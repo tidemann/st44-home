@@ -4,5 +4,6 @@ This repository is created to test and demonstrate CI/CD workflows for ST44 Home
 ## Todo
 - [x] Set up initial repository structure
 - [x] Create sample CI/CD workflows
+- [x] Update to latest node version
 - [ ] Test PR workflow
 
