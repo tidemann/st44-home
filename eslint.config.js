@@ -14,10 +14,10 @@ module.exports = defineConfig([
       tseslint.configs.recommended,
       tseslint.configs.stylistic,
       angular.configs.tsRecommended,
-      prettierConfig
+      prettierConfig,
     ],
     plugins: {
-      prettier
+      prettier,
     },
     processor: angular.processInlineTemplates,
     rules: {
