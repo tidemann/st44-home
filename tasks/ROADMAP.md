@@ -14,32 +14,13 @@ This roadmap outlines planned features and epics for the project. It's maintaine
 
 ## Now (Current Sprint)
 
-### 🟢 In Progress
-None currently
-
-### ⏳ Planned
-- **Feature**: User Profile Management (feature-001)
-  - **Status**: pending (needs breakdown into tasks)
-  - **Priority**: High
-  - **Description**: Allow users to view and edit their profile information
-  - **Business Value**: Improves user engagement and data accuracy
-  - **User Story**: As a registered user, I want to view and edit my profile so that I can keep my information current
-  - **Estimated Effort**: 3-5 days
-  - **Dependencies**: None
-  - **File**: `tasks/features/feature-001-user-profile-management.md`
+No features currently planned. Use Planner Agent to add features to the roadmap.
 
 ---
 
 ## Next (Q1 2026)
 
-### Potential Features
 _To be defined by Planner Agent based on business requirements_
-
-**Example areas to explore:**
-- User management and authentication
-- Core business functionality
-- Data management capabilities
-- Reporting and analytics
 
 ---
 
