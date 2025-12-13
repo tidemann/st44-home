@@ -1,6 +1,47 @@
-# ST44 Home
+# ChoreQuest - Household Chores Management App
 
-A monorepo containing the frontend (Angular) and backend (Fastify) applications for ST44 Home, with PostgreSQL database support.
+**A multi-tenant, mobile-first application that helps families manage and automate household chores for children.**
+
+## Product Overview
+
+ChoreQuest reduces the need for manual reminders by automatically assigning responsibility, sending notifications, and tracking completion of household tasks. The app supports multiple independent households (multi-tenant), where each household manages its own children, tasks, rules, and settings.
+
+### Key Features
+
+- **Multi-Tenant Architecture**: Multiple households, fully isolated data
+- **Smart Task Assignment**: Rule-based automation (weekly rotation, repeating tasks)
+- **Push Notifications**: Proactive reminders reduce parent intervention
+- **Gamification**: Points and rewards system for motivation
+- **Parent Dashboard**: Overview, reporting, and task management
+- **Child Interface**: Simple task view and completion
+
+### Core Concepts
+
+**Households (Tenants)**
+- Each household is a separate, isolated tenant
+- All data (children, tasks, assignments) belongs to one household
+- Users can belong to multiple households with different roles
+
+**Roles**
+- **Admin**: Manages household, invites users
+- **Parent**: Creates tasks, assigns responsibilities, approves completion
+- **Child**: Views and completes assigned tasks
+
+**Task Types**
+- Weekly rotation (odd/even weeks)
+- Repeating tasks (multiple times per week)
+- Daily tasks (optional)
+
+**Motivation System**
+- Earn points by completing tasks
+- Bonus points for completing without reminders
+- Rewards tied to point thresholds
+
+---
+
+## Technical Stack
+
+A monorepo containing the frontend (Angular) and backend (Fastify) applications with PostgreSQL database support.
 
 ## Project Structure
 

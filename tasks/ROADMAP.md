@@ -6,35 +6,101 @@ This roadmap outlines planned features and epics for the project. It's maintaine
 ## Current Status (December 2025)
 
 ### Active Development
-- **Epic**: Basic application infrastructure
-- **Status**: Foundation being established
-- **Features**: API connectivity, database initialization
+- **Product**: ChoreQuest - Multi-Tenant Household Chores App
+- **Phase**: MVP Planning (Phase 1)
+- **Goal**: Launch core functionality in 8 weeks
 
 ---
 
-## Now (Current Sprint)
+## Now (Current Sprint - Phase 1 MVP)
 
-No features currently planned. Use Planner Agent to add features to the roadmap.
+### 🎯 MVP Epics (8-week timeline)
+
+**Epic-001: Multi-Tenant Foundation** ⭐ Critical
+- **Priority**: Critical (Foundational)
+- **Status**: pending
+- **Duration**: 2 weeks
+- **File**: [epic-001-multi-tenant-foundation.md](epics/epic-001-multi-tenant-foundation.md)
+- **Description**: Multi-tenant database, authentication, household management, user invitations
+- **Why Now**: Foundation for entire application - must come first
+- **Dependencies**: None (foundational)
+
+**Epic-002: Task Management Core** ⭐ Critical
+- **Priority**: Critical (Core Product)
+- **Status**: pending
+- **Duration**: 2 weeks
+- **File**: [epic-002-task-management-core.md](epics/epic-002-task-management-core.md)
+- **Description**: Rule-based task creation, automatic assignment, completion tracking
+- **Why Now**: Core value proposition of the product
+- **Dependencies**: Epic-001 must be complete
+
+**Epic-003: User Onboarding & Experience** ⭐ High
+- **Priority**: High (User Activation)
+- **Status**: pending
+- **Duration**: 1 week
+- **File**: [epic-003-user-onboarding.md](epics/epic-003-user-onboarding.md)
+- **Description**: Smooth onboarding flow, guided task creation, household setup
+- **Why Now**: Critical for user activation and retention
+- **Dependencies**: Epic-001, Epic-002
+
+**Epic-004: Push Notifications** ⭐ High
+- **Priority**: High (Key Differentiator)
+- **Status**: pending
+- **Duration**: 1.5 weeks
+- **File**: [epic-004-push-notifications.md](epics/epic-004-push-notifications.md)
+- **Description**: Automated task reminders, notification preferences, quiet hours
+- **Why Now**: Core value prop - reduces parent reminders
+- **Dependencies**: Epic-002
+
+**Epic-005: Parent Dashboard** 📊 Medium
+- **Priority**: Medium (Parent Value)
+- **Status**: pending
+- **Duration**: 1.5 weeks
+- **File**: [epic-005-parent-dashboard.md](epics/epic-005-parent-dashboard.md)
+- **Description**: Weekly overview, completion rates, task management interface
+- **Why Now**: Parent visibility and control
+- **Dependencies**: Epic-002
+
+### Timeline Overview
+```
+Week 1-2:   Epic-001 (Foundation)
+Week 3-4:   Epic-002 (Task Core)
+Week 5:     Epic-003 (Onboarding)
+Week 6-7:   Epic-004 (Notifications)
+Week 7-8:   Epic-005 (Dashboard)
+```
+
+**MVP Launch Target**: End of Week 8
 
 ---
 
-## Next (Q1 2026)
+## Next (Phase 2 - Post-MVP)
 
-_To be defined by Planner Agent based on business requirements_
+### Gamification & Engagement (Weeks 9-12)
+- Points and rewards system
+- Completion streaks and bonuses
+- Enhanced parent analytics
+- Historical trends and reporting
+
+**Goals**: Increase motivation and long-term engagement
 
 ---
 
-## Later (Q2-Q4 2026)
+## Later (Phase 3-4)
 
-### Strategic Initiatives
-_Long-term epics to be defined_
+### Phase 3: Advanced Features (Weeks 13-16)
+- Task templates and sharing
+- Parent approval workflow
+- Advanced assignment rules (3+ children)
+- Smart notification timing
 
-**Potential areas:**
-- Advanced features based on user feedback
-- Integrations with external systems
-- Mobile/responsive enhancements
-- Performance optimizations
-- Scalability improvements
+### Phase 4: Growth & Monetization (Weeks 17-20)
+- Premium tier features
+- Social features (leaderboards, achievements)
+- Platform expansion (web dashboard)
+- Smart home integrations
+
+**Strategic Focus**: Scale and sustainable business model
 
 ---
 
@@ -59,6 +125,15 @@ _Features under consideration but not yet prioritized_
   - PostgreSQL database
   - CI/CD pipeline
   - Dynamic API URL configuration
+- ✅ Agent system implementation
+  - 7 agent specifications
+  - 5 workflow prompt files
+  - Living documentation (7 AGENT.md files)
+  - Work hierarchy and templates
+- 📋 Product planning
+  - ChoreQuest product defined
+  - Implementation plan created
+  - 5 MVP epics planned
 
 ---
 
