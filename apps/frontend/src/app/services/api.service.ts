@@ -1,6 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { environment } from '../../environments/environment.development';
 
 export interface Item {
   id: number;
@@ -19,13 +20,13 @@ interface ItemsResponse {
 })
 export class ApiService {
   private readonly http = inject(HttpClient);
-  private readonly apiUrl = 'http://localhost:3000/api';
+  private readonly apiUrl = `${environment.apiUrl}/api`;
 
   getItems(): Observable<ItemsResponse> {
     return this.http.get<ItemsResponse>(`${this.apiUrl}/items`);
   }
 
   getHealth(): Observable<{ status: string; database: string }> {
-    return this.http.get<{ status: string; database: string }>('http://localhost:3000/health');
+    return this.http.get<{ status: string; database: string }>(`${environment.apiUrl}/health`);
   }
 }
