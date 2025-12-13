@@ -124,6 +124,15 @@ _Features under consideration but not yet prioritized_
 ## Completed
 
 ### December 2025
+- ✅ **Task-005: Authentication Middleware** (2025-12-13)
+  - FastifyRequest type extension with user property
+  - authenticateUser preHandler hook for route protection
+  - JWT token extraction from Authorization Bearer header
+  - Token signature and expiration verification
+  - Token type validation (access vs refresh)
+  - User context attachment to requests
+  - Protected endpoints (logout, test endpoint)
+  - [PR #25](https://github.com/tidemann/st44-home/pull/25)
 - ✅ **Task-004: Token Refresh Endpoint** (2025-12-13)
   - POST /api/auth/refresh endpoint
   - JWT token verification and validation
@@ -218,7 +227,8 @@ Features are prioritized based on:
 3. Provide feedback on direction
 4. Suggest new features for consideration
 
----
+--✅ task-005: Authentication middleware (PR #25) - **COMPLETED**
+- -
 
 ## Changelog
 
