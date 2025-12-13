@@ -124,6 +124,16 @@ _Features under consideration but not yet prioritized_
 ## Completed
 
 ### December 2025
+- ✅ **Task-007: Login Form Component** (2025-12-13)
+  - Angular standalone component with separated HTML/CSS/TS files
+  - Reactive form with email/password validation
+  - Remember me checkbox (localStorage vs sessionStorage)
+  - Show/hide password toggle
+  - Success message after registration redirect
+  - Return URL support for auth guards
+  - WCAG AA compliant (ARIA, keyboard nav, focus management)
+  - AuthService updated to support token persistence preferences
+  - [PR #27](https://github.com/tidemann/st44-home/pull/27)
 - ✅ **Task-006: Registration Form Component** (2025-12-13)
   - Angular standalone component with reactive forms
   - AuthService with register/login/logout methods
