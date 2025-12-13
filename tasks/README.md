@@ -29,6 +29,25 @@ Atomic units of implementation work.
 - **Examples**: "Create user_profiles table", "Implement profile API", "Build profile form"
 - **Template**: `TEMPLATE.md`
 
+## Templates
+
+Work item templates are located in `tasks/templates/`:
+- **`epic.md`**: Template for creating new epics
+- **`feature.md`**: Template for creating new features
+- **`task.md`**: Template for creating new tasks
+
+### Using Templates
+```bash
+# Create a new epic
+cp tasks/templates/epic.md tasks/epic-XXX-name.md
+
+# Create a new feature
+cp tasks/templates/feature.md tasks/feature-XXX-name.md
+
+# Create a new task
+cp tasks/templates/task.md tasks/task-XXX-name.md
+```
+
 ## File Naming Convention
 
 ```
