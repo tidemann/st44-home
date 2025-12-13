@@ -187,20 +187,20 @@ import { CommonModule } from '@angular/common';
 export class ExampleComponent {
   // Inputs
   readonly data = input.required<DataType>();
-  
+
   // Outputs
   readonly itemSelected = output<Item>();
-  
+
   // State
   protected readonly items = signal<Item[]>([]);
   protected readonly loading = signal(false);
   protected readonly error = signal<string | null>(null);
-  
+
   // Computed
   protected readonly filteredItems = computed(() => {
     return this.items().filter(/* logic */);
   });
-  
+
   // Methods
   protected handleClick(item: Item): void {
     this.itemSelected.emit(item);
@@ -235,7 +235,7 @@ export class DataService {
 // BAD: Large component with utility functions (250+ lines)
 export class LargeComponent {
   // ... lots of component logic ...
-  
+
   private calculateDiscount(price: number): number { /* ... */ }
   private formatCurrency(amount: number): string { /* ... */ }
   private validateInput(input: string): boolean { /* ... */ }
@@ -268,7 +268,7 @@ protected readonly error = signal<string | null>(null);
 loadData(): void {
   this.loading.set(true);
   this.error.set(null);
-  
+
   this.dataService.getData().subscribe({
     next: (data) => {
       this.data.set(data);
