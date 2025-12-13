@@ -1,0 +1,38 @@
+# docker-compose.override.yml
+# 
+# This file is automatically loaded by docker-compose and allows you to override
+# settings for local development without modifying the main docker-compose.yml
+#
+# Copy this to docker-compose.override.yml and customize as needed
+#
+# NOTE: This file is gitignored, so you can add local configurations safely
+
+services:
+  # Example: Expose additional database port
+  # db:
+  #   ports:
+  #     - "5433:5432"  # If 5432 is already in use locally
+
+  # Example: Enable hot reload for backend
+  backend:
+    volumes:
+      - ../apps/backend:/app
+      - /app/node_modules
+    command: npm run dev
+
+  # Example: Map backend to different port
+  # backend:
+  #   ports:
+  #     - "3001:3000"
+
+  # Example: Use local build instead of nginx for frontend
+  # frontend:
+  #   build:
+  #     context: ../apps/frontend
+  #     dockerfile: Dockerfile.dev
+  #   volumes:
+  #     - ../apps/frontend:/app
+  #     - /app/node_modules
+  #   command: npm start
+  #   ports:
+  #     - "4200:4200"
