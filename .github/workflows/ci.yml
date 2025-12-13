@@ -20,7 +20,10 @@ jobs:
           node-version: 24
 
       - name: Install dependencies
-        run: npm ci
+        run: npm ci --include=optional
+
+      - name: Rebuild native modules
+        run: npm rebuild --workspace=apps/frontend
 
       - name: Lint
         run: npm run lint:frontend
