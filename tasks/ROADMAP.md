@@ -124,6 +124,16 @@ _Features under consideration but not yet prioritized_
 ## Completed
 
 ### December 2025
+- ✅ **Task-006: Registration Form Component** (2025-12-13)
+  - Angular standalone component with reactive forms
+  - AuthService with register/login/logout methods
+  - Password strength validator and indicator
+  - Client-side validation matching backend rules
+  - Show/hide password toggle
+  - WCAG AA compliant (ARIA, keyboard nav, focus management)
+  - App root simplified (removed demo content)
+  - Frontend agent documentation enhanced with best practices
+  - [PR #26](https://github.com/tidemann/st44-home/pull/26)
 - ✅ **Task-005: Authentication Middleware** (2025-12-13)
   - FastifyRequest type extension with user property
   - authenticateUser preHandler hook for route protection
