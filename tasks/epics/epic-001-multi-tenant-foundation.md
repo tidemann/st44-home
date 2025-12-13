@@ -2,10 +2,10 @@
 
 ## Metadata
 - **ID**: epic-001
-- **Status**: pending
+- **Status**: in-progress
 - **Priority**: critical
 - **Created**: 2025-12-13
-- **Estimated Duration**: 2 weeks
+- **Estimated Duration**: 2 weeks (12-14 working days)
 - **Business Value**: Foundation for entire application
 
 ## Description
@@ -33,13 +33,10 @@ Without a proper multi-tenant foundation, we cannot:
 4. Provide invitation system for adding household members
 
 ## Features
-To be broken down by Planner Agent:
-- User authentication system (register, login, JWT)
-- Database schema with multi-tenant design
-- Household CRUD operations
-- User invitation system (invite codes/links)
-- Household membership with roles (admin, parent, child)
-- Tenant isolation middleware
+- [ ] [feature-001](../features/feature-001-user-authentication.md) - User Authentication System (3-4 days)
+- [ ] [feature-002](../features/feature-002-multi-tenant-schema.md) - Multi-Tenant Database Schema (2-3 days)
+- [ ] [feature-003](../features/feature-003-household-management.md) - Household Management (3-4 days)
+- [ ] [feature-004](../features/feature-004-user-invitation-system.md) - User Invitation System (2-3 days)
 
 ## Success Criteria
 - [ ] Users can register and authenticate securely
@@ -92,4 +89,10 @@ To be broken down by Planner Agent:
 - Blocks: All other epics (foundational)
 
 ## Progress Log
-- [2025-12-13] Epic created based on implementation plan
+- [2025-12-13 21:10] Epic created based on implementation plan
+- [2025-12-13 21:35] Status changed to in-progress, features breakdown complete:
+  - feature-001: User Authentication System (9 tasks)
+  - feature-002: Multi-Tenant Database Schema (10 tasks)
+  - feature-003: Household Management (11 tasks)
+  - feature-004: User Invitation System (11 tasks)
+  - Total: 41 tasks, estimated 12-14 days
