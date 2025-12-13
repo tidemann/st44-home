@@ -345,7 +345,7 @@ docker compose up -d db
 
 - `../infra/docker-compose.yml` - Service orchestration
 - `../apps/backend/src/server.ts` - Database connection
-- `../infra/AGENT.md` - Infrastructure context
+- `../infra/AGENTS.md` - Infrastructure context
 
 ---
 

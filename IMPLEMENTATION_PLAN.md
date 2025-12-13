@@ -557,5 +557,5 @@ See design/ directory for wireframes and high-fidelity mockups (to be created).
 ## References
 
 - Product requirements document (inline above)
-- Technical architecture: AGENT.md files throughout codebase
+- Technical architecture: AGENTS.md files throughout codebase
 - Agent system documentation: .github/agents/

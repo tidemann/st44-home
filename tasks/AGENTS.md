@@ -10,7 +10,7 @@ This directory contains all work items organized in a hierarchical structure: Ep
 tasks/
 ├── README.md              # Workflow documentation
 ├── ROADMAP.md             # Product roadmap (Now/Next/Later/Backlog)
-├── AGENT.md               # This file (agent context)
+├── AGENTS.md              # This file (agent context)
 │
 ├── templates/             # Work item templates
 │   ├── epic.md            # Epic template

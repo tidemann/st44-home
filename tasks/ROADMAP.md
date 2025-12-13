@@ -128,7 +128,7 @@ _Features under consideration but not yet prioritized_
 - ✅ Agent system implementation
   - 7 agent specifications
   - 5 workflow prompt files
-  - Living documentation (7 AGENT.md files)
+  - Living documentation (7 AGENTS.md files)
   - Work hierarchy and templates
 - 📋 Product planning
   - Diddit product defined

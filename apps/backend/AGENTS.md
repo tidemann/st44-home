@@ -20,6 +20,7 @@ server.ts (entry point)
 ### Server Setup (`src/server.ts`)
 
 **Database Connection**:
+
 ```typescript
 const pool = new Pool({
   host: process.env.DB_HOST || 'localhost',
@@ -31,6 +32,7 @@ const pool = new Pool({
 ```
 
 **Fastify Configuration**:
+
 - Logger enabled
 - CORS configured (origin: `process.env.CORS_ORIGIN || '*'`)
 - Top-level await used (ESM)
@@ -38,14 +40,17 @@ const pool = new Pool({
 ### Existing Endpoints
 
 #### `GET /health`
+
 Health check with database connectivity test.
 
 **Response** (200):
+
 ```json
 { "status": "ok", "database": "connected" }
 ```
 
 **Response** (503):
+
 ```json
 {
   "status": "error",
@@ -55,9 +60,11 @@ Health check with database connectivity test.
 ```
 
 #### `GET /api/items`
+
 Returns all items from the `items` table, ordered by `created_at DESC`.
 
 **Response** (200):
+
 ```json
 {
   "items": [
@@ -73,6 +80,7 @@ Returns all items from the `items` table, ordered by `created_at DESC`.
 ```
 
 **Response** (500):
+
 ```json
 { "error": "Failed to fetch items" }
 ```
@@ -80,24 +88,23 @@ Returns all items from the `items` table, ordered by `created_at DESC`.
 ## Conventions & Patterns
 
 ### Route Handler Pattern
+
 ```typescript
-fastify.get<{ Reply: ResponseType }>(
-  '/api/route',
-  async (request, reply) => {
-    try {
-      // Business logic
-      const result = await pool.query<RowType>('SELECT ...');
-      return { data: result.rows };
-    } catch (error) {
-      fastify.log.error(error);
-      reply.code(500);
-      return { error: 'Error message' };
-    }
+fastify.get<{ Reply: ResponseType }>('/api/route', async (request, reply) => {
+  try {
+    // Business logic
+    const result = await pool.query<RowType>('SELECT ...');
+    return { data: result.rows };
+  } catch (error) {
+    fastify.log.error(error);
+    reply.code(500);
+    return { error: 'Error message' };
   }
-);
+});
 ```
 
 **Key Points**:
+
 - Use TypeScript generics for type safety
 - Always use try/catch
 - Log errors with `fastify.log.error()`
@@ -108,20 +115,17 @@ fastify.get<{ Reply: ResponseType }>(
 ### Database Queries
 
 **Always use parameterized queries**:
+
 ```typescript
 // ✅ Good - prevents SQL injection
-const result = await pool.query(
-  'SELECT * FROM users WHERE id = $1',
-  [userId]
-);
+const result = await pool.query('SELECT * FROM users WHERE id = $1', [userId]);
 
 // ❌ Bad - SQL injection risk
-const result = await pool.query(
-  `SELECT * FROM users WHERE id = ${userId}`
-);
+const result = await pool.query(`SELECT * FROM users WHERE id = ${userId}`);
 ```
 
 **Type the result**:
+
 ```typescript
 interface User {
   id: number;
@@ -129,16 +133,14 @@ interface User {
   email: string;
 }
 
-const result = await pool.query<User>(
-  'SELECT * FROM users WHERE id = $1',
-  [userId]
-);
+const result = await pool.query<User>('SELECT * FROM users WHERE id = $1', [userId]);
 // result.rows is now User[]
 ```
 
 ### Error Handling
 
 **Standard pattern**:
+
 ```typescript
 try {
   // Operation
@@ -150,6 +152,7 @@ try {
 ```
 
 **Status codes to use**:
+
 - `200` - Success
 - `201` - Created
 - `400` - Bad request (validation error)
@@ -163,6 +166,7 @@ try {
 ### Type Definitions
 
 **Define interfaces for**:
+
 - Database row types
 - Request bodies
 - Response types
@@ -182,18 +186,16 @@ interface ItemRow {
   updated_at: Date;
 }
 
-fastify.post<{ Body: CreateItemBody }>(
-  '/api/items',
-  async (request, reply) => {
-    const { title, description } = request.body;
-    // ...
-  }
-);
+fastify.post<{ Body: CreateItemBody }>('/api/items', async (request, reply) => {
+  const { title, description } = request.body;
+  // ...
+});
 ```
 
 ## Environment Variables
 
 Required:
+
 - `DB_HOST` - Database host
 - `DB_PORT` - Database port
 - `DB_NAME` - Database name
@@ -201,13 +203,15 @@ Required:
 - `DB_PASSWORD` - Database password
 
 Optional:
+
 - `PORT` - Server port (default: 3000)
 - `HOST` - Server host (default: 0.0.0.0)
-- `CORS_ORIGIN` - CORS origin (default: *)
+- `CORS_ORIGIN` - CORS origin (default: \*)
 
 ## File Organization (Future)
 
 As the API grows, organize into:
+
 ```
 src/
 ├── server.ts           # Entry point, server setup
@@ -230,6 +234,7 @@ src/
 ## Adding a New Endpoint
 
 ### 1. Define Types
+
 ```typescript
 interface CreateUserBody {
   name: string;
@@ -245,37 +250,36 @@ interface User {
 ```
 
 ### 2. Create Route Handler
+
 ```typescript
-fastify.post<{ Body: CreateUserBody }>(
-  '/api/users',
-  async (request, reply) => {
-    try {
-      const { name, email } = request.body;
-      
-      // Validate
-      if (!name || !email) {
-        reply.code(400);
-        return { error: 'Name and email are required' };
-      }
-      
-      // Insert
-      const result = await pool.query<User>(
-        'INSERT INTO users (name, email) VALUES ($1, $2) RETURNING *',
-        [name, email]
-      );
-      
-      reply.code(201);
-      return { user: result.rows[0] };
-    } catch (error) {
-      fastify.log.error(error);
-      reply.code(500);
-      return { error: 'Failed to create user' };
+fastify.post<{ Body: CreateUserBody }>('/api/users', async (request, reply) => {
+  try {
+    const { name, email } = request.body;
+
+    // Validate
+    if (!name || !email) {
+      reply.code(400);
+      return { error: 'Name and email are required' };
     }
+
+    // Insert
+    const result = await pool.query<User>(
+      'INSERT INTO users (name, email) VALUES ($1, $2) RETURNING *',
+      [name, email],
+    );
+
+    reply.code(201);
+    return { user: result.rows[0] };
+  } catch (error) {
+    fastify.log.error(error);
+    reply.code(500);
+    return { error: 'Failed to create user' };
   }
-);
+});
 ```
 
 ### 3. Test Manually
+
 ```bash
 curl -X POST http://localhost:3000/api/users \
   -H "Content-Type: application/json" \
@@ -283,46 +287,46 @@ curl -X POST http://localhost:3000/api/users \
 ```
 
 ### 4. Update Frontend
+
 Create/update service in `apps/frontend/src/app/services/`
 
 ## Database Access Patterns
 
 ### SELECT
+
 ```typescript
-const result = await pool.query<User>(
-  'SELECT * FROM users WHERE active = $1',
-  [true]
-);
+const result = await pool.query<User>('SELECT * FROM users WHERE active = $1', [true]);
 const users = result.rows;
 ```
 
 ### INSERT
+
 ```typescript
 const result = await pool.query<User>(
   'INSERT INTO users (name, email) VALUES ($1, $2) RETURNING *',
-  [name, email]
+  [name, email],
 );
 const newUser = result.rows[0];
 ```
 
 ### UPDATE
+
 ```typescript
-const result = await pool.query<User>(
-  'UPDATE users SET name = $1 WHERE id = $2 RETURNING *',
-  [newName, userId]
-);
+const result = await pool.query<User>('UPDATE users SET name = $1 WHERE id = $2 RETURNING *', [
+  newName,
+  userId,
+]);
 const updated = result.rows[0];
 ```
 
 ### DELETE
+
 ```typescript
-await pool.query(
-  'DELETE FROM users WHERE id = $1',
-  [userId]
-);
+await pool.query('DELETE FROM users WHERE id = $1', [userId]);
 ```
 
 ### Transaction (if needed)
+
 ```typescript
 const client = await pool.connect();
 try {
@@ -341,6 +345,7 @@ try {
 ## Security Checklist
 
 When adding endpoints:
+
 - [ ] Use parameterized queries (never string concatenation)
 - [ ] Validate all inputs (type, format, length)
 - [ ] Sanitize user input
@@ -353,6 +358,7 @@ When adding endpoints:
 ## Common Patterns
 
 ### Pagination
+
 ```typescript
 fastify.get<{ Querystring: { page?: string; limit?: string } }>(
   '/api/items',
@@ -360,18 +366,19 @@ fastify.get<{ Querystring: { page?: string; limit?: string } }>(
     const page = parseInt(request.query.page || '1', 10);
     const limit = parseInt(request.query.limit || '10', 10);
     const offset = (page - 1) * limit;
-    
+
     const result = await pool.query<Item>(
       'SELECT * FROM items ORDER BY created_at DESC LIMIT $1 OFFSET $2',
-      [limit, offset]
+      [limit, offset],
     );
-    
+
     return { items: result.rows, page, limit };
-  }
+  },
 );
 ```
 
 ### File Upload (when needed)
+
 ```typescript
 import multipart from '@fastify/multipart';
 
@@ -386,12 +393,14 @@ fastify.post('/api/upload', async (request, reply) => {
 ## Testing (TODO)
 
 Unit tests should:
+
 - Mock the database pool
 - Test business logic
 - Validate error handling
 - Test edge cases
 
 Integration tests should:
+
 - Use test database
 - Test full request/response cycle
 - Verify database changes
@@ -407,15 +416,18 @@ Integration tests should:
 ## Debugging
 
 ### Enable detailed logging
+
 Already enabled via Fastify logger.
 
 ### Check database queries
+
 ```typescript
 const result = await pool.query(...);
 console.log('Query result:', result.rows);
 ```
 
 ### Test endpoint
+
 ```bash
 curl -v http://localhost:3000/api/endpoint
 ```
@@ -423,15 +435,18 @@ curl -v http://localhost:3000/api/endpoint
 ## Common Issues
 
 **Database connection fails**:
+
 - Check `DB_HOST`, `DB_PORT` in environment
 - Verify database is running: `docker ps`
 - Check database logs: `docker logs st44-db`
 
 **CORS errors in frontend**:
+
 - Verify `CORS_ORIGIN` environment variable
 - Check proxy configuration in dev mode
 
 **Type errors**:
+
 - Ensure interfaces match database schema
 - Use `| null` for nullable columns
 

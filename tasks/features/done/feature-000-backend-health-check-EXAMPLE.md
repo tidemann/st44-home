@@ -43,7 +43,7 @@ As a system administrator, I want a health check endpoint so that I can monitor 
 - ✅ Works in local development
 - ✅ Works in Docker Compose
 - ✅ Frontend can successfully call the endpoint
-- ✅ Endpoint documented in backend AGENT.md
+- ✅ Endpoint documented in backend AGENTS.md
 
 ## Tasks Completed
 - ✅ Task 000-1: Create health endpoint (task-000-1-health-endpoint.md)
@@ -90,7 +90,7 @@ Response 503: {
 4. ✅ Handle errors gracefully
 5. ✅ Test in local dev environment
 6. ✅ Test in Docker environment
-7. ✅ Document in backend AGENT.md
+7. ✅ Document in backend AGENTS.md
 
 ## Lessons Learned
 
@@ -120,7 +120,7 @@ Response 503: {
 
 ## Related Files
 - Implementation: `apps/backend/src/server.ts`
-- Documentation: `apps/backend/AGENT.md`
+- Documentation: `apps/backend/AGENTS.md`
 - Task files: `tasks/items/done/task-000-*.md`
 
 ## Git References

@@ -68,16 +68,16 @@ Orchestrator Agent (Coordination)
 Expert Agents (Implementation)
 ```
 
-### Agsystem-agent.md`
+### Agent Specifications
+
+#### `system-agent.md`
 Meta-agent for maintaining the agent system itself:
 - Maintains agent specifications
 - Designs new agents when needed
 - Keeps prompt files effective
-- Ensures AGENT.md files stay current
+- Ensures AGENTS.md files stay current
 - Analyzes agent performance
 - Documents patterns and anti-patterns
-
-#### `ent Specifications
 
 #### `README.md`
 Complete overview of the agent system:
@@ -331,7 +331,7 @@ All documentation in `.github/` should be:
 2. Define role and responsibilities
 3. Document workflow and patterns
 4. Add to `agents/README.md`
-5. Update this file (AGENT.md)
+5. Update this file (AGENTS.md)
 
 ### Update Agent Workflow
 1. Edit relevant agent spec file
@@ -377,12 +377,12 @@ Use NgRx for state management.
 
 ## Related Files
 
-- `../AGENT.md` - Project root context
-- `../tasks/AGENT.md` - Tasks directory context
-- `../apps/frontend/AGENT.md` - Frontend context
-- `../apps/backend/AGENT.md` - Backend context
-- `../infra/AGENT.md` - Infrastructure context
-- `../docker/AGENT.md` - Docker context
+- `../AGENTS.md` - Project root context
+- `../tasks/AGENTS.md` - Tasks directory context
+- `../apps/frontend/AGENTS.md` - Frontend context
+- `../apps/backend/AGENTS.md` - Backend context
+- `../infra/AGENTS.md` - Infrastructure context
+- `../docker/AGENTS.md` - Docker context
 
 ---
 

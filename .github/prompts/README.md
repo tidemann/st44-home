@@ -208,8 +208,8 @@ To create a new prompt file:
 - [Agent System Overview](../agents/README.md) - Complete agent specifications
 - [Orchestrator Agent](../agents/orchestrator-agent.md) - Main coordination workflow
 - [Planner Agent](../agents/planner-agent.md) - Strategic planning
-- [Task Management](../../tasks/AGENT.md) - Work item hierarchy
-- [Project Overview](../../AGENT.md) - Architecture and conventions
+- [Task Management](../../tasks/AGENTS.md) - Work item hierarchy
+- [Project Overview](../../AGENTS.md) - Architecture and conventions
 
 ## Maintenance
 
@@ -231,6 +231,6 @@ When creating new workflows:
 
 ## Questions?
 
-- See [AGENT.md](../../AGENT.md) for project overview
+- See [AGENTS.md](../../AGENTS.md) for project overview
 - See [.github/agents/README.md](../agents/README.md) for agent system details
-- See [tasks/AGENT.md](../../tasks/AGENT.md) for work item management
+- See [tasks/AGENTS.md](../../tasks/AGENTS.md) for work item management

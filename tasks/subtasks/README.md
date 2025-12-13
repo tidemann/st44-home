@@ -64,7 +64,7 @@ Each instruction file should contain:
 [What tests this agent should write]
 
 ## Reference Documentation
-- Link to AGENT.md files
+- Link to AGENTS.md files
 - Link to relevant existing code
 - Link to parent task file
 ```
@@ -84,7 +84,7 @@ Need to extend users table to support profile information (name, bio, avatar).
 
 ## What You Need to Implement
 - Alter users table with new columns
-- Update database AGENT.md with schema changes
+- Update database AGENTS.md with schema changes
 
 ## Implementation Details
 ALTER TABLE users ADD COLUMN:
@@ -95,12 +95,12 @@ ALTER TABLE users ADD COLUMN:
 
 ## Files to Modify
 - `docker/init.sql` - Add columns (for new installs)
-- `docker/AGENT.md` - Document new schema
+- `docker/AGENTS.md` - Document new schema
 
 ## Acceptance Criteria
 - [ ] Users table has new columns
 - [ ] Columns allow NULL initially
-- [ ] Schema documented in AGENT.md
+- [ ] Schema documented in AGENTS.md
 ```
 
 #### `task-005/backend-agent-instructions.md`
@@ -120,7 +120,7 @@ Implement REST API endpoints for user profile management.
 ## Files to Create/Modify
 - `apps/backend/src/routes/profile.ts` - New route file
 - `apps/backend/src/server.ts` - Register profile routes
-- `apps/backend/AGENT.md` - Document new endpoints
+- `apps/backend/AGENTS.md` - Document new endpoints
 
 ## Implementation Details
 [Detailed endpoint specs, validation rules, error handling...]
@@ -176,7 +176,7 @@ Build UI components for viewing and editing user profile.
 1. Receive task assignment
 2. Read main task file: `tasks/items/task-XXX.md`
 3. Read agent-specific instructions: `tasks/subtasks/task-XXX/[agent]-instructions.md`
-4. Read relevant AGENT.md files for context
+4. Read relevant AGENTS.md files for context
 5. Implement according to instructions
 6. Update progress in task file
 7. Mark subtask complete
