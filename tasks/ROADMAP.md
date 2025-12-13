@@ -124,6 +124,17 @@ _Features under consideration but not yet prioritized_
 ## Completed
 
 ### December 2025
+- ✅ **Task-003: Login API Endpoint with JWT Authentication** (2025-12-13)
+  - POST /api/auth/login endpoint
+  - JWT access tokens (1h) and refresh tokens (7d)
+  - Timing-safe password comparison
+  - Security-focused error handling
+  - [PR #23](https://github.com/tidemann/st44-home/pull/23)
+- ✅ **Task-002: Registration API Endpoint** (2025-12-13)
+  - POST /api/auth/register endpoint
+  - Password hashing with bcrypt
+  - Email validation
+  - [PR #22](https://github.com/tidemann/st44-home/pull/22)
 - ✅ **Task-001: Create Users Table Schema** (2025-12-13)
   - Users table with OAuth support
   - Migration system infrastructure
@@ -207,6 +218,7 @@ Features are prioritized based on:
 ### 2025-12-13
 - ✅ task-001: Users table schema with OAuth support (PR #21) - **COMPLETED**
 - ✅ task-002: Registration API endpoint with bcrypt (PR #22) - **COMPLETED**
+- ✅ task-003: Login API endpoint with JWT authentication (PR #23) - **COMPLETED**
 - Created initial roadmap structure
 - Documented completed infrastructure work
 - Established prioritization framework
