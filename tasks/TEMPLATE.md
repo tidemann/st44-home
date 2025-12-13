@@ -2,10 +2,13 @@
 
 ## Metadata
 - **ID**: task-XXX
+- **Feature**: feature-XXX - [Feature Name]
+- **Epic**: epic-XXX - [Epic Name]
 - **Status**: pending
 - **Priority**: medium
 - **Created**: YYYY-MM-DD
 - **Assigned Agent**: [orchestrator | frontend | backend | database | devops | testing]
+- **Estimated Duration**: X hours/days
 
 ## Description
 [Clear, concise description of what needs to be accomplished. Include context about why this task is needed and what problem it solves.]
