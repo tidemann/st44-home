@@ -91,15 +91,20 @@ cp infra/.env.example infra/.env
 
 ### Development
 
-Run services individually:
-
+**Quick Start:**
 ```bash
-# Frontend (Angular)
-npm run dev:frontend
+# Start both frontend and backend (opens separate windows)
+npm run dev:all
 
-# Backend (Fastify)
-npm run dev:backend
+# Or start individually
+npm run dev:frontend   # Opens new window for frontend
+npm run dev:backend    # Opens new window for backend
+
+# Stop all dev servers
+npm run dev:stop
 ```
+
+**See [DEV_WORKFLOW.md](DEV_WORKFLOW.md) for complete development guide.**
 
 Or use Docker Compose for full stack:
 

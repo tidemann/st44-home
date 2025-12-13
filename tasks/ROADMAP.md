@@ -205,6 +205,8 @@ Features are prioritized based on:
 ## Changelog
 
 ### 2025-12-13
+- ✅ task-001: Users table schema with OAuth support (PR #21) - **COMPLETED**
+- ✅ task-002: Registration API endpoint with bcrypt (PR #22) - **COMPLETED**
 - Created initial roadmap structure
 - Documented completed infrastructure work
 - Established prioritization framework

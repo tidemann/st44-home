@@ -74,16 +74,20 @@ home/
 # Start database only
 cd infra && docker compose up -d db
 
-# Backend (separate terminal)
-cd apps/backend
-npm install
-npm run dev              # tsx watch mode
+# Start backend dev server (detached - opens new window)
+npm run dev:backend
 
-# Frontend (separate terminal)
-cd apps/frontend
-npm install
-npm start                # ng serve with proxy
+# Start frontend dev server (detached - opens new window)
+npm run dev:frontend
+
+# Or start both at once
+npm run dev:all
+
+# Stop all dev servers
+npm run dev:stop
 ```
+
+**CRITICAL FOR AGENTS**: When testing endpoints, NEVER run `npm run dev` directly in your working terminal. Always use the detached scripts above (`npm run dev:backend` or `npm run dev:frontend`) which open new PowerShell windows. This keeps your working terminal free for running test commands.
 
 Access:
 - Frontend: http://localhost:4200

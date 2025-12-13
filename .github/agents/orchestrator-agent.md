@@ -132,7 +132,49 @@ Epic: User Management System (epic-001)
 - Review for accessibility, performance, and security
 - Confirm documentation is updated
 
-### 7. Git Workflow & Pull Requests
+### 7. Development Server Management
+
+**⚠️ CRITICAL: NEVER START DEV SERVERS IN YOUR WORKING TERMINAL**
+
+When testing endpoints or running the application:
+
+#### Always Use Detached Server Scripts
+```bash
+# Start backend server (opens new window)
+npm run dev:backend
+
+# Start frontend server (opens new window)
+npm run dev:frontend
+
+# Start both servers
+npm run dev:all
+
+# Stop all servers when done
+npm run dev:stop
+```
+
+#### Never Do This
+```bash
+# ❌ WRONG - blocks your terminal
+cd apps/backend && npm run dev
+
+# ❌ WRONG - can't run test commands
+cd apps/frontend && npm start
+```
+
+#### Why This Matters
+- Dev servers block the terminal they run in
+- You need your terminal free to run test commands, git operations, etc.
+- The detached scripts start servers in separate PowerShell windows
+- Keeps your workflow unblocked and efficient
+
+#### Testing Workflow
+1. Start servers with `npm run dev:all` (separate windows)
+2. Wait 3-5 seconds for servers to start
+3. Run your test commands in the original terminal
+4. Stop servers with `npm run dev:stop` when done
+
+### 8. Git Workflow & Pull Requests
 
 **⚠️ CRITICAL: NEVER PUSH DIRECTLY TO MAIN**
 
@@ -169,7 +211,7 @@ When work is complete:
 - Reference to related features/tasks
 - CI must pass before merging
 
-### 8. Continuous Improvement
+### 9. Continuous Improvement
 - Learn from completed tasks to improve future planning
 - Update agent workflows based on outcomes
 - Refine delegation strategies

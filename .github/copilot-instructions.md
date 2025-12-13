@@ -91,12 +91,16 @@ This is a monorepo with:
 
 ## Development Workflow
 
-- Run frontend dev server: `npm run start` (includes proxy)
-- Run backend dev server: `npm run dev` (tsx watch mode)
+- **Start backend dev server (detached)**: `npm run dev:backend` from project root
+- **Start frontend dev server (detached)**: `npm run dev:frontend` from project root
+- **Start both servers**: `npm run dev:all` from project root
+- **Stop all dev servers**: `npm run dev:stop` from project root
 - Start database only: `cd infra && docker compose up -d db`
 - Full Docker stack: `npm run docker:up`
 - **Format code BEFORE every commit**: `cd apps/frontend && npm run format && cd ../backend && npm run format`
 - Format check: `npm run format:check` (used in CI)
+
+**CRITICAL**: When agents need to test endpoints, NEVER run dev servers (`npm run dev`, `npm start`) directly in the terminal you're using for commands. Always use the detached scripts above (`npm run dev:backend`, `npm run dev:frontend`) which start servers in separate PowerShell windows, keeping your terminal free for test commands.
 
 ## Git Workflow
 

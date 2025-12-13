@@ -3,6 +3,10 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
+    "dev:backend": "pwsh -Command \"cd apps/backend; Start-Process pwsh -ArgumentList '-NoExit', '-Command', 'npm run dev'\"",
+    "dev:frontend": "pwsh -Command \"cd apps/frontend; Start-Process pwsh -ArgumentList '-NoExit', '-Command', 'npm start'\"",
+    "dev:all": "npm run dev:backend && npm run dev:frontend",
+    "dev:stop": "pwsh -Command \"Get-Process -Name node -ErrorAction SilentlyContinue | Stop-Process -Force\"",
     "docker:up": "cd infra && docker compose up -d",
     "docker:down": "cd infra && docker compose down",
     "docker:logs": "cd infra && docker compose logs -f",
