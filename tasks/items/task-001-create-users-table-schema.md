@@ -131,9 +131,8 @@ CREATE TRIGGER update_users_updated_at BEFORE UPDATE ON users
 - [2025-12-13 22:43] Verified check constraint rejects invalid users - SUCCESS
 - [2025-12-13 22:45] All acceptance criteria met, status changed to completed
 
-## Related Files
-- `docker/postgres/init.sql` - Database initialization script
-- `docker/postgres/Dockerfile` - Database container setup
+## Related PRs
+- [PR #21](https://github.com/tidemann/st44-home/pull/21) - Create users table schema with OAuth support
 
 ## Testing Commands
 ```bash
