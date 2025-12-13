@@ -18,8 +18,9 @@ import {
   getPasswordStrength,
 } from '../utils/password-validation.utils';
 
-// Declare Google Identity Services global
-declare const google: any;
+interface GoogleSignInResponse {
+  credential: string;
+}
 
 @Component({
   selector: 'app-register',
@@ -67,10 +68,12 @@ export class RegisterComponent implements OnInit {
 
   ngOnInit(): void {
     // Make callback available globally for Google
-    (window as any).handleGoogleSignUp = this.handleGoogleSignUp.bind(this);
+    (
+      window as Window & { handleGoogleSignUp?: (response: GoogleSignInResponse) => void }
+    ).handleGoogleSignUp = this.handleGoogleSignUp.bind(this);
   }
 
-  protected async handleGoogleSignUp(response: any): Promise<void> {
+  protected async handleGoogleSignUp(response: GoogleSignInResponse): Promise<void> {
     this.isLoading.set(true);
     this.errorMessage.set(null);
 
@@ -80,9 +83,7 @@ export class RegisterComponent implements OnInit {
       // Success - navigate to dashboard (user already created)
       this.router.navigate(['/dashboard']);
     } catch (error: unknown) {
-      const err = error as {
-        error?: { error?: string; message?: string };
-      };
+      const err = error as { error?: { error?: string; message?: string } };
       const message = err.error?.error || 'Google sign-up failed. Please try again.';
       this.errorMessage.set(message);
     } finally {

@@ -6,8 +6,9 @@ import { AuthService } from '../services/auth.service';
 import { lastValueFrom } from 'rxjs';
 import { environment } from '../../environments/environment.development';
 
-// Declare Google Identity Services global
-declare const google: any;
+interface GoogleSignInResponse {
+  credential: string;
+}
 
 @Component({
   selector: 'app-login',
@@ -47,10 +48,12 @@ export class LoginComponent implements OnInit {
 
   ngOnInit(): void {
     // Make callback available globally for Google
-    (window as any).handleGoogleSignIn = this.handleGoogleSignIn.bind(this);
+    (
+      window as Window & { handleGoogleSignIn?: (response: GoogleSignInResponse) => void }
+    ).handleGoogleSignIn = this.handleGoogleSignIn.bind(this);
   }
 
-  protected async handleGoogleSignIn(response: any): Promise<void> {
+  protected async handleGoogleSignIn(response: GoogleSignInResponse): Promise<void> {
     this.isLoading.set(true);
     this.errorMessage.set(null);
 
@@ -61,9 +64,7 @@ export class LoginComponent implements OnInit {
       const returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/dashboard';
       this.router.navigateByUrl(returnUrl);
     } catch (error: unknown) {
-      const err = error as {
-        error?: { error?: string; message?: string };
-      };
+      const err = error as { error?: { error?: string; message?: string } };
       const message = err.error?.error || 'Google sign-in failed. Please try again.';
       this.errorMessage.set(message);
     } finally {
