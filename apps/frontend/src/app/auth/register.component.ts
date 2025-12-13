@@ -1,13 +1,25 @@
-import { Component, signal, computed, inject, ChangeDetectionStrategy } from '@angular/core';
+import {
+  Component,
+  signal,
+  computed,
+  inject,
+  ChangeDetectionStrategy,
+  OnInit,
+} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormGroup, FormControl, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { AuthService } from '../services/auth.service';
+import { lastValueFrom } from 'rxjs';
+import { environment } from '../../environments/environment.development';
 import {
   passwordStrengthValidator,
   passwordMatchValidator,
   getPasswordStrength,
 } from '../utils/password-validation.utils';
+
+// Declare Google Identity Services global
+declare const google: any;
 
 @Component({
   selector: 'app-register',
@@ -16,10 +28,11 @@ import {
   styleUrl: './register.component.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class RegisterComponent {
+export class RegisterComponent implements OnInit {
   private authService = inject(AuthService);
   private router = inject(Router);
 
+  protected googleClientId = environment.googleClientId;
   protected showPassword = signal(false);
   protected isLoading = signal(false);
   protected errorMessage = signal<string | null>(null);
@@ -51,6 +64,31 @@ export class RegisterComponent {
     const password = this.passwordControl.value || '';
     return getPasswordStrength(password);
   });
+
+  ngOnInit(): void {
+    // Make callback available globally for Google
+    (window as any).handleGoogleSignUp = this.handleGoogleSignUp.bind(this);
+  }
+
+  protected async handleGoogleSignUp(response: any): Promise<void> {
+    this.isLoading.set(true);
+    this.errorMessage.set(null);
+
+    try {
+      await lastValueFrom(this.authService.loginWithGoogle(response.credential));
+
+      // Success - navigate to dashboard (user already created)
+      this.router.navigate(['/dashboard']);
+    } catch (error: unknown) {
+      const err = error as {
+        error?: { error?: string; message?: string };
+      };
+      const message = err.error?.error || 'Google sign-up failed. Please try again.';
+      this.errorMessage.set(message);
+    } finally {
+      this.isLoading.set(false);
+    }
+  }
 
   protected togglePasswordVisibility(): void {
     this.showPassword.update((v) => !v);

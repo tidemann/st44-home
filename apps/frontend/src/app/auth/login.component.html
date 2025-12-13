@@ -5,6 +5,33 @@
     <div class="success-message" role="alert">Account created successfully! Please log in.</div>
   }
 
+  <!-- Google Sign-In Button -->
+  @if (googleClientId) {
+    <div class="google-signin-wrapper">
+      <div
+        id="g_id_onload"
+        [attr.data-client_id]="googleClientId"
+        data-context="signin"
+        data-ux_mode="popup"
+        data-callback="handleGoogleSignIn"
+        data-auto_prompt="false"
+      ></div>
+      <div
+        class="g_id_signin"
+        data-type="standard"
+        data-shape="rectangular"
+        data-theme="outline"
+        data-text="signin_with"
+        data-size="large"
+        data-logo_alignment="left"
+      ></div>
+    </div>
+
+    <div class="separator">
+      <span>OR</span>
+    </div>
+  }
+
   <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
     <!-- Email -->
     <div class="form-group">
