@@ -124,6 +124,11 @@ _Features under consideration but not yet prioritized_
 ## Completed
 
 ### December 2025
+- ✅ **Task-001: Create Users Table Schema** (2025-12-13)
+  - Users table with OAuth support
+  - Migration system infrastructure
+  - Database schema tracking
+  - [PR #21](https://github.com/tidemann/st44-home/pull/21)
 - ✅ Project infrastructure setup
   - Monorepo structure (frontend + backend)
   - Docker Compose setup
@@ -132,13 +137,15 @@ _Features under consideration but not yet prioritized_
   - Dynamic API URL configuration
 - ✅ Agent system implementation
   - 7 agent specifications
-  - 5 workflow prompt files
+  - 6 workflow prompt files (including merge-pr)
   - Living documentation (7 AGENTS.md files)
   - Work hierarchy and templates
+  - Database migration guide
 - 📋 Product planning
   - Diddit product defined
   - Implementation plan created
   - 5 MVP epics planned
+  - Feature-001 broken down into 10 tasks
 
 ---
 
