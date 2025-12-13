@@ -18,4 +18,4 @@ npm run dev
 - `DB_NAME` - Database name (default: st44)
 - `DB_USER` - Database user (default: postgres)
 - `DB_PASSWORD` - Database password (default: postgres)
-- `CORS_ORIGIN` - CORS origin (default: *)
+- `CORS_ORIGIN` - CORS origin (default: \*)
