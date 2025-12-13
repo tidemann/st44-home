@@ -129,7 +129,44 @@ Epic: User Management System (epic-001)
 - Review for accessibility, performance, and security
 - Confirm documentation is updated
 
-### 7. Continuous Improvement
+### 7. Git Workflow & Pull Requests
+
+**⚠️ CRITICAL: NEVER PUSH DIRECTLY TO MAIN**
+
+#### Branch Creation (MANDATORY FIRST STEP)
+Before ANY work begins:
+```bash
+# Check current branch
+git branch
+
+# If on main, CREATE feature branch immediately:
+git checkout -b feature/descriptive-name
+```
+
+#### Commit Workflow
+1. Make changes and commit to feature branch (NEVER main)
+2. Push feature branch: `git push -u origin feature/name`
+3. **NEVER** use `git push` alone without specifying branch
+4. **ALWAYS** verify you're on feature branch before committing
+
+#### PR Creation (REQUIRED)
+When work is complete:
+1. Ensure all changes are committed to feature branch
+2. Push feature branch to remote
+3. Create PR: `gh pr create --title "..." --body "..." --base main`
+4. Wait for CI checks to pass
+5. Merge PR: `gh pr merge <number> --squash --delete-branch`
+6. Switch to main and pull: `git checkout main && git pull`
+
+#### Pull Request Requirements
+- Clear title with conventional commit prefix (feat:, fix:, chore:, docs:)
+- Detailed description of changes
+- List of files changed and why
+- Testing notes and validation
+- Reference to related features/tasks
+- CI must pass before merging
+
+### 8. Continuous Improvement
 - Learn from completed tasks to improve future planning
 - Update agent workflows based on outcomes
 - Refine delegation strategies

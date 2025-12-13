@@ -5,11 +5,19 @@ agent: orchestrator-agent
 
 # Review and Merge Completed Work
 
-**CRITICAL**: NEVER push or create PR without user confirmation
+**⚠️ CRITICAL RULES**:
+- NEVER push directly to main branch
+- ALWAYS work on a feature branch
+- ALWAYS create PR for review before merging
+- Changes must ONLY be on a feature branch, never on main
+- NEVER push or create PR without user confirmation
 
 ## Your Task
 
-1. **Identify completed work**:
+1. **Verify branch status**:
+   - Run `git branch` to confirm you're on a feature branch (not main)
+   - If on main, STOP and create feature branch first
+2. **Identify completed work**:
    - Check for work items in `in-progress` status
    - Verify all acceptance criteria are met
    - Confirm all tests pass

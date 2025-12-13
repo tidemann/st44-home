@@ -5,12 +5,25 @@ agent: orchestrator-agent
 
 # Continue Work on Next Priority
 
+**⚠️ CRITICAL GIT RULES**:
+- NEVER commit directly to main branch
+- ALWAYS create a feature branch before starting work
+- ALWAYS push to feature branch, never main
+- NEVER use `git push` alone - always specify branch or use `-u origin feature/name`
+- All work must go through PR review before merging
+
 **CRITICAL**: NEVER commit and push unless asking the user first
 
 **IMPORTANT**: Always follow ROADMAP.md, even if the user has a document open
 
 ## Your Task
 
+0. **Verify Git Branch (FIRST STEP)**:
+   - Run `git branch` to check current branch
+   - If on main: STOP and run `git checkout -b feature/descriptive-name`
+   - If on feature branch: Verify it's the correct one for this work
+   - NEVER proceed with work while on main branch
+   
 1. **Check current priorities**: Read [ROADMAP.md](../../tasks/ROADMAP.md) to see what's in the "Now" section
    - If ROADMAP.md is empty or unclear, use [Reprioritize prompt](.github/prompts/reprioritize.prompt.md)
 2. **Select top priority**: Pick the first item from "Now" section (unless blocked)

@@ -100,9 +100,33 @@ This is a monorepo with:
 
 ## Git Workflow
 
-- Always work on feature branches, not main
-- Create descriptive branch names: `feature/`, `fix/`, `chore/`
-- Commit changes with clear messages
-- Create pull requests for review
-- Ensure CI checks pass before merging
+**CRITICAL - NEVER PUSH DIRECTLY TO MAIN**
+
+### Branch Workflow (MANDATORY)
+1. **ALWAYS** create a feature branch before making changes
+2. **NEVER** commit directly to main branch
+3. **NEVER** push to main without a PR
+4. All work must go through pull request review
+
+### Branch Naming
+- `feature/descriptive-name` - New features
+- `fix/descriptive-name` - Bug fixes
+- `chore/descriptive-name` - Maintenance, refactoring
+- `docs/descriptive-name` - Documentation updates
+
+### Commit Workflow
+1. Create feature branch: `git checkout -b feature/name`
+2. Make changes and commit with clear messages
+3. Push branch: `git push -u origin feature/name`
+4. Create PR: `gh pr create --title "..." --body "..." --base main`
+5. Wait for CI checks to pass
+6. Merge PR: `gh pr merge <number> --squash --delete-branch`
+7. Pull latest main: `git checkout main && git pull`
+
+### Pull Request Requirements
+- Clear title with conventional commit prefix (feat:, fix:, chore:, docs:)
+- Detailed description of changes
+- List of files changed
+- Testing notes
+- CI must pass before merging
 - Use squash merge to keep history clean
