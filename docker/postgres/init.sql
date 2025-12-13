@@ -1,4 +1,6 @@
 -- Initialize the database
+-- NOTE: For existing databases, use migrations in docker/postgres/migrations/
+-- This file represents the CURRENT STATE of the schema for fresh installations
 
 -- Schema migrations tracking table
 -- This table MUST be created first to track all migrations
@@ -11,9 +13,11 @@ CREATE TABLE IF NOT EXISTS schema_migrations (
 CREATE INDEX IF NOT EXISTS idx_schema_migrations_applied_at 
 ON schema_migrations(applied_at);
 
--- Record init.sql execution
+-- Record migrations as applied (since init.sql creates the current state)
 INSERT INTO schema_migrations (version, name, applied_at)
-VALUES ('INIT', 'initial_schema', NOW())
+VALUES 
+  ('000', 'create_migrations_table', NOW()),
+  ('001', 'create_users_table', NOW())
 ON CONFLICT (version) DO NOTHING;
 
 -- Users table for authentication (supports email/password and OAuth)
