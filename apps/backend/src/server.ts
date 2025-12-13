@@ -80,6 +80,23 @@ interface LoginResponse {
   email: string;
 }
 
+interface RefreshRequest {
+  Body: {
+    refreshToken: string;
+  };
+}
+
+interface RefreshResponse {
+  accessToken: string;
+}
+
+interface RefreshTokenPayload {
+  userId: string;
+  type: string;
+  iat: number;
+  exp: number;
+}
+
 // JSON Schema for Registration
 const registerSchema = {
   body: {
@@ -111,6 +128,19 @@ const loginSchema = {
         format: 'email',
       },
       password: {
+        type: 'string',
+      },
+    },
+  },
+};
+
+// JSON Schema for Token Refresh
+const refreshSchema = {
+  body: {
+    type: 'object',
+    required: ['refreshToken'],
+    properties: {
+      refreshToken: {
         type: 'string',
       },
     },
@@ -232,6 +262,64 @@ fastify.post<LoginRequest, { Reply: LoginResponse | ErrorResponse }>(
       fastify.log.error(error, 'Login error');
       reply.code(500);
       return { error: 'Authentication failed' };
+    }
+  },
+);
+
+// Token refresh endpoint
+fastify.post<RefreshRequest, { Reply: RefreshResponse | ErrorResponse }>(
+  '/api/auth/refresh',
+  {
+    schema: refreshSchema,
+  },
+  async (request, reply) => {
+    const { refreshToken } = request.body;
+
+    try {
+      // Verify token signature and expiry
+      const decoded = jwt.verify(refreshToken, JWT_SECRET) as RefreshTokenPayload;
+
+      // Verify it's a refresh token (not access token)
+      if (decoded.type !== 'refresh') {
+        fastify.log.warn('Attempted to use non-refresh token for refresh');
+        reply.code(401);
+        return { error: 'Invalid or expired refresh token' };
+      }
+
+      // Get user email from database
+      const result = await pool.query('SELECT email FROM users WHERE id = $1', [decoded.userId]);
+
+      if (result.rows.length === 0) {
+        fastify.log.warn({ userId: decoded.userId }, 'User not found for refresh token');
+        reply.code(401);
+        return { error: 'Invalid or expired refresh token' };
+      }
+
+      // Generate new access token
+      const accessToken = generateAccessToken(decoded.userId, result.rows[0].email);
+
+      fastify.log.info({ userId: decoded.userId }, 'Token refreshed successfully');
+
+      reply.code(200);
+      return { accessToken };
+    } catch (error: unknown) {
+      // Handle JWT-specific errors
+      if (error instanceof jwt.TokenExpiredError) {
+        fastify.log.warn('Expired refresh token used');
+        reply.code(401);
+        return { error: 'Invalid or expired refresh token' };
+      }
+
+      if (error instanceof jwt.JsonWebTokenError) {
+        fastify.log.warn({ error: (error as Error).message }, 'Invalid refresh token');
+        reply.code(401);
+        return { error: 'Invalid or expired refresh token' };
+      }
+
+      // Log error but don't expose internal details
+      fastify.log.error(error, 'Token refresh error');
+      reply.code(500);
+      return { error: 'Token refresh failed' };
     }
   },
 );
