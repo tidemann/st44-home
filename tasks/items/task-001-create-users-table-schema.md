@@ -4,7 +4,7 @@
 - **ID**: task-001
 - **Feature**: feature-001 - User Authentication System
 - **Epic**: epic-001 - Multi-Tenant Foundation
-- **Status**: pending
+- **Status**: completed
 - **Priority**: critical
 - **Created**: 2025-12-13
 - **Assigned Agent**: database
@@ -121,6 +121,15 @@ CREATE TRIGGER update_users_updated_at BEFORE UPDATE ON users
 
 ## Progress Log
 - [2025-12-13 21:45] Task created from feature-001 breakdown
+- [2025-12-13 22:30] Status changed to in-progress
+- [2025-12-13 22:35] Added users table schema to docker/postgres/init.sql
+- [2025-12-13 22:35] Added trigger for automatic updated_at timestamp
+- [2025-12-13 22:38] Rebuilt database image and recreated container
+- [2025-12-13 22:40] Verified table structure with \d users
+- [2025-12-13 22:41] Tested email/password user insertion - SUCCESS
+- [2025-12-13 22:42] Tested OAuth user insertion - SUCCESS
+- [2025-12-13 22:43] Verified check constraint rejects invalid users - SUCCESS
+- [2025-12-13 22:45] All acceptance criteria met, status changed to completed
 
 ## Related Files
 - `docker/postgres/init.sql` - Database initialization script
