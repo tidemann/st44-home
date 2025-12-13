@@ -1,4 +1,4 @@
-# ChoreQuest - Implementation Plan
+# Diddit - Implementation Plan
 
 **Created**: December 13, 2025  
 **Status**: Planning Phase  
@@ -8,7 +8,7 @@
 
 ## Executive Summary
 
-This document outlines the high-level implementation plan for ChoreQuest, a mobile-first application for managing household chores with rule-based task assignment, push notifications, and gamification.
+This document outlines the high-level implementation plan for Diddit, a mobile-first application for managing household chores with rule-based task assignment, push notifications, and gamification.
 
 ### Implementation Approach
 

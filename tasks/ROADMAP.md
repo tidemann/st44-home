@@ -6,7 +6,7 @@ This roadmap outlines planned features and epics for the project. It's maintaine
 ## Current Status (December 2025)
 
 ### Active Development
-- **Product**: ChoreQuest - Multi-Tenant Household Chores App
+- **Product**: Diddit - Multi-Tenant Household Chores App
 - **Phase**: MVP Planning (Phase 1)
 - **Goal**: Launch core functionality in 8 weeks
 
@@ -131,7 +131,7 @@ _Features under consideration but not yet prioritized_
   - Living documentation (7 AGENT.md files)
   - Work hierarchy and templates
 - 📋 Product planning
-  - ChoreQuest product defined
+  - Diddit product defined
   - Implementation plan created
   - 5 MVP epics planned
 

@@ -1,10 +1,10 @@
-# ChoreQuest - Household Chores Management App
+# Diddit - Household Chores Management App
 
 **A multi-tenant, mobile-first application that helps families manage and automate household chores for children.**
 
 ## Product Overview
 
-ChoreQuest reduces the need for manual reminders by automatically assigning responsibility, sending notifications, and tracking completion of household tasks. The app supports multiple independent households (multi-tenant), where each household manages its own children, tasks, rules, and settings.
+Diddit reduces the need for manual reminders by automatically assigning responsibility, sending notifications, and tracking completion of household tasks. The app supports multiple independent households (multi-tenant), where each household manages its own children, tasks, rules, and settings.
 
 ### Key Features
 
