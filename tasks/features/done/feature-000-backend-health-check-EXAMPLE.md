@@ -121,7 +121,7 @@ Response 503: {
 ## Related Files
 - Implementation: `apps/backend/src/server.ts`
 - Documentation: `apps/backend/AGENT.md`
-- Task files: `tasks/tasks/done/task-000-*.md`
+- Task files: `tasks/items/done/task-000-*.md`
 
 ## Git References
 - Branch: `feature/backend-health-check`

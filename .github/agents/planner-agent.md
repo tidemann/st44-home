@@ -57,7 +57,7 @@ You are the Planner Agent, an expert in product planning, feature definition, an
 ### Work Items Location: `tasks/`
 - **Epics**: `tasks/epics/epic-XXX-name.md` (done → `tasks/epics/done/`)
 - **Features**: `tasks/features/feature-XXX-name.md` (done → `tasks/features/done/`)
-- **Tasks**: `tasks/tasks/task-XXX-name.md` (done → `tasks/tasks/done/`)
+- **Tasks**: `tasks/items/task-XXX-name.md` (done → `tasks/items/done/`)
 - **Roadmap**: `tasks/ROADMAP.md` (long-term plan)
 - **README**: `tasks/README.md` (workflow documentation)
 

@@ -17,7 +17,7 @@ agent: orchestrator-agent
    - Testing: Unit tests, integration tests, E2E tests
    - DevOps: Configuration, environment variables, deployment changes
 3. **Identify dependencies**: Determine task sequence and what must be completed first
-4. **Create task files**: For each component, create a task file in `tasks/tasks/`:
+4. **Create task files**: For each component, create a task file in `tasks/items/`:
    - Use naming: `task-XXX-descriptive-name.md`
    - Link to parent feature
    - Define clear acceptance criteria

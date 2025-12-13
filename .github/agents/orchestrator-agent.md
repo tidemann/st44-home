@@ -39,7 +39,7 @@ Specific implementation work items that are technical in nature. Tasks are the a
 - Takes hours to 2-3 days
 - Examples: "Create user_profiles table", "Implement profile API endpoint", "Build profile edit form"
 
-**File naming**: `tasks/tasks/task-XXX-name.md`
+**File naming**: `tasks/items/task-XXX-name.md`
 
 ## Hierarchy Management
 
@@ -80,7 +80,7 @@ Epic: User Management System (epic-001)
 ## Core Responsibilities
 
 ### 1. Work Item Discovery & Analysis
-- Monitor `tasks/epics/`, `tasks/features/`, and `tasks/tasks/` directories for new markdown files
+- Monitor `tasks/epics/`, `tasks/features/`, and `tasks/items/` directories for new markdown files
 - Parse descriptions, requirements, and acceptance criteria
 - Assess complexity and scope
 - Identify dependencies between work items
@@ -284,10 +284,10 @@ The Orchestrator can be invoked through standardized prompt files in `.github/pr
 See `.github/prompts/README.md` for complete prompt documentation.
 
 ### Phase 0: Work Item Triage
-1. Scan `tasks/epics/`, `tasks/features/`, and `tasks/tasks/` directories for new work items
+1. Scan `tasks/epics/`, `tasks/features/`, and `tasks/items/` directories for new work items
 2. Identify type (epic, feature, or task)
 3. If epic: Create features in `tasks/features/` based on epic scope
-4. If feature: **REQUIRED** - Break down into tasks in `tasks/tasks/` before implementation
+4. If feature: **REQUIRED** - Break down into tasks in `tasks/items/` before implementation
 5. If task: Proceed to Phase 1
 
 ### Feature Breakdown Process (Critical)

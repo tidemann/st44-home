@@ -301,7 +301,7 @@ cp tasks/templates/epic.md tasks/epics/epic-XXX-name.md
 **For Orchestrator Agent** (creating tasks):
 ```bash
 # Create a new task
-cp tasks/templates/task.md tasks/tasks/task-XXX-name.md
+cp tasks/templates/task.md tasks/items/task-XXX-name.md
 ```
 
 ### Template Locations
@@ -336,12 +336,12 @@ tasks/task-003-registration-form.md
 ### For Orchestrator Agent
 - **Pending Features**: `grep "Status.*pending" tasks/features/feature-*.md`
 - **Feature Files**: `tasks/features/feature-*.md`
-- **Task Files**: `tasks/tasks/task-*.md`
+- **Task Files**: `tasks/items/task-*.md`
 - **Templates**: `tasks/templates/`
 - **Subtask Instructions**: `tasks/subtasks/task-XXX/`
 
 ### For Expert Agents
-- **Assigned Tasks**: Look for your agent name in task metadata in `tasks/tasks/`
+- **Assigned Tasks**: Look for your agent name in task metadata in `tasks/items/`
 - **Subtask Instructions**: `tasks/subtasks/task-XXX/[yourname]-agent-instructions.md`
 - **Related Code**: Use semantic_search and grep_search
 - **Project Standards**: `.github/copilot-instructions.md`
@@ -417,7 +417,7 @@ tasks/task-003-registration-form.md
 2. Read feature file thoroughly
 3. Research codebase for context
 4. Break feature into tasks (database → backend → frontend → testing)
-5. Create task files in `tasks/tasks/` using `tasks/templates/task.md`
+5. Create task files in `tasks/items/` using `tasks/templates/task.md`
 6. Update feature file with task list
 7. Begin task execution
 

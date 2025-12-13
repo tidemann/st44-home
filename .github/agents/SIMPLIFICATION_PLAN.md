@@ -92,7 +92,7 @@ The current agent system is comprehensive and functional, but may be over-engine
 **Work Hierarchy**:
 - `tasks/ROADMAP.md` - Strategic planning
 - `tasks/features/*.md` - Primary work level
-- `tasks/tasks/*.md` - Implementation level
+- `tasks/items/*.md` - Implementation level
 - `tasks/templates/` - 2 templates (feature, task only)
 - No epics until actually needed
 - No subtasks directory

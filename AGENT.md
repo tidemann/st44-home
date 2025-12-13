@@ -177,7 +177,7 @@ Environment variables (via .env or Docker):
 
 ### Adding a New Feature
 1. Planner Agent creates feature file in `tasks/features/`
-2. Orchestrator Agent breaks down into tasks in `tasks/tasks/`
+2. Orchestrator Agent breaks down into tasks in `tasks/items/`
 3. Expert Agents implement tasks
 4. Update relevant AGENT.md files with new patterns
 5. Update documentation if user-facing

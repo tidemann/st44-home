@@ -16,7 +16,7 @@ Use this prompt when the roadmap needs to be reorganized based on changing prior
 2. **Scan work items**:
    - Review `tasks/epics/` for active epics
    - Review `tasks/features/` for pending/in-progress features
-   - Review `tasks/tasks/` for pending/in-progress tasks
+   - Review `tasks/items/` for pending/in-progress tasks
 3. **Assess progress**:
    - What's completed but not moved to done/?
    - What's blocked and why?

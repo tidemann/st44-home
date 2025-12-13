@@ -193,13 +193,13 @@ grep -l "Status.*pending" tasks/features/*.md
 ls tasks/features/*.md
 
 # List all tasks
-ls tasks/tasks/*.md
+ls tasks/items/*.md
 ```
 
 ### For Expert Agents
 ```bash
 # Find tasks assigned to you
-grep -l "Assigned Agent.*frontend" tasks/tasks/*.md
+grep -l "Assigned Agent.*frontend" tasks/items/*.md
 
 # View your subtask instructions
 cat tasks/subtasks/task-XXX/frontend-agent-instructions.md

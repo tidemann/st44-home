@@ -165,7 +165,7 @@ Build UI components for viewing and editing user profile.
 ## Workflow
 
 ### Orchestrator's Process:
-1. Read task file from `tasks/tasks/task-XXX.md`
+1. Read task file from `tasks/items/task-XXX.md`
 2. Identify which agents needed (frontend, backend, database)
 3. Create directory: `tasks/subtasks/task-XXX/`
 4. Write instruction file for each agent
@@ -174,7 +174,7 @@ Build UI components for viewing and editing user profile.
 
 ### Expert Agent's Process:
 1. Receive task assignment
-2. Read main task file: `tasks/tasks/task-XXX.md`
+2. Read main task file: `tasks/items/task-XXX.md`
 3. Read agent-specific instructions: `tasks/subtasks/task-XXX/[agent]-instructions.md`
 4. Read relevant AGENT.md files for context
 5. Implement according to instructions
