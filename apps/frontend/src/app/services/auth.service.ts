@@ -47,7 +47,8 @@ export class AuthService {
   }
 
   private checkAuthStatus(): void {
-    const accessToken = localStorage.getItem('accessToken');
+    const accessToken =
+      localStorage.getItem('accessToken') || sessionStorage.getItem('accessToken');
     if (accessToken) {
       // TODO: Validate token with backend or decode JWT to get user info
       // For now, just mark as authenticated
@@ -62,7 +63,7 @@ export class AuthService {
     });
   }
 
-  login(email: string, password: string): Observable<AuthResponse> {
+  login(email: string, password: string, rememberMe: boolean = false): Observable<AuthResponse> {
     return this.http
       .post<AuthResponse>(`${this.apiUrl}/login`, {
         email,
@@ -70,9 +71,15 @@ export class AuthService {
       })
       .pipe(
         tap((response) => {
-          // Store tokens
-          localStorage.setItem('accessToken', response.accessToken);
-          localStorage.setItem('refreshToken', response.refreshToken);
+          // Store tokens based on rememberMe preference
+          const storage = rememberMe ? localStorage : sessionStorage;
+          storage.setItem('accessToken', response.accessToken);
+          storage.setItem('refreshToken', response.refreshToken);
+
+          // Clear tokens from other storage
+          const otherStorage = rememberMe ? sessionStorage : localStorage;
+          otherStorage.removeItem('accessToken');
+          otherStorage.removeItem('refreshToken');
 
           // Update state
           this.currentUser.set(response.user);
@@ -82,9 +89,11 @@ export class AuthService {
   }
 
   logout(): void {
-    // Clear tokens
+    // Clear tokens from both storages
     localStorage.removeItem('accessToken');
     localStorage.removeItem('refreshToken');
+    sessionStorage.removeItem('accessToken');
+    sessionStorage.removeItem('refreshToken');
 
     // Clear state
     this.currentUser.set(null);
@@ -95,10 +104,10 @@ export class AuthService {
   }
 
   getAccessToken(): string | null {
-    return localStorage.getItem('accessToken');
+    return localStorage.getItem('accessToken') || sessionStorage.getItem('accessToken');
   }
 
   getRefreshToken(): string | null {
-    return localStorage.getItem('refreshToken');
+    return localStorage.getItem('refreshToken') || sessionStorage.getItem('refreshToken');
   }
 }
