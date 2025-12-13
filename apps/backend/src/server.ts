@@ -2,6 +2,7 @@ import Fastify from 'fastify';
 import cors from '@fastify/cors';
 import pg from 'pg';
 import bcrypt from 'bcrypt';
+import jwt from 'jsonwebtoken';
 
 const { Pool } = pg;
 
@@ -23,6 +24,22 @@ const fastify = Fastify({
 await fastify.register(cors, {
   origin: process.env.CORS_ORIGIN || '*',
 });
+
+// JWT Configuration
+const JWT_SECRET = process.env.JWT_SECRET || 'dev-secret-change-in-production';
+const JWT_ACCESS_EXPIRY = '1h';
+const JWT_REFRESH_EXPIRY = '7d';
+
+// JWT Utility Functions
+function generateAccessToken(userId: string, email: string): string {
+  return jwt.sign({ userId, email, type: 'access' }, JWT_SECRET, {
+    expiresIn: JWT_ACCESS_EXPIRY,
+  });
+}
+
+function generateRefreshToken(userId: string): string {
+  return jwt.sign({ userId, type: 'refresh' }, JWT_SECRET, { expiresIn: JWT_REFRESH_EXPIRY });
+}
 
 // Helper Functions
 function validatePasswordStrength(password: string): boolean {
@@ -49,6 +66,20 @@ interface ErrorResponse {
   error: string;
 }
 
+interface LoginRequest {
+  Body: {
+    email: string;
+    password: string;
+  };
+}
+
+interface LoginResponse {
+  accessToken: string;
+  refreshToken: string;
+  userId: string;
+  email: string;
+}
+
 // JSON Schema for Registration
 const registerSchema = {
   body: {
@@ -64,6 +95,23 @@ const registerSchema = {
         type: 'string',
         minLength: 8,
         maxLength: 128,
+      },
+    },
+  },
+};
+
+// JSON Schema for Login
+const loginSchema = {
+  body: {
+    type: 'object',
+    required: ['email', 'password'],
+    properties: {
+      email: {
+        type: 'string',
+        format: 'email',
+      },
+      password: {
+        type: 'string',
       },
     },
   },
@@ -128,6 +176,62 @@ fastify.post<RegisterRequest, { Reply: RegisterResponse | ErrorResponse }>(
       fastify.log.error(error);
       reply.code(500);
       return { error: 'Registration failed' };
+    }
+  },
+);
+
+// Login endpoint
+fastify.post<LoginRequest, { Reply: LoginResponse | ErrorResponse }>(
+  '/api/auth/login',
+  {
+    schema: loginSchema,
+  },
+  async (request, reply) => {
+    const { email, password } = request.body;
+
+    try {
+      // Query user by email
+      const result = await pool.query(
+        'SELECT id, email, password_hash FROM users WHERE email = $1',
+        [email],
+      );
+
+      // User not found - same error message for security
+      if (result.rows.length === 0) {
+        fastify.log.warn({ email }, 'Login attempt with non-existent email');
+        reply.code(401);
+        return { error: 'Invalid email or password' };
+      }
+
+      const user = result.rows[0];
+
+      // Compare password using bcrypt (timing-safe)
+      const passwordMatch = await bcrypt.compare(password, user.password_hash);
+
+      if (!passwordMatch) {
+        fastify.log.warn({ userId: user.id, email }, 'Login attempt with wrong password');
+        reply.code(401);
+        return { error: 'Invalid email or password' };
+      }
+
+      // Generate tokens
+      const accessToken = generateAccessToken(user.id, user.email);
+      const refreshToken = generateRefreshToken(user.id);
+
+      fastify.log.info({ userId: user.id, email }, 'Successful login');
+
+      reply.code(200);
+      return {
+        accessToken,
+        refreshToken,
+        userId: user.id,
+        email: user.email,
+      };
+    } catch (error: unknown) {
+      // Log error but don't expose internal details
+      fastify.log.error(error, 'Login error');
+      reply.code(500);
+      return { error: 'Authentication failed' };
     }
   },
 );
