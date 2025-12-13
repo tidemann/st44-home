@@ -55,9 +55,9 @@ You are the Planner Agent, an expert in product planning, feature definition, an
 - **`task.md`**: Template for creating new tasks (used by Orchestrator)
 
 ### Work Items Location: `tasks/`
-- **Epics**: `tasks/epic-XXX-name.md`
-- **Features**: `tasks/feature-XXX-name.md`
-- **Tasks**: `tasks/task-XXX-name.md`
+- **Epics**: `tasks/epics/epic-XXX-name.md` (done → `tasks/epics/done/`)
+- **Features**: `tasks/features/feature-XXX-name.md` (done → `tasks/features/done/`)
+- **Tasks**: `tasks/tasks/task-XXX-name.md` (done → `tasks/tasks/done/`)
 - **Roadmap**: `tasks/ROADMAP.md` (long-term plan)
 - **README**: `tasks/README.md` (workflow documentation)
 
@@ -81,7 +81,7 @@ You are the Planner Agent, an expert in product planning, feature definition, an
 5. Define success metrics and validation criteria
 
 ### Phase 3: Feature File Creation
-1. Copy `tasks/templates/feature.md` to `tasks/feature-XXX-name.md`
+1. Copy `tasks/templates/feature.md` to `tasks/features/feature-XXX-name.md`
 2. Fill in all required sections:
    - Metadata (ID, epic, priority, timeline)
    - Description and user stories
@@ -94,10 +94,10 @@ You are the Planner Agent, an expert in product planning, feature definition, an
 5. Assign priority based on roadmap
 
 ### Phase 4: Epic Planning (for larger initiatives)
-1. Copy `tasks/templates/epic.md` to `tasks/epic-XXX-name.md`
+1. Copy `tasks/templates/epic.md` to `tasks/epics/epic-XXX-name.md`
 2. Define epic goals and business value
 3. Identify 3-10 features that compose the epic
-4. Create feature files for each identified feature
+4. Create feature files in `tasks/features/` for each identified feature
 5. Link features to parent epic
 6. Estimate timeline and milestones
 7. Define success metrics

@@ -131,9 +131,17 @@ c:\code\st44\home\
 │   │   ├── feature.md        # Feature template
 │   │   └── task.md           # Task template
 │   │
-│   ├── epic-XXX-name.md      # Epic files
-│   ├── feature-XXX-name.md   # Feature files
-│   ├── task-XXX-name.md      # Task files
+│   ├── epics\                # Epic files
+│   │   ├── epic-XXX-name.md
+│   │   └── done\             # Completed epics
+│   │
+│   ├── features\             # Feature files
+│   │   ├── feature-XXX-name.md
+│   │   └── done\             # Completed features
+│   │
+│   ├── tasks\                # Task files
+│   │   ├── task-XXX-name.md
+│   │   └── done\             # Completed tasks
 │   │
 │   └── subtasks\             # Agent-specific instructions
 │       └── task-XXX\
@@ -260,16 +268,16 @@ pending → in-progress → review → completed
 **For Planner Agent** (creating features/epics):
 ```bash
 # Create a new feature
-cp tasks/templates/feature.md tasks/feature-XXX-name.md
+cp tasks/templates/feature.md tasks/features/feature-XXX-name.md
 
 # Create a new epic
-cp tasks/templates/epic.md tasks/epic-XXX-name.md
+cp tasks/templates/epic.md tasks/epics/epic-XXX-name.md
 ```
 
 **For Orchestrator Agent** (creating tasks):
 ```bash
 # Create a new task
-cp tasks/templates/task.md tasks/task-XXX-name.md
+cp tasks/templates/task.md tasks/tasks/task-XXX-name.md
 ```
 
 ### Template Locations
@@ -280,12 +288,12 @@ cp tasks/templates/task.md tasks/task-XXX-name.md
 ## File Naming Conventions
 
 ```
-epic-001-user-management-system.md
-feature-001-user-registration.md
-feature-002-user-profile.md
-task-001-create-users-table.md
-task-002-registration-api.md
-task-003-registration-form.md
+epics/epic-001-user-management-system.md
+features/feature-001-user-registration.md
+features/feature-002-user-profile.md
+tasks/task-001-create-users-table.md
+tasks/task-002-registration-api.md
+tasks/task-003-registration-form.md
 ```
 
 **Format**: `[type]-[###]-[kebab-case-name].md`
@@ -297,19 +305,19 @@ task-003-registration-form.md
 
 ### For Planner Agent
 - **Roadmap**: `tasks/ROADMAP.md`
-- **Epics**: `tasks/epic-*.md`
-- **Features**: `tasks/feature-*.md`
+- **Epics**: `tasks/epics/epic-*.md`
+- **Features**: `tasks/features/feature-*.md`
 - **Templates**: `tasks/templates/`
 
 ### For Orchestrator Agent
-- **Pending Features**: `grep "Status.*pending" tasks/feature-*.md`
-- **Feature Files**: `tasks/feature-*.md`
-- **Task Files**: `tasks/task-*.md`
+- **Pending Features**: `grep "Status.*pending" tasks/features/feature-*.md`
+- **Feature Files**: `tasks/features/feature-*.md`
+- **Task Files**: `tasks/tasks/task-*.md`
 - **Templates**: `tasks/templates/`
 - **Subtask Instructions**: `tasks/subtasks/task-XXX/`
 
 ### For Expert Agents
-- **Assigned Tasks**: Look for your agent name in task metadata
+- **Assigned Tasks**: Look for your agent name in task metadata in `tasks/tasks/`
 - **Subtask Instructions**: `tasks/subtasks/task-XXX/[yourname]-agent-instructions.md`
 - **Related Code**: Use semantic_search and grep_search
 - **Project Standards**: `.github/copilot-instructions.md`
@@ -381,11 +389,11 @@ task-003-registration-form.md
 6. Set feature status to `pending` for Orchestrator
 
 ### As Orchestrator Agent
-1. Scan `tasks/` for features with `status: pending`
+1. Scan `tasks/features/` for features with `status: pending`
 2. Read feature file thoroughly
 3. Research codebase for context
 4. Break feature into tasks (database → backend → frontend → testing)
-5. Create task files using `tasks/templates/task.md`
+5. Create task files in `tasks/tasks/` using `tasks/templates/task.md`
 6. Update feature file with task list
 7. Begin task execution
 

@@ -48,46 +48,54 @@ cp tasks/templates/feature.md tasks/feature-XXX-name.md
 cp tasks/templates/task.md tasks/task-XXX-name.md
 ```
 
-## File Naming Convention
+## Directory Structure
 
 ```
-epic-001-user-management-system.md
-feature-001-user-registration.md
-feature-002-user-profile.md
-task-001-create-users-table.md
-task-002-registration-api.md
-task-003-registration-form.md
+tasks/
+├── epics/
+│   ├── epic-001-user-management-system.md
+│   └── done/  # Completed epics
+├── features/
+│   ├── feature-001-user-registration.md
+│   ├── feature-002-user-profile.md
+│   └── done/  # Completed features
+├── tasks/
+│   ├── task-001-create-users-table.md
+│   ├── task-002-registration-api.md
+│   ├── task-003-registration-form.md
+│   └── done/  # Completed tasks
+└── templates/
 ```
 
 ## Example Hierarchy
 
 ```
-epic-001-user-management-system.md
-├── feature-001-user-registration.md
-│   ├── task-001-create-users-table.md
-│   ├── task-002-registration-api.md
-│   └── task-003-registration-form.md
-├── feature-002-user-profile.md
-│   ├── task-004-extend-users-schema.md
-│   ├── task-005-profile-api.md
-│   └── task-006-profile-ui.md
-└── feature-003-user-authentication.md
-    ├── task-007-jwt-implementation.md
-    ├── task-008-auth-middleware.md
-    └── task-009-login-form.md
+epics/epic-001-user-management-system.md
+├── features/feature-001-user-registration.md
+│   ├── tasks/task-001-create-users-table.md
+│   ├── tasks/task-002-registration-api.md
+│   └── tasks/task-003-registration-form.md
+├── features/feature-002-user-profile.md
+│   ├── tasks/task-004-extend-users-schema.md
+│   ├── tasks/task-005-profile-api.md
+│   └── tasks/task-006-profile-ui.md
+└── features/feature-003-user-authentication.md
+    ├── tasks/task-007-jwt-implementation.md
+    ├── tasks/task-008-auth-middleware.md
+    └── tasks/task-009-login-form.md
 ```
 
 ## Workflow
 
 ### Creating an Epic
-1. Copy `TEMPLATE-EPIC.md` to `epic-XXX-name.md`
+1. Copy `templates/epic.md` to `epics/epic-XXX-name.md`
 2. Fill in goals, timeline, success metrics
 3. Identify major features
 4. Create feature files and link to epic
 5. Set status to `pending`
 
 ### Creating a Feature
-1. Copy `TEMPLATE-FEATURE.md` to `feature-XXX-name.md`
+1. Copy `templates/feature.md` to `features/feature-XXX-name.md`
 2. Link to parent epic
 3. Define user stories and acceptance criteria
 4. Set status to `pending`
@@ -95,7 +103,7 @@ epic-001-user-management-system.md
 
 ### Creating a Task
 1. Usually created by Orchestrator Agent during feature breakdown
-2. Copy `TEMPLATE.md` to `task-XXX-name.md`
+2. Copy `templates/task.md` to `tasks/task-XXX-name.md`
 3. Link to parent feature and epic
 4. Define specific requirements and acceptance criteria
 5. Assign to appropriate expert agent
@@ -108,6 +116,23 @@ epic-001-user-management-system.md
 - **review**: Implementation complete, under review
 - **completed**: Fully done, acceptance criteria met
 - **blocked**: Cannot proceed due to dependencies or issues
+
+## Archiving Completed Work
+
+When work items are completed, move them to the appropriate `done/` folder:
+
+```bash
+# Move completed epic
+git mv epics/epic-001-name.md epics/done/
+
+# Move completed feature
+git mv features/feature-001-name.md features/done/
+
+# Move completed task
+git mv tasks/task-001-name.md tasks/done/
+```
+
+This keeps active work items visible while preserving history.
 
 ## Priority Values
 
@@ -184,7 +209,7 @@ Each task/feature typically results in:
 
 ## Examples
 
-- `task-001-example-user-profile.md` - Complete example showing full workflow
+- `features/feature-001-user-profile.md` - Complete feature example
 - See `.github/agents/` for agent specifications
 
 ## Questions?
