@@ -9,8 +9,35 @@ Use this prompt to invoke the Planner Agent for strategic feature planning and d
 
 ## Your Task
 
-1. **Understand user need**: Clarify what the user wants to build and why
-2. **Invoke Planner Agent**: Switch to planner-agent mode or read [planner-agent.md](../../.github/agents/planner-agent.md)
+### STEP 0: Gather Context (REQUIRED FIRST)
+**Before asking ANY questions, read these files to understand the product:**
+
+1. **Read product context**:
+   - `README.md` - Product overview, features, technical stack
+   - `IMPLEMENTATION_PLAN.md` - Complete technical implementation plan
+   - `tasks/ROADMAP.md` - Current roadmap and priorities
+   
+2. **Read existing epics** in `tasks/epics/`:
+   - `epic-001-multi-tenant-foundation.md`
+   - `epic-002-task-management-core.md`
+   - `epic-003-user-onboarding.md`
+   - `epic-004-push-notifications.md`
+   - `epic-005-parent-dashboard.md`
+   
+3. **Check existing features** in `tasks/features/` to avoid duplication
+
+4. **Read technical context**:
+   - `AGENTS.md` - Project architecture overview
+   - `apps/frontend/AGENTS.md` - Frontend patterns
+   - `apps/backend/AGENTS.md` - Backend patterns
+   - `docker/AGENTS.md` - Database schema
+
+**Only after reading context, proceed to understand the specific feature request.**
+
+### STEP 1: Understand the Feature Request
+
+1. **Invoke Planner Agent**: Switch to planner-agent mode or read [planner-agent.md](../../.github/agents/planner-agent.md)
+2. **Understand user need**: Based on context, clarify what specific feature the user wants
 3. **Strategic analysis**:
    - What problem does this solve?
    - Who are the users?
@@ -36,11 +63,14 @@ Use this prompt to invoke the Planner Agent for strategic feature planning and d
    - What other features does this depend on?
    - What features might depend on this?
    - Are there blocking issues?
-9. **Create feature file**: Use template from `tasks/templates/feature.md`
+9. **Identify parent epic**: Which epic does this feature belong to?
+   - Link to existing epic in `tasks/epics/`
+   - If no epic exists, consider if one should be created first
+10. **Create feature file**: Use template from `tasks/templates/feature.md`
    - Fill in all sections thoroughly
-   - Link to parent epic if applicable
+   - Link to parent epic
    - Add to ROADMAP.md in appropriate section (Now/Next/Later)
-10. **Get user approval**: Present the plan and confirm before moving forward
+11. **Get user approval**: Present the plan and confirm before moving forward
 
 ## Planning Checklist
 
