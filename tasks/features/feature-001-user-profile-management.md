@@ -1,7 +1,7 @@
 # Feature: User Profile Management
 
 ## Status
-pending
+pending (breakdown complete, ready for implementation)
 
 ## Priority
 high
@@ -69,12 +69,11 @@ As a registered user, I want to view and edit my profile information so that I c
 - [ ] All acceptance criteria have corresponding tests
 
 ## Tasks
-To be broken down by Orchestrator Agent. Expected tasks:
-- Database: Extend users table with profile fields
-- Backend: Implement profile API endpoints
-- Frontend: Create profile service
-- Frontend: Build profile view/edit component
-- Testing: Unit and integration tests
+- [ ] Task-001: Create users table with profile fields (task-001-create-users-table.md)
+- [ ] Task-002: Implement profile API endpoints (task-002-profile-api-endpoints.md)
+- [ ] Task-003: Create profile service (task-003-profile-service.md)
+- [ ] Task-004: Build profile view and edit components (task-004-profile-components.md)
+- [ ] Task-005: Add profile feature tests (task-005-profile-tests.md)
 
 ## Dependencies
 None
@@ -121,10 +120,41 @@ Response: { success: boolean, profile: {...} }
 - Validate all input server-side
 
 ## Implementation Plan
-[To be filled by Orchestrator Agent during task breakdown]
+
+### Task Breakdown Complete (Orchestrator Agent - DRY RUN)
+
+**Breakdown Strategy:**
+- Followed database → backend → frontend → testing pattern
+- Each task is independently testable
+- Clear dependencies between tasks
+- Tasks appropriately sized (2-6 hours each)
+
+**Task Sequence:**
+1. **Task-001** (Database) - Foundation, no dependencies
+2. **Task-002** (Backend) - Depends on Task-001 (needs users table)
+3. **Task-003** (Frontend Service) - Depends on Task-002 (needs API endpoints)
+4. **Task-004** (Frontend Components) - Depends on Task-003 (needs ProfileService)
+5. **Task-005** (Testing) - Depends on Tasks 001-004 (tests complete feature)
+
+**Delegation Plan:**
+- Task-001: Database Agent
+- Task-002: Backend Agent  
+- Task-003, Task-004: Frontend Agent
+- Task-005: Frontend & Backend Agents (collaborative)
+
+**Total Estimated Effort:** 15-19 hours (within 3-5 day estimate)
+
+### Next Steps (if this were real):
+1. Start with Task-001 (no blockers)
+2. Create subtask instructions in `tasks/subtasks/` for each agent
+3. Coordinate parallel work where possible (Task-003 and Task-004 can overlap)
+4. Integrate after each task completion
+5. Run Task-005 tests to validate everything works together
 
 ## Progress Log
 - [2025-12-13] Feature created as example for roadmap
+- [2025-12-13 DRY RUN] Orchestrator Agent completed feature breakdown into 5 tasks
+- [2025-12-13 DRY RUN] Implementation plan documented with task dependencies
 
 ## Related Files
 - Template: `tasks/templates/feature.md`
