@@ -2,10 +2,13 @@
 
 ## Metadata
 - **ID**: task-001
+- **Feature**: feature-002-user-profile (example - would link to actual feature)
+- **Epic**: epic-001-user-management-system (example - would link to actual epic)
 - **Status**: pending
 - **Priority**: high
 - **Created**: 2025-12-13
 - **Assigned Agent**: orchestrator
+- **Estimated Duration**: 5-7 days
 
 ## Description
 Implement a user profile feature that allows users to view and edit their profile information. This includes displaying user details, uploading a profile picture, and updating personal information such as name, bio, and contact details.
