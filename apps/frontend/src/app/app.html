@@ -1,25 +1,31 @@
 <h1>Welcome user</h1>
 
 <div class="backend-status">
-  <p>Backend Status: <strong [class.connected]="backendStatus() === 'connected'" 
-     [class.disconnected]="backendStatus() !== 'connected'">{{ backendStatus() }}</strong></p>
+  <p>
+    Backend Status:
+    <strong
+      [class.connected]="backendStatus() === 'connected'"
+      [class.disconnected]="backendStatus() !== 'connected'"
+      >{{ backendStatus() }}</strong
+    >
+  </p>
 </div>
 
 <section class="items-section">
   <h2>Items from Database</h2>
-  
+
   @if (loading()) {
     <p>Loading items...</p>
   }
-  
+
   @if (error()) {
     <p class="error">{{ error() }}</p>
   }
-  
+
   @if (!loading() && !error() && items().length === 0) {
     <p>No items found.</p>
   }
-  
+
   @if (!loading() && items().length > 0) {
     <ul class="items-list">
       @for (item of items(); track item.id) {
@@ -34,4 +40,3 @@
 </section>
 
 <router-outlet />
-
