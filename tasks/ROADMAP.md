@@ -18,12 +18,17 @@ This roadmap outlines planned features and epics for the project. It's maintaine
 
 **Epic-001: Multi-Tenant Foundation** ⭐ Critical
 - **Priority**: Critical (Foundational)
-- **Status**: pending
-- **Duration**: 2 weeks
+- **Status**: in-progress (features defined, awaiting task breakdown)
+- **Duration**: 2 weeks (12-14 days)
 - **File**: [epic-001-multi-tenant-foundation.md](epics/epic-001-multi-tenant-foundation.md)
 - **Description**: Multi-tenant database, authentication, household management, user invitations
 - **Why Now**: Foundation for entire application - must come first
 - **Dependencies**: None (foundational)
+- **Features**: 4 features (41 tasks estimated)
+  - [feature-001](features/feature-001-user-authentication.md): User Authentication (9 tasks, 3-4 days)
+  - [feature-002](features/feature-002-multi-tenant-schema.md): Multi-Tenant Schema (10 tasks, 2-3 days)
+  - [feature-003](features/feature-003-household-management.md): Household Management (11 tasks, 3-4 days)
+  - [feature-004](features/feature-004-user-invitation-system.md): User Invitations (11 tasks, 2-3 days)
 
 **Epic-002: Task Management Core** ⭐ Critical
 - **Priority**: Critical (Core Product)
