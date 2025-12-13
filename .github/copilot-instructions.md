@@ -118,11 +118,16 @@ This is a monorepo with:
 1. Create feature branch: `git checkout -b feature/name`
 2. Make changes and commit with clear messages
 3. **ALWAYS** run prettier before committing: `cd apps/frontend && npm run format && cd ../backend && npm run format`
-4. Push branch: `git push -u origin feature/name`
-5. Create PR: `gh pr create --title "..." --body "..." --base main`
-6. Wait for CI checks to pass
-7. Merge PR: `gh pr merge <number> --squash --delete-branch`
-8. Pull latest main: `git checkout main && git pull`
+4. **CRITICAL**: Before pushing, check if PR exists and is still open:
+   - Run: `gh pr view --json state,mergedAt` (if PR exists for this branch)
+   - If `state` is "MERGED" → STOP! Create NEW branch instead: `git checkout main && git pull && git checkout -b feature/new-name`
+   - If `state` is "OPEN" → Safe to push
+   - If no PR yet → Safe to push
+5. Push branch: `git push -u origin feature/name`
+6. Create PR: `gh pr create --title "..." --body "..." --base main`
+7. Wait for CI checks to pass
+8. Merge PR: `gh pr merge <number> --squash --delete-branch`
+9. Pull latest main: `git checkout main && git pull`
 
 ### Pull Request Requirements
 - Clear title with conventional commit prefix (feat:, fix:, chore:, docs:)
