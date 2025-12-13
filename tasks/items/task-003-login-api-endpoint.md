@@ -28,17 +28,17 @@ Create a secure login endpoint that authenticates users with email/password, gen
 - Return same error for invalid email or password (security best practice)
 
 ## Acceptance Criteria
-- [ ] Endpoint responds to POST `/api/auth/login`
-- [ ] Valid credentials return 200 OK with tokens
-- [ ] Invalid credentials return 401 Unauthorized
-- [ ] Error message doesn't reveal if email exists
-- [ ] Access token expires in 1 hour
-- [ ] Refresh token expires in 7 days
-- [ ] Tokens include user ID and email in payload
-- [ ] Password comparison uses bcrypt.compare
-- [ ] Failed attempts logged for security monitoring
-- [ ] Request validation uses Fastify JSON Schema
-- [ ] All tests passing
+- [x] Endpoint responds to POST `/api/auth/login`
+- [x] Valid credentials return 200 OK with tokens
+- [x] Invalid credentials return 401 Unauthorized
+- [x] Error message doesn't reveal if email exists
+- [x] Access token expires in 1 hour
+- [x] Refresh token expires in 7 days
+- [x] Tokens include user ID and email in payload
+- [x] Password comparison uses bcrypt.compare
+- [x] Failed attempts logged for security monitoring
+- [x] Request validation uses Fastify JSON Schema
+- [ ] All tests passing (deferred to task-009)
 
 ## Dependencies
 - task-001: Users table must exist
