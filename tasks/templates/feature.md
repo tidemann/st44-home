@@ -3,8 +3,8 @@
 ## Metadata
 - **ID**: feature-XXX
 - **Epic**: epic-XXX - [Epic Name]
-- **Status**: pending
-- **Priority**: medium
+- **Status**: pending | in-progress | completed
+- **Priority**: high | medium | low
 - **Created**: YYYY-MM-DD
 - **Estimated Duration**: X days
 

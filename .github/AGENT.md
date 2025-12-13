@@ -10,13 +10,21 @@ Contains GitHub-specific configurations, CI/CD workflows, and AI agent system sp
 .github/
 ├── copilot-instructions.md    # Project coding standards and conventions
 ├── workflows/                  # GitHub Actions CI/CD (future)
-└── agents/                     # AI agent specifications
-    ├── README.md               # Agent system overview
-    ├── planner-agent.md        # Strategic planning agent
-    ├── orchestrator-agent.md   # Coordination agent
-    ├── frontend-agent.md       # Angular expert agent
-    ├── backend-agent.md        # Fastify expert agent
-    └── database-agent.md       # PostgreSQL expert agent
+├── agents/                     # AI agent specifications
+│   ├── README.md               # Agent system overview
+│   ├── system-agent.md         # Meta-agent for agent system maintenance
+│   ├── planner-agent.md        # Strategic planning agent
+│   ├── orchestrator-agent.md   # Coordination agent
+│   ├── frontend-agent.md       # Angular expert agent
+│   ├── backend-agent.md        # Fastify expert agent
+│   └── database-agent.md       # PostgreSQL expert agent
+└── prompts/                    # Workflow trigger files
+    ├── README.md               # Prompt documentation
+    ├── continue-work.prompt.md # Main work progression
+    ├── breakdown-feature.prompt.md # Feature decomposition
+    ├── plan-feature.prompt.md  # Feature planning
+    ├── reprioritize.prompt.md  # Roadmap reorganization
+    └── review-and-merge.prompt.md # PR creation
 ```
 
 ## Copilot Instructions
@@ -43,6 +51,8 @@ Contains GitHub-specific configurations, CI/CD workflows, and AI agent system sp
 
 **Who Updates**: Any agent making architectural decisions should update this file
 
+System Agent (Meta)
+    ↓ Agent System Maintenance
 ## Agent System
 
 **Directory**: `agents/`
@@ -58,7 +68,16 @@ Orchestrator Agent (Coordination)
 Expert Agents (Implementation)
 ```
 
-### Agent Specifications
+### Agsystem-agent.md`
+Meta-agent for maintaining the agent system itself:
+- Maintains agent specifications
+- Designs new agents when needed
+- Keeps prompt files effective
+- Ensures AGENT.md files stay current
+- Analyzes agent performance
+- Documents patterns and anti-patterns
+
+#### `ent Specifications
 
 #### `README.md`
 Complete overview of the agent system:
@@ -116,7 +135,94 @@ PostgreSQL expert:
 **Update immediately when**:
 - New patterns emerge in the codebase
 - Architecture changes
-- New tools or libraries adopted
+- NPrompt Files
+
+**Directory**: `prompts/`
+
+**Purpose**: Pre-configured workflow triggers that activate specific agent operations. These are like "commands" that start standardized work processes.
+
+### Available Prompts
+
+#### `continue-work.prompt.md`
+Triggers main work progression workflow:
+- Checks ROADMAP.md for next priority
+- Breaks down features into tasks if needed
+- Researches codebase
+- Creates implementation plan
+- Coordinates with expert agents
+- Implements and validates solution
+
+**When to use**: Starting autonomous work, ready to progress on next item
+
+#### `breakdown-feature.prompt.md`
+Triggers feature decomposition workflow:
+- Analyzes feature requirements
+- Identifies affected layers (DB/backend/frontend)
+- Creates task files for each component
+- Sequences tasks with dependencies
+- Updates roadmap
+
+**When to use**: Feature defined but needs task breakdown (MANDATORY before implementation)
+
+#### `plan-feature.prompt.md`
+Triggers strategic feature planning (Planner Agent):
+- Analyzes problem and user needs
+- Defines user stories and acceptance criteria
+- Assesses technical scope and dependencies
+- Creates feature file
+- Adds to roadmap
+
+**When to use**: Have new feature idea, need requirements definition
+
+#### `reprioritize.prompt.md`
+Triggers roadmap reorganization (Planner Agent):
+- Reviews current roadmap state
+- Identifies completed/blocked items
+- Reorganizes Now/Next/Later/Backlog
+- Archives completed work
+
+**When to use**: Priorities changed, roadmap needs updating
+
+#### `review-and-merge.prompt.md`
+Triggers validation and PR creation workflow:
+- Validates acceptance criteria met
+- Runs all checks (tests, formatting, build)
+- Updates documentation and work items
+- Creates comprehensive PR
+- **NEVER pushes without user confirmation**
+
+**When to use**: Work complete, ready for PR
+
+### Using Prompt Files
+
+**Basic usage**:
+```
+@workspace Use continue-work.prompt.md
+```
+
+**With context**:
+```
+Use breakdown-feature.prompt.md for feature-003
+```
+
+**Sequential**:
+```
+1. Use plan-feature.prompt.md to plan user authentication
+2. Then use breakdown-feature.prompt.md to create tasks
+3. Finally use continue-work.prompt.md to implement
+```
+
+### When to Update Prompts
+
+**Update immediately when**:
+- Agent workflows change
+- New agents added
+- File/directory structure changes
+- References become outdated
+
+**Example**: Created new agent → Update relevant prompts to reference it
+
+## ew tools or libraries adopted
 - Workflow improvements identified
 - Common issues documented
 

@@ -86,6 +86,7 @@ Epic: User Management System (epic-001)
 - Identify dependencies between work items
 - Prioritize based on urgency and dependencies
 - **Break down features into tasks** before implementation
+- **Use prompt files** for standardized workflows (see `.github/prompts/`)
 
 ### 2. Codebase Research & Analysis
 - Analyze existing codebase structure and patterns
@@ -272,6 +273,16 @@ Target Completion: YYYY-MM-DD
 
 ## Workflow
 
+### Using Prompt Files
+
+The Orchestrator can be invoked through standardized prompt files in `.github/prompts/`:
+
+- **continue-work.prompt.md**: Main workflow for picking up next priority and implementing
+- **breakdown-feature.prompt.md**: Dedicated workflow for feature → task decomposition
+- **review-and-merge.prompt.md**: Validation and PR creation workflow
+
+See `.github/prompts/README.md` for complete prompt documentation.
+
 ### Phase 0: Work Item Triage
 1. Scan `tasks/epics/`, `tasks/features/`, and `tasks/tasks/` directories for new work items
 2. Identify type (epic, feature, or task)
@@ -344,7 +355,7 @@ Target Completion: YYYY-MM-DD
 1. Verify all acceptance criteria met
 2. Run tests and checks
 3. Review code quality
-4. Update task status to `review` or `completed`
+4. Update task status to `completed`
 5. Document outcomes and learnings
 
 ## Decision-Making Framework
@@ -483,6 +494,12 @@ Regularly review and update:
 - Tool usage patterns
 
 ## Tools & Capabilities
+
+### Prompt Files
+- `.github/prompts/continue-work.prompt.md` - Main work progression
+- `.github/prompts/breakdown-feature.prompt.md` - Feature decomposition
+- `.github/prompts/review-and-merge.prompt.md` - PR creation
+- See `.github/prompts/README.md` for usage
 
 ### Available Tools
 - `semantic_search`: Find relevant code patterns

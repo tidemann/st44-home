@@ -7,7 +7,9 @@ This directory contains specifications for autonomous AI agents that manage the 
 ## Agent Hierarchy
 
 ```
-🔵 Planner Agent (Strategic Layer)
+� System Agent (Meta Layer)
+   ↓ Agent System Maintenance & Evolution
+�🔵 Planner Agent (Strategic Layer)
    ↓ Features & Roadmap
 🟢 Orchestrator Agent (Coordination Layer)
    ↓ Task Breakdown & Delegation
@@ -19,7 +21,29 @@ This directory contains specifications for autonomous AI agents that manage the 
    └── Testing Agent (Unit/Integration/E2E)
 ```
 
-## Agent Specifications
+## Ag� [System Agent](system-agent.md)
+**Role**: AI Agent System Expert & Meta-Agent
+
+**Responsibilities**:
+- Maintain and improve agent specifications
+- Design new agents when needed
+- Keep prompt files effective and up-to-date
+- Ensure AGENT.md files stay current as "living documentation"
+- Analyze agent performance and outcomes
+- Evolve the agent system based on learnings
+- Document patterns and best practices
+
+**Key Files**:
+- Maintains: All `.github/agents/*.md` files
+- Maintains: All `.github/prompts/*.md` files
+- Monitors: All `**/AGENT.md` files throughout codebase
+- Updates: Agent system documentation
+
+**Note**: This is a meta-agent that maintains the agent system itself. Invoke when agent specs need improvement, new agents are needed, or prompts require updates.
+
+---
+
+### �ent Specifications
 
 ### 🔵 [Planner Agent](planner-agent.md)
 **Role**: Strategic Planning & Feature Definition
@@ -435,10 +459,83 @@ All agents should:
 4. Share knowledge with other agents
 5. Refine workflows based on feedback
 
-## Questions?
+## How to Use These Agents
 
-- **Workflow**: See `tasks/README.md`
-- **Coding Standards**: See `.github/copilot-instructions.md`
-- **Agent Specs**: See individual agent markdown files in this directory
-- **Templates**: See `tasks/templates/`
-- **Examples**: See `tasks/task-001-example-user-profile.md`
+### Activating an Agent
+
+**Method 1: Reference in Chat**
+```
+@workspace Use the Planner Agent to create a feature for user authentication
+```
+
+**Method 2: Use Prompt Files** (Recommended)
+```
+@workspace Use plan-feature.prompt.md to plan user authentication
+```
+
+**Method 3: Switch Mode** (if supported)
+```
+Switch to planner-agent mode
+```
+
+### Common Workflows
+
+#### Starting New Feature
+```
+1. @workspace Use plan-feature.prompt.md
+2. Describe what you want to build
+3. Planner Agent creates feature file
+4. @workspace Use continue-work.prompt.md to start implementation
+```
+
+#### Continuing Existing Work
+```
+@workspace Use continue-work.prompt.md
+```
+This will:
+- Check roadmap for next priority
+- Break down feature if needed
+- Start implementation
+- Coordinate agents automatically
+
+#### Breaking Down a Feature
+```
+@workspace Use breakdown-feature.prompt.md for feature-001
+```
+
+#### Updating Roadmap
+```
+@workspace Use reprioritize.prompt.md
+```
+
+#### Creating Pull Request
+```
+@workspace Use review-and-merge.prompt.md
+```
+
+### Agent Communication
+
+**Agents work through markdown files:**
+- Planner creates feature files → Orchestrator reads them
+- Orchestrator creates task files → Expert agents read them
+- Expert agents update progress logs → Orchestrator monitors them
+- All changes tracked in Git
+
+**You can:**
+- Review work items at any time
+- Ask agents about their progress
+- Override decisions when needed
+- Request specific approaches
+
+### Tips for Success
+
+1. **Let agents read context first**: They'll search codebase and read AGENT.md files
+2. **Trust the workflow**: Agents coordinate automatically
+3. **Review plans before implementation**: Agents will show you their plan
+4. **Provide feedback**: Agents learn from your input
+5. **Use prompt files**: They standardize workflows and ensure completeness
+
+### Example Session
+
+```
+User: I need user authentication

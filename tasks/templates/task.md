@@ -4,8 +4,8 @@
 - **ID**: task-XXX
 - **Feature**: feature-XXX - [Feature Name]
 - **Epic**: epic-XXX - [Epic Name]
-- **Status**: pending
-- **Priority**: medium
+- **Status**: pending | in-progress | completed
+- **Priority**: high | medium | low
 - **Created**: YYYY-MM-DD
 - **Assigned Agent**: [orchestrator | frontend | backend | database | devops | testing]
 - **Estimated Duration**: X hours/days

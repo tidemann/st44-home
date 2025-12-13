@@ -18,7 +18,15 @@ This roadmap outlines planned features and epics for the project. It's maintaine
 None currently
 
 ### ⏳ Planned
-None currently
+- **Feature**: User Profile Management (feature-001)
+  - **Status**: pending (needs breakdown into tasks)
+  - **Priority**: High
+  - **Description**: Allow users to view and edit their profile information
+  - **Business Value**: Improves user engagement and data accuracy
+  - **User Story**: As a registered user, I want to view and edit my profile so that I can keep my information current
+  - **Estimated Effort**: 3-5 days
+  - **Dependencies**: None
+  - **File**: `tasks/features/feature-001-user-profile-management.md`
 
 ---
 

@@ -2,8 +2,8 @@
 
 ## Metadata
 - **ID**: epic-XXX
-- **Status**: pending
-- **Priority**: high
+- **Status**: pending | in-progress | completed
+- **Priority**: high | medium | low
 - **Created**: YYYY-MM-DD
 - **Timeline**: X weeks/months
 - **Owner**: [team/person responsible]
