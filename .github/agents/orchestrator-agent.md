@@ -115,6 +115,9 @@ Epic: User Management System (epic-001)
   - **Frontend Agent**: Angular components, services, UI/UX
   - **Backend Agent**: Fastify APIs, business logic, middleware
   - **Database Agent**: Schema changes, migrations, queries
+    - ⚠️ **CRITICAL**: Database Agent MUST create migration files
+    - Verify migrations exist before marking DB tasks complete
+    - See `docker/postgres/migrations/README.md` for requirements
   - **DevOps Agent**: Docker, CI/CD, deployment configurations
   - **Testing Agent**: Unit tests, integration tests, E2E tests
 - Monitor agent progress and handle blockers
@@ -392,8 +395,20 @@ See `.github/prompts/README.md` for complete prompt documentation.
 1. Verify all acceptance criteria met
 2. Run tests and checks
 3. Review code quality
-4. Update task status to `completed`
-5. Document outcomes and learnings
+4. **Database Changes: Verify migration files created** (see checklist below)
+5. Update task status to `completed`
+6. Document outcomes and learnings
+
+#### Database Changes Checklist
+If the task involved database changes, verify:
+- [ ] Migration file exists in `docker/postgres/migrations/`
+- [ ] Migration file follows naming convention (NNN_description.sql)
+- [ ] Migration was tested locally
+- [ ] Migration is recorded in schema_migrations table
+- [ ] Migration is idempotent (safe to run multiple times)
+- [ ] init.sql updated if needed (for fresh installs)
+
+**Why this matters**: Without a migration file, database changes will NOT deploy. This verification ensures deployment reliability.
 
 ## Decision-Making Framework
 

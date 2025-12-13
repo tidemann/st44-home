@@ -106,6 +106,29 @@ Prompt files are `.prompt.md` files that serve as pre-configured instructions fo
 
 ---
 
+### [merge-pr.prompt.md](merge-pr.prompt.md) 🆕
+**Agent**: Orchestrator  
+**Purpose**: Review and merge an existing pull request to main
+
+**When to use:**
+- PR has been created and is ready to merge
+- Want to verify all checks passed
+- Ready to merge to main branch
+
+**What it does:**
+1. Checks PR status and CI/CD results
+2. Verifies ALL checks passed (MANDATORY)
+3. Reviews code changes
+4. Validates work item completion
+5. Merges PR using squash merge
+6. Deletes feature branch automatically
+7. Updates task tracking (moves to done/)
+8. Updates ROADMAP.md with completion
+
+**Critical**: Will NOT merge if any checks fail
+
+---
+
 ## How to Use Prompt Files
 
 ### Basic Usage
@@ -186,10 +209,17 @@ Prompts can be combined for larger workflows:
    - breakdown-feature.prompt.md
    - continue-work.prompt.md
 
-2. **Reprioritization → Work → Review**
-   - reprioritize.prompt.md
+2. **Implementation → Review → Merge**
    - continue-work.prompt.md
    - review-and-merge.prompt.md
+   - merge-pr.prompt.md
+
+3. **Complete Feature Workflow**
+   - plan-feature.prompt.md (define feature)
+   - breakdown-feature.prompt.md (create tasks)
+   - continue-work.prompt.md (implement tasks)
+   - review-and-merge.prompt.md (create PR)
+   - merge-pr.prompt.md (merge after checks pass)
 
 ## Creating New Prompts
 

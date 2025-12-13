@@ -190,10 +190,42 @@ Environment variables (via .env or Docker):
 5. Update documentation if necessary
 
 ### Database Changes
-1. Update `docker/postgres/init.sql` for new installations
-2. Create migration script (system TBD)
-3. Update backend types/interfaces
-4. Test locally before committing
+1. **ALWAYS create a migration file** in `docker/postgres/migrations/`
+2. Follow naming convention: `NNN_descriptive_name.sql` (001, 002, etc.)
+3. Use `TEMPLATE.sql` as starting point
+4. Make migrations idempotent (IF NOT EXISTS, etc.)
+5. Test locally before committing
+6. Also update `init.sql` for new tables (fresh installs)
+
+**Migration File Structure**:
+```sql
+-- Migration: NNN_name
+-- Description: What this changes
+-- Date: YYYY-MM-DD
+-- Related Task: task-XXX
+
+BEGIN;
+
+CREATE TABLE IF NOT EXISTS my_table (...);
+
+INSERT INTO schema_migrations (version, name, applied_at)
+VALUES ('NNN', 'name', NOW())
+ON CONFLICT (version) DO NOTHING;
+
+COMMIT;
+```
+
+**Apply Migration**:
+```bash
+docker exec -i st44-db psql -U postgres -d st44 < docker/postgres/migrations/NNN_name.sql
+```
+
+**Verify**:
+```bash
+docker exec -it st44-db psql -U postgres -d st44 -c "SELECT * FROM schema_migrations ORDER BY version;"
+```
+
+**See `docker/postgres/migrations/README.md` for complete documentation.**
 
 ### API Changes
 1. Update backend route handler
@@ -241,9 +273,9 @@ Environment variables (via .env or Docker):
 
 ## Known Issues & TODOs
 
-- [ ] Migration system not implemented
+- [x] Migration system implemented (December 2025)
 - [ ] Testing setup incomplete
-- [ ] CI/CD pipeline not configured
+- [ ] CI/CD pipeline not configured (needs migration runner)
 - [ ] API documentation needed
 - [ ] Error tracking/monitoring not set up
 - [ ] Production deployment guide needed

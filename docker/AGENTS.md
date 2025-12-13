@@ -26,20 +26,57 @@ COPY init.sql /docker-entrypoint-initdb.d/
 
 **Initialization**:
 - Scripts in `/docker-entrypoint-initdb.d/` run automatically
-- Only executes if database doesn't exist
+- Only executes if database doesn't exist (volume is empty)
 - Runs in alphabetical order (useful for multiple scripts)
 
 ### Database Schema (`postgres/init.sql`)
 
 Defines initial database structure. This file runs once when the database is first created.
 
+**Purpose**: Provides "current state" schema for fresh installations.
+
 **Current Schema**:
-- `items` table (example table with id, title, description, timestamps)
+- `schema_migrations` table (tracks applied migrations)
+- `users` table (authentication with email/password and OAuth)
+- `items` table (example table)
+- Triggers for `updated_at` column updates
+
+### Migration System (`postgres/migrations/`)
+
+⚠️ **CRITICAL**: The migration system guarantees database changes deploy correctly.
+
+**Purpose**: Track and apply schema changes to existing databases.
+
+**Key Files**:
+- `README.md` - Comprehensive migration documentation
+- `TEMPLATE.sql` - Template for creating new migrations
+- `NNN_*.sql` - Numbered migration files (000, 001, 002, etc.)
+
+**Why Migrations Matter**:
+- **Deployment Safety**: Changes are version-controlled
+- **Repeatability**: Same changes apply everywhere
+- **Auditability**: Track what changed and when
+- **No Data Loss**: Existing data preserved during changes
+
+**Migration Rules**:
+1. **EVERY schema change requires a migration file**
+2. Migrations are IMMUTABLE (never edit after creation)
+3. Sequential numbering required (001, 002, 003...)
+4. Must be idempotent (safe to run multiple times)
+5. Must record itself in schema_migrations table
+
+**See `docker/postgres/migrations/README.md` for complete documentation.**
 
 ### Schema Management
 
-**Current State**: Single `init.sql` file
-**Limitation**: Only runs on new database creation
+**Two-File System**:
+1. **init.sql**: Current schema for fresh installations
+2. **migrations/**: Individual changes for existing databases
+
+**When creating new tables:**
+- Create migration file in `migrations/`
+- Also add to `init.sql` (for fresh installs)
+- Test both paths (fresh DB and migration)
 
 **For Fresh Database**:
 ```bash
@@ -47,7 +84,20 @@ docker compose down -v  # Remove volume
 docker compose up -d db  # Recreate with init.sql
 ```
 
-**For Existing Database**: Manual migration required
+**For Existing Database** (Production/Development):
+```bash
+# Apply specific migration
+docker exec -i st44-db psql -U postgres -d st44 < docker/postgres/migrations/NNN_name.sql
+
+# Apply all pending migrations
+for file in docker/postgres/migrations/*.sql; do
+  echo "Applying $(basename $file)..."
+  docker exec -i st44-db psql -U postgres -d st44 < "$file"
+done
+
+# Check applied migrations
+docker exec -it st44-db psql -U postgres -d st44 -c "SELECT * FROM schema_migrations ORDER BY version;"
+```
 
 ## Database Schema
 
@@ -77,38 +127,51 @@ CREATE TABLE IF NOT EXISTS items (
 
 ### Adding a New Table
 
-**1. Add to `init.sql`**:
+**IMPORTANT**: This requires TWO changes: migration + init.sql update
+
+**1. Create Migration File**:
 ```sql
+-- docker/postgres/migrations/001_add_users_table.sql
+-- Migration: 001_add_users_table
+-- Description: Add users table for authentication
+-- Date: YYYY-MM-DD
+
+BEGIN;
+
 CREATE TABLE IF NOT EXISTS users (
-    id SERIAL PRIMARY KEY,
-    name VARCHAR(255) NOT NULL,
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     email VARCHAR(255) UNIQUE NOT NULL,
+    password_hash VARCHAR(255),
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE INDEX idx_users_email ON users(email);
+CREATE INDEX IF NOT EXISTS idx_users_email ON users(email);
+
+-- Record migration
+INSERT INTO schema_migrations (version, name, applied_at)
+VALUES ('001', 'add_users_table', NOW())
+ON CONFLICT (version) DO NOTHING;
+
+COMMIT;
 ```
 
-**2. For Fresh Installation**:
-- New deployments will have the table automatically
+**2. Update init.sql**:
+Add the same table definition to `init.sql` (without migration tracking)
 
-**3. For Existing Databases**:
-Option A - Reset database (data loss):
+**3. Apply Migration to Existing Database**:
 ```bash
-docker compose down -v
-docker compose up -d db
+docker exec -i st44-db psql -U postgres -d st44 < docker/postgres/migrations/001_add_users_table.sql
 ```
 
-Option B - Manual migration:
+**4. Verify**:
 ```bash
-docker exec -i st44-db psql -U postgres st44 < migration.sql
-```
+# Check table exists
+docker exec -it st44-db psql -U postgres -d st44 -c "\d users"
 
-Option C - Migration tool (recommended for production):
-- Use tools like node-pg-migrate, db-migrate, or Flyway
-- Track versions and changes
-- Rollback capability
+# Check migration recorded
+docker exec -it st44-db psql -U postgres -d st44 -c "SELECT * FROM schema_migrations;"
+```
 
 ### Database Conventions
 
@@ -181,43 +244,37 @@ docker exec -i st44-db psql -U postgres st44 < migration.sql
 
 ## Migration Strategy (Future)
 
-### Option 1: SQL Files in Directory
-```
-docker/postgres/migrations/
-├── 001_initial_schema.sql
-├── 002_add_users_table.sql
-└── 003_add_orders_table.sql
-```
+**Current State**: File-based migrations with manual application
 
-Run migrations:
+**How It Works**:
+1. Each schema change gets a numbered migration file
+2. Migrations run via psql command
+3. `schema_migrations` table tracks what's applied
+4. Idempotent migrations safe to re-run
+
+**Running Migrations**:
 ```bash
+# Local development
 for file in docker/postgres/migrations/*.sql; do
   docker exec -i st44-db psql -U postgres st44 < "$file"
 done
+
+# Production (CI/CD)
+for file in docker/postgres/migrations/*.sql; do
+  psql $DATABASE_URL < "$file" || exit 1
+done
 ```
 
-### Option 2: Node Migration Tool
-```bash
-npm install node-pg-migrate --save-dev
-```
+**Future Enhancements** (if needed):
+- Automated migration runner in CI/CD
+- Migration rollback support
+- Migration status dashboard
+- Dry-run testing
 
-Create migration:
-```bash
-npx node-pg-migrate create add-users-table
-```
-
-Run migrations:
-```bash
-npx node-pg-migrate up
-```
-
-### Option 3: Flyway/Liquibase
-- Java-based tools
-- Version control for database
-- Automatic change tracking
-- Rollback support
-
-**Recommended**: Choose Option 2 (node-pg-migrate) for consistency with Node.js stack
+**Current approach is sufficient for:**
+- Small to medium projects
+- Predictable deployment schedules
+- Version-controlled schema changes
 
 ## Database Best Practices
 

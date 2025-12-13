@@ -61,7 +61,7 @@ Implement a secure user authentication system that allows users to register, log
 ## Tasks
 **✅ Tasks broken down and ready for implementation**
 
-- [ ] [task-001](../items/task-001-create-users-table-schema.md) - Create users table schema (2-3 hours, database)
+- [x] [task-001](../items/task-001-create-users-table-schema.md) - Create users table schema (2-3 hours, database) ✅ [PR #21](https://github.com/tidemann/st44-home/pull/21)
 - [ ] [task-002](../items/task-002-registration-api-endpoint.md) - Registration API endpoint (4-6 hours, backend)
 - [ ] [task-003](../items/task-003-login-api-endpoint.md) - Login API endpoint (5-7 hours, backend)
 - [ ] [task-004](../items/task-004-token-refresh-endpoint.md) - Token refresh endpoint (3-4 hours, backend)
