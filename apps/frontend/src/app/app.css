@@ -10,3 +10,70 @@ h1 {
   color: #333;
   font-size: 48px;
 }
+
+.backend-status {
+  margin: 20px 0;
+  padding: 10px;
+  border-radius: 8px;
+  background-color: #fff;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.connected {
+  color: #22c55e;
+}
+
+.disconnected {
+  color: #ef4444;
+}
+
+.items-section {
+  max-width: 800px;
+  margin: 40px auto;
+  text-align: left;
+}
+
+.items-section h2 {
+  text-align: center;
+  color: #333;
+  margin-bottom: 24px;
+}
+
+.items-list {
+  list-style: none;
+  padding: 0;
+}
+
+.item-card {
+  background: white;
+  border-radius: 8px;
+  padding: 20px;
+  margin-bottom: 16px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transition: box-shadow 0.2s;
+}
+
+.item-card:hover {
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.item-card h3 {
+  margin: 0 0 12px 0;
+  color: #333;
+}
+
+.item-card p {
+  margin: 0 0 12px 0;
+  color: #666;
+  line-height: 1.5;
+}
+
+.item-card small {
+  color: #999;
+  font-size: 0.875rem;
+}
+
+.error {
+  color: #ef4444;
+  font-weight: 500;
+}
