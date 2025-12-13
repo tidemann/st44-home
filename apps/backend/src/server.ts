@@ -51,16 +51,14 @@ fastify.get<{ Reply: { items: Item[] } | { error: string } }>(
   '/api/items',
   async (request, reply) => {
     try {
-      const result = await pool.query<Item>(
-        'SELECT * FROM items ORDER BY created_at DESC'
-      );
+      const result = await pool.query<Item>('SELECT * FROM items ORDER BY created_at DESC');
       return { items: result.rows };
     } catch (error) {
       fastify.log.error(error);
       reply.code(500);
       return { error: 'Failed to fetch items' };
     }
-  }
+  },
 );
 
 // Start server
