@@ -453,18 +453,25 @@ fastify.get<{ Reply: { items: Item[] } | { error: string } }>(
   },
 );
 
-// Start server
-const start = async () => {
-  try {
-    const port = parseInt(process.env.PORT || '3000', 10);
-    const host = process.env.HOST || '0.0.0.0';
+// Export build function for testing
+export async function build() {
+  return fastify;
+}
 
-    await fastify.listen({ port, host });
-    console.log(`🚀 Server listening on ${host}:${port}`);
-  } catch (err) {
-    fastify.log.error(err);
-    process.exit(1);
-  }
-};
+// Start server only when not imported as a module
+if (import.meta.url === `file://${process.argv[1]}`) {
+  const start = async () => {
+    try {
+      const port = parseInt(process.env.PORT || '3000', 10);
+      const host = process.env.HOST || '0.0.0.0';
 
-start();
+      await fastify.listen({ port, host });
+      console.log(`🚀 Server listening on ${host}:${port}`);
+    } catch (err) {
+      fastify.log.error(err);
+      process.exit(1);
+    }
+  };
+
+  start();
+}
