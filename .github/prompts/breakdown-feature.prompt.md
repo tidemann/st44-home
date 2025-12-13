@@ -9,24 +9,41 @@ agent: orchestrator-agent
 
 ## Your Task
 
-1. **Read feature file**: Understand requirements, user stories, and acceptance criteria
-2. **Analyze scope**: Identify all affected architectural layers:
+### STEP 0: Read Context (REQUIRED FIRST)
+**Before breaking down the feature, gather all necessary context:**
+
+1. **Read the feature file** specified by the user
+2. **Read product context**:
+   - `README.md` - Product overview and technical stack
+   - `IMPLEMENTATION_PLAN.md` - Technical architecture and patterns
+3. **Read technical documentation**:
+   - `AGENTS.md` - Project architecture overview
+   - `apps/frontend/AGENTS.md` - Frontend patterns and conventions
+   - `apps/backend/AGENTS.md` - Backend patterns and conventions
+   - `docker/AGENTS.md` - Database schema and patterns
+4. **Check parent epic** (if linked) for context and requirements
+
+**Only after reading context, proceed with the breakdown.**
+
+### STEP 1: Analyze and Break Down
+
+1. **Analyze scope**: Identify all affected architectural layers:
    - Database: Schema changes, migrations, indexes
    - Backend: API endpoints, business logic, middleware, validation
    - Frontend: Components, services, routing, forms, UI/UX
    - Testing: Unit tests, integration tests, E2E tests
    - DevOps: Configuration, environment variables, deployment changes
-3. **Identify dependencies**: Determine task sequence and what must be completed first
-4. **Create task files**: For each component, create a task file in `tasks/items/`:
+2. **Identify dependencies**: Determine task sequence and what must be completed first
+3. **Create task files**: For each component, create a task file in `tasks/items/`:
    - Use naming: `task-XXX-descriptive-name.md`
    - Link to parent feature
    - Define clear acceptance criteria
    - Estimate complexity (hours/days)
    - Identify dependencies
-5. **Sequence tasks**: Order tasks logically based on dependencies
-6. **Update feature file**: Add task list with links to all created tasks
-7. **Update ROADMAP.md**: Add tasks to "Now" section in priority order
-8. **Get confirmation**: Present breakdown to user before proceeding to implementation
+4. **Sequence tasks**: Order tasks logically based on dependencies
+5. **Update feature file**: Add task list with links to all created tasks
+6. **Update ROADMAP.md**: Add tasks to "Now" section in priority order
+7. **Get confirmation**: Present breakdown to user before proceeding to implementation
 
 ## Task Creation Guidelines
 

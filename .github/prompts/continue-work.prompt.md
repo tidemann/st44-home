@@ -26,11 +26,15 @@ agent: orchestrator-agent
    
 1. **Check current priorities**: Read [ROADMAP.md](../../tasks/ROADMAP.md) to see what's in the "Now" section
    - If ROADMAP.md is empty or unclear, use [Reprioritize prompt](.github/prompts/reprioritize.prompt.md)
-2. **Select top priority**: Pick the first item from "Now" section (unless blocked)
-3. **Determine work item type**: Is it an epic, feature, or task?
-   - **Epic**: Read epic file, ensure features are created. If not, break down epic into features
-   - **Feature**: **MANDATORY** - Break down into tasks using [Breakdown Feature prompt](.github/prompts/breakdown-feature.prompt.md)
-   - **Task**: Proceed to implementation
+2. **Select work based on priority** (in this order):
+   - **FIRST: Look for ready TASKS**: Tasks with clear acceptance criteria ready to implement
+   - **SECOND: Look for FEATURES needing breakdown**: Features without tasks created yet
+   - **THIRD: Look for EPICS needing planning**: Epics without features created yet
+   - **Rationale**: Prefer implementation over planning - finish concrete work before decomposition
+3. **Determine action based on work item type**:
+   - **Task (ready to implement)**: Proceed to implementation immediately
+   - **Feature (needs tasks)**: **MANDATORY** - Break down into tasks using [Breakdown Feature prompt](.github/prompts/breakdown-feature.prompt.md)
+   - **Epic (needs features)**: Break down epic into features using [Plan Feature prompt](.github/prompts/plan-feature.prompt.md)
 4. **Move to in-progress**: Update status in work item file to `in-progress`
 5. **Read work item file**: Understand requirements, acceptance criteria, and technical context
 6. **Clarify uncertainties**: If unclear, ask user follow-up questions before proceeding
