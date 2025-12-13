@@ -88,6 +88,28 @@ export class AuthService {
       );
   }
 
+  loginWithGoogle(credential: string): Observable<AuthResponse> {
+    return this.http
+      .post<AuthResponse>(`${this.apiUrl}/google`, {
+        credential,
+      })
+      .pipe(
+        tap((response) => {
+          // Always use localStorage for OAuth (remember user)
+          localStorage.setItem('accessToken', response.accessToken);
+          localStorage.setItem('refreshToken', response.refreshToken);
+
+          // Clear session storage
+          sessionStorage.removeItem('accessToken');
+          sessionStorage.removeItem('refreshToken');
+
+          // Update state
+          this.currentUser.set(response.user);
+          this.isAuthenticated.set(true);
+        }),
+      );
+  }
+
   logout(): void {
     // Clear tokens from both storages
     localStorage.removeItem('accessToken');

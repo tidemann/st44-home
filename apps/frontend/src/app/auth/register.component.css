@@ -4,6 +4,33 @@
   padding: 2rem;
 }
 
+.google-signin-wrapper {
+  margin-bottom: 1.5rem;
+  display: flex;
+  justify-content: center;
+}
+
+.separator {
+  display: flex;
+  align-items: center;
+  text-align: center;
+  margin: 1.5rem 0;
+}
+
+.separator::before,
+.separator::after {
+  content: '';
+  flex: 1;
+  border-bottom: 1px solid #ccc;
+}
+
+.separator span {
+  padding: 0 1rem;
+  color: #666;
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
 .form-group {
   margin-bottom: 1rem;
 }

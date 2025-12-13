@@ -3,6 +3,7 @@ import cors from '@fastify/cors';
 import pg from 'pg';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
+import { OAuth2Client } from 'google-auth-library';
 
 const { Pool } = pg;
 
@@ -29,6 +30,10 @@ await fastify.register(cors, {
 const JWT_SECRET = process.env.JWT_SECRET || 'dev-secret-change-in-production';
 const JWT_ACCESS_EXPIRY = '1h';
 const JWT_REFRESH_EXPIRY = '7d';
+
+// Google OAuth Configuration
+const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID || '';
+const googleClient = new OAuth2Client(GOOGLE_CLIENT_ID);
 
 // JWT Utility Functions
 function generateAccessToken(userId: string, email: string): string {
@@ -409,6 +414,112 @@ fastify.post(
     fastify.log.info({ userId: request.user?.userId }, 'User logged out');
     reply.code(200);
     return { success: true, message: 'Logged out successfully' };
+  },
+);
+
+// Google OAuth endpoint
+interface GoogleAuthBody {
+  credential: string;
+}
+
+const googleAuthSchema = {
+  body: {
+    type: 'object',
+    required: ['credential'],
+    properties: {
+      credential: { type: 'string' },
+    },
+  },
+};
+
+fastify.post<{ Body: GoogleAuthBody }>(
+  '/api/auth/google',
+  {
+    schema: googleAuthSchema,
+  },
+  async (request, reply) => {
+    const { credential } = request.body;
+
+    try {
+      // Verify ID token with Google
+      const ticket = await googleClient.verifyIdToken({
+        idToken: credential,
+        audience: GOOGLE_CLIENT_ID,
+      });
+
+      const payload = ticket.getPayload();
+      if (!payload) {
+        fastify.log.warn('Invalid Google token - no payload');
+        reply.code(401);
+        return { error: 'Invalid Google token' };
+      }
+
+      const { sub: googleId, email, name } = payload;
+
+      if (!email) {
+        fastify.log.warn('Google token missing email');
+        reply.code(400);
+        return { error: 'Email not provided by Google' };
+      }
+
+      // Check if user exists (by email or OAuth ID)
+      const existingUserResult = await pool.query(
+        'SELECT id, email FROM users WHERE email = $1 OR (oauth_provider = $2 AND oauth_provider_id = $3)',
+        [email, 'google', googleId],
+      );
+
+      let userId: string;
+      let userEmail: string;
+
+      if (existingUserResult.rows.length === 0) {
+        // Create new user with Google OAuth
+        const insertResult = await pool.query(
+          `INSERT INTO users (email, oauth_provider, oauth_provider_id) 
+           VALUES ($1, $2, $3) 
+           RETURNING id, email`,
+          [email, 'google', googleId],
+        );
+        userId = insertResult.rows[0].id;
+        userEmail = insertResult.rows[0].email;
+        fastify.log.info({ userId, email: userEmail }, 'New user created via Google OAuth');
+      } else {
+        userId = existingUserResult.rows[0].id;
+        userEmail = existingUserResult.rows[0].email;
+
+        // Update OAuth info if user exists but doesn't have it yet
+        const user = existingUserResult.rows[0];
+        const needsOAuthUpdate = await pool.query(
+          'SELECT oauth_provider FROM users WHERE id = $1',
+          [userId],
+        );
+
+        if (needsOAuthUpdate.rows[0]?.oauth_provider !== 'google') {
+          await pool.query(
+            'UPDATE users SET oauth_provider = $1, oauth_provider_id = $2 WHERE id = $3',
+            ['google', googleId, userId],
+          );
+          fastify.log.info({ userId }, 'Updated existing user with Google OAuth info');
+        }
+
+        fastify.log.info({ userId, email: userEmail }, 'Existing user logged in via Google OAuth');
+      }
+
+      // Generate JWT tokens (same as email/password login)
+      const accessToken = generateAccessToken(userId, userEmail);
+      const refreshToken = generateRefreshToken(userId);
+
+      reply.code(200);
+      return {
+        accessToken,
+        refreshToken,
+        userId,
+        email: userEmail,
+      };
+    } catch (error) {
+      fastify.log.error(error, 'Google OAuth error');
+      reply.code(401);
+      return { error: 'Google authentication failed' };
+    }
   },
 );
 

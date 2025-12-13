@@ -19,3 +19,6 @@ npm run dev
 - `DB_USER` - Database user (default: postgres)
 - `DB_PASSWORD` - Database password (default: postgres)
 - `CORS_ORIGIN` - CORS origin (default: \*)
+- `JWT_SECRET` - JWT signing secret (default: dev-secret-change-in-production)
+- `GOOGLE_CLIENT_ID` - Google OAuth client ID (required for Google Sign-In)
+- `GOOGLE_CLIENT_SECRET` - Google OAuth client secret (optional, not used in current implementation)

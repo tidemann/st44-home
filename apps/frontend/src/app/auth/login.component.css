@@ -19,6 +19,33 @@ h1 {
   margin-bottom: 1rem;
 }
 
+.google-signin-wrapper {
+  margin-bottom: 1.5rem;
+  display: flex;
+  justify-content: center;
+}
+
+.separator {
+  display: flex;
+  align-items: center;
+  text-align: center;
+  margin: 1.5rem 0;
+}
+
+.separator::before,
+.separator::after {
+  content: '';
+  flex: 1;
+  border-bottom: 1px solid #ccc;
+}
+
+.separator span {
+  padding: 0 1rem;
+  color: #666;
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
 .form-group {
   margin-bottom: 1rem;
 }
@@ -165,7 +192,13 @@ button[type='submit']:disabled {
   border-radius: 2px;
 }
 
-.separator {
+.links .separator {
   margin: 0 0.5rem;
   color: #999;
+  display: inline;
+}
+
+.links .separator::before,
+.links .separator::after {
+  display: none;
 }

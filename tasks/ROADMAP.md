@@ -124,6 +124,18 @@ _Features under consideration but not yet prioritized_
 ## Completed
 
 ### December 2025
+- ✅ **Task-010: Google OAuth Integration** (2025-12-14)
+  - Backend: POST /api/auth/google endpoint with google-auth-library
+  - Backend: ID token verification and user account creation
+  - Backend: JWT token generation for OAuth users
+  - Frontend: Google Identity Services integration
+  - Frontend: Google Sign-In buttons on login and register pages
+  - Frontend: loginWithGoogle() method in AuthService
+  - Environment: GOOGLE_CLIENT_ID configuration
+  - Automatic user account creation on first Google login
+  - OAuth users linked by email if account exists
+  - ESLint fixes for proper TypeScript typing
+  - [PR #29](https://github.com/tidemann/st44-home/pull/29)
 - ✅ **Task-009: Authentication Tests** (2025-12-13)
   - Backend: 30 integration tests (100% passing)
   - Frontend: 75 unit tests (100% passing)
@@ -256,10 +268,10 @@ Features are prioritized based on:
 3. Provide feedback on direction
 4. Suggest new features for consideration
 
---✅ task-005: Authentication middleware (PR #25) - **COMPLETED**
-- -
-
 ## Changelog
+
+### 2025-12-14
+- ✅ task-010: Google OAuth integration (PR #29) - **COMPLETED**
 
 ### 2025-12-13
 - ✅ task-009: Authentication tests (PR #28) - **COMPLETED**
