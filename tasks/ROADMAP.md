@@ -124,6 +124,13 @@ _Features under consideration but not yet prioritized_
 ## Completed
 
 ### December 2025
+- ✅ **Task-004: Token Refresh Endpoint** (2025-12-13)
+  - POST /api/auth/refresh endpoint
+  - JWT token verification and validation
+  - Token type checking (refresh vs access)
+  - User existence validation
+  - Security-focused error handling
+  - [PR #24](https://github.com/tidemann/st44-home/pull/24)
 - ✅ **Task-003: Login API Endpoint with JWT Authentication** (2025-12-13)
   - POST /api/auth/login endpoint
   - JWT access tokens (1h) and refresh tokens (7d)
@@ -219,6 +226,7 @@ Features are prioritized based on:
 - ✅ task-001: Users table schema with OAuth support (PR #21) - **COMPLETED**
 - ✅ task-002: Registration API endpoint with bcrypt (PR #22) - **COMPLETED**
 - ✅ task-003: Login API endpoint with JWT authentication (PR #23) - **COMPLETED**
+- ✅ task-004: Token refresh endpoint (PR #24) - **COMPLETED**
 - Created initial roadmap structure
 - Documented completed infrastructure work
 - Established prioritization framework
