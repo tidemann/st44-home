@@ -63,7 +63,7 @@ export class AuthService {
     });
   }
 
-  login(email: string, password: string, rememberMe: boolean = false): Observable<AuthResponse> {
+  login(email: string, password: string, rememberMe = false): Observable<AuthResponse> {
     return this.http
       .post<AuthResponse>(`${this.apiUrl}/login`, {
         email,
