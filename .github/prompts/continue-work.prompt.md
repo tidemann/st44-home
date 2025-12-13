@@ -5,12 +5,25 @@ agent: orchestrator-agent
 
 # Continue Work on Next Priority
 
+**⚠️ CRITICAL GIT RULES**:
+- NEVER commit directly to main branch
+- ALWAYS create a feature branch before starting work
+- ALWAYS push to feature branch, never main
+- NEVER use `git push` alone - always specify branch or use `-u origin feature/name`
+- All work must go through PR review before merging
+
 **CRITICAL**: NEVER commit and push unless asking the user first
 
 **IMPORTANT**: Always follow ROADMAP.md, even if the user has a document open
 
 ## Your Task
 
+0. **Verify Git Branch (FIRST STEP)**:
+   - Run `git branch` to check current branch
+   - If on main: STOP and run `git checkout -b feature/descriptive-name`
+   - If on feature branch: Verify it's the correct one for this work
+   - NEVER proceed with work while on main branch
+   
 1. **Check current priorities**: Read [ROADMAP.md](../../tasks/ROADMAP.md) to see what's in the "Now" section
    - If ROADMAP.md is empty or unclear, use [Reprioritize prompt](.github/prompts/reprioritize.prompt.md)
 2. **Select top priority**: Pick the first item from "Now" section (unless blocked)
@@ -23,7 +36,7 @@ agent: orchestrator-agent
 6. **Clarify uncertainties**: If unclear, ask user follow-up questions before proceeding
 7. **Assess complexity**: If task seems too complex (>500 LOC or >2 days), break it down further
 8. **Research codebase**: 
-   - Read relevant AGENT.md files for context
+   - Read relevant AGENTS.md files for context
    - Use semantic_search to find related code
    - Review existing patterns and conventions
 9. **Create implementation plan**: Document detailed approach in work item file
@@ -42,8 +55,8 @@ agent: orchestrator-agent
 - Run tests to verify completion
 - Don't start multiple work items simultaneously
 - **Features MUST be broken down into tasks before implementation**
-- Always read relevant AGENT.md files before making changes
-- Update AGENT.md files if you establish new patterns
+- Always read relevant AGENTS.md files before making changes
+- Update AGENTS.md files if you establish new patterns
 
 ## Success Criteria
 
@@ -52,7 +65,7 @@ agent: orchestrator-agent
 - [ ] ROADMAP.md status updated
 - [ ] Solution implemented following acceptance criteria
 - [ ] All tests passing (npm test passes)
-- [ ] AGENT.md files updated if patterns changed
+- [ ] AGENTS.md files updated if patterns changed
 - [ ] Work item file updated with final status
 - [ ] Work item moved to appropriate `done/` folder
 - [ ] ROADMAP.md updated (item removed, next priority added)
@@ -67,6 +80,6 @@ See [tasks/ROADMAP.md](../../tasks/ROADMAP.md) for:
 
 ## Reference Documentation
 
-- [AGENT.md](../../AGENT.md) - Project overview
-- [tasks/AGENT.md](../../tasks/AGENT.md) - Work item management
+- [AGENTS.md](../../AGENTS.md) - Project overview
+- [tasks/AGENTS.md](../../tasks/AGENTS.md) - Work item management
 - [Orchestrator Agent](../../.github/agents/orchestrator-agent.md) - Main coordination workflow

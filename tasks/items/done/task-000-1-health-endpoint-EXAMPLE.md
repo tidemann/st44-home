@@ -27,7 +27,7 @@ Add a `/health` endpoint to the Fastify backend that returns service status and 
 - ✅ Response time < 100ms
 - ✅ Works in local development (localhost:3000)
 - ✅ Works in Docker (internal network)
-- ✅ Documented in backend AGENT.md
+- ✅ Documented in backend AGENTS.md
 
 ## Dependencies
 - PostgreSQL database must be running
@@ -62,7 +62,7 @@ fastify.get('/health', async (request, reply) => {
 
 ### Files Modified
 - `apps/backend/src/server.ts` - Add health route
-- `apps/backend/AGENT.md` - Document new endpoint
+- `apps/backend/AGENTS.md` - Document new endpoint
 
 ### Testing
 Manual testing:
@@ -91,7 +91,7 @@ Expected response:
 5. ✅ Set 503 status code on failure
 6. ✅ Test with database running
 7. ✅ Test with database stopped (error case)
-8. ✅ Update backend AGENT.md with endpoint documentation
+8. ✅ Update backend AGENTS.md with endpoint documentation
 
 ## Agent Assignment
 Backend Agent
@@ -143,7 +143,7 @@ Not needed - straightforward single-agent task
 
 ## Related Files
 - Implementation: [apps/backend/src/server.ts](../../apps/backend/src/server.ts)
-- Documentation: [apps/backend/AGENT.md](../../apps/backend/AGENT.md)
+- Documentation: [apps/backend/AGENTS.md](../../apps/backend/AGENTS.md)
 - Parent Feature: [feature-000-backend-health-check-EXAMPLE.md](../features/done/feature-000-backend-health-check-EXAMPLE.md)
 
 ## Git References

@@ -120,4 +120,4 @@ Use this prompt to invoke the Planner Agent for strategic feature planning and d
 - [Planner Agent](../../.github/agents/planner-agent.md) - Strategic planning expert
 - [tasks/templates/feature.md](../../tasks/templates/feature.md) - Feature template
 - [tasks/ROADMAP.md](../../tasks/ROADMAP.md) - Product roadmap
-- [AGENT.md](../../AGENT.md) - Project architecture
+- [AGENTS.md](../../AGENTS.md) - Project architecture

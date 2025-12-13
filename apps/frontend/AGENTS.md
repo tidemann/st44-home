@@ -26,6 +26,7 @@ src/
 ### Root Component (`app/app.ts`)
 
 **State Management** (signals):
+
 ```typescript
 protected readonly title = signal('home');
 protected readonly items = signal<Item[]>([]);
@@ -35,11 +36,13 @@ protected readonly backendStatus = signal<string>('checking...');
 ```
 
 **Lifecycle**:
+
 - `ngOnInit()`: Loads backend status and items
 - Uses `inject()` for dependency injection
 - No constructor injection
 
 **Patterns Used**:
+
 - Standalone component (implicit `standalone: true`)
 - `ChangeDetectionStrategy.OnPush` required (add if not present)
 - Signals for reactive state
@@ -48,10 +51,12 @@ protected readonly backendStatus = signal<string>('checking...');
 ### API Service (`services/api.service.ts`)
 
 **Current Endpoints**:
+
 - `getItems()`: Returns `Observable<ItemsResponse>`
 - `getHealth()`: Returns `Observable<{ status: string; database: string }>`
 
 **Configuration**:
+
 - Uses environment-based API URL
 - Relative URLs (empty string for dev/prod)
 - Dev: Proxied via `proxy.conf.json`
@@ -62,6 +67,7 @@ protected readonly backendStatus = signal<string>('checking...');
 ### Component Structure
 
 **Standalone Component Pattern**:
+
 ```typescript
 import { Component, signal, inject } from '@angular/core';
 
@@ -74,15 +80,16 @@ import { Component, signal, inject } from '@angular/core';
 })
 export class ComponentName {
   private readonly service = inject(SomeService);
-  
+
   protected readonly state = signal<Type>(initialValue);
   protected readonly computed = computed(() => /* derive from state */);
-  
+
   // Methods...
 }
 ```
 
 **Key Points**:
+
 - No `standalone: true` (implicit in Angular 20+)
 - Use `protected` for template-accessible members
 - Use `private` for internal members
@@ -94,6 +101,7 @@ export class ComponentName {
 ### State Management with Signals
 
 **Creating signals**:
+
 ```typescript
 const count = signal(0);
 const user = signal<User | null>(null);
@@ -101,17 +109,19 @@ const items = signal<Item[]>([]);
 ```
 
 **Updating signals**:
+
 ```typescript
 // Set entire value
 count.set(5);
 user.set(newUser);
 
 // Update based on previous
-count.update(n => n + 1);
-items.update(list => [...list, newItem]);
+count.update((n) => n + 1);
+items.update((list) => [...list, newItem]);
 ```
 
 **Computed values**:
+
 ```typescript
 const doubled = computed(() => count() * 2);
 const itemCount = computed(() => items().length);
@@ -122,43 +132,46 @@ const itemCount = computed(() => items().length);
 ### Template Syntax
 
 **Control Flow** (native, not `*ngIf`/`*ngFor`):
+
 ```html
 @if (loading()) {
-  <p>Loading...</p>
+<p>Loading...</p>
 } @else if (error()) {
-  <p>Error: {{ error() }}</p>
+<p>Error: {{ error() }}</p>
 } @else {
-  <p>Content</p>
-}
-
-@for (item of items(); track item.id) {
-  <div>{{ item.title }}</div>
-}
-
-@switch (status()) {
-  @case ('loading') { <p>Loading...</p> }
-  @case ('success') { <p>Success!</p> }
-  @default { <p>Unknown</p> }
-}
+<p>Content</p>
+} @for (item of items(); track item.id) {
+<div>{{ item.title }}</div>
+} @switch (status()) { @case ('loading') {
+<p>Loading...</p>
+} @case ('success') {
+<p>Success!</p>
+} @default {
+<p>Unknown</p>
+} }
 ```
 
 **Signal access in templates**:
+
 ```html
 <h1>{{ title() }}</h1>
 <p>Count: {{ count() }}</p>
 ```
 
 **Class bindings** (not `ngClass`):
+
 ```html
-<div [class.active]="isActive()" [class.disabled]="isDisabled()">
+<div [class.active]="isActive()" [class.disabled]="isDisabled()"></div>
 ```
 
 **Style bindings** (not `ngStyle`):
+
 ```html
-<div [style.color]="textColor()" [style.font-size.px]="fontSize()">
+<div [style.color]="textColor()" [style.font-size.px]="fontSize()"></div>
 ```
 
 **Event binding**:
+
 ```html
 <button (click)="handleClick()">Click</button>
 ```
@@ -166,6 +179,7 @@ const itemCount = computed(() => items().length);
 ### Forms
 
 **Reactive Forms** (preferred):
+
 ```typescript
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 
@@ -175,12 +189,12 @@ import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 })
 export class MyForm {
   private readonly fb = inject(FormBuilder);
-  
+
   protected readonly form = this.fb.group({
     name: ['', [Validators.required, Validators.minLength(3)]],
     email: ['', [Validators.required, Validators.email]],
   });
-  
+
   protected onSubmit() {
     if (this.form.valid) {
       const data = this.form.value;
@@ -191,11 +205,12 @@ export class MyForm {
 ```
 
 **Template**:
+
 ```html
 <form [formGroup]="form" (ngSubmit)="onSubmit()">
   <input formControlName="name" />
   @if (form.controls.name.errors?.['required']) {
-    <span>Name is required</span>
+  <span>Name is required</span>
   }
   <button type="submit" [disabled]="form.invalid">Submit</button>
 </form>
@@ -204,6 +219,7 @@ export class MyForm {
 ### Routing
 
 **Define routes** (`app.routes.ts`):
+
 ```typescript
 import { Routes } from '@angular/router';
 
@@ -212,12 +228,13 @@ export const routes: Routes = [
   { path: 'about', component: AboutComponent },
   {
     path: 'feature',
-    loadComponent: () => import('./feature/feature.component').then(m => m.FeatureComponent),
+    loadComponent: () => import('./feature/feature.component').then((m) => m.FeatureComponent),
   },
 ];
 ```
 
 **Use in template**:
+
 ```html
 <a routerLink="/">Home</a>
 <a routerLink="/about">About</a>
@@ -229,6 +246,7 @@ export const routes: Routes = [
 ### HTTP Service
 
 **Standard pattern**:
+
 ```typescript
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
@@ -257,6 +275,7 @@ export class DataService {
 ```
 
 **Using in components**:
+
 ```typescript
 export class MyComponent implements OnInit {
   private readonly dataService = inject(DataService);
@@ -271,7 +290,7 @@ export class MyComponent implements OnInit {
   private loadData() {
     this.loading.set(true);
     this.error.set(null);
-    
+
     this.dataService.getData().subscribe({
       next: (response) => {
         this.data.set(response.data);
@@ -290,6 +309,7 @@ export class MyComponent implements OnInit {
 ## Accessibility Requirements
 
 ### Must Pass
+
 - ✅ All AXE checks
 - ✅ WCAG AA minimum
 - ✅ Keyboard navigation
@@ -300,15 +320,17 @@ export class MyComponent implements OnInit {
 ### Common Patterns
 
 **Form fields**:
+
 ```html
 <label for="name">Name</label>
 <input id="name" type="text" aria-required="true" />
 @if (errors()) {
-  <span role="alert" aria-live="polite">{{ errors() }}</span>
+<span role="alert" aria-live="polite">{{ errors() }}</span>
 }
 ```
 
 **Buttons**:
+
 ```html
 <button type="button" aria-label="Close dialog" (click)="close()">
   <span aria-hidden="true">×</span>
@@ -316,15 +338,13 @@ export class MyComponent implements OnInit {
 ```
 
 **Loading states**:
+
 ```html
-<div role="status" aria-live="polite">
-  @if (loading()) {
-    Loading...
-  }
-</div>
+<div role="status" aria-live="polite">@if (loading()) { Loading... }</div>
 ```
 
 **Focus management**:
+
 ```typescript
 import { ViewChild, ElementRef } from '@angular/core';
 
@@ -340,6 +360,7 @@ ngAfterViewInit() {
 ### 1. Create Component
 
 **File**: `src/app/feature/feature.component.ts`
+
 ```typescript
 import { Component } from '@angular/core';
 
@@ -358,6 +379,7 @@ export class FeatureComponent {
 ### 2. Create Template
 
 **File**: `src/app/feature/feature.component.html`
+
 ```html
 <div>
   <h1>Feature</h1>
@@ -368,10 +390,11 @@ export class FeatureComponent {
 ### 3. Add Route (if needed)
 
 **In** `app.routes.ts`:
+
 ```typescript
 {
   path: 'feature',
-  loadComponent: () => 
+  loadComponent: () =>
     import('./feature/feature.component').then(m => m.FeatureComponent),
 }
 ```
@@ -379,6 +402,7 @@ export class FeatureComponent {
 ### 4. Add Service Method (if needed)
 
 **In** `services/api.service.ts`:
+
 ```typescript
 getFeatureData(): Observable<FeatureDataResponse> {
   return this.http.get<FeatureDataResponse>(`${this.apiUrl}/feature`);
@@ -388,6 +412,7 @@ getFeatureData(): Observable<FeatureDataResponse> {
 ## Environment Configuration
 
 ### Development (`environments/environment.development.ts`)
+
 ```typescript
 export const environment = {
   production: false,
@@ -396,6 +421,7 @@ export const environment = {
 ```
 
 ### Production (`environments/environment.ts`)
+
 ```typescript
 export const environment = {
   production: true,
@@ -404,7 +430,9 @@ export const environment = {
 ```
 
 ### Proxy (`proxy.conf.json`)
+
 Proxies `/api` and `/health` to `localhost:3000` in development:
+
 ```json
 {
   "/api": { "target": "http://localhost:3000", ... },
@@ -415,6 +443,7 @@ Proxies `/api` and `/health` to `localhost:3000` in development:
 ## Common Patterns
 
 ### Loading State
+
 ```typescript
 protected readonly state = signal<'idle' | 'loading' | 'success' | 'error'>('idle');
 
@@ -428,15 +457,19 @@ private loadData() {
 ```
 
 **Template**:
+
 ```html
-@switch (state()) {
-  @case ('loading') { <p>Loading...</p> }
-  @case ('success') { <p>Success!</p> }
-  @case ('error') { <p>Error occurred</p> }
-}
+@switch (state()) { @case ('loading') {
+<p>Loading...</p>
+} @case ('success') {
+<p>Success!</p>
+} @case ('error') {
+<p>Error occurred</p>
+} }
 ```
 
 ### Form Validation
+
 ```typescript
 protected readonly form = this.fb.group({
   email: ['', [Validators.required, Validators.email]],
@@ -451,11 +484,12 @@ protected get emailErrors() {
 ```
 
 ### Optimistic Updates
+
 ```typescript
 protected deleteItem(id: number) {
   const original = this.items();
   this.items.update(list => list.filter(item => item.id !== id));
-  
+
   this.service.deleteItem(id).subscribe({
     error: () => {
       // Rollback on error
@@ -469,6 +503,7 @@ protected deleteItem(id: number) {
 ## Testing
 
 ### Component Tests
+
 ```typescript
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
@@ -495,14 +530,17 @@ describe('MyComponent', () => {
 ## Common Issues
 
 **Signal not updating in template**:
+
 - Make sure you're calling the signal: `{{ value() }}` not `{{ value }}`
 - Check `ChangeDetectionStrategy.OnPush` is set
 
 **Cannot find module errors**:
+
 - Check imports in component `imports` array
 - Verify standalone component is exported
 
 **CORS errors**:
+
 - Verify `proxy.conf.json` is configured
 - Check `npm start` uses proxy configuration
 - In production, verify Nginx proxy
@@ -510,6 +548,7 @@ describe('MyComponent', () => {
 ## File Organization
 
 Current (flat structure):
+
 ```
 app/
 ├── app.ts
@@ -522,6 +561,7 @@ app/
 ```
 
 Future (feature-based):
+
 ```
 app/
 ├── app.ts

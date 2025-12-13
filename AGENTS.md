@@ -179,13 +179,13 @@ Environment variables (via .env or Docker):
 1. Planner Agent creates feature file in `tasks/features/`
 2. Orchestrator Agent breaks down into tasks in `tasks/items/`
 3. Expert Agents implement tasks
-4. Update relevant AGENT.md files with new patterns
+4. Update relevant AGENTS.md files with new patterns
 5. Update documentation if user-facing
 
 ### Modifying Existing Code
-1. Read relevant AGENT.md for context
+1. Read relevant AGENTS.md for context
 2. Follow established patterns in that area
-3. Update AGENT.md if patterns change
+3. Update AGENTS.md if patterns change
 4. Ensure tests pass
 5. Update documentation if necessary
 
@@ -253,9 +253,9 @@ Environment variables (via .env or Docker):
 - [Angular Best Practices](.github/copilot-instructions.md)
 - [Agent System](.github/agents/README.md)
 - [Project Roadmap](tasks/ROADMAP.md)
-- [Frontend Context](apps/frontend/AGENT.md)
-- [Backend Context](apps/backend/AGENT.md)
-- [Infrastructure Context](infra/AGENT.md)
+- [Frontend Context](apps/frontend/AGENTS.md)
+- [Backend Context](apps/backend/AGENTS.md)
+- [Infrastructure Context](infra/AGENTS.md)
 
 ---
 

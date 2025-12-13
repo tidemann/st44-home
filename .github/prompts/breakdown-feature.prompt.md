@@ -34,14 +34,14 @@ agent: orchestrator-agent
 - Schema changes (CREATE TABLE, ALTER TABLE)
 - Indexes for performance
 - Data migrations if needed
-- Update `docker/AGENT.md` with new schema
+- Update `docker/AGENTS.md` with new schema
 
 ### Backend Tasks
 - API endpoint implementation
 - Request/response DTOs
 - Business logic and validation
 - Error handling
-- Update `apps/backend/AGENT.md` with new patterns
+- Update `apps/backend/AGENTS.md` with new patterns
 
 ### Frontend Tasks
 - UI components (presentational)
@@ -49,7 +49,7 @@ agent: orchestrator-agent
 - Services for API calls
 - Routing updates
 - State management with signals
-- Update `apps/frontend/AGENT.md` with new patterns
+- Update `apps/frontend/AGENTS.md` with new patterns
 
 ### Testing Tasks
 - Backend unit tests
@@ -106,6 +106,6 @@ Feature: User Profile Management (feature-002)
 
 ## Reference Documentation
 
-- [tasks/AGENT.md](../../tasks/AGENT.md) - Work item management
+- [tasks/AGENTS.md](../../tasks/AGENTS.md) - Work item management
 - [tasks/templates/task.md](../../tasks/templates/task.md) - Task template
 - [Orchestrator Agent](../../.github/agents/orchestrator-agent.md) - Feature breakdown process

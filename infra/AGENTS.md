@@ -254,8 +254,8 @@ GITHUB_REPOSITORY_NAME=repo-name
 
 ### Service-Specific
 See individual service sections above and:
-- `apps/backend/AGENT.md` - Backend env vars
-- `apps/frontend/AGENT.md` - Frontend env config
+- `apps/backend/AGENTS.md` - Backend env vars
+- `apps/frontend/AGENTS.md` - Frontend env config
 
 ## Health Checks
 

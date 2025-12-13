@@ -5,11 +5,19 @@ agent: orchestrator-agent
 
 # Review and Merge Completed Work
 
-**CRITICAL**: NEVER push or create PR without user confirmation
+**⚠️ CRITICAL RULES**:
+- NEVER push directly to main branch
+- ALWAYS work on a feature branch
+- ALWAYS create PR for review before merging
+- Changes must ONLY be on a feature branch, never on main
+- NEVER push or create PR without user confirmation
 
 ## Your Task
 
-1. **Identify completed work**:
+1. **Verify branch status**:
+   - Run `git branch` to confirm you're on a feature branch (not main)
+   - If on main, STOP and create feature branch first
+2. **Identify completed work**:
    - Check for work items in `in-progress` status
    - Verify all acceptance criteria are met
    - Confirm all tests pass
@@ -20,11 +28,11 @@ agent: orchestrator-agent
    - Manual testing if needed
 3. **Review changes**:
    - Use `git diff` to review all changes
-   - Verify code follows conventions in AGENT.md files
+   - Verify code follows conventions in AGENTS.md files
    - Check for any debugging code or console.logs
    - Ensure no sensitive data committed
 4. **Update documentation**:
-   - Update relevant AGENT.md files if patterns changed
+   - Update relevant AGENTS.md files if patterns changed
    - Update README.md if user-facing changes
    - Update copilot-instructions.md if significant architectural changes
 5. **Update work items**:
@@ -57,7 +65,7 @@ agent: orchestrator-agent
 - [ ] Error handling in place
 
 ### Documentation
-- [ ] AGENT.md files updated if patterns changed
+- [ ] AGENTS.md files updated if patterns changed
 - [ ] README.md updated if needed
 - [ ] Code comments for complex logic
 - [ ] API documentation updated
@@ -169,5 +177,5 @@ Format: `<type>: <description>`
 ## Reference Documentation
 
 - [.github/agents/orchestrator-agent.md](../../.github/agents/orchestrator-agent.md) - Validation workflow
-- [tasks/AGENT.md](../../tasks/AGENT.md) - Work item completion process
-- [AGENT.md](../../AGENT.md) - Code quality standards
+- [tasks/AGENTS.md](../../tasks/AGENTS.md) - Work item completion process
+- [AGENTS.md](../../AGENTS.md) - Code quality standards

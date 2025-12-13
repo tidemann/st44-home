@@ -126,4 +126,4 @@ Use this prompt when the roadmap needs to be reorganized based on changing prior
 
 - [tasks/ROADMAP.md](../../tasks/ROADMAP.md) - Product roadmap
 - [Planner Agent](../../.github/agents/planner-agent.md) - Strategic planning
-- [tasks/AGENT.md](../../tasks/AGENT.md) - Work item management
+- [tasks/AGENTS.md](../../tasks/AGENTS.md) - Work item management
