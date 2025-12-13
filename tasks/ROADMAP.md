@@ -124,6 +124,15 @@ _Features under consideration but not yet prioritized_
 ## Completed
 
 ### December 2025
+- ✅ **Task-009: Authentication Tests** (2025-12-13)
+  - Backend: 30 integration tests (100% passing)
+  - Frontend: 75 unit tests (100% passing)
+  - Registration, login, token refresh, logout, middleware tests
+  - Security tests: SQL injection, timing attacks, password hashing
+  - AuthService, LoginComponent, RegisterComponent test coverage
+  - Refactored server.ts for testability
+  - Converted tests from Jasmine to Vitest (Angular 21+)
+  - [PR #28](https://github.com/tidemann/st44-home/pull/28)
 - ✅ **Task-007: Login Form Component** (2025-12-13)
   - Angular standalone component with separated HTML/CSS/TS files
   - Reactive form with email/password validation
@@ -253,10 +262,14 @@ Features are prioritized based on:
 ## Changelog
 
 ### 2025-12-13
-- ✅ task-001: Users table schema with OAuth support (PR #21) - **COMPLETED**
-- ✅ task-002: Registration API endpoint with bcrypt (PR #22) - **COMPLETED**
-- ✅ task-003: Login API endpoint with JWT authentication (PR #23) - **COMPLETED**
+- ✅ task-009: Authentication tests (PR #28) - **COMPLETED**
+- ✅ task-007: Login form component (PR #27) - **COMPLETED**
+- ✅ task-006: Registration form component (PR #26) - **COMPLETED**
+- ✅ task-005: Authentication middleware (PR #25) - **COMPLETED**
 - ✅ task-004: Token refresh endpoint (PR #24) - **COMPLETED**
+- ✅ task-003: Login API endpoint with JWT authentication (PR #23) - **COMPLETED**
+- ✅ task-002: Registration API endpoint with bcrypt (PR #22) - **COMPLETED**
+- ✅ task-001: Users table schema with OAuth support (PR #21) - **COMPLETED**
 - Created initial roadmap structure
 - Documented completed infrastructure work
 - Established prioritization framework
