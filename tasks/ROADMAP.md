@@ -18,14 +18,14 @@ This roadmap outlines planned features and epics for the project. It's maintaine
 
 **Epic-001: Multi-Tenant Foundation** ⭐ Critical
 - **Priority**: Critical (Foundational)
-- **Status**: in-progress (features defined, awaiting task breakdown)
+- **Status**: in-progress (1/4 features complete)
 - **Duration**: 2 weeks (12-14 days)
 - **File**: [epic-001-multi-tenant-foundation.md](epics/epic-001-multi-tenant-foundation.md)
 - **Description**: Multi-tenant database, authentication, household management, user invitations
 - **Why Now**: Foundation for entire application - must come first
 - **Dependencies**: None (foundational)
 - **Features**: 4 features (41 tasks estimated)
-  - [feature-001](features/feature-001-user-authentication.md): User Authentication (9 tasks, 3-4 days)
+  - ✅ [feature-001](features/done/feature-001-user-authentication.md): User Authentication (10 tasks, 2 days) **COMPLETED**
   - [feature-002](features/feature-002-multi-tenant-schema.md): Multi-Tenant Schema (10 tasks, 2-3 days)
   - [feature-003](features/feature-003-household-management.md): Household Management (11 tasks, 3-4 days)
   - [feature-004](features/feature-004-user-invitation-system.md): User Invitations (11 tasks, 2-3 days)
@@ -124,6 +124,19 @@ _Features under consideration but not yet prioritized_
 ## Completed
 
 ### December 2025
+
+#### Features
+- 🎉 **Feature-001: User Authentication System** (2025-12-14) **COMPLETED**
+  - Secure email/password authentication with JWT tokens
+  - Google OAuth "Sign in with Google" integration
+  - Registration and login forms with validation
+  - AuthService with token management and state signals
+  - Protected routes with authentication middleware
+  - Comprehensive testing (105 tests, 100% passing)
+  - All 10 tasks completed in 2 days (vs 4-5 days estimated)
+  - [See all related PRs](#tasks) #21-#29
+
+#### Tasks
 - ✅ **Task-010: Google OAuth Integration** (2025-12-14)
   - Backend: POST /api/auth/google endpoint with google-auth-library
   - Backend: ID token verification and user account creation
@@ -271,6 +284,12 @@ Features are prioritized based on:
 ## Changelog
 
 ### 2025-12-14
+- 🎉 **feature-001: User Authentication System** - **FEATURE COMPLETED!**
+  - All 10 tasks completed in 2 days (vs 4-5 days estimated)
+  - Email/password authentication fully functional
+  - Google OAuth integration live
+  - 105 tests passing (100% success rate)
+  - PRs #21-#29 merged to main
 - ✅ task-010: Google OAuth integration (PR #29) - **COMPLETED**
 
 ### 2025-12-13
