@@ -1,4 +1,4 @@
-import Fastify from 'fastify';
+import Fastify, { FastifyRequest, FastifyReply } from 'fastify';
 import cors from '@fastify/cors';
 import pg from 'pg';
 import bcrypt from 'bcrypt';
@@ -47,6 +47,79 @@ function validatePasswordStrength(password: string): boolean {
   const hasLowerCase = /[a-z]/.test(password);
   const hasNumber = /\d/.test(password);
   return password.length >= 8 && hasUpperCase && hasLowerCase && hasNumber;
+}
+
+// Extend FastifyRequest type to include user info
+declare module 'fastify' {
+  interface FastifyRequest {
+    user?: {
+      userId: string;
+      email: string;
+    };
+  }
+}
+
+// Authentication Middleware
+interface AccessTokenPayload {
+  userId: string;
+  email: string;
+  type: string;
+  iat: number;
+  exp: number;
+}
+
+async function authenticateUser(request: FastifyRequest, reply: FastifyReply) {
+  try {
+    // Extract token from Authorization header
+    const authHeader = request.headers.authorization;
+
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+      return reply.code(401).send({
+        error: 'Missing or invalid authorization header',
+      });
+    }
+
+    const token = authHeader.substring(7); // Remove "Bearer " prefix
+
+    // Verify token with JWT_SECRET
+    const decoded = jwt.verify(token, JWT_SECRET) as AccessTokenPayload;
+
+    // Verify it's an access token (not refresh token)
+    if (decoded.type !== 'access') {
+      fastify.log.warn('Attempted to use non-access token for authentication');
+      return reply.code(401).send({
+        error: 'Invalid token type',
+      });
+    }
+
+    // Attach user info to request
+    request.user = {
+      userId: decoded.userId,
+      email: decoded.email,
+    };
+
+    // Middleware successful - continue to route handler
+  } catch (error: unknown) {
+    // Handle JWT-specific errors
+    if (error instanceof jwt.TokenExpiredError) {
+      return reply.code(401).send({
+        error: 'Token expired',
+      });
+    }
+
+    if (error instanceof jwt.JsonWebTokenError) {
+      fastify.log.warn({ error: (error as Error).message }, 'Invalid token');
+      return reply.code(401).send({
+        error: 'Invalid token',
+      });
+    }
+
+    // Log error but don't expose internal details
+    fastify.log.error(error, 'Authentication error');
+    return reply.code(500).send({
+      error: 'Authentication failed',
+    });
+  }
 }
 
 // Request/Response Types
@@ -321,6 +394,39 @@ fastify.post<RefreshRequest, { Reply: RefreshResponse | ErrorResponse }>(
       reply.code(500);
       return { error: 'Token refresh failed' };
     }
+  },
+);
+
+// Logout endpoint (requires authentication)
+fastify.post(
+  '/api/auth/logout',
+  {
+    preHandler: [authenticateUser],
+  },
+  async (request, reply) => {
+    // In basic implementation, logout is client-side (delete tokens)
+    // Future enhancement: Add token to blacklist in database
+    fastify.log.info({ userId: request.user?.userId }, 'User logged out');
+    reply.code(200);
+    return { success: true, message: 'Logged out successfully' };
+  },
+);
+
+// Protected test endpoint (requires authentication)
+fastify.get(
+  '/api/protected',
+  {
+    preHandler: [authenticateUser],
+  },
+  async (request, reply) => {
+    reply.code(200);
+    return {
+      message: 'This is protected data',
+      user: {
+        userId: request.user?.userId,
+        email: request.user?.email,
+      },
+    };
   },
 );
 
