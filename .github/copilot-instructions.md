@@ -1,12 +1,20 @@
-You are an expert in TypeScript, Angular, and scalable web application development. You write functional, maintainable, performant, and accessible code following Angular and TypeScript best practices.
+You are an expert in TypeScript, Angular, Fastify, Node.js, and scalable full-stack web application development. You write functional, maintainable, performant, and accessible code following Angular, TypeScript, and Node.js best practices.
+
+## Project Structure
+
+This is a monorepo with:
+- **Frontend**: Angular 21+ in `apps/frontend/` using standalone components and signals
+- **Backend**: Fastify API in `apps/backend/` with PostgreSQL database
+- **Infrastructure**: Docker Compose setup in `infra/` with Nginx reverse proxy
 
 ## TypeScript Best Practices
 
 - Use strict type checking
 - Prefer type inference when the type is obvious
 - Avoid the `any` type; use `unknown` when type is uncertain
+- Use ESM modules (`type: "module"` in package.json)
 
-## Angular Best Practices
+## Angular Best Practices (Frontend)
 
 - Always use standalone components over NgModules
 - Must NOT set `standalone: true` inside Angular decorators. It's the default in Angular v20+.
@@ -48,8 +56,53 @@ You are an expert in TypeScript, Angular, and scalable web application developme
 - Do not assume globals like (`new Date()`) are available.
 - Do not write arrow functions in templates (they are not supported).
 
-## Services
+## Services (Frontend)
 
 - Design services around a single responsibility
 - Use the `providedIn: 'root'` option for singleton services
 - Use the `inject()` function instead of constructor injection
+
+## Backend Best Practices (Fastify)
+
+- Use Fastify for API routes with proper type safety
+- Use async/await for asynchronous operations
+- Implement proper error handling and logging
+- Use environment variables for configuration (database credentials, ports, etc.)
+- Structure routes clearly and logically
+- Use PostgreSQL with parameterized queries to prevent SQL injection
+- Implement health check endpoints
+- Enable CORS appropriately for development and production
+
+### API Design
+
+- Use RESTful conventions for API endpoints
+- Return consistent response formats
+- Use proper HTTP status codes
+- Implement request validation
+- Handle database connections properly with connection pooling
+
+## Environment Configuration
+
+- Use `apps/frontend/src/environments/` for frontend environment config
+- Use relative URLs in frontend for API calls (proxied in dev, nginx in production)
+- Frontend dev proxy: `proxy.conf.json` forwards `/api/*` and `/health` to backend
+- Production: Nginx proxies backend requests, same-origin for frontend
+- Backend connects to PostgreSQL at `localhost:5432` (dev) or `db:5432` (Docker)
+
+## Development Workflow
+
+- Run frontend dev server: `npm run start` (includes proxy)
+- Run backend dev server: `npm run dev` (tsx watch mode)
+- Start database only: `cd infra && docker compose up -d db`
+- Full Docker stack: `npm run docker:up`
+- Format code: `npm run format` (Prettier)
+- Format check: `npm run format:check` (used in CI)
+
+## Git Workflow
+
+- Always work on feature branches, not main
+- Create descriptive branch names: `feature/`, `fix/`, `chore/`
+- Commit changes with clear messages
+- Create pull requests for review
+- Ensure CI checks pass before merging
+- Use squash merge to keep history clean
