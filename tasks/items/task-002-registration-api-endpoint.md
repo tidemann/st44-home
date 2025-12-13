@@ -4,7 +4,7 @@
 - **ID**: task-002
 - **Feature**: feature-001 - User Authentication System
 - **Epic**: epic-001 - Multi-Tenant Foundation
-- **Status**: pending
+- **Status**: in-progress
 - **Priority**: critical
 - **Created**: 2025-12-13
 - **Assigned Agent**: backend

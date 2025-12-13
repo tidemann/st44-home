@@ -1,6 +1,7 @@
 import Fastify from 'fastify';
 import cors from '@fastify/cors';
 import pg from 'pg';
+import bcrypt from 'bcrypt';
 
 const { Pool } = pg;
 
@@ -23,6 +24,51 @@ await fastify.register(cors, {
   origin: process.env.CORS_ORIGIN || '*',
 });
 
+// Helper Functions
+function validatePasswordStrength(password: string): boolean {
+  const hasUpperCase = /[A-Z]/.test(password);
+  const hasLowerCase = /[a-z]/.test(password);
+  const hasNumber = /\d/.test(password);
+  return password.length >= 8 && hasUpperCase && hasLowerCase && hasNumber;
+}
+
+// Request/Response Types
+interface RegisterRequest {
+  Body: {
+    email: string;
+    password: string;
+  };
+}
+
+interface RegisterResponse {
+  userId: string;
+  email: string;
+}
+
+interface ErrorResponse {
+  error: string;
+}
+
+// JSON Schema for Registration
+const registerSchema = {
+  body: {
+    type: 'object',
+    required: ['email', 'password'],
+    properties: {
+      email: {
+        type: 'string',
+        format: 'email',
+        maxLength: 255,
+      },
+      password: {
+        type: 'string',
+        minLength: 8,
+        maxLength: 128,
+      },
+    },
+  },
+};
+
 // Health check endpoint
 fastify.get('/health', async (request, reply) => {
   try {
@@ -37,6 +83,54 @@ fastify.get('/health', async (request, reply) => {
     };
   }
 });
+
+// Registration endpoint
+fastify.post<RegisterRequest, { Reply: RegisterResponse | ErrorResponse }>(
+  '/api/auth/register',
+  {
+    schema: registerSchema,
+  },
+  async (request, reply) => {
+    const { email, password } = request.body;
+
+    // Validate password strength
+    if (!validatePasswordStrength(password)) {
+      reply.code(400);
+      return {
+        error:
+          'Password must contain at least one uppercase letter, one lowercase letter, and one number',
+      };
+    }
+
+    try {
+      // Hash password with bcrypt (cost factor 12)
+      const passwordHash = await bcrypt.hash(password, 12);
+
+      // Insert user into database
+      const result = await pool.query(
+        'INSERT INTO users (email, password_hash) VALUES ($1, $2) RETURNING id, email',
+        [email, passwordHash],
+      );
+
+      reply.code(201);
+      return {
+        userId: result.rows[0].id,
+        email: result.rows[0].email,
+      };
+    } catch (error: unknown) {
+      // Handle duplicate email (PostgreSQL unique violation)
+      if (error && typeof error === 'object' && 'code' in error && error.code === '23505') {
+        reply.code(409);
+        return { error: 'Email already registered' };
+      }
+
+      // Log error but don't expose internal details to client
+      fastify.log.error(error);
+      reply.code(500);
+      return { error: 'Registration failed' };
+    }
+  },
+);
 
 interface Item {
   id: number;
