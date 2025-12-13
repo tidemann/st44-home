@@ -2,25 +2,11 @@
   "name": "st44-home",
   "version": "1.0.0",
   "private": true,
-  "workspaces": [
-    "apps/*"
-  ],
   "scripts": {
-    "dev:frontend": "npm run start --workspace=apps/frontend",
-    "dev:backend": "npm run dev --workspace=apps/backend",
-    "build:frontend": "npm run build --workspace=apps/frontend",
-    "build:backend": "npm run build --workspace=apps/backend",
-    "test:frontend": "npm run test --workspace=apps/frontend",
-    "lint:frontend": "npm run lint --workspace=apps/frontend",
-    "format": "npm run format --workspaces",
-    "format:check": "npm run format:check --workspaces",
     "docker:up": "cd infra && docker compose up -d",
     "docker:down": "cd infra && docker compose down",
     "docker:logs": "cd infra && docker compose logs -f",
     "docker:restart": "cd infra && docker compose restart"
-  },
-  "devDependencies": {
-    "prettier": "^3.7.4"
   },
   "packageManager": "npm@11.6.2"
 }
