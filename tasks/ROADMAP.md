@@ -191,6 +191,14 @@ _Features under consideration but not yet prioritized_
   - [See all related PRs](#tasks) #21-#29
 
 #### Tasks
+- ✅ **Task-018: Implement Row-Level Security** (2025-12-14)
+  - Created migration 018_implement_row_level_security.sql
+  - Enabled RLS on 6 tenant-scoped tables
+  - Created isolation policies using app.current_household_id session variable
+  - Tested with non-superuser role: data isolation verified
+  - Defense-in-depth: SQL injection cannot bypass RLS
+  - Completed in 0.5 hours (estimated 4-5 hours)
+  - [PR #53](https://github.com/tidemann/st44-home/pull/53)
 - ✅ **Task-017: Add Performance Indexes** (2025-12-14)
   - Created migration 017_add_performance_indexes.sql
   - 4 composite/unique indexes for query optimization
@@ -354,6 +362,16 @@ Features are prioritized based on:
 4. Suggest new features for consideration
 
 ## Changelog
+
+### 2025-12-14 (Task-018 Complete! 🔒)
+- 🔒 **PR #53 MERGED** - Task-018 (Implement Row-Level Security) completed
+  - Enabled RLS on 6 tenant-scoped tables for defense-in-depth data isolation
+  - Created policies enforcing household_id filtering at database level
+  - Tested with non-superuser: Family A sees only Emma, Family B sees only Noah
+  - Even SQL injection cannot bypass RLS policies
+  - Task completed in 0.5 hours (estimated 4-5 hours)
+  - **Feature-002 Progress**: 8/10 tasks complete (80%)
+  - **Next**: task-019 (Document Schema with ERD)
 
 ### 2025-12-14 (Task-017 Complete! 🎯)
 - 🎯 **PR #52 MERGED** - Task-017 (Add Performance Indexes) completed

@@ -60,7 +60,7 @@ Design and implement a complete multi-tenant database schema that ensures proper
 - [x] [task-015](../items/done/task-015-create-task-assignments-table.md) - Create task_assignments table (3-4 hours, database) **COMPLETED**
 - [x] [task-016](../items/done/task-016-create-task-completions-table.md) - Create task_completions table (2-3 hours, database) **COMPLETED**
 - [x] [task-017](../items/done/task-017-add-performance-indexes.md) - Add performance indexes (2-3 hours, database) **COMPLETED** [PR #52]
-- [ ] [task-018](../items/task-018-implement-row-level-security.md) - Implement row-level security policies (4-5 hours, database)
+- [x] [task-018](../items/done/task-018-implement-row-level-security.md) - Implement row-level security policies (4-5 hours, database) **COMPLETED** [PR #53]
 - [ ] [task-019](../items/task-019-document-schema-erd.md) - Document schema with ERD diagram (2-3 hours, orchestrator)
 - [ ] [task-020](../items/task-020-migration-rollback-scripts.md) - Write migration rollback scripts (2-3 hours, database)
 
