@@ -4,7 +4,7 @@
 - **ID**: task-022
 - **Feature**: feature-003 - Household Management
 - **Epic**: epic-001 - Multi-Tenant Foundation
-- **Status**: pending
+- **Status**: in-progress
 - **Priority**: high
 - **Created**: 2025-12-14
 - **Assigned Agent**: backend
