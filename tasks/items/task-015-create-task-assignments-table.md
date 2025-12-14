@@ -4,7 +4,7 @@
 - **ID**: task-015
 - **Feature**: feature-002 - Multi-Tenant Database Schema
 - **Epic**: epic-001 - Multi-Tenant Foundation
-- **Status**: pending
+- **Status**: in-progress
 - **Priority**: critical
 - **Created**: 2025-12-14
 - **Assigned Agent**: database
@@ -24,15 +24,15 @@ Create the task_assignments table to store specific task instances assigned to c
 - Create migration file following conventions
 
 ## Acceptance Criteria
-- [ ] Migration file created (015_create_task_assignments_table.sql)
-- [ ] Table has id, household_id (FK), task_id (FK), child_id (FK), due_date (DATE), status, created_at
-- [ ] Foreign keys to households, tasks, and children with CASCADE
-- [ ] CHECK constraint: status IN ('pending', 'completed', 'overdue')
-- [ ] Index on household_id: idx_task_assignments_household
-- [ ] Index on child_id: idx_task_assignments_child
-- [ ] Index on due_date: idx_task_assignments_due_date
-- [ ] Migration tested with sample assignments
-- [ ] init.sql updated
+- [x] Migration file created (015_create_task_assignments_table.sql)
+- [x] Table has id, household_id (FK), task_id (FK), child_id (FK), due_date (DATE), status, created_at
+- [x] Foreign keys to households, tasks, and children with CASCADE
+- [x] CHECK constraint: status IN ('pending', 'completed', 'overdue')
+- [x] Index on household_id: idx_task_assignments_household
+- [x] Index on child_id: idx_task_assignments_child
+- [x] Index on due_date: idx_task_assignments_due_date
+- [x] Migration tested with sample assignments
+- [x] init.sql updated
 
 ## Dependencies
 - task-011: Households table must exist
@@ -140,10 +140,14 @@ EOF
 
 ## Progress Log
 - [2025-12-14 00:20] Task created from feature-002 breakdown
+- [2025-12-14 10:00] Status changed to in-progress; migration created
+- [2025-12-14 10:05] Migration applied successfully; table structure verified
+- [2025-12-14 10:10] Test inserts validated; CHECK constraint confirmed
+- [2025-12-14 10:15] All three indexes created; foreign keys validated
 
-## Related Files
-- `docker/postgres/migrations/015_create_task_assignments_table.sql`
-- `docker/postgres/init.sql`
+## Completion
+- **Status**: completed
+- **Validation**: All acceptance criteria met; migration recorded in schema_migrations; inserts, constraints, and indexes verified
 
 ## Lessons Learned
-[To be filled after completion]
+- Reminder to check existing table schemas (children.birth_year vs birthdate) before writing test inserts

@@ -20,7 +20,9 @@ VALUES
   ('001', 'create_users_table', NOW()),
   ('011', 'create_households_table', NOW()),
   ('012', 'create_household_members_table', NOW()),
-  ('013', 'create_children_table', NOW())
+  ('013', 'create_children_table', NOW()),
+  ('014', 'create_tasks_table', NOW()),
+  ('015', 'create_task_assignments_table', NOW())
 ON CONFLICT (version) DO NOTHING;
 
 -- Users table for authentication (supports email/password and OAuth)
@@ -90,6 +92,21 @@ CREATE TABLE IF NOT EXISTS tasks (
 );
 
 CREATE INDEX IF NOT EXISTS idx_tasks_household ON tasks(household_id);
+
+-- Task assignments table (specific task instances assigned to children)
+CREATE TABLE IF NOT EXISTS task_assignments (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  household_id UUID NOT NULL REFERENCES households(id) ON DELETE CASCADE,
+  task_id UUID NOT NULL REFERENCES tasks(id) ON DELETE CASCADE,
+  child_id UUID NOT NULL REFERENCES children(id) ON DELETE CASCADE,
+  due_date DATE NOT NULL,
+  status VARCHAR(50) DEFAULT 'pending' CHECK (status IN ('pending', 'completed', 'overdue')),
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE INDEX IF NOT EXISTS idx_task_assignments_household ON task_assignments(household_id);
+CREATE INDEX IF NOT EXISTS idx_task_assignments_child ON task_assignments(child_id);
+CREATE INDEX IF NOT EXISTS idx_task_assignments_due_date ON task_assignments(due_date);
 
 -- Sample items table (for testing)
 CREATE TABLE IF NOT EXISTS items (
