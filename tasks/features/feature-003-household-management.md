@@ -57,8 +57,8 @@ Enable users to create, view, switch between, and manage households. Users can c
 - [ ] Documentation updated
 
 ## Tasks
-- [ ] [task-021](../items/task-021-household-crud-api-endpoints.md): Implement household CRUD API endpoints (4-6h)
-- [ ] [task-022](../items/task-022-household-membership-middleware.md): Implement household membership validation middleware (2-3h)
+- [x] [task-021](../items/done/task-021-household-crud-api-endpoints.md): Implement household CRUD API endpoints (4-6h) **COMPLETED** (PR #56, 0.5h actual)
+- [x] [task-022](../items/done/task-022-household-membership-middleware.md): Implement household membership validation middleware (2-3h) **COMPLETED** (PR #57, 1h actual)
 - [ ] [task-023](../items/task-023-children-crud-api-endpoints.md): Implement children CRUD API endpoints (4-5h)
 - [ ] [task-024](../items/task-024-household-creation-flow-frontend.md): Build household creation flow (frontend) (4-5h)
 - [ ] [task-025](../items/task-025-household-settings-page.md): Build household settings page (frontend) (3-4h)
@@ -68,7 +68,8 @@ Enable users to create, view, switch between, and manage households. Users can c
 - [ ] [task-029](../items/task-029-household-state-management.md): Implement household context/state management (2-3h)
 - [ ] [task-030](../items/task-030-household-management-tests.md): Write household management tests (6-8h)
 
-**Total Estimated Duration**: 35-46 hours (5-6 days)
+**Total Estimated Duration**: 35-46 hours (5-6 days)  
+**Progress**: 2/11 tasks complete (18%)
 
 **Critical Path**: task-021 → task-022 → task-023 → task-028 → task-024
 
