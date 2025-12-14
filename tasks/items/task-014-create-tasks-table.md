@@ -4,7 +4,7 @@
 - **ID**: task-014
 - **Feature**: feature-002 - Multi-Tenant Database Schema
 - **Epic**: epic-001 - Multi-Tenant Foundation
-- **Status**: pending
+- **Status**: in-progress
 - **Priority**: critical
 - **Created**: 2025-12-14
 - **Assigned Agent**: database
@@ -24,14 +24,14 @@ Create the tasks table to store task templates/definitions within households. Th
 - Create migration file following conventions
 
 ## Acceptance Criteria
-- [ ] Migration file created (014_create_tasks_table.sql)
-- [ ] Table has id, household_id (FK), name, description, points, rule_type, rule_config (JSONB), created_at, updated_at
-- [ ] Foreign key to households with ON DELETE CASCADE
-- [ ] CHECK constraint: rule_type IN ('weekly_rotation', 'repeating', 'daily')
-- [ ] Index on household_id: idx_tasks_household
-- [ ] Migration tested with sample tasks
-- [ ] init.sql updated
-- [ ] JSONB rule_config tested with valid JSON
+- [x] Migration file created (014_create_tasks_table.sql)
+- [x] Table has id, household_id (FK), name, description, points, rule_type, rule_config (JSONB), created_at, updated_at
+- [x] Foreign key to households with ON DELETE CASCADE
+- [x] CHECK constraint: rule_type IN ('weekly_rotation', 'repeating', 'daily')
+- [x] Index on household_id: idx_tasks_household
+- [x] Migration tested with sample tasks
+- [x] init.sql updated
+- [x] JSONB rule_config tested with valid JSON
 
 ## Dependencies
 - task-011: Households table must exist
@@ -153,6 +153,16 @@ EOF
 
 ## Progress Log
 - [2025-12-14 00:20] Task created from feature-002 breakdown
+- [2025-12-14 09:40] Status changed to in-progress; migration applied
+- [2025-12-14 09:45] Inserted sample JSONB rule_config and verified retrieval
+- [2025-12-14 09:50] Verified index and CHECK constraint behavior
+
+## Completion
+- **Status**: completed
+- **Validation**: All acceptance criteria met; migration recorded in schema_migrations; inserts and JSONB queries verified
+
+## Lessons Learned
+- When running JSONB inserts via Windows PowerShell into Docker, prefer piping a .sql file to psql to avoid quoting issues.
 
 ## Related Files
 - `docker/postgres/migrations/014_create_tasks_table.sql`
