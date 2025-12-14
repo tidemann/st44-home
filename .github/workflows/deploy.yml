@@ -114,21 +114,10 @@ jobs:
 
       - name: Run Database Migrations
         run: |
-          echo "Copying migration runner to server..."
-          scp -i ~/.ssh/id_deploy docker/postgres/run-migrations.sh \
-            ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }}:/srv/st44-home/docker/postgres/
-          
           echo "Running database migrations..."
           ssh -i ~/.ssh/id_deploy -o StrictHostKeyChecking=yes \
             ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} \
-            "cd /srv/st44-home && \
-             export DB_HOST=localhost && \
-             export DB_PORT=5432 && \
-             export DB_NAME=st44 && \
-             export DB_USER=postgres && \
-             export DB_PASSWORD='${{ secrets.DB_PASSWORD }}' && \
-             chmod +x docker/postgres/run-migrations.sh && \
-             docker/postgres/run-migrations.sh"
+            "docker exec st44-db /usr/local/bin/run-migrations.sh"
 
       - name: Start Application Services
         run: |

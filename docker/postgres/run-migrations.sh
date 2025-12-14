@@ -20,8 +20,15 @@ PGPASSWORD="${DB_PASSWORD}"
 
 export PGHOST PGPORT PGDATABASE PGUSER PGPASSWORD
 
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-MIGRATIONS_DIR="${SCRIPT_DIR}/migrations"
+# Determine migrations directory
+# When run inside container: /migrations
+# When run on host: ./docker/postgres/migrations
+if [ -d "/migrations" ]; then
+    MIGRATIONS_DIR="/migrations"
+else
+    SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+    MIGRATIONS_DIR="${SCRIPT_DIR}/migrations"
+fi
 
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 echo "  Database Migration Runner"
