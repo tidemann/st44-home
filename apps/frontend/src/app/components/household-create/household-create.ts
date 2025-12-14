@@ -46,7 +46,7 @@ export class HouseholdCreateComponent {
       const httpError = error as { status?: number };
       if (httpError?.status === 400) {
         message = 'Please check your household name.';
-      } else if (error?.status === 401) {
+      } else if (httpError?.status === 401) {
         message = 'Session expired. Please log in again.';
         await this.router.navigate(['/login']);
         return;
