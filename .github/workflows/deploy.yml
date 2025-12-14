@@ -135,15 +135,23 @@ jobs:
             ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} \
             'docker ps --filter "name=st44" --format "table {{.Names}}\t{{.Status}}\t{{.Ports}}"'
           
-          echo "Checking nginx is responding..."
+          echo "Checking for docker-compose.override.yml..."
           ssh -i ~/.ssh/id_deploy -o StrictHostKeyChecking=yes \
             ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} \
-            'curl -f http://localhost/ || echo "Frontend not responding"'
+            'ls -la /srv/st44-home/infra/docker-compose.override.yml || echo "No override file found"'
           
-          echo "Checking backend logs..."
+          echo "Removing docker-compose.override.yml if it exists..."
           ssh -i ~/.ssh/id_deploy -o StrictHostKeyChecking=yes \
             ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} \
-            'docker logs --tail 20 st44-backend'
+            'rm -f /srv/st44-home/infra/docker-compose.override.yml && echo "Removed override file (if existed)"'
+          
+          echo "Restarting frontend with correct port mapping..."
+          ssh -i ~/.ssh/id_deploy -o StrictHostKeyChecking=yes \
+            ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} \
+            'cd /srv/st44-home/infra && docker compose up -d frontend'
+          
+          echo "Waiting for frontend to restart..."
+          sleep 5
           
           echo "Checking application health endpoint..."
           ssh -i ~/.ssh/id_deploy -o StrictHostKeyChecking=yes \
@@ -153,7 +161,7 @@ jobs:
           echo "Checking database health..."
           ssh -i ~/.ssh/id_deploy -o StrictHostKeyChecking=yes \
             ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} \
-            'curl -f http://localhost/health/database || echo "Database health check failed (expected until migrations run)"'
+            'curl -s http://localhost/health/database | head -20 || echo "Database health check failed"'
 
       - name: Purge Cloudflare Cache
         run: |
