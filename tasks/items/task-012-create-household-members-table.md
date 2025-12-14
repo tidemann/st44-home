@@ -4,11 +4,13 @@
 - **ID**: task-012
 - **Feature**: feature-002 - Multi-Tenant Database Schema
 - **Epic**: epic-001 - Multi-Tenant Foundation
-- **Status**: pending
+- **Status**: completed
 - **Priority**: critical
 - **Created**: 2025-12-14
+- **Completed**: 2025-12-14
 - **Assigned Agent**: database
 - **Estimated Duration**: 3-4 hours
+- **Actual Duration**: 0.5 hours
 
 ## Description
 Create the household_members junction table that implements the many-to-many relationship between users and households. Users can belong to multiple households with different roles (admin, parent, child). This table enables separated parents to manage multiple families, role-based permissions, and household access control.
@@ -23,15 +25,15 @@ Create the household_members junction table that implements the many-to-many rel
 - Test all constraints and indexes
 
 ## Acceptance Criteria
-- [ ] Migration file created (012_create_household_members_table.sql)
-- [ ] Table has id (UUID PK), household_id (FK), user_id (FK), role (CHECK constraint), joined_at
-- [ ] Foreign keys to households and users with CASCADE delete
-- [ ] UNIQUE constraint on (household_id, user_id)
-- [ ] CHECK constraint: role IN ('admin', 'parent', 'child')
-- [ ] Index on household_id: idx_household_members_household
-- [ ] Index on user_id: idx_household_members_user
-- [ ] Migration tested with INSERT attempts (valid and invalid)
-- [ ] init.sql updated
+- [x] Migration file created (012_create_household_members_table.sql)
+- [x] Table has id (UUID PK), household_id (FK), user_id (FK), role (CHECK constraint), joined_at
+- [x] Foreign keys to households and users with CASCADE delete
+- [x] UNIQUE constraint on (household_id, user_id)
+- [x] CHECK constraint: role IN ('admin', 'parent', 'child')
+- [x] Index on household_id: idx_household_members_household
+- [x] Index on user_id: idx_household_members_user
+- [x] Migration tested with INSERT attempts (valid and invalid)
+- [x] init.sql updated
 
 ## Dependencies
 - task-011: Households table must exist
@@ -116,10 +118,26 @@ EOF
 
 ## Progress Log
 - [2025-12-14 00:20] Task created from feature-002 breakdown
+- [2025-12-14 01:10] Status changed to in-progress
+- [2025-12-14 01:15] Migration file 012_create_household_members_table.sql created
+- [2025-12-14 01:20] Updated init.sql with household_members table and indexes
+- [2025-12-14 01:25] Migration applied successfully
+- [2025-12-14 01:30] Table structure verified - all columns and types correct
+- [2025-12-14 01:35] UNIQUE constraint tested - duplicate prevented successfully
+- [2025-12-14 01:40] CHECK constraint tested - invalid role 'guest' rejected
+- [2025-12-14 01:45] CASCADE delete tested - member deleted when household deleted
+- [2025-12-14 01:50] Migration recorded in schema_migrations (version 012)
+- [2025-12-14 01:55] Idempotency confirmed - safe to run multiple times
+- [2025-12-14 02:00] All acceptance criteria met, status changed to completed
 
 ## Related Files
 - `docker/postgres/migrations/012_create_household_members_table.sql`
 - `docker/postgres/init.sql`
 
 ## Lessons Learned
-[To be filled after completion]
+- Foreign key constraints with CASCADE delete work seamlessly
+- UNIQUE constraint on composite key (household_id, user_id) prevents duplicates
+- CHECK constraint validates role values at database level
+- Comprehensive constraint testing caught edge cases early
+- Actual time (0.5h) much faster than estimated (3-4h) - clear specs help
+- Two indexes created for bidirectional queries (household→members, user→households)

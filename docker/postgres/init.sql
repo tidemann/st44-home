@@ -18,7 +18,8 @@ INSERT INTO schema_migrations (version, name, applied_at)
 VALUES 
   ('000', 'create_migrations_table', NOW()),
   ('001', 'create_users_table', NOW()),
-  ('011', 'create_households_table', NOW())
+  ('011', 'create_households_table', NOW()),
+  ('012', 'create_household_members_table', NOW())
 ON CONFLICT (version) DO NOTHING;
 
 -- Users table for authentication (supports email/password and OAuth)
@@ -48,6 +49,19 @@ CREATE TABLE IF NOT EXISTS households (
   created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
+
+-- Household members junction table (user-household many-to-many with roles)
+CREATE TABLE IF NOT EXISTS household_members (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  household_id UUID NOT NULL REFERENCES households(id) ON DELETE CASCADE,
+  user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  role VARCHAR(50) NOT NULL CHECK (role IN ('admin', 'parent', 'child')),
+  joined_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+  UNIQUE(household_id, user_id)
+);
+
+CREATE INDEX IF NOT EXISTS idx_household_members_household ON household_members(household_id);
+CREATE INDEX IF NOT EXISTS idx_household_members_user ON household_members(user_id);
 
 -- Sample items table (for testing)
 CREATE TABLE IF NOT EXISTS items (
