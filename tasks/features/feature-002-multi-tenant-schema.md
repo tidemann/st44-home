@@ -53,13 +53,13 @@ Design and implement a complete multi-tenant database schema that ensures proper
 ## Tasks
 **✅ Tasks broken down and ready for implementation**
 
-- [ ] [task-011](../items/task-011-create-households-table.md) - Create households table (2-3 hours, database)
-- [ ] [task-012](../items/task-012-create-household-members-table.md) - Create household_members junction table (3-4 hours, database)
-- [ ] [task-013](../items/task-013-create-children-table.md) - Create children table (2-3 hours, database)
-- [ ] [task-014](../items/task-014-create-tasks-table.md) - Create tasks table (3-4 hours, database)
-- [ ] [task-015](../items/task-015-create-task-assignments-table.md) - Create task_assignments table (3-4 hours, database)
-- [ ] [task-016](../items/task-016-create-task-completions-table.md) - Create task_completions table (2-3 hours, database)
-- [ ] [task-017](../items/task-017-add-performance-indexes.md) - Add performance indexes (2-3 hours, database)
+- [x] [task-011](../items/done/task-011-create-households-table.md) - Create households table (2-3 hours, database) **COMPLETED**
+- [x] [task-012](../items/done/task-012-create-household-members-table.md) - Create household_members junction table (3-4 hours, database) **COMPLETED**
+- [x] [task-013](../items/done/task-013-create-children-table.md) - Create children table (2-3 hours, database) **COMPLETED**
+- [x] [task-014](../items/done/task-014-create-tasks-table.md) - Create tasks table (3-4 hours, database) **COMPLETED**
+- [x] [task-015](../items/done/task-015-create-task-assignments-table.md) - Create task_assignments table (3-4 hours, database) **COMPLETED**
+- [x] [task-016](../items/done/task-016-create-task-completions-table.md) - Create task_completions table (2-3 hours, database) **COMPLETED**
+- [x] [task-017](../items/done/task-017-add-performance-indexes.md) - Add performance indexes (2-3 hours, database) **COMPLETED** [PR #52]
 - [ ] [task-018](../items/task-018-implement-row-level-security.md) - Implement row-level security policies (4-5 hours, database)
 - [ ] [task-019](../items/task-019-document-schema-erd.md) - Document schema with ERD diagram (2-3 hours, orchestrator)
 - [ ] [task-020](../items/task-020-migration-rollback-scripts.md) - Write migration rollback scripts (2-3 hours, database)
