@@ -4,11 +4,12 @@
 - **ID**: task-023
 - **Feature**: feature-003 - Household Management
 - **Epic**: epic-001 - Multi-Tenant Foundation
-- **Status**: in-progress
+- **Status**: completed
 - **Priority**: high
 - **Created**: 2025-12-14
 - **Assigned Agent**: backend
 - **Estimated Duration**: 4-5 hours
+- **Actual Duration**: 1.5 hours
 
 ## Description
 Implement RESTful API endpoints for managing children profiles within households. Children are household-scoped entities that represent kids who will be assigned tasks. Parents need to add, view, edit, and remove child profiles as their family composition changes.
@@ -247,6 +248,14 @@ interface ChildInput {
 
 ## Progress Log
 - [2025-12-14 16:45] Task created from feature-003 breakdown
+- [2025-12-14 19:30] Started implementation - created feature branch
+- [2025-12-14 19:45] Created routes/children.ts with 4 CRUD endpoints
+- [2025-12-14 20:00] Fixed middleware param priority bug (householdId > id)
+- [2025-12-14 20:15] Created comprehensive test script (11 test scenarios)
+- [2025-12-14 20:30] All tests passing ✅
+- [2025-12-14 20:35] PR #58 created and CI passed (frontend + backend)
+- [2025-12-14 20:45] PR #58 merged successfully
+- [2025-12-14 20:45] Task completed in 1.5 hours (vs 4-5 hours estimated)
 
 ## Related Files
 - `apps/backend/src/routes/children.ts` - New file
@@ -255,4 +264,8 @@ interface ChildInput {
 - `docker/postgres/init.sql` - Children table schema
 
 ## Lessons Learned
-[To be filled after completion]
+- Nested route params require careful middleware design (householdId vs id priority)
+- Middleware param extraction order matters for composed routes
+- Test-driven development caught the param priority bug quickly
+- CRUD pattern is very consistent across resources (households → children)
+- Actual time: 1.5h vs estimated 4-5h (67% faster due to reusable middleware and patterns)

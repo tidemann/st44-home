@@ -59,7 +59,7 @@ Enable users to create, view, switch between, and manage households. Users can c
 ## Tasks
 - [x] [task-021](../items/done/task-021-household-crud-api-endpoints.md): Implement household CRUD API endpoints (4-6h) **COMPLETED** (PR #56, 0.5h actual)
 - [x] [task-022](../items/done/task-022-household-membership-middleware.md): Implement household membership validation middleware (2-3h) **COMPLETED** (PR #57, 1h actual)
-- [ ] [task-023](../items/task-023-children-crud-api-endpoints.md): Implement children CRUD API endpoints (4-5h)
+- [x] [task-023](../items/done/task-023-children-crud-api-endpoints.md): Implement children CRUD API endpoints (4-5h) **COMPLETED** (PR #58, 1.5h actual)
 - [ ] [task-024](../items/task-024-household-creation-flow-frontend.md): Build household creation flow (frontend) (4-5h)
 - [ ] [task-025](../items/task-025-household-settings-page.md): Build household settings page (frontend) (3-4h)
 - [ ] [task-026](../items/task-026-household-switcher-component.md): Build household switcher component (3-4h)
@@ -69,7 +69,10 @@ Enable users to create, view, switch between, and manage households. Users can c
 - [ ] [task-030](../items/task-030-household-management-tests.md): Write household management tests (6-8h)
 
 **Total Estimated Duration**: 35-46 hours (5-6 days)  
-**Progress**: 2/11 tasks complete (18%)
+**Progress**: 3/11 tasks complete (27%)  
+**Backend Complete**: 3/3 backend tasks done (100%) ✅  
+**Frontend Remaining**: 5/6 frontend tasks (83% remaining)  
+**Testing Remaining**: 1/1 testing task (100% remaining)
 
 **Critical Path**: task-021 → task-022 → task-023 → task-028 → task-024
 
