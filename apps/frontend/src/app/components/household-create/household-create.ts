@@ -37,13 +37,14 @@ export class HouseholdCreateComponent {
 
       // Redirect to dashboard (root for now)
       await this.router.navigate(['/']);
-    } catch (error: any) {
+    } catch (error: unknown) {
       this.isLoading.set(false);
 
       // User-friendly error messages
       let message = 'Failed to create household. Please try again.';
 
-      if (error?.status === 400) {
+      const httpError = error as { status?: number };
+      if (httpError?.status === 400) {
         message = 'Please check your household name.';
       } else if (error?.status === 401) {
         message = 'Session expired. Please log in again.';

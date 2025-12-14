@@ -29,12 +29,12 @@ export class ApiService {
     return firstValueFrom(this.http.get<T>(url, { headers: this.getHeaders() }));
   }
 
-  async post<T>(endpoint: string, body: any): Promise<T> {
+  async post<T>(endpoint: string, body: unknown): Promise<T> {
     const url = `${this.baseUrl}${endpoint}`;
     return firstValueFrom(this.http.post<T>(url, body, { headers: this.getHeaders() }));
   }
 
-  async put<T>(endpoint: string, body: any): Promise<T> {
+  async put<T>(endpoint: string, body: unknown): Promise<T> {
     const url = `${this.baseUrl}${endpoint}`;
     return firstValueFrom(this.http.put<T>(url, body, { headers: this.getHeaders() }));
   }
