@@ -140,6 +140,10 @@ npm run build:backend
 # Run frontend tests
 npm run test:frontend
 
+# Run E2E tests (requires backend + database running)
+cd apps/frontend
+npm run test:e2e
+
 # Lint frontend
 npm run lint:frontend
 
@@ -150,12 +154,25 @@ npm run format:check
 npm run format
 ```
 
+**E2E Testing**: See [docs/E2E_TESTING.md](docs/E2E_TESTING.md) for complete E2E testing guide including:
+- Setup and installation
+- Running tests locally and in CI
+- Writing new tests with page objects
+- Debugging and troubleshooting
+- Best practices
+
 ## CI/CD
 
 The project uses GitHub Actions for CI/CD:
 
 - **CI Workflow** (`.github/workflows/ci.yml`): Runs on PRs and pushes to main
   - Tests, lints, and builds both frontend and backend
+  
+- **E2E Workflow** (`.github/workflows/e2e.yml`): Optional workflow for E2E testing
+  - Manual trigger via Actions tab
+  - Scheduled daily at 2 AM UTC
+  - Runs Playwright E2E tests with PostgreSQL service
+  - See [docs/E2E_TESTING.md](docs/E2E_TESTING.md) for details
   
 - **Deploy Workflow** (`.github/workflows/deploy.yml`): Runs on pushes to main
   - Builds Docker images for frontend and backend
