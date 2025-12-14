@@ -99,6 +99,10 @@ jobs:
         run: npm ci
         working-directory: apps/backend
 
+      - name: Build backend
+        run: npm run build
+        working-directory: apps/backend
+
       - name: Initialize test database
         run: |
           PGPASSWORD=postgres psql -h localhost -p 55432 -U postgres -d st44_test -f docker/postgres/init.sql
