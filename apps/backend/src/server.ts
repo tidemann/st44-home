@@ -564,6 +564,121 @@ fastify.get<{ Reply: { items: Item[] } | { error: string } }>(
   },
 );
 
+// Health Check Endpoints
+
+// Basic health check
+fastify.get('/health', async () => {
+  return {
+    status: 'ok',
+    timestamp: new Date().toISOString(),
+  };
+});
+
+// Database health check with schema validation
+fastify.get('/health/database', async (request, reply) => {
+  const healthCheck = {
+    status: 'healthy' as 'healthy' | 'degraded' | 'unhealthy',
+    timestamp: new Date().toISOString(),
+    database: {
+      connected: false,
+      responseTime: 0,
+      error: undefined as string | undefined,
+    },
+    migrations: {
+      applied: [] as string[],
+      latest: null as string | null,
+      count: 0,
+      warning: undefined as string | undefined,
+    },
+    schema: {
+      critical_tables: [] as Array<{ name: string; exists: boolean }>,
+      all_tables_exist: false,
+    },
+  };
+
+  try {
+    // Check database connectivity
+    const startTime = Date.now();
+    try {
+      await pool.query('SELECT 1');
+      healthCheck.database.connected = true;
+      healthCheck.database.responseTime = Date.now() - startTime;
+    } catch (error) {
+      healthCheck.database.connected = false;
+      healthCheck.database.error =
+        error instanceof Error ? error.message : 'Connection failed';
+      healthCheck.status = 'unhealthy';
+      return reply.code(503).send(healthCheck);
+    }
+
+    // Check migrations
+    try {
+      const result = await pool.query(
+        'SELECT version FROM schema_migrations ORDER BY version',
+      );
+      healthCheck.migrations.applied = result.rows.map((row) => row.version);
+      healthCheck.migrations.count = result.rows.length;
+      healthCheck.migrations.latest = result.rows[result.rows.length - 1]?.version || null;
+
+      // Expected migrations: 000, 001, 011-016 = 8 total
+      const expectedCount = 8;
+      if (healthCheck.migrations.count < expectedCount) {
+        healthCheck.migrations.warning = `Expected ${expectedCount} migrations, only ${healthCheck.migrations.count} applied`;
+        healthCheck.status = 'degraded';
+      }
+    } catch (error) {
+      healthCheck.migrations.warning = 'schema_migrations table not found';
+      healthCheck.status = 'degraded';
+    }
+
+    // Check critical tables exist
+    const criticalTables = [
+      'users',
+      'households',
+      'household_members',
+      'children',
+      'tasks',
+      'task_assignments',
+      'task_completions',
+    ];
+
+    for (const tableName of criticalTables) {
+      try {
+        const result = await pool.query(
+          `SELECT EXISTS (
+            SELECT FROM information_schema.tables 
+            WHERE table_name = $1
+          )`,
+          [tableName],
+        );
+        const exists = result.rows[0]?.exists || false;
+        healthCheck.schema.critical_tables.push({ name: tableName, exists });
+      } catch (error) {
+        healthCheck.schema.critical_tables.push({ name: tableName, exists: false });
+      }
+    }
+
+    healthCheck.schema.all_tables_exist = healthCheck.schema.critical_tables.every(
+      (t) => t.exists,
+    );
+
+    if (!healthCheck.schema.all_tables_exist) {
+      healthCheck.status = 'degraded';
+    }
+
+    // Return appropriate status code
+    const statusCode = healthCheck.status === 'unhealthy' ? 503 : 200;
+    return reply.code(statusCode).send(healthCheck);
+  } catch (error) {
+    fastify.log.error({ error }, 'Health check failed');
+    return reply.code(503).send({
+      status: 'unhealthy',
+      timestamp: new Date().toISOString(),
+      error: error instanceof Error ? error.message : 'Unknown error',
+    });
+  }
+});
+
 // Export build function for testing
 export async function build() {
   return fastify;
