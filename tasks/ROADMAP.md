@@ -14,6 +14,53 @@ This roadmap outlines planned features and epics for the project. It's maintaine
 
 ## Now (Current Sprint - Phase 1 MVP)
 
+### 🔴 CRITICAL - Production Blocked
+
+**Feature-005: Production Database Deployment & Migration System** 🚨 CRITICAL BUG
+- **Priority**: Critical (Production Blocking)
+- **Status**: pending (tasks created)
+- **Duration**: 1 day (8-10 hours)
+- **File**: [feature-005-production-database-deployment.md](features/feature-005-production-database-deployment.md)
+- **Description**: Fix production 500 errors - database schema missing in deployed environment
+- **Why Now**: PRODUCTION IS BROKEN - Users cannot register accounts
+- **Issue**: `relation "users" does not exist` - Migrations never applied to production
+- **Impact**: All user registration attempts fail with 500 error
+- **Tasks**: 6 tasks (immediate fix + automation)
+  - [task-021](items/task-021-audit-deployment-process.md): Audit deployment process (1 hour)
+  - [task-022](items/task-022-create-migration-runner-script.md): Create migration runner script (2-3 hours)
+  - [task-023](items/task-023-apply-migrations-to-production.md): Apply existing migrations to production **IMMEDIATE** (1 hour)
+  - [task-024](items/task-024-add-migration-to-deploy-workflow.md): Add migration to deploy workflow (2-3 hours)
+  - [task-025](items/task-025-database-health-check-endpoint.md): Database health check endpoint (2-3 hours)
+  - [task-026](items/task-026-document-deployment-process.md): Document deployment process (1 hour)
+
+### 🛡️ CRITICAL - Quality Infrastructure
+
+**Epic-006: Testing & Quality Assurance Infrastructure** 🛡️ PREVENT PRODUCTION BUGS
+- **Priority**: Critical (Deployment Safety)
+- **Status**: pending
+- **Duration**: 1.5 weeks (9-11 days)
+- **File**: [epic-006-testing-quality-assurance.md](epics/epic-006-testing-quality-assurance.md)
+- **Description**: E2E testing, database validation, CI/CD quality gates to prevent production failures
+- **Why Now**: Production incident (feature-005) showed need for comprehensive testing before deployment
+- **Goal**: ZERO critical bugs reach production - 100% of critical flows tested
+- **Features**: 4 features (E2E tests, DB validation, CI gates, performance tests)
+  - [feature-006](features/feature-006-e2e-testing-infrastructure.md): E2E Testing Infrastructure (5-6 days) **HIGH PRIORITY**
+  - feature-007: Database Testing & Schema Validation (2-3 days)
+  - feature-008: CI/CD Quality Gates (2 days)
+  - feature-009: Performance & Load Testing (2 days, optional for MVP)
+
+**Feature-006: E2E Testing Infrastructure** ⚡ REGISTRATION MUST NEVER FAIL
+- **Priority**: Critical (Prevents Production Bugs)
+- **Status**: pending (awaiting task breakdown)
+- **Duration**: 5-6 days
+- **File**: [feature-006-e2e-testing-infrastructure.md](features/feature-006-e2e-testing-infrastructure.md)
+- **Description**: Playwright E2E tests for critical user flows, especially registration
+- **Why Now**: Would have caught production bug in PR checks before deployment
+- **Coverage**: Registration, login, database validation, OAuth (if implemented)
+- **Impact**: No more production failures due to missing schema or broken auth flows
+- **Tasks**: 9 tasks estimated (Playwright setup → critical tests → CI integration)
+- **Dependencies**: Must wait for feature-005 to be merged (migration system operational)
+
 ### 🎯 MVP Epics (8-week timeline)
 
 **Epic-001: Multi-Tenant Foundation** ⭐ Critical
@@ -26,7 +73,7 @@ This roadmap outlines planned features and epics for the project. It's maintaine
 - **Dependencies**: None (foundational)
 - **Features**: 4 features (41 tasks estimated)
   - ✅ [feature-001](features/done/feature-001-user-authentication.md): User Authentication (10 tasks, 2 days) **COMPLETED**
-  - [feature-002](features/feature-002-multi-tenant-schema.md): Multi-Tenant Schema (10 tasks, 2-3 days) **IN PROGRESS**
+  - ⏸️ [feature-002](features/feature-002-multi-tenant-schema.md): Multi-Tenant Schema (10 tasks, 2-3 days) **PAUSED** (blocked by feature-005)
   - [feature-003](features/feature-003-household-management.md): Household Management (11 tasks, 3-4 days)
   - [feature-004](features/feature-004-user-invitation-system.md): User Invitations (11 tasks, 2-3 days)
 
@@ -68,14 +115,16 @@ This roadmap outlines planned features and epics for the project. It's maintaine
 
 ### Timeline Overview
 ```
-Week 1-2:   Epic-001 (Foundation)
-Week 3-4:   Epic-002 (Task Core)
-Week 5:     Epic-003 (Onboarding)
-Week 6-7:   Epic-004 (Notifications)
-Week 7-8:   Epic-005 (Dashboard)
+Week 0:       Feature-005 (Production Fix - IMMEDIATE) + Feature-006 (E2E Tests)
+Week 1-2:     Epic-001 (Foundation)
+Week 3-4:     Epic-002 (Task Core)
+Week 5:       Epic-003 (Onboarding)
+Week 6-7:     Epic-004 (Notifications)
+Week 7-8:     Epic-005 (Dashboard)
+Week 1-8:     Epic-006 (Testing QA - runs in parallel)
 ```
 
-**MVP Launch Target**: End of Week 8
+**MVP Launch Target**: End of Week 8 (with comprehensive test coverage)
 
 ---
 
@@ -282,6 +331,37 @@ Features are prioritized based on:
 4. Suggest new features for consideration
 
 ## Changelog
+
+### 2025-12-14 (Planning - E2E Testing)
+- 🛡️ **Epic-006: Testing & Quality Assurance Infrastructure** - CREATED
+  - Response to production incident (feature-005)
+  - Goal: ZERO critical bugs reach production
+  - 4 features: E2E tests, DB validation, CI gates, performance
+  - Timeline: 1.5 weeks, runs in parallel with feature development
+- ⚡ **Feature-006: E2E Testing Infrastructure** - CREATED
+  - Playwright E2E testing for critical user flows
+  - PRIMARY FOCUS: Registration flow must never fail in production
+  - Coverage: Registration, login, database validation, OAuth
+  - 9 tasks estimated (5-6 days)
+  - Dependencies: Requires feature-005 merged first
+  - Prevention: Would have caught production bug in PR checks
+- 📋 **Roadmap Updated**
+  - Added epic-006 to "Now" section (critical priority)
+  - Added feature-006 to "Now" section (high priority)
+  - Updated timeline to show Week 0 for urgent work
+  - MVP timeline updated: Week 1-8 plus testing infrastructure
+
+### 2025-12-14 (Late)
+- 🚨 **PRODUCTION EMERGENCY** - Users cannot register, 500 errors
+  - Error: `relation "users" does not exist`
+  - Root cause: Migrations never applied to production database
+  - Created **feature-005: Production Database Deployment System**
+  - Created 6 tasks for immediate fix + automation (tasks 021-026)
+  - Task-023 is IMMEDIATE FIX to restore service
+  - Tasks 022, 024 automate migrations in deployment
+  - Task-025 adds health checks to prevent recurrence
+  - **BLOCKING ALL OTHER WORK** until production is restored
+  - Feature-002 (Multi-Tenant Schema) paused until fix deployed
 
 ### 2025-12-14
 - 📋 **feature-002: Multi-Tenant Schema** - Tasks broken down (10 tasks ready)
