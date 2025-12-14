@@ -4,7 +4,7 @@
 - **ID**: task-030
 - **Feature**: feature-006
 - **Epic**: epic-006
-- **Status**: pending
+- **Status**: completed
 - **Priority**: critical
 - **Created**: 2025-12-14
 - **Assigned Agent**: testing + frontend
@@ -22,18 +22,27 @@
 - Test post-registration redirect
 
 ## Acceptance Criteria
-- [ ] `e2e/pages/register.page.ts` created
-- [ ] Test: successful registration
-- [ ] Test: weak password validation
-- [ ] Test: duplicate email error
-- [ ] Test: invalid email format
-- [ ] Test: user record in database
-- [ ] Test: JWT token stored
-- [ ] Test: redirect to home/dashboard
-- [ ] Test: password hashed in DB
+- [x] `e2e/pages/register.page.ts` created (completed in task-029)
+- [x] Test: successful registration
+- [x] Test: weak password validation
+- [x] Test: duplicate email error
+- [x] Test: invalid email format
+- [x] Test: user record in database
+- [x] Test: JWT token stored
+- [x] Test: redirect to home/dashboard
+- [x] Test: password hashed in DB
+- [x] Test: password mismatch validation
+- [x] Test: empty field validation
+- [x] Test: special characters in email
+- [x] Test: database schema verification
 
 ## Dependencies
 - task-029 (test utilities must exist)
 
 ## Progress Log
 - [2025-12-14] Task created
+- [2025-12-14 13:00] Status set to in-progress; branch feature/task-030-registration-e2e-tests created
+- [2025-12-14 13:05] Created comprehensive registration.spec.ts with 13 test cases
+- [2025-12-14 13:05] Tests cover: success, validation, DB verification, password hashing, JWT tokens, redirects
+- [2025-12-14 13:10] PR #46 opened; CI checks passed (frontend + backend SUCCESS)
+- [2025-12-14 13:12] Merged PR #46 with squash; branch deleted; status completed
