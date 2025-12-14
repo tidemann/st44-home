@@ -42,9 +42,12 @@ This roadmap outlines planned features and epics for the project. It's maintaine
 - **Tasks**: 9 tasks created (027-035) [PR #40 merged]
   - [x] task-027: Install and configure Playwright (4-6h) **COMPLETED** [PR #41]
   - [x] task-028: Set up test database (4-6h) **COMPLETED** [PR #43]
-  - [ ] task-029: Create test fixtures and utilities (4-6h)
-  - [ ] task-030: Registration flow E2E tests ⚠️ **CRITICAL** (6-8h)
-  - [ ] task-031: Login flow E2E tests (4-6h)
+  - [x] task-029: Create test fixtures and utilities (4-6h) **COMPLETED** [PR #45]
+  - [x] task-030: Registration flow E2E tests ⚠️ **CRITICAL** (6-8h) **COMPLETED** [PR #46]
+  - [x] task-031: Login flow E2E tests (4-6h) **COMPLETED** [PR #47]
+  - [x] task-032: Database validation tests (3-4h) **COMPLETED** [PR #48]
+  - [ ] task-033: Password reset E2E tests (4-6h)
+  - [ ] task-034: CI/CD E2E integration ⚠️ **CRITICAL** (3-4h)
   - [ ] task-032: Database validation tests (3-4h)
   - [ ] task-033: Google OAuth E2E tests (optional) (4-5h)
   - [ ] task-034: CI/CD integration ⚠️ **CRITICAL** (4-6h)
