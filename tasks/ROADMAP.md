@@ -59,7 +59,7 @@ This roadmap outlines planned features and epics for the project. It's maintaine
 
 **Epic-001: Multi-Tenant Foundation** ⭐ Critical
 - **Priority**: Critical (Foundational)
-- **Status**: in-progress (1/4 features complete, 1/4 ready for implementation)
+- **Status**: in-progress (2/4 features complete)
 - **Duration**: 2 weeks (12-14 days)
 - **File**: [epic-001-multi-tenant-foundation.md](epics/epic-001-multi-tenant-foundation.md)
 - **Description**: Multi-tenant database, authentication, household management, user invitations
@@ -67,7 +67,7 @@ This roadmap outlines planned features and epics for the project. It's maintaine
 - **Dependencies**: None (foundational)
 - **Features**: 4 features (41 tasks estimated)
   - ✅ [feature-001](features/done/feature-001-user-authentication.md): User Authentication (10 tasks, 2 days) **COMPLETED**
-  - [feature-002](features/feature-002-multi-tenant-schema.md): Multi-Tenant Schema (10 tasks, 2-3 days) **READY FOR IMPLEMENTATION**
+  - ✅ [feature-002](features/done/feature-002-multi-tenant-schema.md): Multi-Tenant Schema (10 tasks, 7 hours) **COMPLETED**
   - [feature-003](features/feature-003-household-management.md): Household Management (11 tasks, 3-4 days)
   - [feature-004](features/feature-004-user-invitation-system.md): User Invitations (11 tasks, 2-3 days)
 
@@ -362,6 +362,33 @@ Features are prioritized based on:
 4. Suggest new features for consideration
 
 ## Changelog
+
+### 2025-12-14 (Feature-002 Complete! 🎉)
+- 🎉 **FEATURE-002 100% COMPLETE** - Multi-Tenant Database Schema finished!
+  - All 10 tasks completed in ~7 hours (vs 25-35 hours estimated)
+  - 70% faster than estimated due to mature migration system
+  - **Epic-001 Progress**: 2/4 features complete (50%)
+  - **Next**: feature-003 (Household Management)
+- ✅ **PR #55 MERGED** - Task-020 (Migration Rollback Scripts) completed
+  - Created 8 rollback scripts (011_down.sql through 018_down.sql)
+  - Scripts drop objects in reverse dependency order (018 → 011)
+  - Tested rollback cycle: 018 down → 018 up (SUCCESS)
+  - Updated migrations/README.md with rollback documentation
+  - Data loss warnings and production safety considerations documented
+  - Rollback scripts for development/testing use only
+  - Task completed in 0.5 hours (estimated 2-3 hours)
+- 📊 **Schema Complete**: 7 tables, 15 indexes, RLS policies, comprehensive docs
+
+### 2025-12-14 (Task-019 Complete! 📖)
+- 📖 **PR #54 MERGED** - Task-019 (Document Schema with ERD) completed
+  - Created comprehensive SCHEMA.md (800+ lines)
+  - Mermaid ERD diagram with all 7 tables and relationships
+  - Complete data dictionary (all columns documented)
+  - 15+ common query examples with EXPLAIN ANALYZE
+  - Security documentation (RLS policies, testing procedures)
+  - Updated README.md with database schema section
+  - Task completed in 0.5 hours (estimated 2-3 hours)
+  - **Feature-002 Progress**: 9/10 tasks complete (90%)
 
 ### 2025-12-14 (Task-018 Complete! 🔒)
 - 🔒 **PR #53 MERGED** - Task-018 (Implement Row-Level Security) completed
