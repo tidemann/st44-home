@@ -17,6 +17,13 @@ export const routes: Routes = [
       ),
   },
   {
+    path: 'household/settings',
+    loadComponent: () =>
+      import('./components/household-settings/household-settings').then(
+        (m) => m.HouseholdSettingsComponent,
+      ),
+  },
+  {
     path: '',
     redirectTo: '/login',
     pathMatch: 'full',

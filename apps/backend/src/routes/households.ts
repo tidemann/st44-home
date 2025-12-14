@@ -260,6 +260,49 @@ async function updateHousehold(
 }
 
 /**
+ * GET /api/households/:id/members - Get household members
+ * Returns list of all members in the household
+ */
+async function getHouseholdMembers(
+  request: FastifyRequest<GetHouseholdRequest>,
+  reply: FastifyReply,
+) {
+  const { id } = request.params;
+
+  try {
+    const result = await db.query(
+      `SELECT
+        u.id as user_id,
+        u.email,
+        u.display_name,
+        hm.role,
+        hm.joined_at
+      FROM household_members hm
+      JOIN users u ON hm.user_id = u.id
+      WHERE hm.household_id = $1
+      ORDER BY hm.role DESC, u.display_name ASC NULLS LAST, u.email ASC`,
+      [id],
+    );
+
+    return reply.send({
+      members: result.rows.map((row: unknown) => ({
+        user_id: (row as { user_id: number }).user_id,
+        email: (row as { email: string }).email,
+        display_name: (row as { display_name: string | null }).display_name,
+        role: (row as { role: string }).role,
+        joined_at: (row as { joined_at: Date }).joined_at,
+      })),
+    });
+  } catch (error) {
+    request.log.error(error, 'Failed to get household members');
+    return reply.status(500).send({
+      error: 'Internal Server Error',
+      message: 'Failed to retrieve household members',
+    });
+  }
+}
+
+/**
  * Register household routes
  */
 export default async function householdRoutes(server: FastifyInstance) {
@@ -285,5 +328,11 @@ export default async function householdRoutes(server: FastifyInstance) {
   server.put('/api/households/:id', {
     preHandler: [authenticateUser, validateHouseholdMembership, requireHouseholdAdmin],
     handler: updateHousehold,
+  });
+
+  // Get household members (member access)
+  server.get('/api/households/:id/members', {
+    preHandler: [authenticateUser, validateHouseholdMembership],
+    handler: getHouseholdMembers,
   });
 }

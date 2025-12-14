@@ -11,6 +11,14 @@ export interface Household {
   updatedAt?: string;
 }
 
+export interface HouseholdMember {
+  user_id: number;
+  email: string;
+  display_name: string | null;
+  role: 'admin' | 'parent';
+  joined_at: string;
+}
+
 @Injectable({
   providedIn: 'root',
 })
@@ -48,5 +56,12 @@ export class HouseholdService {
 
   async updateHousehold(id: string, name: string): Promise<Household> {
     return this.apiService.put<Household>(`/households/${id}`, { name });
+  }
+
+  async getHouseholdMembers(householdId: string): Promise<HouseholdMember[]> {
+    const response = await this.apiService.get<{ members: HouseholdMember[] }>(
+      `/households/${householdId}/members`,
+    );
+    return response.members;
   }
 }
