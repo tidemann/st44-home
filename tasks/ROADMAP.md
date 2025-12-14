@@ -18,7 +18,7 @@ This roadmap outlines planned features and epics for the project. It's maintaine
 
 **Epic-001: Multi-Tenant Foundation** ⭐ Critical
 - **Priority**: Critical (Foundational)
-- **Status**: in-progress (1/4 features complete)
+- **Status**: in-progress (1/4 features complete, 1/4 ready for implementation)
 - **Duration**: 2 weeks (12-14 days)
 - **File**: [epic-001-multi-tenant-foundation.md](epics/epic-001-multi-tenant-foundation.md)
 - **Description**: Multi-tenant database, authentication, household management, user invitations
@@ -26,7 +26,7 @@ This roadmap outlines planned features and epics for the project. It's maintaine
 - **Dependencies**: None (foundational)
 - **Features**: 4 features (41 tasks estimated)
   - ✅ [feature-001](features/done/feature-001-user-authentication.md): User Authentication (10 tasks, 2 days) **COMPLETED**
-  - [feature-002](features/feature-002-multi-tenant-schema.md): Multi-Tenant Schema (10 tasks, 2-3 days)
+  - [feature-002](features/feature-002-multi-tenant-schema.md): Multi-Tenant Schema (10 tasks, 2-3 days) **TASKS READY**
   - [feature-003](features/feature-003-household-management.md): Household Management (11 tasks, 3-4 days)
   - [feature-004](features/feature-004-user-invitation-system.md): User Invitations (11 tasks, 2-3 days)
 
@@ -284,6 +284,12 @@ Features are prioritized based on:
 ## Changelog
 
 ### 2025-12-14
+- 📋 **feature-002: Multi-Tenant Schema** - Tasks broken down (10 tasks ready)
+  - Households, household_members, children, tasks, task_assignments, task_completions tables
+  - Performance indexes and row-level security
+  - Schema documentation with ERD diagram
+  - Migration rollback scripts
+  - Status: ready-for-implementation
 - 🎉 **feature-001: User Authentication System** - **FEATURE COMPLETED!**
   - All 10 tasks completed in 2 days (vs 4-5 days estimated)
   - Email/password authentication fully functional
