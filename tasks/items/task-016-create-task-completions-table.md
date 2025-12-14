@@ -4,7 +4,7 @@
 - **ID**: task-016
 - **Feature**: feature-002 - Multi-Tenant Database Schema
 - **Epic**: epic-001 - Multi-Tenant Foundation
-- **Status**: pending
+- **Status**: in-progress
 - **Priority**: high
 - **Created**: 2025-12-14
 - **Assigned Agent**: database
@@ -23,14 +23,14 @@ Create the task_completions table to maintain a historical record of completed t
 - Create migration file following conventions
 
 ## Acceptance Criteria
-- [ ] Migration file created (016_create_task_completions_table.sql)
-- [ ] Table has id, household_id (FK), task_assignment_id (FK), child_id (FK), completed_at (TIMESTAMP), points_earned (INTEGER NOT NULL)
-- [ ] Foreign keys to households, task_assignments, children with CASCADE
-- [ ] Index on household_id: idx_task_completions_household
-- [ ] Index on child_id: idx_task_completions_child
-- [ ] Migration tested with sample completions
-- [ ] init.sql updated
-- [ ] Documented as append-only (no updates)
+- [x] Migration file created (016_create_task_completions_table.sql)
+- [x] Table has id, household_id (FK), task_assignment_id (FK), child_id (FK), completed_at (TIMESTAMP), points_earned (INTEGER NOT NULL)
+- [x] Foreign keys to households, task_assignments, children with CASCADE
+- [x] Index on household_id: idx_task_completions_household
+- [x] Index on child_id: idx_task_completions_child
+- [x] Migration tested with sample completions
+- [x] init.sql updated
+- [x] Documented as append-only (no updates)
 
 ## Dependencies
 - task-011: Households table must exist
@@ -141,10 +141,15 @@ EOF
 
 ## Progress Log
 - [2025-12-14 00:20] Task created from feature-002 breakdown
+- [2025-12-14 10:55] Status changed to in-progress; migration created
+- [2025-12-14 11:00] Migration applied; table structure and indexes verified
+- [2025-12-14 11:05] Test inserts validated; NOT NULL constraint on points_earned confirmed
+- [2025-12-14 11:10] Analytics queries tested (SUM, COUNT, GROUP BY)
 
-## Related Files
-- `docker/postgres/migrations/016_create_task_completions_table.sql`
-- `docker/postgres/init.sql`
+## Completion
+- **Status**: completed
+- **Validation**: All acceptance criteria met; migration recorded in schema_migrations; inserts, constraints, and analytics queries verified
 
 ## Lessons Learned
-[To be filled after completion]
+- Append-only table design simplifies data integrity and enables reliable historical analytics
+- Denormalizing child_id improves query performance for leaderboards and reports
