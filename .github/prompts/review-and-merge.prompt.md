@@ -1,9 +1,9 @@
 ---
-description: Review completed work and create pull request for merging
+description: Unified review, PR creation, CI wait, and merge workflow (handoff-aware)
 agent: orchestrator-agent
 ---
 
-# Review and Merge Completed Work
+# Review, Create/Merge PR (Unified)
 
 **⚠️ CRITICAL RULES**:
 - NEVER push directly to main branch
@@ -11,6 +11,13 @@ agent: orchestrator-agent
 - ALWAYS create PR for review before merging
 - Changes must ONLY be on a feature branch, never on main
 - NEVER push or create PR without user confirmation
+
+## Handoff Input (Optional)
+
+- `handoff`: The PR number or feature branch name provided by the Orchestrator when handing off.
+   - If a PR number is provided, operate on that PR.
+   - If a branch name is provided, operate on the PR associated with that branch.
+   - If no argument provided, discover an open PR automatically (prefer current branch’s PR).
 
 ## Your Task
 
@@ -21,29 +28,29 @@ agent: orchestrator-agent
    - Check for work items in `in-progress` status
    - Verify all acceptance criteria are met
    - Confirm all tests pass
-2. **Run validation checks**:
+3. **Run validation checks**:
    - `npm run format:check` - Prettier formatting
    - `npm test` - All tests pass
    - `npm run build` - Production build succeeds
    - Manual testing if needed
-3. **Review changes**:
+4. **Review changes**:
    - Use `git diff` to review all changes
    - Verify code follows conventions in AGENTS.md files
    - Check for any debugging code or console.logs
    - Ensure no sensitive data committed
-4. **Update documentation**:
+5. **Update documentation**:
    - Update relevant AGENTS.md files if patterns changed
    - Update README.md if user-facing changes
    - Update copilot-instructions.md if significant architectural changes
-5. **Update work items**:
+6. **Update work items**:
    - Update work item status to `completed`
    - Add final progress log entry
    - Move work item file to appropriate `done/` folder
-6. **Update ROADMAP.md**:
+7. **Update ROADMAP.md**:
    - Remove completed items from Now
    - Move Next → Now as appropriate
    - Document completion in ROADMAP.md
-7. **Prepare PR description**:
+8. **Prepare PR description**:
    - Clear title describing the change
    - Comprehensive body with:
      - Problem statement
@@ -51,8 +58,49 @@ agent: orchestrator-agent
      - Changes made (bulleted list)
      - Testing performed
      - Screenshots if UI changes
-8. **Get user approval**: Present changes and PR description, wait for confirmation
-9. **Create PR**: Only after user confirms, run `gh pr create`
+9. **Determine PR target (handoff-aware)**:
+   - If `handoff` is a PR number: use it.
+   - If `handoff` is a branch name: find PR for that branch.
+   - If no handoff:
+     - Prefer PR of current branch: `gh pr view --json number,state`.
+     - Otherwise discover open PRs: `gh pr list --state open --json number,title,headRefName`.
+
+10. **Create PR if missing**:
+    - If no PR exists, create one:
+      ```bash
+      gh pr create --title "<type>: <summary>" --body "<template>" --base main
+      ```
+
+11. **Wait for CI checks and merge**:
+    - Poll PR status until checks complete:
+      ```bash
+      gh pr view <PR_NUMBER> --json statusCheckRollup,mergeable,state
+      ```
+    - If checks FAIL: return to Orchestrator to fix, push, and re-run.
+    - If checks PASS: merge with squash and delete branch:
+      ```bash
+      gh pr merge <PR_NUMBER> --squash --delete-branch
+      ```
+
+12. **Post-merge resume**:
+    - Switch to `main` and pull latest.
+    - Signal Orchestrator to re-invoke `continue-work.prompt.md` to pick next priority.
+
+## Signal Definitions
+
+To enable automation and clear handshakes between prompts, this unified workflow emits explicit signals:
+
+- Success: `merge complete`
+   - Emitted after successful squash merge and branch deletion.
+   - Orchestrator should immediately re-invoke `continue-work.prompt.md`.
+
+- Blocked: `checks failing`
+   - Emitted when any CI check fails.
+   - Orchestrator should reclaim control, fix issues, push updates, then hand off again.
+
+- Pending: `waiting for checks`
+   - Emitted while CI is still running.
+   - Orchestrator can poll or wait until a terminal signal (success/blocked) is emitted.
 
 ## Pre-merge Checklist
 
@@ -170,9 +218,10 @@ Format: `<type>: <description>`
 - [ ] Work items updated and moved to done/
 - [ ] ROADMAP.md updated
 - [ ] PR description is comprehensive
-- [ ] User approved proceeding with PR
-- [ ] PR created successfully
+- [ ] PR created successfully (if missing)
 - [ ] CI checks pass on GitHub
+- [ ] PR merged with squash and branch deleted
+- [ ] Orchestrator resumes with `continue-work.prompt.md`
 
 ## Reference Documentation
 

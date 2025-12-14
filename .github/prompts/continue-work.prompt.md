@@ -48,8 +48,11 @@ agent: orchestrator-agent
 11. **Implement solution**: Follow workflow in [Orchestrator Agent](../../.github/agents/orchestrator-agent.md)
 12. **Delegate to experts**: Assign subtasks to Frontend, Backend, Database agents as needed
 13. **Update progress**: Keep work item file and roadmap current during work
-14. **Validate completion**: Verify all acceptance criteria met, tests pass
-15. **Complete**: Move to appropriate `done/` folder when finished, update roadmap
+14. **Create/Update PR**: Push changes on the feature branch and ensure a PR targeting `main` exists
+15. **Handoff to Review/Merge**: Invoke [review-and-merge.prompt.md](./review-and-merge.prompt.md) to validate, wait for CI, and merge when green
+16. **Auto-Resume Work**: After the unified prompt signals "merge complete" (squash merged and branch deleted), automatically re-invoke this Continue Work prompt to pick up the next priority
+17. **Validate completion**: Verify all acceptance criteria met, tests pass, and documentation updated
+18. **Complete**: Move to appropriate `done/` folder when finished, update roadmap
 
 ## Constraints
 
@@ -68,6 +71,8 @@ agent: orchestrator-agent
 - [ ] Implementation plan added to work item file
 - [ ] ROADMAP.md status updated
 - [ ] Solution implemented following acceptance criteria
+- [ ] PR created and merged via review-and-merge workflow
+- [ ] All CI checks passing on GitHub (frontend + backend)
 - [ ] All tests passing (npm test passes)
 - [ ] AGENTS.md files updated if patterns changed
 - [ ] Work item file updated with final status

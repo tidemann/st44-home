@@ -361,7 +361,7 @@ The Orchestrator can be invoked through standardized prompt files in `.github/pr
 
 - **continue-work.prompt.md**: Main workflow for picking up next priority and implementing
 - **breakdown-feature.prompt.md**: Dedicated workflow for feature → task decomposition
-- **review-and-merge.prompt.md**: Validation and PR creation workflow
+- **review-and-merge.prompt.md**: Validation, CI verification, and PR merge workflow
 
 See `.github/prompts/README.md` for complete prompt documentation.
 
@@ -440,6 +440,20 @@ See `.github/prompts/README.md` for complete prompt documentation.
 4. **Database Changes: Verify migration files created** (see checklist below)
 5. Update task status to `completed`
 6. Document outcomes and learnings
+
+### Phase 8: PR Handoff Loop (New)
+To avoid stopping after every push, the Orchestrator must hand off to review/merge and then resume work automatically:
+
+1. When implementation for a task is complete and changes are pushed to a feature branch, immediately invoke the `review-and-merge.prompt.md`.
+2. In the review-and-merge phase:
+   - Ensure a PR exists targeting `main` with a clear description.
+   - Wait for all GitHub Actions checks to complete.
+   - If checks fail, return control to Orchestrator to fix and re-push; then re-invoke review-and-merge.
+   - If checks pass, perform a squash merge and delete the feature branch.
+3. After merge completes, the Orchestrator automatically re-invokes `continue-work.prompt.md` to pick up the next priority.
+4. Update relevant task/feature status and ROADMAP before resuming.
+
+This loop ensures continuous progress: implement → PR review/merge → resume next work item.
 
 #### Database Changes Checklist
 If the task involved database changes, verify:

@@ -4,7 +4,7 @@
 - **ID**: task-027
 - **Feature**: feature-006 - E2E Testing Infrastructure
 - **Epic**: epic-006 - Testing & Quality Assurance Infrastructure
-- **Status**: in-progress
+- **Status**: completed
 - **Priority**: high
 - **Created**: 2025-12-14
 - **Assigned Agent**: frontend + testing
@@ -190,6 +190,10 @@ test.describe('Example Test Suite', () => {
 ## Progress Log
 - [2025-12-14 03:05] Status set to in-progress; implementation plan confirmed
 - [2025-12-14 03:05] Branch created: feature/task-027-playwright-setup
+- [2025-12-14 10:50] Added Playwright config, example test, scripts, .gitignore
+- [2025-12-14 10:52] Opened PR #41; backend check passed, frontend failing (npm ci lockfile)
+- [2025-12-14 10:56] Updated `apps/frontend/package-lock.json` to include Playwright deps
+- [2025-12-14 10:57] CI green; merged PR #41 with squash; deleted branch
 
 ## Testing Strategy
 - Verify example test passes
@@ -201,7 +205,7 @@ test.describe('Example Test Suite', () => {
 [To be filled during review]
 
 ## Related PRs
-[To be filled during implementation]
+- PR #41: feat(e2e): Playwright setup (task-027)
 
 ## Lessons Learned
 [To be filled after completion]
