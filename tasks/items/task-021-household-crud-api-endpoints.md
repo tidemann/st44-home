@@ -4,7 +4,7 @@
 - **ID**: task-021
 - **Feature**: feature-003 - Household Management
 - **Epic**: epic-001 - Multi-Tenant Foundation
-- **Status**: pending
+- **Status**: completed
 - **Priority**: high
 - **Created**: 2025-12-14
 - **Assigned Agent**: backend
@@ -25,15 +25,15 @@ Implement RESTful API endpoints for household CRUD operations (Create, Read, Upd
 
 ## Acceptance Criteria
 - [x] POST /api/households creates household and assigns creator as admin
-- [ ] GET /api/households returns all households user belongs to with their role
-- [ ] GET /api/households/:id returns household details (only if user is member)
-- [ ] PUT /api/households/:id updates household (only if user is admin)
-- [ ] All endpoints validate authentication token
-- [ ] Membership validation prevents access to non-member households
-- [ ] Created household includes id, name, createdAt, updatedAt
-- [ ] Proper HTTP status codes (201, 200, 403, 404, 500)
-- [ ] JSON schema validation on request bodies
-- [ ] All operations properly scoped to household_id
+- [x] GET /api/households returns all households user belongs to with their role
+- [x] GET /api/households/:id returns household details (only if user is member)
+- [x] PUT /api/households/:id updates household (only if user is admin)
+- [x] All endpoints validate authentication token
+- [x] Membership validation prevents access to non-member households
+- [x] Created household includes id, name, createdAt, updatedAt
+- [x] Proper HTTP status codes (201, 200, 403, 404, 500)
+- [x] JSON schema validation on request bodies
+- [x] All operations properly scoped to household_id
 
 ## Dependencies
 - feature-001: Authentication middleware must be in place
@@ -267,6 +267,13 @@ RETURNING *;
 
 ## Progress Log
 - [2025-12-14 16:45] Task created from feature-003 breakdown
+- [2025-12-14 16:50] Status changed to in-progress
+- [2025-12-14 17:00] Created database module with shared pool export
+- [2025-12-14 17:05] Extracted auth middleware to separate file
+- [2025-12-14 17:10] Implemented all 4 household CRUD endpoints
+- [2025-12-14 17:15] Fixed server.ts to use buildApp pattern
+- [2025-12-14 17:22] All endpoints tested successfully (create, list, get, update)
+- [2025-12-14 17:23] Status changed to completed
 
 ## Related Files
 - `apps/backend/src/routes/households.ts` - New file
