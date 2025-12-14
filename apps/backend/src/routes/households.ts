@@ -1,6 +1,10 @@
 import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
 import { db } from '../database.js';
 import { authenticateUser } from '../middleware/auth.js';
+import {
+  validateHouseholdMembership,
+  requireHouseholdAdmin,
+} from '../middleware/household-membership.js';
 
 interface CreateHouseholdRequest {
   Body: {
@@ -148,40 +152,16 @@ async function listHouseholds(request: FastifyRequest, reply: FastifyReply) {
  */
 async function getHousehold(request: FastifyRequest<GetHouseholdRequest>, reply: FastifyReply) {
   const { id } = request.params;
-  const userId = request.user?.userId;
+  const role = request.household?.role;
 
-  if (!userId) {
-    return reply.status(401).send({
-      error: 'Unauthorized',
-      message: 'Authentication required',
-    });
-  }
-
-  // Validate UUID format
-  const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
-  if (!uuidRegex.test(id)) {
-    return reply.status(400).send({
-      error: 'Bad Request',
-      message: 'Invalid household ID format',
+  if (!role) {
+    return reply.status(500).send({
+      error: 'Internal Server Error',
+      message: 'Household context missing',
     });
   }
 
   try {
-    // Check membership
-    const membershipResult = await db.query(
-      'SELECT role FROM household_members WHERE household_id = $1 AND user_id = $2',
-      [id, userId],
-    );
-
-    if (membershipResult.rows.length === 0) {
-      return reply.status(403).send({
-        error: 'Forbidden',
-        message: 'You do not have access to this household',
-      });
-    }
-
-    const role = membershipResult.rows[0].role;
-
     // Get household details
     const householdResult = await db.query(
       `SELECT 
@@ -233,23 +213,6 @@ async function updateHousehold(
 ) {
   const { id } = request.params;
   const { name } = request.body;
-  const userId = request.user?.userId;
-
-  if (!userId) {
-    return reply.status(401).send({
-      error: 'Unauthorized',
-      message: 'Authentication required',
-    });
-  }
-
-  // Validate UUID format
-  const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
-  if (!uuidRegex.test(id)) {
-    return reply.status(400).send({
-      error: 'Bad Request',
-      message: 'Invalid household ID format',
-    });
-  }
 
   // Validate household name
   if (!name || name.trim().length === 0) {
@@ -267,29 +230,7 @@ async function updateHousehold(
   }
 
   try {
-    // Check if user is household admin
-    const membershipResult = await db.query(
-      'SELECT role FROM household_members WHERE household_id = $1 AND user_id = $2',
-      [id, userId],
-    );
-
-    if (membershipResult.rows.length === 0) {
-      return reply.status(403).send({
-        error: 'Forbidden',
-        message: 'You do not have access to this household',
-      });
-    }
-
-    const role = membershipResult.rows[0].role;
-
-    if (role !== 'admin') {
-      return reply.status(403).send({
-        error: 'Forbidden',
-        message: 'Only household admins can update settings',
-      });
-    }
-
-    // Update household
+    // Update household (middleware already validated admin role)
     const result = await db.query(
       'UPDATE households SET name = $1, updated_at = NOW() WHERE id = $2 RETURNING id, name, updated_at',
       [name.trim(), id],
@@ -334,15 +275,15 @@ export default async function householdRoutes(server: FastifyInstance) {
     handler: listHouseholds,
   });
 
-  // Get household details
+  // Get household details (member access)
   server.get('/api/households/:id', {
-    preHandler: [authenticateUser],
+    preHandler: [authenticateUser, validateHouseholdMembership],
     handler: getHousehold,
   });
 
-  // Update household
+  // Update household (admin only)
   server.put('/api/households/:id', {
-    preHandler: [authenticateUser],
+    preHandler: [authenticateUser, validateHouseholdMembership, requireHouseholdAdmin],
     handler: updateHousehold,
   });
 }
