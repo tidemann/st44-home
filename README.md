@@ -158,6 +158,24 @@ npm run format
 - Setup and installation
 - Running tests locally and in CI
 - Writing new tests with page objects
+
+### Database Schema
+
+**Comprehensive schema documentation**: [docker/postgres/SCHEMA.md](docker/postgres/SCHEMA.md)
+
+The database implements a multi-tenant architecture with full data isolation between households. Key features:
+- **ERD Diagram**: Visual representation of all tables and relationships
+- **Tables Reference**: Detailed documentation for all 6 tenant-scoped tables
+- **Common Queries**: 10+ example queries with index usage
+- **Security**: Row-Level Security (RLS) policies for defense-in-depth
+- **Performance**: Composite indexes optimized for query patterns
+- **Data Dictionary**: Complete column reference
+
+**Quick links**:
+- [Entity Relationship Diagram](docker/postgres/SCHEMA.md#entity-relationship-diagram)
+- [Common Queries](docker/postgres/SCHEMA.md#common-queries)
+- [Security Model](docker/postgres/SCHEMA.md#security)
+- [Migration History](docker/postgres/SCHEMA.md#migration-history)
 - Debugging and troubleshooting
 - Best practices
 
