@@ -3,10 +3,11 @@
 ## Metadata
 - **ID**: feature-002
 - **Epic**: epic-001 - Multi-Tenant Foundation
-- **Status**: pending
+- **Status**: ready-for-implementation
 - **Priority**: critical
 - **Created**: 2025-12-13
-- **Estimated Duration**: 2-3 days
+- **Updated**: 2025-12-14
+- **Estimated Duration**: 2-3 days (10 tasks, ~25-35 hours total)
 
 ## Description
 Design and implement a complete multi-tenant database schema that ensures proper data isolation between households while supporting efficient queries. This schema is the foundation for all application data and must be designed correctly from the start to prevent data leaks and support scalability.
@@ -50,18 +51,18 @@ Design and implement a complete multi-tenant database schema that ensures proper
 - [ ] All tests passing
 
 ## Tasks
-**⚠️ Feature must be broken down into tasks by Orchestrator Agent before implementation**
+**✅ Tasks broken down and ready for implementation**
 
-- [ ] **task-010**: Design complete schema with all tables and relationships
-- [ ] **task-011**: Create households table and basic structure
-- [ ] **task-012**: Create household_members junction table with roles
-- [ ] **task-013**: Create children table
-- [ ] **task-014**: Create tasks and task_assignments tables
-- [ ] **task-015**: Create task_completions table
-- [ ] **task-016**: Add indexes for performance
-- [ ] **task-017**: Implement row-level security policies
-- [ ] **task-018**: Document schema with ERD diagram
-- [ ] **task-019**: Write migration rollback scripts
+- [ ] [task-011](../items/task-011-create-households-table.md) - Create households table (2-3 hours, database)
+- [ ] [task-012](../items/task-012-create-household-members-table.md) - Create household_members junction table (3-4 hours, database)
+- [ ] [task-013](../items/task-013-create-children-table.md) - Create children table (2-3 hours, database)
+- [ ] [task-014](../items/task-014-create-tasks-table.md) - Create tasks table (3-4 hours, database)
+- [ ] [task-015](../items/task-015-create-task-assignments-table.md) - Create task_assignments table (3-4 hours, database)
+- [ ] [task-016](../items/task-016-create-task-completions-table.md) - Create task_completions table (2-3 hours, database)
+- [ ] [task-017](../items/task-017-add-performance-indexes.md) - Add performance indexes (2-3 hours, database)
+- [ ] [task-018](../items/task-018-implement-row-level-security.md) - Implement row-level security policies (4-5 hours, database)
+- [ ] [task-019](../items/task-019-document-schema-erd.md) - Document schema with ERD diagram (2-3 hours, orchestrator)
+- [ ] [task-020](../items/task-020-migration-rollback-scripts.md) - Write migration rollback scripts (2-3 hours, database)
 
 ## Dependencies
 - PostgreSQL 17 database
@@ -173,6 +174,8 @@ N/A - This is a backend/database feature with no direct UI
 
 ## Progress Log
 - [2025-12-13 21:20] Feature created for Epic-001
+- [2025-12-14 00:25] Status changed to ready-for-implementation
+- [2025-12-14 00:25] Tasks broken down: 10 database tasks created (25-35 hours estimated)
 
 ## Testing Strategy
 - [ ] Migration up/down scripts tested
