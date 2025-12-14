@@ -19,7 +19,8 @@ VALUES
   ('000', 'create_migrations_table', NOW()),
   ('001', 'create_users_table', NOW()),
   ('011', 'create_households_table', NOW()),
-  ('012', 'create_household_members_table', NOW())
+  ('012', 'create_household_members_table', NOW()),
+  ('013', 'create_children_table', NOW())
 ON CONFLICT (version) DO NOTHING;
 
 -- Users table for authentication (supports email/password and OAuth)
@@ -63,6 +64,18 @@ CREATE TABLE IF NOT EXISTS household_members (
 CREATE INDEX IF NOT EXISTS idx_household_members_household ON household_members(household_id);
 CREATE INDEX IF NOT EXISTS idx_household_members_user ON household_members(user_id);
 
+-- Children table (profiles for household task assignments)
+CREATE TABLE IF NOT EXISTS children (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  household_id UUID NOT NULL REFERENCES households(id) ON DELETE CASCADE,
+  name VARCHAR(255) NOT NULL,
+  birth_year INTEGER,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE INDEX IF NOT EXISTS idx_children_household ON children(household_id);
+
 -- Sample items table (for testing)
 CREATE TABLE IF NOT EXISTS items (
   id SERIAL PRIMARY KEY,
@@ -94,6 +107,11 @@ EXECUTE FUNCTION update_updated_at_column();
 
 CREATE TRIGGER update_households_updated_at
 BEFORE UPDATE ON households
+FOR EACH ROW
+EXECUTE FUNCTION update_updated_at_column();
+
+CREATE TRIGGER update_children_updated_at
+BEFORE UPDATE ON children
 FOR EACH ROW
 EXECUTE FUNCTION update_updated_at_column();
 

@@ -4,11 +4,13 @@
 - **ID**: task-013
 - **Feature**: feature-002 - Multi-Tenant Database Schema
 - **Epic**: epic-001 - Multi-Tenant Foundation
-- **Status**: pending
+- **Status**: completed
 - **Priority**: critical
 - **Created**: 2025-12-14
+- **Completed**: 2025-12-14
 - **Assigned Agent**: database
 - **Estimated Duration**: 2-3 hours
+- **Actual Duration**: 0.5 hours
 
 ## Description
 Create the children table to store child profiles within households. These profiles represent the children who will be assigned tasks (separate from user accounts). A child profile includes name and birth year for age-appropriate task assignment. This enables the core functionality of the chore app: assigning tasks to specific children.
@@ -23,13 +25,13 @@ Create the children table to store child profiles within households. These profi
 - Test data isolation (children only visible to their household)
 
 ## Acceptance Criteria
-- [ ] Migration file created (013_create_children_table.sql)
-- [ ] Table has id (UUID PK), household_id (FK), name (VARCHAR 255 NOT NULL), birth_year (INTEGER), created_at, updated_at
-- [ ] Foreign key to households with ON DELETE CASCADE
-- [ ] Index on household_id: idx_children_household
-- [ ] Migration tested with sample data
-- [ ] init.sql updated
-- [ ] Data isolation verified (cannot see other household's children)
+- [x] Migration file created (013_create_children_table.sql)
+- [x] Table has id (UUID PK), household_id (FK), name (VARCHAR 255 NOT NULL), birth_year (INTEGER), created_at, updated_at
+- [x] Foreign key to households with ON DELETE CASCADE
+- [x] Index on household_id: idx_children_household
+- [x] Migration tested with sample data
+- [x] init.sql updated
+- [x] Data isolation verified (cannot see other household's children)
 
 ## Dependencies
 - task-011: Households table must exist
@@ -113,10 +115,22 @@ EOF
 
 ## Progress Log
 - [2025-12-14 00:20] Task created from feature-002 breakdown
+- [2025-12-14 02:10] Status changed to in-progress
+- [2025-12-14 02:15] Migration file 013_create_children_table.sql created
+- [2025-12-14 02:20] Updated init.sql with children table, index, and trigger
+- [2025-12-14 02:25] Migration applied successfully and columns verified
+- [2025-12-14 02:30] Sample data inserted and scoped queries verified
+- [2025-12-14 02:35] CASCADE delete verified (children removed with household)
+- [2025-12-14 02:40] Migration recorded in schema_migrations (version 013)
+- [2025-12-14 02:45] Idempotency confirmed (safe to run multiple times)
+- [2025-12-14 02:50] All acceptance criteria met, status changed to completed
 
 ## Related Files
 - `docker/postgres/migrations/013_create_children_table.sql`
 - `docker/postgres/init.sql`
 
 ## Lessons Learned
-[To be filled after completion]
+- Index on household_id ensures efficient scoped queries
+- Using birth_year (nullable) balances utility and privacy
+- Clear migration conventions speed up implementation
+- Testing CASCADE deletes prevents orphaned records
