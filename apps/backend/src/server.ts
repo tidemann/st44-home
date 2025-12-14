@@ -225,21 +225,6 @@ const refreshSchema = {
   },
 };
 
-// Health check endpoint
-fastify.get('/health', async (request, reply) => {
-  try {
-    await pool.query('SELECT 1');
-    return { status: 'ok', database: 'connected' };
-  } catch (error) {
-    reply.code(503);
-    return {
-      status: 'error',
-      database: 'disconnected',
-      error: error instanceof Error ? error.message : 'Unknown error',
-    };
-  }
-});
-
 // Registration endpoint
 fastify.post<RegisterRequest, { Reply: RegisterResponse | ErrorResponse }>(
   '/api/auth/register',
@@ -605,17 +590,14 @@ fastify.get('/health/database', async (request, reply) => {
       healthCheck.database.responseTime = Date.now() - startTime;
     } catch (error) {
       healthCheck.database.connected = false;
-      healthCheck.database.error =
-        error instanceof Error ? error.message : 'Connection failed';
+      healthCheck.database.error = error instanceof Error ? error.message : 'Connection failed';
       healthCheck.status = 'unhealthy';
       return reply.code(503).send(healthCheck);
     }
 
     // Check migrations
     try {
-      const result = await pool.query(
-        'SELECT version FROM schema_migrations ORDER BY version',
-      );
+      const result = await pool.query('SELECT version FROM schema_migrations ORDER BY version');
       healthCheck.migrations.applied = result.rows.map((row) => row.version);
       healthCheck.migrations.count = result.rows.length;
       healthCheck.migrations.latest = result.rows[result.rows.length - 1]?.version || null;
@@ -658,9 +640,7 @@ fastify.get('/health/database', async (request, reply) => {
       }
     }
 
-    healthCheck.schema.all_tables_exist = healthCheck.schema.critical_tables.every(
-      (t) => t.exists,
-    );
+    healthCheck.schema.all_tables_exist = healthCheck.schema.critical_tables.every((t) => t.exists);
 
     if (!healthCheck.schema.all_tables_exist) {
       healthCheck.status = 'degraded';
