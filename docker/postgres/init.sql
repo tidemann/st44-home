@@ -76,6 +76,21 @@ CREATE TABLE IF NOT EXISTS children (
 
 CREATE INDEX IF NOT EXISTS idx_children_household ON children(household_id);
 
+-- Tasks table (templates/definitions for household chores)
+CREATE TABLE IF NOT EXISTS tasks (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  household_id UUID NOT NULL REFERENCES households(id) ON DELETE CASCADE,
+  name VARCHAR(255) NOT NULL,
+  description TEXT,
+  points INTEGER DEFAULT 10,
+  rule_type VARCHAR(50) NOT NULL CHECK (rule_type IN ('weekly_rotation', 'repeating', 'daily')),
+  rule_config JSONB,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE INDEX IF NOT EXISTS idx_tasks_household ON tasks(household_id);
+
 -- Sample items table (for testing)
 CREATE TABLE IF NOT EXISTS items (
   id SERIAL PRIMARY KEY,
@@ -112,6 +127,11 @@ EXECUTE FUNCTION update_updated_at_column();
 
 CREATE TRIGGER update_children_updated_at
 BEFORE UPDATE ON children
+FOR EACH ROW
+EXECUTE FUNCTION update_updated_at_column();
+
+CREATE TRIGGER update_tasks_updated_at
+BEFORE UPDATE ON tasks
 FOR EACH ROW
 EXECUTE FUNCTION update_updated_at_column();
 
