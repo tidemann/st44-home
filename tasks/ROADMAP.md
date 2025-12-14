@@ -16,22 +16,24 @@ This roadmap outlines planned features and epics for the project. It's maintaine
 
 ### 🔴 CRITICAL - Production Blocked
 
-**Feature-005: Production Database Deployment & Migration System** 🚨 CRITICAL BUG
+**Feature-005: Production Database Deployment & Migration System** 🚨 **AUTOMATION COMPLETE - MANUAL FIX PENDING**
 - **Priority**: Critical (Production Blocking)
-- **Status**: pending (tasks created)
+- **Status**: in-progress (automation deployed, manual fix pending)
 - **Duration**: 1 day (8-10 hours)
 - **File**: [feature-005-production-database-deployment.md](features/feature-005-production-database-deployment.md)
 - **Description**: Fix production 500 errors - database schema missing in deployed environment
 - **Why Now**: PRODUCTION IS BROKEN - Users cannot register accounts
 - **Issue**: `relation "users" does not exist` - Migrations never applied to production
 - **Impact**: All user registration attempts fail with 500 error
-- **Tasks**: 6 tasks (immediate fix + automation)
-  - [task-021](items/task-021-audit-deployment-process.md): Audit deployment process (1 hour)
-  - [task-022](items/task-022-create-migration-runner-script.md): Create migration runner script (2-3 hours)
-  - [task-023](items/task-023-apply-migrations-to-production.md): Apply existing migrations to production **IMMEDIATE** (1 hour)
-  - [task-024](items/task-024-add-migration-to-deploy-workflow.md): Add migration to deploy workflow (2-3 hours)
-  - [task-025](items/task-025-database-health-check-endpoint.md): Database health check endpoint (2-3 hours)
-  - [task-026](items/task-026-document-deployment-process.md): Document deployment process (1 hour)
+- **PR**: [#38 merged](https://github.com/tidemann/st44-home/pull/38) - Automation deployed
+- **Tasks**: 6 tasks (5 completed, 1 pending)
+  - ✅ [task-021](items/done/task-021-audit-deployment-process.md): Audit deployment process (PR #38)
+  - ✅ [task-022](items/done/task-022-create-migration-runner-script.md): Create migration runner script (PR #38)
+  - ⏳ [task-023](items/task-023-apply-migrations-to-production.md): Apply existing migrations to production **IMMEDIATE ACTION REQUIRED**
+  - ✅ [task-024](items/done/task-024-add-migration-to-deploy-workflow.md): Add migration to deploy workflow (PR #38)
+  - ✅ [task-025](items/done/task-025-database-health-check-endpoint.md): Database health check endpoint (PR #38)
+  - ✅ [task-026](items/done/task-026-document-deployment-process.md): Document deployment process (PR #38)
+- **Next Action**: SSH to production server and run migration script to restore service
 
 ### 🛡️ CRITICAL - Quality Infrastructure
 
@@ -331,6 +333,27 @@ Features are prioritized based on:
 4. Suggest new features for consideration
 
 ## Changelog
+
+### 2025-12-14 (Late - PR #39 Merged)
+- 🎉 **PR #39 MERGED** - Root cause fixed: migrations now embedded in Docker image
+  - Modified `docker/postgres/Dockerfile` to include migrations in image
+  - Updated deployment workflow to run migrations via `docker exec`
+  - Made migration script detect container vs host environment
+  - **IMPACT**: Future deployments will auto-apply migrations correctly
+  - **REMAINING**: task-023 still pending (manual fix to restore current production)
+  - New database image building in CI with migrations embedded
+  - After next deployment, migration system fully operational
+
+### 2025-12-14 (Late - PR #38 Merged)
+- 🎉 **PR #38 MERGED** - Database migration automation deployed
+  - Migration runner script created (`docker/postgres/run-migrations.sh`)
+  - Deploy workflow updated to run migrations automatically
+  - Health check endpoint added (`GET /health/database`)
+  - Comprehensive deployment documentation created (`docs/DEPLOYMENT.md`)
+  - 5 of 6 tasks completed (tasks 021, 022, 024, 025, 026)
+  - **PRODUCTION STILL BROKEN** - task-023 pending (manual migration application)
+  - Future deployments will auto-migrate (prevention complete)
+  - Current production needs manual intervention to restore service
 
 ### 2025-12-14 (Planning - E2E Testing)
 - 🛡️ **Epic-006: Testing & Quality Assurance Infrastructure** - CREATED

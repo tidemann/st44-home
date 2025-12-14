@@ -166,6 +166,8 @@ curl -X POST https://home.st44.no/api/auth/register \
 
 ## Progress Log
 - [2025-12-14 02:30] Task created - Emergency fix to restore production service
+- [2025-12-14 02:21] PR #39 merged - Root cause fixed (migrations now embedded in Docker image)
+- [2025-12-14 02:21] Manual migration application still needed to restore current production
 
 ## Testing Results
 [To be filled after migrations applied]
