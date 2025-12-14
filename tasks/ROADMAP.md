@@ -191,6 +191,17 @@ _Features under consideration but not yet prioritized_
   - [See all related PRs](#tasks) #21-#29
 
 #### Tasks
+- ✅ **Task-017: Add Performance Indexes** (2025-12-14)
+  - Created migration 017_add_performance_indexes.sql
+  - 4 composite/unique indexes for query optimization
+  - idx_task_assignments_child_due_status (child's daily task view)
+  - idx_task_assignments_household_status_due (household task management)
+  - idx_users_email (UNIQUE - fast login lookups)
+  - idx_children_household_name (children search)
+  - All 15 indexes verified in database
+  - Updated init.sql for fresh installations
+  - Completed in 0.5 hours (estimated 2-3 hours)
+  - [PR #52](https://github.com/tidemann/st44-home/pull/52)
 - ✅ **Task-023: Apply Migrations to Production** (2025-12-14)
   - Verified all 8 migrations applied successfully
   - Database health check: HEALTHY
@@ -343,6 +354,21 @@ Features are prioritized based on:
 4. Suggest new features for consideration
 
 ## Changelog
+
+### 2025-12-14 (Task-017 Complete! 🎯)
+- 🎯 **PR #52 MERGED** - Task-017 (Add Performance Indexes) completed
+  - Created migration 017_add_performance_indexes.sql
+  - Implemented 4 composite/unique indexes for common query patterns:
+    - idx_task_assignments_child_due_status: Child's daily task view optimization
+    - idx_task_assignments_household_status_due: Household task management queries
+    - idx_users_email (UNIQUE): Fast login lookups + email uniqueness enforcement
+    - idx_children_household_name: Children search/filter optimization
+  - Updated init.sql with all composite indexes for fresh installations
+  - Verified 15 total indexes across 7 multi-tenant tables
+  - Migration tested and applied successfully with idempotency
+  - Task completed in 0.5 hours (estimated 2-3 hours)
+  - **Feature-002 Progress**: 7/10 tasks complete (70%)
+  - **Next**: task-018 (Row-Level Security Policies)
 
 ### 2025-12-14 (Feature-006 Ready! 📋)
 - 📋 **PR #40 MERGED** - Feature-006 broken down into 9 implementation tasks
