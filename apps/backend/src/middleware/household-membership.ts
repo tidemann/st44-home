@@ -34,7 +34,8 @@ export async function validateHouseholdMembership(
   request: FastifyRequest<HouseholdRouteParams>,
   reply: FastifyReply,
 ) {
-  const householdId = request.params.id || request.params.householdId;
+  // Prioritize householdId param (for nested routes), fallback to id (for direct household routes)
+  const householdId = request.params.householdId || request.params.id;
   const userId = request.user?.userId;
 
   if (!userId) {

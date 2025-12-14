@@ -5,6 +5,7 @@ import jwt from 'jsonwebtoken';
 import { OAuth2Client } from 'google-auth-library';
 import { pool } from './database.js';
 import householdRoutes from './routes/households.js';
+import childrenRoutes from './routes/children.js';
 
 // Build Fastify app
 async function buildApp() {
@@ -19,6 +20,7 @@ async function buildApp() {
 
   // Register routes
   await fastify.register(householdRoutes);
+  await fastify.register(childrenRoutes);
 
   return fastify;
 }
