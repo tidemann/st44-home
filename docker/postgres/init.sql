@@ -24,7 +24,8 @@ VALUES
   ('014', 'create_tasks_table', NOW()),
   ('015', 'create_task_assignments_table', NOW()),
   ('016', 'create_task_completions_table', NOW()),
-  ('017', 'add_performance_indexes', NOW())
+  ('017', 'add_performance_indexes', NOW()),
+  ('018', 'implement_row_level_security', NOW())
 ON CONFLICT (version) DO NOTHING;
 
 -- Users table for authentication (supports email/password and OAuth)
@@ -175,3 +176,42 @@ CREATE TRIGGER update_items_updated_at
 BEFORE UPDATE ON items
 FOR EACH ROW
 EXECUTE FUNCTION update_updated_at_column();
+
+-- ============================================================================
+-- Row-Level Security (RLS) Policies
+-- ============================================================================
+-- Defense-in-depth: RLS provides database-level data isolation
+-- Even if application code bypasses filtering, database enforces household isolation
+
+-- Enable RLS on all tenant-scoped tables
+ALTER TABLE households ENABLE ROW LEVEL SECURITY;
+ALTER TABLE household_members ENABLE ROW LEVEL SECURITY;
+ALTER TABLE children ENABLE ROW LEVEL SECURITY;
+ALTER TABLE tasks ENABLE ROW LEVEL SECURITY;
+ALTER TABLE task_assignments ENABLE ROW LEVEL SECURITY;
+ALTER TABLE task_completions ENABLE ROW LEVEL SECURITY;
+
+-- Create RLS policies (application sets app.current_household_id per request)
+CREATE POLICY IF NOT EXISTS households_isolation ON households
+FOR ALL
+USING (id = current_setting('app.current_household_id', TRUE)::UUID);
+
+CREATE POLICY IF NOT EXISTS household_members_isolation ON household_members
+FOR ALL
+USING (household_id = current_setting('app.current_household_id', TRUE)::UUID);
+
+CREATE POLICY IF NOT EXISTS children_isolation ON children
+FOR ALL
+USING (household_id = current_setting('app.current_household_id', TRUE)::UUID);
+
+CREATE POLICY IF NOT EXISTS tasks_isolation ON tasks
+FOR ALL
+USING (household_id = current_setting('app.current_household_id', TRUE)::UUID);
+
+CREATE POLICY IF NOT EXISTS task_assignments_isolation ON task_assignments
+FOR ALL
+USING (household_id = current_setting('app.current_household_id', TRUE)::UUID);
+
+CREATE POLICY IF NOT EXISTS task_completions_isolation ON task_completions
+FOR ALL
+USING (household_id = current_setting('app.current_household_id', TRUE)::UUID);

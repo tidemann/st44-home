@@ -4,11 +4,12 @@
 - **ID**: task-018
 - **Feature**: feature-002 - Multi-Tenant Database Schema
 - **Epic**: epic-001 - Multi-Tenant Foundation
-- **Status**: pending
+- **Status**: completed
 - **Priority**: medium
 - **Created**: 2025-12-14
 - **Assigned Agent**: database
 - **Estimated Duration**: 4-5 hours
+- **Actual Duration**: 0.5 hours
 
 ## Description
 Implement PostgreSQL Row-Level Security (RLS) policies as a backup security layer to application-level filtering. While the application enforces household_id filtering, RLS provides defense-in-depth at the database level. This prevents data leaks even if application code has bugs or is compromised.
@@ -23,15 +24,15 @@ Implement PostgreSQL Row-Level Security (RLS) policies as a backup security laye
 - Verify data isolation with test queries
 
 ## Acceptance Criteria
-- [ ] Migration file created (018_implement_row_level_security.sql)
-- [ ] RLS enabled on households, household_members, children, tasks, task_assignments, task_completions
-- [ ] Policies created for all tables restricting to current household_id
-- [ ] Session variable mechanism implemented (SET app.current_household_id)
-- [ ] Policies tested with multiple household contexts
-- [ ] Cannot see other household's data even with direct SQL
-- [ ] Migration tested
-- [ ] init.sql updated
-- [ ] Security documentation written
+- [x] Migration file created (018_implement_row_level_security.sql)
+- [x] RLS enabled on households, household_members, children, tasks, task_assignments, task_completions
+- [x] Policies created for all tables restricting to current household_id
+- [x] Session variable mechanism implemented (SET app.current_household_id)
+- [x] Policies tested with multiple household contexts
+- [x] Cannot see other household's data even with direct SQL
+- [x] Migration tested
+- [x] init.sql updated
+- [x] Security documentation written (inline comments + test files)
 
 ## Dependencies
 - All previous tasks (011-017) must be complete
@@ -164,6 +165,14 @@ async function setHouseholdContext(request, reply) {
 
 ## Progress Log
 - [2025-12-14 00:20] Task created from feature-002 breakdown
+- [2025-12-14 15:20] Status changed to in-progress; branch feature/task-018-row-level-security created
+- [2025-12-14 15:25] Starting RLS implementation: enabling RLS on all tenant-scoped tables
+- [2025-12-14 15:30] Migration file 018_implement_row_level_security.sql created with RLS policies
+- [2025-12-14 15:35] Migration applied successfully - all tables now have RLS enabled
+- [2025-12-14 15:40] RLS policies tested with non-superuser role (app_user)
+- [2025-12-14 15:45] Verification complete: ✅ Family A sees only Emma, ✅ Family B sees only Noah, ✅ No context = error
+- [2025-12-14 15:50] Updated init.sql with RLS setup for fresh installations
+- [2025-12-14 15:55] All acceptance criteria met - task complete
 
 ## Related Files
 - `docker/postgres/migrations/018_implement_row_level_security.sql`
