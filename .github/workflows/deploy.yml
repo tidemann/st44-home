@@ -135,33 +135,15 @@ jobs:
             ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} \
             'docker ps --filter "name=st44" --format "table {{.Names}}\t{{.Status}}\t{{.Ports}}"'
           
-          echo "Checking for docker-compose.override.yml..."
+          echo "Checking backend health endpoint (direct)..."
           ssh -i ~/.ssh/id_deploy -o StrictHostKeyChecking=yes \
             ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} \
-            'ls -la /srv/st44-home/infra/docker-compose.override.yml || echo "No override file found"'
+            'curl -f http://localhost:3000/health || exit 1'
           
-          echo "Removing docker-compose.override.yml if it exists..."
+          echo "Checking database health endpoint (via backend)..."
           ssh -i ~/.ssh/id_deploy -o StrictHostKeyChecking=yes \
             ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} \
-            'rm -f /srv/st44-home/infra/docker-compose.override.yml && echo "Removed override file (if existed)"'
-          
-          echo "Restarting frontend with correct port mapping..."
-          ssh -i ~/.ssh/id_deploy -o StrictHostKeyChecking=yes \
-            ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} \
-            'cd /srv/st44-home/infra && docker compose up -d frontend'
-          
-          echo "Waiting for frontend to restart..."
-          sleep 5
-          
-          echo "Checking application health endpoint..."
-          ssh -i ~/.ssh/id_deploy -o StrictHostKeyChecking=yes \
-            ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} \
-            'for i in {1..30}; do curl -f http://localhost/health && break || sleep 2; done'
-          
-          echo "Checking database health..."
-          ssh -i ~/.ssh/id_deploy -o StrictHostKeyChecking=yes \
-            ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} \
-            'curl -s http://localhost/health/database | head -20 || echo "Database health check failed"'
+            'curl -s http://localhost:3000/health/database | head -20 || echo "Database health check failed"'
 
       - name: Purge Cloudflare Cache
         run: |
