@@ -14,28 +14,7 @@ This roadmap outlines planned features and epics for the project. It's maintaine
 
 ## Now (Current Sprint - Phase 1 MVP)
 
-### 🔴 CRITICAL - Production Blocked
-
-**Feature-005: Production Database Deployment & Migration System** 🚨 **AUTOMATION COMPLETE - MANUAL FIX PENDING**
-- **Priority**: Critical (Production Blocking)
-- **Status**: in-progress (automation deployed, manual fix pending)
-- **Duration**: 1 day (8-10 hours)
-- **File**: [feature-005-production-database-deployment.md](features/feature-005-production-database-deployment.md)
-- **Description**: Fix production 500 errors - database schema missing in deployed environment
-- **Why Now**: PRODUCTION IS BROKEN - Users cannot register accounts
-- **Issue**: `relation "users" does not exist` - Migrations never applied to production
-- **Impact**: All user registration attempts fail with 500 error
-- **PR**: [#38 merged](https://github.com/tidemann/st44-home/pull/38) - Automation deployed
-- **Tasks**: 6 tasks (5 completed, 1 pending)
-  - ✅ [task-021](items/done/task-021-audit-deployment-process.md): Audit deployment process (PR #38)
-  - ✅ [task-022](items/done/task-022-create-migration-runner-script.md): Create migration runner script (PR #38)
-  - ⏳ [task-023](items/task-023-apply-migrations-to-production.md): Apply existing migrations to production **IMMEDIATE ACTION REQUIRED**
-  - ✅ [task-024](items/done/task-024-add-migration-to-deploy-workflow.md): Add migration to deploy workflow (PR #38)
-  - ✅ [task-025](items/done/task-025-database-health-check-endpoint.md): Database health check endpoint (PR #38)
-  - ✅ [task-026](items/done/task-026-document-deployment-process.md): Document deployment process (PR #38)
-- **Next Action**: SSH to production server and run migration script to restore service
-
-### 🛡️ CRITICAL - Quality Infrastructure
+### ️ CRITICAL - Quality Infrastructure
 
 **Epic-006: Testing & Quality Assurance Infrastructure** 🛡️ PREVENT PRODUCTION BUGS
 - **Priority**: Critical (Deployment Safety)
@@ -61,7 +40,7 @@ This roadmap outlines planned features and epics for the project. It's maintaine
 - **Coverage**: Registration, login, database validation, OAuth (if implemented)
 - **Impact**: No more production failures due to missing schema or broken auth flows
 - **Tasks**: 9 tasks estimated (Playwright setup → critical tests → CI integration)
-- **Dependencies**: Must wait for feature-005 to be merged (migration system operational)
+- **Dependencies**: feature-005 complete ✅
 
 ### 🎯 MVP Epics (8-week timeline)
 
@@ -75,7 +54,7 @@ This roadmap outlines planned features and epics for the project. It's maintaine
 - **Dependencies**: None (foundational)
 - **Features**: 4 features (41 tasks estimated)
   - ✅ [feature-001](features/done/feature-001-user-authentication.md): User Authentication (10 tasks, 2 days) **COMPLETED**
-  - ⏸️ [feature-002](features/feature-002-multi-tenant-schema.md): Multi-Tenant Schema (10 tasks, 2-3 days) **PAUSED** (blocked by feature-005)
+  - [feature-002](features/feature-002-multi-tenant-schema.md): Multi-Tenant Schema (10 tasks, 2-3 days) **READY FOR IMPLEMENTATION**
   - [feature-003](features/feature-003-household-management.md): Household Management (11 tasks, 3-4 days)
   - [feature-004](features/feature-004-user-invitation-system.md): User Invitations (11 tasks, 2-3 days)
 
@@ -177,6 +156,17 @@ _Features under consideration but not yet prioritized_
 ### December 2025
 
 #### Features
+- 🎉 **Feature-005: Production Database Deployment & Migration System** (2025-12-14) **COMPLETED**
+  - Fixed production 500 errors - database schema now deployed correctly
+  - Created automated migration system embedded in Docker image
+  - Added migration runner script with idempotent execution
+  - Integrated migrations into deployment workflow
+  - Added comprehensive database health check endpoint
+  - Documented deployment process and production architecture
+  - Fixed deployment health checks to use correct port (3000)
+  - Verified production operational: all migrations applied, registration working
+  - All 6 tasks completed in 1 day (emergency fix + prevention)
+  - [See all related PRs](#tasks) #38, #39 + deployment fixes
 - 🎉 **Feature-001: User Authentication System** (2025-12-14) **COMPLETED**
   - Secure email/password authentication with JWT tokens
   - Google OAuth "Sign in with Google" integration
@@ -188,6 +178,13 @@ _Features under consideration but not yet prioritized_
   - [See all related PRs](#tasks) #21-#29
 
 #### Tasks
+- ✅ **Task-023: Apply Migrations to Production** (2025-12-14)
+  - Verified all 8 migrations applied successfully
+  - Database health check: HEALTHY
+  - All critical tables exist and operational
+  - User registration tested and working (201 response)
+  - Production fully functional
+  - [Automated via deployment workflow]
 - ✅ **Task-010: Google OAuth Integration** (2025-12-14)
   - Backend: POST /api/auth/google endpoint with google-auth-library
   - Backend: ID token verification and user account creation
@@ -333,6 +330,25 @@ Features are prioritized based on:
 4. Suggest new features for consideration
 
 ## Changelog
+
+### 2025-12-14 (Production Restored! 🎉)
+- ✅ **PRODUCTION OPERATIONAL** - Feature-005 Complete!
+  - Deployment succeeded with correct health checks (port 3000)
+  - All 8 migrations applied successfully in production
+  - Database health check: HEALTHY (response time 11ms)
+  - User registration tested and working (created test user successfully)
+  - All critical tables verified: users, households, household_members, children, tasks, task_assignments, task_completions
+  - **IMPACT**: Users can now register accounts, production is fully functional
+- ✅ **Task-023 Complete** - Production database operational
+  - Verification: Database health endpoint returns healthy status
+  - Verification: All 8 migrations applied (000, 001, 011-016)
+  - Verification: Registration endpoint working (201 response)
+  - Automated migration system working as designed
+- 🔧 **Deployment Workflow Fixed** - Health checks corrected
+  - Fixed health check to use correct port (localhost:3000 instead of localhost:80)
+  - Documented production architecture (Frontend:3001, Backend:3000, DB:5432)
+  - Simplified health check logic (removed unnecessary diagnostics)
+  - Deployment CI passing reliably
 
 ### 2025-12-14 (Late - PR #39 Merged)
 - 🎉 **PR #39 MERGED** - Root cause fixed: migrations now embedded in Docker image
