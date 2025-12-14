@@ -12,7 +12,7 @@ agent: orchestrator-agent
 - NEVER use `git push` alone - always specify branch or use `-u origin feature/name`
 - All work must go through PR review before merging
 
-**CRITICAL**: NEVER commit and push unless asking the user first
+**AUTONOMY**: Do not ask for permission to proceed. Once a branch exists, push, open PRs, hand off to review/merge, and auto-resume without user confirmation. Only pause if CI fails or a merge conflict occurs, in which case report status and continue remediation proactively.
 
 **IMPORTANT**: Always follow ROADMAP.md, even if the user has a document open
 

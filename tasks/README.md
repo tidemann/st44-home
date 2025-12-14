@@ -207,6 +207,27 @@ Each task/feature typically results in:
 - Pull request: Links back to task file
 - Commit messages: Reference task ID
 
+### PR Handoff Loop (Automated)
+The orchestrator follows an autonomous workflow:
+1. **Implement**: Create branch, implement task, commit changes
+2. **Push & PR**: Push branch and open PR targeting main
+3. **Handoff**: Invoke `review-and-merge.prompt.md` with PR number or branch
+4. **CI Wait**: Unified prompt polls CI status until checks pass or fail
+5. **Merge**: On green, squash-merge and delete branch
+6. **Signal**: Emit "merge complete" signal
+7. **Auto-Resume**: Automatically re-invoke `continue-work.prompt.md` to pick next priority
+
+This loop runs without user confirmation, only pausing on CI failures or merge conflicts.
+
+**Related Prompts**:
+- `.github/prompts/continue-work.prompt.md` - Main workflow driver
+- `.github/prompts/review-and-merge.prompt.md` - Unified handoff, CI wait, merge
+- `.github/prompts/merge-pr.prompt.md` - Alias to unified flow
+
+**Key PRs**:
+- PR #42: Unified review/merge handoff and signals
+- PR #43: Test database setup for E2E
+
 ## Examples
 
 - `features/feature-001-user-profile.md` - Complete feature example

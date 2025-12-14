@@ -40,8 +40,8 @@ This roadmap outlines planned features and epics for the project. It's maintaine
 - **Coverage**: Registration, login, database validation, OAuth (if implemented)
 - **Impact**: No more production failures due to missing schema or broken auth flows
 - **Tasks**: 9 tasks created (027-035) [PR #40 merged]
-  - [ ] task-027: Install and configure Playwright (4-6h)
-  - [ ] task-028: Set up test database (4-6h)
+  - [x] task-027: Install and configure Playwright (4-6h) **COMPLETED** [PR #41]
+  - [x] task-028: Set up test database (4-6h) **COMPLETED** [PR #43]
   - [ ] task-029: Create test fixtures and utilities (4-6h)
   - [ ] task-030: Registration flow E2E tests ⚠️ **CRITICAL** (6-8h)
   - [ ] task-031: Login flow E2E tests (4-6h)
