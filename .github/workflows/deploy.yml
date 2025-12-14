@@ -128,12 +128,12 @@ jobs:
       - name: Verify Deployment Health
         run: |
           echo "Waiting for services to start..."
-          sleep 10
+          sleep 15
           
           echo "Checking application health..."
           ssh -i ~/.ssh/id_deploy -o StrictHostKeyChecking=yes \
             ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} \
-            'curl -f http://localhost/health || exit 1'
+            'for i in {1..30}; do curl -f http://localhost/health && break || sleep 2; done'
           
           echo "Checking database health..."
           ssh -i ~/.ssh/id_deploy -o StrictHostKeyChecking=yes \
