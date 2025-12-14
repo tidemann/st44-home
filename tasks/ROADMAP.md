@@ -32,14 +32,24 @@ This roadmap outlines planned features and epics for the project. It's maintaine
 
 **Feature-006: E2E Testing Infrastructure** ⚡ REGISTRATION MUST NEVER FAIL
 - **Priority**: Critical (Prevents Production Bugs)
-- **Status**: pending (awaiting task breakdown)
-- **Duration**: 5-6 days
+- **Status**: ready-for-implementation (tasks broken down)
+- **Duration**: 5-6 days (35-46 hours)
 - **File**: [feature-006-e2e-testing-infrastructure.md](features/feature-006-e2e-testing-infrastructure.md)
 - **Description**: Playwright E2E tests for critical user flows, especially registration
 - **Why Now**: Would have caught production bug in PR checks before deployment
 - **Coverage**: Registration, login, database validation, OAuth (if implemented)
 - **Impact**: No more production failures due to missing schema or broken auth flows
-- **Tasks**: 9 tasks estimated (Playwright setup → critical tests → CI integration)
+- **Tasks**: 9 tasks created (027-035) [PR #40 merged]
+  - [ ] task-027: Install and configure Playwright (4-6h)
+  - [ ] task-028: Set up test database (4-6h)
+  - [ ] task-029: Create test fixtures and utilities (4-6h)
+  - [ ] task-030: Registration flow E2E tests ⚠️ **CRITICAL** (6-8h)
+  - [ ] task-031: Login flow E2E tests (4-6h)
+  - [ ] task-032: Database validation tests (3-4h)
+  - [ ] task-033: Google OAuth E2E tests (optional) (4-5h)
+  - [ ] task-034: CI/CD integration ⚠️ **CRITICAL** (4-6h)
+  - [ ] task-035: E2E testing documentation (2-3h)
+- **Critical Path**: 027 → 028 → 029 → 030 → 034
 - **Dependencies**: feature-005 complete ✅
 
 ### 🎯 MVP Epics (8-week timeline)
@@ -330,6 +340,22 @@ Features are prioritized based on:
 4. Suggest new features for consideration
 
 ## Changelog
+
+### 2025-12-14 (Feature-006 Ready! 📋)
+- 📋 **PR #40 MERGED** - Feature-006 broken down into 9 implementation tasks
+  - Created task-027: Install and configure Playwright (4-6h)
+  - Created task-028: Set up test database and migration runner (4-6h)
+  - Created task-029: Create test fixtures and utilities (4-6h)
+  - Created task-030: Registration flow E2E tests (6-8h) ⚠️ **CRITICAL**
+  - Created task-031: Login flow E2E tests (4-6h)
+  - Created task-032: Database validation tests (3-4h)
+  - Created task-033: Google OAuth E2E tests (4-5h, optional)
+  - Created task-034: CI/CD integration (4-6h) ⚠️ **CRITICAL**
+  - Created task-035: E2E testing documentation (2-3h)
+  - **Total**: 35-46 hours (5-6 days)
+  - **Critical Path**: 027 → 028 → 029 → 030 → 034
+  - **Status**: ready-for-implementation
+  - **Next**: Start with task-027 (Playwright setup)
 
 ### 2025-12-14 (Production Restored! 🎉)
 - ✅ **PRODUCTION OPERATIONAL** - Feature-005 Complete!
