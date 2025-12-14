@@ -23,7 +23,8 @@ VALUES
   ('013', 'create_children_table', NOW()),
   ('014', 'create_tasks_table', NOW()),
   ('015', 'create_task_assignments_table', NOW()),
-  ('016', 'create_task_completions_table', NOW())
+  ('016', 'create_task_completions_table', NOW()),
+  ('017', 'add_performance_indexes', NOW())
 ON CONFLICT (version) DO NOTHING;
 
 -- Users table for authentication (supports email/password and OAuth)
@@ -42,8 +43,8 @@ CREATE TABLE IF NOT EXISTS users (
 );
 
 -- Indexes for users table
-CREATE INDEX idx_users_email ON users(email);
-CREATE UNIQUE INDEX idx_users_oauth ON users(oauth_provider, oauth_provider_id) WHERE oauth_provider IS NOT NULL;
+CREATE UNIQUE INDEX IF NOT EXISTS idx_users_email ON users(email); -- Updated to UNIQUE in migration 017
+CREATE UNIQUE INDEX IF NOT EXISTS idx_users_oauth ON users(oauth_provider, oauth_provider_id) WHERE oauth_provider IS NOT NULL;
 
 -- Households table (multi-tenant primary identifier)
 -- All other tables reference household_id for data isolation
@@ -78,6 +79,7 @@ CREATE TABLE IF NOT EXISTS children (
 );
 
 CREATE INDEX IF NOT EXISTS idx_children_household ON children(household_id);
+CREATE INDEX IF NOT EXISTS idx_children_household_name ON children(household_id, name); -- Added in migration 017 for search optimization
 
 -- Tasks table (templates/definitions for household chores)
 CREATE TABLE IF NOT EXISTS tasks (
@@ -108,6 +110,9 @@ CREATE TABLE IF NOT EXISTS task_assignments (
 CREATE INDEX IF NOT EXISTS idx_task_assignments_household ON task_assignments(household_id);
 CREATE INDEX IF NOT EXISTS idx_task_assignments_child ON task_assignments(child_id);
 CREATE INDEX IF NOT EXISTS idx_task_assignments_due_date ON task_assignments(due_date);
+-- Composite indexes added in migration 017 for query optimization
+CREATE INDEX IF NOT EXISTS idx_task_assignments_child_due_status ON task_assignments(child_id, due_date, status);
+CREATE INDEX IF NOT EXISTS idx_task_assignments_household_status_due ON task_assignments(household_id, status, due_date);
 
 -- Task completions table (historical record of completed tasks, append-only)
 CREATE TABLE IF NOT EXISTS task_completions (
