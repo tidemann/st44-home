@@ -10,6 +10,13 @@ export const routes: Routes = [
     loadComponent: () => import('./auth/register.component').then((m) => m.RegisterComponent),
   },
   {
+    path: 'household/create',
+    loadComponent: () =>
+      import('./components/household-create/household-create').then(
+        (m) => m.HouseholdCreateComponent,
+      ),
+  },
+  {
     path: '',
     redirectTo: '/login',
     pathMatch: 'full',
