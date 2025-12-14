@@ -1,30 +1,29 @@
 import Fastify, { FastifyRequest, FastifyReply } from 'fastify';
 import cors from '@fastify/cors';
-import pg from 'pg';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import { OAuth2Client } from 'google-auth-library';
+import { pool } from './database.js';
+import householdRoutes from './routes/households.js';
 
-const { Pool } = pg;
+// Build Fastify app
+async function buildApp() {
+  const fastify = Fastify({
+    logger: true,
+  });
 
-// Database connection pool
-const pool = new Pool({
-  host: process.env.DB_HOST || 'localhost',
-  port: parseInt(process.env.DB_PORT || '5432', 10),
-  database: process.env.DB_NAME || 'st44',
-  user: process.env.DB_USER || 'postgres',
-  password: process.env.DB_PASSWORD || 'postgres',
-});
+  // Register CORS
+  await fastify.register(cors, {
+    origin: process.env.CORS_ORIGIN || '*',
+  });
 
-// Create Fastify instance
-const fastify = Fastify({
-  logger: true,
-});
+  // Register routes
+  await fastify.register(householdRoutes);
 
-// Register CORS
-await fastify.register(cors, {
-  origin: process.env.CORS_ORIGIN || '*',
-});
+  return fastify;
+}
+
+const fastify = await buildApp();
 
 // JWT Configuration
 const JWT_SECRET = process.env.JWT_SECRET || 'dev-secret-change-in-production';
@@ -661,23 +660,21 @@ fastify.get('/health/database', async (request, reply) => {
 
 // Export build function for testing
 export async function build() {
-  return fastify;
+  return buildApp();
 }
 
-// Start server only when not imported as a module
-if (import.meta.url === `file://${process.argv[1]}`) {
-  const start = async () => {
-    try {
-      const port = parseInt(process.env.PORT || '3000', 10);
-      const host = process.env.HOST || '0.0.0.0';
+// Start server
+const start = async () => {
+  try {
+    const port = parseInt(process.env.PORT || '3000', 10);
+    const host = process.env.HOST || '0.0.0.0';
 
-      await fastify.listen({ port, host });
-      console.log(`🚀 Server listening on ${host}:${port}`);
-    } catch (err) {
-      fastify.log.error(err);
-      process.exit(1);
-    }
-  };
+    await fastify.listen({ port, host });
+    console.log(`🚀 Server listening on ${host}:${port}`);
+  } catch (err) {
+    fastify.log.error(err);
+    process.exit(1);
+  }
+};
 
-  start();
-}
+start();
