@@ -17,7 +17,8 @@ ON schema_migrations(applied_at);
 INSERT INTO schema_migrations (version, name, applied_at)
 VALUES 
   ('000', 'create_migrations_table', NOW()),
-  ('001', 'create_users_table', NOW())
+  ('001', 'create_users_table', NOW()),
+  ('011', 'create_households_table', NOW())
 ON CONFLICT (version) DO NOTHING;
 
 -- Users table for authentication (supports email/password and OAuth)
@@ -38,6 +39,15 @@ CREATE TABLE IF NOT EXISTS users (
 -- Indexes for users table
 CREATE INDEX idx_users_email ON users(email);
 CREATE UNIQUE INDEX idx_users_oauth ON users(oauth_provider, oauth_provider_id) WHERE oauth_provider IS NOT NULL;
+
+-- Households table (multi-tenant primary identifier)
+-- All other tables reference household_id for data isolation
+CREATE TABLE IF NOT EXISTS households (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  name VARCHAR(255) NOT NULL,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
 
 -- Sample items table (for testing)
 CREATE TABLE IF NOT EXISTS items (
@@ -65,6 +75,11 @@ $$ language 'plpgsql';
 
 CREATE TRIGGER update_users_updated_at
 BEFORE UPDATE ON users
+FOR EACH ROW
+EXECUTE FUNCTION update_updated_at_column();
+
+CREATE TRIGGER update_households_updated_at
+BEFORE UPDATE ON households
 FOR EACH ROW
 EXECUTE FUNCTION update_updated_at_column();
 
