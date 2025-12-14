@@ -89,51 +89,41 @@ Prompt files are `.prompt.md` files that serve as pre-configured instructions fo
 
 ### [review-and-merge.prompt.md](review-and-merge.prompt.md)
 **Agent**: Orchestrator  
-**Purpose**: Review completed work and create pull request
+**Purpose**: Unified review, PR creation, CI wait, and merge workflow (handoff-aware)
 
 **When to use:**
-- Work is complete and ready for review
-- All tests pass
-- Ready to create PR
+- Orchestrator hands off after pushing a feature branch
+- PR exists and needs CI wait + merge
+- No PR yet; need to create and then merge when checks pass
+
+**Handoff support:**
+- Accepts `handoff` input: PR number or feature branch name
+- If no handoff provided, auto-discovers open PRs (prefers current branch’s PR)
 
 **What it does:**
-1. Validates all acceptance criteria met
-2. Runs all checks (tests, formatting, build)
-3. Updates documentation
-4. Updates work items and roadmap
-5. Creates comprehensive PR description
-6. Creates PR (after user approval)
+1. Validates acceptance criteria and runs checks (format, test, build)
+2. Updates docs and work items
+3. Ensures a PR exists (creates if missing)
+4. Waits for GitHub CI checks to complete
+5. If checks fail, returns to Orchestrator to fix and re-push
+6. If checks pass, merges via squash and deletes branch
+7. Signals Orchestrator to resume `continue-work.prompt.md`
 
 ---
 
-### [merge-pr.prompt.md](merge-pr.prompt.md) 🆕
+### [merge-pr.prompt.md](merge-pr.prompt.md)
 **Agent**: Orchestrator  
-**Purpose**: Review and merge an existing pull request to main
+**Purpose**: Alias to unified review-and-merge; handles CI wait and merging
 
-**When to use:**
-- PR has been created and is ready to merge
-- Want to verify all checks passed
-- Ready to merge to main branch
+**Usage:** Prefer using `review-and-merge.prompt.md`. This alias:
+- Accepts handoff (PR number or branch)
+- Creates PR if missing
+- Waits for CI checks
+- Merges with squash and deletes branch
+- Signals Orchestrator to resume continue-work
 
-**What it does:**
-1. Checks PR status and CI/CD results
-2. Verifies ALL checks passed (MANDATORY)
-3. Reviews code changes
-4. Validates work item completion
-5. Merges PR using squash merge
-6. Deletes feature branch automatically
-7. Updates task tracking (moves to done/)
-8. Updates ROADMAP.md with completion
-
-**Critical**: Will NOT merge if any checks fail
-
----
-
-## How to Use Prompt Files
 
 ### Basic Usage
-Simply reference the prompt file in your message:
-
 ```
 @workspace Use continue-work.prompt.md
 ```
@@ -145,12 +135,25 @@ Follow the workflow in .github/prompts/continue-work.prompt.md
 ```
 
 ### With Context
+### Invocation Patterns (Handoff)
+
+You can pass a handoff argument (PR number or branch name) to the unified review/merge flow:
+
+```
+# Operate on a specific PR
+review-and-merge.prompt.md --handoff 41
+
+# Operate on a specific feature branch
+review-and-merge.prompt.md --handoff feature/task-027-playwright-setup
+
+# No handoff provided → auto-discover open PRs
+review-and-merge.prompt.md
+```
+
+After merge, the Orchestrator auto-resumes `continue-work.prompt.md`.
 Provide additional context when needed:
 
 ```
-Use breakdown-feature.prompt.md for feature-003
-```
-
 ### Sequential Prompts
 Chain prompts for complete workflows:
 
@@ -168,11 +171,6 @@ Each prompt file follows this structure:
 ---
 description: Brief description of what this prompt does
 agent: primary-agent-name
----
-
-# Prompt Title
-
-[Critical warnings]
 
 ## Your Task
 [Step-by-step instructions]
@@ -209,17 +207,17 @@ Prompts can be combined for larger workflows:
    - breakdown-feature.prompt.md
    - continue-work.prompt.md
 
-2. **Implementation → Review → Merge**
-   - continue-work.prompt.md
-   - review-and-merge.prompt.md
-   - merge-pr.prompt.md
+2. **Implementation → Review/Merge (Unified) → Auto-Resume**
+   - continue-work.prompt.md (implements and pushes feature branch)
+   - review-and-merge.prompt.md (handoff-aware: create or use PR, wait for CI, squash-merge, delete branch)
+   - Orchestrator auto-resumes continue-work after merge
 
-3. **Complete Feature Workflow**
+3. **Complete Feature Workflow (Unified)**
    - plan-feature.prompt.md (define feature)
    - breakdown-feature.prompt.md (create tasks)
-   - continue-work.prompt.md (implement tasks)
-   - review-and-merge.prompt.md (create PR)
-   - merge-pr.prompt.md (merge after checks pass)
+   - continue-work.prompt.md (implement tasks and push branch)
+   - review-and-merge.prompt.md (create PR if missing, wait for CI, merge)
+   - Auto-resume continue-work to pick next priority
 
 ## Creating New Prompts
 

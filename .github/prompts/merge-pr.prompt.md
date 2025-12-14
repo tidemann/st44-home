@@ -1,10 +1,10 @@
 ````prompt
 ---
-description: Review PR checks and merge to main after all requirements met
+description: Alias to unified review-and-merge; handles CI wait and merging
 agent: orchestrator-agent
 ---
 
-# Merge Pull Request
+# Merge Pull Request (Alias)
 
 **⚠️ CRITICAL MERGE RULES**:
 - ALL CI/CD checks MUST pass before merging
@@ -13,115 +13,27 @@ agent: orchestrator-agent
 - ALWAYS delete feature branch after merge
 - Update task tracking after successful merge
 
-**IMPORTANT**: This prompt is for merging EXISTING pull requests. To create a new PR, use `review-and-merge.prompt.md`
+This prompt is now an alias of the unified workflow. Prefer using [review-and-merge.prompt.md](./review-and-merge.prompt.md), which:
+- Accepts handoff (PR number or branch)
+- Creates PR if missing
+- Waits for CI checks to finish
+- Merges with squash and deletes branch
+- Signals Orchestrator to resume continue-work
 
-## Your Task
+## Quick Use
 
-0. **Identify PR to merge**:
-   - If PR number provided, use that
-   - Otherwise, check current branch's PR: `gh pr view`
-   - Verify you're working with correct PR
+Use the unified prompt instead:
 
-1. **Check PR status and requirements**:
-   ```bash
-   gh pr view <PR_NUMBER> --json state,mergeable,statusCheckRollup
-   ```
-   - Verify state is "OPEN"
-   - Verify mergeable is "MERGEABLE" (no conflicts)
-   - Verify statusCheckRollup shows all checks passed
+```bash
+# With handoff PR number
+<invoke review-and-merge.prompt.md> --handoff <PR_NUMBER>
 
-2. **Review CI/CD check results**:
-   ```bash
-   gh pr checks <PR_NUMBER>
-   ```
-   **MANDATORY REQUIREMENTS**:
-   - ✅ All checks must show "pass" status
-   - ✅ No failing tests
-   - ✅ No build errors
-   - ✅ No linting/formatting errors
-   - ❌ STOP if any checks fail - DO NOT MERGE
+# With handoff branch name
+<invoke review-and-merge.prompt.md> --handoff feature/task-027-playwright-setup
 
-3. **Review PR details**:
-   ```bash
-   gh pr view <PR_NUMBER>
-   ```
-   - Read PR description
-   - Verify changes are clear
-   - Check for any reviewer comments
-   - Ensure all conversations resolved
-
-4. **Review code changes**:
-   ```bash
-   gh pr diff <PR_NUMBER>
-   ```
-   - Scan for obvious issues
-   - Check for sensitive data (passwords, API keys)
-   - Verify follows project conventions
-   - Look for console.logs or debugging code
-
-5. **Final validation** (if not done by CI):
-   ```bash
-   # Switch to PR branch
-   gh pr checkout <PR_NUMBER>
-   
-   # Run tests
-   npm test
-   
-   # Check formatting
-   npm run format:check
-   
-   # Build if applicable
-   npm run build
-   ```
-
-6. **Verify work item completion**:
-   - Check task/feature file is updated with PR link
-   - Verify status is marked as completed
-   - Confirm acceptance criteria all checked off
-   - Ensure progress log is complete
-
-7. **Merge the PR**:
-   ```bash
-   gh pr merge <PR_NUMBER> --squash --delete-branch
-   ```
-   **Merge options explained**:
-   - `--squash`: Combines all commits into one clean commit
-   - `--delete-branch`: Automatically removes feature branch after merge
-   
-   **Alternative options** (use only if needed):
-   - `--merge`: Regular merge (preserves all commits)
-   - `--rebase`: Rebase and merge
-   - `--auto`: Enable auto-merge when checks pass
-
-8. **Verify merge success**:
-   ```bash
-   # Check PR is merged
-   gh pr view <PR_NUMBER> --json state,mergedAt
-   
-   # Switch to main and pull latest
-   git checkout main
-   git pull origin main
-   ```
-
-9. **Move completed work to done folder**:
-   ```bash
-   # Move task file to done
-   git mv tasks/items/task-XXX-name.md tasks/items/done/
-   
-   # Or move feature file
-   git mv tasks/features/feature-XXX-name.md tasks/features/done/
-   
-   # Commit the move
-   git add .
-   git commit -m "chore: move completed task-XXX to done folder"
-   git push origin main
-   ```
-
-10. **Update ROADMAP.md**:
-    - Remove completed item from "Now" section
-    - Add to "Completed" section with date
-    - Move next priority item from "Next" to "Now" if appropriate
-    - Commit and push roadmap update
+# No handoff (auto-discover open PRs)
+<invoke review-and-merge.prompt.md>
+```
 
 ## Pre-Merge Checklist
 
@@ -314,18 +226,11 @@ gh pr view <PR_NUMBER> --json state,mergedAt,mergedBy
 - Check for other PRs using same branch
 - Manually delete if safe: `git push origin --delete branch-name`
 
-## Success Criteria
+## Success Criteria (Delegated)
 
-- [ ] All CI/CD checks passed
-- [ ] No merge conflicts
-- [ ] PR reviewed and approved (if required)
-- [ ] Code quality verified
-- [ ] PR merged successfully using squash merge
-- [ ] Feature branch deleted
-- [ ] Local main branch updated
-- [ ] Work item moved to done/ folder
-- [ ] ROADMAP.md updated
-- [ ] Ready to continue with next work
+- [ ] CI/CD checks passed (handled in unified prompt)
+- [ ] Squash merge completed and branch deleted
+- [ ] Orchestrator resumes `continue-work` after merge
 
 ## Safety Checklist
 

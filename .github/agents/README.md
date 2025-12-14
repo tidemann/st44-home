@@ -80,6 +80,26 @@ This directory contains specifications for autonomous AI agents that manage the 
 - Reads: `tasks/feature-XXX-name.md`, `tasks/epic-XXX-name.md`
 - Uses: `tasks/templates/task.md`
 
+**PR Handoff Loop (Unified)**:
+- After pushing changes on a feature branch, the Orchestrator hands off to `review-and-merge.prompt.md` with a `handoff` (PR number or branch), or lets it auto-discover open PRs.
+- The unified prompt creates a PR if missing, waits for CI checks, merges with squash, and deletes the branch.
+- Signals emitted:
+   - Success: `merge complete` → Orchestrator immediately re-invokes `continue-work.prompt.md`.
+   - Blocked: `checks failing` → Orchestrator fixes issues, pushes, and re-hands off.
+   - Pending: `waiting for checks` → Orchestrator can poll until a terminal signal.
+
+**Invocation Examples**:
+```
+# Handoff with a specific PR number
+review-and-merge.prompt.md --handoff 41
+
+# Handoff with a specific feature branch
+review-and-merge.prompt.md --handoff feature/task-027-playwright-setup
+
+# No handoff (auto-discover open PRs)
+review-and-merge.prompt.md
+```
+
 ---
 
 ### 🟡 [Frontend Agent](frontend-agent.md)
