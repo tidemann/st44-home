@@ -3,7 +3,7 @@
 ## Metadata
 - **ID**: feature-006
 - **Epic**: epic-006 - Testing & Quality Assurance Infrastructure
-- **Status**: pending
+- **Status**: ready-for-implementation
 - **Priority**: critical
 - **Created**: 2025-12-14
 - **Estimated Duration**: 5-6 days
@@ -179,19 +179,19 @@ Implement comprehensive end-to-end testing infrastructure using Playwright to te
 - [ ] CI/CD integration documented
 
 ## Tasks
-**⚠️ Feature must be broken down into tasks by Orchestrator Agent before implementation**
 
-Suggested task breakdown (to be formalized by Orchestrator):
+- [ ] [task-027](../items/task-027-install-configure-playwright.md): Install and configure Playwright (4-6 hours)
+- [ ] [task-028](../items/task-028-setup-test-database.md): Set up test database and migration runner (4-6 hours)
+- [ ] [task-029](../items/task-029-create-test-fixtures-utilities.md): Create test fixtures and utilities (4-6 hours)
+- [ ] [task-030](../items/task-030-registration-flow-e2e-tests.md): Registration flow E2E tests ⚠️ **CRITICAL** (6-8 hours)
+- [ ] [task-031](../items/task-031-login-flow-e2e-tests.md): Login flow E2E tests (4-6 hours)
+- [ ] [task-032](../items/task-032-database-validation-tests.md): Database validation E2E tests (3-4 hours)
+- [ ] [task-033](../items/task-033-google-oauth-e2e-tests.md): Google OAuth E2E tests (optional) (4-5 hours)
+- [ ] [task-034](../items/task-034-integrate-e2e-tests-ci-cd.md): Integrate E2E tests into CI/CD ⚠️ **CRITICAL** (4-6 hours)
+- [ ] [task-035](../items/task-035-e2e-testing-documentation.md): E2E testing documentation (2-3 hours)
 
-- [ ] **task-027**: Install and configure Playwright
-- [ ] **task-028**: Set up test database and migration runner
-- [ ] **task-029**: Create test fixtures and utilities
-- [ ] **task-030**: Implement registration flow E2E tests
-- [ ] **task-031**: Implement login flow E2E tests
-- [ ] **task-032**: Implement database validation tests
-- [ ] **task-033**: Implement Google OAuth E2E tests (if needed)
-- [ ] **task-034**: Integrate E2E tests into CI/CD pipeline
-- [ ] **task-035**: Create E2E testing documentation
+**Total Estimated Time**: 35-46 hours (5-6 days)
+**Critical Path**: task-027 → task-028 → task-029 → task-030 → task-034
 
 ## Dependencies
 
@@ -535,7 +535,9 @@ jobs:
 
 ## Progress Log
 - [2025-12-14 22:45] Feature created by Planner Agent
-- [Pending] Orchestrator task breakdown
+- [2025-12-14] **Orchestrator task breakdown complete**: Created 9 tasks (027-035)
+- [2025-12-14] Status changed to ready-for-implementation
+- [2025-12-14] Estimated 35-46 hours total (5-6 days)
 - [Pending] Implementation start
 
 ## Testing Strategy
