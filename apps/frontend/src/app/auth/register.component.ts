@@ -80,8 +80,8 @@ export class RegisterComponent implements OnInit {
     try {
       await lastValueFrom(this.authService.loginWithGoogle(response.credential));
 
-      // Success - navigate to dashboard (user already created)
-      this.router.navigate(['/dashboard']);
+      // Success - navigate to household creation page (user already created and logged in)
+      this.router.navigate(['/household/create']);
     } catch (error: unknown) {
       const err = error as { error?: { error?: string; message?: string } };
       const message = err.error?.error || 'Google sign-up failed. Please try again.';
