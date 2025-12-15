@@ -76,7 +76,10 @@ describe('Household API', () => {
 
   after(async () => {
     // Cleanup: Delete households and users created during tests
-    await pool.query('DELETE FROM households WHERE id IN (SELECT household_id FROM household_members WHERE user_id IN ($1, $2))', [user1Id, user2Id]);
+    await pool.query(
+      'DELETE FROM households WHERE id IN (SELECT household_id FROM household_members WHERE user_id IN ($1, $2))',
+      [user1Id, user2Id],
+    );
     await pool.query('DELETE FROM users WHERE id IN ($1, $2)', [user1Id, user2Id]);
     await pool.end();
     await app.close();
@@ -433,7 +436,9 @@ describe('Household API', () => {
 
   after(async () => {
     // Cleanup test data
-    await pool.query("DELETE FROM household_members WHERE household_id IN (SELECT id FROM households WHERE name LIKE 'Test Household%')");
+    await pool.query(
+      "DELETE FROM household_members WHERE household_id IN (SELECT id FROM households WHERE name LIKE 'Test Household%')",
+    );
     await pool.query("DELETE FROM households WHERE name LIKE 'Test Household%'");
     await pool.query("DELETE FROM users WHERE email LIKE 'household-test%@example.com'");
     await pool.end();

@@ -74,7 +74,9 @@ describe('Children API', () => {
     // Get user IDs
     const adminResult = await pool.query('SELECT id FROM users WHERE email = $1', [adminEmail]);
     const parentResult = await pool.query('SELECT id FROM users WHERE email = $1', [parentEmail]);
-    const outsiderResult = await pool.query('SELECT id FROM users WHERE email = $1', [outsiderEmail]);
+    const outsiderResult = await pool.query('SELECT id FROM users WHERE email = $1', [
+      outsiderEmail,
+    ]);
 
     adminUserId = adminResult.rows[0].id;
     parentUserId = parentResult.rows[0].id;
@@ -103,7 +105,11 @@ describe('Children API', () => {
     // Cleanup: Delete children, households, and users
     await pool.query('DELETE FROM children WHERE household_id = $1', [householdId]);
     await pool.query('DELETE FROM households WHERE id = $1', [householdId]);
-    await pool.query('DELETE FROM users WHERE id IN ($1, $2, $3)', [adminUserId, parentUserId, outsiderUserId]);
+    await pool.query('DELETE FROM users WHERE id IN ($1, $2, $3)', [
+      adminUserId,
+      parentUserId,
+      outsiderUserId,
+    ]);
     await pool.end();
     await app.close();
   });
