@@ -665,7 +665,7 @@ export async function build() {
   return buildApp();
 }
 
-// Start server
+// Start server only if this module is run directly (not imported for tests)
 const start = async () => {
   try {
     const port = parseInt(process.env.PORT || '3000', 10);
@@ -679,4 +679,7 @@ const start = async () => {
   }
 };
 
-start();
+// Only start server if running directly (not imported by tests)
+if (import.meta.url === `file://${process.argv[1]}`) {
+  start();
+}
