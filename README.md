@@ -162,14 +162,29 @@ npm run format
 **Local E2E Testing Environment**: For running E2E tests locally during development:
 
 ```bash
+# RECOMMENDED: Full automated test run (starts services, waits, runs tests, stops)
+cd apps/frontend
+npm run test:e2e:local
+
+# OR use individual scripts for more control:
+
 # Start isolated test environment (PostgreSQL, backend, frontend on different ports)
-docker-compose -f docker-compose.e2e-local.yml up
+npm run test:e2e:start
+
+# Wait for services to become healthy
+npm run test:e2e:wait
+
+# Run tests (services must be running)
+npm run test:e2e
 
 # Stop test environment
-docker-compose -f docker-compose.e2e-local.yml down
+npm run test:e2e:stop
 
-# Reset test environment (removes volumes)
-docker-compose -f docker-compose.e2e-local.yml down -v
+# Other useful commands:
+npm run test:e2e:restart        # Restart services
+npm run test:e2e:logs           # View service logs
+npm run test:e2e:reset          # Reset test database to clean state
+npm run test:e2e:local:watch    # Start services and open Playwright UI for interactive testing
 ```
 
 **Test environment ports** (avoid conflicts with dev):
