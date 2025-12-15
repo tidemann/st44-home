@@ -4,11 +4,13 @@
 - **ID**: task-036
 - **Feature**: feature-004 - User Invitation System
 - **Epic**: epic-001 - Multi-Tenant Foundation
-- **Status**: pending
+- **Status**: completed
 - **Priority**: high
 - **Created**: 2025-12-15
+- **Completed**: 2025-12-15
 - **Assigned Agent**: database
 - **Estimated Duration**: 3-4 hours
+- **Actual Duration**: 0.5 hours
 
 ## Description
 Create the invitations table to store household invitation records. Each invitation includes a unique token, expiration date, status tracking, and links to the household and inviting user.
@@ -130,4 +132,14 @@ SELECT * FROM invitations WHERE invited_email = 'test@example.com';
 8. Commit changes
 
 ## Progress Log
-- [2025-12-15] Task created from feature-004 breakdown
+- [2025-12-15 08:14] Task created from feature-004 breakdown
+- [2025-12-15 08:15] Migration file 037 created with invitations table schema
+- [2025-12-15 08:16] Migration applied successfully to local database
+- [2025-12-15 08:17] Table structure verified: all columns, indexes, and constraints present
+- [2025-12-15 08:18] Foreign key constraints verified (CASCADE on household and user)
+- [2025-12-15 08:19] Migration recorded in schema_migrations table (version 037)
+- [2025-12-15 08:20] Idempotency tested - migration can run multiple times safely
+- [2025-12-15 08:21] init.sql updated with invitations table for fresh installs
+- [2025-12-15 08:22] RLS policy added for household isolation
+- [2025-12-15 08:23] Updated_at trigger added for timestamp automation
+- [2025-12-15 08:24] Task completed in 0.5 hours (vs 3-4 hours estimated)
