@@ -322,6 +322,130 @@ Migrations should run automatically during deployment:
     done
 ```
 
+## Rolling Back Migrations
+
+### Overview
+
+Rollback scripts provide a safety net for development and testing. They allow you to reverse migrations cleanly when experimenting with schema changes.
+
+**⚠️ WARNING**: Rollback scripts are for **development/testing only**. Do NOT use in production without extreme caution - data loss is permanent.
+
+### Rollback Directory Structure
+
+```
+migrations/
+├── 011_create_households_table.sql
+├── 012_create_household_members_table.sql
+├── ...
+└── rollback/
+    ├── 011_down.sql
+    ├── 012_down.sql
+    └── ...
+```
+
+### Rollback File Structure
+
+```sql
+-- Rollback: NNN_descriptive_name.sql
+-- Description: Reverts changes from migration NNN
+-- Date: YYYY-MM-DD
+-- WARNING: Data loss warning if applicable
+
+BEGIN;
+
+-- Drop objects in reverse dependency order
+DROP TABLE IF EXISTS table_name CASCADE;
+
+-- Remove migration record
+DELETE FROM schema_migrations WHERE version = 'NNN';
+
+COMMIT;
+```
+
+### Running Rollback Scripts
+
+#### PowerShell (Windows)
+```powershell
+# Rollback single migration
+Get-Content docker/postgres/migrations/rollback/018_down.sql | docker exec -i st44-db psql -U postgres -d st44
+
+# Rollback multiple migrations (reverse order)
+Get-Content docker/postgres/migrations/rollback/018_down.sql | docker exec -i st44-db psql -U postgres -d st44
+Get-Content docker/postgres/migrations/rollback/017_down.sql | docker exec -i st44-db psql -U postgres -d st44
+```
+
+#### Bash (Linux/Mac)
+```bash
+# Rollback single migration
+docker exec -i st44-db psql -U postgres -d st44 < docker/postgres/migrations/rollback/018_down.sql
+
+# Rollback multiple migrations (reverse order)
+for version in 018 017 016 015; do
+  docker exec -i st44-db psql -U postgres -d st44 < docker/postgres/migrations/rollback/${version}_down.sql
+done
+```
+
+### Rollback Dependencies
+
+Migrations must be rolled back in **reverse order** to avoid foreign key violations:
+
+```
+Apply Order:     011 → 012 → 013 → 014 → 015 → 016 → 017 → 018
+Rollback Order:  018 → 017 → 016 → 015 → 014 → 013 → 012 → 011
+```
+
+### Testing Rollback Cycle
+
+Always test rollback scripts before committing:
+
+```bash
+# 1. Verify migration is applied
+docker exec -it st44-db psql -U postgres -d st44 -c "SELECT version FROM schema_migrations WHERE version = '018';"
+
+# 2. Rollback (PowerShell)
+Get-Content docker/postgres/migrations/rollback/018_down.sql | docker exec -i st44-db psql -U postgres -d st44
+
+# 3. Verify migration was removed
+docker exec -it st44-db psql -U postgres -d st44 -c "SELECT version FROM schema_migrations WHERE version = '018';"
+# (Should return 0 rows)
+
+# 4. Reapply migration
+Get-Content docker/postgres/migrations/018_implement_row_level_security.sql | docker exec -i st44-db psql -U postgres -d st44
+
+# 5. Verify migration was reapplied
+docker exec -it st44-db psql -U postgres -d st44 -c "SELECT version FROM schema_migrations WHERE version = '018';"
+# (Should return 1 row)
+```
+
+### Rollback Best Practices
+
+1. **Use CASCADE carefully**: `DROP TABLE ... CASCADE` removes dependent objects automatically
+2. **Document data loss**: Add warnings about what data will be destroyed
+3. **Test locally first**: Never test rollbacks in production
+4. **Keep in sync**: Create rollback script when creating migration
+5. **Reverse order**: Always rollback in reverse of application order
+
+### When to Use Rollbacks
+
+**Good reasons**:
+- Experimenting with schema changes locally
+- Testing migration scripts
+- Resetting development database
+- Trying out different approaches
+
+**Bad reasons**:
+- Fixing production schema errors (create forward migration instead)
+- Removing old tables with user data (archive instead)
+- Undoing deployed migrations (extremely dangerous)
+
+### Production Considerations
+
+In production, **forward-only migrations** are preferred:
+- Don't rollback - create a new migration to fix issues
+- Preserve data whenever possible
+- Test migrations thoroughly before deployment
+- Have backups before major schema changes
+
 ## Verification
 
 Before marking a database task complete:
@@ -331,6 +455,8 @@ Before marking a database task complete:
 - [ ] Migration is idempotent
 - [ ] Schema_migrations entry added
 - [ ] Init.sql updated if needed for fresh installs
+- [ ] Rollback script created (if applicable)
+- [ ] Rollback cycle tested (down → up)
 - [ ] Related task documentation updated
 
 ---

@@ -3,10 +3,11 @@
 ## Metadata
 - **ID**: feature-004
 - **Epic**: epic-001 - Multi-Tenant Foundation
-- **Status**: pending
+- **Status**: ready-for-implementation
 - **Priority**: high
 - **Created**: 2025-12-13
-- **Estimated Duration**: 2-3 days
+- **Broken Down**: 2025-12-15
+- **Estimated Duration**: 2-3 days (5-7 days actual based on tasks)
 
 ## Description
 Enable household admins and parents to invite other users to join their household. Users can invite via email, manage pending invitations, and invited users can accept or decline invitations. This enables multi-parent households and allows separated parents to share household management.
@@ -61,19 +62,27 @@ Enable household admins and parents to invite other users to join their househol
 - [ ] Documentation updated
 
 ## Tasks
-**⚠️ Feature must be broken down into tasks by Orchestrator Agent before implementation**
 
-- [ ] **task-031**: Create invitations table schema
-- [ ] **task-032**: Implement invitation CRUD API endpoints
-- [ ] **task-033**: Implement invitation authorization middleware
-- [ ] **task-034**: Add email validation and duplicate checks
-- [ ] **task-035**: Implement invitation token generation
-- [ ] **task-036**: Implement invitation acceptance logic
-- [ ] **task-037**: Build invite user component (frontend)
-- [ ] **task-038**: Build invitations list component
-- [ ] **task-039**: Build invitation inbox component
-- [ ] **task-040**: Create invitation service (frontend)
-- [ ] **task-041**: Write invitation system tests
+### Backend Tasks (6 tasks, 12-17 hours)
+- [x] [task-036](../items/done/task-036-create-invitations-table-schema.md): Create invitations table schema (3-4h) **COMPLETED** (0.5h actual)
+- [x] [task-037](../items/done/task-037-invitation-crud-api-endpoints.md): Implement invitation CRUD API endpoints (5-6h) **COMPLETED** (0.5h actual)
+- [ ] [task-038](../items/task-038-invitation-authorization-middleware.md): Implement invitation authorization middleware (2-3h)
+- [x] [task-039](../items/done/task-039-email-validation-duplicate-checks.md): Add email validation and duplicate checks (2-3h) **COMPLETED** (implemented in task-037)
+- [x] [task-040](../items/done/task-040-invitation-token-generation.md): Implement invitation token generation (1-2h) **COMPLETED** (implemented in task-037)
+- [x] [task-041](../items/done/task-041-invitation-acceptance-logic.md): Implement invitation acceptance logic (3-4h) **COMPLETED** (implemented in task-037)
+
+### Frontend Tasks (4 tasks, 13-17 hours)
+- [ ] [task-042](../items/task-042-invite-user-component.md): Build invite user component (3-4h)
+- [ ] [task-043](../items/task-043-invitations-sent-list-component.md): Build invitations sent list component (3-4h)
+- [ ] [task-044](../items/task-044-invitation-inbox-component.md): Build invitation inbox component (4-5h)
+- [ ] [task-045](../items/task-045-invitation-service-frontend.md): Create invitation service (frontend) (3-4h)
+
+### Testing Tasks (1 task, 6-8 hours)
+- [ ] [task-046](../items/task-046-invitation-system-tests.md): Write invitation system tests (6-8h)
+
+**Total**: 11 tasks, 31-42 hours (4-6 days after consolidation)
+**Critical Path**: task-036 → task-037 → (038?) → task-045 → task-044
+**Progress**: 5/11 tasks complete (45%)
 
 ## Dependencies
 - feature-001: User authentication must be complete
@@ -213,6 +222,14 @@ If you don't have a Diddit account yet, you'll be prompted to create one.
 
 ## Progress Log
 - [2025-12-13 21:30] Feature created for Epic-001
+- [2025-12-15] Feature broken down into 11 tasks (036-046)
+- [2025-12-15] Status updated to ready-for-implementation
+- [2025-12-15] Tasks organized: 6 backend + 4 frontend + 1 testing
+- [2025-12-15] Estimated duration updated based on task breakdown (37-49 hours)
+- [2025-12-15] task-036 complete: Invitations table schema (PR #65, 0.5h)
+- [2025-12-15] task-037 complete: Invitation CRUD API endpoints (PR #66, 0.5h)
+- [2025-12-15] tasks 039-041 marked complete: Logic already implemented in task-037
+- [2025-12-15] Progress: 5/11 tasks complete (45%), backend nearly done except authorization middleware
 
 ## Testing Strategy
 - [ ] Unit tests for invitation service

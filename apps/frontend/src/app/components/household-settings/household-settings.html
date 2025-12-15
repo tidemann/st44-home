@@ -1,0 +1,132 @@
+<div class="household-settings">
+  @if (isLoading()) {
+    <div class="loading" aria-live="polite">Loading household settings...</div>
+  } @else if (household()) {
+    <div class="household-settings__header">
+      <h1>Household Settings</h1>
+      <p class="household-settings__subtitle">Manage your household details and members</p>
+    </div>
+
+    <div class="household-settings__content">
+      <!-- Household Name Section -->
+      <section class="settings-section">
+        <h2>Household Details</h2>
+
+        <form [formGroup]="householdForm" (ngSubmit)="onSubmit()" class="household-form">
+          <div class="form-group">
+            <label for="household-name" class="form-label">Household Name</label>
+            <input
+              id="household-name"
+              type="text"
+              formControlName="name"
+              class="form-input"
+              placeholder="e.g., The Smith Family"
+              [attr.aria-invalid]="
+                householdForm.get('name')?.invalid && householdForm.get('name')?.touched
+              "
+              [attr.aria-describedby]="
+                householdForm.get('name')?.invalid && householdForm.get('name')?.touched
+                  ? 'name-error'
+                  : null
+              "
+            />
+
+            @if (householdForm.get('name')?.invalid && householdForm.get('name')?.touched) {
+              <div id="name-error" class="form-error" role="alert">
+                @if (householdForm.get('name')?.errors?.['required']) {
+                  <span>Household name is required</span>
+                }
+                @if (householdForm.get('name')?.errors?.['maxlength']) {
+                  <span>Household name must be less than 100 characters</span>
+                }
+              </div>
+            }
+          </div>
+
+          @if (!isAdmin()) {
+            <div class="info-message" role="status">
+              <p>Only household admins can edit household details.</p>
+            </div>
+          }
+
+          @if (isAdmin()) {
+            <button
+              type="submit"
+              class="btn btn--primary"
+              [disabled]="householdForm.invalid || isSaving()"
+              [attr.aria-busy]="isSaving()"
+            >
+              @if (isSaving()) {
+                <span>Saving...</span>
+              } @else {
+                <span>Save Changes</span>
+              }
+            </button>
+          }
+        </form>
+      </section>
+
+      <!-- Members Section -->
+      <section class="settings-section">
+        <h2>Household Members</h2>
+
+        @if (isAdmin()) {
+          <div class="section-actions">
+            <app-invite-user
+              [householdId]="household()!.id"
+              (invitationSent)="onInvitationSent()"
+            />
+          </div>
+        }
+
+        @if (members().length > 0) {
+          <ul class="members-list" role="list">
+            @for (member of members(); track member.user_id) {
+              <li class="member-item">
+                <div class="member-info">
+                  <span class="member-name">
+                    {{ member.display_name || member.email }}
+                  </span>
+                  <span
+                    class="member-role"
+                    [class.member-role--admin]="member.role === 'admin'"
+                    [class.member-role--parent]="member.role === 'parent'"
+                  >
+                    {{ member.role }}
+                  </span>
+                </div>
+                <div class="member-meta">
+                  <span class="member-email">{{ member.email }}</span>
+                  <span class="member-joined">
+                    Joined {{ member.joined_at | date: 'mediumDate' }}
+                  </span>
+                </div>
+              </li>
+            }
+          </ul>
+        } @else {
+          <p class="empty-state">No members found.</p>
+        }
+      </section>
+
+      <!-- Children Section -->
+      <section class="settings-section">
+        <h2>Children</h2>
+        <p class="section-description">Manage children in your household.</p>
+        <app-children-management />
+      </section>
+    </div>
+
+    @if (successMessage()) {
+      <div class="alert alert--success" role="status" aria-live="polite">
+        {{ successMessage() }}
+      </div>
+    }
+
+    @if (errorMessage()) {
+      <div class="alert alert--error" role="alert" aria-live="polite">
+        {{ errorMessage() }}
+      </div>
+    }
+  }
+</div>

@@ -3,7 +3,7 @@
 ## Metadata
 - **ID**: feature-003
 - **Epic**: epic-001 - Multi-Tenant Foundation
-- **Status**: pending
+- **Status**: ready-for-implementation
 - **Priority**: critical
 - **Created**: 2025-12-13
 - **Estimated Duration**: 3-4 days
@@ -57,19 +57,28 @@ Enable users to create, view, switch between, and manage households. Users can c
 - [ ] Documentation updated
 
 ## Tasks
-**⚠️ Feature must be broken down into tasks by Orchestrator Agent before implementation**
+- [x] [task-021](../items/done/task-021-household-crud-api-endpoints.md): Implement household CRUD API endpoints (4-6h) **COMPLETED** (PR #56, 0.5h actual)
+- [x] [task-022](../items/done/task-022-household-membership-middleware.md): Implement household membership validation middleware (2-3h) **COMPLETED** (PR #57, 1h actual)
+- [x] [task-023](../items/done/task-023-children-crud-api-endpoints.md): Implement children CRUD API endpoints (4-5h) **COMPLETED** (PR #58, 1.5h actual)
+- [ ] [task-024](../items/task-024-household-creation-flow-frontend.md): Build household creation flow (frontend) (4-5h)
+- [ ] [task-025](../items/task-025-household-settings-page.md): Build household settings page (frontend) (3-4h)
+- [ ] [task-026](../items/task-026-household-switcher-component.md): Build household switcher component (3-4h)
+- [ ] [task-027](../items/task-027-children-management-component.md): Build children management component (4-5h)
+- [ ] [task-028](../items/task-028-household-service-frontend.md): Create household service in frontend (3-4h)
+- [ ] [task-029](../items/task-029-household-state-management.md): Implement household context/state management (2-3h)
+- [ ] [task-030](../items/task-030-household-management-tests.md): Write household management tests (6-8h)
 
-- [ ] **task-020**: Implement household CRUD API endpoints
-- [ ] **task-021**: Implement household membership validation middleware
-- [ ] **task-022**: Implement children CRUD API endpoints
-- [ ] **task-023**: Create household service in backend
-- [ ] **task-024**: Build household creation flow (frontend)
-- [ ] **task-025**: Build household settings page (frontend)
-- [ ] **task-026**: Build household switcher component
-- [ ] **task-027**: Build children management component
-- [ ] **task-028**: Create household service in frontend
-- [ ] **task-029**: Implement household context/state management
-- [ ] **task-030**: Write household management tests
+**Total Estimated Duration**: 35-46 hours (5-6 days)  
+**Progress**: 3/11 tasks complete (27%)  
+**Backend Complete**: 3/3 backend tasks done (100%) ✅  
+**Frontend Remaining**: 5/6 frontend tasks (83% remaining)  
+**Testing Remaining**: 1/1 testing task (100% remaining)
+
+**Critical Path**: task-021 → task-022 → task-023 → task-028 → task-024
+
+**Backend** (tasks 021-023): 10-14 hours  
+**Frontend** (tasks 024-029): 19-24 hours  
+**Testing** (task 030): 6-8 hours
 
 ## Dependencies
 - feature-001: User authentication must be complete
@@ -157,6 +166,9 @@ Enable users to create, view, switch between, and manage households. Users can c
 
 ## Progress Log
 - [2025-12-13 21:25] Feature created for Epic-001
+- [2025-12-14 16:45] Status changed to ready-for-implementation
+- [2025-12-14 16:50] Tasks broken down: 10 tasks created (35-46 hours estimated)
+- [2025-12-14 16:50] Critical path identified: Backend → Service → Frontend flow
 
 ## Testing Strategy
 - [ ] Unit tests for household service

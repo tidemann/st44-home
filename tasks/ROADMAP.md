@@ -59,7 +59,7 @@ This roadmap outlines planned features and epics for the project. It's maintaine
 
 **Epic-001: Multi-Tenant Foundation** ⭐ Critical
 - **Priority**: Critical (Foundational)
-- **Status**: in-progress (1/4 features complete, 1/4 ready for implementation)
+- **Status**: in-progress (2/4 features complete)
 - **Duration**: 2 weeks (12-14 days)
 - **File**: [epic-001-multi-tenant-foundation.md](epics/epic-001-multi-tenant-foundation.md)
 - **Description**: Multi-tenant database, authentication, household management, user invitations
@@ -67,7 +67,7 @@ This roadmap outlines planned features and epics for the project. It's maintaine
 - **Dependencies**: None (foundational)
 - **Features**: 4 features (41 tasks estimated)
   - ✅ [feature-001](features/done/feature-001-user-authentication.md): User Authentication (10 tasks, 2 days) **COMPLETED**
-  - [feature-002](features/feature-002-multi-tenant-schema.md): Multi-Tenant Schema (10 tasks, 2-3 days) **READY FOR IMPLEMENTATION**
+  - ✅ [feature-002](features/done/feature-002-multi-tenant-schema.md): Multi-Tenant Schema (10 tasks, 7 hours) **COMPLETED**
   - [feature-003](features/feature-003-household-management.md): Household Management (11 tasks, 3-4 days)
   - [feature-004](features/feature-004-user-invitation-system.md): User Invitations (11 tasks, 2-3 days)
 
@@ -191,6 +191,25 @@ _Features under consideration but not yet prioritized_
   - [See all related PRs](#tasks) #21-#29
 
 #### Tasks
+- ✅ **Task-018: Implement Row-Level Security** (2025-12-14)
+  - Created migration 018_implement_row_level_security.sql
+  - Enabled RLS on 6 tenant-scoped tables
+  - Created isolation policies using app.current_household_id session variable
+  - Tested with non-superuser role: data isolation verified
+  - Defense-in-depth: SQL injection cannot bypass RLS
+  - Completed in 0.5 hours (estimated 4-5 hours)
+  - [PR #53](https://github.com/tidemann/st44-home/pull/53)
+- ✅ **Task-017: Add Performance Indexes** (2025-12-14)
+  - Created migration 017_add_performance_indexes.sql
+  - 4 composite/unique indexes for query optimization
+  - idx_task_assignments_child_due_status (child's daily task view)
+  - idx_task_assignments_household_status_due (household task management)
+  - idx_users_email (UNIQUE - fast login lookups)
+  - idx_children_household_name (children search)
+  - All 15 indexes verified in database
+  - Updated init.sql for fresh installations
+  - Completed in 0.5 hours (estimated 2-3 hours)
+  - [PR #52](https://github.com/tidemann/st44-home/pull/52)
 - ✅ **Task-023: Apply Migrations to Production** (2025-12-14)
   - Verified all 8 migrations applied successfully
   - Database health check: HEALTHY
@@ -343,6 +362,58 @@ Features are prioritized based on:
 4. Suggest new features for consideration
 
 ## Changelog
+
+### 2025-12-14 (Feature-002 Complete! 🎉)
+- 🎉 **FEATURE-002 100% COMPLETE** - Multi-Tenant Database Schema finished!
+  - All 10 tasks completed in ~7 hours (vs 25-35 hours estimated)
+  - 70% faster than estimated due to mature migration system
+  - **Epic-001 Progress**: 2/4 features complete (50%)
+  - **Next**: feature-003 (Household Management)
+- ✅ **PR #55 MERGED** - Task-020 (Migration Rollback Scripts) completed
+  - Created 8 rollback scripts (011_down.sql through 018_down.sql)
+  - Scripts drop objects in reverse dependency order (018 → 011)
+  - Tested rollback cycle: 018 down → 018 up (SUCCESS)
+  - Updated migrations/README.md with rollback documentation
+  - Data loss warnings and production safety considerations documented
+  - Rollback scripts for development/testing use only
+  - Task completed in 0.5 hours (estimated 2-3 hours)
+- 📊 **Schema Complete**: 7 tables, 15 indexes, RLS policies, comprehensive docs
+
+### 2025-12-14 (Task-019 Complete! 📖)
+- 📖 **PR #54 MERGED** - Task-019 (Document Schema with ERD) completed
+  - Created comprehensive SCHEMA.md (800+ lines)
+  - Mermaid ERD diagram with all 7 tables and relationships
+  - Complete data dictionary (all columns documented)
+  - 15+ common query examples with EXPLAIN ANALYZE
+  - Security documentation (RLS policies, testing procedures)
+  - Updated README.md with database schema section
+  - Task completed in 0.5 hours (estimated 2-3 hours)
+  - **Feature-002 Progress**: 9/10 tasks complete (90%)
+
+### 2025-12-14 (Task-018 Complete! 🔒)
+- 🔒 **PR #53 MERGED** - Task-018 (Implement Row-Level Security) completed
+  - Enabled RLS on 6 tenant-scoped tables for defense-in-depth data isolation
+  - Created policies enforcing household_id filtering at database level
+  - Tested with non-superuser: Family A sees only Emma, Family B sees only Noah
+  - Even SQL injection cannot bypass RLS policies
+  - Task completed in 0.5 hours (estimated 4-5 hours)
+  - **Feature-002 Progress**: 8/10 tasks complete (80%)
+  - **Next**: task-019 (Document Schema with ERD)
+
+### 2025-12-14 (Task-017 Complete! 🎯)
+- 🎯 **PR #52 MERGED** - Task-017 (Add Performance Indexes) completed
+  - Created migration 017_add_performance_indexes.sql
+  - Implemented 4 composite/unique indexes for common query patterns:
+    - idx_task_assignments_child_due_status: Child's daily task view optimization
+    - idx_task_assignments_household_status_due: Household task management queries
+    - idx_users_email (UNIQUE): Fast login lookups + email uniqueness enforcement
+    - idx_children_household_name: Children search/filter optimization
+  - Updated init.sql with all composite indexes for fresh installations
+  - Verified 15 total indexes across 7 multi-tenant tables
+  - Migration tested and applied successfully with idempotency
+  - Task completed in 0.5 hours (estimated 2-3 hours)
+  - **Feature-002 Progress**: 7/10 tasks complete (70%)
+  - **Next**: task-018 (Row-Level Security Policies)
 
 ### 2025-12-14 (Feature-006 Ready! 📋)
 - 📋 **PR #40 MERGED** - Feature-006 broken down into 9 implementation tasks

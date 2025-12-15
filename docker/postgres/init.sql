@@ -23,7 +23,9 @@ VALUES
   ('013', 'create_children_table', NOW()),
   ('014', 'create_tasks_table', NOW()),
   ('015', 'create_task_assignments_table', NOW()),
-  ('016', 'create_task_completions_table', NOW())
+  ('016', 'create_task_completions_table', NOW()),
+  ('017', 'add_performance_indexes', NOW()),
+  ('018', 'implement_row_level_security', NOW())
 ON CONFLICT (version) DO NOTHING;
 
 -- Users table for authentication (supports email/password and OAuth)
@@ -42,8 +44,8 @@ CREATE TABLE IF NOT EXISTS users (
 );
 
 -- Indexes for users table
-CREATE INDEX idx_users_email ON users(email);
-CREATE UNIQUE INDEX idx_users_oauth ON users(oauth_provider, oauth_provider_id) WHERE oauth_provider IS NOT NULL;
+CREATE UNIQUE INDEX IF NOT EXISTS idx_users_email ON users(email); -- Updated to UNIQUE in migration 017
+CREATE UNIQUE INDEX IF NOT EXISTS idx_users_oauth ON users(oauth_provider, oauth_provider_id) WHERE oauth_provider IS NOT NULL;
 
 -- Households table (multi-tenant primary identifier)
 -- All other tables reference household_id for data isolation
@@ -67,6 +69,30 @@ CREATE TABLE IF NOT EXISTS household_members (
 CREATE INDEX IF NOT EXISTS idx_household_members_household ON household_members(household_id);
 CREATE INDEX IF NOT EXISTS idx_household_members_user ON household_members(user_id);
 
+-- Invitations table (household invitation system)
+CREATE TABLE IF NOT EXISTS invitations (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  household_id UUID NOT NULL REFERENCES households(id) ON DELETE CASCADE,
+  invited_by UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  invited_email VARCHAR(255) NOT NULL,
+  token VARCHAR(255) NOT NULL,
+  role VARCHAR(20) NOT NULL DEFAULT 'parent',
+  status VARCHAR(20) NOT NULL DEFAULT 'pending',
+  expires_at TIMESTAMP NOT NULL DEFAULT (NOW() + INTERVAL '7 days'),
+  accepted_at TIMESTAMP,
+  created_at TIMESTAMP NOT NULL DEFAULT NOW(),
+  updated_at TIMESTAMP NOT NULL DEFAULT NOW(),
+  
+  CONSTRAINT invitations_role_check CHECK (role IN ('admin', 'parent')),
+  CONSTRAINT invitations_status_check CHECK (status IN ('pending', 'accepted', 'declined', 'cancelled', 'expired')),
+  CONSTRAINT invitations_expiry_check CHECK (expires_at > created_at)
+);
+
+CREATE INDEX IF NOT EXISTS idx_invitations_household ON invitations(household_id);
+CREATE INDEX IF NOT EXISTS idx_invitations_email ON invitations(invited_email);
+CREATE UNIQUE INDEX IF NOT EXISTS idx_invitations_token ON invitations(token);
+CREATE INDEX IF NOT EXISTS idx_invitations_status ON invitations(status);
+
 -- Children table (profiles for household task assignments)
 CREATE TABLE IF NOT EXISTS children (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -78,6 +104,7 @@ CREATE TABLE IF NOT EXISTS children (
 );
 
 CREATE INDEX IF NOT EXISTS idx_children_household ON children(household_id);
+CREATE INDEX IF NOT EXISTS idx_children_household_name ON children(household_id, name); -- Added in migration 017 for search optimization
 
 -- Tasks table (templates/definitions for household chores)
 CREATE TABLE IF NOT EXISTS tasks (
@@ -108,6 +135,9 @@ CREATE TABLE IF NOT EXISTS task_assignments (
 CREATE INDEX IF NOT EXISTS idx_task_assignments_household ON task_assignments(household_id);
 CREATE INDEX IF NOT EXISTS idx_task_assignments_child ON task_assignments(child_id);
 CREATE INDEX IF NOT EXISTS idx_task_assignments_due_date ON task_assignments(due_date);
+-- Composite indexes added in migration 017 for query optimization
+CREATE INDEX IF NOT EXISTS idx_task_assignments_child_due_status ON task_assignments(child_id, due_date, status);
+CREATE INDEX IF NOT EXISTS idx_task_assignments_household_status_due ON task_assignments(household_id, status, due_date);
 
 -- Task completions table (historical record of completed tasks, append-only)
 CREATE TABLE IF NOT EXISTS task_completions (
@@ -156,6 +186,11 @@ BEFORE UPDATE ON households
 FOR EACH ROW
 EXECUTE FUNCTION update_updated_at_column();
 
+CREATE TRIGGER update_invitations_updated_at
+BEFORE UPDATE ON invitations
+FOR EACH ROW
+EXECUTE FUNCTION update_updated_at_column();
+
 CREATE TRIGGER update_children_updated_at
 BEFORE UPDATE ON children
 FOR EACH ROW
@@ -170,3 +205,47 @@ CREATE TRIGGER update_items_updated_at
 BEFORE UPDATE ON items
 FOR EACH ROW
 EXECUTE FUNCTION update_updated_at_column();
+
+-- ============================================================================
+-- Row-Level Security (RLS) Policies
+-- ============================================================================
+-- Defense-in-depth: RLS provides database-level data isolation
+-- Even if application code bypasses filtering, database enforces household isolation
+
+-- Enable RLS on all tenant-scoped tables
+ALTER TABLE households ENABLE ROW LEVEL SECURITY;
+ALTER TABLE household_members ENABLE ROW LEVEL SECURITY;
+ALTER TABLE invitations ENABLE ROW LEVEL SECURITY;
+ALTER TABLE children ENABLE ROW LEVEL SECURITY;
+ALTER TABLE tasks ENABLE ROW LEVEL SECURITY;
+ALTER TABLE task_assignments ENABLE ROW LEVEL SECURITY;
+ALTER TABLE task_completions ENABLE ROW LEVEL SECURITY;
+
+-- Create RLS policies (application sets app.current_household_id per request)
+CREATE POLICY IF NOT EXISTS households_isolation ON households
+FOR ALL
+USING (id = current_setting('app.current_household_id', TRUE)::UUID);
+
+CREATE POLICY IF NOT EXISTS household_members_isolation ON household_members
+FOR ALL
+USING (household_id = current_setting('app.current_household_id', TRUE)::UUID);
+
+CREATE POLICY IF NOT EXISTS invitations_isolation ON invitations
+FOR ALL
+USING (household_id = current_setting('app.current_household_id', TRUE)::UUID);
+
+CREATE POLICY IF NOT EXISTS children_isolation ON children
+FOR ALL
+USING (household_id = current_setting('app.current_household_id', TRUE)::UUID);
+
+CREATE POLICY IF NOT EXISTS tasks_isolation ON tasks
+FOR ALL
+USING (household_id = current_setting('app.current_household_id', TRUE)::UUID);
+
+CREATE POLICY IF NOT EXISTS task_assignments_isolation ON task_assignments
+FOR ALL
+USING (household_id = current_setting('app.current_household_id', TRUE)::UUID);
+
+CREATE POLICY IF NOT EXISTS task_completions_isolation ON task_completions
+FOR ALL
+USING (household_id = current_setting('app.current_household_id', TRUE)::UUID);

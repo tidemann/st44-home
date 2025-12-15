@@ -48,11 +48,39 @@ agent: orchestrator-agent
 11. **Implement solution**: Follow workflow in [Orchestrator Agent](../../.github/agents/orchestrator-agent.md)
 12. **Delegate to experts**: Assign subtasks to Frontend, Backend, Database agents as needed
 13. **Update progress**: Keep work item file and roadmap current during work
-14. **Create/Update PR**: Push changes on the feature branch and ensure a PR targeting `main` exists
-15. **Handoff to Review/Merge**: Invoke [review-and-merge.prompt.md](./review-and-merge.prompt.md) to validate, wait for CI, and merge when green
-16. **Auto-Resume Work**: After the unified prompt signals "merge complete" (squash merged and branch deleted), automatically re-invoke this Continue Work prompt to pick up the next priority
-17. **Validate completion**: Verify all acceptance criteria met, tests pass, and documentation updated
-18. **Complete**: Move to appropriate `done/` folder when finished, update roadmap
+14. **Create/Update PR**: Push changes and create/update PR following review-and-merge workflow:
+    
+    a. **Format code**: `npm run format` in both frontend and backend
+    b. **Commit all changes**: Ensure all work committed to feature branch
+    c. **Push feature branch**: `git push` or `git push -u origin feature/branch-name`
+    d. **Check for existing PR**: `gh pr view --json number,state`
+    e. **Create PR if needed**: `gh pr create --title "type: description" --body "..." --base main`
+    f. **Record PR number** for next step
+    
+15. **Wait for CI and Merge**: Complete review-and-merge workflow automatically:
+    
+    a. **Poll CI status**: 
+       ```bash
+       gh pr view <PR_NUMBER> --json statusCheckRollup,mergeable,state
+       ```
+    b. **If checks PASS**: 
+       ```bash
+       gh pr merge <PR_NUMBER> --squash --delete-branch
+       git checkout main
+       git pull
+       ```
+    c. **If checks FAIL**: Fix issues, commit, push, and re-poll (do not stop or ask user)
+    d. **Signal**: After successful merge, emit "merge complete" and proceed to step 16
+    
+16. **Auto-Resume Work**: Immediately continue with next priority:
+    - Return to step 1 (check ROADMAP.md for next priority)
+    - Do NOT ask user permission to continue
+    - Only stop if: no more work items, or unresolvable blocker
+    
+17. **Update completion**: After merge:
+    - Move work item file to appropriate `done/` folder
+    - Update ROADMAP.md (remove from Now, adjust Next → Now)
+    - Update feature/epic status if all tasks complete
 
 ## Constraints
 

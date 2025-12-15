@@ -1,0 +1,57 @@
+<div class="household-create">
+  <div class="household-create__header">
+    <h1>Welcome! Let's set up your household</h1>
+    <p>What should we call your household?</p>
+  </div>
+
+  <form [formGroup]="householdForm" (ngSubmit)="onSubmit()" class="household-create__form">
+    <div class="form-group">
+      <label for="household-name" class="form-label">Household Name</label>
+      <input
+        id="household-name"
+        type="text"
+        formControlName="name"
+        class="form-input"
+        placeholder="e.g., The Smith Family"
+        [attr.aria-invalid]="
+          householdForm.get('name')?.invalid && householdForm.get('name')?.touched
+        "
+        [attr.aria-describedby]="
+          householdForm.get('name')?.invalid && householdForm.get('name')?.touched
+            ? 'name-error'
+            : null
+        "
+      />
+
+      @if (householdForm.get('name')?.invalid && householdForm.get('name')?.touched) {
+        <div id="name-error" class="form-error" role="alert">
+          @if (householdForm.get('name')?.errors?.['required']) {
+            <span>Household name is required</span>
+          }
+          @if (householdForm.get('name')?.errors?.['maxlength']) {
+            <span>Household name must be less than 100 characters</span>
+          }
+        </div>
+      }
+    </div>
+
+    @if (errorMessage()) {
+      <div class="alert alert--error" role="alert" aria-live="polite">
+        {{ errorMessage() }}
+      </div>
+    }
+
+    <button
+      type="submit"
+      class="btn btn--primary"
+      [disabled]="householdForm.invalid || isLoading()"
+      [attr.aria-busy]="isLoading()"
+    >
+      @if (isLoading()) {
+        <span>Creating household...</span>
+      } @else {
+        <span>Create Household</span>
+      }
+    </button>
+  </form>
+</div>

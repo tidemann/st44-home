@@ -1,0 +1,103 @@
+<div class="household-switcher">
+  @if (isLoading()) {
+    <div class="switcher-loading">Loading...</div>
+  } @else if (households().length > 0) {
+    <button
+      type="button"
+      class="switcher-toggle"
+      [attr.aria-expanded]="isOpen()"
+      [attr.aria-haspopup]="true"
+      [attr.aria-label]="'Switch household. Current: ' + (getActiveHousehold()?.name || 'None')"
+      (click)="toggleDropdown()"
+      (keydown)="onToggleKeyDown($event)"
+    >
+      <span class="switcher-toggle__label">
+        @if (getActiveHousehold(); as active) {
+          <span class="switcher-toggle__name">{{ active.name }}</span>
+          <span
+            class="switcher-toggle__role"
+            [class.switcher-toggle__role--admin]="active.role === 'admin'"
+            [class.switcher-toggle__role--parent]="active.role === 'parent'"
+          >
+            {{ active.role }}
+          </span>
+        } @else {
+          <span class="switcher-toggle__name">Select Household</span>
+        }
+      </span>
+      <svg
+        class="switcher-toggle__icon"
+        [class.switcher-toggle__icon--open]="isOpen()"
+        width="20"
+        height="20"
+        viewBox="0 0 20 20"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+        aria-hidden="true"
+      >
+        <path
+          d="M5 7.5L10 12.5L15 7.5"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        />
+      </svg>
+    </button>
+
+    @if (isOpen()) {
+      <div class="switcher-dropdown" role="menu" aria-label="Household list">
+        @for (household of households(); track household.id) {
+          <button
+            type="button"
+            class="switcher-item"
+            [class.switcher-item--active]="household.id === activeHouseholdId()"
+            role="menuitem"
+            [attr.aria-current]="household.id === activeHouseholdId() ? 'true' : null"
+            (click)="switchHousehold(household)"
+            (keydown)="onKeyDown($event, household)"
+            tabindex="0"
+          >
+            <span class="switcher-item__content">
+              <span class="switcher-item__name">{{ household.name }}</span>
+              <span
+                class="switcher-item__role"
+                [class.switcher-item__role--admin]="household.role === 'admin'"
+                [class.switcher-item__role--parent]="household.role === 'parent'"
+              >
+                {{ household.role }}
+              </span>
+            </span>
+            @if (household.id === activeHouseholdId()) {
+              <svg
+                class="switcher-item__check"
+                width="20"
+                height="20"
+                viewBox="0 0 20 20"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+                aria-hidden="true"
+              >
+                <path
+                  d="M16.25 5L7.5 13.75L3.75 10"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                />
+              </svg>
+            }
+          </button>
+        }
+      </div>
+    }
+
+    @if (isOpen()) {
+      <div class="switcher-overlay" (click)="closeDropdown()" aria-hidden="true"></div>
+    }
+  } @else if (errorMessage()) {
+    <div class="switcher-error" role="alert">
+      {{ errorMessage() }}
+    </div>
+  }
+</div>

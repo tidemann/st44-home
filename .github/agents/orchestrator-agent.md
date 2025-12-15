@@ -194,14 +194,56 @@ git checkout -b feature/descriptive-name
 3. **NEVER** use `git push` alone without specifying branch
 4. **ALWAYS** verify you're on feature branch before committing
 
-#### PR Creation (REQUIRED)
-When work is complete:
-1. Ensure all changes are committed to feature branch
-2. Push feature branch to remote
-3. Create PR: `gh pr create --title "..." --body "..." --base main`
-4. Wait for CI checks to pass
-5. Merge PR: `gh pr merge <number> --squash --delete-branch`
-6. Switch to main and pull: `git checkout main && git pull`
+#### PR Creation and Merge Workflow (AUTOMATED)
+When work is complete, follow this workflow WITHOUT stopping for user confirmation:
+
+**Step 1: Format and Commit**
+```bash
+# Format code
+cd apps/frontend && npm run format
+cd ../backend && npm run format
+
+# Commit all changes
+git add .
+git commit -m "type: description"
+```
+
+**Step 2: Push and Create PR**
+```bash
+# Push feature branch
+git push -u origin feature/branch-name
+
+# Check for existing PR
+gh pr view --json number,state
+
+# If no PR exists, create one
+gh pr create --title "type: description" \
+  --body "## Problem\n...\n## Solution\n...\n## Changes\n..." \
+  --base main
+```
+
+**Step 3: Wait for CI and Merge (AUTOMATED)**
+```bash
+# Poll CI status (repeat until complete)
+gh pr view <PR_NUMBER> --json statusCheckRollup,mergeable,state
+
+# When checks PASS - merge automatically
+gh pr merge <PR_NUMBER> --squash --delete-branch
+
+# Switch back to main
+git checkout main
+git pull
+```
+
+**Step 4: Handle CI Failures**
+- If CI checks fail: Fix issues, commit, push, and re-poll
+- Do NOT stop or ask user for help unless unresolvable
+- Continue with next priority after successful merge
+
+**Step 5: Auto-Resume**
+- After "merge complete", immediately return to continue-work workflow
+- Check ROADMAP.md for next priority
+- Do NOT ask permission to continue
 
 #### Pull Request Requirements
 - Clear title with conventional commit prefix (feat:, fix:, chore:, docs:)
@@ -441,19 +483,94 @@ See `.github/prompts/README.md` for complete prompt documentation.
 5. Update task status to `completed`
 6. Document outcomes and learnings
 
-### Phase 8: PR Handoff Loop (New)
-To avoid stopping after every push, the Orchestrator must hand off to review/merge and then resume work automatically:
+### Phase 8: PR Creation, CI Wait, and Merge (Automated)
 
-1. When implementation for a task is complete and changes are pushed to a feature branch, immediately invoke the `review-and-merge.prompt.md`.
-2. In the review-and-merge phase:
-   - Ensure a PR exists targeting `main` with a clear description.
-   - Wait for all GitHub Actions checks to complete.
-   - If checks fail, return control to Orchestrator to fix and re-push; then re-invoke review-and-merge.
-   - If checks pass, perform a squash merge and delete the feature branch.
-3. After merge completes, the Orchestrator automatically re-invokes `continue-work.prompt.md` to pick up the next priority.
-4. Update relevant task/feature status and ROADMAP before resuming.
+**CRITICAL: This phase must complete WITHOUT user interaction**
 
-This loop ensures continuous progress: implement → PR review/merge → resume next work item.
+When implementation complete and all changes committed to feature branch:
+
+**8.1 Format and Push**
+```bash
+# Format code
+cd apps/frontend && npm run format
+cd apps/backend && npm run format
+
+# Commit and push
+git add .
+git commit -m "type: description"
+git push
+```
+
+**8.2 Create or Update PR**
+```bash
+# Check for existing PR on current branch
+gh pr view --json number,state,title
+
+# If no PR exists, create one
+gh pr create --title "type: description" \
+  --body "## Problem\n[description]\n\n## Solution\n[description]\n\n## Changes\n- [changes]" \
+  --base main
+
+# Record PR number for polling
+```
+
+**8.3 Poll CI Until Complete (Loop)**
+```bash
+# Poll every 10-15 seconds until checks complete
+gh pr view <PR_NUMBER> --json statusCheckRollup,mergeable,state
+
+# Parse response:
+# - If state = "CLOSED": Stop (someone closed it)
+# - If checks still running: Wait and poll again
+# - If checks FAILED: Go to step 8.4
+# - If checks PASSED: Go to step 8.5
+```
+
+**8.4 Handle CI Failures (Automated Fix)**
+```bash
+# Read CI failure logs
+gh pr view <PR_NUMBER> --json statusCheckRollup
+
+# Analyze failure (lint, tests, build)
+# Fix the issue in code
+# Commit and push fix
+git add .
+git commit -m "fix: resolve CI failure - [description]"
+git push
+
+# Return to 8.3 (poll again)
+```
+
+**8.5 Merge PR Automatically**
+```bash
+# All checks passed - merge with squash
+gh pr merge <PR_NUMBER> --squash --delete-branch
+
+# Switch to main and pull
+git checkout main
+git pull
+```
+
+**8.6 Update Work Items and Resume**
+```bash
+# Update task status to completed
+# Move task file to done/ folder
+# Update feature/epic progress
+# Update ROADMAP.md
+
+# IMMEDIATELY return to continue-work workflow
+# Check ROADMAP.md for next priority
+# Do NOT stop or wait for user confirmation
+```
+
+**Key Rules:**
+- ✅ Complete entire phase without stopping
+- ✅ Fix CI failures automatically
+- ✅ Merge when checks pass
+- ✅ Resume next work immediately
+- ❌ Do NOT ask user "should I continue?"
+- ❌ Do NOT stop after PR creation
+- ❌ Do NOT wait for manual review
 
 #### Database Changes Checklist
 If the task involved database changes, verify:
