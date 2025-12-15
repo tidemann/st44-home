@@ -69,6 +69,30 @@ CREATE TABLE IF NOT EXISTS household_members (
 CREATE INDEX IF NOT EXISTS idx_household_members_household ON household_members(household_id);
 CREATE INDEX IF NOT EXISTS idx_household_members_user ON household_members(user_id);
 
+-- Invitations table (household invitation system)
+CREATE TABLE IF NOT EXISTS invitations (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  household_id UUID NOT NULL REFERENCES households(id) ON DELETE CASCADE,
+  invited_by UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  invited_email VARCHAR(255) NOT NULL,
+  token VARCHAR(255) NOT NULL,
+  role VARCHAR(20) NOT NULL DEFAULT 'parent',
+  status VARCHAR(20) NOT NULL DEFAULT 'pending',
+  expires_at TIMESTAMP NOT NULL DEFAULT (NOW() + INTERVAL '7 days'),
+  accepted_at TIMESTAMP,
+  created_at TIMESTAMP NOT NULL DEFAULT NOW(),
+  updated_at TIMESTAMP NOT NULL DEFAULT NOW(),
+  
+  CONSTRAINT invitations_role_check CHECK (role IN ('admin', 'parent')),
+  CONSTRAINT invitations_status_check CHECK (status IN ('pending', 'accepted', 'declined', 'cancelled', 'expired')),
+  CONSTRAINT invitations_expiry_check CHECK (expires_at > created_at)
+);
+
+CREATE INDEX IF NOT EXISTS idx_invitations_household ON invitations(household_id);
+CREATE INDEX IF NOT EXISTS idx_invitations_email ON invitations(invited_email);
+CREATE UNIQUE INDEX IF NOT EXISTS idx_invitations_token ON invitations(token);
+CREATE INDEX IF NOT EXISTS idx_invitations_status ON invitations(status);
+
 -- Children table (profiles for household task assignments)
 CREATE TABLE IF NOT EXISTS children (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -162,6 +186,11 @@ BEFORE UPDATE ON households
 FOR EACH ROW
 EXECUTE FUNCTION update_updated_at_column();
 
+CREATE TRIGGER update_invitations_updated_at
+BEFORE UPDATE ON invitations
+FOR EACH ROW
+EXECUTE FUNCTION update_updated_at_column();
+
 CREATE TRIGGER update_children_updated_at
 BEFORE UPDATE ON children
 FOR EACH ROW
@@ -186,6 +215,7 @@ EXECUTE FUNCTION update_updated_at_column();
 -- Enable RLS on all tenant-scoped tables
 ALTER TABLE households ENABLE ROW LEVEL SECURITY;
 ALTER TABLE household_members ENABLE ROW LEVEL SECURITY;
+ALTER TABLE invitations ENABLE ROW LEVEL SECURITY;
 ALTER TABLE children ENABLE ROW LEVEL SECURITY;
 ALTER TABLE tasks ENABLE ROW LEVEL SECURITY;
 ALTER TABLE task_assignments ENABLE ROW LEVEL SECURITY;
@@ -197,6 +227,10 @@ FOR ALL
 USING (id = current_setting('app.current_household_id', TRUE)::UUID);
 
 CREATE POLICY IF NOT EXISTS household_members_isolation ON household_members
+FOR ALL
+USING (household_id = current_setting('app.current_household_id', TRUE)::UUID);
+
+CREATE POLICY IF NOT EXISTS invitations_isolation ON invitations
 FOR ALL
 USING (household_id = current_setting('app.current_household_id', TRUE)::UUID);
 
