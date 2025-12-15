@@ -14,8 +14,8 @@ export class LoginPage extends BasePage {
 
   constructor(page: Page) {
     super(page);
-    this.emailInput = page.getByLabel(/email/i);
-    this.passwordInput = page.getByLabel(/password/i);
+    this.emailInput = page.getByRole('textbox', { name: /email/i });
+    this.passwordInput = page.locator('input[type="password"]').first();
     this.rememberMeCheckbox = page.getByLabel(/remember me/i);
     this.loginButton = page.getByRole('button', { name: /log in|sign in/i });
     this.errorMessage = page.locator('[role="alert"], .error-message, .alert-error');
