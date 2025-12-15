@@ -1,0 +1,12 @@
+{
+  "playwright.reuseBrowser": true,
+  "playwright.showBrowser": true,
+  "playwright.env": {
+    "PWDEBUG": "console"
+  },
+  "testing.automaticallyOpenPeekView": "never",
+  "files.watcherExclude": {
+    "**/apps/frontend/playwright-report/**": true,
+    "**/apps/frontend/test-results/**": true
+  }
+}

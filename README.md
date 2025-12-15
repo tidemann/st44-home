@@ -194,6 +194,61 @@ npm run test:e2e:local:watch    # Start services and open Playwright UI for inte
 
 See `.env.e2e-local` for configuration details.
 
+#### Debugging E2E Tests
+
+VS Code debug configurations are available for interactive debugging with breakpoints:
+
+**Debug Configurations:**
+1. **Debug E2E Tests** - Run all tests with debugger attached
+   - Automatically starts services before debugging
+   - Runs in headed mode with Playwright inspector
+   - Set breakpoints in your test files
+   
+2. **Debug Current E2E Test** - Debug the currently open test file
+   - Fastest option for debugging a specific test
+   - Focus on one file at a time
+   - Automatically starts services
+   
+3. **Debug E2E with Inspector** - Launch Playwright UI for interactive debugging
+   - Best for exploring selectors and page interactions
+   - Step through tests visually
+   - Record new test actions
+   
+4. **Debug E2E (Services Already Running)** - Skip service startup
+   - Use when services are already running
+   - Faster debug cycle for repeated runs
+
+**Using the Debugger:**
+1. Set breakpoints in your test files by clicking the gutter
+2. Open the Run and Debug view (Ctrl+Shift+D / Cmd+Shift+D)
+3. Select a debug configuration from the dropdown
+4. Press F5 or click the green play button
+5. Test execution will pause at breakpoints
+6. Use the Debug toolbar to step through code, inspect variables, and view call stacks
+
+**Keyboard Shortcuts:**
+- F5: Start debugging
+- F9: Toggle breakpoint
+- F10: Step over
+- F11: Step into
+- Shift+F11: Step out
+- F5: Continue
+
+**Troubleshooting:**
+- If services fail to start, manually run `npm run test:e2e:start` first
+- If breakpoints aren't hit, ensure `PWDEBUG=1` environment variable is set
+- For selector issues, use "Debug E2E with Inspector" configuration
+- Check the Debug Console for Playwright output and errors
+
+**VS Code Extensions:**
+Install the recommended Playwright extension for enhanced features:
+- Test discovery in sidebar
+- Run tests from editor gutters
+- View test reports inline
+- Generate locators with CodeGen
+
+Press Ctrl+Shift+P (Cmd+Shift+P on Mac) and search for "Extensions: Show Recommended Extensions" to install.
+
 ### Database Schema
 
 **Comprehensive schema documentation**: [docker/postgres/SCHEMA.md](docker/postgres/SCHEMA.md)

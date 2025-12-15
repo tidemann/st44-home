@@ -1,0 +1,75 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Debug E2E Tests",
+      "type": "node",
+      "request": "launch",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["run", "test:e2e:local"],
+      "cwd": "${workspaceFolder}/apps/frontend",
+      "console": "integratedTerminal",
+      "internalConsoleOptions": "neverOpen",
+      "env": {
+        "PWDEBUG": "1",
+        "HEADED": "1"
+      },
+      "preLaunchTask": "Start E2E Services"
+    },
+    {
+      "name": "Debug Current E2E Test",
+      "type": "node",
+      "request": "launch",
+      "program": "${workspaceFolder}/apps/frontend/node_modules/.bin/playwright",
+      "args": [
+        "test",
+        "${relativeFile}",
+        "--headed",
+        "--debug"
+      ],
+      "cwd": "${workspaceFolder}/apps/frontend",
+      "console": "integratedTerminal",
+      "internalConsoleOptions": "neverOpen",
+      "skipFiles": ["<node_internals>/**"],
+      "preLaunchTask": "Start E2E Services"
+    },
+    {
+      "name": "Debug E2E with Inspector",
+      "type": "node",
+      "request": "launch",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["run", "test:e2e:ui"],
+      "cwd": "${workspaceFolder}/apps/frontend",
+      "console": "integratedTerminal",
+      "internalConsoleOptions": "neverOpen",
+      "env": {
+        "PWDEBUG": "console"
+      },
+      "preLaunchTask": "Start E2E Services"
+    },
+    {
+      "name": "Debug E2E (Services Already Running)",
+      "type": "node",
+      "request": "launch",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["run", "test:e2e:local", "--", "--headed", "--debug"],
+      "cwd": "${workspaceFolder}/apps/frontend",
+      "console": "integratedTerminal",
+      "internalConsoleOptions": "neverOpen",
+      "env": {
+        "PWDEBUG": "1"
+      }
+    }
+  ],
+  "compounds": [
+    {
+      "name": "Debug E2E Full Stack",
+      "configurations": ["Debug E2E Tests"],
+      "presentation": {
+        "hidden": false,
+        "group": "E2E Testing",
+        "order": 1
+      }
+    }
+  ]
+}

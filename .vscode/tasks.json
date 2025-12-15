@@ -1,0 +1,66 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Start E2E Services",
+      "type": "npm",
+      "script": "test:e2e:start",
+      "path": "apps/frontend",
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "silent",
+        "panel": "dedicated",
+        "clear": false
+      },
+      "isBackground": true,
+      "runOptions": {
+        "instanceLimit": 1
+      }
+    },
+    {
+      "label": "Stop E2E Services",
+      "type": "npm",
+      "script": "test:e2e:stop",
+      "path": "apps/frontend",
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "silent",
+        "panel": "shared",
+        "clear": false
+      }
+    },
+    {
+      "label": "Restart E2E Services",
+      "type": "npm",
+      "script": "test:e2e:restart",
+      "path": "apps/frontend",
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated"
+      }
+    },
+    {
+      "label": "View E2E Service Logs",
+      "type": "npm",
+      "script": "test:e2e:logs",
+      "path": "apps/frontend",
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated"
+      }
+    },
+    {
+      "label": "Reset E2E Database",
+      "type": "npm",
+      "script": "test:e2e:reset",
+      "path": "apps/frontend",
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared"
+      }
+    }
+  ]
+}
