@@ -12,7 +12,6 @@ import { DatePipe } from '@angular/common';
 import { HouseholdService, Household, HouseholdMember } from '../../services/household.service';
 import { ChildrenManagementComponent } from '../children-management/children-management';
 import { InviteUserComponent } from '../invite-user/invite-user';
-import { SendInvitationResponse } from '../../services/invitation.service';
 
 @Component({
   selector: 'app-household-settings',
