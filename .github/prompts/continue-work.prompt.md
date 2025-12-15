@@ -66,18 +66,25 @@ agent: orchestrator-agent
     b. **If checks PASS**: 
        ```bash
        gh pr merge <PR_NUMBER> --squash --delete-branch
-       git checkout main
-       git pull
        ```
     c. **If checks FAIL**: Fix issues, commit, push, and re-poll (do not stop or ask user)
     d. **Signal**: After successful merge, emit "merge complete" and proceed to step 16
     
-16. **Auto-Resume Work**: Immediately continue with next priority:
+16. **CRITICAL: Update Local Main Branch** (MANDATORY after every merge):
+    ```bash
+    git checkout main
+    git pull origin main
+    ```
+    - This ensures next task starts from latest code
+    - Prevents merge conflicts and outdated code issues
+    - **NEVER skip this step** - it's critical for workflow continuity
+    
+17. **Auto-Resume Work**: Immediately continue with next priority:
     - Return to step 1 (check ROADMAP.md for next priority)
     - Do NOT ask user permission to continue
     - Only stop if: no more work items, or unresolvable blocker
     
-17. **Update completion**: After merge:
+18. **Update completion**: After merge and pulling main:
     - **CRITICAL**: Move work item file to appropriate `done/` folder:
       ```bash
       # Move to done folder

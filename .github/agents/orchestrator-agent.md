@@ -229,19 +229,25 @@ gh pr view <PR_NUMBER> --json statusCheckRollup,mergeable,state
 
 # When checks PASS - merge automatically
 gh pr merge <PR_NUMBER> --squash --delete-branch
-
-# Switch back to main
-git checkout main
-git pull
 ```
 
-**Step 4: Handle CI Failures**
+**Step 4: CRITICAL - Update Local Main Branch (MANDATORY)**
+```bash
+# Switch to main and pull latest
+git checkout main
+git pull origin main
+```
+- **NEVER skip this step** - ensures next task starts from latest code
+- Prevents merge conflicts and outdated code issues
+- Critical for workflow continuity
+
+**Step 5: Handle CI Failures**
 - If CI checks fail: Fix issues, commit, push, and re-poll
 - Do NOT stop or ask user for help unless unresolvable
 - Continue with next priority after successful merge
 
-**Step 5: Auto-Resume**
-- After "merge complete", immediately return to continue-work workflow
+**Step 6: Auto-Resume**
+- After pulling main, immediately return to continue-work workflow
 - Check ROADMAP.md for next priority
 - Do NOT ask permission to continue
 
@@ -545,13 +551,19 @@ git push
 ```bash
 # All checks passed - merge with squash
 gh pr merge <PR_NUMBER> --squash --delete-branch
-
-# Switch to main and pull
-git checkout main
-git pull
 ```
 
-**8.6 Update Work Items and Resume**
+**8.6 CRITICAL: Update Local Main Branch (MANDATORY)**
+```bash
+# Switch to main and pull latest
+git checkout main
+git pull origin main
+```
+- **NEVER skip this step** - ensures next task starts from latest code
+- Prevents merge conflicts and outdated code issues
+- Must be done after EVERY successful merge
+
+**8.7 Update Work Items and Resume**
 ```bash
 # Update task status to completed
 # Move task file to done/ folder

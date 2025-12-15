@@ -96,8 +96,16 @@ agent: orchestrator-agent
       gh pr merge <PR_NUMBER> --squash --delete-branch
       ```
 
-12. **Post-merge resume**:
-    - Switch to `main` and pull latest.
+12. **CRITICAL: Update Local Main Branch** (MANDATORY after every merge):
+    ```bash
+    git checkout main
+    git pull origin main
+    ```
+    - This ensures next task starts from latest code
+    - Prevents merge conflicts and outdated code issues
+    - **NEVER skip this step** - it's critical for workflow continuity
+
+13. **Post-merge resume**:
     - Signal Orchestrator to re-invoke `continue-work.prompt.md` to pick next priority.
 
 ## Signal Definitions
