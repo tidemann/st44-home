@@ -45,7 +45,21 @@ agent: orchestrator-agent
 6. **Update work items**:
    - Update work item status to `completed`
    - Add final progress log entry
-   - Move work item file to appropriate `done/` folder
+   - **CRITICAL**: Move work item file to appropriate `done/` folder:
+     ```bash
+     # For tasks
+     git mv tasks/items/task-XXX-name.md tasks/items/done/
+     # For features
+     git mv tasks/features/feature-XXX-name.md tasks/features/done/
+     ```
+   - **CRITICAL**: Check for and remove duplicates:
+     ```bash
+     # If file already exists in done/, remove from active folder
+     if (Test-Path tasks/items/done/task-XXX-name.md) {
+       Remove-Item tasks/items/task-XXX-name.md -Force
+     }
+     ```
+   - Commit the move before creating PR: `git commit -m "chore: move task-XXX to done"`
 7. **Update ROADMAP.md**:
    - Remove completed items from Now
    - Move Next → Now as appropriate
@@ -134,7 +148,9 @@ To enable automation and clear handshakes between prompts, this unified workflow
 - [ ] All acceptance criteria checked off
 - [ ] Work item status updated to `completed`
 - [ ] Final progress log entry added
-- [ ] Work item moved to done/ folder
+- [ ] **CRITICAL**: Work item moved to done/ folder using `git mv`
+- [ ] **CRITICAL**: No duplicate exists in both active and done folders
+- [ ] File movement committed to git
 - [ ] ROADMAP.md updated
 
 ## PR Title Format

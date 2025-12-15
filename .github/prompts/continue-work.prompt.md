@@ -78,9 +78,23 @@ agent: orchestrator-agent
     - Only stop if: no more work items, or unresolvable blocker
     
 17. **Update completion**: After merge:
-    - Move work item file to appropriate `done/` folder
+    - **CRITICAL**: Move work item file to appropriate `done/` folder:
+      ```bash
+      # Move to done folder
+      git mv tasks/items/task-XXX-name.md tasks/items/done/
+      # Or for features
+      git mv tasks/features/feature-XXX-name.md tasks/features/done/
+      ```
+    - **CRITICAL**: Verify no duplicates exist:
+      ```bash
+      # Check if file already in done/ - if yes, delete from items/
+      Test-Path tasks/items/done/task-XXX-name.md
+      # If True, remove duplicate from items/
+      Remove-Item tasks/items/task-XXX-name.md -Force
+      ```
     - Update ROADMAP.md (remove from Now, adjust Next → Now)
     - Update feature/epic status if all tasks complete
+    - Commit the move: `git commit -m "chore: move completed task-XXX to done folder"`
 
 ## Constraints
 

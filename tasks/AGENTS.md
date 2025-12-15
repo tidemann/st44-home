@@ -128,20 +128,55 @@ tasks/task-003-registration-form-component.md
 
 ## Archiving Completed Work
 
-When work items reach `status: completed`, move them to `done/` folders:
+**⚠️ CRITICAL**: When work items reach `status: completed`, they **MUST** be moved to `done/` folders immediately. This is MANDATORY to prevent workspace clutter and duplicate files.
 
+### Moving Completed Work (Required Workflow)
+
+**Step 1: Move file using git mv**
 ```bash
 # Epic completed
 git mv epics/epic-001-name.md epics/done/
 
-# Feature completed
+# Feature completed  
 git mv features/feature-001-name.md features/done/
 
 # Task completed
-git mv tasks/task-001-name.md tasks/done/
+git mv tasks/items/task-001-name.md tasks/items/done/
 ```
 
-This keeps active directories clean while preserving history.
+**Step 2: Check for duplicates (Critical Safeguard)**
+```bash
+# Check if file already exists in done/
+if (Test-Path tasks/items/done/task-001-name.md) {
+    # If duplicate found, delete from active folder
+    Remove-Item tasks/items/task-001-name.md -Force
+}
+```
+
+**Step 3: Commit the move**
+```bash
+git add -A
+git commit -m "chore: move completed task-001 to done folder"
+git push
+```
+
+### Why This Matters
+
+**DO**:
+- ✅ Always use `git mv` to move files (preserves git history)
+- ✅ Move files immediately after marking status as `completed`
+- ✅ Check for and remove duplicates before committing
+- ✅ Commit file movements as separate commits for clarity
+- ✅ Keep active directories (`tasks/items/`, `features/`, `epics/`) clean
+
+**DON'T**:
+- ❌ NEVER leave completed tasks in active folders
+- ❌ NEVER have the same file in both active and done folders
+- ❌ NEVER use regular `mv` command (breaks git history)
+- ❌ NEVER skip the duplicate check
+- ❌ NEVER forget to commit the move
+
+This keeps active directories clean while preserving history and preventing confusion about which work items need attention.
 
 ## Creating Work Items
 

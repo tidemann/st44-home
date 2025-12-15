@@ -702,6 +702,50 @@ After each task completion:
 4. Update planning strategies
 5. Refine agent delegation criteria
 
+### Work Item File Management (CRITICAL)
+
+**MANDATORY**: After completing any work item (task, feature, epic):
+
+1. **Move to done/ folder** (NEVER leave in active folder):
+   ```bash
+   # For tasks
+   git mv tasks/items/task-XXX-name.md tasks/items/done/
+   
+   # For features
+   git mv tasks/features/feature-XXX-name.md tasks/features/done/
+   
+   # For epics
+   git mv tasks/epics/epic-XXX-name.md tasks/epics/done/
+   ```
+
+2. **Check for duplicates** (prevent duplicate files):
+   ```bash
+   # If file already exists in done/, remove from active folder
+   if (Test-Path tasks/items/done/task-XXX-name.md) {
+       Remove-Item tasks/items/task-XXX-name.md -Force
+   }
+   ```
+
+3. **Commit the move**:
+   ```bash
+   git add -A
+   git commit -m "chore: move completed task-XXX to done folder"
+   ```
+
+**Why This Matters**:
+- Keeps workspace organized
+- Clear separation between active and completed work
+- Prevents confusion about what needs attention
+- Ensures ROADMAP.md accurately reflects pending work
+- Avoids duplicate files cluttering the repository
+
+**NEVER**:
+- Leave completed tasks in `tasks/items/` folder
+- Leave completed features in `tasks/features/` folder
+- Leave completed epics in `tasks/epics/` folder
+- Create duplicates in both active and done folders
+- Skip the git mv step (always use git mv, not regular mv)
+
 ### Knowledge Base Maintenance
 Maintain `agents/knowledge-base/`:
 - Common patterns and solutions
