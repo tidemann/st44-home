@@ -144,7 +144,7 @@ test.describe('User Login Flow', () => {
   });
 
   test('should handle return URL redirect after login', async ({ page }) => {
-    const returnUrl = '/dashboard';
+    const returnUrl = '/household/settings';
 
     // ARRANGE: Navigate to login with return URL
     await page.goto(`/login?returnUrl=${encodeURIComponent(returnUrl)}`);
@@ -188,10 +188,10 @@ test.describe('User Login Flow', () => {
 
     // Should be on a valid app page
     const currentUrl = page.url();
-    expect(currentUrl).not.toMatch(/\/auth\/(login|register)/);
+    expect(currentUrl).not.toMatch(/\/(login|register)/);
 
-    // Common redirects: home, dashboard, or root
-    expect(currentUrl).toMatch(/\/(home|dashboard)?$/);
+    // Common redirects: household creation or settings
+    expect(currentUrl).toMatch(/\/(household\/(create|settings))?$/);
   });
 
   test('should prevent login with empty email', async () => {

@@ -50,7 +50,7 @@ test.describe('User Registration Flow', () => {
     // ACT: Fill and submit registration form
     await registerPage.register(testEmail, testPassword);
 
-    // ASSERT: Should redirect to home/dashboard (not on register page anymore)
+    // ASSERT: Redirected to login page after registration
     await expect(page).not.toHaveURL(/\/register/);
 
     // ASSERT: Access token should be stored in localStorage
@@ -188,8 +188,8 @@ test.describe('User Registration Flow', () => {
     const currentUrl = page.url();
     expect(currentUrl).not.toMatch(/\/(login|register)/);
 
-    // Common redirects: home, dashboard, or root
-    expect(currentUrl).toMatch(/\/(home|dashboard)?$/);
+    // After registration, redirected to login page
+    expect(currentUrl).toMatch(/\/login$/);
   });
 
   test('should create user with correct database schema', async () => {
