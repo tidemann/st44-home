@@ -19,17 +19,39 @@ This roadmap outlines planned features and epics for the project. It's maintaine
 **Epic-006: Testing & Quality Assurance Infrastructure** 🛡️ PREVENT PRODUCTION BUGS
 - **Priority**: Critical (Deployment Safety)
 - **Status**: in-progress
-- **Duration**: 1.5 weeks (9-11 days)
+- **Duration**: 2-3 weeks (14-19 days)
 - **File**: [epic-006-testing-quality-assurance.md](epics/epic-006-testing-quality-assurance.md)
-- **Description**: E2E testing, database validation, CI/CD quality gates to prevent production failures
+- **Description**: E2E testing, backend unit/integration tests, database validation, CI/CD quality gates
 - **Why Now**: Production incident (feature-005) showed need for comprehensive testing before deployment
 - **Goal**: ZERO critical bugs reach production - 100% of critical flows tested
-- **Features**: 4 features (E2E tests, DB validation, CI gates, performance tests)
+- **Features**: 5 features (E2E tests, backend tests, DB validation, CI gates, performance tests)
   - [feature-010](features/feature-010-local-e2e-test-execution.md): **🔥 IMMEDIATE PRIORITY** Local E2E Execution (2-3 days)
+  - [feature-011](features/feature-011-backend-testing-infrastructure.md): **🔥 HIGH PRIORITY** Backend Testing (4-5 days)
   - [feature-006](features/feature-006-e2e-testing-infrastructure.md): E2E Testing Infrastructure (mostly complete, 2 tasks remaining)
   - feature-007: Database Testing & Schema Validation (2-3 days)
   - feature-008: CI/CD Quality Gates (2 days)
   - feature-009: Performance & Load Testing (2 days, optional for MVP)
+
+**Feature-011: Backend Testing Infrastructure** 🔥 HIGH PRIORITY
+- **Priority**: HIGH (Code Quality & Confidence)
+- **Status**: pending (ready for task breakdown)
+- **Duration**: 4-5 days (28-36 hours)
+- **File**: [feature-011-backend-testing-infrastructure.md](features/feature-011-backend-testing-infrastructure.md)
+- **Description**: Comprehensive unit and integration tests for Fastify backend with CI integration
+- **Why Now**: Backend has minimal test coverage (only auth integration tests), needs comprehensive testing
+- **Coverage**: Unit tests (password, JWT, auth logic), integration tests (households, children, invitations), middleware tests
+- **Impact**: Prevents regressions, enables safe refactoring, catches bugs before production
+- **Tasks**: 8 tasks estimated (051-058)
+  - [ ] task-051: Configure test infrastructure (test DB, fixtures, mocking, coverage) (4-5h)
+  - [ ] task-052: Unit tests for utilities (password, JWT, authorization) (6-8h)
+  - [ ] task-053: Integration tests for household endpoints (5-6h)
+  - [ ] task-054: Integration tests for children endpoints (5-6h)
+  - [ ] task-055: Integration tests for invitation endpoints (4-5h)
+  - [ ] task-056: Middleware tests (auth, household membership) (3-4h)
+  - [ ] task-057: CI pipeline integration (npm test, coverage reporting) (2-3h)
+  - [ ] task-058: Backend testing documentation (2-3h)
+- **Dependencies**: None (can start immediately)
+- **Success Metrics**: 80%+ code coverage, 100+ tests, < 60s execution time
 
 **Feature-010: Local E2E Test Execution Environment** 🔥 IMMEDIATE PRIORITY
 - **Priority**: HIGH (Developer Velocity - REPRIORITIZED)
@@ -377,6 +399,23 @@ Features are prioritized based on:
 4. Suggest new features for consideration
 
 ## Changelog
+
+### 2025-12-15 (Feature-011 Created! 🧪)
+- 🧪 **Feature-011: Backend Testing Infrastructure** - CREATED
+  - Comprehensive unit and integration testing for Fastify backend
+  - Unit tests: password validation, JWT utilities, authorization logic
+  - Integration tests: households, children, invitations API endpoints
+  - Middleware tests: authenticateUser, validateHouseholdMembership
+  - CI pipeline integration with coverage reporting (80%+ target)
+  - Test infrastructure: test database, fixtures, mocking utilities
+  - 8 tasks created (051-058) totaling 28-36 hours (4-5 days)
+  - Priority: high (code quality and developer confidence)
+  - Dependencies: None (can start immediately)
+  - **Why Now**: Backend has only 30 auth tests, missing coverage for households/children/invitations
+  - **Impact**: Prevents regressions, enables safe refactoring, catches bugs in CI
+  - Added to epic-006 as 5th feature
+  - Epic-006 duration extended: 1.5 weeks → 2-3 weeks
+  - Committed in feature file
 
 ### 2025-12-15 (Feature-010 Created! 🔧)
 - 🔧 **Feature-010: Local E2E Test Execution Environment** - CREATED

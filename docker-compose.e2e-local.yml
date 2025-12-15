@@ -1,0 +1,90 @@
+# Docker Compose for Local E2E Testing
+# This configuration runs E2E tests locally with isolated services on different ports
+# to avoid conflicts with development environment.
+#
+# Usage:
+#   Start:  docker-compose -f docker-compose.e2e-local.yml up
+#   Stop:   docker-compose -f docker-compose.e2e-local.yml down
+#   Logs:   docker-compose -f docker-compose.e2e-local.yml logs -f
+#   Reset:  docker-compose -f docker-compose.e2e-local.yml down -v
+
+services:
+  # PostgreSQL Test Database
+  postgres-test:
+    image: postgres:17-alpine
+    container_name: st44-postgres-test-local
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: st44_test_local
+    ports:
+      - "5433:5432"
+    volumes:
+      - ./docker/postgres/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+      - postgres_test_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d st44_test_local"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - e2e-test-network
+
+  # Backend API (Test Environment)
+  backend-test:
+    build:
+      context: ./apps/backend
+      dockerfile: Dockerfile
+    container_name: st44-backend-test-local
+    environment:
+      PORT: 3000
+      HOST: 0.0.0.0
+      NODE_ENV: test
+      DB_HOST: postgres-test
+      DB_PORT: 5432
+      DB_NAME: st44_test_local
+      DB_USER: postgres
+      DB_PASSWORD: postgres
+      CORS_ORIGIN: "*"
+      JWT_SECRET: test-secret-key-local
+      JWT_REFRESH_SECRET: test-refresh-secret-key-local
+    ports:
+      - "3001:3000"
+    depends_on:
+      postgres-test:
+        condition: service_healthy
+    networks:
+      - e2e-test-network
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://0.0.0.0:3000/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Frontend (Development Server for E2E)
+  frontend-test:
+    image: node:24-alpine
+    container_name: st44-frontend-test-local
+    working_dir: /app
+    environment:
+      NODE_ENV: development
+      CI: "false"
+    ports:
+      - "4201:4200"
+    volumes:
+      - ./apps/frontend:/app:cached
+      - frontend_node_modules:/app/node_modules
+    command: sh -c "npm install && npm start -- --host 0.0.0.0 --port 4200 --proxy-config proxy.conf.e2e-local.json"
+    depends_on:
+      backend-test:
+        condition: service_healthy
+    networks:
+      - e2e-test-network
+
+networks:
+  e2e-test-network:
+    driver: bridge
+
+volumes:
+  postgres_test_data:
+  frontend_node_modules:
