@@ -47,10 +47,7 @@ This roadmap outlines planned features and epics for the project. It's maintaine
   - [x] task-031: Login flow E2E tests (4-6h) **COMPLETED** [PR #47]
   - [x] task-032: Database validation tests (3-4h) **COMPLETED** [PR #48]
   - [ ] task-033: Password reset E2E tests (4-6h)
-  - [ ] task-034: CI/CD E2E integration ⚠️ **CRITICAL** (3-4h)
-  - [ ] task-032: Database validation tests (3-4h)
-  - [ ] task-033: Google OAuth E2E tests (optional) (4-5h)
-  - [ ] task-034: CI/CD integration ⚠️ **CRITICAL** (4-6h)
+  - [x] task-034: CI/CD E2E integration ⚠️ **CRITICAL** (1.5h) **COMPLETED** [PR #70] ✅ NON-BLOCKING
   - [ ] task-035: E2E testing documentation (2-3h)
 - **Critical Path**: 027 → 028 → 029 → 030 → 034
 - **Dependencies**: feature-005 complete ✅
