@@ -3,7 +3,7 @@
 ## Metadata
 - **ID**: feature-011
 - **Epic**: epic-006 - Testing & Quality Assurance Infrastructure
-- **Status**: pending
+- **Status**: ready-for-implementation
 - **Priority**: high
 - **Created**: 2025-12-15
 - **Estimated Duration**: 4-5 days (28-36 hours)
@@ -49,62 +49,65 @@ Comprehensive testing infrastructure for the Fastify backend including unit test
 - [ ] Test execution time < 60 seconds
 
 ## Tasks
-**⚠️ Feature must be broken down into tasks by Orchestrator Agent before implementation**
 
-Preliminary task breakdown (to be refined):
+- [ ] **[task-051](../items/task-051-backend-test-infrastructure-setup.md)**: Backend Test Infrastructure Setup (4-5h)
+  - Test database configuration with isolation
+  - Test fixtures for users, households, children, tasks
+  - Database cleanup utility functions
+  - Mocking infrastructure (pg.Pool, bcrypt, JWT)
+  - c8 coverage reporting configuration
+  - Coverage thresholds (80% minimum)
 
-- [ ] **task-051**: Configure test infrastructure (4-5h)
-  - Test database setup with isolation
-  - Test utilities for fixtures and cleanup
-  - Mocking infrastructure for external dependencies
-  - Coverage reporting configuration
-
-- [ ] **task-052**: Unit tests for utilities and services (6-8h)
+- [ ] **[task-052](../items/task-052-unit-tests-backend-utilities.md)**: Unit Tests for Backend Utilities (6-8h)
   - Password validation unit tests
   - JWT generation/verification unit tests
   - Authorization logic unit tests
+  - Input validation unit tests
   - Error handling utility tests
 
-- [ ] **task-053**: Integration tests for household endpoints (5-6h)
-  - GET /api/households (list households for user)
+- [ ] **[task-053](../items/task-053-integration-tests-household-endpoints.md)**: Integration Tests for Household Endpoints (5-6h)
+  - GET /api/households (list households)
   - POST /api/households (create household)
-  - GET /api/households/:id (get household details)
+  - GET /api/households/:id (get details)
   - PUT /api/households/:id (update household)
   - DELETE /api/households/:id (delete household)
-  - Test authentication and authorization
+  - Authentication and authorization tests
 
-- [ ] **task-054**: Integration tests for children endpoints (5-6h)
+- [ ] **[task-054](../items/task-054-integration-tests-children-endpoints.md)**: Integration Tests for Children Endpoints (5-6h)
   - GET /api/households/:id/children (list children)
   - POST /api/households/:id/children (create child)
-  - GET /api/children/:id (get child details)
+  - GET /api/children/:id (get details)
   - PUT /api/children/:id (update child)
   - DELETE /api/children/:id (delete child)
-  - Test household membership validation
+  - Household membership validation tests
 
-- [ ] **task-055**: Integration tests for invitation endpoints (4-5h)
+- [ ] **[task-055](../items/task-055-integration-tests-invitation-endpoints.md)**: Integration Tests for Invitation Endpoints (4-5h)
   - POST /api/invitations (create invitation)
-  - GET /api/invitations/:token (get invitation details)
-  - POST /api/invitations/:token/accept (accept invitation)
-  - POST /api/invitations/:token/decline (decline invitation)
-  - Test email validation and expiration
+  - GET /api/invitations/:token (get details)
+  - POST /api/invitations/:token/accept (accept)
+  - POST /api/invitations/:token/decline (decline)
+  - Email validation and expiration tests
 
-- [ ] **task-056**: Middleware tests (3-4h)
-  - authenticateUser middleware comprehensive tests
+- [ ] **[task-056](../items/task-056-middleware-unit-integration-tests.md)**: Middleware Unit and Integration Tests (3-4h)
+  - authenticateUser middleware tests
   - validateHouseholdMembership middleware tests
-  - Error handling middleware tests
+  - Error handling tests
+  - Middleware chaining integration tests
 
-- [ ] **task-057**: CI pipeline integration (2-3h)
+- [ ] **[task-057](../items/task-057-ci-pipeline-integration-backend-tests.md)**: CI Pipeline Integration (2-3h)
   - Add npm test to backend CI job
-  - Configure coverage reporting
-  - Set up coverage thresholds
-  - Add test result artifacts
+  - Configure PostgreSQL service in CI
+  - Coverage reporting and artifacts
+  - Coverage thresholds enforcement
 
-- [ ] **task-058**: Backend testing documentation (2-3h)
-  - Testing guide with examples
-  - How to write unit vs integration tests
+- [ ] **[task-058](../items/task-058-backend-testing-documentation.md)**: Backend Testing Documentation (2-3h)
+  - Comprehensive TESTING.md guide
+  - Unit vs integration test patterns
   - Test database setup instructions
-  - Mocking patterns and best practices
-  - Coverage expectations
+  - Mocking patterns and examples
+  - Coverage expectations and troubleshooting
+
+**Progress**: 0/8 tasks complete (0%)
 
 ## Dependencies
 - None (can start immediately)
@@ -216,6 +219,9 @@ N/A - Backend infrastructure feature (no user-facing UI)
 - Best practices
 
 ## Progress Log
+- [2025-12-15 18:35] Feature broken down by Orchestrator Agent - 8 task files created (051-058)
+- [2025-12-15 18:35] Status changed to ready-for-implementation
+- [2025-12-15 18:35] Task-051 (test infrastructure) is next priority
 - [2025-12-15 16:20] Feature created by Planner Agent
 - [2025-12-15 16:20] Preliminary task breakdown (8 tasks, 28-36 hours)
 
