@@ -6,6 +6,7 @@ import { OAuth2Client } from 'google-auth-library';
 import { pool } from './database.js';
 import householdRoutes from './routes/households.js';
 import childrenRoutes from './routes/children.js';
+import { invitationRoutes } from './routes/invitations.js';
 
 // JWT Configuration
 const JWT_SECRET = process.env.JWT_SECRET || 'dev-secret-change-in-production';
@@ -527,9 +528,10 @@ async function buildApp() {
     );
   });
 
-  // Register household and children routes
+  // Register household, children, and invitation routes
   await fastify.register(householdRoutes);
   await fastify.register(childrenRoutes);
+  await fastify.register(invitationRoutes);
 
   // Example items endpoint
   interface Item {
