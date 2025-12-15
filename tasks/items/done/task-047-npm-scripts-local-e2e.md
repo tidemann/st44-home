@@ -4,11 +4,12 @@
 - **ID**: task-047
 - **Feature**: feature-010 - Local E2E Test Execution Environment
 - **Epic**: epic-006 - Testing & Quality Assurance Infrastructure
-- **Status**: in-progress
+- **Status**: completed
 - **Priority**: high
 - **Created**: 2025-12-15
 - **Assigned Agent**: devops + testing
 - **Estimated Duration**: 2-3 hours
+- **Actual Duration**: 2 hours
 
 ## Description
 Add comprehensive npm scripts to make local E2E test execution simple and developer-friendly. Developers should be able to run tests, debug tests, and manage test services with single commands. Scripts should handle starting/stopping Docker services, running tests in various modes (full suite, watch mode, UI mode), and provide helpful output.
@@ -175,6 +176,8 @@ Scripts should use environment variables:
   - test:e2e - Tests ran (browser install needed but script works) ✅
   - test:e2e:stop - Clean shutdown ✅
 - [2025-12-15 16:40] All acceptance criteria met
+- [2025-12-15 16:42] PR #72 created and merged successfully
+- [2025-12-15 16:43] Status changed to completed
 
 ## Testing Strategy
 - Manual testing of each script
@@ -184,7 +187,7 @@ Scripts should use environment variables:
 - Test with fresh environment (no containers running)
 
 ## Related PRs
-- TBD
+- [PR #72](https://github.com/tidemann/st44-home/pull/72) - feat: add npm scripts for local E2E test execution ✅ MERGED
 
 ## Lessons Learned
 [To be filled after completion]

@@ -48,7 +48,7 @@ Provide developers with a complete, easy-to-use environment for running E2E test
 
 ## Tasks
 - [x] **task-046**: Docker Compose configuration for local E2E (3-4h) ✅ COMPLETED [PR #71]
-- [ ] **task-047**: NPM scripts for local E2E execution (2-3h)
+- [x] **task-047**: NPM scripts for local E2E execution (2-3h) ✅ COMPLETED [PR #72]
 - [ ] **task-048**: VS Code debug configurations for E2E tests (2-3h)
 - [ ] **task-049**: Database seeding and reset utilities (3-4h)
 - [ ] **task-050**: Local E2E testing documentation (3-4h)
@@ -157,6 +157,8 @@ N/A - This is a developer tooling feature with no end-user UI
 - [2025-12-15 15:45] task-046 started (Docker Compose for local E2E)
 - [2025-12-15 16:15] task-046 completed and merged [PR #71]
 - [2025-12-15 16:17] Feature progress: 1/5 tasks complete (20%)
+- [2025-12-15 16:43] task-047 completed and merged [PR #72]
+- [2025-12-15 16:43] Feature progress: 2/5 tasks complete (40%)
 
 ## Testing Strategy
 - [ ] Validate docker-compose starts all services correctly
@@ -167,6 +169,7 @@ N/A - This is a developer tooling feature with no end-user UI
 
 ## Related PRs
 - [PR #71](https://github.com/tidemann/st44-home/pull/71) - task-046: Docker Compose for local E2E testing ✅ MERGED
+- [PR #72](https://github.com/tidemann/st44-home/pull/72) - task-047: NPM scripts for local E2E execution ✅ MERGED
 
 ## Success Metrics
 - **Developer Efficiency**: Time to run E2E tests locally < 10 minutes (including setup)
