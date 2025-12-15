@@ -3,7 +3,7 @@
 ## Metadata
 - **ID**: feature-010
 - **Epic**: epic-006 - Testing & Quality Assurance Infrastructure
-- **Status**: pending
+- **Status**: in-progress
 - **Priority**: medium
 - **Created**: 2025-12-15
 - **Estimated Duration**: 2-3 days
@@ -47,7 +47,11 @@ Provide developers with a complete, easy-to-use environment for running E2E test
 - [ ] Test environment can be started/stopped cleanly without manual intervention
 
 ## Tasks
-**Tasks to be created:**
+- [x] **task-046**: Docker Compose configuration for local E2E (3-4h) ✅ COMPLETED [PR #71]
+- [ ] **task-047**: NPM scripts for local E2E execution (2-3h)
+- [ ] **task-048**: VS Code debug configurations for E2E tests (2-3h)
+- [ ] **task-049**: Database seeding and reset utilities (3-4h)
+- [ ] **task-050**: Local E2E testing documentation (3-4h)
 
 - [ ] **task-046**: Create docker-compose.e2e-local.yml for local test environment (3-4h)
 - [ ] **task-047**: Add npm scripts for local E2E test execution (2-3h)
@@ -150,6 +154,9 @@ N/A - This is a developer tooling feature with no end-user UI
 ## Progress Log
 - [2025-12-15 14:45] Feature created by Planner Agent
 - [2025-12-15 14:45] Tasks defined (046-050)
+- [2025-12-15 15:45] task-046 started (Docker Compose for local E2E)
+- [2025-12-15 16:15] task-046 completed and merged [PR #71]
+- [2025-12-15 16:17] Feature progress: 1/5 tasks complete (20%)
 
 ## Testing Strategy
 - [ ] Validate docker-compose starts all services correctly
@@ -159,7 +166,7 @@ N/A - This is a developer tooling feature with no end-user UI
 - [ ] Validate documentation with fresh developer walkthrough
 
 ## Related PRs
-- TBD - Will be linked as tasks are completed
+- [PR #71](https://github.com/tidemann/st44-home/pull/71) - task-046: Docker Compose for local E2E testing ✅ MERGED
 
 ## Success Metrics
 - **Developer Efficiency**: Time to run E2E tests locally < 10 minutes (including setup)
