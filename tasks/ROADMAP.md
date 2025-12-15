@@ -18,22 +18,40 @@ This roadmap outlines planned features and epics for the project. It's maintaine
 
 **Epic-006: Testing & Quality Assurance Infrastructure** 🛡️ PREVENT PRODUCTION BUGS
 - **Priority**: Critical (Deployment Safety)
-- **Status**: pending
+- **Status**: in-progress
 - **Duration**: 1.5 weeks (9-11 days)
 - **File**: [epic-006-testing-quality-assurance.md](epics/epic-006-testing-quality-assurance.md)
 - **Description**: E2E testing, database validation, CI/CD quality gates to prevent production failures
 - **Why Now**: Production incident (feature-005) showed need for comprehensive testing before deployment
 - **Goal**: ZERO critical bugs reach production - 100% of critical flows tested
 - **Features**: 4 features (E2E tests, DB validation, CI gates, performance tests)
-  - [feature-006](features/feature-006-e2e-testing-infrastructure.md): E2E Testing Infrastructure (5-6 days) **HIGH PRIORITY**
+  - [feature-010](features/feature-010-local-e2e-test-execution.md): **🔥 IMMEDIATE PRIORITY** Local E2E Execution (2-3 days)
+  - [feature-006](features/feature-006-e2e-testing-infrastructure.md): E2E Testing Infrastructure (mostly complete, 2 tasks remaining)
   - feature-007: Database Testing & Schema Validation (2-3 days)
   - feature-008: CI/CD Quality Gates (2 days)
   - feature-009: Performance & Load Testing (2 days, optional for MVP)
 
-**Feature-006: E2E Testing Infrastructure** ⚡ REGISTRATION MUST NEVER FAIL
-- **Priority**: Critical (Prevents Production Bugs)
+**Feature-010: Local E2E Test Execution Environment** 🔥 IMMEDIATE PRIORITY
+- **Priority**: HIGH (Developer Velocity - REPRIORITIZED)
 - **Status**: ready-for-implementation (tasks broken down)
-- **Duration**: 5-6 days (35-46 hours)
+- **Duration**: 2-3 days (13-18 hours)
+- **File**: [feature-010-local-e2e-test-execution.md](features/feature-010-local-e2e-test-execution.md)
+- **Description**: Local development environment for running E2E tests easily with Docker Compose
+- **Why Now**: **REPRIORITIZED** - Developers need to run E2E tests locally NOW before writing more tests
+- **Coverage**: Docker setup, npm scripts, VS Code debugging, database utilities, documentation
+- **Impact**: Unblocks local E2E test development, faster feedback, easier debugging
+- **Tasks**: 5 tasks created (046-050) - **START WITH THESE**
+  - [ ] task-046: Docker Compose configuration for local E2E (3-4h) ⚡ **NEXT**
+  - [ ] task-047: NPM scripts for local E2E execution (2-3h)
+  - [ ] task-048: VS Code debug configurations for E2E tests (2-3h)
+  - [ ] task-049: Database seeding and reset utilities (3-4h)
+  - [ ] task-050: Local E2E testing documentation (3-4h)
+- **Dependencies**: feature-006 infrastructure complete ✅ (Playwright, test database, fixtures installed)
+
+**Feature-006: E2E Testing Infrastructure** ⚡ MOSTLY COMPLETE
+- **Priority**: Critical (Prevents Production Bugs)
+- **Status**: in-progress (7/9 tasks complete - 78% done)
+- **Duration**: 5-6 days (35-46 hours) - **ONLY 6-9h REMAINING**
 - **File**: [feature-006-e2e-testing-infrastructure.md](features/feature-006-e2e-testing-infrastructure.md)
 - **Description**: Playwright E2E tests for critical user flows, especially registration
 - **Why Now**: Would have caught production bug in PR checks before deployment
@@ -46,28 +64,11 @@ This roadmap outlines planned features and epics for the project. It's maintaine
   - [x] task-030: Registration flow E2E tests ⚠️ **CRITICAL** (6-8h) **COMPLETED** [PR #46]
   - [x] task-031: Login flow E2E tests (4-6h) **COMPLETED** [PR #47]
   - [x] task-032: Database validation tests (3-4h) **COMPLETED** [PR #48]
-  - [ ] task-033: Password reset E2E tests (4-6h)
+  - [ ] task-033: Google OAuth E2E tests (4-6h) - **DEFERRED** (do after feature-010)
   - [x] task-034: CI/CD E2E integration ⚠️ **CRITICAL** (1.5h) **COMPLETED** [PR #70] ✅ NON-BLOCKING
-  - [ ] task-035: E2E testing documentation (2-3h)
-- **Critical Path**: 027 → 028 → 029 → 030 → 034
+  - [ ] task-035: E2E testing documentation (2-3h) - **DEFERRED** (do after feature-010)
+- **Remaining Work**: Optional OAuth tests + docs (can be done after local environment works)
 - **Dependencies**: feature-005 complete ✅
-
-**Feature-010: Local E2E Test Execution Environment** 🔧 DEVELOPER EXPERIENCE
-- **Priority**: Medium (Developer Productivity)
-- **Status**: ready-for-implementation (tasks broken down)
-- **Duration**: 2-3 days (13-18 hours)
-- **File**: [feature-010-local-e2e-test-execution.md](features/feature-010-local-e2e-test-execution.md)
-- **Description**: Local development environment for running E2E tests easily with Docker Compose
-- **Why Now**: E2E tests integrated in CI, developers need ability to run locally before pushing
-- **Coverage**: Docker setup, npm scripts, VS Code debugging, database utilities, documentation
-- **Impact**: Faster feedback loops, catch issues before CI, easier debugging, better DX
-- **Tasks**: 5 tasks created (046-050)
-  - [ ] task-046: Docker Compose configuration for local E2E (3-4h)
-  - [ ] task-047: NPM scripts for local E2E execution (2-3h)
-  - [ ] task-048: VS Code debug configurations for E2E tests (2-3h)
-  - [ ] task-049: Database seeding and reset utilities (3-4h)
-  - [ ] task-050: Local E2E testing documentation (3-4h)
-- **Dependencies**: feature-006 tasks complete (Playwright, test database, fixtures)
 
 ### 🎯 MVP Epics (8-week timeline)
 
