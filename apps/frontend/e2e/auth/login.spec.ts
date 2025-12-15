@@ -35,7 +35,7 @@ test.describe('User Login Flow', () => {
     await loginPage.login(testEmail, testPassword);
 
     // ASSERT: Should redirect away from login page
-    await expect(page).not.toHaveURL(/\/auth\/login/);
+    await expect(page).not.toHaveURL(/\/login/);
 
     // ASSERT: Access token should be stored
     const accessToken = await page.evaluate(() => localStorage.getItem('accessToken'));
@@ -55,7 +55,7 @@ test.describe('User Login Flow', () => {
     expect(error?.toLowerCase()).toMatch(/invalid|incorrect|wrong|credentials/);
 
     // ASSERT: Should still be on login page
-    await expect(loginPage.page).toHaveURL(/\/auth\/login/);
+    await expect(loginPage.page).toHaveURL(/\/login/);
 
     // ASSERT: No token should be stored
     const accessToken = await loginPage.page.evaluate(() => localStorage.getItem('accessToken'));

@@ -51,7 +51,7 @@ test.describe('User Registration Flow', () => {
     await registerPage.register(testEmail, testPassword);
 
     // ASSERT: Should redirect to home/dashboard (not on register page anymore)
-    await expect(page).not.toHaveURL(/\/auth\/register/);
+    await expect(page).not.toHaveURL(/\/register/);
 
     // ASSERT: Access token should be stored in localStorage
     const accessToken = await page.evaluate(() => localStorage.getItem('accessToken'));
@@ -82,7 +82,7 @@ test.describe('User Registration Flow', () => {
     expect(error?.toLowerCase()).toMatch(/password|weak|length|character/);
 
     // ASSERT: Should still be on registration page
-    await expect(registerPage.page).toHaveURL(/\/auth\/register/);
+    await expect(registerPage.page).toHaveURL(/\/register/);
 
     // ASSERT: User should NOT be in database
     const result = await pool.query('SELECT id FROM users WHERE email = $1', [testEmail]);
@@ -182,11 +182,11 @@ test.describe('User Registration Flow', () => {
     await registerPage.register(testEmail, testPassword);
 
     // ASSERT: Should redirect away from register page within reasonable time
-    await expect(page).not.toHaveURL(/\/auth\/register/, { timeout: 5000 });
+    await expect(page).not.toHaveURL(/\/register/, { timeout: 5000 });
 
     // Should be on a valid app page (not login either)
     const currentUrl = page.url();
-    expect(currentUrl).not.toMatch(/\/auth\/(login|register)/);
+    expect(currentUrl).not.toMatch(/\/(login|register)/);
 
     // Common redirects: home, dashboard, or root
     expect(currentUrl).toMatch(/\/(home|dashboard)?$/);
@@ -258,7 +258,7 @@ test.describe('User Registration Flow', () => {
     await registerPage.register(specialEmail, testPassword);
 
     // ASSERT: Should succeed and store correctly
-    await expect(registerPage.page).not.toHaveURL(/\/auth\/register/);
+    await expect(registerPage.page).not.toHaveURL(/\/register/);
 
     const result = await pool.query('SELECT email FROM users WHERE email = $1', [specialEmail]);
     expect(result.rows).toHaveLength(1);
