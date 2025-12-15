@@ -21,7 +21,7 @@ export class RegisterPage extends BasePage {
   }
 
   async goto(): Promise<void> {
-    await this.page.goto('/auth/register');
+    await this.page.goto('/register');
     await this.waitForLoad();
   }
 

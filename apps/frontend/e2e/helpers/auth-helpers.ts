@@ -6,7 +6,7 @@ import { Page } from '@playwright/test';
  */
 export async function loginAsUser(page: Page, email: string, password: string): Promise<void> {
   // Navigate to login page
-  await page.goto('/auth/login');
+  await page.goto('/login');
 
   // Fill in credentials
   await page.getByLabel(/email/i).fill(email);
@@ -16,7 +16,7 @@ export async function loginAsUser(page: Page, email: string, password: string): 
   await page.getByRole('button', { name: /log in|sign in/i }).click();
 
   // Wait for successful redirect (away from login page)
-  await page.waitForURL((url) => !url.pathname.includes('/auth/login'), { timeout: 5000 });
+  await page.waitForURL((url) => !url.pathname.includes('/login'), { timeout: 5000 });
 }
 
 /**
@@ -25,7 +25,7 @@ export async function loginAsUser(page: Page, email: string, password: string): 
  */
 export async function registerUser(page: Page, email: string, password: string): Promise<void> {
   // Navigate to registration page
-  await page.goto('/auth/register');
+  await page.goto('/register');
 
   // Fill in credentials
   await page.getByLabel(/email/i).fill(email);
@@ -36,7 +36,7 @@ export async function registerUser(page: Page, email: string, password: string):
   await page.getByRole('button', { name: /register|sign up/i }).click();
 
   // Wait for successful redirect (away from register page)
-  await page.waitForURL((url) => !url.pathname.includes('/auth/register'), { timeout: 5000 });
+  await page.waitForURL((url) => !url.pathname.includes('/register'), { timeout: 5000 });
 }
 
 /**
@@ -52,7 +52,7 @@ export async function logout(page: Page): Promise<void> {
   });
 
   // Navigate to login page
-  await page.goto('/auth/login');
+  await page.goto('/login');
 }
 
 /**

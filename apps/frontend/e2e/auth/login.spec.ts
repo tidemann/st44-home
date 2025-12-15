@@ -147,7 +147,7 @@ test.describe('User Login Flow', () => {
     const returnUrl = '/dashboard';
 
     // ARRANGE: Navigate to login with return URL
-    await page.goto(`/auth/login?returnUrl=${encodeURIComponent(returnUrl)}`);
+    await page.goto(`/login?returnUrl=${encodeURIComponent(returnUrl)}`);
     await loginPage.waitForLoad();
 
     // ACT: Login successfully

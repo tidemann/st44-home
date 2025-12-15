@@ -56,9 +56,9 @@ test.describe('Database Health and Validation', () => {
   test('should have all 8 critical tables created', async () => {
     // ACT: Query for all expected tables
     const result = await pool.query(`
-      SELECT table_name 
-      FROM information_schema.tables 
-      WHERE table_schema = 'public' 
+      SELECT table_name
+      FROM information_schema.tables
+      WHERE table_schema = 'public'
         AND table_type = 'BASE TABLE'
       ORDER BY table_name
     `);
