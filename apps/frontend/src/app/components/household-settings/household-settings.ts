@@ -11,10 +11,12 @@ import { Router } from '@angular/router';
 import { DatePipe } from '@angular/common';
 import { HouseholdService, Household, HouseholdMember } from '../../services/household.service';
 import { ChildrenManagementComponent } from '../children-management/children-management';
+import { InviteUserComponent } from '../invite-user/invite-user';
+import { SendInvitationResponse } from '../../services/invitation.service';
 
 @Component({
   selector: 'app-household-settings',
-  imports: [ReactiveFormsModule, DatePipe, ChildrenManagementComponent],
+  imports: [ReactiveFormsModule, DatePipe, ChildrenManagementComponent, InviteUserComponent],
   templateUrl: './household-settings.html',
   styleUrl: './household-settings.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -140,6 +142,15 @@ export class HouseholdSettingsComponent implements OnInit {
       return payload.userId || 0;
     } catch {
       return 0;
+    }
+  }
+
+  async onInvitationSent(_response: SendInvitationResponse) {
+    // Refresh members list
+    const householdId = this.household()?.id;
+    if (householdId) {
+      // Note: New member won't appear until they accept, but refresh for consistency
+      await this.loadHouseholdData();
     }
   }
 }

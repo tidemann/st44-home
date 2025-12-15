@@ -70,6 +70,15 @@
       <section class="settings-section">
         <h2>Household Members</h2>
 
+        @if (isAdmin()) {
+          <div class="section-actions">
+            <app-invite-user
+              [householdId]="household()!.id"
+              (invitationSent)="onInvitationSent($event)"
+            />
+          </div>
+        }
+
         @if (members().length > 0) {
           <ul class="members-list" role="list">
             @for (member of members(); track member.user_id) {
