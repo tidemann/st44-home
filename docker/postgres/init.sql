@@ -222,30 +222,38 @@ ALTER TABLE task_assignments ENABLE ROW LEVEL SECURITY;
 ALTER TABLE task_completions ENABLE ROW LEVEL SECURITY;
 
 -- Create RLS policies (application sets app.current_household_id per request)
-CREATE POLICY IF NOT EXISTS households_isolation ON households
+-- Note: PostgreSQL 17 doesn't support IF NOT EXISTS for CREATE POLICY, so drop first
+DROP POLICY IF EXISTS households_isolation ON households;
+CREATE POLICY households_isolation ON households
 FOR ALL
 USING (id = current_setting('app.current_household_id', TRUE)::UUID);
 
-CREATE POLICY IF NOT EXISTS household_members_isolation ON household_members
+DROP POLICY IF EXISTS household_members_isolation ON household_members;
+CREATE POLICY household_members_isolation ON household_members
 FOR ALL
 USING (household_id = current_setting('app.current_household_id', TRUE)::UUID);
 
-CREATE POLICY IF NOT EXISTS invitations_isolation ON invitations
+DROP POLICY IF EXISTS invitations_isolation ON invitations;
+CREATE POLICY invitations_isolation ON invitations
 FOR ALL
 USING (household_id = current_setting('app.current_household_id', TRUE)::UUID);
 
-CREATE POLICY IF NOT EXISTS children_isolation ON children
+DROP POLICY IF EXISTS children_isolation ON children;
+CREATE POLICY children_isolation ON children
 FOR ALL
 USING (household_id = current_setting('app.current_household_id', TRUE)::UUID);
 
-CREATE POLICY IF NOT EXISTS tasks_isolation ON tasks
+DROP POLICY IF EXISTS tasks_isolation ON tasks;
+CREATE POLICY tasks_isolation ON tasks
 FOR ALL
 USING (household_id = current_setting('app.current_household_id', TRUE)::UUID);
 
-CREATE POLICY IF NOT EXISTS task_assignments_isolation ON task_assignments
+DROP POLICY IF EXISTS task_assignments_isolation ON task_assignments;
+CREATE POLICY task_assignments_isolation ON task_assignments
 FOR ALL
 USING (household_id = current_setting('app.current_household_id', TRUE)::UUID);
 
-CREATE POLICY IF NOT EXISTS task_completions_isolation ON task_completions
+DROP POLICY IF EXISTS task_completions_isolation ON task_completions;
+CREATE POLICY task_completions_isolation ON task_completions
 FOR ALL
 USING (household_id = current_setting('app.current_household_id', TRUE)::UUID);

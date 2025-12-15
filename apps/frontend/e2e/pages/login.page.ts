@@ -14,8 +14,8 @@ export class LoginPage extends BasePage {
 
   constructor(page: Page) {
     super(page);
-    this.emailInput = page.getByLabel(/email/i);
-    this.passwordInput = page.getByLabel(/password/i);
+    this.emailInput = page.getByRole('textbox', { name: /email/i });
+    this.passwordInput = page.locator('input[type="password"]').first();
     this.rememberMeCheckbox = page.getByLabel(/remember me/i);
     this.loginButton = page.getByRole('button', { name: /log in|sign in/i });
     this.errorMessage = page.locator('[role="alert"], .error-message, .alert-error');
@@ -23,7 +23,7 @@ export class LoginPage extends BasePage {
   }
 
   async goto(): Promise<void> {
-    await this.page.goto('/auth/login');
+    await this.page.goto('/login');
     await this.waitForLoad();
   }
 
@@ -36,6 +36,15 @@ export class LoginPage extends BasePage {
     }
 
     await this.loginButton.click();
+
+    // Wait for navigation or error message
+    await Promise.race([
+      this.page.waitForURL((url) => !url.pathname.includes('/login'), { timeout: 5000 }),
+      this.errorMessage.waitFor({ state: 'visible', timeout: 5000 }).catch(() => {}),
+    ]);
+
+    // Give Angular time to process response and store tokens
+    await this.page.waitForTimeout(500);
   }
 
   async getErrorMessage(): Promise<string | null> {

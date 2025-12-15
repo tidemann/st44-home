@@ -22,9 +22,8 @@ test.describe('Database Health and Validation', () => {
     await resetTestDatabase();
   });
 
-  test.afterAll(async () => {
-    await pool.end();
-  });
+  // Note: Pool cleanup handled by process exit, not afterAll
+  // This prevents "pool already ended" errors during test retries
 
   test('should return 200 from /health endpoint', async ({ request }) => {
     // ACT: Call health endpoint
@@ -50,15 +49,16 @@ test.describe('Database Health and Validation', () => {
     // ASSERT: Database should be healthy
     const body = await response.json();
     expect(body.status).toBe('healthy');
-    expect(body.database).toBe('connected');
+    expect(body.database.connected).toBe(true);
+    expect(typeof body.database.responseTime).toBe('number');
   });
 
   test('should have all 8 critical tables created', async () => {
     // ACT: Query for all expected tables
     const result = await pool.query(`
-      SELECT table_name 
-      FROM information_schema.tables 
-      WHERE table_schema = 'public' 
+      SELECT table_name
+      FROM information_schema.tables
+      WHERE table_schema = 'public'
         AND table_type = 'BASE TABLE'
       ORDER BY table_name
     `);
@@ -75,14 +75,15 @@ test.describe('Database Health and Validation', () => {
       'task_assignments',
       'task_completions',
       'schema_migrations',
+      'items',
     ];
 
-    for (const table of expectedTables) {
-      expect(tableNames).toContain(table);
+    for (const tableName of expectedTables) {
+      expect(tableNames).toContain(tableName);
     }
 
-    // ASSERT: Should have exactly 8 tables (no extras)
-    expect(tableNames).toHaveLength(8);
+    // ASSERT: Should have exactly 9 tables (no extras)
+    expect(tableNames).toHaveLength(9);
   });
 
   test('should have schema_migrations table with correct structure', async () => {
@@ -103,12 +104,12 @@ test.describe('Database Health and Validation', () => {
       nullable: row.is_nullable,
     }));
 
-    expect(columns).toContainEqual({ name: 'version', type: 'integer', nullable: 'NO' });
+    expect(columns).toContainEqual({ name: 'version', type: 'character varying', nullable: 'NO' });
     expect(columns).toContainEqual({ name: 'name', type: 'character varying', nullable: 'NO' });
     expect(columns).toContainEqual({
       name: 'applied_at',
-      type: 'timestamp without time zone',
-      nullable: 'YES',
+      type: 'timestamp with time zone',
+      nullable: 'NO',
     });
   });
 
