@@ -63,13 +63,13 @@ Enable household admins and parents to invite other users to join their househol
 
 ## Tasks
 
-### Backend Tasks (7 tasks, 18-24 hours)
-- [ ] [task-036](../items/task-036-create-invitations-table-schema.md): Create invitations table schema (3-4h)
-- [ ] [task-037](../items/task-037-invitation-crud-api-endpoints.md): Implement invitation CRUD API endpoints (5-6h)
+### Backend Tasks (6 tasks, 12-17 hours)
+- [x] [task-036](../items/done/task-036-create-invitations-table-schema.md): Create invitations table schema (3-4h) **COMPLETED** (0.5h actual)
+- [x] [task-037](../items/done/task-037-invitation-crud-api-endpoints.md): Implement invitation CRUD API endpoints (5-6h) **COMPLETED** (0.5h actual)
 - [ ] [task-038](../items/task-038-invitation-authorization-middleware.md): Implement invitation authorization middleware (2-3h)
-- [ ] [task-039](../items/task-039-email-validation-duplicate-checks.md): Add email validation and duplicate checks (2-3h)
-- [ ] [task-040](../items/task-040-invitation-token-generation.md): Implement invitation token generation (1-2h)
-- [ ] [task-041](../items/task-041-invitation-acceptance-logic.md): Implement invitation acceptance logic (3-4h)
+- [x] [task-039](../items/done/task-039-email-validation-duplicate-checks.md): Add email validation and duplicate checks (2-3h) **COMPLETED** (implemented in task-037)
+- [x] [task-040](../items/done/task-040-invitation-token-generation.md): Implement invitation token generation (1-2h) **COMPLETED** (implemented in task-037)
+- [x] [task-041](../items/done/task-041-invitation-acceptance-logic.md): Implement invitation acceptance logic (3-4h) **COMPLETED** (implemented in task-037)
 
 ### Frontend Tasks (4 tasks, 13-17 hours)
 - [ ] [task-042](../items/task-042-invite-user-component.md): Build invite user component (3-4h)
@@ -80,8 +80,9 @@ Enable household admins and parents to invite other users to join their househol
 ### Testing Tasks (1 task, 6-8 hours)
 - [ ] [task-046](../items/task-046-invitation-system-tests.md): Write invitation system tests (6-8h)
 
-**Total**: 11 tasks, 37-49 hours (5-7 days)
-**Critical Path**: task-036 → task-037 → task-041 → task-045 → task-044
+**Total**: 11 tasks, 31-42 hours (4-6 days after consolidation)
+**Critical Path**: task-036 → task-037 → (038?) → task-045 → task-044
+**Progress**: 5/11 tasks complete (45%)
 
 ## Dependencies
 - feature-001: User authentication must be complete
@@ -225,6 +226,10 @@ If you don't have a Diddit account yet, you'll be prompted to create one.
 - [2025-12-15] Status updated to ready-for-implementation
 - [2025-12-15] Tasks organized: 6 backend + 4 frontend + 1 testing
 - [2025-12-15] Estimated duration updated based on task breakdown (37-49 hours)
+- [2025-12-15] task-036 complete: Invitations table schema (PR #65, 0.5h)
+- [2025-12-15] task-037 complete: Invitation CRUD API endpoints (PR #66, 0.5h)
+- [2025-12-15] tasks 039-041 marked complete: Logic already implemented in task-037
+- [2025-12-15] Progress: 5/11 tasks complete (45%), backend nearly done except authorization middleware
 
 ## Testing Strategy
 - [ ] Unit tests for invitation service
