@@ -4,20 +4,36 @@
 - **ID**: task-026
 - **Feature**: feature-003 - Household Management
 - **Epic**: epic-001 - Multi-Tenant Foundation
-- **Status**: pending
+- **Status**: in-progress
 - **Priority**: high
 - **Created**: 2025-12-14
 - **Assigned Agent**: frontend
 - **Estimated Duration**: 3-4 hours
 
 ## Description
-[Detailed description to be added]
+Build a household switcher component that allows users to view and switch between multiple households they belong to. This component should appear in the app header/navigation and show the currently active household with an option to switch.
 
 ## Requirements
-- [Requirements to be added]
+- Dropdown/menu component showing all user's households
+- Display active household prominently
+- Click to switch to different household
+- Update active household in localStorage and state
+- Refresh UI to reflect new active household
+- Show user's role in each household (admin/parent)
+- Responsive design for mobile and desktop
+- WCAG AA compliant
 
 ## Acceptance Criteria
-- [ ] [Criteria to be added]
+- [ ] HouseholdSwitcherComponent created
+- [ ] Lists all households user belongs to
+- [ ] Shows currently active household
+- [ ] Click household to switch active
+- [ ] Updates localStorage on switch
+- [ ] Triggers UI update across app
+- [ ] Shows role badge for each household
+- [ ] Keyboard accessible (arrow keys, enter, esc)
+- [ ] WCAG AA compliant
+- [ ] Works on mobile and desktop
 
 ## Dependencies
 - task-021, task-022, task-023, task-024
