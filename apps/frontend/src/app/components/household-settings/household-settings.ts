@@ -145,7 +145,7 @@ export class HouseholdSettingsComponent implements OnInit {
     }
   }
 
-  async onInvitationSent(_response: SendInvitationResponse) {
+  async onInvitationSent() {
     // Refresh members list
     const householdId = this.household()?.id;
     if (householdId) {
