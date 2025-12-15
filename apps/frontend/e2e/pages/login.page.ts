@@ -36,6 +36,15 @@ export class LoginPage extends BasePage {
     }
 
     await this.loginButton.click();
+
+    // Wait for navigation or error message
+    await Promise.race([
+      this.page.waitForURL((url) => !url.pathname.includes('/login'), { timeout: 5000 }),
+      this.errorMessage.waitFor({ state: 'visible', timeout: 5000 }).catch(() => {}),
+    ]);
+
+    // Give Angular time to process response and store tokens
+    await this.page.waitForTimeout(500);
   }
 
   async getErrorMessage(): Promise<string | null> {

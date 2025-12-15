@@ -30,6 +30,15 @@ export class RegisterPage extends BasePage {
     await this.passwordInput.fill(password);
     await this.confirmPasswordInput.fill(confirmPassword || password);
     await this.registerButton.click();
+
+    // Wait for navigation or error message
+    await Promise.race([
+      this.page.waitForURL((url) => !url.pathname.includes('/register'), { timeout: 5000 }),
+      this.errorMessage.waitFor({ state: 'visible', timeout: 5000 }).catch(() => {}),
+    ]);
+
+    // Give Angular time to process response (if going to login, tokens won't be stored)
+    await this.page.waitForTimeout(500);
   }
 
   async getErrorMessage(): Promise<string | null> {
