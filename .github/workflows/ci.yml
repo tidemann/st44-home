@@ -126,6 +126,19 @@ jobs:
         run: |
           timeout 30 bash -c 'until curl -f http://localhost:3000/health; do sleep 2; done'
 
+      - name: Start frontend server
+        run: |
+          cd apps/frontend
+          npm start &
+          echo $! > frontend.pid
+          sleep 10
+        env:
+          CI: false
+
+      - name: Wait for frontend
+        run: |
+          timeout 60 bash -c 'until curl -f http://localhost:4200; do sleep 2; done'
+
       - name: Run E2E tests
         run: npm run test:e2e
         working-directory: apps/frontend
@@ -153,5 +166,12 @@ jobs:
         run: |
           if [ -f apps/backend/backend.pid ]; then
             kill $(cat apps/backend/backend.pid) || true
+          fi
+
+      - name: Stop frontend server
+        if: always()
+        run: |
+          if [ -f apps/frontend/frontend.pid ]; then
+            kill $(cat apps/frontend/frontend.pid) || true
           fi
 

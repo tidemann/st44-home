@@ -554,7 +554,7 @@ fastify.get<{ Reply: { items: Item[] } | { error: string } }>(
 // Basic health check
 fastify.get('/health', async () => {
   return {
-    status: 'ok',
+    status: 'healthy',
     timestamp: new Date().toISOString(),
   };
 });

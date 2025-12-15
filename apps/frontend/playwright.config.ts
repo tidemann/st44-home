@@ -9,7 +9,7 @@ export default defineConfig({
   reporter: process.env.CI ? [['list'], ['html']] : 'html',
   timeout: 30000,
   use: {
-    baseURL: process.env.CI ? 'http://localhost:3000' : 'http://localhost:4200',
+    baseURL: 'http://localhost:4200',
     trace: 'on-first-retry',
     screenshot: 'only-on-failure',
     video: 'retain-on-failure',
