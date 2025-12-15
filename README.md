@@ -159,7 +159,15 @@ npm run format
 - Running tests locally and in CI
 - Writing new tests with page objects
 
-**Local E2E Testing Environment**: For running E2E tests locally during development:
+**Local E2E Development**: For running and debugging E2E tests during development, see **[docs/LOCAL_E2E_TESTING.md](docs/LOCAL_E2E_TESTING.md)** for comprehensive guide including:
+- Quick start and prerequisites
+- Running tests (all npm scripts explained)
+- Debugging with VS Code and Playwright Inspector
+- Database seeding and management utilities
+- Troubleshooting common issues
+- Best practices for writing reliable E2E tests
+
+**Quick Reference - Local E2E Testing**:
 
 ```bash
 # RECOMMENDED: Full automated test run (starts services, waits, runs tests, stops)

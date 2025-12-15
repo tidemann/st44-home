@@ -4,7 +4,7 @@
 - **ID**: task-050
 - **Feature**: feature-010 - Local E2E Test Execution Environment
 - **Epic**: epic-006 - Testing & Quality Assurance Infrastructure
-- **Status**: pending
+- **Status**: in-progress
 - **Priority**: medium
 - **Created**: 2025-12-15
 - **Assigned Agent**: documentation + testing
@@ -378,6 +378,20 @@ await page.click('[data-testid="create-household-button"]');
 
 ## Progress Log
 - [2025-12-15 15:10] Task created by Planner Agent
+- [2025-12-15 16:00] Status changed to in-progress
+- [2025-12-15 16:00] Created feature branch feature/task-050-local-e2e-documentation
+- [2025-12-15 16:15] Created comprehensive LOCAL_E2E_TESTING.md (500+ lines)
+  * Table of Contents with 8 major sections
+  * Prerequisites (Docker, Node.js, port requirements)
+  * Quick Start (first-time setup)
+  * Running Tests (all 8 npm scripts documented with usage examples)
+  * Debugging Tests (VS Code debugger + Playwright inspector workflows)
+  * Database Management (seeding utilities, SQL queries, reset procedures)
+  * Troubleshooting (6 common scenarios with detailed solutions)
+  * Best Practices (test independence, wait strategies, selectors, auth patterns)
+  * FAQ (12 common questions with answers)
+- [2025-12-15 16:15] Updated README.md with link to LOCAL_E2E_TESTING.md
+- [2025-12-15 16:15] All 12 acceptance criteria met - ready for review
 
 ## Testing Strategy
 - Follow documentation on clean machine
