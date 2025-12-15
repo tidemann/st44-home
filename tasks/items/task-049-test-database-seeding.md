@@ -4,11 +4,12 @@
 - **ID**: task-049
 - **Feature**: feature-010 - Local E2E Test Execution Environment
 - **Epic**: epic-006 - Testing & Quality Assurance Infrastructure
-- **Status**: pending
+- **Status**: completed
 - **Priority**: medium
 - **Created**: 2025-12-15
 - **Assigned Agent**: database + testing
 - **Estimated Duration**: 3-4 hours
+- **Actual Duration**: 0.5 hours
 
 ## Description
 Create utility functions and SQL scripts for seeding the test database with realistic test data and resetting it to a clean state. These utilities allow developers to quickly set up specific test scenarios, reset between test runs, and ensure consistent test data. This is essential for reliable local E2E testing and reduces test setup boilerplate.
@@ -23,17 +24,17 @@ Create utility functions and SQL scripts for seeding the test database with real
 - Clear error messages and logging
 
 ## Acceptance Criteria
-- [ ] `apps/frontend/e2e/helpers/seed-database.ts` created with utility functions
-- [ ] SQL seed files in `docker/postgres/test-seeds/` directory
-- [ ] `seedTestUser()` function creates user with email and password
-- [ ] `seedTestHousehold()` function creates household with members
-- [ ] `seedTestChildren()` function creates child records
-- [ ] `seedTestTasks()` function creates task data
-- [ ] `resetDatabase()` function cleans all test data
-- [ ] `seedFullScenario()` function creates complete test environment
-- [ ] All functions use transactions for atomicity
-- [ ] Functions return created entity IDs for use in tests
-- [ ] Documentation with examples of usage
+- [x] `apps/frontend/e2e/helpers/seed-database.ts` created with utility functions
+- [x] SQL seed files in `docker/postgres/test-seeds/` directory
+- [x] `seedTestUser()` function creates user with email and password
+- [x] `seedTestHousehold()` function creates household with members
+- [x] `seedTestChildren()` function creates child records
+- [x] `seedTestTasks()` function creates task data
+- [x] `resetDatabase()` function cleans all test data
+- [x] `seedFullScenario()` function creates complete test environment
+- [x] All functions use transactions for atomicity
+- [x] Functions return created entity IDs for use in tests
+- [x] Documentation with examples of usage
 
 ## Dependencies
 - `docker/postgres/init.sql` schema (exists ✅)
@@ -259,6 +260,12 @@ const passwordHash = await bcrypt.hash(password, 10);
 
 ## Progress Log
 - [2025-12-15 15:05] Task created by Planner Agent
+- [2025-12-15 17:45] Status changed to in-progress by Orchestrator Agent
+- [2025-12-15 17:50] Created comprehensive seed-database.ts with 10 functions
+- [2025-12-15 17:55] Created 4 SQL seed files (users, households, children, tasks)
+- [2025-12-15 18:00] Added test-seeds README with loading instructions
+- [2025-12-15 18:00] Installed bcrypt and @types/bcrypt
+- [2025-12-15 18:00] All acceptance criteria met, ready for PR
 
 ## Testing Strategy
 - Unit tests for each utility function
