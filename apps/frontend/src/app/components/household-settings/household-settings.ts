@@ -12,7 +12,7 @@ import { DatePipe } from '@angular/common';
 import { HouseholdService } from '../../services/household.service';
 
 interface Household {
-  id: number;
+  id: string;
   name: string;
   created_at: string;
 }
