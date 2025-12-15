@@ -1,4 +1,4 @@
-import { Injectable, signal, inject } from '@angular/core';
+import { Injectable, signal, computed, inject } from '@angular/core';
 import { ApiService } from './api.service';
 
 export interface Household {
@@ -19,6 +19,15 @@ export interface HouseholdMember {
   joined_at: string;
 }
 
+/**
+ * Service for managing households and household state
+ *
+ * This service provides:
+ * - CRUD operations for households
+ * - Active household state management with signals
+ * - localStorage persistence for active household
+ * - Reactive updates across components
+ */
 @Injectable({
   providedIn: 'root',
 })
@@ -27,6 +36,12 @@ export class HouseholdService {
 
   // Active household ID stored in localStorage
   private activeHouseholdId = signal<string | null>(this.getStoredHouseholdId());
+
+  /**
+   * Computed signal exposing the active household ID (read-only)
+   * Components can use this for reactive updates when household changes
+   */
+  activeHousehold$ = computed(() => this.activeHouseholdId());
 
   getActiveHouseholdId() {
     return this.activeHouseholdId();
