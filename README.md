@@ -159,6 +159,26 @@ npm run format
 - Running tests locally and in CI
 - Writing new tests with page objects
 
+**Local E2E Testing Environment**: For running E2E tests locally during development:
+
+```bash
+# Start isolated test environment (PostgreSQL, backend, frontend on different ports)
+docker-compose -f docker-compose.e2e-local.yml up
+
+# Stop test environment
+docker-compose -f docker-compose.e2e-local.yml down
+
+# Reset test environment (removes volumes)
+docker-compose -f docker-compose.e2e-local.yml down -v
+```
+
+**Test environment ports** (avoid conflicts with dev):
+- Frontend: http://localhost:4201
+- Backend: http://localhost:3001
+- Database: localhost:5433
+
+See `.env.e2e-local` for configuration details.
+
 ### Database Schema
 
 **Comprehensive schema documentation**: [docker/postgres/SCHEMA.md](docker/postgres/SCHEMA.md)
