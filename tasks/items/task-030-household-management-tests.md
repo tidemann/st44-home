@@ -4,13 +4,14 @@
 - **ID**: task-030
 - **Feature**: feature-003 - Household Management
 - **Epic**: epic-001 - Multi-Tenant Foundation
-- **Status**: blocked
+- **Status**: pending
 - **Priority**: medium (downgraded from high)
 - **Created**: 2025-12-14
 - **Started**: 2025-12-15
 - **Blocked**: 2025-12-15 - Server architecture issue discovered
+- **Unblocked**: 2025-12-15 - Server refactored, blocker resolved
 - **Assigned Agent**: testing
-- **Estimated Duration**: 6-8 hours (plus 4-6 hours for server refactoring)
+- **Estimated Duration**: 6-8 hours
 
 ## Description
 Write comprehensive tests for all household management functionality including backend API endpoints, frontend services, and E2E user flows. This ensures household management features work correctly and prevents regressions.
@@ -70,6 +71,12 @@ Write comprehensive tests for all household management functionality including b
   - Issue: Module imports trigger server startup causing port conflicts
   - Partial fix: Added check so server only starts when run directly
   - Impact: Cannot write proper integration tests until refactoring complete
+- [2025-12-15] **BLOCKER RESOLVED**: Server.ts refactored successfully
+  - Fixed: All auth routes moved into buildApp() via plugin pattern
+  - Fixed: build() now returns complete app with ALL routes
+  - Verified: All 30 auth tests passing (no 404s, no hanging)
+  - Status: Task-030 can now proceed with household/children tests
+  - Decision: Defer comprehensive testing to prioritize Feature-006 (E2E Testing)
   
 ## Blocker Details
 
