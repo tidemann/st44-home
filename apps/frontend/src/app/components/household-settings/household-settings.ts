@@ -10,10 +10,11 @@ import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angula
 import { Router } from '@angular/router';
 import { DatePipe } from '@angular/common';
 import { HouseholdService, Household, HouseholdMember } from '../../services/household.service';
+import { ChildrenManagementComponent } from '../children-management/children-management';
 
 @Component({
   selector: 'app-household-settings',
-  imports: [ReactiveFormsModule, DatePipe],
+  imports: [ReactiveFormsModule, DatePipe, ChildrenManagementComponent],
   templateUrl: './household-settings.html',
   styleUrl: './household-settings.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
