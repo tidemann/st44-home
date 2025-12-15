@@ -311,10 +311,13 @@ async function buildApp() {
 
           reply.code(200);
           return {
+            message: 'Login successful',
+            user: {
+              id: user.id,
+              email: user.email,
+            },
             accessToken,
             refreshToken,
-            userId: user.id,
-            email: user.email,
           };
         } catch (error: unknown) {
           // Log error but don't expose internal details
