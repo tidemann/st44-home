@@ -9,21 +9,7 @@ import {
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { DatePipe } from '@angular/common';
-import { HouseholdService } from '../../services/household.service';
-
-interface Household {
-  id: string;
-  name: string;
-  created_at: string;
-}
-
-interface HouseholdMember {
-  user_id: number;
-  email: string;
-  display_name: string | null;
-  role: 'admin' | 'parent';
-  joined_at: string;
-}
+import { HouseholdService, Household, HouseholdMember } from '../../services/household.service';
 
 @Component({
   selector: 'app-household-settings',
