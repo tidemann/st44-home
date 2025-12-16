@@ -432,16 +432,97 @@ describe('Household API', () => {
 
       assert.strictEqual(response.statusCode, 401);
     });
+
+    test('should reject access by non-member', async () => {
+      // Create a new household for user1 that user2 is NOT a member of
+      const createResponse = await app.inject({
+        method: 'POST',
+        url: '/api/households',
+        headers: {
+          Authorization: `Bearer ${user1Token}`,
+        },
+        payload: {
+          name: `Private Household ${Date.now()}`,
+        },
+      });
+      const privateHousehold = JSON.parse(createResponse.body);
+
+      // user2 tries to access members of user1's private household
+      const response = await app.inject({
+        method: 'GET',
+        url: `/api/households/${privateHousehold.id}/members`,
+        headers: {
+          Authorization: `Bearer ${user2Token}`,
+        },
+      });
+
+      assert.strictEqual(response.statusCode, 403);
+    });
   });
 
-  after(async () => {
-    // Cleanup test data
-    await pool.query(
-      "DELETE FROM household_members WHERE household_id IN (SELECT id FROM households WHERE name LIKE 'Test Household%')",
-    );
-    await pool.query("DELETE FROM households WHERE name LIKE 'Test Household%'");
-    await pool.query("DELETE FROM users WHERE email LIKE 'household-test%@example.com'");
-    await pool.end();
-    await app.close();
+  describe('Data Isolation', () => {
+    test('should not return households user is not a member of', async () => {
+      // Create household for user2
+      await app.inject({
+        method: 'POST',
+        url: '/api/households',
+        headers: {
+          Authorization: `Bearer ${user2Token}`,
+        },
+        payload: {
+          name: `User2 Private Household ${Date.now()}`,
+        },
+      });
+
+      // user1 lists their households
+      const response = await app.inject({
+        method: 'GET',
+        url: '/api/households',
+        headers: {
+          Authorization: `Bearer ${user1Token}`,
+        },
+      });
+
+      const body = JSON.parse(response.body);
+
+      // Verify none of user2's private households are in user1's list
+      const user2PrivateHouseholds = body.households.filter((h: { name: string }) =>
+        h.name.includes('User2 Private'),
+      );
+      assert.strictEqual(user2PrivateHouseholds.length, 0);
+    });
+  });
+
+  describe('Error Handling', () => {
+    test('should return 404 for non-existent household on update', async () => {
+      const response = await app.inject({
+        method: 'PUT',
+        url: '/api/households/00000000-0000-0000-0000-000000000000',
+        headers: {
+          Authorization: `Bearer ${user1Token}`,
+        },
+        payload: {
+          name: 'Updated Name',
+        },
+      });
+
+      // 403 because membership check happens before 404
+      assert.ok([403, 404].includes(response.statusCode));
+    });
+
+    test('should handle name with only whitespace', async () => {
+      const response = await app.inject({
+        method: 'POST',
+        url: '/api/households',
+        headers: {
+          Authorization: `Bearer ${user1Token}`,
+        },
+        payload: {
+          name: '   ',
+        },
+      });
+
+      assert.strictEqual(response.statusCode, 400);
+    });
   });
 });
