@@ -1,0 +1,119 @@
+<div class="invitation-inbox" role="region" aria-label="Invitation Inbox">
+  <div class="header">
+    <h2 id="inbox-title">
+      Invitation Inbox
+      @if (pendingCount > 0) {
+        <span class="badge badge-count" aria-label="{{ pendingCount }} pending invitations">
+          {{ pendingCount }}
+        </span>
+      }
+    </h2>
+    <button
+      type="button"
+      class="btn btn-secondary"
+      (click)="loadInvitations()"
+      [disabled]="isLoading()"
+      aria-label="Refresh invitations"
+    >
+      Refresh
+    </button>
+  </div>
+
+  <!-- Success message -->
+  @if (successMessage()) {
+    <div class="alert alert-success" role="alert" aria-live="polite">
+      {{ successMessage() }}
+    </div>
+  }
+
+  <!-- Error message -->
+  @if (errorMessage()) {
+    <div class="alert alert-error" role="alert" aria-live="assertive">
+      {{ errorMessage() }}
+    </div>
+  }
+
+  <!-- Loading state -->
+  @if (isLoading()) {
+    <div class="loading" role="status" aria-live="polite">
+      <span aria-hidden="true">⏳</span> Loading invitations...
+    </div>
+  }
+
+  <!-- Empty state -->
+  @if (!isLoading() && invitations().length === 0) {
+    <div class="empty-state" role="status">
+      <p>No pending invitations.</p>
+      <p>When someone invites you to join their household, it will appear here.</p>
+    </div>
+  }
+
+  <!-- Invitations list -->
+  @if (!isLoading() && invitations().length > 0) {
+    <ul class="invitations-list" aria-labelledby="inbox-title" role="list">
+      @for (invitation of invitations(); track invitation.id) {
+        <li class="invitation-card" [class.expired]="isExpired(invitation)">
+          <div class="invitation-details">
+            <h3 class="household-name">
+              {{ invitation.householdName || 'Unknown Household' }}
+            </h3>
+            <p class="inviter">
+              Invited by: {{ invitation.inviterName || invitation.inviterEmail || 'Unknown' }}
+            </p>
+            <p class="role">
+              Role: <strong>{{ invitation.role | titlecase }}</strong>
+            </p>
+            <p class="dates">
+              Sent: {{ invitation.createdAt | date: 'mediumDate' }}
+              <span class="separator">•</span>
+              @if (isExpired(invitation)) {
+                <span class="text-danger">Expired</span>
+              } @else {
+                Expires: {{ invitation.expiresAt | date: 'mediumDate' }}
+              }
+            </p>
+          </div>
+
+          <div class="invitation-actions">
+            @if (isExpired(invitation)) {
+              <span class="expired-badge" aria-label="This invitation has expired"> Expired </span>
+            } @else {
+              <button
+                type="button"
+                class="btn btn-primary"
+                (click)="acceptInvitation(invitation)"
+                [disabled]="isProcessing(invitation)"
+                [attr.aria-label]="
+                  'Accept invitation to join ' + (invitation.householdName || 'household')
+                "
+                [attr.aria-busy]="isProcessing(invitation)"
+              >
+                @if (isProcessing(invitation)) {
+                  Accepting...
+                } @else {
+                  Accept
+                }
+              </button>
+              <button
+                type="button"
+                class="btn btn-secondary"
+                (click)="declineInvitation(invitation)"
+                [disabled]="isProcessing(invitation)"
+                [attr.aria-label]="
+                  'Decline invitation to join ' + (invitation.householdName || 'household')
+                "
+                [attr.aria-busy]="isProcessing(invitation)"
+              >
+                @if (isProcessing(invitation)) {
+                  Declining...
+                } @else {
+                  Decline
+                }
+              </button>
+            }
+          </div>
+        </li>
+      }
+    </ul>
+  }
+</div>
