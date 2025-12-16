@@ -51,7 +51,7 @@ export class InvitationsSentListComponent implements OnInit {
    */
   async cancelInvitation(invitation: Invitation) {
     const confirmed = confirm(
-      `Are you sure you want to cancel the invitation to ${invitation.invitedEmail}?`
+      `Are you sure you want to cancel the invitation to ${invitation.invitedEmail}?`,
     );
     if (!confirmed) {
       return;

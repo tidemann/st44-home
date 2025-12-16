@@ -16,7 +16,13 @@ import { InvitationsSentListComponent } from '../invitations-sent-list/invitatio
 
 @Component({
   selector: 'app-household-settings',
-  imports: [ReactiveFormsModule, DatePipe, ChildrenManagementComponent, InviteUserComponent, InvitationsSentListComponent],
+  imports: [
+    ReactiveFormsModule,
+    DatePipe,
+    ChildrenManagementComponent,
+    InviteUserComponent,
+    InvitationsSentListComponent,
+  ],
   templateUrl: './household-settings.html',
   styleUrl: './household-settings.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
