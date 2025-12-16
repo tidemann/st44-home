@@ -469,9 +469,7 @@ describe('Invitation API', () => {
       assert.strictEqual(memberCheck.rows.length, 1);
 
       // Cleanup
-      await pool.query('DELETE FROM household_members WHERE user_id = $1', [
-        userResult.rows[0].id,
-      ]);
+      await pool.query('DELETE FROM household_members WHERE user_id = $1', [userResult.rows[0].id]);
       await pool.query('DELETE FROM invitations WHERE id = $1', [inviteBody.id]);
       await pool.query('DELETE FROM users WHERE id = $1', [userResult.rows[0].id]);
     });
@@ -572,9 +570,7 @@ describe('Invitation API', () => {
 
       // Cleanup
       const userResult = await pool.query('SELECT id FROM users WHERE email = $1', [newUserEmail]);
-      await pool.query('DELETE FROM household_members WHERE user_id = $1', [
-        userResult.rows[0].id,
-      ]);
+      await pool.query('DELETE FROM household_members WHERE user_id = $1', [userResult.rows[0].id]);
       await pool.query('DELETE FROM invitations WHERE id = $1', [inviteBody.id]);
       await pool.query('DELETE FROM users WHERE id = $1', [userResult.rows[0].id]);
     });
