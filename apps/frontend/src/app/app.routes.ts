@@ -24,6 +24,13 @@ export const routes: Routes = [
       ),
   },
   {
+    path: 'invitations',
+    loadComponent: () =>
+      import('./components/invitation-inbox/invitation-inbox').then(
+        (m) => m.InvitationInboxComponent,
+      ),
+  },
+  {
     path: '',
     redirectTo: '/login',
     pathMatch: 'full',
