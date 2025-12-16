@@ -56,7 +56,9 @@ export function generateAccessToken(
   secret: string = JWT_SECRET,
   expiresIn: string = JWT_ACCESS_EXPIRY,
 ): string {
-  return jwt.sign({ userId, email, type: 'access' }, secret, { expiresIn: expiresIn as jwt.SignOptions['expiresIn'] });
+  return jwt.sign({ userId, email, type: 'access' }, secret, {
+    expiresIn: expiresIn as jwt.SignOptions['expiresIn'],
+  });
 }
 
 /**
@@ -72,7 +74,9 @@ export function generateRefreshToken(
   secret: string = JWT_SECRET,
   expiresIn: string = JWT_REFRESH_EXPIRY,
 ): string {
-  return jwt.sign({ userId, type: 'refresh' }, secret, { expiresIn: expiresIn as jwt.SignOptions['expiresIn'] });
+  return jwt.sign({ userId, type: 'refresh' }, secret, {
+    expiresIn: expiresIn as jwt.SignOptions['expiresIn'],
+  });
 }
 
 /**
@@ -163,4 +167,3 @@ export function isTokenExpired(token: string): boolean {
 export function getJwtSecret(): string {
   return JWT_SECRET;
 }
-
