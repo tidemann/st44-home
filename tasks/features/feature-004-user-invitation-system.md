@@ -3,7 +3,7 @@
 ## Metadata
 - **ID**: feature-004
 - **Epic**: epic-001 - Multi-Tenant Foundation
-- **Status**: ready-for-implementation
+- **Status**: complete
 - **Priority**: high
 - **Created**: 2025-12-13
 - **Broken Down**: 2025-12-15
@@ -66,23 +66,23 @@ Enable household admins and parents to invite other users to join their househol
 ### Backend Tasks (6 tasks, 12-17 hours)
 - [x] [task-036](../items/done/task-036-create-invitations-table-schema.md): Create invitations table schema (3-4h) **COMPLETED** (0.5h actual)
 - [x] [task-037](../items/done/task-037-invitation-crud-api-endpoints.md): Implement invitation CRUD API endpoints (5-6h) **COMPLETED** (0.5h actual)
-- [ ] [task-038](../items/task-038-invitation-authorization-middleware.md): Implement invitation authorization middleware (2-3h)
+- [x] [task-038](../items/done/task-038-invitation-authorization-middleware.md): Implement invitation authorization middleware (2-3h) **COMPLETED**
 - [x] [task-039](../items/done/task-039-email-validation-duplicate-checks.md): Add email validation and duplicate checks (2-3h) **COMPLETED** (implemented in task-037)
 - [x] [task-040](../items/done/task-040-invitation-token-generation.md): Implement invitation token generation (1-2h) **COMPLETED** (implemented in task-037)
 - [x] [task-041](../items/done/task-041-invitation-acceptance-logic.md): Implement invitation acceptance logic (3-4h) **COMPLETED** (implemented in task-037)
 
 ### Frontend Tasks (4 tasks, 13-17 hours)
-- [ ] [task-042](../items/task-042-invite-user-component.md): Build invite user component (3-4h)
-- [ ] [task-043](../items/task-043-invitations-sent-list-component.md): Build invitations sent list component (3-4h)
-- [ ] [task-044](../items/task-044-invitation-inbox-component.md): Build invitation inbox component (4-5h)
-- [ ] [task-045](../items/task-045-invitation-service-frontend.md): Create invitation service (frontend) (3-4h)
+- [x] task-042: Build invite user component (3-4h) **COMPLETED** (invite-user component exists)
+- [x] [task-043](../items/done/task-043-invitations-sent-list-component.md): Build invitations sent list component (3-4h) **COMPLETED**
+- [x] [task-044](../items/done/task-044-invitation-inbox-component.md): Build invitation inbox component (4-5h) **COMPLETED** [PR #86]
+- [x] [task-045](../items/done/task-045-invitation-service-frontend.md): Create invitation service (frontend) (3-4h) **COMPLETED**
 
 ### Testing Tasks (1 task, 6-8 hours)
-- [ ] [task-046](../items/task-046-invitation-system-tests.md): Write invitation system tests (6-8h)
+- [x] [task-046](../items/done/task-046-invitation-system-tests.md): Write invitation system tests (6-8h) **COMPLETED** [PR #88]
 
 **Total**: 11 tasks, 31-42 hours (4-6 days after consolidation)
 **Critical Path**: task-036 → task-037 → (038?) → task-045 → task-044
-**Progress**: 5/11 tasks complete (45%)
+**Progress**: 11/11 tasks complete (100%) ✅
 
 ## Dependencies
 - feature-001: User authentication must be complete
