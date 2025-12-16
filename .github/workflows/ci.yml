@@ -42,6 +42,21 @@ jobs:
   backend:
     runs-on: ubuntu-latest
 
+    services:
+      postgres:
+        image: postgres:17
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: st44_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -57,4 +72,34 @@ jobs:
 
       - name: Prettier Format Check
         run: npm run format:check
+        working-directory: apps/backend
+
+      - name: Initialize test database
+        run: psql -h localhost -U postgres -d st44_test -f docker/postgres/init.sql
+        env:
+          PGPASSWORD: postgres
+
+      - name: Run unit tests
+        run: npx tsx --test src/utils/*.test.ts src/middleware/auth.test.ts
+        working-directory: apps/backend
+        env:
+          DB_HOST: localhost
+          DB_PORT: 5432
+          DB_NAME: st44_test
+          DB_USER: postgres
+          DB_PASSWORD: postgres
+
+      - name: Run integration tests
+        run: npx tsx --test src/routes/*.test.ts src/middleware/household-membership.test.ts src/server.test.ts
+        working-directory: apps/backend
+        timeout-minutes: 5
+        env:
+          DB_HOST: localhost
+          DB_PORT: 5432
+          DB_NAME: st44_test
+          DB_USER: postgres
+          DB_PASSWORD: postgres
+
+      - name: Build
+        run: npm run build
         working-directory: apps/backend
