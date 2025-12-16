@@ -1,0 +1,14 @@
+{
+  "all": true,
+  "include": ["src/**/*.ts"],
+  "exclude": ["src/**/*.test.ts", "src/test-helpers/**", "src/server.js"],
+  "reporter": ["text", "lcov", "html"],
+  "report-dir": "coverage",
+  "check-coverage": true,
+  "lines": 80,
+  "functions": 80,
+  "branches": 70,
+  "statements": 80,
+  "clean": true,
+  "temp-directory": "coverage/.c8-temp"
+}
