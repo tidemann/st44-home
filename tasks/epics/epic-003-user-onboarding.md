@@ -2,7 +2,7 @@
 
 ## Metadata
 - **ID**: epic-003
-- **Status**: pending
+- **Status**: in-progress
 - **Priority**: high
 - **Created**: 2025-12-13
 - **Estimated Duration**: 1 week
@@ -34,13 +34,18 @@ First impressions matter:
 5. Provide household switcher for multi-household users
 
 ## Features
+- [feature-012](../features/feature-012-landing-pages-after-login.md): **Landing Pages After Login** (3-4 days) - NEW
+  - Parent dashboard with household overview
+  - Child dashboard with today's tasks
+  - Auth guards and role-based routing
+
 To be broken down by Planner Agent:
-- Account registration flow
-- Household creation wizard
-- Add children interface
+- Account registration flow (partially complete via feature-001)
+- Household creation wizard (partially complete via feature-003)
+- Add children interface (partially complete via feature-003)
 - Guided first task creation
-- Invitation system for additional parents
-- Household switcher UI
+- Invitation system for additional parents (feature-004)
+- Household switcher UI (partially complete via feature-003)
 - Welcome/tutorial screens
 
 ## Success Criteria
@@ -128,3 +133,5 @@ To be broken down by Planner Agent:
 
 ## Progress Log
 - [2025-12-13] Epic created based on implementation plan
+- [2025-12-16] Feature-012 (Landing Pages After Login) created and added
+- [2025-12-16] Status changed to in-progress
