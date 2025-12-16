@@ -10,7 +10,7 @@ export {
   hasWeakPatterns,
   PASSWORD_RULES,
   type PasswordValidationResult,
-} from './password.ts';
+} from './password.js';
 
 export {
   generateAccessToken,
@@ -23,4 +23,5 @@ export {
   type AccessTokenPayload,
   type RefreshTokenPayload,
   type TokenVerificationResult,
-} from './jwt.ts';
+} from './jwt.js';
+
