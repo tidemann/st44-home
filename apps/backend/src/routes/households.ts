@@ -260,6 +260,103 @@ async function updateHousehold(
 }
 
 /**
+ * GET /api/households/:id/dashboard - Get dashboard summary
+ * Returns week summary, children stats for parent dashboard
+ */
+async function getHouseholdDashboard(
+  request: FastifyRequest<GetHouseholdRequest>,
+  reply: FastifyReply,
+) {
+  const { id } = request.params;
+
+  try {
+    // Get household info
+    const householdResult = await db.query('SELECT id, name FROM households WHERE id = $1', [id]);
+
+    if (householdResult.rows.length === 0) {
+      return reply.status(404).send({
+        error: 'Not Found',
+        message: 'Household not found',
+      });
+    }
+
+    const household = householdResult.rows[0];
+
+    // Get week summary from task_assignments
+    // Week starts on Monday, ends on Sunday
+    const weekSummaryResult = await db.query(
+      `SELECT 
+        COUNT(*) as total,
+        SUM(CASE WHEN status = 'completed' THEN 1 ELSE 0 END) as completed,
+        SUM(CASE WHEN status = 'pending' AND due_date >= CURRENT_DATE THEN 1 ELSE 0 END) as pending,
+        SUM(CASE WHEN status = 'pending' AND due_date < CURRENT_DATE THEN 1 ELSE 0 END) as overdue
+      FROM task_assignments
+      WHERE household_id = $1 
+        AND due_date >= date_trunc('week', CURRENT_DATE)
+        AND due_date < date_trunc('week', CURRENT_DATE) + INTERVAL '7 days'`,
+      [id],
+    );
+
+    const weekStats = weekSummaryResult.rows[0];
+    const total = parseInt(weekStats.total || '0', 10);
+    const completed = parseInt(weekStats.completed || '0', 10);
+    const pending = parseInt(weekStats.pending || '0', 10);
+    const overdue = parseInt(weekStats.overdue || '0', 10);
+    const completionRate = total > 0 ? Math.round((completed / total) * 100) : 0;
+
+    // Get per-child statistics
+    const childrenResult = await db.query(
+      `SELECT 
+        c.id, 
+        c.name,
+        COUNT(ta.id) as tasks_total,
+        SUM(CASE WHEN ta.status = 'completed' THEN 1 ELSE 0 END) as tasks_completed
+      FROM children c
+      LEFT JOIN task_assignments ta ON ta.child_id = c.id 
+        AND ta.due_date >= date_trunc('week', CURRENT_DATE)
+        AND ta.due_date < date_trunc('week', CURRENT_DATE) + INTERVAL '7 days'
+      WHERE c.household_id = $1
+      GROUP BY c.id, c.name
+      ORDER BY c.name`,
+      [id],
+    );
+
+    const children = childrenResult.rows.map((row) => {
+      const tasksTotal = parseInt(row.tasks_total || '0', 10);
+      const tasksCompleted = parseInt(row.tasks_completed || '0', 10);
+      return {
+        id: row.id,
+        name: row.name,
+        tasksCompleted,
+        tasksTotal,
+        completionRate: tasksTotal > 0 ? Math.round((tasksCompleted / tasksTotal) * 100) : 0,
+      };
+    });
+
+    return reply.send({
+      household: {
+        id: household.id,
+        name: household.name,
+      },
+      weekSummary: {
+        total,
+        completed,
+        pending,
+        overdue,
+        completionRate,
+      },
+      children,
+    });
+  } catch (error) {
+    request.log.error(error, 'Failed to get household dashboard');
+    return reply.status(500).send({
+      error: 'Internal Server Error',
+      message: 'Failed to retrieve dashboard data',
+    });
+  }
+}
+
+/**
  * GET /api/households/:id/members - Get household members
  * Returns list of all members in the household
  */
@@ -333,5 +430,11 @@ export default async function householdRoutes(server: FastifyInstance) {
   server.get('/api/households/:id/members', {
     preHandler: [authenticateUser, validateHouseholdMembership],
     handler: getHouseholdMembers,
+  });
+
+  // Get household dashboard (member access)
+  server.get('/api/households/:id/dashboard', {
+    preHandler: [authenticateUser, validateHouseholdMembership],
+    handler: getHouseholdDashboard,
   });
 }
