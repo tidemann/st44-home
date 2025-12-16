@@ -8,12 +8,7 @@ import {
 } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { HouseholdService } from '../../services/household.service';
-import {
-  DashboardService,
-  DashboardSummary,
-  ChildStats,
-  WeekSummary,
-} from '../../services/dashboard.service';
+import { DashboardService, DashboardSummary, WeekSummary } from '../../services/dashboard.service';
 import { HouseholdSwitcherComponent } from '../../components/household-switcher/household-switcher';
 
 /**
