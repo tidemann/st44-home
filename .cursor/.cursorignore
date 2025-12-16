@@ -1,0 +1,46 @@
+# Dependencies
+node_modules/
+dist/
+build/
+out-tsc/
+
+# Generated files
+*.generated.ts
+*.spec.ts
+
+# Test outputs
+coverage/
+playwright-report/
+test-results/
+__screenshots__/
+
+# Logs
+*.log
+npm-debug.log
+yarn-error.log
+
+# Database dumps
+*.sql.gz
+*.dump
+
+# Environment files (may contain secrets)
+.env
+.env.local
+
+# Docker override files
+docker-compose.override.yml
+
+# IDE files
+.vscode/
+.idea/
+*.sublime-workspace
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+
+# Large data files
+*.csv
+*.json.gz
+
