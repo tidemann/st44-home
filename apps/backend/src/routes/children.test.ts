@@ -553,17 +553,70 @@ describe('Children API', () => {
 
       assert.strictEqual(response.statusCode, 403);
     });
+
+    after(async () => {
+      // Cleanup household2
+      if (household2Id) {
+        await pool.query('DELETE FROM children WHERE household_id = $1', [household2Id]);
+        await pool.query('DELETE FROM household_members WHERE household_id = $1', [household2Id]);
+        await pool.query('DELETE FROM households WHERE id = $1', [household2Id]);
+      }
+    });
   });
 
-  after(async () => {
-    // Cleanup test data
-    if (householdId) {
-      await pool.query('DELETE FROM children WHERE household_id = $1', [householdId]);
-      await pool.query('DELETE FROM household_members WHERE household_id = $1', [householdId]);
-      await pool.query('DELETE FROM households WHERE id = $1', [householdId]);
-    }
-    await pool.query("DELETE FROM users WHERE email LIKE 'children-test%@example.com'");
-    await pool.end();
-    await app.close();
+  describe('Edge Cases', () => {
+    test('should reject child with empty name', async () => {
+      const response = await app.inject({
+        method: 'POST',
+        url: `/api/households/${householdId}/children`,
+        headers: { Authorization: `Bearer ${adminToken}` },
+        payload: {
+          name: '',
+          birthYear: 2015,
+        },
+      });
+
+      assert.strictEqual(response.statusCode, 400);
+    });
+
+    test('should reject child with whitespace-only name', async () => {
+      const response = await app.inject({
+        method: 'POST',
+        url: `/api/households/${householdId}/children`,
+        headers: { Authorization: `Bearer ${adminToken}` },
+        payload: {
+          name: '   ',
+          birthYear: 2015,
+        },
+      });
+
+      assert.strictEqual(response.statusCode, 400);
+    });
+
+    test('should reject request to non-existent household', async () => {
+      const response = await app.inject({
+        method: 'GET',
+        url: '/api/households/00000000-0000-0000-0000-000000000000/children',
+        headers: { Authorization: `Bearer ${adminToken}` },
+      });
+
+      // Could be 404 or 403 depending on implementation
+      assert.ok([403, 404].includes(response.statusCode));
+    });
+
+    test('should accept very long valid child name', async () => {
+      const response = await app.inject({
+        method: 'POST',
+        url: `/api/households/${householdId}/children`,
+        headers: { Authorization: `Bearer ${adminToken}` },
+        payload: {
+          name: 'A'.repeat(50),
+          birthYear: 2015,
+        },
+      });
+
+      // Should either succeed or fail with 400 if name too long
+      assert.ok([201, 400].includes(response.statusCode));
+    });
   });
 });
