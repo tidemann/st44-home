@@ -128,24 +128,25 @@ This roadmap outlines planned features and epics for the project. It's maintaine
 - **Features**:
   - [feature-012](features/feature-012-landing-pages-after-login.md): **NEW** Landing Pages After Login (3-4 days)
 
-**Feature-012: Landing Pages After Login** 🏠 NEW
+**Feature-012: Landing Pages After Login** 🏠 PARENT DASHBOARD COMPLETE ✅
 - **Priority**: High (User Experience)
-- **Status**: pending (ready for task breakdown)
-- **Duration**: 3-4 days (22-31 hours)
+- **Status**: in-progress (4/8 tasks complete - 50% done, parent dashboard functional)
+- **Duration**: 3-4 days (22-31 hours) - **12-15h completed**
 - **File**: [feature-012-landing-pages-after-login.md](features/feature-012-landing-pages-after-login.md)
 - **Description**: Role-appropriate landing pages for parents (dashboard) and children (task list)
 - **Why Now**: Users currently have no home page after login - critical UX gap
 - **Impact**: Establishes core post-login experience, foundation for Epic-005
 - **Tasks**: 8 tasks estimated (059-066)
-  - [ ] task-059: Create dashboard summary API endpoint (3-4h)
-  - [ ] task-060: Create child tasks API endpoint (2-3h)
-  - [ ] task-061: Implement auth guards and role-based routing (3-4h)
-  - [ ] task-062: Build parent dashboard component (4-6h)
-  - [ ] task-063: Build child dashboard component (3-4h)
-  - [ ] task-064: Create dashboard service (2-3h)
-  - [ ] task-065: Integrate household context with dashboards (1-2h)
-  - [ ] task-066: Write landing pages tests (4-6h)
-- **Dependencies**: feature-001 ✅, feature-002 ✅, feature-003 (partially complete)
+  - [x] task-059: Create dashboard summary API endpoint (3-4h) **DONE** [PR #90]
+  - [ ] task-060: Create child tasks API endpoint (2-3h) **DEFERRED** (requires child role in schema)
+  - [x] task-061: Implement auth guards and role-based routing (3-4h) **DONE** [PR #93]
+  - [x] task-062: Build parent dashboard component (4-6h) **DONE** [PR #92]
+  - [ ] task-063: Build child dashboard component (3-4h) **DEFERRED** (requires child role in schema)
+  - [x] task-064: Create dashboard service (2-3h) **DONE** [PR #91]
+  - [ ] task-065: Integrate household context with dashboards (1-2h) **N/A** (already integrated)
+  - [ ] task-066: Write landing pages tests (4-6h) **PENDING** (do after child dashboard)
+- **Dependencies**: feature-001 ✅, feature-002 ✅, feature-003 ✅
+- **Note**: Parent dashboard is complete and functional. Child dashboard deferred until 'child' role is added to household_members schema.
 
 **Epic-004: Push Notifications** ⭐ High
 - **Priority**: High (Key Differentiator)
