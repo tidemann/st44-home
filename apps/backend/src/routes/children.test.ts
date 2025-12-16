@@ -126,7 +126,6 @@ describe('Children API', () => {
       });
       assert.strictEqual(response.statusCode, 401);
     });
-
   });
 
   describe('GET /api/households/:householdId/children', () => {
