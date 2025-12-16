@@ -1,14 +1,25 @@
 Follow the workflow defined in `.github/prompts/merge-pr.prompt.md`.
 
-This is an alias to the unified review-and-merge workflow. It handles:
-- CI wait and merging
-- Accepts handoff (PR number or branch)
-- Creates PR if missing
-- Waits for CI checks
-- Merges with squash and deletes branch
-- Signals Orchestrator to resume continue-work
+**CRITICAL: VERIFY CI BEFORE MERGE**
 
-**Note**: Prefer using `/review-and-merge` for the unified workflow.
+## Merge Workflow
 
-**See**: `.github/prompts/merge-pr.prompt.md` and `.github/prompts/review-and-merge.prompt.md` for complete workflow details.
+1. **Check CI Status** (REQUIRED):
+   ```bash
+   gh pr checks <PR_NUMBER> --watch
+   ```
 
+2. **If CI FAILS**:
+   - DO NOT MERGE
+   - Investigate failure: `gh run view <RUN_ID> --log-failed`
+   - Fix the issue
+   - Push fix and wait for CI to pass
+
+3. **If CI PASSES**:
+   ```bash
+   gh pr merge <PR_NUMBER> --squash --delete-branch
+   ```
+
+**NEVER merge a PR with failing CI checks!**
+
+This defeats the entire purpose of CI/CD.

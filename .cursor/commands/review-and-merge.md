@@ -5,40 +5,44 @@ Follow the workflow defined in `.github/prompts/review-and-merge.prompt.md`.
 ## Workflow Steps
 
 ### 1. Verify PR Exists
-- Check for open PR on current branch using `pull_request_get_detail`
-- If no PR exists, create one using `pull_request_create`
+- Check for open PR on current branch
+- If no PR exists, create one
 
-### 2. Wait for CI
-- Poll PR status every 30-60 seconds
-- Check `Merged` and `State` fields in PR details
+### 2. **CRITICAL: Wait for CI and VERIFY it passes**
+```bash
+# Watch CI status until completion
+gh pr checks <PR_NUMBER> --watch
 
-### 3. Merge (when CI passes)
-- If merge tool not available, inform user to merge via GitHub UI
-- After merge confirmed, proceed to cleanup
+# Check final status
+gh pr view <PR_NUMBER> --json statusCheckRollup
+```
 
-### 4. Post-Merge Cleanup (CRITICAL)
+**If ANY check has `conclusion: FAILURE`**:
+- DO NOT PROCEED TO MERGE
+- Run: `gh run view <RUN_ID> --log-failed` to see errors
+- Fix the failing tests/checks
+- Push the fix
+- Wait for CI again
+
+### 3. Merge (ONLY when ALL CI checks pass)
+```bash
+gh pr merge <PR_NUMBER> --squash --delete-branch
+```
+
+### 4. Post-Merge Cleanup
 ```powershell
-# Update local main
 git checkout main
 git pull origin main
-
-# Delete local feature branch  
-git branch -d feature/task-XXX-description
-
-# Move task to done folder
 git mv tasks/items/task-XXX-name.md tasks/items/done/
 git commit -m "chore: move completed task-XXX to done"
 git push origin main
 ```
 
-### 5. Update Tracking
-- Update feature progress in feature file
-- Update ROADMAP.md
+### 5. Signal Continue
+- After successful merge, continue with next task
 
-### 6. Signal Continue
-- After successful merge, invoke `/continue-work` to resume next task
+---
+
+**NEVER merge a PR with failing CI!** This defeats the purpose of CI/CD.
 
 **Handoff support**: Accepts `{{handoff}}` input (PR number or feature branch name).
-
-**See**: `.github/prompts/review-and-merge.prompt.md` for complete workflow details.
-

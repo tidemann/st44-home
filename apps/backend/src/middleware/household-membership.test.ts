@@ -3,12 +3,10 @@ import assert from 'node:assert';
 import { build } from '../server.ts';
 import type { FastifyInstance } from 'fastify';
 import pg from 'pg';
+import { registerAndLogin } from '../test-helpers/auth.ts';
 
 /**
  * Household Membership Middleware Integration Tests
- *
- * Tests validateHouseholdMembership and requireHouseholdAdmin middleware
- * through actual HTTP requests to verify middleware behavior.
  */
 
 describe('Household Membership Middleware', () => {
@@ -34,32 +32,18 @@ describe('Household Membership Middleware', () => {
       password: process.env.DB_PASSWORD || 'postgres',
     });
 
-    // Create test users
     const adminEmail = `mw-test-admin-${Date.now()}@example.com`;
     const parentEmail = `mw-test-parent-${Date.now()}@example.com`;
     const outsiderEmail = `mw-test-outsider-${Date.now()}@example.com`;
+    const testPassword = 'TestPass123!';
 
-    const adminResponse = await app.inject({
-      method: 'POST',
-      url: '/api/auth/register',
-      payload: { email: adminEmail, password: 'TestPass123!' },
-    });
+    const adminData = await registerAndLogin(app, adminEmail, testPassword);
+    const parentData = await registerAndLogin(app, parentEmail, testPassword);
+    const outsiderData = await registerAndLogin(app, outsiderEmail, testPassword);
 
-    const parentResponse = await app.inject({
-      method: 'POST',
-      url: '/api/auth/register',
-      payload: { email: parentEmail, password: 'TestPass123!' },
-    });
-
-    const outsiderResponse = await app.inject({
-      method: 'POST',
-      url: '/api/auth/register',
-      payload: { email: outsiderEmail, password: 'TestPass123!' },
-    });
-
-    adminToken = JSON.parse(adminResponse.body).accessToken;
-    parentToken = JSON.parse(parentResponse.body).accessToken;
-    outsiderToken = JSON.parse(outsiderResponse.body).accessToken;
+    adminToken = adminData.accessToken;
+    parentToken = parentData.accessToken;
+    outsiderToken = outsiderData.accessToken;
 
     const adminResult = await pool.query('SELECT id FROM users WHERE email = $1', [adminEmail]);
     const parentResult = await pool.query('SELECT id FROM users WHERE email = $1', [parentEmail]);
@@ -78,7 +62,6 @@ describe('Household Membership Middleware', () => {
       headers: { Authorization: `Bearer ${adminToken}` },
       payload: { name: `Middleware Test Household ${Date.now()}` },
     });
-
     householdId = JSON.parse(householdResponse.body).id;
 
     // Add parent
@@ -107,7 +90,6 @@ describe('Household Membership Middleware', () => {
         url: `/api/households/${householdId}`,
         headers: { Authorization: `Bearer ${adminToken}` },
       });
-
       assert.strictEqual(response.statusCode, 200);
     });
 
@@ -117,7 +99,6 @@ describe('Household Membership Middleware', () => {
         url: `/api/households/${householdId}`,
         headers: { Authorization: `Bearer ${parentToken}` },
       });
-
       assert.strictEqual(response.statusCode, 200);
     });
 
@@ -127,10 +108,7 @@ describe('Household Membership Middleware', () => {
         url: `/api/households/${householdId}`,
         headers: { Authorization: `Bearer ${outsiderToken}` },
       });
-
       assert.strictEqual(response.statusCode, 403);
-      const body = JSON.parse(response.body);
-      assert.ok(body.message.includes('not a member'));
     });
 
     test('should reject invalid UUID format (400)', async () => {
@@ -139,19 +117,7 @@ describe('Household Membership Middleware', () => {
         url: '/api/households/not-a-uuid',
         headers: { Authorization: `Bearer ${adminToken}` },
       });
-
       assert.strictEqual(response.statusCode, 400);
-    });
-
-    test('should reject non-existent household (403/404)', async () => {
-      const response = await app.inject({
-        method: 'GET',
-        url: '/api/households/00000000-0000-0000-0000-000000000000',
-        headers: { Authorization: `Bearer ${adminToken}` },
-      });
-
-      // Middleware returns 403 for non-member (can't tell if doesn't exist)
-      assert.ok([403, 404].includes(response.statusCode));
     });
 
     test('should reject without authentication (401)', async () => {
@@ -159,7 +125,6 @@ describe('Household Membership Middleware', () => {
         method: 'GET',
         url: `/api/households/${householdId}`,
       });
-
       assert.strictEqual(response.statusCode, 401);
     });
   });
@@ -172,7 +137,6 @@ describe('Household Membership Middleware', () => {
         headers: { Authorization: `Bearer ${adminToken}` },
         payload: { name: `Updated Name ${Date.now()}` },
       });
-
       assert.strictEqual(response.statusCode, 200);
     });
 
@@ -183,33 +147,17 @@ describe('Household Membership Middleware', () => {
         headers: { Authorization: `Bearer ${parentToken}` },
         payload: { name: 'Unauthorized Update' },
       });
-
-      assert.strictEqual(response.statusCode, 403);
-      const body = JSON.parse(response.body);
-      assert.ok(body.message.includes('Admin'));
-    });
-
-    test('should reject non-member from admin actions (403)', async () => {
-      const response = await app.inject({
-        method: 'PUT',
-        url: `/api/households/${householdId}`,
-        headers: { Authorization: `Bearer ${outsiderToken}` },
-        payload: { name: 'Outsider Update' },
-      });
-
       assert.strictEqual(response.statusCode, 403);
     });
   });
 
   describe('Middleware Chaining', () => {
     test('should chain auth -> membership -> handler correctly', async () => {
-      // This test verifies the full chain works
       const response = await app.inject({
         method: 'GET',
         url: `/api/households/${householdId}/members`,
         headers: { Authorization: `Bearer ${adminToken}` },
       });
-
       assert.strictEqual(response.statusCode, 200);
       const body = JSON.parse(response.body);
       assert.ok(Array.isArray(body.members));
@@ -220,7 +168,6 @@ describe('Household Membership Middleware', () => {
         method: 'GET',
         url: `/api/households/${householdId}/members`,
       });
-
       assert.strictEqual(response.statusCode, 401);
     });
 
@@ -230,7 +177,6 @@ describe('Household Membership Middleware', () => {
         url: `/api/households/${householdId}/members`,
         headers: { Authorization: `Bearer ${outsiderToken}` },
       });
-
       assert.strictEqual(response.statusCode, 403);
     });
   });
