@@ -117,6 +117,9 @@ export class AuthService {
     sessionStorage.removeItem('accessToken');
     sessionStorage.removeItem('refreshToken');
 
+    // Clear household context
+    localStorage.removeItem('activeHouseholdId');
+
     // Clear state
     this.currentUser.set(null);
     this.isAuthenticated.set(false);
