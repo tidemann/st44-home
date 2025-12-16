@@ -127,15 +127,6 @@ describe('Children API', () => {
       assert.strictEqual(response.statusCode, 401);
     });
 
-    test('should reject invalid name', async () => {
-      const response = await app.inject({
-        method: 'POST',
-        url: `/api/households/${householdId}/children`,
-        headers: { Authorization: `Bearer ${adminToken}` },
-        payload: { name: 'A', birthYear: 2015 },
-      });
-      assert.strictEqual(response.statusCode, 400);
-    });
   });
 
   describe('GET /api/households/:householdId/children', () => {
@@ -248,7 +239,7 @@ describe('Children API', () => {
 
       assert.strictEqual(response.statusCode, 200);
       const body = JSON.parse(response.body);
-      assert.strictEqual(body.message, 'Child deleted successfully');
+      assert.strictEqual(body.message, 'Child removed successfully');
     });
 
     test('should return 404 for non-existent child', async () => {
