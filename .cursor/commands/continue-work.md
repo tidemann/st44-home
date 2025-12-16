@@ -6,10 +6,20 @@ Follow the workflow defined in `.github/prompts/continue-work.prompt.md`.
 3. Break down features into tasks if needed
 4. Create implementation plan
 5. Implement and validate solution
-6. Push, create PR, wait for CI, merge
-7. Update roadmap and move completed items to done/
-8. **Auto-resume**: After merge, immediately continue with next priority
+6. Push and create PR
+7. **CRITICAL - VERIFY CI PASSES**: 
+   - Run: `gh pr checks <PR_NUMBER> --watch`
+   - ONLY proceed if ALL checks pass
+   - If checks fail: FIX THE ISSUE, push again, wait for CI to pass
+8. Merge using `gh pr merge --squash --delete-branch`
+9. Update roadmap and move completed items to done/
+10. **Auto-resume**: After merge, immediately continue with next priority
 
-**Only pause if**: CI fails repeatedly, merge conflict occurs, or no more work items exist.
+**STOP AND FIX if**:
+- CI fails (do NOT merge failing PRs!)
+- Merge conflict occurs
+- No more work items exist
+
+**NEVER merge a PR without verifying CI status first!**
 
 **See**: `.github/prompts/continue-work.prompt.md` for complete workflow details.

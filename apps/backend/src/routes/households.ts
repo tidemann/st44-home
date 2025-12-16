@@ -274,13 +274,12 @@ async function getHouseholdMembers(
       `SELECT
         u.id as user_id,
         u.email,
-        u.display_name,
         hm.role,
         hm.joined_at
       FROM household_members hm
       JOIN users u ON hm.user_id = u.id
       WHERE hm.household_id = $1
-      ORDER BY hm.role DESC, u.display_name ASC NULLS LAST, u.email ASC`,
+      ORDER BY hm.role DESC, u.email ASC`,
       [id],
     );
 
@@ -288,7 +287,7 @@ async function getHouseholdMembers(
       members: result.rows.map((row: unknown) => ({
         user_id: (row as { user_id: number }).user_id,
         email: (row as { email: string }).email,
-        display_name: (row as { display_name: string | null }).display_name,
+        display_name: null, // TODO: Add display_name column to users table
         role: (row as { role: string }).role,
         joined_at: (row as { joined_at: Date }).joined_at,
       })),
