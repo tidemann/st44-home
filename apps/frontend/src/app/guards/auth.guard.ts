@@ -55,7 +55,7 @@ export const authGuard: CanActivateFn = async (
         // User has no households, redirect to create one
         return router.createUrlTree(['/household/create']);
       }
-    } catch (error) {
+    } catch {
       // Failed to fetch households (network error or auth error)
       // Let the request through, the component will handle the error
       return true;
