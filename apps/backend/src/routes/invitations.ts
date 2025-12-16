@@ -3,6 +3,7 @@ import crypto from 'crypto';
 import { db } from '../database.js';
 import { authenticateUser } from '../middleware/auth.js';
 import { validateHouseholdMembership } from '../middleware/household-membership.js';
+import { validateCanInvite } from '../middleware/invitation-auth.js';
 
 interface CreateInvitationRequest {
   Params: {
@@ -482,7 +483,7 @@ export async function invitationRoutes(fastify: FastifyInstance) {
   fastify.post(
     '/api/households/:householdId/invitations',
     {
-      preHandler: [authenticateUser, validateHouseholdMembership as any],
+      preHandler: [authenticateUser, validateHouseholdMembership as any, validateCanInvite],
     },
     createInvitation,
   );
