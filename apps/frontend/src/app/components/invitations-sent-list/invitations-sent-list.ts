@@ -1,0 +1,115 @@
+import { Component, inject, signal, OnInit } from '@angular/core';
+import { CommonModule, DatePipe } from '@angular/common';
+import { InvitationService, Invitation } from '../../services/invitation.service';
+import { HouseholdService } from '../../services/household.service';
+
+@Component({
+  selector: 'app-invitations-sent-list',
+  imports: [CommonModule, DatePipe],
+  templateUrl: './invitations-sent-list.html',
+  styleUrl: './invitations-sent-list.css',
+})
+export class InvitationsSentListComponent implements OnInit {
+  private invitationService = inject(InvitationService);
+  private householdService = inject(HouseholdService);
+
+  invitations = signal<Invitation[]>([]);
+  isLoading = signal(false);
+  successMessage = signal<string | null>(null);
+  errorMessage = signal<string | null>(null);
+
+  ngOnInit() {
+    this.loadInvitations();
+  }
+
+  /**
+   * Load sent invitations for current household
+   */
+  async loadInvitations() {
+    const householdId = this.householdService.getActiveHouseholdId();
+    if (!householdId) {
+      this.errorMessage.set('No active household selected');
+      return;
+    }
+
+    this.isLoading.set(true);
+    this.errorMessage.set(null);
+
+    try {
+      const response = await this.invitationService.listSentInvitations(householdId);
+      this.invitations.set(response.invitations);
+    } catch (error) {
+      console.error('Failed to load invitations:', error);
+      this.errorMessage.set('Failed to load invitations. Please try again.');
+    } finally {
+      this.isLoading.set(false);
+    }
+  }
+
+  /**
+   * Cancel a pending invitation
+   */
+  async cancelInvitation(invitation: Invitation) {
+    const confirmed = confirm(
+      `Are you sure you want to cancel the invitation to ${invitation.invitedEmail}?`
+    );
+    if (!confirmed) {
+      return;
+    }
+
+    const householdId = this.householdService.getActiveHouseholdId();
+    if (!householdId) {
+      this.errorMessage.set('No active household selected');
+      return;
+    }
+
+    this.isLoading.set(true);
+    this.errorMessage.set(null);
+
+    try {
+      await this.invitationService.cancelInvitation(householdId, invitation.id);
+      this.showSuccessMessage(`Invitation to ${invitation.invitedEmail} cancelled`);
+      await this.loadInvitations();
+    } catch (error) {
+      console.error('Failed to cancel invitation:', error);
+      this.errorMessage.set('Failed to cancel invitation. Please try again.');
+    } finally {
+      this.isLoading.set(false);
+    }
+  }
+
+  /**
+   * Get status badge class
+   */
+  getStatusClass(status: string): string {
+    switch (status) {
+      case 'pending':
+        return 'badge-pending';
+      case 'accepted':
+        return 'badge-accepted';
+      case 'declined':
+        return 'badge-declined';
+      case 'cancelled':
+        return 'badge-cancelled';
+      case 'expired':
+        return 'badge-expired';
+      default:
+        return '';
+    }
+  }
+
+  /**
+   * Check if invitation can be cancelled
+   */
+  canCancel(invitation: Invitation): boolean {
+    return invitation.status === 'pending';
+  }
+
+  /**
+   * Show success message and auto-clear
+   */
+  private showSuccessMessage(message: string) {
+    this.successMessage.set(message);
+    setTimeout(() => this.successMessage.set(null), 3000);
+  }
+}

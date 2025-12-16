@@ -1,0 +1,86 @@
+<div class="invitations-sent-list">
+  <div class="header">
+    <h3>Sent Invitations</h3>
+    <button
+      type="button"
+      class="btn btn-secondary btn-sm"
+      (click)="loadInvitations()"
+      [disabled]="isLoading()"
+      aria-label="Refresh invitations list"
+    >
+      Refresh
+    </button>
+  </div>
+
+  <!-- Success message -->
+  @if (successMessage()) {
+    <div class="alert alert-success" role="alert">
+      {{ successMessage() }}
+    </div>
+  }
+
+  <!-- Error message -->
+  @if (errorMessage()) {
+    <div class="alert alert-error" role="alert">
+      {{ errorMessage() }}
+    </div>
+  }
+
+  <!-- Loading state -->
+  @if (isLoading()) {
+    <div class="loading">Loading invitations...</div>
+  }
+
+  <!-- Empty state -->
+  @if (!isLoading() && invitations().length === 0) {
+    <div class="empty-state">
+      <p>No invitations sent yet.</p>
+      <p>Use the "Invite User" form above to invite someone to your household.</p>
+    </div>
+  }
+
+  <!-- Invitations table -->
+  @if (!isLoading() && invitations().length > 0) {
+    <div class="invitations-table" role="table" aria-label="Sent invitations">
+      <div class="table-header" role="row">
+        <div class="cell email" role="columnheader">Email</div>
+        <div class="cell role" role="columnheader">Role</div>
+        <div class="cell status" role="columnheader">Status</div>
+        <div class="cell date" role="columnheader">Sent</div>
+        <div class="cell expires" role="columnheader">Expires</div>
+        <div class="cell actions" role="columnheader">Actions</div>
+      </div>
+
+      @for (invitation of invitations(); track invitation.id) {
+        <div class="table-row" role="row">
+          <div class="cell email" role="cell">{{ invitation.invitedEmail }}</div>
+          <div class="cell role" role="cell">{{ invitation.role | titlecase }}</div>
+          <div class="cell status" role="cell">
+            <span class="badge" [class]="getStatusClass(invitation.status)">
+              {{ invitation.status | titlecase }}
+            </span>
+          </div>
+          <div class="cell date" role="cell">
+            {{ invitation.createdAt | date: 'short' }}
+          </div>
+          <div class="cell expires" role="cell">
+            {{ invitation.expiresAt | date: 'short' }}
+          </div>
+          <div class="cell actions" role="cell">
+            @if (canCancel(invitation)) {
+              <button
+                type="button"
+                class="btn btn-danger btn-sm"
+                (click)="cancelInvitation(invitation)"
+                [disabled]="isLoading()"
+                [attr.aria-label]="'Cancel invitation to ' + invitation.invitedEmail"
+              >
+                Cancel
+              </button>
+            }
+          </div>
+        </div>
+      }
+    </div>
+  }
+</div>
