@@ -273,4 +273,89 @@ describe('Household API', () => {
       assert.strictEqual(response.statusCode, 401);
     });
   });
+
+  describe('GET /api/households/:id/dashboard', () => {
+    let householdId: string;
+
+    before(async () => {
+      const response = await app.inject({
+        method: 'POST',
+        url: '/api/households',
+        headers: { Authorization: `Bearer ${user1Token}` },
+        payload: { name: `Dashboard Test Household ${Date.now()}` },
+      });
+      householdId = JSON.parse(response.body).id;
+    });
+
+    test('should return dashboard with empty state', async () => {
+      const response = await app.inject({
+        method: 'GET',
+        url: `/api/households/${householdId}/dashboard`,
+        headers: { Authorization: `Bearer ${user1Token}` },
+      });
+
+      assert.strictEqual(response.statusCode, 200);
+      const body = JSON.parse(response.body);
+
+      // Check household info
+      assert.ok(body.household);
+      assert.strictEqual(body.household.id, householdId);
+      assert.ok(body.household.name);
+
+      // Check week summary structure
+      assert.ok(body.weekSummary);
+      assert.strictEqual(typeof body.weekSummary.total, 'number');
+      assert.strictEqual(typeof body.weekSummary.completed, 'number');
+      assert.strictEqual(typeof body.weekSummary.pending, 'number');
+      assert.strictEqual(typeof body.weekSummary.overdue, 'number');
+      assert.strictEqual(typeof body.weekSummary.completionRate, 'number');
+
+      // Check children array (empty for new household)
+      assert.ok(Array.isArray(body.children));
+    });
+
+    test('should return dashboard with children', async () => {
+      // Add a child to the household
+      await pool.query(
+        `INSERT INTO children (household_id, name, birth_year) VALUES ($1, 'Test Child', 2015)`,
+        [householdId],
+      );
+
+      const response = await app.inject({
+        method: 'GET',
+        url: `/api/households/${householdId}/dashboard`,
+        headers: { Authorization: `Bearer ${user1Token}` },
+      });
+
+      assert.strictEqual(response.statusCode, 200);
+      const body = JSON.parse(response.body);
+
+      // Check children list
+      assert.ok(body.children.length >= 1);
+      const child = body.children.find((c: { name: string }) => c.name === 'Test Child');
+      assert.ok(child);
+      assert.ok(child.id);
+      assert.strictEqual(child.name, 'Test Child');
+      assert.strictEqual(typeof child.tasksTotal, 'number');
+      assert.strictEqual(typeof child.tasksCompleted, 'number');
+      assert.strictEqual(typeof child.completionRate, 'number');
+    });
+
+    test('should reject without authentication', async () => {
+      const response = await app.inject({
+        method: 'GET',
+        url: `/api/households/${householdId}/dashboard`,
+      });
+      assert.strictEqual(response.statusCode, 401);
+    });
+
+    test('should reject non-member access', async () => {
+      const response = await app.inject({
+        method: 'GET',
+        url: `/api/households/${householdId}/dashboard`,
+        headers: { Authorization: `Bearer ${user2Token}` },
+      });
+      assert.strictEqual(response.statusCode, 403);
+    });
+  });
 });

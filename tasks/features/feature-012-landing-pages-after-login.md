@@ -3,7 +3,7 @@
 ## Metadata
 - **ID**: feature-012
 - **Epic**: epic-003 - User Onboarding & Experience
-- **Status**: pending
+- **Status**: in-progress
 - **Priority**: high
 - **Created**: 2025-12-16
 - **Estimated Duration**: 3-4 days (22-31 hours)
