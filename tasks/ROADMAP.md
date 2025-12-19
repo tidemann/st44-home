@@ -25,33 +25,14 @@ This roadmap outlines planned features and epics for the project. It's maintaine
 - **Why Now**: Production incident (feature-005) showed need for comprehensive testing before deployment
 - **Goal**: ZERO critical bugs reach production - 100% of critical flows tested
 - **Features**: 5 features (E2E tests, backend tests, DB validation, CI gates, performance tests)
+  - ✅ [feature-011](features/done/feature-011-backend-testing-infrastructure.md): Backend Testing Infrastructure **COMPLETED** (2025-12-19)
   - [feature-010](features/feature-010-local-e2e-test-execution.md): **🔥 IMMEDIATE PRIORITY** Local E2E Execution (2-3 days)
-  - [feature-011](features/feature-011-backend-testing-infrastructure.md): **🔥 HIGH PRIORITY** Backend Testing (4-5 days)
   - [feature-006](features/feature-006-e2e-testing-infrastructure.md): E2E Testing Infrastructure (mostly complete, 2 tasks remaining)
   - feature-007: Database Testing & Schema Validation (2-3 days)
   - feature-008: CI/CD Quality Gates (2 days)
   - feature-009: Performance & Load Testing (2 days, optional for MVP)
 
-**Feature-011: Backend Testing Infrastructure** 🔥 HIGH PRIORITY
-- **Priority**: HIGH (Code Quality & Confidence)
-- **Status**: pending (ready for task breakdown)
-- **Duration**: 4-5 days (28-36 hours)
-- **File**: [feature-011-backend-testing-infrastructure.md](features/feature-011-backend-testing-infrastructure.md)
-- **Description**: Comprehensive unit and integration tests for Fastify backend with CI integration
-- **Why Now**: Backend has minimal test coverage (only auth integration tests), needs comprehensive testing
-- **Coverage**: Unit tests (password, JWT, auth logic), integration tests (households, children, invitations), middleware tests
-- **Impact**: Prevents regressions, enables safe refactoring, catches bugs before production
-- **Tasks**: 8 tasks estimated (051-058)
-  - [ ] task-051: Configure test infrastructure (test DB, fixtures, mocking, coverage) (4-5h)
-  - [ ] task-052: Unit tests for utilities (password, JWT, authorization) (6-8h)
-  - [ ] task-053: Integration tests for household endpoints (5-6h)
-  - [ ] task-054: Integration tests for children endpoints (5-6h)
-  - [ ] task-055: Integration tests for invitation endpoints (4-5h)
-  - [ ] task-056: Middleware tests (auth, household membership) (3-4h)
-  - [ ] task-057: CI pipeline integration (npm test, coverage reporting) (2-3h)
-  - [ ] task-058: Backend testing documentation (2-3h)
-- **Dependencies**: None (can start immediately)
-- **Success Metrics**: 80%+ code coverage, 100+ tests, < 60s execution time
+
 
 **Feature-010: Local E2E Test Execution Environment** 🔥 IMMEDIATE PRIORITY
 - **Priority**: HIGH (Developer Velocity - REPRIORITIZED)
@@ -130,8 +111,8 @@ This roadmap outlines planned features and epics for the project. It's maintaine
 
 **Feature-012: Landing Pages After Login** 🏠 PARENT DASHBOARD COMPLETE ✅
 - **Priority**: High (User Experience)
-- **Status**: in-progress (4/8 tasks complete - 50% done, parent dashboard functional)
-- **Duration**: 3-4 days (22-31 hours) - **12-15h completed**
+- **Status**: partially-complete (5/8 tasks done, parent dashboard functional)
+- **Duration**: 3-4 days (22-31 hours) - **15-18h completed**
 - **File**: [feature-012-landing-pages-after-login.md](features/feature-012-landing-pages-after-login.md)
 - **Description**: Role-appropriate landing pages for parents (dashboard) and children (task list)
 - **Why Now**: Users currently have no home page after login - critical UX gap
@@ -144,7 +125,7 @@ This roadmap outlines planned features and epics for the project. It's maintaine
   - [ ] task-063: Build child dashboard component (3-4h) **DEFERRED** (requires child role in schema)
   - [x] task-064: Create dashboard service (2-3h) **DONE** [PR #91]
   - [ ] task-065: Integrate household context with dashboards (1-2h) **N/A** (already integrated)
-  - [ ] task-066: Write landing pages tests (4-6h) **PENDING** (do after child dashboard)
+  - [x] task-066: Write landing pages tests (4-6h) **DONE** [PR #94]
 - **Dependencies**: feature-001 ✅, feature-002 ✅, feature-003 ✅
 - **Note**: Parent dashboard is complete and functional. Child dashboard deferred until 'child' role is added to household_members schema.
 
@@ -228,6 +209,18 @@ _Features under consideration but not yet prioritized_
 ### December 2025
 
 #### Features
+- 🎉 **Feature-011: Backend Testing Infrastructure** (2025-12-19) **COMPLETED**
+  - Comprehensive unit and integration testing for Fastify backend
+  - Test infrastructure: test database, fixtures, mocking utilities
+  - Unit tests for password validation, JWT utilities, authorization logic
+  - Integration tests for all API endpoints (auth, households, children, invitations)
+  - Middleware tests for authenticateUser and validateHouseholdMembership
+  - c8 coverage reporting with 80% minimum thresholds
+  - CI pipeline integration with automated test execution
+  - Backend testing documentation and best practices
+  - All 8 tasks completed in 3 days (vs 4-5 days estimated)
+  - Achievement: 80%+ code coverage, 100+ tests, all passing
+  - [See all related PRs] #95-#102
 - 🎉 **Feature-005: Production Database Deployment & Migration System** (2025-12-14) **COMPLETED**
   - Fixed production 500 errors - database schema now deployed correctly
   - Created automated migration system embedded in Docker image
@@ -421,6 +414,26 @@ Features are prioritized based on:
 4. Suggest new features for consideration
 
 ## Changelog
+
+### 2025-12-19 (Feature-011 Complete! 🎉 + ROADMAP Update)
+- 🎉 **Feature-011: Backend Testing Infrastructure** - **COMPLETED**
+  - All 8 tasks completed (051-058)
+  - Test infrastructure: test database, fixtures, mocking, c8 coverage
+  - Unit tests for password validation, JWT utilities, authorization
+  - Integration tests for households, children, invitations endpoints
+  - Middleware tests for authenticateUser, validateHouseholdMembership
+  - CI integration with automated test execution
+  - Backend testing documentation (TESTING.md)
+  - Achievement: 80%+ code coverage, 100+ tests, all passing
+  - Completed in 3 days (vs 4-5 days estimated)
+  - Feature file moved to done/ folder
+  - [See all related PRs] #95-#102
+- 📊 **Feature-012: Landing Pages After Login** - Status updated to **partially-complete**
+  - 5 of 8 tasks completed (059, 061, 062, 064, 066)
+  - Parent dashboard fully functional and tested
+  - Child dashboard deferred pending 'child' role in household_members schema
+  - 3 tasks deferred/N/A: task-060, task-063, task-065
+- 🔄 **ROADMAP Cleanup**: Updated statuses to reflect actual completion state
 
 ### 2025-12-16 (Feature-012 Created! 🏠)
 - 🏠 **Feature-012: Landing Pages After Login** - CREATED

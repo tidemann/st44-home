@@ -3,10 +3,11 @@
 ## Metadata
 - **ID**: feature-012
 - **Epic**: epic-003 - User Onboarding & Experience
-- **Status**: in-progress
+- **Status**: partially-complete
 - **Priority**: high
 - **Created**: 2025-12-16
 - **Estimated Duration**: 3-4 days (22-31 hours)
+- **Completion Note**: Parent dashboard complete (5/8 tasks), child dashboard deferred pending schema changes
 
 ## Description
 Create role-appropriate landing pages that users see after logging in. Parents see a dashboard with household overview and quick actions. Children (users with child role) see a simplified task list focused on their daily assignments. This feature establishes the core post-authentication experience and provides the foundation for more detailed dashboards in Epic-005.
@@ -81,43 +82,46 @@ Create role-appropriate landing pages that users see after logging in. Parents s
 **⚠️ Feature must be broken down into tasks by Orchestrator Agent before implementation**
 
 ### Backend Tasks (2 tasks, 5-7 hours)
-- [ ] **task-059**: Create dashboard summary API endpoint (3-4h)
+- [x] **task-059**: Create dashboard summary API endpoint (3-4h) **COMPLETED** [PR #90]
   - GET /api/households/:id/dashboard
   - Returns week summary, children stats, recent activity
-- [ ] **task-060**: Create child tasks API endpoint (2-3h)
+- [ ] **task-060**: Create child tasks API endpoint (2-3h) **DEFERRED** - requires 'child' role in household_members schema
   - GET /api/households/:id/my-tasks
   - Returns today's tasks for authenticated child user
 
 ### Frontend Tasks (5 tasks, 13-18 hours)
-- [ ] **task-061**: Implement auth guards and role-based routing (3-4h)
+- [x] **task-061**: Implement auth guards and role-based routing (3-4h) **COMPLETED** [PR #93]
   - AuthGuard, RoleGuard (parent/child)
   - Update app.routes.ts with protected routes
   - Redirect logic for no-household users
-- [ ] **task-062**: Build parent dashboard component (4-6h)
+- [x] **task-062**: Build parent dashboard component (4-6h) **COMPLETED** [PR #92]
   - Week summary card
   - Children list with completion bars
   - Quick action buttons
   - Empty states
-- [ ] **task-063**: Build child dashboard component (3-4h)
+- [ ] **task-063**: Build child dashboard component (3-4h) **DEFERRED** - requires 'child' role in household_members schema
   - Task list for today
   - Mark complete functionality
   - Points display
   - Child-friendly design
-- [ ] **task-064**: Create dashboard service (2-3h)
+- [x] **task-064**: Create dashboard service (2-3h) **COMPLETED** [PR #91]
   - API calls for dashboard data
   - Caching for performance
-- [ ] **task-065**: Integrate household context with dashboards (1-2h)
+- [ ] **task-065**: Integrate household context with dashboards (1-2h) **N/A** - Already integrated via auth guards and dashboard component
   - Connect household switcher
   - Persist selection
 
 ### Testing Tasks (1 task, 4-6 hours)
-- [ ] **task-066**: Write landing pages tests (4-6h)
+- [x] **task-066**: Write landing pages tests (4-6h) **COMPLETED** [PR #94]
   - Unit tests for guards
   - Unit tests for dashboard components
   - Integration tests for routing
   - E2E tests for login → dashboard flow
 
 **Total**: 8 tasks, 22-31 hours (3-4 days)
+**Completed**: 5/8 tasks (059, 061, 062, 064, 066)
+**Deferred**: 2 tasks (060, 063) - pending 'child' role implementation
+**N/A**: 1 task (065) - functionality already implemented
 **Critical Path**: task-059 → task-064 → task-062 → task-061
 
 ## Dependencies
@@ -379,6 +383,11 @@ if (role === 'child') {
 - E2E tests
 
 ## Progress Log
+- [2025-12-19] Status updated to **partially-complete** - Parent dashboard functional, child dashboard deferred
+  - 5 of 8 tasks completed (059, 061, 062, 064, 066)
+  - Parent dashboard live and tested
+  - Child dashboard tasks (060, 063) deferred pending 'child' role in schema
+  - Task 065 marked N/A - functionality already implemented
 - [2025-12-16] Feature created based on planning session
 - [2025-12-16] Status: pending (ready for task breakdown)
 
