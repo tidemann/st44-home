@@ -25,7 +25,8 @@ VALUES
   ('015', 'create_task_assignments_table', NOW()),
   ('016', 'create_task_completions_table', NOW()),
   ('017', 'add_performance_indexes', NOW()),
-  ('018', 'implement_row_level_security', NOW())
+  ('018', 'implement_row_level_security', NOW()),
+  ('021', 'rename_due_date_to_date', NOW())
 ON CONFLICT (version) DO NOTHING;
 
 -- Users table for authentication (supports email/password and OAuth)
@@ -128,18 +129,21 @@ CREATE TABLE IF NOT EXISTS task_assignments (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   household_id UUID NOT NULL REFERENCES households(id) ON DELETE CASCADE,
   task_id UUID NOT NULL REFERENCES tasks(id) ON DELETE CASCADE,
-  child_id UUID NOT NULL REFERENCES children(id) ON DELETE CASCADE,
-  due_date DATE NOT NULL,
+  child_id UUID REFERENCES children(id) ON DELETE CASCADE, -- Nullable for household-wide tasks
+  date DATE NOT NULL, -- Renamed from due_date (migration 021)
   status VARCHAR(50) DEFAULT 'pending' CHECK (status IN ('pending', 'completed', 'overdue')),
   created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
 CREATE INDEX IF NOT EXISTS idx_task_assignments_household ON task_assignments(household_id);
 CREATE INDEX IF NOT EXISTS idx_task_assignments_child ON task_assignments(child_id);
-CREATE INDEX IF NOT EXISTS idx_task_assignments_due_date ON task_assignments(due_date);
+CREATE INDEX IF NOT EXISTS idx_task_assignments_date ON task_assignments(date);
 -- Composite indexes added in migration 017 for query optimization
-CREATE INDEX IF NOT EXISTS idx_task_assignments_child_due_status ON task_assignments(child_id, due_date, status);
-CREATE INDEX IF NOT EXISTS idx_task_assignments_household_status_due ON task_assignments(household_id, status, due_date);
+CREATE INDEX IF NOT EXISTS idx_task_assignments_child_date_status ON task_assignments(child_id, date, status);
+CREATE INDEX IF NOT EXISTS idx_task_assignments_household_status_date ON task_assignments(household_id, status, date);
+-- Partial unique indexes for idempotency (migration 021)
+CREATE UNIQUE INDEX IF NOT EXISTS idx_task_assignments_task_child_date_unique ON task_assignments(task_id, child_id, date) WHERE child_id IS NOT NULL;
+CREATE UNIQUE INDEX IF NOT EXISTS idx_task_assignments_task_date_unique ON task_assignments(task_id, date) WHERE child_id IS NULL;
 
 -- Task completions table (historical record of completed tasks, append-only)
 CREATE TABLE IF NOT EXISTS task_completions (
