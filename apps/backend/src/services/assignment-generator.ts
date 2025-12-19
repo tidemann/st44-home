@@ -339,13 +339,17 @@ async function generateWeeklyRotationAssignments(
   }
 
   if (rotationType === 'odd_even_week') {
-    // Use ISO week number to determine odd/even
-    for (const date of dates) {
-      const weekNum = getISOWeek(date);
-      const isOddWeek = weekNum % 2 === 1;
-      const childIndex = isOddWeek ? 0 : 1;
-      const childId = assignedChildren[childIndex % assignedChildren.length];
+    // Use ISO week number of the START date to determine which child for ALL dates
+    // This ensures consistent assignment within a generation batch
+    const startWeekNum = getISOWeek(dates[0]);
+    // Odd weeks (1, 3, 5...): index 0
+    // Even weeks (2, 4, 6...): index 1
+    // For 3+ children: use (weekNum - 1) % length to cycle through
+    const childIndex = (startWeekNum - 1) % assignedChildren.length;
+    const childId = assignedChildren[childIndex];
 
+    // All dates get the same child (determined by start week)
+    for (const date of dates) {
       assignments.push({
         task_id: task.id,
         child_id: childId,
@@ -364,40 +368,25 @@ async function generateWeeklyRotationAssignments(
       [task.id],
     );
 
-    let lastChildIndex = -1;
-    let lastWeekNum = 0;
+    let nextChildIndex = 0; // Default to first child if no history
 
     if (lastAssignmentResult.rows.length > 0) {
       const lastChildId = lastAssignmentResult.rows[0].child_id;
-      const lastDate = new Date(lastAssignmentResult.rows[0].date);
-      lastChildIndex = assignedChildren.indexOf(lastChildId);
-      lastWeekNum = getISOWeek(lastDate);
-      if (lastChildIndex === -1) {
+      const lastChildIndex = assignedChildren.indexOf(lastChildId);
+      
+      if (lastChildIndex !== -1) {
+        // Found last child in current assigned_children list - rotate to next
+        nextChildIndex = (lastChildIndex + 1) % assignedChildren.length;
+      } else {
         // Last child not in current assigned_children list, start from beginning
-        lastChildIndex = -1;
+        nextChildIndex = 0;
       }
     }
 
-    // Group dates by ISO week and assign one child per week
-    const weekAssignments = new Map<number, string>();
+    // All dates in the range get the same child (weekly rotation)
+    const childId = assignedChildren[nextChildIndex];
+    
     for (const date of dates) {
-      const weekNum = getISOWeek(date);
-
-      if (!weekAssignments.has(weekNum)) {
-        // New week - determine which child
-        if (weekNum === lastWeekNum && lastChildIndex >= 0) {
-          // Same week as last assignment - use same child
-          weekAssignments.set(weekNum, assignedChildren[lastChildIndex]);
-        } else {
-          // Different week - rotate to next child
-          const weeksFromLast = weekNum - lastWeekNum;
-          const nextChildIndex = (lastChildIndex + weeksFromLast) % assignedChildren.length;
-          weekAssignments.set(weekNum, assignedChildren[nextChildIndex]);
-        }
-      }
-
-      // Create assignment for this date with the week's assigned child
-      const childId = weekAssignments.get(weekNum)!;
       assignments.push({
         task_id: task.id,
         child_id: childId,
