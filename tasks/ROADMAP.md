@@ -51,6 +51,29 @@ This roadmap outlines planned features and epics for the project. It's maintaine
   - [ ] feature-008: CI/CD Quality Gates (2 days) **NOT STARTED**
   - feature-009: Performance & Load Testing **OPTIONAL** (deferred for MVP)
 
+**Task-089: Fix Test Watch Mode for Agent Workflows** 🔥 CRITICAL
+- **Priority**: Critical (Blocks Agent Testing - Quick Fix)
+- **Status**: pending
+- **Duration**: 1-2 hours (simple fix)
+- **File**: [task-089-fix-test-watch-mode-for-agents.md](items/task-089-fix-test-watch-mode-for-agents.md)
+- **Description**: Fix `npm test` triggering watch mode, preventing agents from running tests
+- **Problem**: When agents run `npm test`, Vitest enters watch mode and waits indefinitely
+- **Solution**: Add `test:ci` script for single-pass test execution, fix path resolution errors
+- **Impact**: Agents can run tests without hanging, improving workflow efficiency
+- **Assigned**: frontend-agent | orchestrator-agent
+
+**Task-088: Fix E2E Test Database Initialization in GitHub Actions** ⚠️ HIGH
+- **Priority**: High (Blocks E2E CI Tests - after task-089)
+- **Status**: pending
+- **Duration**: 2 hours
+- **File**: [task-088-fix-e2e-test-database-initialization.md](items/task-088-fix-e2e-test-database-initialization.md)
+- **Description**: E2E tests fail in GitHub Actions because `st44_test` database not created
+- **Latest Failure**: Dec 19, 2025 - 39/42 tests failed (92% failure rate)
+- **Problem**: Workflow creates `st44` database but E2E tests expect `st44_test`
+- **Solution**: Update `.github/workflows/e2e.yml` to create and initialize `st44_test` database
+- **Impact**: E2E tests will pass in CI, preventing regressions
+- **Assigned**: devops-agent
+
 **Feature-006: E2E Testing Infrastructure** ⚡ 89% COMPLETE
 - **Priority**: Critical (Prevents Production Bugs)
 - **Status**: partially-complete (8/9 tasks complete)
@@ -461,6 +484,24 @@ Features are prioritized based on:
 4. Suggest new features for consideration
 
 ## Changelog
+
+### 2025-12-19 (Task-089 Created! 🔥 + Task-088 Updated)
+- 🔥 **Task-089: Fix Test Watch Mode for Agent Workflows** - CREATED (CRITICAL)
+  - Problem: `npm test` triggers Vitest watch mode, causing agents to wait indefinitely
+  - Impact: Blocks agent workflows from running automated tests
+  - Solution: Add `test:ci` script for single-pass execution, fix path resolution
+  - Priority: Critical (workflow blocker - quick fix)
+  - Estimated: 1-2 hours
+  - Assigned: frontend-agent | orchestrator-agent
+- ⚠️ **Task-088: Fix E2E Test Database Initialization** - UPDATED (HIGH)
+  - Latest failure: Dec 19, 2025 at 13:14 UTC (Run 20371108053)
+  - Result: 39/42 tests failed (92% failure rate)
+  - Primary error: `error: database "st44_test" does not exist`
+  - Secondary issue: "role 'root' does not exist" (17 occurrences, non-blocking)
+  - All test suites affected: Login, Registration, Database Validation, Example
+  - Priority: High (after task-089)
+  - Assigned: devops-agent
+  - Added to epic-006 (Testing & Quality Assurance)
 
 ### 2025-12-19 (Comprehensive ROADMAP Audit 🎉)
 - 🎉 **Epic-001: Multi-Tenant Foundation** - **COMPLETED** (moved to done/)

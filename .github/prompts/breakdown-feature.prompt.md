@@ -1,6 +1,6 @@
 ---
 description: Break down a feature into implementation tasks
-agent: orchestrator-agent
+agent: planner-agent
 ---
 
 # Break Down Feature into Tasks
