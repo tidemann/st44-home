@@ -11,9 +11,17 @@ import { describe, it, expect, beforeEach, vi } from 'vitest';
 describe('TaskCreateComponent', () => {
   let component: TaskCreateComponent;
   let fixture: ComponentFixture<TaskCreateComponent>;
-  let mockTaskService: any;
-  let mockChildrenService: any;
-  let mockHouseholdService: any;
+  let mockTaskService: {
+    createTask: ReturnType<typeof vi.fn>;
+    loading: ReturnType<typeof signal<boolean>>;
+    error: ReturnType<typeof signal<string | null>>;
+  };
+  let mockChildrenService: {
+    listChildren: ReturnType<typeof vi.fn>;
+  };
+  let mockHouseholdService: {
+    getActiveHouseholdId: ReturnType<typeof vi.fn>;
+  };
 
   const mockChildren = [
     { id: '1', name: 'Emma', birthYear: 2015, createdAt: new Date().toISOString() },
