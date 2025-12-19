@@ -78,6 +78,7 @@ jobs:
         run: |
           npm start &
           echo $! > backend.pid
+          echo "Backend started on port 3000"
 
       - name: Wait for backend health check
         run: |
@@ -94,9 +95,12 @@ jobs:
 
       - name: Start frontend server
         working-directory: apps/frontend
+        env:
+          PORT: 4200
         run: |
           npm start &
           echo $! > frontend.pid
+          echo "Frontend started on port 4200"
 
       - name: Wait for frontend to be ready
         run: |
@@ -112,11 +116,16 @@ jobs:
           exit 1
 
       - name: Run E2E tests
-        working-directory: apps/frontend
-        env:
-          CI: true
+        woFRONTEND_PORT: 4200
+          FRONTEND_HOST: localhost
+          BACKEND_PORT: 3000
+          BACKEND_HOST: localhost
           DB_HOST: localhost
           DB_PORT: 55432
+          DB_NAME: st44_test
+          DB_USER: postgres
+          DB_PASSWORD: postgres
+          USE_DOCKER_COMPOSE: false
           DB_NAME: st44_test
           DB_USER: postgres
           DB_PASSWORD: postgres
