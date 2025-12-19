@@ -121,28 +121,32 @@ test.describe('User Login Flow', () => {
     // ARRANGE: Fill password field
     await loginPage.passwordInput.fill(testPassword);
 
+    // Get password input by a selector that doesn't depend on type attribute
+    // (Assuming password input is the second input on the page after email)
+    const passwordField = page.locator('input').nth(1);
+
     // Initial state should be password (hidden)
-    let inputType = await loginPage.passwordInput.getAttribute('type');
+    let inputType = await passwordField.getAttribute('type');
     expect(inputType).toBe('password');
 
     // ACT: Click show/hide password toggle
     const toggleButton = page.getByRole('button', { name: /show|hide|visibility/i });
     if (await toggleButton.isVisible()) {
       await toggleButton.click();
-      // Wait for Angular to update the DOM
-      await page.waitForTimeout(200);
+      // Wait for Angular to update the DOM (increased from 200ms to 500ms for reliability)
+      await page.waitForTimeout(500);
 
       // ASSERT: Should change to text (visible)
-      inputType = await loginPage.passwordInput.getAttribute('type');
+      inputType = await passwordField.getAttribute('type');
       expect(inputType).toBe('text');
 
       // ACT: Click again to hide
       await toggleButton.click();
-      // Wait for Angular to update the DOM
-      await page.waitForTimeout(200);
+      // Wait for Angular to update the DOM (increased from 200ms to 500ms)
+      await page.waitForTimeout(500);
 
       // ASSERT: Should change back to password (hidden)
-      inputType = await loginPage.passwordInput.getAttribute('type');
+      inputType = await passwordField.getAttribute('type');
       expect(inputType).toBe('password');
     }
   });

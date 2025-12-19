@@ -26,10 +26,10 @@ if (!process.env.USE_DOCKER_COMPOSE) {
 
 export default defineConfig({
   testDir: './e2e',
-  fullyParallel: true,
+  fullyParallel: false, // CRITICAL: Disabled for E2E tests that share database state
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 2 : 0,
-  workers: process.env.CI ? 4 : undefined,
+  workers: 1, // Run tests serially to avoid database conflicts with resetTestDatabase()
   reporter: process.env.CI ? [['list'], ['html']] : 'html',
   timeout: 30000,
   use: {
