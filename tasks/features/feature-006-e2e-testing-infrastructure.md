@@ -181,10 +181,10 @@ Implement comprehensive end-to-end testing infrastructure using Playwright to te
 
 ## Tasks
 
-- [x] [task-027](../items/done/task-027-install-configure-playwright.md): Install and configure Playwright (4-6 hours) **COMPLETED** [PR #41]
+- [x] [task-076](../items/done/task-076-install-configure-playwright.md): Install and configure Playwright (4-6 hours) **COMPLETED** [PR #41]
 - [x] [task-028](../items/done/task-028-setup-test-database.md): Set up test database and migration runner (4-6 hours) **COMPLETED** [PR #43]
-- [x] [task-029](../items/done/task-029-create-test-fixtures-utilities.md): Create test fixtures and utilities (4-6 hours) **COMPLETED** [PR #45]
-- [x] [task-030](../items/done/task-030-registration-flow-e2e-tests.md): Registration flow E2E tests ⚠️ **CRITICAL** (6-8 hours) **COMPLETED** [PR #46]
+- [x] [task-073](../items/done/task-073-create-test-fixtures-utilities.md): Create test fixtures and utilities (4-6 hours) **COMPLETED** [PR #45]
+- [x] [task-074](../items/done/task-074-registration-flow-e2e-tests.md): Registration flow E2E tests ⚠️ **CRITICAL** (6-8 hours) **COMPLETED** [PR #46]
 - [x] [task-031](../items/done/task-031-login-flow-e2e-tests.md): Login flow E2E tests (4-6 hours) **COMPLETED** [PR #47]
 - [x] [task-032](../items/done/task-032-database-validation-tests.md): Database validation E2E tests (3-4 hours) **COMPLETED** [PR #48]
 - [ ] [task-033](../items/task-033-google-oauth-e2e-tests.md): Google OAuth E2E tests (optional) (4-5 hours) **DEFERRED** (optional for MVP)
@@ -194,7 +194,7 @@ Implement comprehensive end-to-end testing infrastructure using Playwright to te
 **Total Estimated Time**: 35-46 hours (5-6 days)  
 **Actual Time**: ~30 hours (4 days)  
 **Progress**: 8/9 tasks complete (89%) - 1 optional task deferred  
-**Critical Path**: task-027 → task-028 → task-029 → task-030 → task-034 ✅ **COMPLETE**
+**Critical Path**: task-076 → task-028 → task-073 → task-074 → task-034 ✅ **COMPLETE**
 
 ## Dependencies
 
@@ -520,12 +520,12 @@ jobs:
 [To be filled by Orchestrator Agent after task breakdown]
 
 ### Phase 1: Infrastructure (2 days)
-- Task-027: Install Playwright and configure
+- Task-076: Install Playwright and configure
 - Task-028: Set up test database with Docker Compose
-- Task-029: Create test fixtures and utilities
+- Task-073: Create test fixtures and utilities
 
 ### Phase 2: Critical Tests (2 days)
-- Task-030: Registration flow tests (PRIORITY 1)
+- Task-074: Registration flow tests (PRIORITY 1)
 - Task-031: Login flow tests (PRIORITY 1)
 - Task-032: Database validation tests (PRIORITY 1)
 

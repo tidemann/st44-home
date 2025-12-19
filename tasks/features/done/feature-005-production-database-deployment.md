@@ -46,12 +46,12 @@ Fix critical production bug where the database schema doesn't exist in the deplo
 ## Tasks
 **🔴 CRITICAL - Production is broken, needs immediate attention**
 
-- [ ] **task-021**: Audit deployment process and identify where migrations should run (1 hour, orchestrator)
-- [ ] **task-022**: Create database migration runner script for production (2-3 hours, database)
-- [ ] **task-023**: Apply existing migrations to production database (1 hour, database)
-- [ ] **task-024**: Add migration runner to GitHub Actions deploy workflow (2-3 hours, orchestrator)
-- [ ] **task-025**: Create database health check endpoint with schema validation (2-3 hours, backend)
-- [ ] **task-026**: Document production database deployment process (1 hour, orchestrator)
+- [x] **task-067**: Audit deployment process and identify where migrations should run (1 hour, orchestrator)
+- [x] **task-068**: Create database migration runner script for production (2-3 hours, database)
+- [x] **task-069**: Apply existing migrations to production database (1 hour, database)
+- [x] **task-070**: Add migration runner to GitHub Actions deploy workflow (2-3 hours, orchestrator)
+- [x] **task-071**: Create database health check endpoint with schema validation (2-3 hours, backend)
+- [x] **task-072**: Document production database deployment process (1 hour, orchestrator)
 
 ## Dependencies
 - Existing migrations in `docker/postgres/migrations/` (already created)

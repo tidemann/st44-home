@@ -64,7 +64,7 @@ Enable household admins and parents to invite other users to join their househol
 ## Tasks
 
 ### Backend Tasks (6 tasks, 12-17 hours)
-- [x] [task-036](../items/done/task-036-create-invitations-table-schema.md): Create invitations table schema (3-4h) **COMPLETED** (0.5h actual)
+- [x] [task-077](../items/done/task-077-create-invitations-table-schema.md): Create invitations table schema (3-4h) **COMPLETED** (0.5h actual)
 - [x] [task-037](../items/done/task-037-invitation-crud-api-endpoints.md): Implement invitation CRUD API endpoints (5-6h) **COMPLETED** (0.5h actual)
 - [x] [task-038](../items/done/task-038-invitation-authorization-middleware.md): Implement invitation authorization middleware (2-3h) **COMPLETED**
 - [x] [task-039](../items/done/task-039-email-validation-duplicate-checks.md): Add email validation and duplicate checks (2-3h) **COMPLETED** (implemented in task-037)
@@ -78,10 +78,10 @@ Enable household admins and parents to invite other users to join their househol
 - [x] [task-045](../items/done/task-045-invitation-service-frontend.md): Create invitation service (frontend) (3-4h) **COMPLETED**
 
 ### Testing Tasks (1 task, 6-8 hours)
-- [x] [task-046](../items/done/task-046-invitation-system-tests.md): Write invitation system tests (6-8h) **COMPLETED** [PR #88]
+- [x] [task-075](../items/done/task-075-invitation-system-tests.md): Write invitation system tests (6-8h) **COMPLETED** [PR #88]
 
 **Total**: 11 tasks, 31-42 hours (4-6 days after consolidation)
-**Critical Path**: task-036 → task-037 → (038?) → task-045 → task-044
+**Critical Path**: task-077 → task-037 → (038?) → task-045 → task-044
 **Progress**: 11/11 tasks complete (100%) ✅
 
 ## Dependencies
@@ -226,7 +226,7 @@ If you don't have a Diddit account yet, you'll be prompted to create one.
 - [2025-12-15] Status updated to ready-for-implementation
 - [2025-12-15] Tasks organized: 6 backend + 4 frontend + 1 testing
 - [2025-12-15] Estimated duration updated based on task breakdown (37-49 hours)
-- [2025-12-15] task-036 complete: Invitations table schema (PR #65, 0.5h)
+- [2025-12-15] task-077 complete: Invitations table schema (PR #65, 0.5h)
 - [2025-12-15] task-037 complete: Invitation CRUD API endpoints (PR #66, 0.5h)
 - [2025-12-15] tasks 039-041 marked complete: Logic already implemented in task-037
 - [2025-12-15] Progress: 5/11 tasks complete (45%), backend nearly done except authorization middleware
