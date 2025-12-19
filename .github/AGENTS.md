@@ -257,7 +257,7 @@ jobs:
       - uses: actions/setup-node@v3
       - run: npm ci
       - run: npm test
-      - run: npm run lint
+      # Note: Backend doesn't have lint command
 ```
 
 ## Maintaining This Directory

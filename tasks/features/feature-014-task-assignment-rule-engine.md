@@ -130,7 +130,17 @@ async function generateAssignments(
 - date-fns library for ISO week calculations
 
 ## Tasks
-To be created by Orchestrator Agent
+
+Total: 3 tasks (18-23 hours estimated, 3-4 days)
+
+- [ ] [task-091](../items/task-091-assignment-generation-service.md): Assignment Generation Service (8-10h, backend-agent)
+- [ ] [task-092](../items/task-092-assignment-api-endpoints.md): Assignment API Endpoints (4-5h, backend-agent)
+- [ ] [task-093](../items/task-093-assignment-integration-tests.md): Assignment Integration Tests (6-8h, backend-agent)
+
+**Dependencies:**
+- task-091 → task-092 (API endpoints need service)
+- task-092 → task-093 (tests need both service and API)
 
 ## Progress Log
 - [2025-12-19 10:45] Feature created for Epic-002 breakdown
+- [2025-12-19] Feature broken down into 3 tasks by orchestrator-agent
