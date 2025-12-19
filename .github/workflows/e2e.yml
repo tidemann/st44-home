@@ -116,7 +116,10 @@ jobs:
           exit 1
 
       - name: Run E2E tests
-        woFRONTEND_PORT: 4200
+        working-directory: apps/frontend
+        env:
+          CI: true
+          FRONTEND_PORT: 4200
           FRONTEND_HOST: localhost
           BACKEND_PORT: 3000
           BACKEND_HOST: localhost
@@ -126,9 +129,6 @@ jobs:
           DB_USER: postgres
           DB_PASSWORD: postgres
           USE_DOCKER_COMPOSE: false
-          DB_NAME: st44_test
-          DB_USER: postgres
-          DB_PASSWORD: postgres
         run: npm run test:e2e
 
       - name: Upload test results
