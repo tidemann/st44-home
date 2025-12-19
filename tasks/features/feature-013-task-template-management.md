@@ -103,7 +103,21 @@ CREATE TABLE tasks (
 - feature-003 ✅ Complete (household management UI)
 
 ## Tasks
-To be created by Orchestrator Agent
+- [ ] [task-082](../items/task-082-task-templates-crud-api.md): Task Templates CRUD API Endpoints (6-8h) **Backend**
+- [ ] [task-083](../items/task-083-task-template-frontend-service.md): Task Template Frontend Service (3-4h) **Frontend**
+- [ ] [task-084](../items/task-084-task-template-creation-form.md): Task Template Creation Form Component (8-10h) **Frontend**
+- [ ] [task-085](../items/task-085-task-template-list-component.md): Task Template List Component (5-6h) **Frontend**
+- [ ] [task-086](../items/task-086-task-template-edit-modal.md): Task Template Edit Modal Component (6-7h) **Frontend**
+- [ ] [task-087](../items/task-087-task-template-integration-tests.md): Task Template Management Integration Tests (4-5h) **Testing**
+
+**Total Estimated**: 32-40 hours (4-5 days)
+
+**Implementation Sequence**:
+1. task-082 (Backend API) - Foundation
+2. task-083 (Frontend Service) - Depends on task-082
+3. task-084, task-085, task-086 (Frontend Components) - Depend on task-083, can be parallel
+4. task-087 (Integration Tests) - Depends on all above
 
 ## Progress Log
 - [2025-12-19 10:40] Feature created for Epic-002 breakdown
+- [2025-12-19 12:00] Feature broken down into 6 tasks by Orchestrator Agent
