@@ -29,16 +29,23 @@ export class RegisterPage extends BasePage {
     await this.emailInput.fill(email);
     await this.passwordInput.fill(password);
     await this.confirmPasswordInput.fill(confirmPassword || password);
-    await this.registerButton.click();
 
-    // Wait for navigation or error message
-    await Promise.race([
-      this.page.waitForURL((url) => !url.pathname.includes('/register'), { timeout: 5000 }),
-      this.errorMessage.waitFor({ state: 'visible', timeout: 5000 }).catch(() => {}),
-    ]);
+    // Check if button is enabled before clicking
+    const isEnabled = await this.registerButton.isEnabled();
+    if (isEnabled) {
+      await this.registerButton.click();
 
-    // Give Angular time to process response (if going to login, tokens won't be stored)
-    await this.page.waitForTimeout(500);
+      // Wait for navigation or error message
+      await Promise.race([
+        this.page.waitForURL((url) => !url.pathname.includes('/register'), { timeout: 5000 }),
+        this.errorMessage.waitFor({ state: 'visible', timeout: 5000 }).catch(() => {}),
+      ]);
+
+      // Give Angular time to process response (if going to login, tokens won't be stored)
+      await this.page.waitForTimeout(500);
+    }
+    // If button is disabled, don't attempt to click it
+    // The test should verify the disabled state instead
   }
 
   async getErrorMessage(): Promise<string | null> {

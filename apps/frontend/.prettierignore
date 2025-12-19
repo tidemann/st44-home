@@ -1,0 +1,15 @@
+# Test output files
+test-results.json
+playwright-report/
+test-results/
+
+# Build output
+dist/
+.angular/
+
+# Dependencies
+node_modules/
+
+# Environment files
+.env
+.env.local

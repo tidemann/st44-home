@@ -39,8 +39,8 @@ export async function createTestUser(
   email: string,
   password: string,
 ): Promise<{ id: number; email: string; accessToken: string; refreshToken: string }> {
-  // Use environment variable or default to GitHub Actions port (3000) or local port (3001)
-  const apiPort = process.env.BACKEND_PORT || '3000';
+  // Use environment variable or default to local E2E port (3001) for local testing, GitHub Actions (3000)
+  const apiPort = process.env.BACKEND_PORT || '3001'; // Changed from 3000 to 3001 for local E2E
   const apiHost = process.env.BACKEND_HOST || 'localhost';
   const response = await fetch(`http://${apiHost}:${apiPort}/api/auth/register`, {
     method: 'POST',
