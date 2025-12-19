@@ -6,17 +6,17 @@ import { Pool } from 'pg';
  */
 export async function resetTestDatabase(): Promise<void> {
   const pool = new Pool({
-    host: 'localhost',
-    port: 55432, // Test DB port from E2E workflow
-    database: 'st44', // Must match E2E workflow postgres service POSTGRES_DB
-    user: 'postgres',
-    password: 'postgres',
+    host: process.env.DB_HOST || 'localhost',
+    port: parseInt(process.env.DB_PORT || '55432'), // Test DB port from E2E workflow
+    database: process.env.DB_NAME || 'st44_test', // Must match E2E workflow postgres service POSTGRES_DB
+    user: process.env.DB_USER || 'postgres',
+    password: process.env.DB_PASSWORD || 'postgres',
   });
 
   try {
     // Truncate all tables with CASCADE to handle foreign keys
     await pool.query(`
-      TRUNCATE TABLE 
+      TRUNCATE TABLE
         users,
         households,
         household_members,
