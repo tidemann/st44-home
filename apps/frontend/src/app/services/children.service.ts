@@ -42,7 +42,7 @@ export class ChildrenService {
    */
   async listChildren(householdId: string): Promise<Child[]> {
     const response = await this.api.get<ListChildrenResponse>(
-      `/api/households/${householdId}/children`,
+      `/households/${householdId}/children`,
     );
     return response.children;
   }
@@ -51,7 +51,7 @@ export class ChildrenService {
    * Add a new child to a household
    */
   async createChild(householdId: string, data: CreateChildRequest): Promise<Child> {
-    return this.api.post<Child>(`/api/households/${householdId}/children`, data);
+    return this.api.post<Child>(`/households/${householdId}/children`, data);
   }
 
   /**
@@ -62,15 +62,13 @@ export class ChildrenService {
     childId: string,
     data: UpdateChildRequest,
   ): Promise<Child> {
-    return this.api.put<Child>(`/api/households/${householdId}/children/${childId}`, data);
+    return this.api.put<Child>(`/households/${householdId}/children/${childId}`, data);
   }
 
   /**
    * Delete a child from a household
    */
   async deleteChild(householdId: string, childId: string): Promise<DeleteChildResponse> {
-    return this.api.delete<DeleteChildResponse>(
-      `/api/households/${householdId}/children/${childId}`,
-    );
+    return this.api.delete<DeleteChildResponse>(`/households/${householdId}/children/${childId}`);
   }
 }
