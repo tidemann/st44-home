@@ -4,7 +4,7 @@
 - **ID**: task-082
 - **Feature**: [feature-013-task-template-management](../features/feature-013-task-template-management.md)
 - **Epic**: [epic-002-task-management-core](../epics/epic-002-task-management-core.md)
-- **Status**: pending
+- **Status**: in-progress
 - **Priority**: critical
 - **Created**: 2025-12-19
 - **Assigned Agent**: backend-agent
@@ -338,3 +338,4 @@ Integration tests should cover:
 
 ## Progress Log
 - [2025-12-19] Task created for feature-013 breakdown
+- [2025-12-19 12:10] Status changed to in-progress - Delegating to backend-agent
