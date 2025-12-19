@@ -4,7 +4,7 @@
 - **ID**: task-084
 - **Feature**: [feature-013-task-template-management](../features/feature-013-task-template-management.md)
 - **Epic**: [epic-002-task-management-core](../epics/epic-002-task-management-core.md)
-- **Status**: pending
+- **Status**: in-progress
 - **Priority**: critical
 - **Created**: 2025-12-19
 - **Assigned Agent**: frontend-agent
