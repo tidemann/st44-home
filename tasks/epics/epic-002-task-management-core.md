@@ -34,11 +34,11 @@ This is the core product feature that:
 5. Support multiple task types (weekly rotation, repeating)
 
 ## Features
-- [ ] [feature-013](../features/feature-013-task-template-management.md): Task Template Management (pending) - 4-5 days
+- [x] [feature-013](../features/done/feature-013-task-template-management.md): Task Template Management (completed) - 4-5 days ✅
   - CRUD operations for task templates with assignment rules
   - Rule configuration UI (weekly rotation, repeating, daily)
   - Task activation/deactivation
-- [ ] [feature-014](../features/feature-014-task-assignment-rule-engine.md): Task Assignment Rule Engine (pending) - 5-6 days
+- [x] [feature-014](../features/done/feature-014-task-assignment-rule-engine.md): Task Assignment Rule Engine (completed) - 5-6 days ✅
   - Automated assignment generation service
   - ISO week-based rotation logic
   - Repeating task scheduling
@@ -129,9 +129,11 @@ interface TaskRule {
 
 ## Progress Log
 - [2025-12-13] Epic created based on implementation plan
-- [2025-12-19] Features defined by Planner Agent:
+- [2025-12-19 10:45] Features defined by Planner Agent:
   - feature-013: Task Template Management
   - feature-014: Task Assignment Rule Engine
   - feature-015: Task Viewing & Completion
   - Total estimated: 13-16 days
-  - Ready for Orchestrator to break down feature-013 into tasks
+- [2025-12-19 23:40] Feature-013 completed (100%) - Task Template Management ✅
+- [2025-12-19 23:40] Feature-014 completed (100%) - Task Assignment Rule Engine ✅
+- [2025-12-19 23:40] Epic progress: 2/3 features complete (67%)
