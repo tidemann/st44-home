@@ -4,7 +4,7 @@
 - **ID**: task-091
 - **Feature**: [feature-014-task-assignment-rule-engine](../features/feature-014-task-assignment-rule-engine.md)
 - **Epic**: [epic-002-task-management-core](../epics/epic-002-task-management-core.md)
-- **Status**: pending
+- **Status**: in-progress
 - **Priority**: critical
 - **Created**: 2025-12-19
 - **Assigned Agent**: backend-agent
@@ -84,18 +84,18 @@ async function generateAssignments(
 - Log warnings for tasks with invalid configurations
 
 ## Acceptance Criteria
-- [ ] Function signature matches interface above
-- [ ] All 4 rule types implemented correctly
-- [ ] ISO week calculation uses date-fns getISOWeek
-- [ ] Idempotency prevents duplicate assignments
-- [ ] Existing assignments are skipped (not recreated)
-- [ ] Batch operations used (not one-by-one inserts)
-- [ ] Returns accurate created/skipped/errors counts
-- [ ] Handles tasks with no assigned_children
-- [ ] Skips inactive tasks (active=false)
-- [ ] Transaction used for consistency
-- [ ] Error handling doesn't crash entire generation
-- [ ] Comprehensive logging for debugging
+- [x] Function signature matches interface above
+- [x] All 4 rule types implemented correctly
+- [x] ISO week calculation uses date-fns getISOWeek
+- [x] Idempotency prevents duplicate assignments
+- [x] Existing assignments are skipped (not recreated)
+- [x] Batch operations used (not one-by-one inserts)
+- [x] Returns accurate created/skipped/errors counts
+- [x] Handles tasks with no assigned_children
+- [x] Skips inactive tasks (active=false)
+- [x] Transaction used for consistency
+- [x] Error handling doesn't crash entire generation
+- [x] Comprehensive logging for debugging
 
 ## Technical Notes
 
@@ -142,3 +142,11 @@ const sql = `
 
 ## Progress Log
 - [2025-12-19] Task created for feature-014 breakdown
+- [2025-12-19] Task status changed to in-progress
+- [2025-12-19] date-fns package installed for ISO week calculations
+- [2025-12-19] Assignment generation service implemented
+- [2025-12-19] All 4 rule types working (daily, repeating, weekly_rotation odd/even, weekly_rotation alternating)
+- [2025-12-19] Idempotency implemented - skips existing assignments
+- [2025-12-19] Batch database operations for performance
+- [2025-12-19] Local checks passed (format, build, test)
+- [2025-12-19] Changes committed - ready for orchestrator
