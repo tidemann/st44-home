@@ -31,13 +31,13 @@ test.describe('User Login Flow', () => {
   });
 
   test('should successfully login with valid credentials', async ({ page }) => {
-    // ACT: Login with valid credentials
-    await loginPage.login(testEmail, testPassword);
+    // ACT: Login with valid credentials (with rememberMe so tokens go to localStorage)
+    await loginPage.login(testEmail, testPassword, true);
 
     // ASSERT: Should redirect away from login page
     await expect(page).not.toHaveURL(/\/login/);
 
-    // ASSERT: Access token should be stored
+    // ASSERT: Access token should be stored in localStorage
     const accessToken = await page.evaluate(() => localStorage.getItem('accessToken'));
     expect(accessToken).toBeTruthy();
     expect(accessToken).toMatch(/^[\w-]+\.[\w-]+\.[\w-]+$/); // JWT format
