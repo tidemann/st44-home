@@ -10,11 +10,11 @@ import { resetTestDatabase } from '../helpers/test-helpers';
 
 // Database connection for validation queries
 const pool = new Pool({
-  host: 'localhost',
-  port: 55432,
-  database: 'st44_test',
-  user: 'postgres',
-  password: 'postgres',
+  host: process.env.DB_HOST || 'localhost',
+  port: parseInt(process.env.DB_PORT || '5433'),
+  database: process.env.DB_NAME || 'st44_test_local',
+  user: process.env.DB_USER || 'postgres',
+  password: process.env.DB_PASSWORD || 'postgres',
 });
 
 test.describe('Database Health and Validation', () => {
@@ -27,7 +27,9 @@ test.describe('Database Health and Validation', () => {
 
   test('should return 200 from /health endpoint', async ({ request }) => {
     // ACT: Call health endpoint
-    const response = await request.get('http://localhost:3000/health');
+    const apiPort = process.env.BACKEND_PORT || '3000';
+    const apiHost = process.env.BACKEND_HOST || 'localhost';
+    const response = await request.get(`http://${apiHost}:${apiPort}/health`);
 
     // ASSERT: Should return 200 OK
     expect(response.ok()).toBeTruthy();
@@ -40,7 +42,9 @@ test.describe('Database Health and Validation', () => {
 
   test('should return healthy status from /health/database endpoint', async ({ request }) => {
     // ACT: Call database health endpoint
-    const response = await request.get('http://localhost:3000/health/database');
+    const apiPort = process.env.BACKEND_PORT || '3000';
+    const apiHost = process.env.BACKEND_HOST || 'localhost';
+    const response = await request.get(`http://${apiHost}:${apiPort}/health/database`);
 
     // ASSERT: Should return 200 OK
     expect(response.ok()).toBeTruthy();
@@ -237,7 +241,9 @@ test.describe('Database Health and Validation', () => {
     // In a real scenario where DB is down, endpoint should return appropriate status
 
     // ACT: Call health endpoint (should work even if DB has issues)
-    const response = await request.get('http://localhost:3000/health');
+    const apiPort = process.env.BACKEND_PORT || '3000';
+    const apiHost = process.env.BACKEND_HOST || 'localhost';
+    const response = await request.get(`http://${apiHost}:${apiPort}/health`);
 
     // ASSERT: Should always respond (not timeout)
     expect(response.status()).toBeGreaterThanOrEqual(200);

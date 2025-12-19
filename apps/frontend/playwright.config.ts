@@ -1,5 +1,9 @@
 import { defineConfig, devices } from '@playwright/test';
 
+const frontendPort = process.env.FRONTEND_PORT || '4200';
+const frontendHost = process.env.FRONTEND_HOST || 'localhost';
+const baseURL = `http://${frontendHost}:${frontendPort}`;
+
 export default defineConfig({
   testDir: './e2e',
   fullyParallel: true,
@@ -9,7 +13,7 @@ export default defineConfig({
   reporter: process.env.CI ? [['list'], ['html']] : 'html',
   timeout: 30000,
   use: {
-    baseURL: 'http://localhost:4200',
+    baseURL,
     trace: 'on-first-retry',
     screenshot: 'only-on-failure',
     video: 'retain-on-failure',
@@ -20,12 +24,14 @@ export default defineConfig({
       use: { ...devices['Desktop Chrome'] },
     },
   ],
-  webServer: process.env.CI
-    ? undefined
-    : {
-        command: 'npm run start',
-        url: 'http://localhost:4200',
-        reuseExistingServer: true,
-        timeout: 120000,
-      },
+  // Don't start webServer if using docker-compose (local E2E) or CI
+  webServer:
+    process.env.CI || process.env.USE_DOCKER_COMPOSE
+      ? undefined
+      : {
+          command: 'npm run start',
+          url: baseURL,
+          reuseExistingServer: true,
+          timeout: 120000,
+        },
 });

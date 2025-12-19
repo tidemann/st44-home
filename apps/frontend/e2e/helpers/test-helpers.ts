@@ -7,8 +7,8 @@ import { Pool } from 'pg';
 export async function resetTestDatabase(): Promise<void> {
   const pool = new Pool({
     host: process.env.DB_HOST || 'localhost',
-    port: parseInt(process.env.DB_PORT || '55432'), // Test DB port from E2E workflow
-    database: process.env.DB_NAME || 'st44_test', // Must match E2E workflow postgres service POSTGRES_DB
+    port: parseInt(process.env.DB_PORT || '5433'), // Local E2E: 5433, GitHub Actions: 55432
+    database: process.env.DB_NAME || 'st44_test_local', // Local E2E: st44_test_local, GitHub Actions: st44_test
     user: process.env.DB_USER || 'postgres',
     password: process.env.DB_PASSWORD || 'postgres',
   });
@@ -39,7 +39,10 @@ export async function createTestUser(
   email: string,
   password: string,
 ): Promise<{ id: number; email: string; accessToken: string; refreshToken: string }> {
-  const response = await fetch('http://localhost:3000/api/auth/register', {
+  // Use environment variable or default to GitHub Actions port (3000) or local port (3001)
+  const apiPort = process.env.BACKEND_PORT || '3000';
+  const apiHost = process.env.BACKEND_HOST || 'localhost';
+  const response = await fetch(`http://${apiHost}:${apiPort}/api/auth/register`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ email, password }),

@@ -16,7 +16,7 @@ export class RegisterPage extends BasePage {
     this.emailInput = page.getByRole('textbox', { name: /email/i });
     this.passwordInput = page.locator('input[type="password"]').first();
     this.confirmPasswordInput = page.locator('input[type="password"]').nth(1);
-    this.registerButton = page.getByRole('button', { name: /register|sign up/i });
+    this.registerButton = page.getByRole('button', { name: /create account|register/i });
     this.errorMessage = page.locator('[role="alert"], .error-message, .alert-error');
   }
 
