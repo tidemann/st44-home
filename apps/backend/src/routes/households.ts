@@ -288,12 +288,12 @@ async function getHouseholdDashboard(
       `SELECT 
         COUNT(*) as total,
         SUM(CASE WHEN status = 'completed' THEN 1 ELSE 0 END) as completed,
-        SUM(CASE WHEN status = 'pending' AND due_date >= CURRENT_DATE THEN 1 ELSE 0 END) as pending,
-        SUM(CASE WHEN status = 'pending' AND due_date < CURRENT_DATE THEN 1 ELSE 0 END) as overdue
+        SUM(CASE WHEN status = 'pending' AND date >= CURRENT_DATE THEN 1 ELSE 0 END) as pending,
+        SUM(CASE WHEN status = 'pending' AND date < CURRENT_DATE THEN 1 ELSE 0 END) as overdue
       FROM task_assignments
       WHERE household_id = $1 
-        AND due_date >= date_trunc('week', CURRENT_DATE)
-        AND due_date < date_trunc('week', CURRENT_DATE) + INTERVAL '7 days'`,
+        AND date >= date_trunc('week', CURRENT_DATE)
+        AND date < date_trunc('week', CURRENT_DATE) + INTERVAL '7 days'`,
       [id],
     );
 
@@ -313,8 +313,8 @@ async function getHouseholdDashboard(
         SUM(CASE WHEN ta.status = 'completed' THEN 1 ELSE 0 END) as tasks_completed
       FROM children c
       LEFT JOIN task_assignments ta ON ta.child_id = c.id 
-        AND ta.due_date >= date_trunc('week', CURRENT_DATE)
-        AND ta.due_date < date_trunc('week', CURRENT_DATE) + INTERVAL '7 days'
+        AND ta.date >= date_trunc('week', CURRENT_DATE)
+        AND ta.date < date_trunc('week', CURRENT_DATE) + INTERVAL '7 days'
       WHERE c.household_id = $1
       GROUP BY c.id, c.name
       ORDER BY c.name`,
