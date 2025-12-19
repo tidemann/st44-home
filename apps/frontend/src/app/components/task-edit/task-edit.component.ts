@@ -37,10 +37,10 @@ export class TaskEditComponent {
   readonly task = input.required<TaskTemplate>();
   readonly closed = output<void>();
 
-  // Signals
-  protected readonly hasChanges = signal<boolean>(false);
-  protected readonly showUnsavedWarning = signal<boolean>(false);
-  protected readonly children = signal<Child[]>([]);
+  // Signals (public for testing)
+  hasChanges = signal<boolean>(false);
+  showUnsavedWarning = signal<boolean>(false);
+  children = signal<Child[]>([]);
 
   // Form group
   taskForm!: FormGroup;

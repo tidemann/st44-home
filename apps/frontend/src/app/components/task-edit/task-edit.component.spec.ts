@@ -13,7 +13,7 @@ import { describe, it, expect, beforeEach, vi } from 'vitest';
 // Issue: https://github.com/angular/angular/issues/43688
 // Component builds and compiles successfully (verified with npm run build)
 // Tests will be enabled once vite.config.ts is configured for resolveComponentResources()
-describe.skip('TaskEditComponent', () => {
+describe('TaskEditComponent', () => {
   let component: TaskEditComponent;
   let fixture: ComponentFixture<TaskEditComponent>;
   let mockTaskService: {
