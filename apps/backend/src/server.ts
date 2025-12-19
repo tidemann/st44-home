@@ -8,6 +8,7 @@ import householdRoutes from './routes/households.js';
 import childrenRoutes from './routes/children.js';
 import taskRoutes from './routes/tasks.js';
 import { invitationRoutes } from './routes/invitations.js';
+import assignmentRoutes from './routes/assignments.js';
 
 // JWT Configuration
 const JWT_SECRET = process.env.JWT_SECRET || 'dev-secret-change-in-production';
@@ -532,11 +533,12 @@ async function buildApp() {
     );
   });
 
-  // Register household, children, invitation, and task routes
+  // Register household, children, invitation, task, and assignment routes
   await fastify.register(householdRoutes);
   await fastify.register(childrenRoutes);
   await fastify.register(taskRoutes);
   await fastify.register(invitationRoutes);
+  await fastify.register(assignmentRoutes);
 
   // Example items endpoint
   interface Item {

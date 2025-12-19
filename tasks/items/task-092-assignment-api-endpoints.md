@@ -4,7 +4,7 @@
 - **ID**: task-092
 - **Feature**: [feature-014-task-assignment-rule-engine](../features/feature-014-task-assignment-rule-engine.md)
 - **Epic**: [epic-002-task-management-core](../epics/epic-002-task-management-core.md)
-- **Status**: pending
+- **Status**: in-progress
 - **Priority**: critical
 - **Created**: 2025-12-19
 - **Assigned Agent**: backend-agent
@@ -176,3 +176,8 @@ const query = `
 
 ## Progress Log
 - [2025-12-19] Task created for feature-014 breakdown
+- [2025-12-19] Task status changed to in-progress
+- [2025-12-19] Assignment API endpoints implemented
+- [2025-12-19] Both endpoints tested with existing middleware
+- [2025-12-19] Local checks passed (format, build, test)
+- [2025-12-19] Changes committed - ready for orchestrator
