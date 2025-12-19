@@ -129,6 +129,8 @@ test.describe('User Login Flow', () => {
     const toggleButton = page.getByRole('button', { name: /show|hide|visibility/i });
     if (await toggleButton.isVisible()) {
       await toggleButton.click();
+      // Wait for Angular to update the DOM
+      await page.waitForTimeout(200);
 
       // ASSERT: Should change to text (visible)
       inputType = await loginPage.passwordInput.getAttribute('type');
@@ -136,6 +138,8 @@ test.describe('User Login Flow', () => {
 
       // ACT: Click again to hide
       await toggleButton.click();
+      // Wait for Angular to update the DOM
+      await page.waitForTimeout(200);
 
       // ASSERT: Should change back to password (hidden)
       inputType = await loginPage.passwordInput.getAttribute('type');
@@ -144,7 +148,7 @@ test.describe('User Login Flow', () => {
   });
 
   test('should handle return URL redirect after login', async ({ page }) => {
-    const returnUrl = '/household/settings';
+    const returnUrl = '/household/create';
 
     // ARRANGE: Navigate to login with return URL
     await page.goto(`/login?returnUrl=${encodeURIComponent(returnUrl)}`);
@@ -223,8 +227,10 @@ test.describe('User Login Flow', () => {
   });
 
   test('should navigate to registration page from login', async ({ page }) => {
-    // ACT: Click register link
-    await loginPage.clickRegisterLink();
+    // ACT: Find and click register link
+    const registerLink = page.locator('a[href*=\"register\"]').first();
+    await registerLink.waitFor({ state: 'visible', timeout: 5000 });
+    await registerLink.click();
 
     // ASSERT: Should navigate to registration page
     await expect(page).toHaveURL(/\/register/);
@@ -236,9 +242,9 @@ test.describe('User Login Flow', () => {
     await resetTestDatabase();
     await createTestUser(specialEmail, testPassword);
 
-    // ACT: Login with special email
+    // ACT: Login with special email (with rememberMe to check localStorage)
     await loginPage.goto();
-    await loginPage.login(specialEmail, testPassword);
+    await loginPage.login(specialEmail, testPassword, true);
 
     // ASSERT: Should login successfully
     await expect(page).not.toHaveURL(/\/login/);
@@ -280,9 +286,9 @@ test.describe('User Login Flow', () => {
     let error = await loginPage.getErrorMessage();
     expect(error).toBeTruthy();
 
-    // ACT: Login successfully
+    // ACT: Login successfully (with rememberMe to check tokens)
     await loginPage.goto(); // Refresh to clear form
-    await loginPage.login(testEmail, testPassword);
+    await loginPage.login(testEmail, testPassword, true);
 
     // ASSERT: Should succeed without error
     await expect(page).not.toHaveURL(/\/login/);

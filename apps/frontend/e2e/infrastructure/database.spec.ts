@@ -57,7 +57,7 @@ test.describe('Database Health and Validation', () => {
     expect(typeof body.database.responseTime).toBe('number');
   });
 
-  test('should have all 8 critical tables created', async () => {
+  test('should have all critical tables created', async () => {
     // ACT: Query for all expected tables
     const result = await pool.query(`
       SELECT table_name
@@ -79,6 +79,7 @@ test.describe('Database Health and Validation', () => {
       'task_assignments',
       'task_completions',
       'schema_migrations',
+      'invitations',
       'items',
     ];
 
@@ -86,8 +87,8 @@ test.describe('Database Health and Validation', () => {
       expect(tableNames).toContain(tableName);
     }
 
-    // ASSERT: Should have exactly 9 tables (no extras)
-    expect(tableNames).toHaveLength(9);
+    // ASSERT: Should have exactly 10 tables (all critical tables)
+    expect(tableNames).toHaveLength(10);
   });
 
   test('should have schema_migrations table with correct structure', async () => {
