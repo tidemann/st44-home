@@ -78,11 +78,15 @@ This roadmap outlines planned features and epics for the project. It's maintaine
 **Epic-002: Task Management Core** ⭐ **READY TO START**
 - **Priority**: Critical (Core Product)
 - **Status**: pending (blocked by Epic-001 ✅ **NOW UNBLOCKED**)
-- **Duration**: 2 weeks
+- **Duration**: 2 weeks (13-16 days)
 - **File**: [epic-002-task-management-core.md](epics/epic-002-task-management-core.md)
 - **Description**: Rule-based task creation, automatic assignment, completion tracking
 - **Why Now**: Core value proposition of the product - Epic-001 complete, can start NOW
 - **Dependencies**: Epic-001 ✅ **COMPLETE**
+- **Features**: 3 features defined (13-16 days total)
+  - [ ] [feature-013](features/feature-013-task-template-management.md): Task Template Management (4-5 days) **PENDING**
+  - [ ] [feature-014](features/feature-014-task-assignment-rule-engine.md): Task Assignment Rule Engine (5-6 days) **PENDING**
+  - [ ] [feature-015](features/feature-015-task-viewing-completion.md): Task Viewing & Completion (4-5 days) **PENDING**
 
 **THIS IS THE NEXT PRIORITY** - With Epic-001 complete, Epic-002 is unblocked and ready to start!
 

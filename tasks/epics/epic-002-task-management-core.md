@@ -34,16 +34,20 @@ This is the core product feature that:
 5. Support multiple task types (weekly rotation, repeating)
 
 ## Features
-To be broken down by Planner Agent:
-- Task template creation (CRUD)
-- Rule engine for task assignment
-  - Odd/even week rotation
-  - Repeating tasks on specific days
-  - Daily tasks
-- Task assignment generation service
-- Task list views (parent and child perspectives)
-- Task completion functionality
-- Task history and tracking
+- [ ] [feature-013](../features/feature-013-task-template-management.md): Task Template Management (pending) - 4-5 days
+  - CRUD operations for task templates with assignment rules
+  - Rule configuration UI (weekly rotation, repeating, daily)
+  - Task activation/deactivation
+- [ ] [feature-014](../features/feature-014-task-assignment-rule-engine.md): Task Assignment Rule Engine (pending) - 5-6 days
+  - Automated assignment generation service
+  - ISO week-based rotation logic
+  - Repeating task scheduling
+  - Idempotent execution
+- [ ] [feature-015](../features/feature-015-task-viewing-completion.md): Task Viewing & Completion (pending) - 4-5 days
+  - Child task list view (today, week)
+  - Parent task dashboard (all children)
+  - Task completion functionality
+  - Assignment reassignment
 
 ## Success Criteria
 - [ ] Parents can create tasks with detailed rules
@@ -125,3 +129,9 @@ interface TaskRule {
 
 ## Progress Log
 - [2025-12-13] Epic created based on implementation plan
+- [2025-12-19] Features defined by Planner Agent:
+  - feature-013: Task Template Management
+  - feature-014: Task Assignment Rule Engine
+  - feature-015: Task Viewing & Completion
+  - Total estimated: 13-16 days
+  - Ready for Orchestrator to break down feature-013 into tasks
