@@ -148,17 +148,155 @@ export default async function assignmentRoutes(fastify: FastifyInstance) {
   );
 
   /**
-   * GET /api/households/:householdId/assignments
-   * View assignments for a household over a date range
+   * GET /api/children/:childId/tasks
+   * Query tasks for a specific child
    */
-  fastify.get<{ Params: ViewAssignmentsParams; Querystring: ViewAssignmentsQuery }>(
+  fastify.get<{
+    Params: { childId: string };
+    Querystring: { date?: string; status?: string };
+  }>(
+    '/api/children/:childId/tasks',
+    {
+      preHandler: [authenticateUser],
+    },
+    async (request, reply) => {
+      const { childId } = request.params;
+      let { date, status } = request.query;
+
+      // Validate childId format
+      if (!isValidUuid(childId)) {
+        return reply.code(400).send({
+          error: 'Invalid childId format (must be UUID)',
+        });
+      }
+
+      // Check if child exists and get household_id
+      try {
+        const childResult = await pool.query('SELECT household_id FROM children WHERE id = $1', [
+          childId,
+        ]);
+
+        if (childResult.rows.length === 0) {
+          return reply.code(404).send({
+            error: 'Child not found',
+          });
+        }
+
+        const childHouseholdId = childResult.rows[0].household_id;
+
+        // Authorization: Check if user is member of child's household
+        const membershipResult = await pool.query(
+          'SELECT role FROM household_members WHERE household_id = $1 AND user_id = $2',
+          [childHouseholdId, request.user?.userId],
+        );
+
+        if (membershipResult.rows.length === 0) {
+          return reply.code(403).send({
+            error: "You are not authorized to view this child's tasks",
+          });
+        }
+
+        // Default date to today if not provided
+        if (!date) {
+          const today = new Date();
+          date = today.toISOString().split('T')[0]; // YYYY-MM-DD
+        }
+
+        // Validate date format
+        if (!isValidDate(date)) {
+          return reply.code(400).send({
+            error: 'Invalid date format (must be YYYY-MM-DD)',
+          });
+        }
+
+        // Validate status if provided
+        if (status && !['pending', 'completed', 'overdue'].includes(status)) {
+          return reply.code(400).send({
+            error: 'Invalid status value (must be pending, completed, or overdue)',
+          });
+        }
+
+        // Build query with optional status filter
+        let query = `
+          SELECT 
+            ta.id,
+            ta.task_id,
+            t.name as title,
+            t.description,
+            t.rule_type,
+            ta.date::text as date,
+            ta.status,
+            tc.completed_at::text as completed_at
+          FROM task_assignments ta
+          JOIN tasks t ON ta.task_id = t.id
+          LEFT JOIN task_completions tc ON ta.id = tc.task_assignment_id
+          WHERE ta.child_id = $1 AND ta.date = $2
+        `;
+
+        const queryParams: (string | undefined)[] = [childId, date];
+
+        if (status) {
+          query += ' AND ta.status = $3';
+          queryParams.push(status);
+        }
+
+        query += ' ORDER BY t.name';
+
+        const result = await pool.query(query, queryParams);
+
+        // Transform to expected response format
+        const tasks = result.rows.map((row) => ({
+          id: row.id,
+          taskId: row.task_id,
+          title: row.title,
+          description: row.description,
+          ruleType: row.rule_type,
+          date: row.date,
+          status: row.status,
+          completedAt: row.completed_at || null,
+        }));
+
+        return reply.code(200).send({
+          tasks,
+        });
+      } catch (error) {
+        fastify.log.error(error, 'Failed to fetch child tasks');
+        return reply.code(500).send({
+          error: 'Failed to fetch tasks',
+        });
+      }
+    },
+  );
+
+  /**
+   * GET /api/households/:householdId/assignments
+   * View assignments for a household (updated to support new query params)
+   */
+  fastify.get<{
+    Params: { householdId: string };
+    Querystring: { date?: string; days?: string; childId?: string; status?: string };
+  }>(
     '/api/households/:householdId/assignments',
     {
       preHandler: [authenticateUser, validateHouseholdMembership],
     },
     async (request, reply) => {
       const { householdId } = request.params;
-      let { date, days } = request.query;
+      let { date, days, childId, status } = request.query;
+
+      // Validate childId if provided
+      if (childId && !isValidUuid(childId)) {
+        return reply.code(400).send({
+          error: 'Invalid childId format (must be UUID)',
+        });
+      }
+
+      // Validate status if provided
+      if (status && !['pending', 'completed', 'overdue'].includes(status)) {
+        return reply.code(400).send({
+          error: 'Invalid status value (must be pending, completed, or overdue)',
+        });
+      }
 
       // Default date to today
       if (!date) {
@@ -173,47 +311,92 @@ export default async function assignmentRoutes(fastify: FastifyInstance) {
         });
       }
 
-      // Default days to 7, validate range
-      const daysNum = days ? parseInt(days, 10) : 7;
+      // Handle days parameter (for backward compatibility with existing endpoint)
+      let endDateStr = date;
+      if (days) {
+        const daysNum = parseInt(days, 10);
 
-      if (isNaN(daysNum) || daysNum < 1 || daysNum > 30) {
-        return reply.code(400).send({
-          error: 'days must be between 1 and 30',
-        });
+        if (isNaN(daysNum) || daysNum < 1 || daysNum > 30) {
+          return reply.code(400).send({
+            error: 'days must be between 1 and 30',
+          });
+        }
+
+        // Calculate end date
+        const startDate = new Date(date);
+        const endDate = new Date(startDate);
+        endDate.setDate(endDate.getDate() + daysNum - 1);
+        endDateStr = endDate.toISOString().split('T')[0];
       }
 
-      // Calculate end date
-      const startDate = new Date(date);
-      const endDate = new Date(startDate);
-      endDate.setDate(endDate.getDate() + daysNum - 1);
-
-      const endDateStr = endDate.toISOString().split('T')[0];
-
-      // Query assignments with joins
+      // Query assignments with joins and optional filters
       try {
-        const result = await pool.query<Assignment>(
-          `SELECT 
+        // Build dynamic query with optional filters
+        let query = `
+          SELECT 
             ta.id,
             ta.task_id,
-            t.name as task_name,
+            t.name as title,
+            t.description,
             ta.child_id,
             c.name as child_name,
             ta.date::text as date,
             ta.status,
-            ta.created_at::text as created_at
+            tc.completed_at::text as completed_at
           FROM task_assignments ta
           JOIN tasks t ON ta.task_id = t.id
           LEFT JOIN children c ON ta.child_id = c.id
+          LEFT JOIN task_completions tc ON ta.id = tc.task_assignment_id
           WHERE t.household_id = $1
-            AND ta.date >= $2
-            AND ta.date <= $3
-          ORDER BY ta.date ASC, c.name ASC`,
-          [householdId, date, endDateStr],
-        );
+        `;
+
+        const queryParams: (string | undefined)[] = [householdId];
+        let paramIndex = 2;
+
+        // Add date range filter
+        if (days) {
+          query += ` AND ta.date >= $${paramIndex} AND ta.date <= $${paramIndex + 1}`;
+          queryParams.push(date, endDateStr);
+          paramIndex += 2;
+        } else {
+          query += ` AND ta.date = $${paramIndex}`;
+          queryParams.push(date);
+          paramIndex += 1;
+        }
+
+        // Add optional childId filter
+        if (childId) {
+          query += ` AND ta.child_id = $${paramIndex}`;
+          queryParams.push(childId);
+          paramIndex += 1;
+        }
+
+        // Add optional status filter
+        if (status) {
+          query += ` AND ta.status = $${paramIndex}`;
+          queryParams.push(status);
+          paramIndex += 1;
+        }
+
+        query += ' ORDER BY ta.date ASC, c.name ASC, t.name ASC';
+
+        const result = await pool.query(query, queryParams);
+
+        // Transform to expected response format
+        const assignments = result.rows.map((row) => ({
+          id: row.id,
+          taskId: row.task_id,
+          title: row.title,
+          description: row.description,
+          childId: row.child_id,
+          childName: row.child_name,
+          date: row.date,
+          status: row.status,
+          completedAt: row.completed_at || null,
+        }));
 
         return reply.code(200).send({
-          assignments: result.rows,
-          total: result.rows.length,
+          assignments,
         });
       } catch (error) {
         fastify.log.error(error, 'Failed to fetch assignments');
