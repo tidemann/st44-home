@@ -57,14 +57,20 @@ jobs:
         env:
           PGPASSWORD: postgres
         run: |
-          psql -h localhost -p 55432 -U postgres -d st44 -f docker/postgres/init.sql
+          # Create the test database
+          psql -h localhost -p 55432 -U postgres -d postgres -c "CREATE DATABASE st44_test;"
+          
+          # Initialize the test database schema
+          psql -h localhost -p 55432 -U postgres -d st44_test -f docker/postgres/init.sql
+          
+          echo "Database st44_test created and initialized successfully"
 
       - name: Start backend server
         working-directory: apps/backend
         env:
           DB_HOST: localhost
           DB_PORT: 55432
-          DB_NAME: st44
+          DB_NAME: st44_test
           DB_USER: postgres
           DB_PASSWORD: postgres
           PORT: 3000

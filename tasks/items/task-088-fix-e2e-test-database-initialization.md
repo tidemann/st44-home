@@ -4,12 +4,13 @@
 - **ID**: task-088
 - **Feature**: feature-006 - E2E Testing Infrastructure
 - **Epic**: epic-006 - Testing & Quality Assurance
-- **Status**: pending
+- **Status**: in-progress
 - **Priority**: high (after task-089)
 - **Created**: 2025-12-19
-- **Updated**: 2025-12-19 (latest failure info added)
-- **Assigned Agent**: devops
+- **Updated**: 2025-12-19 (implementation started)
+- **Assigned Agent**: devops | orchestrator
 - **Estimated Duration**: 2 hours
+- **Actual Duration**: 0.25 hours (so far)
 
 ## Description
 The E2E tests are failing in GitHub Actions CI because the test database `st44_test` is not being created. The workflow currently only creates the `st44` database, but the E2E tests expect to connect to `st44_test`.
@@ -33,10 +34,10 @@ The GitHub Actions logs show multiple connection attempts to `st44_test` fail im
 - [x] GitHub Actions workflow creates `st44_test` database before running tests
 - [x] Database schema is properly initialized in `st44_test` using init.sql
 - [x] Backend server connects to `st44_test` database (not `st44`) during E2E tests
-- [x] All E2E tests pass in GitHub Actions (0 failures out of 39 tests)
+- [ ] All E2E tests pass in GitHub Actions (0 failures out of 39 tests)
 - [x] Local E2E testing setup remains unaffected
 - [x] Database initialization logs are clear and show successful creation
-- [x] No authentication errors (role "root" does not exist) in logs
+- [ ] No authentication errors (role "root" does not exist) in logs
 
 ## Dependencies
 - No dependencies - this is a CI infrastructure fix
@@ -156,6 +157,11 @@ Update the "Start backend server" step:
 - [2025-12-19 14:55] Confirmed: 39/42 tests failing (92% failure rate)
 - [2025-12-19 14:55] Priority: High, blocked by task-089 (agent test execution fix)
 - [2025-12-19 14:55] Secondary issue identified: "role 'root' does not exist" (non-blocking)
+- [2025-12-19 16:10] Status changed to in-progress by Orchestrator Agent
+- [2025-12-19 16:10] Implementation: Updated .github/workflows/e2e.yml
+- [2025-12-19 16:10] Implementation: Changed "Initialize database" step to create st44_test
+- [2025-12-19 16:10] Implementation: Updated backend DB_NAME env var to st44_test
+- [2025-12-19 16:10] Ready to commit and trigger workflow for verification
 
 ## Testing Results
 [To be filled during testing phase]
