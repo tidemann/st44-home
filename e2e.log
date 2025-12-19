@@ -1,0 +1,1149 @@
+Run npm run test:e2e
+  npm run test:e2e
+  shell: /usr/bin/bash -e {0}
+  env:
+    CI: true
+    FRONTEND_PORT: 4200
+    FRONTEND_HOST: localhost
+    BACKEND_PORT: 3000
+    BACKEND_HOST: localhost
+    DB_HOST: localhost
+    DB_PORT: 55432
+    DB_NAME: st44_test
+    DB_USER: postgres
+    DB_PASSWORD: postgres
+    USE_DOCKER_COMPOSE: false
+> home@0.0.0 test:e2e
+> cross-env BACKEND_PORT=3001 BACKEND_HOST=localhost FRONTEND_PORT=4201 USE_DOCKER_COMPOSE=true playwright test
+Running 42 tests using 1 worker
+  ✘   1 [chromium] › e2e/auth/login.spec.ts:33:7 › User Login Flow › should successfully login with valid credentials (326ms)
+  ✘   2 [chromium] › e2e/auth/login.spec.ts:33:7 › User Login Flow › should successfully login with valid credentials (retry #1) (344ms)
+  ✘   3 [chromium] › e2e/auth/login.spec.ts:33:7 › User Login Flow › should successfully login with valid credentials (retry #2) (322ms)
+  ✘   4 [chromium] › e2e/auth/login.spec.ts:46:7 › User Login Flow › should reject login with invalid email (335ms)
+  ✘   5 [chromium] › e2e/auth/login.spec.ts:46:7 › User Login Flow › should reject login with invalid email (retry #1) (346ms)
+  ✘   6 [chromium] › e2e/auth/login.spec.ts:46:7 › User Login Flow › should reject login with invalid email (retry #2) (441ms)
+  ✘   7 [chromium] › e2e/auth/login.spec.ts:65:7 › User Login Flow › should reject login with wrong password (352ms)
+  ✘   8 [chromium] › e2e/auth/login.spec.ts:65:7 › User Login Flow › should reject login with wrong password (retry #1) (335ms)
+  ✘   9 [chromium] › e2e/auth/login.spec.ts:65:7 › User Login Flow › should reject login with wrong password (retry #2) (319ms)
+  ✘  10 [chromium] › e2e/auth/login.spec.ts:84:7 › User Login Flow › should store tokens in localStorage when remember me is checked (327ms)
+  ✘  11 [chromium] › e2e/auth/login.spec.ts:84:7 › User Login Flow › should store tokens in localStorage when remember me is checked (retry #1) (1.5s)
+  ✘  12 [chromium] › e2e/auth/login.spec.ts:84:7 › User Login Flow › should store tokens in localStorage when remember me is checked (retry #2) (329ms)
+  ✘  13 [chromium] › e2e/auth/login.spec.ts:101:7 › User Login Flow › should store tokens in sessionStorage when remember me is not checked (337ms)
+  ✘  14 [chromium] › e2e/auth/login.spec.ts:101:7 › User Login Flow › should store tokens in sessionStorage when remember me is not checked (retry #1) (343ms)
+  ✘  15 [chromium] › e2e/auth/login.spec.ts:101:7 › User Login Flow › should store tokens in sessionStorage when remember me is not checked (retry #2) (323ms)
+  ✘  16 [chromium] › e2e/auth/login.spec.ts:120:7 › User Login Flow › should toggle password visibility (331ms)
+  ✘  17 [chromium] › e2e/auth/login.spec.ts:120:7 › User Login Flow › should toggle password visibility (retry #1) (344ms)
+  ✘  18 [chromium] › e2e/auth/login.spec.ts:120:7 › User Login Flow › should toggle password visibility (retry #2) (330ms)
+  ✘  19 [chromium] › e2e/auth/login.spec.ts:154:7 › User Login Flow › should handle return URL redirect after login (321ms)
+  ✘  20 [chromium] › e2e/auth/login.spec.ts:154:7 › User Login Flow › should handle return URL redirect after login (retry #1) (338ms)
+  ✘  21 [chromium] › e2e/auth/login.spec.ts:154:7 › User Login Flow › should handle return URL redirect after login (retry #2) (323ms)
+  ✘  22 [chromium] › e2e/auth/login.spec.ts:170:7 › User Login Flow › should store both access and refresh tokens (317ms)
+  ✘  23 [chromium] › e2e/auth/login.spec.ts:170:7 › User Login Flow › should store both access and refresh tokens (retry #1) (333ms)
+  ✘  24 [chromium] › e2e/auth/login.spec.ts:170:7 › User Login Flow › should store both access and refresh tokens (retry #2) (330ms)
+  ✘  25 [chromium] › e2e/auth/login.spec.ts:190:7 › User Login Flow › should redirect to home page after successful login (317ms)
+  ✘  26 [chromium] › e2e/auth/login.spec.ts:190:7 › User Login Flow › should redirect to home page after successful login (retry #1) (342ms)
+  ✘  27 [chromium] › e2e/auth/login.spec.ts:190:7 › User Login Flow › should redirect to home page after successful login (retry #2) (315ms)
+  ✘  28 [chromium] › e2e/auth/login.spec.ts:205:7 › User Login Flow › should prevent login with empty email (314ms)
+  ✘  29 [chromium] › e2e/auth/login.spec.ts:205:7 › User Login Flow › should prevent login with empty email (retry #1) (341ms)
+  ✘  30 [chromium] › e2e/auth/login.spec.ts:205:7 › User Login Flow › should prevent login with empty email (retry #2) (334ms)
+  ✘  31 [chromium] › e2e/auth/login.spec.ts:219:7 › User Login Flow › should prevent login with empty password (317ms)
+  ✘  32 [chromium] › e2e/auth/login.spec.ts:219:7 › User Login Flow › should prevent login with empty password (retry #1) (336ms)
+  ✘  33 [chromium] › e2e/auth/login.spec.ts:219:7 › User Login Flow › should prevent login with empty password (retry #2) (313ms)
+  ✘  34 [chromium] › e2e/auth/login.spec.ts:233:7 › User Login Flow › should navigate to registration page from login (315ms)
+  ✘  35 [chromium] › e2e/auth/login.spec.ts:233:7 › User Login Flow › should navigate to registration page from login (retry #1) (352ms)
+  ✘  36 [chromium] › e2e/auth/login.spec.ts:233:7 › User Login Flow › should navigate to registration page from login (retry #2) (357ms)
+  ✘  37 [chromium] › e2e/auth/login.spec.ts:243:7 › User Login Flow › should handle special characters in email correctly (318ms)
+  ✘  38 [chromium] › e2e/auth/login.spec.ts:243:7 › User Login Flow › should handle special characters in email correctly (retry #1) (335ms)
+  ✘  39 [chromium] › e2e/auth/login.spec.ts:243:7 › User Login Flow › should handle special characters in email correctly (retry #2) (317ms)
+  ✘  40 [chromium] › e2e/auth/login.spec.ts:259:7 › User Login Flow › should be case-sensitive for password (327ms)
+  ✘  41 [chromium] › e2e/auth/login.spec.ts:259:7 › User Login Flow › should be case-sensitive for password (retry #1) (346ms)
+  ✘  42 [chromium] › e2e/auth/login.spec.ts:259:7 › User Login Flow › should be case-sensitive for password (retry #2) (316ms)
+  ✘  43 [chromium] › e2e/auth/login.spec.ts:271:7 › User Login Flow › should handle rapid login attempts gracefully (322ms)
+  ✘  44 [chromium] › e2e/auth/login.spec.ts:271:7 › User Login Flow › should handle rapid login attempts gracefully (retry #1) (330ms)
+  ✘  45 [chromium] › e2e/auth/login.spec.ts:271:7 › User Login Flow › should handle rapid login attempts gracefully (retry #2) (313ms)
+  ✘  46 [chromium] › e2e/auth/login.spec.ts:286:7 › User Login Flow › should clear form errors after successful login (313ms)
+  ✘  47 [chromium] › e2e/auth/login.spec.ts:286:7 › User Login Flow › should clear form errors after successful login (retry #1) (346ms)
+  ✘  48 [chromium] › e2e/auth/login.spec.ts:286:7 › User Login Flow › should clear form errors after successful login (retry #2) (323ms)
+  ✘  49 [chromium] › e2e/auth/registration.spec.ts:49:7 › User Registration Flow › should successfully register a new user with valid credentials (357ms)
+  ✘  50 [chromium] › e2e/auth/registration.spec.ts:49:7 › User Registration Flow › should successfully register a new user with valid credentials (retry #1) (392ms)
+  ✘  51 [chromium] › e2e/auth/registration.spec.ts:49:7 › User Registration Flow › should successfully register a new user with valid credentials (retry #2) (352ms)
+  ✘  52 [chromium] › e2e/auth/registration.spec.ts:78:7 › User Registration Flow › should reject registration with weak password (347ms)
+  ✘  53 [chromium] › e2e/auth/registration.spec.ts:78:7 › User Registration Flow › should reject registration with weak password (retry #1) (426ms)
+  ✘  54 [chromium] › e2e/auth/registration.spec.ts:78:7 › User Registration Flow › should reject registration with weak password (retry #2) (366ms)
+  ✘  55 [chromium] › e2e/auth/registration.spec.ts:97:7 › User Registration Flow › should reject registration with duplicate email (345ms)
+  ✘  56 [chromium] › e2e/auth/registration.spec.ts:97:7 › User Registration Flow › should reject registration with duplicate email (retry #1) (380ms)
+  ✘  57 [chromium] › e2e/auth/registration.spec.ts:97:7 › User Registration Flow › should reject registration with duplicate email (retry #2) (361ms)
+  ✘  58 [chromium] › e2e/auth/registration.spec.ts:121:7 › User Registration Flow › should reject registration with invalid email format (357ms)
+  ✘  59 [chromium] › e2e/auth/registration.spec.ts:121:7 › User Registration Flow › should reject registration with invalid email format (retry #1) (395ms)
+  ✘  60 [chromium] › e2e/auth/registration.spec.ts:121:7 › User Registration Flow › should reject registration with invalid email format (retry #2) (342ms)
+  ✘  61 [chromium] › e2e/auth/registration.spec.ts:154:7 › User Registration Flow › should reject registration when passwords do not match (382ms)
+  ✘  62 [chromium] › e2e/auth/registration.spec.ts:154:7 › User Registration Flow › should reject registration when passwords do not match (retry #1) (394ms)
+  ✘  63 [chromium] › e2e/auth/registration.spec.ts:154:7 › User Registration Flow › should reject registration when passwords do not match (retry #2) (356ms)
+  ✘  64 [chromium] › e2e/auth/registration.spec.ts:172:7 › User Registration Flow › should redirect to login after registration (no auto-login) (372ms)
+  ✘  65 [chromium] › e2e/auth/registration.spec.ts:172:7 › User Registration Flow › should redirect to login after registration (no auto-login) (retry #1) (378ms)
+  ✘  66 [chromium] › e2e/auth/registration.spec.ts:172:7 › User Registration Flow › should redirect to login after registration (no auto-login) (retry #2) (360ms)
+  ✘  67 [chromium] › e2e/auth/registration.spec.ts:188:7 › User Registration Flow › should redirect to home page after successful registration (354ms)
+  ✘  68 [chromium] › e2e/auth/registration.spec.ts:188:7 › User Registration Flow › should redirect to home page after successful registration (retry #1) (394ms)
+  ✘  69 [chromium] › e2e/auth/registration.spec.ts:188:7 › User Registration Flow › should redirect to home page after successful registration (retry #2) (337ms)
+  ✘  70 [chromium] › e2e/auth/registration.spec.ts:200:7 › User Registration Flow › should create user with correct database schema (357ms)
+  ✘  71 [chromium] › e2e/auth/registration.spec.ts:200:7 › User Registration Flow › should create user with correct database schema (retry #1) (391ms)
+  ✘  72 [chromium] › e2e/auth/registration.spec.ts:200:7 › User Registration Flow › should create user with correct database schema (retry #2) (357ms)
+  ✘  73 [chromium] › e2e/auth/registration.spec.ts:233:7 › User Registration Flow › should prevent registration with empty fields (355ms)
+  ✘  74 [chromium] › e2e/auth/registration.spec.ts:233:7 › User Registration Flow › should prevent registration with empty fields (retry #1) (397ms)
+  ✘  75 [chromium] › e2e/auth/registration.spec.ts:233:7 › User Registration Flow › should prevent registration with empty fields (retry #2) (348ms)
+  ✘  76 [chromium] › e2e/auth/registration.spec.ts:263:7 › User Registration Flow › should handle special characters in email correctly (363ms)
+  ✘  77 [chromium] › e2e/auth/registration.spec.ts:263:7 › User Registration Flow › should handle special characters in email correctly (retry #1) (411ms)
+  ✘  78 [chromium] › e2e/auth/registration.spec.ts:263:7 › User Registration Flow › should handle special characters in email correctly (retry #2) (365ms)
+  ✘  79 [chromium] › e2e/auth/registration.spec.ts:277:7 › User Registration Flow › should handle long email addresses correctly (342ms)
+  ✘  80 [chromium] › e2e/auth/registration.spec.ts:277:7 › User Registration Flow › should handle long email addresses correctly (retry #1) (399ms)
+  ✘  81 [chromium] › e2e/auth/registration.spec.ts:277:7 › User Registration Flow › should handle long email addresses correctly (retry #2) (362ms)
+  ✘  82 [chromium] › e2e/auth/registration.spec.ts:289:7 › User Registration Flow › should trim whitespace from email input (344ms)
+  ✘  83 [chromium] › e2e/auth/registration.spec.ts:289:7 › User Registration Flow › should trim whitespace from email input (retry #1) (384ms)
+  ✘  84 [chromium] › e2e/auth/registration.spec.ts:289:7 › User Registration Flow › should trim whitespace from email input (retry #2) (355ms)
+  ✘  85 [chromium] › e2e/example.spec.ts:4:7 › Example E2E › loads homepage (297ms)
+  ✘  86 [chromium] › e2e/example.spec.ts:4:7 › Example E2E › loads homepage (retry #1) (332ms)
+  ✘  87 [chromium] › e2e/example.spec.ts:4:7 › Example E2E › loads homepage (retry #2) (307ms)
+  ✘  88 [chromium] › e2e/example.spec.ts:9:7 › Example E2E › navigates to register if link exists (303ms)
+  ✘  89 [chromium] › e2e/example.spec.ts:9:7 › Example E2E › navigates to register if link exists (retry #1) (343ms)
+  ✘  90 [chromium] › e2e/example.spec.ts:9:7 › Example E2E › navigates to register if link exists (retry #2) (299ms)
+  ✘  91 [chromium] › e2e/infrastructure/database.spec.ts:28:7 › Database Health and Validation › should return 200 from /health endpoint (371ms)
+  ✘  92 [chromium] › e2e/infrastructure/database.spec.ts:28:7 › Database Health and Validation › should return 200 from /health endpoint (retry #1) (388ms)
+  ✘  93 [chromium] › e2e/infrastructure/database.spec.ts:28:7 › Database Health and Validation › should return 200 from /health endpoint (retry #2) (370ms)
+  ✘  94 [chromium] › e2e/infrastructure/database.spec.ts:43:7 › Database Health and Validation › should return healthy status from /health/database endpoint (370ms)
+  ✘  95 [chromium] › e2e/infrastructure/database.spec.ts:43:7 › Database Health and Validation › should return healthy status from /health/database endpoint (retry #1) (390ms)
+  ✘  96 [chromium] › e2e/infrastructure/database.spec.ts:43:7 › Database Health and Validation › should return healthy status from /health/database endpoint (retry #2) (369ms)
+  ✓  97 [chromium] › e2e/infrastructure/database.spec.ts:60:7 › Database Health and Validation › should have all critical tables created (79ms)
+  ✓  98 [chromium] › e2e/infrastructure/database.spec.ts:94:7 › Database Health and Validation › should have schema_migrations table with correct structure (50ms)
+  ✓  99 [chromium] › e2e/infrastructure/database.spec.ts:121:7 › Database Health and Validation › should have users table with correct schema (51ms)
+  ✓  100 [chromium] › e2e/infrastructure/database.spec.ts:151:7 › Database Health and Validation › should respond to database queries within 100ms (35ms)
+  ✓  101 [chromium] › e2e/infrastructure/database.spec.ts:162:7 › Database Health and Validation › should handle concurrent database connections (88ms)
+  ✓  102 [chromium] › e2e/infrastructure/database.spec.ts:175:7 › Database Health and Validation › should maintain referential integrity between tables (64ms)
+  ✓  103 [chromium] › e2e/infrastructure/database.spec.ts:212:7 › Database Health and Validation › should have proper indexes on critical columns (50ms)
+  ✘  104 [chromium] › e2e/infrastructure/database.spec.ts:240:7 › Database Health and Validation › should handle database connection errors gracefully (351ms)
+  ✘  105 [chromium] › e2e/infrastructure/database.spec.ts:240:7 › Database Health and Validation › should handle database connection errors gracefully (retry #1) (389ms)
+  ✘  106 [chromium] › e2e/infrastructure/database.spec.ts:240:7 › Database Health and Validation › should handle database connection errors gracefully (retry #2) (369ms)
+  ✓  107 [chromium] › e2e/infrastructure/database.spec.ts:254:7 › Database Health and Validation › should have created_at and updated_at timestamps on all tables (90ms)
+  ✓  108 [chromium] › e2e/infrastructure/database.spec.ts:275:7 › Database Health and Validation › should have NOT NULL constraints on critical columns (41ms)
+  1) [chromium] › e2e/auth/login.spec.ts:33:7 › User Login Flow › should successfully login with valid credentials 
+    TypeError: fetch failed
+       at helpers/test-helpers.ts:45
+      43 |   const apiPort = process.env.BACKEND_PORT || '3001'; // Changed from 3000 to 3001 for local E2E
+      44 |   const apiHost = process.env.BACKEND_HOST || 'localhost';
+    > 45 |   const response = await fetch(`http://${apiHost}:${apiPort}/api/auth/register`, {
+         |                    ^
+      46 |     method: 'POST',
+      47 |     headers: { 'Content-Type': 'application/json' },
+      48 |     body: JSON.stringify({ email, password }),
+        at createTestUser (/home/runner/work/st44-home/st44-home/apps/frontend/e2e/helpers/test-helpers.ts:45:20)
+        at /home/runner/work/st44-home/st44-home/apps/frontend/e2e/auth/login.spec.ts:26:5
+    [cause]: AggregateError: 
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/auth-login-User-Login-Flow-5ef4f-ogin-with-valid-credentials-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/auth-login-User-Login-Flow-5ef4f-ogin-with-valid-credentials-chromium/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+    Retry #1 ───────────────────────────────────────────────────────────────────────────────────────
+    TypeError: fetch failed
+       at helpers/test-helpers.ts:45
+      43 |   const apiPort = process.env.BACKEND_PORT || '3001'; // Changed from 3000 to 3001 for local E2E
+      44 |   const apiHost = process.env.BACKEND_HOST || 'localhost';
+    > 45 |   const response = await fetch(`http://${apiHost}:${apiPort}/api/auth/register`, {
+         |                    ^
+      46 |     method: 'POST',
+      47 |     headers: { 'Content-Type': 'application/json' },
+      48 |     body: JSON.stringify({ email, password }),
+        at createTestUser (/home/runner/work/st44-home/st44-home/apps/frontend/e2e/helpers/test-helpers.ts:45:20)
+        at /home/runner/work/st44-home/st44-home/apps/frontend/e2e/auth/login.spec.ts:26:5
+    [cause]: AggregateError: 
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/auth-login-User-Login-Flow-5ef4f-ogin-with-valid-credentials-chromium-retry1/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/auth-login-User-Login-Flow-5ef4f-ogin-with-valid-credentials-chromium-retry1/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/auth-login-User-Login-Flow-5ef4f-ogin-with-valid-credentials-chromium-retry1/trace.zip
+    Usage:
+        npx playwright show-trace test-results/auth-login-User-Login-Flow-5ef4f-ogin-with-valid-credentials-chromium-retry1/trace.zip
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+    Retry #2 ───────────────────────────────────────────────────────────────────────────────────────
+    TypeError: fetch failed
+       at helpers/test-helpers.ts:45
+      43 |   const apiPort = process.env.BACKEND_PORT || '3001'; // Changed from 3000 to 3001 for local E2E
+      44 |   const apiHost = process.env.BACKEND_HOST || 'localhost';
+    > 45 |   const response = await fetch(`http://${apiHost}:${apiPort}/api/auth/register`, {
+         |                    ^
+      46 |     method: 'POST',
+      47 |     headers: { 'Content-Type': 'application/json' },
+      48 |     body: JSON.stringify({ email, password }),
+        at createTestUser (/home/runner/work/st44-home/st44-home/apps/frontend/e2e/helpers/test-helpers.ts:45:20)
+        at /home/runner/work/st44-home/st44-home/apps/frontend/e2e/auth/login.spec.ts:26:5
+    [cause]: AggregateError: 
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/auth-login-User-Login-Flow-5ef4f-ogin-with-valid-credentials-chromium-retry2/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/auth-login-User-Login-Flow-5ef4f-ogin-with-valid-credentials-chromium-retry2/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+  2) [chromium] › e2e/auth/login.spec.ts:46:7 › User Login Flow › should reject login with invalid email 
+    TypeError: fetch failed
+       at helpers/test-helpers.ts:45
+      43 |   const apiPort = process.env.BACKEND_PORT || '3001'; // Changed from 3000 to 3001 for local E2E
+      44 |   const apiHost = process.env.BACKEND_HOST || 'localhost';
+    > 45 |   const response = await fetch(`http://${apiHost}:${apiPort}/api/auth/register`, {
+         |                    ^
+      46 |     method: 'POST',
+      47 |     headers: { 'Content-Type': 'application/json' },
+      48 |     body: JSON.stringify({ email, password }),
+        at createTestUser (/home/runner/work/st44-home/st44-home/apps/frontend/e2e/helpers/test-helpers.ts:45:20)
+        at /home/runner/work/st44-home/st44-home/apps/frontend/e2e/auth/login.spec.ts:26:5
+    [cause]: AggregateError: 
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/auth-login-User-Login-Flow-430fa-ct-login-with-invalid-email-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/auth-login-User-Login-Flow-430fa-ct-login-with-invalid-email-chromium/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+    Retry #1 ───────────────────────────────────────────────────────────────────────────────────────
+    TypeError: fetch failed
+       at helpers/test-helpers.ts:45
+      43 |   const apiPort = process.env.BACKEND_PORT || '3001'; // Changed from 3000 to 3001 for local E2E
+      44 |   const apiHost = process.env.BACKEND_HOST || 'localhost';
+    > 45 |   const response = await fetch(`http://${apiHost}:${apiPort}/api/auth/register`, {
+         |                    ^
+      46 |     method: 'POST',
+      47 |     headers: { 'Content-Type': 'application/json' },
+      48 |     body: JSON.stringify({ email, password }),
+        at createTestUser (/home/runner/work/st44-home/st44-home/apps/frontend/e2e/helpers/test-helpers.ts:45:20)
+        at /home/runner/work/st44-home/st44-home/apps/frontend/e2e/auth/login.spec.ts:26:5
+    [cause]: AggregateError: 
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/auth-login-User-Login-Flow-430fa-ct-login-with-invalid-email-chromium-retry1/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/auth-login-User-Login-Flow-430fa-ct-login-with-invalid-email-chromium-retry1/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/auth-login-User-Login-Flow-430fa-ct-login-with-invalid-email-chromium-retry1/trace.zip
+    Usage:
+        npx playwright show-trace test-results/auth-login-User-Login-Flow-430fa-ct-login-with-invalid-email-chromium-retry1/trace.zip
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+    Retry #2 ───────────────────────────────────────────────────────────────────────────────────────
+    TypeError: fetch failed
+       at helpers/test-helpers.ts:45
+      43 |   const apiPort = process.env.BACKEND_PORT || '3001'; // Changed from 3000 to 3001 for local E2E
+      44 |   const apiHost = process.env.BACKEND_HOST || 'localhost';
+    > 45 |   const response = await fetch(`http://${apiHost}:${apiPort}/api/auth/register`, {
+         |                    ^
+      46 |     method: 'POST',
+      47 |     headers: { 'Content-Type': 'application/json' },
+      48 |     body: JSON.stringify({ email, password }),
+        at createTestUser (/home/runner/work/st44-home/st44-home/apps/frontend/e2e/helpers/test-helpers.ts:45:20)
+        at /home/runner/work/st44-home/st44-home/apps/frontend/e2e/auth/login.spec.ts:26:5
+    [cause]: AggregateError: 
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/auth-login-User-Login-Flow-430fa-ct-login-with-invalid-email-chromium-retry2/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/auth-login-User-Login-Flow-430fa-ct-login-with-invalid-email-chromium-retry2/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+  3) [chromium] › e2e/auth/login.spec.ts:65:7 › User Login Flow › should reject login with wrong password 
+    TypeError: fetch failed
+       at helpers/test-helpers.ts:45
+      43 |   const apiPort = process.env.BACKEND_PORT || '3001'; // Changed from 3000 to 3001 for local E2E
+      44 |   const apiHost = process.env.BACKEND_HOST || 'localhost';
+    > 45 |   const response = await fetch(`http://${apiHost}:${apiPort}/api/auth/register`, {
+         |                    ^
+      46 |     method: 'POST',
+      47 |     headers: { 'Content-Type': 'application/json' },
+      48 |     body: JSON.stringify({ email, password }),
+        at createTestUser (/home/runner/work/st44-home/st44-home/apps/frontend/e2e/helpers/test-helpers.ts:45:20)
+        at /home/runner/work/st44-home/st44-home/apps/frontend/e2e/auth/login.spec.ts:26:5
+    [cause]: AggregateError: 
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/auth-login-User-Login-Flow-abd7f-t-login-with-wrong-password-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/auth-login-User-Login-Flow-abd7f-t-login-with-wrong-password-chromium/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+    Retry #1 ───────────────────────────────────────────────────────────────────────────────────────
+    TypeError: fetch failed
+       at helpers/test-helpers.ts:45
+      43 |   const apiPort = process.env.BACKEND_PORT || '3001'; // Changed from 3000 to 3001 for local E2E
+      44 |   const apiHost = process.env.BACKEND_HOST || 'localhost';
+    > 45 |   const response = await fetch(`http://${apiHost}:${apiPort}/api/auth/register`, {
+         |                    ^
+      46 |     method: 'POST',
+      47 |     headers: { 'Content-Type': 'application/json' },
+      48 |     body: JSON.stringify({ email, password }),
+        at createTestUser (/home/runner/work/st44-home/st44-home/apps/frontend/e2e/helpers/test-helpers.ts:45:20)
+        at /home/runner/work/st44-home/st44-home/apps/frontend/e2e/auth/login.spec.ts:26:5
+    [cause]: AggregateError: 
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/auth-login-User-Login-Flow-abd7f-t-login-with-wrong-password-chromium-retry1/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/auth-login-User-Login-Flow-abd7f-t-login-with-wrong-password-chromium-retry1/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/auth-login-User-Login-Flow-abd7f-t-login-with-wrong-password-chromium-retry1/trace.zip
+    Usage:
+        npx playwright show-trace test-results/auth-login-User-Login-Flow-abd7f-t-login-with-wrong-password-chromium-retry1/trace.zip
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+    Retry #2 ───────────────────────────────────────────────────────────────────────────────────────
+    TypeError: fetch failed
+       at helpers/test-helpers.ts:45
+      43 |   const apiPort = process.env.BACKEND_PORT || '3001'; // Changed from 3000 to 3001 for local E2E
+      44 |   const apiHost = process.env.BACKEND_HOST || 'localhost';
+    > 45 |   const response = await fetch(`http://${apiHost}:${apiPort}/api/auth/register`, {
+         |                    ^
+      46 |     method: 'POST',
+      47 |     headers: { 'Content-Type': 'application/json' },
+      48 |     body: JSON.stringify({ email, password }),
+        at createTestUser (/home/runner/work/st44-home/st44-home/apps/frontend/e2e/helpers/test-helpers.ts:45:20)
+        at /home/runner/work/st44-home/st44-home/apps/frontend/e2e/auth/login.spec.ts:26:5
+    [cause]: AggregateError: 
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/auth-login-User-Login-Flow-abd7f-t-login-with-wrong-password-chromium-retry2/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/auth-login-User-Login-Flow-abd7f-t-login-with-wrong-password-chromium-retry2/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+  4) [chromium] › e2e/auth/login.spec.ts:84:7 › User Login Flow › should store tokens in localStorage when remember me is checked 
+    TypeError: fetch failed
+       at helpers/test-helpers.ts:45
+      43 |   const apiPort = process.env.BACKEND_PORT || '3001'; // Changed from 3000 to 3001 for local E2E
+      44 |   const apiHost = process.env.BACKEND_HOST || 'localhost';
+    > 45 |   const response = await fetch(`http://${apiHost}:${apiPort}/api/auth/register`, {
+         |                    ^
+      46 |     method: 'POST',
+      47 |     headers: { 'Content-Type': 'application/json' },
+      48 |     body: JSON.stringify({ email, password }),
+        at createTestUser (/home/runner/work/st44-home/st44-home/apps/frontend/e2e/helpers/test-helpers.ts:45:20)
+        at /home/runner/work/st44-home/st44-home/apps/frontend/e2e/auth/login.spec.ts:26:5
+    [cause]: AggregateError: 
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/auth-login-User-Login-Flow-90ac4-when-remember-me-is-checked-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/auth-login-User-Login-Flow-90ac4-when-remember-me-is-checked-chromium/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+    Retry #1 ───────────────────────────────────────────────────────────────────────────────────────
+    TypeError: fetch failed
+       at helpers/test-helpers.ts:45
+      43 |   const apiPort = process.env.BACKEND_PORT || '3001'; // Changed from 3000 to 3001 for local E2E
+      44 |   const apiHost = process.env.BACKEND_HOST || 'localhost';
+    > 45 |   const response = await fetch(`http://${apiHost}:${apiPort}/api/auth/register`, {
+         |                    ^
+      46 |     method: 'POST',
+      47 |     headers: { 'Content-Type': 'application/json' },
+      48 |     body: JSON.stringify({ email, password }),
+        at createTestUser (/home/runner/work/st44-home/st44-home/apps/frontend/e2e/helpers/test-helpers.ts:45:20)
+        at /home/runner/work/st44-home/st44-home/apps/frontend/e2e/auth/login.spec.ts:26:5
+    [cause]: AggregateError: 
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/auth-login-User-Login-Flow-90ac4-when-remember-me-is-checked-chromium-retry1/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/auth-login-User-Login-Flow-90ac4-when-remember-me-is-checked-chromium-retry1/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/auth-login-User-Login-Flow-90ac4-when-remember-me-is-checked-chromium-retry1/trace.zip
+    Usage:
+        npx playwright show-trace test-results/auth-login-User-Login-Flow-90ac4-when-remember-me-is-checked-chromium-retry1/trace.zip
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+    Retry #2 ───────────────────────────────────────────────────────────────────────────────────────
+    TypeError: fetch failed
+       at helpers/test-helpers.ts:45
+      43 |   const apiPort = process.env.BACKEND_PORT || '3001'; // Changed from 3000 to 3001 for local E2E
+      44 |   const apiHost = process.env.BACKEND_HOST || 'localhost';
+    > 45 |   const response = await fetch(`http://${apiHost}:${apiPort}/api/auth/register`, {
+         |                    ^
+      46 |     method: 'POST',
+      47 |     headers: { 'Content-Type': 'application/json' },
+      48 |     body: JSON.stringify({ email, password }),
+        at createTestUser (/home/runner/work/st44-home/st44-home/apps/frontend/e2e/helpers/test-helpers.ts:45:20)
+        at /home/runner/work/st44-home/st44-home/apps/frontend/e2e/auth/login.spec.ts:26:5
+    [cause]: AggregateError: 
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/auth-login-User-Login-Flow-90ac4-when-remember-me-is-checked-chromium-retry2/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/auth-login-User-Login-Flow-90ac4-when-remember-me-is-checked-chromium-retry2/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+  5) [chromium] › e2e/auth/login.spec.ts:101:7 › User Login Flow › should store tokens in sessionStorage when remember me is not checked 
+    TypeError: fetch failed
+       at helpers/test-helpers.ts:45
+      43 |   const apiPort = process.env.BACKEND_PORT || '3001'; // Changed from 3000 to 3001 for local E2E
+      44 |   const apiHost = process.env.BACKEND_HOST || 'localhost';
+    > 45 |   const response = await fetch(`http://${apiHost}:${apiPort}/api/auth/register`, {
+         |                    ^
+      46 |     method: 'POST',
+      47 |     headers: { 'Content-Type': 'application/json' },
+      48 |     body: JSON.stringify({ email, password }),
+        at createTestUser (/home/runner/work/st44-home/st44-home/apps/frontend/e2e/helpers/test-helpers.ts:45:20)
+        at /home/runner/work/st44-home/st44-home/apps/frontend/e2e/auth/login.spec.ts:26:5
+    [cause]: AggregateError: 
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/auth-login-User-Login-Flow-22cb7--remember-me-is-not-checked-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/auth-login-User-Login-Flow-22cb7--remember-me-is-not-checked-chromium/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+    Retry #1 ───────────────────────────────────────────────────────────────────────────────────────
+    TypeError: fetch failed
+       at helpers/test-helpers.ts:45
+      43 |   const apiPort = process.env.BACKEND_PORT || '3001'; // Changed from 3000 to 3001 for local E2E
+      44 |   const apiHost = process.env.BACKEND_HOST || 'localhost';
+    > 45 |   const response = await fetch(`http://${apiHost}:${apiPort}/api/auth/register`, {
+         |                    ^
+      46 |     method: 'POST',
+      47 |     headers: { 'Content-Type': 'application/json' },
+      48 |     body: JSON.stringify({ email, password }),
+        at createTestUser (/home/runner/work/st44-home/st44-home/apps/frontend/e2e/helpers/test-helpers.ts:45:20)
+        at /home/runner/work/st44-home/st44-home/apps/frontend/e2e/auth/login.spec.ts:26:5
+    [cause]: AggregateError: 
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/auth-login-User-Login-Flow-22cb7--remember-me-is-not-checked-chromium-retry1/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/auth-login-User-Login-Flow-22cb7--remember-me-is-not-checked-chromium-retry1/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/auth-login-User-Login-Flow-22cb7--remember-me-is-not-checked-chromium-retry1/trace.zip
+    Usage:
+        npx playwright show-trace test-results/auth-login-User-Login-Flow-22cb7--remember-me-is-not-checked-chromium-retry1/trace.zip
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+    Retry #2 ───────────────────────────────────────────────────────────────────────────────────────
+    TypeError: fetch failed
+       at helpers/test-helpers.ts:45
+      43 |   const apiPort = process.env.BACKEND_PORT || '3001'; // Changed from 3000 to 3001 for local E2E
+      44 |   const apiHost = process.env.BACKEND_HOST || 'localhost';
+    > 45 |   const response = await fetch(`http://${apiHost}:${apiPort}/api/auth/register`, {
+         |                    ^
+      46 |     method: 'POST',
+      47 |     headers: { 'Content-Type': 'application/json' },
+      48 |     body: JSON.stringify({ email, password }),
+        at createTestUser (/home/runner/work/st44-home/st44-home/apps/frontend/e2e/helpers/test-helpers.ts:45:20)
+        at /home/runner/work/st44-home/st44-home/apps/frontend/e2e/auth/login.spec.ts:26:5
+    [cause]: AggregateError: 
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/auth-login-User-Login-Flow-22cb7--remember-me-is-not-checked-chromium-retry2/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/auth-login-User-Login-Flow-22cb7--remember-me-is-not-checked-chromium-retry2/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+  6) [chromium] › e2e/auth/login.spec.ts:120:7 › User Login Flow › should toggle password visibility 
+    TypeError: fetch failed
+       at helpers/test-helpers.ts:45
+      43 |   const apiPort = process.env.BACKEND_PORT || '3001'; // Changed from 3000 to 3001 for local E2E
+      44 |   const apiHost = process.env.BACKEND_HOST || 'localhost';
+    > 45 |   const response = await fetch(`http://${apiHost}:${apiPort}/api/auth/register`, {
+         |                    ^
+      46 |     method: 'POST',
+      47 |     headers: { 'Content-Type': 'application/json' },
+      48 |     body: JSON.stringify({ email, password }),
+        at createTestUser (/home/runner/work/st44-home/st44-home/apps/frontend/e2e/helpers/test-helpers.ts:45:20)
+        at /home/runner/work/st44-home/st44-home/apps/frontend/e2e/auth/login.spec.ts:26:5
+    [cause]: AggregateError: 
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/auth-login-User-Login-Flow-should-toggle-password-visibility-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/auth-login-User-Login-Flow-should-toggle-password-visibility-chromium/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+    Retry #1 ───────────────────────────────────────────────────────────────────────────────────────
+    TypeError: fetch failed
+       at helpers/test-helpers.ts:45
+      43 |   const apiPort = process.env.BACKEND_PORT || '3001'; // Changed from 3000 to 3001 for local E2E
+      44 |   const apiHost = process.env.BACKEND_HOST || 'localhost';
+    > 45 |   const response = await fetch(`http://${apiHost}:${apiPort}/api/auth/register`, {
+         |                    ^
+      46 |     method: 'POST',
+      47 |     headers: { 'Content-Type': 'application/json' },
+      48 |     body: JSON.stringify({ email, password }),
+        at createTestUser (/home/runner/work/st44-home/st44-home/apps/frontend/e2e/helpers/test-helpers.ts:45:20)
+        at /home/runner/work/st44-home/st44-home/apps/frontend/e2e/auth/login.spec.ts:26:5
+    [cause]: AggregateError: 
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/auth-login-User-Login-Flow-should-toggle-password-visibility-chromium-retry1/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/auth-login-User-Login-Flow-should-toggle-password-visibility-chromium-retry1/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/auth-login-User-Login-Flow-should-toggle-password-visibility-chromium-retry1/trace.zip
+    Usage:
+        npx playwright show-trace test-results/auth-login-User-Login-Flow-should-toggle-password-visibility-chromium-retry1/trace.zip
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+    Retry #2 ───────────────────────────────────────────────────────────────────────────────────────
+    TypeError: fetch failed
+       at helpers/test-helpers.ts:45
+      43 |   const apiPort = process.env.BACKEND_PORT || '3001'; // Changed from 3000 to 3001 for local E2E
+      44 |   const apiHost = process.env.BACKEND_HOST || 'localhost';
+    > 45 |   const response = await fetch(`http://${apiHost}:${apiPort}/api/auth/register`, {
+         |                    ^
+      46 |     method: 'POST',
+      47 |     headers: { 'Content-Type': 'application/json' },
+      48 |     body: JSON.stringify({ email, password }),
+        at createTestUser (/home/runner/work/st44-home/st44-home/apps/frontend/e2e/helpers/test-helpers.ts:45:20)
+        at /home/runner/work/st44-home/st44-home/apps/frontend/e2e/auth/login.spec.ts:26:5
+    [cause]: AggregateError: 
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/auth-login-User-Login-Flow-should-toggle-password-visibility-chromium-retry2/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/auth-login-User-Login-Flow-should-toggle-password-visibility-chromium-retry2/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+  7) [chromium] › e2e/auth/login.spec.ts:154:7 › User Login Flow › should handle return URL redirect after login 
+    TypeError: fetch failed
+       at helpers/test-helpers.ts:45
+      43 |   const apiPort = process.env.BACKEND_PORT || '3001'; // Changed from 3000 to 3001 for local E2E
+      44 |   const apiHost = process.env.BACKEND_HOST || 'localhost';
+    > 45 |   const response = await fetch(`http://${apiHost}:${apiPort}/api/auth/register`, {
+         |                    ^
+      46 |     method: 'POST',
+      47 |     headers: { 'Content-Type': 'application/json' },
+      48 |     body: JSON.stringify({ email, password }),
+        at createTestUser (/home/runner/work/st44-home/st44-home/apps/frontend/e2e/helpers/test-helpers.ts:45:20)
+        at /home/runner/work/st44-home/st44-home/apps/frontend/e2e/auth/login.spec.ts:26:5
+    [cause]: AggregateError: 
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/auth-login-User-Login-Flow-4d4fa-rn-URL-redirect-after-login-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/auth-login-User-Login-Flow-4d4fa-rn-URL-redirect-after-login-chromium/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+    Retry #1 ───────────────────────────────────────────────────────────────────────────────────────
+    TypeError: fetch failed
+       at helpers/test-helpers.ts:45
+      43 |   const apiPort = process.env.BACKEND_PORT || '3001'; // Changed from 3000 to 3001 for local E2E
+      44 |   const apiHost = process.env.BACKEND_HOST || 'localhost';
+    > 45 |   const response = await fetch(`http://${apiHost}:${apiPort}/api/auth/register`, {
+         |                    ^
+      46 |     method: 'POST',
+      47 |     headers: { 'Content-Type': 'application/json' },
+      48 |     body: JSON.stringify({ email, password }),
+        at createTestUser (/home/runner/work/st44-home/st44-home/apps/frontend/e2e/helpers/test-helpers.ts:45:20)
+        at /home/runner/work/st44-home/st44-home/apps/frontend/e2e/auth/login.spec.ts:26:5
+    [cause]: AggregateError: 
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/auth-login-User-Login-Flow-4d4fa-rn-URL-redirect-after-login-chromium-retry1/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/auth-login-User-Login-Flow-4d4fa-rn-URL-redirect-after-login-chromium-retry1/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/auth-login-User-Login-Flow-4d4fa-rn-URL-redirect-after-login-chromium-retry1/trace.zip
+    Usage:
+        npx playwright show-trace test-results/auth-login-User-Login-Flow-4d4fa-rn-URL-redirect-after-login-chromium-retry1/trace.zip
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+    Retry #2 ───────────────────────────────────────────────────────────────────────────────────────
+    TypeError: fetch failed
+       at helpers/test-helpers.ts:45
+      43 |   const apiPort = process.env.BACKEND_PORT || '3001'; // Changed from 3000 to 3001 for local E2E
+      44 |   const apiHost = process.env.BACKEND_HOST || 'localhost';
+    > 45 |   const response = await fetch(`http://${apiHost}:${apiPort}/api/auth/register`, {
+         |                    ^
+      46 |     method: 'POST',
+      47 |     headers: { 'Content-Type': 'application/json' },
+      48 |     body: JSON.stringify({ email, password }),
+        at createTestUser (/home/runner/work/st44-home/st44-home/apps/frontend/e2e/helpers/test-helpers.ts:45:20)
+        at /home/runner/work/st44-home/st44-home/apps/frontend/e2e/auth/login.spec.ts:26:5
+    [cause]: AggregateError: 
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/auth-login-User-Login-Flow-4d4fa-rn-URL-redirect-after-login-chromium-retry2/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/auth-login-User-Login-Flow-4d4fa-rn-URL-redirect-after-login-chromium-retry2/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+  8) [chromium] › e2e/auth/login.spec.ts:170:7 › User Login Flow › should store both access and refresh tokens 
+    TypeError: fetch failed
+       at helpers/test-helpers.ts:45
+      43 |   const apiPort = process.env.BACKEND_PORT || '3001'; // Changed from 3000 to 3001 for local E2E
+      44 |   const apiHost = process.env.BACKEND_HOST || 'localhost';
+    > 45 |   const response = await fetch(`http://${apiHost}:${apiPort}/api/auth/register`, {
+         |                    ^
+      46 |     method: 'POST',
+      47 |     headers: { 'Content-Type': 'application/json' },
+      48 |     body: JSON.stringify({ email, password }),
+        at createTestUser (/home/runner/work/st44-home/st44-home/apps/frontend/e2e/helpers/test-helpers.ts:45:20)
+        at /home/runner/work/st44-home/st44-home/apps/frontend/e2e/auth/login.spec.ts:26:5
+    [cause]: AggregateError: 
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/auth-login-User-Login-Flow-f747f-h-access-and-refresh-tokens-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/auth-login-User-Login-Flow-f747f-h-access-and-refresh-tokens-chromium/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+    Retry #1 ───────────────────────────────────────────────────────────────────────────────────────
+    TypeError: fetch failed
+       at helpers/test-helpers.ts:45
+      43 |   const apiPort = process.env.BACKEND_PORT || '3001'; // Changed from 3000 to 3001 for local E2E
+      44 |   const apiHost = process.env.BACKEND_HOST || 'localhost';
+    > 45 |   const response = await fetch(`http://${apiHost}:${apiPort}/api/auth/register`, {
+         |                    ^
+      46 |     method: 'POST',
+      47 |     headers: { 'Content-Type': 'application/json' },
+      48 |     body: JSON.stringify({ email, password }),
+        at createTestUser (/home/runner/work/st44-home/st44-home/apps/frontend/e2e/helpers/test-helpers.ts:45:20)
+        at /home/runner/work/st44-home/st44-home/apps/frontend/e2e/auth/login.spec.ts:26:5
+    [cause]: AggregateError: 
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/auth-login-User-Login-Flow-f747f-h-access-and-refresh-tokens-chromium-retry1/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/auth-login-User-Login-Flow-f747f-h-access-and-refresh-tokens-chromium-retry1/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/auth-login-User-Login-Flow-f747f-h-access-and-refresh-tokens-chromium-retry1/trace.zip
+    Usage:
+        npx playwright show-trace test-results/auth-login-User-Login-Flow-f747f-h-access-and-refresh-tokens-chromium-retry1/trace.zip
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+    Retry #2 ───────────────────────────────────────────────────────────────────────────────────────
+    TypeError: fetch failed
+       at helpers/test-helpers.ts:45
+      43 |   const apiPort = process.env.BACKEND_PORT || '3001'; // Changed from 3000 to 3001 for local E2E
+      44 |   const apiHost = process.env.BACKEND_HOST || 'localhost';
+    > 45 |   const response = await fetch(`http://${apiHost}:${apiPort}/api/auth/register`, {
+         |                    ^
+      46 |     method: 'POST',
+      47 |     headers: { 'Content-Type': 'application/json' },
+      48 |     body: JSON.stringify({ email, password }),
+        at createTestUser (/home/runner/work/st44-home/st44-home/apps/frontend/e2e/helpers/test-helpers.ts:45:20)
+        at /home/runner/work/st44-home/st44-home/apps/frontend/e2e/auth/login.spec.ts:26:5
+    [cause]: AggregateError: 
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/auth-login-User-Login-Flow-f747f-h-access-and-refresh-tokens-chromium-retry2/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/auth-login-User-Login-Flow-f747f-h-access-and-refresh-tokens-chromium-retry2/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+  9) [chromium] › e2e/auth/login.spec.ts:190:7 › User Login Flow › should redirect to home page after successful login 
+    TypeError: fetch failed
+       at helpers/test-helpers.ts:45
+      43 |   const apiPort = process.env.BACKEND_PORT || '3001'; // Changed from 3000 to 3001 for local E2E
+      44 |   const apiHost = process.env.BACKEND_HOST || 'localhost';
+    > 45 |   const response = await fetch(`http://${apiHost}:${apiPort}/api/auth/register`, {
+         |                    ^
+      46 |     method: 'POST',
+      47 |     headers: { 'Content-Type': 'application/json' },
+      48 |     body: JSON.stringify({ email, password }),
+        at createTestUser (/home/runner/work/st44-home/st44-home/apps/frontend/e2e/helpers/test-helpers.ts:45:20)
+        at /home/runner/work/st44-home/st44-home/apps/frontend/e2e/auth/login.spec.ts:26:5
+    [cause]: AggregateError: 
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/auth-login-User-Login-Flow-92446-page-after-successful-login-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/auth-login-User-Login-Flow-92446-page-after-successful-login-chromium/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+    Retry #1 ───────────────────────────────────────────────────────────────────────────────────────
+    TypeError: fetch failed
+       at helpers/test-helpers.ts:45
+      43 |   const apiPort = process.env.BACKEND_PORT || '3001'; // Changed from 3000 to 3001 for local E2E
+      44 |   const apiHost = process.env.BACKEND_HOST || 'localhost';
+    > 45 |   const response = await fetch(`http://${apiHost}:${apiPort}/api/auth/register`, {
+         |                    ^
+      46 |     method: 'POST',
+      47 |     headers: { 'Content-Type': 'application/json' },
+      48 |     body: JSON.stringify({ email, password }),
+        at createTestUser (/home/runner/work/st44-home/st44-home/apps/frontend/e2e/helpers/test-helpers.ts:45:20)
+        at /home/runner/work/st44-home/st44-home/apps/frontend/e2e/auth/login.spec.ts:26:5
+    [cause]: AggregateError: 
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/auth-login-User-Login-Flow-92446-page-after-successful-login-chromium-retry1/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/auth-login-User-Login-Flow-92446-page-after-successful-login-chromium-retry1/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/auth-login-User-Login-Flow-92446-page-after-successful-login-chromium-retry1/trace.zip
+    Usage:
+        npx playwright show-trace test-results/auth-login-User-Login-Flow-92446-page-after-successful-login-chromium-retry1/trace.zip
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+    Retry #2 ───────────────────────────────────────────────────────────────────────────────────────
+    TypeError: fetch failed
+       at helpers/test-helpers.ts:45
+      43 |   const apiPort = process.env.BACKEND_PORT || '3001'; // Changed from 3000 to 3001 for local E2E
+      44 |   const apiHost = process.env.BACKEND_HOST || 'localhost';
+    > 45 |   const response = await fetch(`http://${apiHost}:${apiPort}/api/auth/register`, {
+         |                    ^
+      46 |     method: 'POST',
+      47 |     headers: { 'Content-Type': 'application/json' },
+      48 |     body: JSON.stringify({ email, password }),
+        at createTestUser (/home/runner/work/st44-home/st44-home/apps/frontend/e2e/helpers/test-helpers.ts:45:20)
+        at /home/runner/work/st44-home/st44-home/apps/frontend/e2e/auth/login.spec.ts:26:5
+    [cause]: AggregateError: 
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/auth-login-User-Login-Flow-92446-page-after-successful-login-chromium-retry2/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/auth-login-User-Login-Flow-92446-page-after-successful-login-chromium-retry2/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+  10) [chromium] › e2e/auth/login.spec.ts:205:7 › User Login Flow › should prevent login with empty email 
+    TypeError: fetch failed
+       at helpers/test-helpers.ts:45
+      43 |   const apiPort = process.env.BACKEND_PORT || '3001'; // Changed from 3000 to 3001 for local E2E
+      44 |   const apiHost = process.env.BACKEND_HOST || 'localhost';
+    > 45 |   const response = await fetch(`http://${apiHost}:${apiPort}/api/auth/register`, {
+         |                    ^
+      46 |     method: 'POST',
+      47 |     headers: { 'Content-Type': 'application/json' },
+      48 |     body: JSON.stringify({ email, password }),
+        at createTestUser (/home/runner/work/st44-home/st44-home/apps/frontend/e2e/helpers/test-helpers.ts:45:20)
+        at /home/runner/work/st44-home/st44-home/apps/frontend/e2e/auth/login.spec.ts:26:5
+    [cause]: AggregateError: 
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/auth-login-User-Login-Flow-13a12-vent-login-with-empty-email-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/auth-login-User-Login-Flow-13a12-vent-login-with-empty-email-chromium/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+    Retry #1 ───────────────────────────────────────────────────────────────────────────────────────
+    TypeError: fetch failed
+       at helpers/test-helpers.ts:45
+      43 |   const apiPort = process.env.BACKEND_PORT || '3001'; // Changed from 3000 to 3001 for local E2E
+      44 |   const apiHost = process.env.BACKEND_HOST || 'localhost';
+    > 45 |   const response = await fetch(`http://${apiHost}:${apiPort}/api/auth/register`, {
+         |                    ^
+      46 |     method: 'POST',
+      47 |     headers: { 'Content-Type': 'application/json' },
+      48 |     body: JSON.stringify({ email, password }),
+        at createTestUser (/home/runner/work/st44-home/st44-home/apps/frontend/e2e/helpers/test-helpers.ts:45:20)
+        at /home/runner/work/st44-home/st44-home/apps/frontend/e2e/auth/login.spec.ts:26:5
+    [cause]: AggregateError: 
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/auth-login-User-Login-Flow-13a12-vent-login-with-empty-email-chromium-retry1/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/auth-login-User-Login-Flow-13a12-vent-login-with-empty-email-chromium-retry1/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/auth-login-User-Login-Flow-13a12-vent-login-with-empty-email-chromium-retry1/trace.zip
+    Usage:
+        npx playwright show-trace test-results/auth-login-User-Login-Flow-13a12-vent-login-with-empty-email-chromium-retry1/trace.zip
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+    Retry #2 ───────────────────────────────────────────────────────────────────────────────────────
+    TypeError: fetch failed
+       at helpers/test-helpers.ts:45
+      43 |   const apiPort = process.env.BACKEND_PORT || '3001'; // Changed from 3000 to 3001 for local E2E
+      44 |   const apiHost = process.env.BACKEND_HOST || 'localhost';
+    > 45 |   const response = await fetch(`http://${apiHost}:${apiPort}/api/auth/register`, {
+         |                    ^
+      46 |     method: 'POST',
+      47 |     headers: { 'Content-Type': 'application/json' },
+      48 |     body: JSON.stringify({ email, password }),
+        at createTestUser (/home/runner/work/st44-home/st44-home/apps/frontend/e2e/helpers/test-helpers.ts:45:20)
+        at /home/runner/work/st44-home/st44-home/apps/frontend/e2e/auth/login.spec.ts:26:5
+    [cause]: AggregateError: 
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/auth-login-User-Login-Flow-13a12-vent-login-with-empty-email-chromium-retry2/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/auth-login-User-Login-Flow-13a12-vent-login-with-empty-email-chromium-retry2/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+  11) [chromium] › e2e/auth/login.spec.ts:219:7 › User Login Flow › should prevent login with empty password 
+    TypeError: fetch failed
+       at helpers/test-helpers.ts:45
+      43 |   const apiPort = process.env.BACKEND_PORT || '3001'; // Changed from 3000 to 3001 for local E2E
+      44 |   const apiHost = process.env.BACKEND_HOST || 'localhost';
+    > 45 |   const response = await fetch(`http://${apiHost}:${apiPort}/api/auth/register`, {
+         |                    ^
+      46 |     method: 'POST',
+      47 |     headers: { 'Content-Type': 'application/json' },
+      48 |     body: JSON.stringify({ email, password }),
+        at createTestUser (/home/runner/work/st44-home/st44-home/apps/frontend/e2e/helpers/test-helpers.ts:45:20)
+        at /home/runner/work/st44-home/st44-home/apps/frontend/e2e/auth/login.spec.ts:26:5
+    [cause]: AggregateError: 
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/auth-login-User-Login-Flow-09ec9-t-login-with-empty-password-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/auth-login-User-Login-Flow-09ec9-t-login-with-empty-password-chromium/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+    Retry #1 ───────────────────────────────────────────────────────────────────────────────────────
+    TypeError: fetch failed
+       at helpers/test-helpers.ts:45
+      43 |   const apiPort = process.env.BACKEND_PORT || '3001'; // Changed from 3000 to 3001 for local E2E
+      44 |   const apiHost = process.env.BACKEND_HOST || 'localhost';
+    > 45 |   const response = await fetch(`http://${apiHost}:${apiPort}/api/auth/register`, {
+         |                    ^
+      46 |     method: 'POST',
+      47 |     headers: { 'Content-Type': 'application/json' },
+      48 |     body: JSON.stringify({ email, password }),
+        at createTestUser (/home/runner/work/st44-home/st44-home/apps/frontend/e2e/helpers/test-helpers.ts:45:20)
+        at /home/runner/work/st44-home/st44-home/apps/frontend/e2e/auth/login.spec.ts:26:5
+    [cause]: AggregateError: 
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/auth-login-User-Login-Flow-09ec9-t-login-with-empty-password-chromium-retry1/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/auth-login-User-Login-Flow-09ec9-t-login-with-empty-password-chromium-retry1/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/auth-login-User-Login-Flow-09ec9-t-login-with-empty-password-chromium-retry1/trace.zip
+    Usage:
+        npx playwright show-trace test-results/auth-login-User-Login-Flow-09ec9-t-login-with-empty-password-chromium-retry1/trace.zip
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+    Retry #2 ───────────────────────────────────────────────────────────────────────────────────────
+    TypeError: fetch failed
+       at helpers/test-helpers.ts:45
+      43 |   const apiPort = process.env.BACKEND_PORT || '3001'; // Changed from 3000 to 3001 for local E2E
+      44 |   const apiHost = process.env.BACKEND_HOST || 'localhost';
+    > 45 |   const response = await fetch(`http://${apiHost}:${apiPort}/api/auth/register`, {
+         |                    ^
+      46 |     method: 'POST',
+      47 |     headers: { 'Content-Type': 'application/json' },
+      48 |     body: JSON.stringify({ email, password }),
+        at createTestUser (/home/runner/work/st44-home/st44-home/apps/frontend/e2e/helpers/test-helpers.ts:45:20)
+        at /home/runner/work/st44-home/st44-home/apps/frontend/e2e/auth/login.spec.ts:26:5
+    [cause]: AggregateError: 
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/auth-login-User-Login-Flow-09ec9-t-login-with-empty-password-chromium-retry2/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/auth-login-User-Login-Flow-09ec9-t-login-with-empty-password-chromium-retry2/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+  12) [chromium] › e2e/auth/login.spec.ts:233:7 › User Login Flow › should navigate to registration page from login 
+    TypeError: fetch failed
+       at helpers/test-helpers.ts:45
+      43 |   const apiPort = process.env.BACKEND_PORT || '3001'; // Changed from 3000 to 3001 for local E2E
+      44 |   const apiHost = process.env.BACKEND_HOST || 'localhost';
+    > 45 |   const response = await fetch(`http://${apiHost}:${apiPort}/api/auth/register`, {
+         |                    ^
+      46 |     method: 'POST',
+      47 |     headers: { 'Content-Type': 'application/json' },
+      48 |     body: JSON.stringify({ email, password }),
+        at createTestUser (/home/runner/work/st44-home/st44-home/apps/frontend/e2e/helpers/test-helpers.ts:45:20)
+        at /home/runner/work/st44-home/st44-home/apps/frontend/e2e/auth/login.spec.ts:26:5
+    [cause]: AggregateError: 
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/auth-login-User-Login-Flow-3b280-egistration-page-from-login-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/auth-login-User-Login-Flow-3b280-egistration-page-from-login-chromium/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+    Retry #1 ───────────────────────────────────────────────────────────────────────────────────────
+    TypeError: fetch failed
+       at helpers/test-helpers.ts:45
+      43 |   const apiPort = process.env.BACKEND_PORT || '3001'; // Changed from 3000 to 3001 for local E2E
+      44 |   const apiHost = process.env.BACKEND_HOST || 'localhost';
+    > 45 |   const response = await fetch(`http://${apiHost}:${apiPort}/api/auth/register`, {
+         |                    ^
+      46 |     method: 'POST',
+      47 |     headers: { 'Content-Type': 'application/json' },
+      48 |     body: JSON.stringify({ email, password }),
+        at createTestUser (/home/runner/work/st44-home/st44-home/apps/frontend/e2e/helpers/test-helpers.ts:45:20)
+        at /home/runner/work/st44-home/st44-home/apps/frontend/e2e/auth/login.spec.ts:26:5
+    [cause]: AggregateError: 
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/auth-login-User-Login-Flow-3b280-egistration-page-from-login-chromium-retry1/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/auth-login-User-Login-Flow-3b280-egistration-page-from-login-chromium-retry1/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/auth-login-User-Login-Flow-3b280-egistration-page-from-login-chromium-retry1/trace.zip
+    Usage:
+        npx playwright show-trace test-results/auth-login-User-Login-Flow-3b280-egistration-page-from-login-chromium-retry1/trace.zip
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+    Retry #2 ───────────────────────────────────────────────────────────────────────────────────────
+    TypeError: fetch failed
+       at helpers/test-helpers.ts:45
+      43 |   const apiPort = process.env.BACKEND_PORT || '3001'; // Changed from 3000 to 3001 for local E2E
+      44 |   const apiHost = process.env.BACKEND_HOST || 'localhost';
+    > 45 |   const response = await fetch(`http://${apiHost}:${apiPort}/api/auth/register`, {
+         |                    ^
+      46 |     method: 'POST',
+      47 |     headers: { 'Content-Type': 'application/json' },
+      48 |     body: JSON.stringify({ email, password }),
+        at createTestUser (/home/runner/work/st44-home/st44-home/apps/frontend/e2e/helpers/test-helpers.ts:45:20)
+        at /home/runner/work/st44-home/st44-home/apps/frontend/e2e/auth/login.spec.ts:26:5
+    [cause]: AggregateError: 
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/auth-login-User-Login-Flow-3b280-egistration-page-from-login-chromium-retry2/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/auth-login-User-Login-Flow-3b280-egistration-page-from-login-chromium-retry2/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+  13) [chromium] › e2e/auth/login.spec.ts:243:7 › User Login Flow › should handle special characters in email correctly 
+    TypeError: fetch failed
+       at helpers/test-helpers.ts:45
+      43 |   const apiPort = process.env.BACKEND_PORT || '3001'; // Changed from 3000 to 3001 for local E2E
+      44 |   const apiHost = process.env.BACKEND_HOST || 'localhost';
+    > 45 |   const response = await fetch(`http://${apiHost}:${apiPort}/api/auth/register`, {
+         |                    ^
+      46 |     method: 'POST',
+      47 |     headers: { 'Content-Type': 'application/json' },
+      48 |     body: JSON.stringify({ email, password }),
+        at createTestUser (/home/runner/work/st44-home/st44-home/apps/frontend/e2e/helpers/test-helpers.ts:45:20)
+        at /home/runner/work/st44-home/st44-home/apps/frontend/e2e/auth/login.spec.ts:26:5
+    [cause]: AggregateError: 
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/auth-login-User-Login-Flow-4e61e-aracters-in-email-correctly-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/auth-login-User-Login-Flow-4e61e-aracters-in-email-correctly-chromium/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+    Retry #1 ───────────────────────────────────────────────────────────────────────────────────────
+    TypeError: fetch failed
+       at helpers/test-helpers.ts:45
+      43 |   const apiPort = process.env.BACKEND_PORT || '3001'; // Changed from 3000 to 3001 for local E2E
+      44 |   const apiHost = process.env.BACKEND_HOST || 'localhost';
+    > 45 |   const response = await fetch(`http://${apiHost}:${apiPort}/api/auth/register`, {
+         |                    ^
+      46 |     method: 'POST',
+      47 |     headers: { 'Content-Type': 'application/json' },
+      48 |     body: JSON.stringify({ email, password }),
+        at createTestUser (/home/runner/work/st44-home/st44-home/apps/frontend/e2e/helpers/test-helpers.ts:45:20)
+        at /home/runner/work/st44-home/st44-home/apps/frontend/e2e/auth/login.spec.ts:26:5
+    [cause]: AggregateError: 
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/auth-login-User-Login-Flow-4e61e-aracters-in-email-correctly-chromium-retry1/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/auth-login-User-Login-Flow-4e61e-aracters-in-email-correctly-chromium-retry1/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/auth-login-User-Login-Flow-4e61e-aracters-in-email-correctly-chromium-retry1/trace.zip
+    Usage:
+        npx playwright show-trace test-results/auth-login-User-Login-Flow-4e61e-aracters-in-email-correctly-chromium-retry1/trace.zip
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+    Retry #2 ───────────────────────────────────────────────────────────────────────────────────────
+    TypeError: fetch failed
+       at helpers/test-helpers.ts:45
+      43 |   const apiPort = process.env.BACKEND_PORT || '3001'; // Changed from 3000 to 3001 for local E2E
+      44 |   const apiHost = process.env.BACKEND_HOST || 'localhost';
+    > 45 |   const response = await fetch(`http://${apiHost}:${apiPort}/api/auth/register`, {
+         |                    ^
+      46 |     method: 'POST',
+      47 |     headers: { 'Content-Type': 'application/json' },
+      48 |     body: JSON.stringify({ email, password }),
+        at createTestUser (/home/runner/work/st44-home/st44-home/apps/frontend/e2e/helpers/test-helpers.ts:45:20)
+        at /home/runner/work/st44-home/st44-home/apps/frontend/e2e/auth/login.spec.ts:26:5
+    [cause]: AggregateError: 
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/auth-login-User-Login-Flow-4e61e-aracters-in-email-correctly-chromium-retry2/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/auth-login-User-Login-Flow-4e61e-aracters-in-email-correctly-chromium-retry2/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+  14) [chromium] › e2e/auth/login.spec.ts:259:7 › User Login Flow › should be case-sensitive for password 
+    TypeError: fetch failed
+       at helpers/test-helpers.ts:45
+      43 |   const apiPort = process.env.BACKEND_PORT || '3001'; // Changed from 3000 to 3001 for local E2E
+      44 |   const apiHost = process.env.BACKEND_HOST || 'localhost';
+    > 45 |   const response = await fetch(`http://${apiHost}:${apiPort}/api/auth/register`, {
+         |                    ^
+      46 |     method: 'POST',
+      47 |     headers: { 'Content-Type': 'application/json' },
+      48 |     body: JSON.stringify({ email, password }),
+        at createTestUser (/home/runner/work/st44-home/st44-home/apps/frontend/e2e/helpers/test-helpers.ts:45:20)
+        at /home/runner/work/st44-home/st44-home/apps/frontend/e2e/auth/login.spec.ts:26:5
+    [cause]: AggregateError: 
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/auth-login-User-Login-Flow-a82c8-case-sensitive-for-password-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/auth-login-User-Login-Flow-a82c8-case-sensitive-for-password-chromium/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+    Retry #1 ───────────────────────────────────────────────────────────────────────────────────────
+    TypeError: fetch failed
+       at helpers/test-helpers.ts:45
+      43 |   const apiPort = process.env.BACKEND_PORT || '3001'; // Changed from 3000 to 3001 for local E2E
+      44 |   const apiHost = process.env.BACKEND_HOST || 'localhost';
+    > 45 |   const response = await fetch(`http://${apiHost}:${apiPort}/api/auth/register`, {
+         |                    ^
+      46 |     method: 'POST',
+      47 |     headers: { 'Content-Type': 'application/json' },
+      48 |     body: JSON.stringify({ email, password }),
+        at createTestUser (/home/runner/work/st44-home/st44-home/apps/frontend/e2e/helpers/test-helpers.ts:45:20)
+        at /home/runner/work/st44-home/st44-home/apps/frontend/e2e/auth/login.spec.ts:26:5
+    [cause]: AggregateError: 
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/auth-login-User-Login-Flow-a82c8-case-sensitive-for-password-chromium-retry1/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/auth-login-User-Login-Flow-a82c8-case-sensitive-for-password-chromium-retry1/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/auth-login-User-Login-Flow-a82c8-case-sensitive-for-password-chromium-retry1/trace.zip
+    Usage:
+        npx playwright show-trace test-results/auth-login-User-Login-Flow-a82c8-case-sensitive-for-password-chromium-retry1/trace.zip
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+    Retry #2 ───────────────────────────────────────────────────────────────────────────────────────
+    TypeError: fetch failed
+       at helpers/test-helpers.ts:45
+      43 |   const apiPort = process.env.BACKEND_PORT || '3001'; // Changed from 3000 to 3001 for local E2E
+      44 |   const apiHost = process.env.BACKEND_HOST || 'localhost';
+    > 45 |   const response = await fetch(`http://${apiHost}:${apiPort}/api/auth/register`, {
+         |                    ^
+      46 |     method: 'POST',
+      47 |     headers: { 'Content-Type': 'application/json' },
+      48 |     body: JSON.stringify({ email, password }),
+        at createTestUser (/home/runner/work/st44-home/st44-home/apps/frontend/e2e/helpers/test-helpers.ts:45:20)
+        at /home/runner/work/st44-home/st44-home/apps/frontend/e2e/auth/login.spec.ts:26:5
+    [cause]: AggregateError: 
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/auth-login-User-Login-Flow-a82c8-case-sensitive-for-password-chromium-retry2/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/auth-login-User-Login-Flow-a82c8-case-sensitive-for-password-chromium-retry2/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+  15) [chromium] › e2e/auth/login.spec.ts:271:7 › User Login Flow › should handle rapid login attempts gracefully 
+    TypeError: fetch failed
+       at helpers/test-helpers.ts:45
+      43 |   const apiPort = process.env.BACKEND_PORT || '3001'; // Changed from 3000 to 3001 for local E2E
+      44 |   const apiHost = process.env.BACKEND_HOST || 'localhost';
+    > 45 |   const response = await fetch(`http://${apiHost}:${apiPort}/api/auth/register`, {
+         |                    ^
+      46 |     method: 'POST',
+      47 |     headers: { 'Content-Type': 'application/json' },
+      48 |     body: JSON.stringify({ email, password }),
+        at createTestUser (/home/runner/work/st44-home/st44-home/apps/frontend/e2e/helpers/test-helpers.ts:45:20)
+        at /home/runner/work/st44-home/st44-home/apps/frontend/e2e/auth/login.spec.ts:26:5
+    [cause]: AggregateError: 
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/auth-login-User-Login-Flow-ac604-d-login-attempts-gracefully-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/auth-login-User-Login-Flow-ac604-d-login-attempts-gracefully-chromium/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+    Retry #1 ───────────────────────────────────────────────────────────────────────────────────────
+    TypeError: fetch failed
+       at helpers/test-helpers.ts:45
+      43 |   const apiPort = process.env.BACKEND_PORT || '3001'; // Changed from 3000 to 3001 for local E2E
+      44 |   const apiHost = process.env.BACKEND_HOST || 'localhost';
+    > 45 |   const response = await fetch(`http://${apiHost}:${apiPort}/api/auth/register`, {
+         |                    ^
+      46 |     method: 'POST',
+      47 |     headers: { 'Content-Type': 'application/json' },
+      48 |     body: JSON.stringify({ email, password }),
+        at createTestUser (/home/runner/work/st44-home/st44-home/apps/frontend/e2e/helpers/test-helpers.ts:45:20)
+        at /home/runner/work/st44-home/st44-home/apps/frontend/e2e/auth/login.spec.ts:26:5
+    [cause]: AggregateError: 
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/auth-login-User-Login-Flow-ac604-d-login-attempts-gracefully-chromium-retry1/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/auth-login-User-Login-Flow-ac604-d-login-attempts-gracefully-chromium-retry1/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/auth-login-User-Login-Flow-ac604-d-login-attempts-gracefully-chromium-retry1/trace.zip
+    Usage:
+        npx playwright show-trace test-results/auth-login-User-Login-Flow-ac604-d-login-attempts-gracefully-chromium-retry1/trace.zip
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+    Retry #2 ───────────────────────────────────────────────────────────────────────────────────────
+    TypeError: fetch failed
+       at helpers/test-helpers.ts:45
+      43 |   const apiPort = process.env.BACKEND_PORT || '3001'; // Changed from 3000 to 3001 for local E2E
+      44 |   const apiHost = process.env.BACKEND_HOST || 'localhost';
+    > 45 |   const response = await fetch(`http://${apiHost}:${apiPort}/api/auth/register`, {
+         |                    ^
+      46 |     method: 'POST',
+      47 |     headers: { 'Content-Type': 'application/json' },
+      48 |     body: JSON.stringify({ email, password }),
+        at createTestUser (/home/runner/work/st44-home/st44-home/apps/frontend/e2e/helpers/test-helpers.ts:45:20)
+        at /home/runner/work/st44-home/st44-home/apps/frontend/e2e/auth/login.spec.ts:26:5
+    [cause]: AggregateError: 
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/auth-login-User-Login-Flow-ac604-d-login-attempts-gracefully-chromium-retry2/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/auth-login-User-Login-Flow-ac604-d-login-attempts-gracefully-chromium-retry2/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+  16) [chromium] › e2e/auth/login.spec.ts:286:7 › User Login Flow › should clear form errors after successful login 
+    TypeError: fetch failed
+       at helpers/test-helpers.ts:45
+      43 |   const apiPort = process.env.BACKEND_PORT || '3001'; // Changed from 3000 to 3001 for local E2E
+      44 |   const apiHost = process.env.BACKEND_HOST || 'localhost';
+    > 45 |   const response = await fetch(`http://${apiHost}:${apiPort}/api/auth/register`, {
+         |                    ^
+      46 |     method: 'POST',
+      47 |     headers: { 'Content-Type': 'application/json' },
+      48 |     body: JSON.stringify({ email, password }),
+        at createTestUser (/home/runner/work/st44-home/st44-home/apps/frontend/e2e/helpers/test-helpers.ts:45:20)
+        at /home/runner/work/st44-home/st44-home/apps/frontend/e2e/auth/login.spec.ts:26:5
+    [cause]: AggregateError: 
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/auth-login-User-Login-Flow-e01d2-rors-after-successful-login-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/auth-login-User-Login-Flow-e01d2-rors-after-successful-login-chromium/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+    Retry #1 ───────────────────────────────────────────────────────────────────────────────────────
+    TypeError: fetch failed
+       at helpers/test-helpers.ts:45
+      43 |   const apiPort = process.env.BACKEND_PORT || '3001'; // Changed from 3000 to 3001 for local E2E
+      44 |   const apiHost = process.env.BACKEND_HOST || 'localhost';
+    > 45 |   const response = await fetch(`http://${apiHost}:${apiPort}/api/auth/register`, {
+         |                    ^
+      46 |     method: 'POST',
+      47 |     headers: { 'Content-Type': 'application/json' },
+      48 |     body: JSON.stringify({ email, password }),
+        at createTestUser (/home/runner/work/st44-home/st44-home/apps/frontend/e2e/helpers/test-helpers.ts:45:20)
+        at /home/runner/work/st44-home/st44-home/apps/frontend/e2e/auth/login.spec.ts:26:5
+    [cause]: AggregateError: 
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/auth-login-User-Login-Flow-e01d2-rors-after-successful-login-chromium-retry1/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/auth-login-User-Login-Flow-e01d2-rors-after-successful-login-chromium-retry1/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/auth-login-User-Login-Flow-e01d2-rors-after-successful-login-chromium-retry1/trace.zip
+    Usage:
+        npx playwright show-trace test-results/auth-login-User-Login-Flow-e01d2-rors-after-successful-login-chromium-retry1/trace.zip
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+    Retry #2 ───────────────────────────────────────────────────────────────────────────────────────
+    TypeError: fetch failed
+       at helpers/test-helpers.ts:45
+      43 |   const apiPort = process.env.BACKEND_PORT || '3001'; // Changed from 3000 to 3001 for local E2E
+      44 |   const apiHost = process.env.BACKEND_HOST || 'localhost';
+    > 45 |   const response = await fetch(`http://${apiHost}:${apiPort}/api/auth/register`, {
+         |                    ^
+      46 |     method: 'POST',
+      47 |     headers: { 'Content-Type': 'application/json' },
+      48 |     body: JSON.stringify({ email, password }),
+        at createTestUser (/home/runner/work/st44-home/st44-home/apps/frontend/e2e/helpers/test-helpers.ts:45:20)
+        at /home/runner/work/st44-home/st44-home/apps/frontend/e2e/auth/login.spec.ts:26:5
+    [cause]: AggregateError: 
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/auth-login-User-Login-Flow-e01d2-rors-after-successful-login-chromium-retry2/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/auth-login-User-Login-Flow-e01d2-rors-after-successful-login-chromium-retry2/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+  17) [chromium] › e2e/auth/registration.spec.ts:49:7 › User Registration Flow › should successfully register a new user with valid credentials 
+    Error: page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:4201/register
+    Call log:
+      - navigating to "http://localhost:4201/register", waiting until "load"
+       at pages/register.page.ts:24
+      22 |
+      23 |   async goto(): Promise<void> {
+    > 24 |     await this.page.goto('/register');
+         |                     ^
+      25 |     await this.waitForLoad();
+      26 |   }
+      27 |
+        at RegisterPage.goto (/home/runner/work/st44-home/st44-home/apps/frontend/e2e/pages/register.page.ts:24:21)
+        at /home/runner/work/st44-home/st44-home/apps/frontend/e2e/auth/registration.spec.ts:38:24
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/auth-registration-User-Reg-9a6fa-user-with-valid-credentials-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/auth-registration-User-Reg-9a6fa-user-with-valid-credentials-chromium/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+    Retry #1 ───────────────────────────────────────────────────────────────────────────────────────
+    Error: page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:4201/register
+    Call log:
+      - navigating to "http://localhost:4201/register", waiting until "load"
+       at pages/register.page.ts:24
+      22 |
+      23 |   async goto(): Promise<void> {
+    > 24 |     await this.page.goto('/register');
+         |                     ^
+      25 |     await this.waitForLoad();
+      26 |   }
