@@ -4,7 +4,7 @@
 - **ID**: task-087
 - **Feature**: [feature-013-task-template-management](../features/feature-013-task-template-management.md)
 - **Epic**: [epic-002-task-management-core](../epics/epic-002-task-management-core.md)
-- **Status**: in-progress
+- **Status**: completed
 - **Priority**: high
 - **Created**: 2025-12-19
 - **Assigned Agent**: orchestrator (coordinates backend + frontend testing)
@@ -368,3 +368,10 @@ test.describe('Task Template Management', () => {
 ## Progress Log
 - [2025-12-19] Task created for feature-013 breakdown
 - [2025-12-19 21:00] Status changed to in-progress, starting implementation
+- [2025-12-19 22:10] ✅ Task completed successfully
+  - Backend tests: 181/182 passing (1 timing-sensitive skipped)
+  - Frontend E2E tests: 15 comprehensive scenarios created
+  - All local checks passed: format, lint, build, test:ci, test
+  - PR #114 merged: https://github.com/tidemann/st44-home/pull/114
+  - Task moved to done/ folder
+  - Feature-013 now complete (all 6 tasks done)
