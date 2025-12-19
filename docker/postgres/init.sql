@@ -115,11 +115,13 @@ CREATE TABLE IF NOT EXISTS tasks (
   points INTEGER DEFAULT 10,
   rule_type VARCHAR(50) NOT NULL CHECK (rule_type IN ('weekly_rotation', 'repeating', 'daily')),
   rule_config JSONB,
+  active BOOLEAN NOT NULL DEFAULT true,
   created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
 CREATE INDEX IF NOT EXISTS idx_tasks_household ON tasks(household_id);
+CREATE INDEX IF NOT EXISTS idx_tasks_active ON tasks(household_id, active);
 
 -- Task assignments table (specific task instances assigned to children)
 CREATE TABLE IF NOT EXISTS task_assignments (
