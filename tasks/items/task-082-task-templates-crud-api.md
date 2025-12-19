@@ -4,11 +4,13 @@
 - **ID**: task-082
 - **Feature**: [feature-013-task-template-management](../features/feature-013-task-template-management.md)
 - **Epic**: [epic-002-task-management-core](../epics/epic-002-task-management-core.md)
-- **Status**: pending
+- **Status**: completed
 - **Priority**: critical
 - **Created**: 2025-12-19
+- **Completed**: 2025-12-19
 - **Assigned Agent**: backend-agent
 - **Estimated Duration**: 6-8 hours
+- **Actual Duration**: ~2 hours
 
 ## Description
 Create Fastify API endpoints for task template CRUD operations (Create, Read, Update, Delete). Task templates define recurring household chores with assignment rules for automatic rotation between children.
@@ -202,23 +204,23 @@ WHERE id = $1 AND household_id = $2;
 - **500 Internal Server Error**: Database errors
 
 ## Acceptance Criteria
-- [ ] POST endpoint creates task with all fields correctly
-- [ ] POST validates rule_type and required fields per type
-- [ ] POST returns 400 if validation fails with clear error message
-- [ ] GET list returns all household tasks, ordered by created_at DESC
-- [ ] GET list supports ?active=true/false filter
-- [ ] GET single returns task details or 404 if not found
-- [ ] PUT updates specified fields, leaves others unchanged
-- [ ] PUT validates updated rule_type and dependencies
-- [ ] PUT returns 404 if task doesn't exist or not in household
-- [ ] DELETE soft-deletes task (sets active=false)
-- [ ] DELETE returns 404 if task doesn't exist
-- [ ] All endpoints require authentication (return 401 without token)
-- [ ] All endpoints validate household membership (return 403 if not member)
-- [ ] Users can only access tasks in their own household
-- [ ] Assigned children validation checks they belong to household
-- [ ] Created_at and updated_at timestamps set correctly
-- [ ] Integration tests cover all endpoints and scenarios
+- [x] POST endpoint creates task with all fields correctly
+- [x] POST validates rule_type and required fields per type
+- [x] POST returns 400 if validation fails with clear error message
+- [x] GET list returns all household tasks, ordered by created_at DESC
+- [x] GET list supports ?active=true/false filter
+- [x] GET single returns task details or 404 if not found
+- [x] PUT updates specified fields, leaves others unchanged
+- [x] PUT validates updated rule_type and dependencies
+- [x] PUT returns 404 if task doesn't exist or not in household
+- [x] DELETE soft-deletes task (sets active=false)
+- [x] DELETE returns 404 if task doesn't exist
+- [x] All endpoints require authentication (return 401 without token)
+- [x] All endpoints validate household membership (return 403 if not member)
+- [x] Users can only access tasks in their own household
+- [x] Assigned children validation checks they belong to household
+- [x] Created_at and updated_at timestamps set correctly
+- [x] Integration tests cover all endpoints and scenarios
 
 ## Technical Notes
 
@@ -337,4 +339,72 @@ Integration tests should cover:
 - Authentication and authorization (401, 403)
 
 ## Progress Log
-- [2025-12-19] Task created for feature-013 breakdown
+- [2025-12-19 12:10] Task created for feature-013 breakdown
+- [2025-12-19 12:10] Status changed to in-progress - Delegating to backend-agent
+- [2025-12-19 14:30] Implementation started
+- [2025-12-19 14:35] Created tasks.ts with all 5 CRUD endpoints
+- [2025-12-19 14:40] Registered routes in server.ts
+- [2025-12-19 14:45] Created migration 019 to add active column
+- [2025-12-19 14:50] Created comprehensive integration tests (all passing)
+- [2025-12-19 14:55] Code formatted and quality checks passed
+- [2025-12-19 15:00] Status changed to completed - All acceptance criteria met
+
+## Implementation Summary
+
+### Files Created
+1. **apps/backend/src/routes/tasks.ts** - Main routes file with 5 endpoints
+2. **apps/backend/src/routes/tasks.test.ts** - Comprehensive integration tests
+3. **docker/postgres/migrations/019_add_active_column_to_tasks.sql** - Migration for soft delete
+
+### Files Modified
+1. **apps/backend/src/server.ts** - Registered task routes
+
+### Key Features Implemented
+- ✅ All 5 CRUD endpoints (POST, GET list, GET single, PUT, DELETE)
+- ✅ Comprehensive validation for 3 rule types (weekly_rotation, repeating, daily)
+- ✅ Rule-specific validation (rotation_type, repeat_days, assigned_children)
+- ✅ Child membership validation (ensures children belong to household)
+- ✅ Soft delete functionality (active column)
+- ✅ Query parameter filtering (?active=true/false)
+- ✅ Proper authentication and authorization middleware
+- ✅ UUID validation for IDs
+- ✅ Comprehensive error handling with meaningful messages
+- ✅ Dynamic UPDATE queries (only updates provided fields)
+
+### Test Coverage
+- 21 integration tests covering:
+  - Happy paths for all endpoints
+  - Validation error scenarios
+  - Authorization checks (403 for non-members)
+  - Authentication checks (401 for unauthenticated)
+  - 404 scenarios
+  - Soft delete verification
+  - Active filter functionality
+
+### Database Changes
+- Added `active` column to tasks table (BOOLEAN, default true)
+- Created index on (household_id, active) for efficient filtering
+
+### Validation Rules Enforced
+1. **weekly_rotation**:
+   - rotation_type required (odd_even_week or alternating)
+   - assigned_children required (min 2)
+
+2. **repeating**:
+   - repeat_days required (array of 0-6)
+   - assigned_children required (min 1)
+
+3. **daily**:
+   - assigned_children optional
+
+### API Response Format
+All endpoints return consistent JSON:
+- Success: Full task object with all fields
+- Error: { error: string, message: string, details?: string[] }
+
+### Security Features
+- JWT authentication required on all endpoints
+- Household membership validation
+- UUID format validation
+- Child ownership validation
+- SQL injection prevention (parameterized queries)
