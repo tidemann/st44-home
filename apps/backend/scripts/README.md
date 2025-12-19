@@ -5,6 +5,7 @@ This directory contains PowerShell scripts for manual API integration testing. T
 ## Purpose
 
 These scripts are **manual testing tools** for local development:
+
 - Quick verification of API endpoints
 - Manual integration testing during development
 - Debugging and troubleshooting API behavior
@@ -20,7 +21,9 @@ These scripts are **manual testing tools** for local development:
 ## Available Scripts
 
 ### test-households.ps1
+
 Tests household CRUD endpoints:
+
 - Register user and login
 - Create household
 - Get household details
@@ -28,12 +31,15 @@ Tests household CRUD endpoints:
 - List user's households
 
 **Usage:**
+
 ```powershell
 .\test-households.ps1
 ```
 
 ### test-children-crud.ps1
+
 Comprehensive children CRUD testing:
+
 - List children (empty household)
 - Create children (valid data)
 - List children (ordered alphabetically)
@@ -43,12 +49,15 @@ Comprehensive children CRUD testing:
 - Authorization tests (non-existent IDs)
 
 **Usage:**
+
 ```powershell
 .\test-children-crud.ps1
 ```
 
 ### test-household-membership.ps1
+
 Tests household membership middleware and authorization:
+
 - User registration (2 users)
 - Household creation (user 1)
 - Member access (user 1 can access)
@@ -57,6 +66,7 @@ Tests household membership middleware and authorization:
 - Invalid ID handling
 
 **Usage:**
+
 ```powershell
 .\test-household-membership.ps1
 ```
@@ -71,6 +81,7 @@ Tests household membership middleware and authorization:
 ## Configuration
 
 All scripts use:
+
 - **Base URL**: `http://localhost:3000`
 - **API prefix**: `/api/`
 - **Auth**: Bearer token authentication
@@ -105,19 +116,20 @@ Test 2: Create child (Emma, 2015)...
 
 ## Comparison with Automated Tests
 
-| Aspect | Manual Scripts (these) | Automated Tests (Playwright) |
-|--------|------------------------|------------------------------|
-| **Purpose** | Quick verification, debugging | CI/CD, regression testing |
-| **Execution** | Manual, on-demand | Automated, on every push |
-| **Environment** | Local dev server | Test environment (Docker) |
-| **Database** | Development DB | Test database (isolated) |
-| **Speed** | Fast (seconds) | Slower (full setup) |
-| **Coverage** | Focused scenarios | Comprehensive |
-| **Output** | Console (colored text) | Reports, screenshots, traces |
+| Aspect          | Manual Scripts (these)        | Automated Tests (Playwright) |
+| --------------- | ----------------------------- | ---------------------------- |
+| **Purpose**     | Quick verification, debugging | CI/CD, regression testing    |
+| **Execution**   | Manual, on-demand             | Automated, on every push     |
+| **Environment** | Local dev server              | Test environment (Docker)    |
+| **Database**    | Development DB                | Test database (isolated)     |
+| **Speed**       | Fast (seconds)                | Slower (full setup)          |
+| **Coverage**    | Focused scenarios             | Comprehensive                |
+| **Output**      | Console (colored text)        | Reports, screenshots, traces |
 
 ## When to Use
 
 **Use these scripts when:**
+
 - Developing new API endpoints
 - Debugging authentication issues
 - Testing authorization logic
@@ -126,6 +138,7 @@ Test 2: Create child (Emma, 2015)...
 - Demonstrating API usage to team members
 
 **Use automated tests when:**
+
 - Running full regression suite
 - CI/CD pipeline validation
 - Comprehensive coverage needed
@@ -138,23 +151,25 @@ When creating new manual test scripts:
 
 1. **Name**: `test-{feature}.ps1` (e.g., `test-tasks.ps1`)
 2. **Structure**:
+
    ```powershell
    # Test script for {feature}
-   
+
    $ErrorActionPreference = "Stop"
    $baseUrl = "http://localhost:3000"
-   
+
    Write-Host "=== Testing {Feature} ===" -ForegroundColor Cyan
-   
+
    # Setup (register, login, create test data)
-   
+
    # Test 1: Description
    Write-Host "`nTest 1: ..." -ForegroundColor Yellow
    # ... test code ...
    Write-Host "✓ Success" -ForegroundColor Green
-   
+
    Write-Host "`n=== All Tests Complete ===" -ForegroundColor Cyan
    ```
+
 3. **Document** in this README
 4. **Commit** with meaningful message
 
