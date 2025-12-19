@@ -54,9 +54,8 @@ agent: orchestrator-agent
     cd apps/frontend && npm run format
     cd apps/backend && npm run format
     
-    # Lint code (checks for issues)
+    # Lint code (frontend only - backend doesn't have lint)
     cd apps/frontend && npm run lint
-    cd apps/backend && npm run lint
     
     # Build (verifies compilation)
     cd apps/frontend && npm run build

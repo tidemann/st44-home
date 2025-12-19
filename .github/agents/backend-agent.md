@@ -109,8 +109,8 @@ apps/backend/
 - Load test if needed
 
 ### 6. Validate
-- Run `npm run lint`
 - Run `npm run format:check`
+- Run `npm run build`
 - Ensure all tests pass
 - Verify API documentation
 - Check logs for errors
@@ -346,7 +346,6 @@ const config = {
 - `npm run dev` - Start dev server with watch mode
 - `npm run build` - Build for production
 - `npm start` - Start production server
-- `npm run lint` - Run ESLint
 - `npm run format` - Format with Prettier
 - `npm test` - Run tests
 

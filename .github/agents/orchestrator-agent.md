@@ -203,9 +203,8 @@ When work is complete, follow this workflow WITHOUT stopping for user confirmati
 cd apps/frontend && npm run format
 cd ../backend && npm run format
 
-# Lint code (checks for issues)
+# Lint code (frontend only - backend doesn't have lint)
 cd apps/frontend && npm run lint
-cd ../backend && npm run lint
 
 # Build (verifies TypeScript compilation)
 cd apps/frontend && npm run build
