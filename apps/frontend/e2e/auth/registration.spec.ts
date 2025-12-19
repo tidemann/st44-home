@@ -17,11 +17,11 @@ import { Pool } from 'pg';
 
 // Database connection for verification queries
 const pool = new Pool({
-  host: 'localhost',
-  port: 55432,
-  database: 'st44_test',
-  user: 'postgres',
-  password: 'postgres',
+  host: process.env.DB_HOST || 'localhost',
+  port: parseInt(process.env.DB_PORT || '5433'),
+  database: process.env.DB_NAME || 'st44_test_local',
+  user: process.env.DB_USER || 'postgres',
+  password: process.env.DB_PASSWORD || 'postgres',
 });
 
 test.describe('User Registration Flow', () => {
@@ -50,13 +50,18 @@ test.describe('User Registration Flow', () => {
     // ACT: Fill and submit registration form
     await registerPage.register(testEmail, testPassword);
 
-    // ASSERT: Redirected to login page after registration
-    await expect(page).not.toHaveURL(/\/register/);
+    // ASSERT: Should redirect to login page (not auto-login)
+    await expect(page).toHaveURL(/\/login/);
 
-    // ASSERT: Access token should be stored in localStorage
+    // ASSERT: Should show success message
+    const successMessage = await page.locator('[role="alert"]').textContent();
+    expect(successMessage?.toLowerCase()).toContain('account created');
+
+    // ASSERT: No tokens should be stored yet (user must log in)
     const accessToken = await page.evaluate(() => localStorage.getItem('accessToken'));
-    expect(accessToken).toBeTruthy();
-    expect(accessToken).toMatch(/^[\w-]+\.[\w-]+\.[\w-]+$/); // JWT format
+    const sessionToken = await page.evaluate(() => sessionStorage.getItem('accessToken'));
+    expect(accessToken).toBeNull();
+    expect(sessionToken).toBeNull();
 
     // ASSERT: User should be in database
     const result = await pool.query('SELECT id, email, password_hash FROM users WHERE email = $1', [
