@@ -7,6 +7,7 @@ Different environments use different ports to avoid conflicts and match their in
 ## Environment Configurations
 
 ### 1. Local Development (Docker Compose)
+
 **Used for**: Local E2E testing with `npm run test:e2e:full`
 
 - **Frontend**: `4201` (maps to container 4200)
@@ -16,6 +17,7 @@ Different environments use different ports to avoid conflicts and match their in
 - **Docker Compose**: `docker-compose.e2e-local.yml`
 
 **Usage**:
+
 ```bash
 npm run test:e2e:full     # Start services, run tests, stop services
 npm run test:e2e:local    # Run tests only (services must be running)
@@ -23,6 +25,7 @@ npm run test:e2e:ui       # Run tests in UI mode (services must be running)
 ```
 
 ### 2. GitHub Actions CI
+
 **Used for**: Automated E2E testing in CI/CD pipeline
 
 - **Frontend**: `4200` (direct, no container)
@@ -32,6 +35,7 @@ npm run test:e2e:ui       # Run tests in UI mode (services must be running)
 - **Workflow**: `.github/workflows/e2e.yml`
 
 **Environment Variables Set in Workflow**:
+
 ```yaml
 FRONTEND_PORT: 4200
 FRONTEND_HOST: localhost
@@ -44,6 +48,7 @@ USE_DOCKER_COMPOSE: false
 ```
 
 ### 3. Production
+
 **Used for**: Actual deployed application
 
 - **Frontend**: `8080` (via Nginx)
@@ -79,7 +84,9 @@ USE_DOCKER_COMPOSE: false
 ## How It Works
 
 ### playwright.config.ts
+
 Sets default values that can be overridden by environment variables:
+
 ```typescript
 const frontendPort = process.env.FRONTEND_PORT || '4201';
 const backendPort = process.env.BACKEND_PORT || '3001';
@@ -87,13 +94,16 @@ const dbPort = process.env.DB_PORT || '5433';
 ```
 
 ### test-helpers.ts
+
 Uses environment variables with sensible defaults:
+
 ```typescript
 const apiPort = process.env.BACKEND_PORT || '3001';
 const dbPort = parseInt(process.env.DB_PORT || '5433');
 ```
 
 ### NPM Scripts
+
 - `test:e2e` - No env vars, respects existing environment (for CI)
 - `test:e2e:local` - Sets local docker ports explicitly
 - `test:e2e:full` - Orchestrates full local workflow
@@ -101,29 +111,32 @@ const dbPort = parseInt(process.env.DB_PORT || '5433');
 ## Troubleshooting
 
 ### Tests Fail Locally
+
 1. Ensure services are running: `npm run test:e2e:start`
 2. Check services are healthy: `npm run test:e2e:logs`
 3. Reset database if needed: `npm run test:e2e:reset`
 4. Run tests: `npm run test:e2e:local`
 
 ### Tests Fail in CI
+
 1. Check GitHub Actions workflow sets correct env vars
 2. Verify backend/frontend are started successfully
 3. Check health check steps pass
 4. Review full workflow logs in GitHub Actions UI
 
 ### Port Conflicts
+
 - **Local**: Change ports in `docker-compose.e2e-local.yml`
 - **CI**: Update workflow `.github/workflows/e2e.yml`
 - **Tests**: Environment variables automatically adapt
 
 ## Quick Reference
 
-| Environment | Frontend | Backend | Database | DB Name |
-|------------|----------|---------|----------|---------|
-| Local Docker | 4201 | 3001 | 5433 | st44_test_local |
-| GitHub CI | 4200 | 3000 | 55432 | st44_test |
-| Production | 8080 | 3000 | 5432 | st44 |
+| Environment  | Frontend | Backend | Database | DB Name         |
+| ------------ | -------- | ------- | -------- | --------------- |
+| Local Docker | 4201     | 3001    | 5433     | st44_test_local |
+| GitHub CI    | 4200     | 3000    | 55432    | st44_test       |
+| Production   | 8080     | 3000    | 5432     | st44            |
 
 ## Best Practices
 
