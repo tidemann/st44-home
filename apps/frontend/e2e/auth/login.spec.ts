@@ -74,7 +74,7 @@ test.describe('User Login Flow', () => {
     expect(error?.toLowerCase()).toMatch(/invalid|incorrect|wrong|credentials/);
 
     // ASSERT: Should still be on login page
-    await expect(loginPage.page).toHaveURL(/\/auth\/login/);
+    await expect(loginPage.page).toHaveURL(/\/login/);
 
     // ASSERT: No token should be stored
     const accessToken = await loginPage.page.evaluate(() => localStorage.getItem('accessToken'));
@@ -184,14 +184,14 @@ test.describe('User Login Flow', () => {
     await loginPage.login(testEmail, testPassword);
 
     // ASSERT: Should redirect away from login page
-    await expect(page).not.toHaveURL(/\/auth\/login/, { timeout: 5000 });
+    await expect(page).not.toHaveURL(/\/login/, { timeout: 5000 });
 
     // Should be on a valid app page
     const currentUrl = page.url();
     expect(currentUrl).not.toMatch(/\/(login|register)/);
 
     // Common redirects: household creation or settings
-    expect(currentUrl).toMatch(/\/(household\/(create|settings))?$/);
+    expect(currentUrl).toMatch(/\/(household\/(create|settings)|dashboard)?$/);
   });
 
   test('should prevent login with empty email', async () => {
@@ -205,7 +205,7 @@ test.describe('User Login Flow', () => {
     expect(error || !isButtonEnabled).toBeTruthy();
 
     // ASSERT: Should still be on login page
-    await expect(loginPage.page).toHaveURL(/\/auth\/login/);
+    await expect(loginPage.page).toHaveURL(/\/login/);
   });
 
   test('should prevent login with empty password', async () => {
@@ -219,7 +219,7 @@ test.describe('User Login Flow', () => {
     expect(error || !isButtonEnabled).toBeTruthy();
 
     // ASSERT: Should still be on login page
-    await expect(loginPage.page).toHaveURL(/\/auth\/login/);
+    await expect(loginPage.page).toHaveURL(/\/login/);
   });
 
   test('should navigate to registration page from login', async ({ page }) => {
@@ -227,7 +227,7 @@ test.describe('User Login Flow', () => {
     await loginPage.clickRegisterLink();
 
     // ASSERT: Should navigate to registration page
-    await expect(page).toHaveURL(/\/auth\/register/);
+    await expect(page).toHaveURL(/\/register/);
   });
 
   test('should handle special characters in email correctly', async ({ page }) => {
@@ -241,7 +241,7 @@ test.describe('User Login Flow', () => {
     await loginPage.login(specialEmail, testPassword);
 
     // ASSERT: Should login successfully
-    await expect(page).not.toHaveURL(/\/auth\/login/);
+    await expect(page).not.toHaveURL(/\/login/);
     const accessToken = await page.evaluate(() => localStorage.getItem('accessToken'));
     expect(accessToken).toBeTruthy();
   });
@@ -255,7 +255,7 @@ test.describe('User Login Flow', () => {
     // ASSERT: Should fail (password is case-sensitive)
     const error = await loginPage.getErrorMessage();
     expect(error).toBeTruthy();
-    await expect(loginPage.page).toHaveURL(/\/auth\/login/);
+    await expect(loginPage.page).toHaveURL(/\/login/);
   });
 
   test('should handle rapid login attempts gracefully', async () => {
@@ -270,7 +270,7 @@ test.describe('User Login Flow', () => {
     expect(error).toBeTruthy();
 
     // Should still be on login page
-    await expect(loginPage.page).toHaveURL(/\/auth\/login/);
+    await expect(loginPage.page).toHaveURL(/\/login/);
   });
 
   test('should clear form errors after successful login', async ({ page }) => {
@@ -285,7 +285,7 @@ test.describe('User Login Flow', () => {
     await loginPage.login(testEmail, testPassword);
 
     // ASSERT: Should succeed without error
-    await expect(page).not.toHaveURL(/\/auth\/login/);
+    await expect(page).not.toHaveURL(/\/login/);
     const accessToken = await page.evaluate(() => localStorage.getItem('accessToken'));
     expect(accessToken).toBeTruthy();
   });
