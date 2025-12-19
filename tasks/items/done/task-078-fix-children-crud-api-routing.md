@@ -4,7 +4,7 @@
 - **ID**: task-078
 - **Feature**: Bug Fix (feature-003 - Household Management)
 - **Epic**: epic-001 - Multi-Tenant Foundation
-- **Status**: in-progress
+- **Status**: completed
 - **Priority**: high
 - **Created**: 2025-12-19
 - **Assigned Agent**: backend
@@ -53,14 +53,14 @@ Potential causes:
 - Confirm no other routes have similar issues
 
 ## Acceptance Criteria
-- [ ] Children CRUD endpoints return 200/201 (not 404)
-- [ ] API path shows single `/api/` prefix (not double)
-- [ ] Can successfully add a child to household
-- [ ] Can list children for household
-- [ ] Can update child details
-- [ ] Can delete child
-- [ ] Works in both dev and Docker environments
-- [ ] No other routes affected by the fix
+- [x] Children CRUD endpoints return 200/201 (not 404)
+- [x] API path shows single `/api/` prefix (not double)
+- [x] Can successfully add a child to household
+- [x] Can list children for household
+- [x] Can update child details
+- [x] Can delete child
+- [x] Works in both dev and Docker environments
+- [x] No other routes affected by the fix
 
 ## Technical Notes
 
@@ -113,3 +113,6 @@ export const environment = {
 - [2025-12-19] Root cause found: ApiService has baseUrl = `${environment.apiUrl}/api`
 - [2025-12-19] ChildrenService adds `/api/` prefix, causing double `/api/api/`
 - [2025-12-19] Fix: Remove `/api/` prefix from ChildrenService endpoint calls
+- [2025-12-19] PR #100 created and merged successfully
+- [2025-12-19] CI checks passed (frontend + backend)
+- [2025-12-19] Task completed - Children CRUD routing fixed
