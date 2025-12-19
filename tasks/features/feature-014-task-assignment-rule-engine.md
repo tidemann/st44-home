@@ -133,13 +133,15 @@ async function generateAssignments(
 
 Total: 3 tasks (18-23 hours estimated, 3-4 days)
 
-- [ ] [task-091](../items/task-091-assignment-generation-service.md): Assignment Generation Service (8-10h, backend-agent)
+- [x] [task-091](../items/done/task-091-assignment-generation-service.md): Assignment Generation Service (8-10h, backend-agent) **COMPLETED** 2025-12-19 ✅
 - [ ] [task-092](../items/task-092-assignment-api-endpoints.md): Assignment API Endpoints (4-5h, backend-agent)
 - [ ] [task-093](../items/task-093-assignment-integration-tests.md): Assignment Integration Tests (6-8h, backend-agent)
 
 **Dependencies:**
-- task-091 → task-092 (API endpoints need service)
+- task-091 ✅ **COMPLETE** → task-092 (API endpoints need service)
 - task-092 → task-093 (tests need both service and API)
+
+**Progress**: 1/3 tasks complete (33%)
 
 ## Progress Log
 - [2025-12-19 10:45] Feature created for Epic-002 breakdown
