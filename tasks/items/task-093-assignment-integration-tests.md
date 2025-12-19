@@ -4,7 +4,7 @@
 - **ID**: task-093
 - **Feature**: [feature-014-task-assignment-rule-engine](../features/feature-014-task-assignment-rule-engine.md)
 - **Epic**: [epic-002-task-management-core](../epics/epic-002-task-management-core.md)
-- **Status**: pending
+- **Status**: in-progress
 - **Priority**: high
 - **Created**: 2025-12-19
 - **Assigned Agent**: backend-agent

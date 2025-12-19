@@ -83,11 +83,12 @@ export async function generateAssignments(
       return result;
     }
 
-    // 2. Generate date range
+    // 2. Generate date range (use UTC to avoid timezone issues)
     const dates: Date[] = [];
     for (let i = 0; i < days; i++) {
       const date = new Date(startDate);
-      date.setDate(date.getDate() + i);
+      // Use UTC date methods to avoid timezone shifts
+      date.setUTCDate(date.getUTCDate() + i);
       dates.push(date);
     }
 
@@ -132,32 +133,66 @@ export async function generateAssignments(
 
     // 6. Batch insert new assignments
     if (newAssignments.length > 0) {
-      // Build batch insert query
-      const valuePlaceholders: string[] = [];
-      const values: (string | null)[] = [];
-      let paramIndex = 1;
+      // Separate assignments with and without child_id for proper ON CONFLICT handling
+      const assignmentsWithChild = newAssignments.filter((a) => a.child_id !== null);
+      const assignmentsWithoutChild = newAssignments.filter((a) => a.child_id === null);
 
-      for (const assignment of newAssignments) {
-        valuePlaceholders.push(
-          `($${paramIndex}, $${paramIndex + 1}, $${paramIndex + 2}, $${paramIndex + 3}, 'pending')`,
-        );
-        values.push(
-          assignment.household_id,
-          assignment.task_id,
-          assignment.child_id,
-          assignment.date,
-        );
-        paramIndex += 4;
+      let insertedCount = 0;
+
+      // Insert assignments with child_id
+      if (assignmentsWithChild.length > 0) {
+        const valuePlaceholders: string[] = [];
+        const values: (string | null)[] = [];
+        let paramIndex = 1;
+
+        for (const assignment of assignmentsWithChild) {
+          valuePlaceholders.push(
+            `($${paramIndex}, $${paramIndex + 1}, $${paramIndex + 2}, $${paramIndex + 3}, 'pending')`,
+          );
+          values.push(
+            assignment.household_id,
+            assignment.task_id,
+            assignment.child_id,
+            assignment.date,
+          );
+          paramIndex += 4;
+        }
+
+        const insertSqlWithChild = `
+          INSERT INTO task_assignments (household_id, task_id, child_id, date, status)
+          VALUES ${valuePlaceholders.join(', ')}
+          ON CONFLICT (task_id, child_id, date) WHERE child_id IS NOT NULL DO NOTHING
+        `;
+
+        const result1 = await client.query(insertSqlWithChild, values);
+        insertedCount += result1.rowCount || 0;
       }
 
-      const insertSql = `
-        INSERT INTO task_assignments (household_id, task_id, child_id, date, status)
-        VALUES ${valuePlaceholders.join(', ')}
-        ON CONFLICT (task_id, child_id, date) DO NOTHING
-      `;
+      // Insert assignments without child_id
+      if (assignmentsWithoutChild.length > 0) {
+        const valuePlaceholders: string[] = [];
+        const values: (string | null)[] = [];
+        let paramIndex = 1;
 
-      await client.query(insertSql, values);
-      result.created = newAssignments.length;
+        for (const assignment of assignmentsWithoutChild) {
+          valuePlaceholders.push(
+            `($${paramIndex}, $${paramIndex + 1}, NULL, $${paramIndex + 2}, 'pending')`,
+          );
+          values.push(assignment.household_id, assignment.task_id, assignment.date);
+          paramIndex += 3;
+        }
+
+        const insertSqlWithoutChild = `
+          INSERT INTO task_assignments (household_id, task_id, child_id, date, status)
+          VALUES ${valuePlaceholders.join(', ')}
+          ON CONFLICT (task_id, date) WHERE child_id IS NULL DO NOTHING
+        `;
+
+        const result2 = await client.query(insertSqlWithoutChild, values);
+        insertedCount += result2.rowCount || 0;
+      }
+
+      result.created = insertedCount;
     }
 
     await client.query('COMMIT');
@@ -256,7 +291,7 @@ function generateRepeatingAssignments(
   let occurrenceCount = 0;
 
   for (const date of dates) {
-    const dayOfWeek = date.getDay(); // 0=Sunday, 6=Saturday
+    const dayOfWeek = date.getUTCDay(); // 0=Sunday, 6=Saturday (use UTC)
 
     // Check if this date is a repeat day
     if (repeatDays.includes(dayOfWeek)) {
@@ -321,7 +356,7 @@ async function generateWeeklyRotationAssignments(
   } else if (rotationType === 'alternating') {
     // Query most recent assignment to determine next child
     const lastAssignmentResult = await client.query(
-      `SELECT child_id
+      `SELECT child_id, date
        FROM task_assignments
        WHERE task_id = $1
        ORDER BY date DESC
@@ -330,22 +365,39 @@ async function generateWeeklyRotationAssignments(
     );
 
     let lastChildIndex = -1;
+    let lastWeekNum = 0;
 
     if (lastAssignmentResult.rows.length > 0) {
       const lastChildId = lastAssignmentResult.rows[0].child_id;
+      const lastDate = new Date(lastAssignmentResult.rows[0].date);
       lastChildIndex = assignedChildren.indexOf(lastChildId);
+      lastWeekNum = getISOWeek(lastDate);
       if (lastChildIndex === -1) {
         // Last child not in current assigned_children list, start from beginning
         lastChildIndex = -1;
       }
     }
 
-    // Generate assignments, rotating through children
-    for (let i = 0; i < dates.length; i++) {
-      const date = dates[i];
-      const childIndex = (lastChildIndex + 1 + i) % assignedChildren.length;
-      const childId = assignedChildren[childIndex];
+    // Group dates by ISO week and assign one child per week
+    const weekAssignments = new Map<number, string>();
+    for (const date of dates) {
+      const weekNum = getISOWeek(date);
 
+      if (!weekAssignments.has(weekNum)) {
+        // New week - determine which child
+        if (weekNum === lastWeekNum && lastChildIndex >= 0) {
+          // Same week as last assignment - use same child
+          weekAssignments.set(weekNum, assignedChildren[lastChildIndex]);
+        } else {
+          // Different week - rotate to next child
+          const weeksFromLast = weekNum - lastWeekNum;
+          const nextChildIndex = (lastChildIndex + weeksFromLast) % assignedChildren.length;
+          weekAssignments.set(weekNum, assignedChildren[nextChildIndex]);
+        }
+      }
+
+      // Create assignment for this date with the week's assigned child
+      const childId = weekAssignments.get(weekNum)!;
       assignments.push({
         task_id: task.id,
         child_id: childId,
@@ -361,11 +413,11 @@ async function generateWeeklyRotationAssignments(
 }
 
 /**
- * Format Date object as YYYY-MM-DD string
+ * Format Date object as YYYY-MM-DD string (UTC to avoid timezone issues)
  */
 function formatDate(date: Date): string {
-  const year = date.getFullYear();
-  const month = String(date.getMonth() + 1).padStart(2, '0');
-  const day = String(date.getDate()).padStart(2, '0');
+  const year = date.getUTCFullYear();
+  const month = String(date.getUTCMonth() + 1).padStart(2, '0');
+  const day = String(date.getUTCDate()).padStart(2, '0');
   return `${year}-${month}-${day}`;
 }
