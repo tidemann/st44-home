@@ -1,6 +1,10 @@
 import { test, expect } from '@playwright/test';
 import { registerUser, loginAsUser } from '../helpers/auth-helpers';
-import { resetTestDatabase, generateTestEmail, generateTestPassword } from '../helpers/test-helpers';
+import {
+  resetTestDatabase,
+  generateTestEmail,
+  generateTestPassword,
+} from '../helpers/test-helpers';
 
 /**
  * Task Template Management E2E Tests
@@ -72,7 +76,9 @@ test.describe('Task Template Management', () => {
     await page.getByLabel(/points/i).fill('10');
 
     // Select rule type
-    const ruleTypeSelect = page.locator('select[name="rule_type"], mat-select[formControlName="rule_type"]');
+    const ruleTypeSelect = page.locator(
+      'select[name="rule_type"], mat-select[formControlName="rule_type"]',
+    );
     await ruleTypeSelect.click();
     await page.getByRole('option', { name: /daily/i }).click();
 
@@ -95,7 +101,9 @@ test.describe('Task Template Management', () => {
     await page.getByLabel(/points/i).fill('5');
 
     // Select repeating rule type
-    const ruleTypeSelect = page.locator('select[name="rule_type"], mat-select[formControlName="rule_type"]');
+    const ruleTypeSelect = page.locator(
+      'select[name="rule_type"], mat-select[formControlName="rule_type"]',
+    );
     await ruleTypeSelect.click();
     await page.getByRole('option', { name: /repeating/i }).click();
 
@@ -127,7 +135,9 @@ test.describe('Task Template Management', () => {
     await page.getByLabel(/points/i).fill('15');
 
     // Select weekly rotation
-    const ruleTypeSelect = page.locator('select[name="rule_type"], mat-select[formControlName="rule_type"]');
+    const ruleTypeSelect = page.locator(
+      'select[name="rule_type"], mat-select[formControlName="rule_type"]',
+    );
     await ruleTypeSelect.click();
     await page.getByRole('option', { name: /weekly rotation/i }).click();
 
@@ -135,7 +145,9 @@ test.describe('Task Template Management', () => {
     await expect(page.getByText(/rotation type/i)).toBeVisible();
 
     // Select rotation type
-    const rotationSelect = page.locator('select[name="rotation_type"], mat-select[formControlName="rotation_type"]');
+    const rotationSelect = page.locator(
+      'select[name="rotation_type"], mat-select[formControlName="rotation_type"]',
+    );
     await rotationSelect.click();
     await page.getByRole('option', { name: /odd.*even week|alternating/i }).click();
 
@@ -186,7 +198,9 @@ test.describe('Task Template Management', () => {
     await page.getByLabel(/title|name/i).fill('Test Task');
 
     // Select repeating
-    const ruleTypeSelect = page.locator('select[name="rule_type"], mat-select[formControlName="rule_type"]');
+    const ruleTypeSelect = page.locator(
+      'select[name="rule_type"], mat-select[formControlName="rule_type"]',
+    );
     await ruleTypeSelect.click();
     await page.getByRole('option', { name: /repeating/i }).click();
 
@@ -205,12 +219,16 @@ test.describe('Task Template Management', () => {
     await page.getByLabel(/title|name/i).fill('Test Task');
 
     // Select weekly rotation
-    const ruleTypeSelect = page.locator('select[name="rule_type"], mat-select[formControlName="rule_type"]');
+    const ruleTypeSelect = page.locator(
+      'select[name="rule_type"], mat-select[formControlName="rule_type"]',
+    );
     await ruleTypeSelect.click();
     await page.getByRole('option', { name: /weekly rotation/i }).click();
 
     // Select rotation type
-    const rotationSelect = page.locator('select[name="rotation_type"], mat-select[formControlName="rotation_type"]');
+    const rotationSelect = page.locator(
+      'select[name="rotation_type"], mat-select[formControlName="rotation_type"]',
+    );
     await rotationSelect.click();
     await page.getByRole('option', { name: /odd.*even/i }).click();
 
@@ -232,7 +250,9 @@ test.describe('Task Template Management', () => {
     await page.getByLabel(/title|name/i).fill('Original Title');
     await page.getByLabel(/points/i).fill('10');
 
-    const ruleTypeSelect = page.locator('select[name="rule_type"], mat-select[formControlName="rule_type"]');
+    const ruleTypeSelect = page.locator(
+      'select[name="rule_type"], mat-select[formControlName="rule_type"]',
+    );
     await ruleTypeSelect.click();
     await page.getByRole('option', { name: /daily/i }).click();
 
@@ -264,7 +284,9 @@ test.describe('Task Template Management', () => {
 
     await page.getByLabel(/title|name/i).fill('Task to Delete');
 
-    const ruleTypeSelect = page.locator('select[name="rule_type"], mat-select[formControlName="rule_type"]');
+    const ruleTypeSelect = page.locator(
+      'select[name="rule_type"], mat-select[formControlName="rule_type"]',
+    );
     await ruleTypeSelect.click();
     await page.getByRole('option', { name: /daily/i }).click();
 
@@ -272,7 +294,10 @@ test.describe('Task Template Management', () => {
     await expect(page.getByText(/created|success/i)).toBeVisible();
 
     // Delete the task
-    await page.getByRole('button', { name: /delete/i }).first().click();
+    await page
+      .getByRole('button', { name: /delete/i })
+      .first()
+      .click();
 
     // Confirm deletion
     await page.getByRole('button', { name: /confirm|yes|delete/i }).click();
@@ -288,7 +313,9 @@ test.describe('Task Template Management', () => {
 
     await page.getByLabel(/title|name/i).fill('Inactive Task');
 
-    const ruleTypeSelect = page.locator('select[name="rule_type"], mat-select[formControlName="rule_type"]');
+    const ruleTypeSelect = page.locator(
+      'select[name="rule_type"], mat-select[formControlName="rule_type"]',
+    );
     await ruleTypeSelect.click();
     await page.getByRole('option', { name: /daily/i }).click();
 
@@ -296,7 +323,10 @@ test.describe('Task Template Management', () => {
     await expect(page.getByText(/created|success/i)).toBeVisible();
 
     // Delete it
-    await page.getByRole('button', { name: /delete/i }).first().click();
+    await page
+      .getByRole('button', { name: /delete/i })
+      .first()
+      .click();
     await page.getByRole('button', { name: /confirm|yes|delete/i }).click();
 
     // By default, should not see inactive task
@@ -321,7 +351,9 @@ test.describe('Task Template Management', () => {
       await page.getByRole('button', { name: /add task|create task|new task/i }).click();
       await page.getByLabel(/title|name/i).fill(taskName);
 
-      const ruleTypeSelect = page.locator('select[name="rule_type"], mat-select[formControlName="rule_type"]');
+      const ruleTypeSelect = page.locator(
+        'select[name="rule_type"], mat-select[formControlName="rule_type"]',
+      );
       await ruleTypeSelect.click();
       await page.getByRole('option', { name: /daily/i }).click();
 
@@ -336,7 +368,7 @@ test.describe('Task Template Management', () => {
 
       // Verify alphabetical order
       const taskElements = await page.locator('.task-row, .task-card').allTextContents();
-      const titles = taskElements.filter(text => tasks.some(t => text.includes(t)));
+      const titles = taskElements.filter((text) => tasks.some((t) => text.includes(t)));
 
       // Should be sorted A-Z
       expect(titles[0]).toContain('Apple');
@@ -352,7 +384,9 @@ test.describe('Task Template Management', () => {
 
     await page.getByLabel(/title|name/i).fill('Private Task');
 
-    const ruleTypeSelect = page.locator('select[name="rule_type"], mat-select[formControlName="rule_type"]');
+    const ruleTypeSelect = page.locator(
+      'select[name="rule_type"], mat-select[formControlName="rule_type"]',
+    );
     await ruleTypeSelect.click();
     await page.getByRole('option', { name: /daily/i }).click();
 
@@ -372,7 +406,7 @@ test.describe('Task Template Management', () => {
 
     // Should get 403 or redirect, not see "Private Task"
     await expect(page2.getByText('Private Task')).not.toBeVisible();
-    
+
     await page2.close();
   });
 });
