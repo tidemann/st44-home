@@ -111,22 +111,28 @@ This roadmap outlines planned features and epics for the project. It's maintaine
 
 ---
 
-### 🎯 Next Priority: Epic-002 (Task Management Core)
+### 🎯 Next Priority: Epic-002 (Task Management Core) - IN PROGRESS! 🚀
 
-**Epic-002: Task Management Core** ⭐ **READY TO START**
+**Epic-002: Task Management Core** ⭐ **IN PROGRESS** (1/3 features complete)
 - **Priority**: Critical (Core Product)
-- **Status**: pending (blocked by Epic-001 ✅ **NOW UNBLOCKED**)
-- **Duration**: 2 weeks (13-16 days)
+- **Status**: in-progress (feature-013 ✅ complete)
+- **Duration**: 2 weeks (13-16 days) - **~4.5 days completed**
 - **File**: [epic-002-task-management-core.md](epics/epic-002-task-management-core.md)
 - **Description**: Rule-based task creation, automatic assignment, completion tracking
-- **Why Now**: Core value proposition of the product - Epic-001 complete, can start NOW
+- **Why Now**: Core value proposition of the product
 - **Dependencies**: Epic-001 ✅ **COMPLETE**
 - **Features**: 3 features defined (13-16 days total)
-  - [ ] [feature-013](features/feature-013-task-template-management.md): Task Template Management (4-5 days) **PENDING**
-  - [ ] [feature-014](features/feature-014-task-assignment-rule-engine.md): Task Assignment Rule Engine (5-6 days) **PENDING**
+  - ✅ [feature-013](features/done/feature-013-task-template-management.md): Task Template Management (4-5 days) **COMPLETED** 2025-12-19 🎉
+    - All 6 tasks completed: Backend API, Frontend Service, 3 UI Components, Integration Tests
+    - 181 backend tests passing, 195 frontend tests passing, 15 E2E scenarios
+    - Complete CRUD operations with validation and multi-tenant isolation
+    - PRs #103, #104, #111, #112, #113, #114 merged
+  - [ ] [feature-014](features/feature-014-task-assignment-rule-engine.md): Task Assignment Rule Engine (5-6 days) **NEXT PRIORITY** ⚡
   - [ ] [feature-015](features/feature-015-task-viewing-completion.md): Task Viewing & Completion (4-5 days) **PENDING**
 
-**THIS IS THE NEXT PRIORITY** - With Epic-001 complete, Epic-002 is unblocked and ready to start!
+**Progress**: 33% complete (1 of 3 features done) - Epic-002 is progressing on schedule!
+
+**NEXT UP**: Feature-014 (Task Assignment Rule Engine) - Ready to start!
 
 ---
 
@@ -231,6 +237,18 @@ _Features under consideration but not yet prioritized_
 ### December 2025
 
 #### Features
+- 🎉 **Feature-013: Task Template Management** (2025-12-19) **COMPLETED**
+  - Complete CRUD API for task templates with three rule types (daily, repeating, weekly_rotation)
+  - Backend: 181 passing integration tests covering all endpoints and validation scenarios
+  - Frontend: TaskService with reactive state management (signals)
+  - Frontend: TaskCreateComponent for creating new task templates
+  - Frontend: TaskListComponent for viewing and managing task templates
+  - Frontend: TaskEditComponent modal for editing existing templates
+  - E2E: 15 comprehensive test scenarios covering all user flows
+  - Multi-tenant data isolation verified at backend and E2E levels
+  - All 6 tasks completed in 4.5 days (vs 4-5 days estimated)
+  - Achievement: Complete task template management system operational
+  - [See all related PRs] #103, #104, #111, #112, #113, #114
 - 🎉 **Feature-011: Backend Testing Infrastructure** (2025-12-19) **COMPLETED**
   - Comprehensive unit and integration testing for Fastify backend
   - Test infrastructure: test database, fixtures, mocking utilities
