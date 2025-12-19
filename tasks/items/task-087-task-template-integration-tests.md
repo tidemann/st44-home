@@ -4,7 +4,7 @@
 - **ID**: task-087
 - **Feature**: [feature-013-task-template-management](../features/feature-013-task-template-management.md)
 - **Epic**: [epic-002-task-management-core](../epics/epic-002-task-management-core.md)
-- **Status**: pending
+- **Status**: in-progress
 - **Priority**: high
 - **Created**: 2025-12-19
 - **Assigned Agent**: orchestrator (coordinates backend + frontend testing)
@@ -367,3 +367,4 @@ test.describe('Task Template Management', () => {
 
 ## Progress Log
 - [2025-12-19] Task created for feature-013 breakdown
+- [2025-12-19 21:00] Status changed to in-progress, starting implementation
