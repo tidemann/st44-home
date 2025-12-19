@@ -192,7 +192,7 @@ describe('TaskService', () => {
 
       // Second request succeeds
       mockApiService.post.mockResolvedValueOnce(mockTask);
-      const result2$ = service.createTask('household-1', createRequest);
+      service.createTask('household-1', createRequest);
       // Wait for the promise to resolve
       await new Promise((resolve) => setTimeout(resolve, 0));
 

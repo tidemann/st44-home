@@ -114,7 +114,7 @@ export class TaskService {
    * @param activeOnly - Filter for active tasks only (default: true)
    * @returns Observable of task template array
    */
-  getTasks(householdId: string, activeOnly: boolean = true): Observable<TaskTemplate[]> {
+  getTasks(householdId: string, activeOnly = true): Observable<TaskTemplate[]> {
     this.loadingSignal.set(true);
     this.errorSignal.set(null);
 
