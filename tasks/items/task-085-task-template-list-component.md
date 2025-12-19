@@ -4,10 +4,10 @@
 - **ID**: task-085
 - **Feature**: [feature-013-task-template-management](../features/feature-013-task-template-management.md)
 - **Epic**: [epic-002-task-management-core](../epics/epic-002-task-management-core.md)
-- **Status**: pending
+- **Status**: in-progress
 - **Priority**: high
 - **Created**: 2025-12-19
-- **Assigned Agent**: frontend-agent
+- **Assigned Agent**: frontend-agent | orchestrator-agent
 - **Estimated Duration**: 5-6 hours
 
 ## Description
