@@ -228,6 +228,7 @@ scripts/                # Manual testing scripts (PowerShell)
 ```
 
 **scripts/ Directory**:
+
 - PowerShell scripts for manual API testing
 - Used during local development for quick verification
 - Complement automated tests (not a replacement)

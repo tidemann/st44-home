@@ -48,16 +48,31 @@ agent: orchestrator-agent
 11. **Implement solution**: Follow workflow in [Orchestrator Agent](../../.github/agents/orchestrator-agent.md)
 12. **Delegate to experts**: Assign subtasks to Frontend, Backend, Database agents as needed
 13. **Update progress**: Keep work item file and roadmap current during work
-14. **Create/Update PR**: Push changes and create/update PR following review-and-merge workflow:
+14. **Run Local Checks (MANDATORY - NEVER SKIP)**:
+    ```bash
+    # Format code (auto-fixes)
+    cd apps/frontend && npm run format
+    cd apps/backend && npm run format
     
-    a. **Format code**: `npm run format` in both frontend and backend
-    b. **Commit all changes**: Ensure all work committed to feature branch
-    c. **Push feature branch**: `git push` or `git push -u origin feature/branch-name`
-    d. **Check for existing PR**: `gh pr view --json number,state`
-    e. **Create PR if needed**: `gh pr create --title "type: description" --body "..." --base main`
-    f. **Record PR number** for next step
+    # Lint code (checks for issues)
+    cd apps/frontend && npm run lint
+    cd apps/backend && npm run lint
     
-15. **Wait for CI and Merge**: Complete review-and-merge workflow automatically:
+    # Build (verifies compilation)
+    cd apps/frontend && npm run build
+    cd apps/backend && npm run build
+    ```
+    **⚠️ CRITICAL**: If ANY check fails, fix locally and re-run. NEVER commit/push with failing checks.
+    
+15. **Create/Update PR**: Push changes and create/update PR (ONLY after checks pass):
+    
+    a. **Commit all changes**: `git add . && git commit -m "type: description"`
+    b. **Push feature branch**: `git push` or `git push -u origin feature/branch-name`
+    c. **Check for existing PR**: `gh pr view --json number,state`
+    d. **Create PR if needed**: `gh pr create --title "type: description" --body "..." --base main`
+    e. **Record PR number** for next step
+    
+16. **Wait for CI and Merge**: Complete review-and-merge workflow automatically:
     
     a. **Poll CI status**: 
        ```bash
@@ -68,9 +83,9 @@ agent: orchestrator-agent
        gh pr merge <PR_NUMBER> --squash --delete-branch
        ```
     c. **If checks FAIL**: Fix issues, commit, push, and re-poll (do not stop or ask user)
-    d. **Signal**: After successful merge, emit "merge complete" and proceed to step 16
+    d. **Signal**: After successful merge, emit "merge complete" and proceed to step 17
     
-16. **CRITICAL: Update Local Main Branch** (MANDATORY after every merge):
+17. **CRITICAL: Update Local Main Branch** (MANDATORY after every merge):
     ```bash
     git checkout main
     git pull origin main
@@ -79,12 +94,12 @@ agent: orchestrator-agent
     - Prevents merge conflicts and outdated code issues
     - **NEVER skip this step** - it's critical for workflow continuity
     
-17. **Auto-Resume Work**: Immediately continue with next priority:
+18. **Auto-Resume Work**: Immediately continue with next priority:
     - Return to step 1 (check ROADMAP.md for next priority)
     - Do NOT ask user permission to continue
     - Only stop if: no more work items, or unresolvable blocker
     
-18. **Update completion**: After merge and pulling main:
+19. **Update completion**: After merge and pulling main:
     - **CRITICAL**: Move work item file to appropriate `done/` folder:
       ```bash
       # Move to done folder

@@ -197,20 +197,37 @@ git checkout -b feature/descriptive-name
 #### PR Creation and Merge Workflow (AUTOMATED)
 When work is complete, follow this workflow WITHOUT stopping for user confirmation:
 
-**Step 1: Format and Commit**
+**Step 1: Local Checks (MANDATORY - NEVER SKIP)**
 ```bash
-# Format code
+# Format code (fixes issues automatically)
 cd apps/frontend && npm run format
 cd ../backend && npm run format
 
-# Commit all changes
+# Lint code (checks for issues)
+cd apps/frontend && npm run lint
+cd ../backend && npm run lint
+
+# Build (verifies TypeScript compilation)
+cd apps/frontend && npm run build
+cd ../backend && npm run build
+```
+
+**⚠️ CRITICAL**: If ANY check fails:
+1. Fix the issues locally
+2. Re-run the checks
+3. Only proceed when ALL checks pass
+4. NEVER commit and push hoping CI will pass
+
+**Step 2: Commit Changes**
+```bash
+# Only commit after all checks pass
 git add .
 git commit -m "type: description"
 ```
 
-**Step 2: Push and Create PR**
+**Step 3: Push and Create PR**
 ```bash
-# Push feature branch
+# Push feature branch (only after local checks pass)
 git push -u origin feature/branch-name
 
 # Check for existing PR
@@ -222,7 +239,7 @@ gh pr create --title "type: description" \
   --base main
 ```
 
-**Step 3: Wait for CI and Merge (AUTOMATED)**
+**Step 4: Wait for CI and Merge (AUTOMATED)**
 ```bash
 # Poll CI status (repeat until complete)
 gh pr view <PR_NUMBER> --json statusCheckRollup,mergeable,state
@@ -231,7 +248,7 @@ gh pr view <PR_NUMBER> --json statusCheckRollup,mergeable,state
 gh pr merge <PR_NUMBER> --squash --delete-branch
 ```
 
-**Step 4: CRITICAL - Update Local Main Branch (MANDATORY)**
+**Step 5: CRITICAL - Update Local Main Branch (MANDATORY)**
 ```bash
 # Switch to main and pull latest
 git checkout main
@@ -241,12 +258,13 @@ git pull origin main
 - Prevents merge conflicts and outdated code issues
 - Critical for workflow continuity
 
-**Step 5: Handle CI Failures**
-- If CI checks fail: Fix issues, commit, push, and re-poll
+**Step 6: Handle CI Failures**
+- If CI checks still fail (should be rare after local checks): Fix issues, commit, push, and re-poll
 - Do NOT stop or ask user for help unless unresolvable
 - Continue with next priority after successful merge
+- **Remember**: Local checks should catch 99% of issues
 
-**Step 6: Auto-Resume**
+**Step 7: Auto-Resume**
 - After pulling main, immediately return to continue-work workflow
 - Check ROADMAP.md for next priority
 - Do NOT ask permission to continue

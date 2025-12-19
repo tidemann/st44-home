@@ -1,0 +1,177 @@
+<div class="task-list">
+  <div class="list-header">
+    <h2>Task Templates</h2>
+
+    <!-- Filters & Sort -->
+    <div class="controls">
+      <div class="filter-toggle" role="group" aria-label="Filter tasks">
+        <label class="filter-option">
+          <input
+            type="radio"
+            name="filter"
+            [checked]="showActiveOnly()"
+            (change)="onFilterChange(true)"
+            aria-label="Show active tasks only"
+          />
+          Active only
+        </label>
+        <label class="filter-option">
+          <input
+            type="radio"
+            name="filter"
+            [checked]="!showActiveOnly()"
+            (change)="onFilterChange(false)"
+            aria-label="Show all tasks"
+          />
+          Show all
+        </label>
+      </div>
+
+      <div class="sort-control">
+        <label for="sort">Sort by:</label>
+        <select id="sort" (change)="onSortChange($event)" [value]="sortBy()">
+          <option value="created">Newest first</option>
+          <option value="title">Title (A-Z)</option>
+          <option value="rule_type">Rule type</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <!-- Loading State -->
+  @if (taskService.loading()) {
+    <div class="loading" role="status" aria-live="polite">
+      <div class="spinner" aria-hidden="true"></div>
+      <p>Loading tasks...</p>
+    </div>
+  }
+
+  <!-- Error State -->
+  @if (taskService.error()) {
+    <div class="error-state" role="alert" aria-live="assertive">
+      <p>{{ taskService.error() }}</p>
+      <button type="button" (click)="loadTasks()" class="btn-secondary">Try again</button>
+    </div>
+  }
+
+  <!-- Empty State -->
+  @if (!taskService.loading() && !taskService.error() && displayedTasks().length === 0) {
+    <div class="empty-state">
+      <p class="empty-title">No task templates yet</p>
+      <p class="empty-description">Create your first task to get started!</p>
+    </div>
+  }
+
+  <!-- Task List -->
+  @if (!taskService.loading() && !taskService.error() && displayedTasks().length > 0) {
+    <div class="task-cards">
+      @for (task of displayedTasks(); track task.id) {
+        <article class="task-card" [class.inactive]="!task.active">
+          <div class="task-header">
+            <h3>{{ task.name }}</h3>
+            <span class="rule-badge" [attr.data-rule]="task.rule_type">
+              {{ getRuleTypeLabel(task.rule_type) }}
+            </span>
+          </div>
+
+          @if (task.description) {
+            <p class="description">{{ task.description }}</p>
+          }
+
+          <div class="task-details">
+            <div class="detail-row">
+              <strong>Assigned to:</strong>
+              <span>{{ getChildrenNames(task) }}</span>
+            </div>
+
+            @if (task.points) {
+              <div class="detail-row">
+                <strong>Points:</strong>
+                <span>{{ task.points }}</span>
+              </div>
+            }
+
+            @if (task.rule_type === 'repeating' && task.rule_config?.repeat_days) {
+              <div class="detail-row">
+                <strong>Days:</strong>
+                <span>{{ getRepeatDaysLabel(task.rule_config?.repeat_days) }}</span>
+              </div>
+            }
+
+            @if (task.rule_type === 'weekly_rotation' && task.rule_config?.rotation_type) {
+              <div class="detail-row">
+                <strong>Rotation:</strong>
+                <span>{{ getRotationTypeLabel(task.rule_config?.rotation_type) }}</span>
+              </div>
+            }
+
+            <div class="detail-row">
+              <strong>Status:</strong>
+              <span [class.status-active]="task.active" [class.status-inactive]="!task.active">
+                {{ task.active ? 'Active' : 'Inactive' }}
+              </span>
+            </div>
+          </div>
+
+          <div class="task-actions">
+            <button
+              type="button"
+              (click)="onEdit(task)"
+              class="btn-secondary btn-sm"
+              [attr.aria-label]="'Edit ' + task.name"
+            >
+              Edit
+            </button>
+            <button
+              type="button"
+              (click)="onToggleActive(task)"
+              class="btn-secondary btn-sm"
+              [attr.aria-label]="(task.active ? 'Disable ' : 'Enable ') + task.name"
+            >
+              {{ task.active ? 'Disable' : 'Enable' }}
+            </button>
+            <button
+              type="button"
+              (click)="onDeleteClick(task)"
+              class="btn-danger btn-sm"
+              [attr.aria-label]="'Delete ' + task.name"
+            >
+              Delete
+            </button>
+          </div>
+        </article>
+      }
+    </div>
+  }
+
+  <!-- Delete Confirmation Dialog -->
+  @if (taskToDelete()) {
+    <div
+      class="dialog-overlay"
+      (click)="cancelDelete()"
+      (keydown.escape)="cancelDelete()"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="dialog-title"
+      tabindex="-1"
+    >
+      <div
+        class="dialog"
+        (click)="$event.stopPropagation()"
+        (keydown.enter)="$event.stopPropagation()"
+        tabindex="0"
+      >
+        <h3 id="dialog-title">Delete Task Template?</h3>
+        <p>
+          Are you sure you want to delete
+          <strong>"{{ taskToDelete()?.name }}"</strong>? This will remove the template but preserve
+          existing task assignments.
+        </p>
+        <div class="dialog-actions">
+          <button type="button" (click)="cancelDelete()" class="btn-secondary">Cancel</button>
+          <button type="button" (click)="confirmDelete()" class="btn-danger">Delete</button>
+        </div>
+      </div>
+    </div>
+  }
+</div>
