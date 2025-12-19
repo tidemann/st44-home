@@ -4,7 +4,7 @@
 - **ID**: task-078
 - **Feature**: Bug Fix (feature-003 - Household Management)
 - **Epic**: epic-001 - Multi-Tenant Foundation
-- **Status**: pending
+- **Status**: in-progress
 - **Priority**: high
 - **Created**: 2025-12-19
 - **Assigned Agent**: backend
@@ -109,3 +109,7 @@ export const environment = {
 
 ## Progress Log
 - [2025-12-19 11:15] Task created based on user-reported bug
+- [2025-12-19] Status changed to in-progress, investigating root cause
+- [2025-12-19] Root cause found: ApiService has baseUrl = `${environment.apiUrl}/api`
+- [2025-12-19] ChildrenService adds `/api/` prefix, causing double `/api/api/`
+- [2025-12-19] Fix: Remove `/api/` prefix from ChildrenService endpoint calls
