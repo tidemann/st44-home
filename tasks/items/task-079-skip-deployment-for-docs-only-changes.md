@@ -4,7 +4,7 @@
 - **ID**: task-079
 - **Feature**: DevOps Optimization
 - **Epic**: N/A (Infrastructure improvement)
-- **Status**: pending
+- **Status**: in-progress
 - **Priority**: medium
 - **Created**: 2025-12-19
 - **Assigned Agent**: orchestrator (DevOps)
@@ -137,3 +137,6 @@ fi
 
 ## Progress Log
 - [2025-12-19 11:25] Task created based on user feedback about unnecessary deployments
+- [2025-12-19] Status changed to in-progress
+- [2025-12-19] Implementing Option B: dorny/paths-filter action for clean path detection
+- [2025-12-19] Will add path filter to deploy.yml to check for code changes
