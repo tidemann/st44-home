@@ -113,10 +113,10 @@ This roadmap outlines planned features and epics for the project. It's maintaine
 
 ### 🎯 Next Priority: Epic-002 (Task Management Core) - IN PROGRESS! 🚀
 
-**Epic-002: Task Management Core** ⭐ **IN PROGRESS** (1/3 features complete)
+**Epic-002: Task Management Core** ⭐ **IN PROGRESS** (2/3 features complete)
 - **Priority**: Critical (Core Product)
-- **Status**: in-progress (feature-013 ✅ complete)
-- **Duration**: 2 weeks (13-16 days) - **~4.5 days completed**
+- **Status**: in-progress (feature-013 ✅ complete, feature-014 ✅ complete)
+- **Duration**: 2 weeks (13-16 days) - **~7 days completed**
 - **File**: [epic-002-task-management-core.md](epics/epic-002-task-management-core.md)
 - **Description**: Rule-based task creation, automatic assignment, completion tracking
 - **Why Now**: Core value proposition of the product
@@ -127,12 +127,18 @@ This roadmap outlines planned features and epics for the project. It's maintaine
     - 181 backend tests passing, 195 frontend tests passing, 15 E2E scenarios
     - Complete CRUD operations with validation and multi-tenant isolation
     - PRs #103, #104, #111, #112, #113, #114 merged
-  - [ ] [feature-014](features/feature-014-task-assignment-rule-engine.md): Task Assignment Rule Engine (5-6 days) **NEXT PRIORITY** ⚡
-  - [ ] [feature-015](features/feature-015-task-viewing-completion.md): Task Viewing & Completion (4-5 days) **PENDING**
+  - ✅ [feature-014](features/done/feature-014-task-assignment-rule-engine.md): Task Assignment Rule Engine (5-6 days) **COMPLETED** 2025-12-19 🎉
+    - All 3 tasks completed: Assignment Generation Service, Assignment API Endpoints, Integration Tests
+    - 181 backend integration tests passing (42 service + 22 API + 117 existing)
+    - All 4 rule types working: Daily, Repeating, Weekly Odd/Even, Alternating
+    - Complete assignment generation with idempotency and multi-tenant isolation
+    - Database migration 020 (generator schema) + 021 (rename due_date→date)
+    - PRs #115, #116, #117 merged
+  - [ ] [feature-015](features/feature-015-task-viewing-completion.md): Task Viewing & Completion (4-5 days) **NEXT PRIORITY** ⚡
 
-**Progress**: 33% complete (1 of 3 features done) - Epic-002 is progressing on schedule!
+**Progress**: 67% complete (2 of 3 features done) - Epic-002 progressing fast!
 
-**NEXT UP**: Feature-014 (Task Assignment Rule Engine) - Ready to start!
+**NEXT UP**: Feature-015 (Task Viewing & Completion) - Ready to start!
 
 ---
 
@@ -237,6 +243,17 @@ _Features under consideration but not yet prioritized_
 ### December 2025
 
 #### Features
+- 🎉 **Feature-014: Task Assignment Rule Engine** (2025-12-19) **COMPLETED**
+  - Assignment generation service with all 4 rule types: Daily, Repeating, Weekly Odd/Even, Alternating
+  - Backend: 181 passing integration tests (42 service + 22 API + 117 existing)
+  - ISO week-based rotation logic for accurate odd/even week assignments
+  - Idempotent assignment generation (safe to re-run)
+  - Database migrations: 020 (generator schema) + 021 (rename due_date→date, nullable child_id)
+  - API endpoints: POST /api/households/:id/generate-assignments, GET /api/households/:id/assignments
+  - Comprehensive test coverage: assignment calculation, date filtering, multi-tenant isolation
+  - All 3 tasks completed in ~2.5 days (vs 5-6 days estimated)
+  - Achievement: Complete automated task assignment system operational
+  - [See all related PRs] #115, #116, #117
 - 🎉 **Feature-013: Task Template Management** (2025-12-19) **COMPLETED**
   - Complete CRUD API for task templates with three rule types (daily, repeating, weekly_rotation)
   - Backend: 181 passing integration tests covering all endpoints and validation scenarios
