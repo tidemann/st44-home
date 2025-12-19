@@ -161,12 +161,149 @@ Update `.github/prompts/` to use minimal delegation:
 - **Simpler debugging**: Each agent's context is traceable
 - **Faster execution**: Less context to process
 
+## Monitoring & Verification
+
+### How to Verify Correct Agent Assignment
+
+**During Development:**
+1. **Check runSubagent calls**: Look for `agentName` parameter in orchestrator logs
+   ```
+   runSubagent({ agentName: "backend-agent", ... })  ✅ Correct
+   runSubagent({ agentName: "frontend-agent", ... }) ✅ Correct
+   runSubagent({ ... })                              ❌ Wrong - no agent specified
+   ```
+
+2. **Check task file metadata**: Verify `Assigned Agent` field matches actual invocation
+   ```markdown
+   - **Assigned Agent**: backend-agent  ← Should match runSubagent call
+   ```
+
+3. **Review agent response**: Agent should identify itself in first message
+   ```
+   "I'm the backend-agent, implementing task-078..."  ✅ Correct
+   "Let me implement this..."                         ❌ Unclear which agent
+   ```
+
+**In Chat Logs:**
+- Look for explicit agent mode switch: "You are currently running in 'backend-agent' mode"
+- Verify agent name in `<modeInstructions>` section of context
+- Check for agent role declaration at start of response
+
+### How to Verify Clean Context Window
+
+**Method 1: Check Agent's First Actions**
+A clean context window means the agent should:
+1. ✅ Start by reading the task file: `read_file(tasks/items/task-XXX.md)`
+2. ✅ Read area-specific AGENTS.md: `read_file(apps/backend/AGENTS.md)`
+3. ❌ NOT reference orchestrator conversation details
+4. ❌ NOT mention previous tasks or discussions
+
+**Method 2: Token Usage Inspection**
+- Initial agent context should be ~5K-10K tokens (task file + agent spec + system prompt)
+- If initial context is 30K+ tokens, it inherited orchestrator history
+- Use GitHub Copilot's token counter in developer tools
+
+**Method 3: Check for Context Leakage**
+Watch for these signs of inherited context:
+- ❌ Agent mentions "as we discussed earlier" (no prior discussion with this agent)
+- ❌ Agent references other tasks without reading their files
+- ❌ Agent knows about orchestrator's decisions without reading them
+- ✅ Agent asks questions or reads files to get context
+
+**Method 4: Inspect runSubagent Prompt**
+The delegation prompt should be minimal:
+```typescript
+// ✅ GOOD - Minimal prompt
+runSubagent({
+  agentName: "backend-agent",
+  prompt: "Implement task-078: Fix children CRUD API routing. Read task file for full context.",
+  description: "Fix API routing bug"
+})
+
+// ❌ BAD - Verbose prompt with orchestrator context
+runSubagent({
+  agentName: "backend-agent",
+  prompt: "Earlier we discussed the household management feature and found that... 
+          (500 words of orchestrator context)...
+          Now implement task-078...",
+  description: "Fix API routing bug"
+})
+```
+
+### Monitoring Tools
+
+**1. Add Logging to Task Files**
+Update task files to include handover tracking:
+```markdown
+## Handover Log
+- [2025-12-19 11:30] Orchestrator: Created task, assigned to backend-agent
+- [2025-12-19 11:31] Backend Agent: Started, read task file, token count: 8.2K
+- [2025-12-19 11:35] Backend Agent: Completed, PR #99 created
+```
+
+**2. Agent Response Template**
+Require agents to start with context declaration:
+```markdown
+## Context Verification
+- Agent: backend-agent
+- Task: task-078
+- Context source: Read task-078 file + apps/backend/AGENTS.md
+- Starting token count: 8,234
+- Inherited orchestrator context: NO
+```
+
+**3. Create Handover Checklist**
+Add to orchestrator workflow:
+```
+Before delegating:
+- [ ] Task file is comprehensive and self-contained
+- [ ] Assigned Agent field is set correctly
+- [ ] Delegation prompt is minimal (<100 words)
+- [ ] No orchestrator context copied into prompt
+
+After delegation:
+- [ ] Agent identified itself correctly
+- [ ] Agent read task file as first action
+- [ ] Agent didn't reference orchestrator discussions
+- [ ] Token usage is reasonable (~5K-15K initial)
+```
+
+**4. Post-Implementation Review**
+After task completion, verify:
+- Agent name in PR matches task assignment
+- Agent didn't exhibit knowledge it shouldn't have
+- Token usage was efficient
+- Implementation followed task file requirements
+
+### Red Flags (Context Leakage)
+
+Watch for these indicators of improper handover:
+- 🚩 Agent starts working without reading task file
+- 🚩 Agent references "previous conversation" or "as discussed"
+- 🚩 Agent knows orchestrator's reasoning without asking
+- 🚩 Initial token count > 20K (suggests inherited context)
+- 🚩 Agent uses orchestrator's exact phrasing from delegation prompt
+- 🚩 Agent implements something not in task file
+
+### Success Indicators (Clean Handover)
+
+Look for these signs of proper handover:
+- ✅ Agent's first tool call is reading the task file
+- ✅ Agent asks clarifying questions when needed
+- ✅ Agent reads AGENTS.md for area-specific context
+- ✅ Initial token count 5K-15K (task + agent spec only)
+- ✅ Agent explicitly states "reading task-078 for requirements"
+- ✅ Implementation matches task file exactly
+
 ## Testing Strategy
 1. Measure token usage before/after on sample tasks
 2. Run task-078 with new pattern, compare to old pattern
 3. Verify agents successfully read task files
 4. Confirm agents don't reference orchestrator context
 5. Check PR quality remains high
+6. **Monitor handover using checklist above**
+7. **Review token counts at agent initialization**
+8. **Check for context leakage indicators**
 
 ## Files to Update
 - `.github/agents/orchestrator-agent.md` - Handover pattern
