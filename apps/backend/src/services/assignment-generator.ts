@@ -373,7 +373,7 @@ async function generateWeeklyRotationAssignments(
     if (lastAssignmentResult.rows.length > 0) {
       const lastChildId = lastAssignmentResult.rows[0].child_id;
       const lastChildIndex = assignedChildren.indexOf(lastChildId);
-      
+
       if (lastChildIndex !== -1) {
         // Found last child in current assigned_children list - rotate to next
         nextChildIndex = (lastChildIndex + 1) % assignedChildren.length;
@@ -385,7 +385,7 @@ async function generateWeeklyRotationAssignments(
 
     // All dates in the range get the same child (weekly rotation)
     const childId = assignedChildren[nextChildIndex];
-    
+
     for (const date of dates) {
       assignments.push({
         task_id: task.id,
