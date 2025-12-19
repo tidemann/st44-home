@@ -4,11 +4,13 @@
 - **ID**: task-083
 - **Feature**: [feature-013-task-template-management](../features/feature-013-task-template-management.md)
 - **Epic**: [epic-002-task-management-core](../epics/epic-002-task-management-core.md)
-- **Status**: pending
+- **Status**: completed
 - **Priority**: critical
 - **Created**: 2025-12-19
+- **Completed**: 2025-12-19
 - **Assigned Agent**: frontend-agent
 - **Estimated Duration**: 3-4 hours
+- **Actual Duration**: ~1.5 hours
 
 ## Description
 Create Angular service for task template API integration with signals-based state management. This service provides methods for CRUD operations on task templates and maintains reactive state for the frontend components.
@@ -86,23 +88,23 @@ public readonly inactiveTasks = computed(() =>
 - Error handling with user-friendly messages
 
 ## Acceptance Criteria
-- [ ] Service created at `apps/frontend/src/app/services/task.service.ts`
-- [ ] TypeScript interfaces defined for all API request/response types
-- [ ] createTask() sends POST request and adds to state on success
-- [ ] getTasks() sends GET request and updates state
-- [ ] getTasks() supports activeOnly parameter
-- [ ] getTask() sends GET request for single task
-- [ ] updateTask() sends PUT request and updates state on success
-- [ ] deleteTask() sends DELETE request and removes from state on success
-- [ ] All methods return Observables for component subscription
-- [ ] Loading state managed with signals during API calls
-- [ ] Error state managed with signals for display in components
-- [ ] Signals are readonly from outside the service
-- [ ] Computed signals for active/inactive tasks
-- [ ] Error messages are user-friendly (not raw API errors)
-- [ ] Service follows Angular standalone pattern
-- [ ] Service uses inject() for dependencies
-- [ ] Service has providedIn: 'root'
+- [x] Service created at `apps/frontend/src/app/services/task.service.ts`
+- [x] TypeScript interfaces defined for all API request/response types
+- [x] createTask() sends POST request and adds to state on success
+- [x] getTasks() sends GET request and updates state
+- [x] getTasks() supports activeOnly parameter
+- [x] getTask() sends GET request for single task
+- [x] updateTask() sends PUT request and updates state on success
+- [x] deleteTask() sends DELETE request and removes from state on success
+- [x] All methods return Observables for component subscription
+- [x] Loading state managed with signals during API calls
+- [x] Error state managed with signals for display in components
+- [x] Signals are readonly from outside the service
+- [x] Computed signals for active/inactive tasks
+- [x] Error messages are user-friendly (not raw API errors)
+- [x] Service follows Angular standalone pattern
+- [x] Service uses inject() for dependencies
+- [x] Service has providedIn: 'root'
 
 ## Technical Implementation
 
@@ -299,3 +301,13 @@ Unit tests should cover:
 
 ## Progress Log
 - [2025-12-19] Task created for feature-013 breakdown
+- [2025-12-19 12:25] Status changed to in-progress - Delegating to frontend-agent
+- [2025-12-19 12:33] Implementation completed:
+  - Created TaskService with all CRUD methods
+  - Implemented signals-based state management
+  - Added computed signals for active/inactive tasks
+  - Note: Updated interfaces to match actual backend API (uses 'name' not 'title', nested rule_config)
+  - Created comprehensive unit tests (45 tests)
+  - All tests passing ✅
+  - Code formatted with Prettier ✅
+- [2025-12-19 12:35] Status changed to completed
