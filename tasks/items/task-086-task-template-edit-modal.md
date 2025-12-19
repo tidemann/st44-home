@@ -4,7 +4,7 @@
 - **ID**: task-086
 - **Feature**: [feature-013-task-template-management](../features/feature-013-task-template-management.md)
 - **Epic**: [epic-002-task-management-core](../epics/epic-002-task-management-core.md)
-- **Status**: pending
+- **Status**: in-progress
 - **Priority**: high
 - **Created**: 2025-12-19
 - **Assigned Agent**: frontend-agent
@@ -459,4 +459,6 @@ Unit tests should cover:
 - `apps/frontend/src/app/components/task-edit/task-edit.component.spec.ts`
 
 ## Progress Log
+- [2025-12-19 21:27] Task status changed to in-progress
+- [2025-12-19 21:27] Delegated to frontend-agent for implementation
 - [2025-12-19] Task created for feature-013 breakdown
