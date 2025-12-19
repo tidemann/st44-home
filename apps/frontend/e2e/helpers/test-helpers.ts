@@ -7,8 +7,8 @@ import { Pool } from 'pg';
 export async function resetTestDatabase(): Promise<void> {
   const pool = new Pool({
     host: 'localhost',
-    port: 55432, // Test DB port from task-028
-    database: 'st44_test',
+    port: 55432, // Test DB port from E2E workflow
+    database: 'st44', // Must match E2E workflow postgres service POSTGRES_DB
     user: 'postgres',
     password: 'postgres',
   });
