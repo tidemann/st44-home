@@ -311,7 +311,8 @@ onSubmit(): void {
 - `npm run lint` - Run ESLint
 - `npm run lint -- --fix` - Auto-fix linting issues
 - `npm run format` - Format with Prettier
-- `npm run test` - Run tests
+- `npm run test:ci` - Run tests once (for agents/CI)
+- `npm run test:watch` - Run tests in watch mode (for development)
 
 ### Git Workflow
 - Create feature branch from main
