@@ -208,9 +208,33 @@ Optional:
 - `HOST` - Server host (default: 0.0.0.0)
 - `CORS_ORIGIN` - CORS origin (default: \*)
 
-## File Organization (Future)
+## File Organization
 
-As the API grows, organize into:
+Current structure:
+
+```
+src/
+├── server.ts           # Entry point, server setup
+├── routes/             # Route handlers organized by feature
+├── middleware/         # Request/response middleware
+├── test-helpers/       # Testing utilities and fixtures
+└── utils/              # Shared utility functions
+
+scripts/                # Manual testing scripts (PowerShell)
+├── README.md           # Script documentation
+├── test-households.ps1 # Household CRUD testing
+├── test-children-crud.ps1
+└── test-household-membership.ps1
+```
+
+**scripts/ Directory**:
+- PowerShell scripts for manual API testing
+- Used during local development for quick verification
+- Complement automated tests (not a replacement)
+- Self-contained (create their own test data)
+- See `scripts/README.md` for usage instructions
+
+As the API grows further, organize into:
 
 ```
 src/
@@ -455,10 +479,12 @@ curl -v http://localhost:3000/api/endpoint
 - `package.json` - Dependencies and scripts
 - `tsconfig.json` - TypeScript configuration
 - `Dockerfile` - Production image
+- `scripts/` - Manual testing PowerShell scripts
+- `TESTING.md` - Testing strategy and guidelines
 - `../frontend/src/app/services/` - Frontend API clients
 - `../../docker/postgres/init.sql` - Database schema
 
 ---
 
-**Last Updated**: 2025-12-13
+**Last Updated**: 2025-12-19
 **Update This File**: When adding endpoints, changing patterns, or updating architecture
