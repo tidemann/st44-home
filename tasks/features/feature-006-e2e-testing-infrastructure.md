@@ -3,9 +3,10 @@
 ## Metadata
 - **ID**: feature-006
 - **Epic**: epic-006 - Testing & Quality Assurance Infrastructure
-- **Status**: ready-for-implementation
+- **Status**: partially-complete (8/9 tasks complete - OAuth E2E tests deferred)
 - **Priority**: critical
 - **Created**: 2025-12-14
+- **Completed**: 2025-12-19 (8/9 tasks)
 - **Estimated Duration**: 5-6 days
 
 ## Description
@@ -180,18 +181,20 @@ Implement comprehensive end-to-end testing infrastructure using Playwright to te
 
 ## Tasks
 
-- [ ] [task-027](../items/task-027-install-configure-playwright.md): Install and configure Playwright (4-6 hours)
-- [ ] [task-028](../items/task-028-setup-test-database.md): Set up test database and migration runner (4-6 hours)
-- [ ] [task-029](../items/task-029-create-test-fixtures-utilities.md): Create test fixtures and utilities (4-6 hours)
-- [ ] [task-030](../items/task-030-registration-flow-e2e-tests.md): Registration flow E2E tests ⚠️ **CRITICAL** (6-8 hours)
-- [ ] [task-031](../items/task-031-login-flow-e2e-tests.md): Login flow E2E tests (4-6 hours)
-- [ ] [task-032](../items/task-032-database-validation-tests.md): Database validation E2E tests (3-4 hours)
-- [ ] [task-033](../items/task-033-google-oauth-e2e-tests.md): Google OAuth E2E tests (optional) (4-5 hours)
-- [ ] [task-034](../items/task-034-integrate-e2e-tests-ci-cd.md): Integrate E2E tests into CI/CD ⚠️ **CRITICAL** (4-6 hours)
-- [ ] [task-035](../items/task-035-e2e-testing-documentation.md): E2E testing documentation (2-3 hours)
+- [x] [task-027](../items/done/task-027-install-configure-playwright.md): Install and configure Playwright (4-6 hours) **COMPLETED** [PR #41]
+- [x] [task-028](../items/done/task-028-setup-test-database.md): Set up test database and migration runner (4-6 hours) **COMPLETED** [PR #43]
+- [x] [task-029](../items/done/task-029-create-test-fixtures-utilities.md): Create test fixtures and utilities (4-6 hours) **COMPLETED** [PR #45]
+- [x] [task-030](../items/done/task-030-registration-flow-e2e-tests.md): Registration flow E2E tests ⚠️ **CRITICAL** (6-8 hours) **COMPLETED** [PR #46]
+- [x] [task-031](../items/done/task-031-login-flow-e2e-tests.md): Login flow E2E tests (4-6 hours) **COMPLETED** [PR #47]
+- [x] [task-032](../items/done/task-032-database-validation-tests.md): Database validation E2E tests (3-4 hours) **COMPLETED** [PR #48]
+- [ ] [task-033](../items/task-033-google-oauth-e2e-tests.md): Google OAuth E2E tests (optional) (4-5 hours) **DEFERRED** (optional for MVP)
+- [x] [task-034](../items/done/task-034-integrate-e2e-tests-ci-cd.md): Integrate E2E tests into CI/CD ⚠️ **CRITICAL** (4-6 hours) **COMPLETED** [PR #70]
+- [x] [task-035](../items/done/task-035-e2e-testing-documentation.md): E2E testing documentation (2-3 hours) **COMPLETED**
 
-**Total Estimated Time**: 35-46 hours (5-6 days)
-**Critical Path**: task-027 → task-028 → task-029 → task-030 → task-034
+**Total Estimated Time**: 35-46 hours (5-6 days)  
+**Actual Time**: ~30 hours (4 days)  
+**Progress**: 8/9 tasks complete (89%) - 1 optional task deferred  
+**Critical Path**: task-027 → task-028 → task-029 → task-030 → task-034 ✅ **COMPLETE**
 
 ## Dependencies
 
