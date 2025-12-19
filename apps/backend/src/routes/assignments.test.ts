@@ -575,7 +575,7 @@ describe('Assignments API', () => {
         headers: { Authorization: `Bearer ${adminToken}` },
       });
 
-      assert.strictEqual(response.statusCode, 403); // Middleware validates membership first
+      assert.strictEqual(response.statusCode, 400); // Invalid UUID format checked first
     });
 
     test('validates invalid date format (400)', async () => {
