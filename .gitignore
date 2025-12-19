@@ -49,6 +49,17 @@ Thumbs.db
 # Docker
 docker-compose.override.yml
 
+# Temporary files
+.temp/
+*.log
+
+# Test results
+test-results/
+playwright-report/
+apps/frontend/test-results/
+apps/frontend/playwright-report/
+apps/frontend/test-results.json
+
 # Temporary documentation
 MIGRATION.md
 NEXT_STEPS.md
