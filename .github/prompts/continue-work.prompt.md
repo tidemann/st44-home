@@ -61,6 +61,10 @@ agent: orchestrator-agent
     # Build (verifies compilation)
     cd apps/frontend && npm run build
     cd apps/backend && npm run build
+    
+    # Run tests (catches failures before CI)
+    cd apps/frontend && npm run test:ci
+    cd apps/backend && npm run test
     ```
     **⚠️ CRITICAL**: If ANY check fails, fix locally and re-run. NEVER commit/push with failing checks.
     

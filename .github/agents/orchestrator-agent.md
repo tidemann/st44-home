@@ -210,6 +210,10 @@ cd ../backend && npm run lint
 # Build (verifies TypeScript compilation)
 cd apps/frontend && npm run build
 cd ../backend && npm run build
+
+# Run tests (catches failures before CI)
+cd apps/frontend && npm run test:ci
+cd ../backend && npm run test
 ```
 
 **⚠️ CRITICAL**: If ANY check fails:
