@@ -4,7 +4,7 @@
 - **ID**: task-081
 - **Feature**: CI/CD E2E Testing
 - **Epic**: epic-006 - Testing & Quality Assurance Infrastructure
-- **Status**: pending
+- **Status**: in-progress
 - **Priority**: high
 - **Created**: 2025-12-19
 - **Assigned Agent**: orchestrator (DevOps/CI)
@@ -144,3 +144,8 @@ Likely files to check:
 
 ## Progress Log
 - [2025-12-19 11:45] Task created based on scheduled E2E test CI failure
+- [2025-12-19] Status changed to in-progress, investigating workflow files
+- [2025-12-19] Found issue: e2e.yml uses `cache: 'npm'` without `cache-dependency-path`
+- [2025-12-19] Applied fix: Added cache-dependency-path with both frontend and backend lock files
+- [2025-12-19] Verified both package-lock.json files exist at expected paths
+- [2025-12-19] Ready to test in CI
