@@ -35,16 +35,25 @@ export class LoginPage extends BasePage {
       await this.rememberMeCheckbox.check();
     }
 
-    await this.loginButton.click();
+    // Wait a moment for Angular form validation to update button state
+    await this.page.waitForTimeout(100);
 
-    // Wait for navigation or error message
-    await Promise.race([
-      this.page.waitForURL((url) => !url.pathname.includes('/login'), { timeout: 5000 }),
-      this.errorMessage.waitFor({ state: 'visible', timeout: 5000 }).catch(() => {}),
-    ]);
+    // Check if button is enabled before clicking
+    const isEnabled = await this.loginButton.isEnabled();
+    if (isEnabled) {
+      await this.loginButton.click();
 
-    // Give Angular time to process response and store tokens
-    await this.page.waitForTimeout(500);
+      // Wait for navigation or error message
+      await Promise.race([
+        this.page.waitForURL((url) => !url.pathname.includes('/login'), { timeout: 5000 }),
+        this.errorMessage.waitFor({ state: 'visible', timeout: 5000 }).catch(() => {}),
+      ]);
+
+      // Give Angular time to process response and store tokens
+      await this.page.waitForTimeout(500);
+    }
+    // If button is disabled, don't attempt to click it
+    // The test should verify the disabled state instead
   }
 
   async getErrorMessage(): Promise<string | null> {

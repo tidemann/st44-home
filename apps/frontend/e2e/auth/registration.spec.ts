@@ -204,15 +204,15 @@ test.describe('User Registration Flow', () => {
 
     // ASSERT: Verify all expected columns exist and have correct types
     const result = await pool.query(
-      `SELECT 
-        id, 
-        email, 
-        password_hash, 
-        oauth_provider, 
-        oauth_provider_id, 
-        created_at, 
+      `SELECT
+        id,
+        email,
+        password_hash,
+        oauth_provider,
+        oauth_provider_id,
+        created_at,
         updated_at
-      FROM users 
+      FROM users
       WHERE email = $1`,
       [testEmail],
     );
