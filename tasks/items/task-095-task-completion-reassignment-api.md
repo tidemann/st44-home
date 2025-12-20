@@ -4,7 +4,7 @@
 - **ID**: task-095
 - **Feature**: [feature-015-task-viewing-completion](../features/feature-015-task-viewing-completion.md)
 - **Epic**: [epic-002-task-management-core](../epics/epic-002-task-management-core.md)
-- **Status**: pending
+- **Status**: in-progress
 - **Priority**: critical
 - **Created**: 2025-12-19
 - **Estimated Duration**: 4-5 hours
@@ -178,3 +178,4 @@ if (!isParent) {
 
 ## Progress Log
 - [2025-12-19 23:50] Task created for feature-015 breakdown
+- [2025-12-20 01:40] Status changed to in-progress, delegating to backend-agent

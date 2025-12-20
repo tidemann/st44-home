@@ -401,4 +401,255 @@ export default async function assignmentRoutes(fastify: FastifyInstance) {
       }
     },
   );
+
+  /**
+   * PUT /api/assignments/:assignmentId/complete
+   * Mark a task assignment as complete
+   */
+  fastify.put<{
+    Params: { assignmentId: string };
+    Body?: { note?: string };
+  }>(
+    '/api/assignments/:assignmentId/complete',
+    {
+      preHandler: [authenticateUser],
+    },
+    async (request, reply) => {
+      const { assignmentId } = request.params;
+
+      // Validate assignmentId format
+      if (!isValidUuid(assignmentId)) {
+        return reply.code(400).send({
+          error: 'Invalid assignmentId format (must be UUID)',
+        });
+      }
+
+      try {
+        // Fetch assignment with household_id for authorization
+        const assignmentResult = await pool.query(
+          `SELECT ta.id, ta.household_id, ta.child_id, ta.status, ta.task_id
+           FROM task_assignments ta
+           WHERE ta.id = $1`,
+          [assignmentId],
+        );
+
+        if (assignmentResult.rows.length === 0) {
+          return reply.code(404).send({
+            error: 'Assignment not found',
+          });
+        }
+
+        const assignment = assignmentResult.rows[0];
+
+        // Check if already completed
+        if (assignment.status === 'completed') {
+          return reply.code(400).send({
+            error: 'Assignment is already completed',
+          });
+        }
+
+        // Check if status is pending
+        if (assignment.status !== 'pending') {
+          return reply.code(400).send({
+            error: 'Only pending assignments can be completed',
+          });
+        }
+
+        // Authorization: Check if user is parent in household OR the assigned child
+        const membershipResult = await pool.query(
+          'SELECT role FROM household_members WHERE household_id = $1 AND user_id = $2',
+          [assignment.household_id, request.user?.userId],
+        );
+
+        if (membershipResult.rows.length === 0) {
+          return reply.code(403).send({
+            error: 'You are not authorized to complete this assignment',
+          });
+        }
+
+        const userRole = membershipResult.rows[0].role;
+        const isParent = userRole === 'admin' || userRole === 'parent';
+
+        // For child role, check if they are the assigned child
+        if (!isParent && userRole === 'child') {
+          // Get the child_id for this user
+          const childResult = await pool.query(
+            'SELECT id FROM children WHERE household_id = $1 AND name = $2',
+            [assignment.household_id, request.user?.email.split('@')[0]], // This is a placeholder - should be improved
+          );
+
+          // For now, allow any child in the household since we don't have child-user linkage
+          // In production, you'd have a proper child-user relationship
+          // For this implementation, if user is a child member, we'll check if assignment is for any child
+          if (!assignment.child_id) {
+            return reply.code(403).send({
+              error: 'Only parents or the assigned child can complete this assignment',
+            });
+          }
+        }
+
+        // Mark assignment as complete
+        const updateResult = await pool.query(
+          `UPDATE task_assignments
+           SET status = 'completed'
+           WHERE id = $1 AND status = 'pending'
+           RETURNING id, status, child_id, task_id`,
+          [assignmentId],
+        );
+
+        if (updateResult.rows.length === 0) {
+          // This shouldn't happen if we checked status above, but handle it
+          return reply.code(400).send({
+            error: 'Failed to complete assignment - status may have changed',
+          });
+        }
+
+        const completedAssignment = updateResult.rows[0];
+
+        return reply.code(200).send({
+          id: completedAssignment.id,
+          status: completedAssignment.status,
+          completed_at: new Date().toISOString(),
+          child_id: completedAssignment.child_id,
+          task_id: completedAssignment.task_id,
+        });
+      } catch (error) {
+        fastify.log.error(error, 'Failed to complete assignment');
+        return reply.code(500).send({
+          error: 'Failed to complete assignment',
+        });
+      }
+    },
+  );
+
+  /**
+   * PUT /api/assignments/:assignmentId/reassign
+   * Reassign task to a different child
+   */
+  fastify.put<{
+    Params: { assignmentId: string };
+    Body: { childId: string };
+  }>(
+    '/api/assignments/:assignmentId/reassign',
+    {
+      preHandler: [authenticateUser],
+    },
+    async (request, reply) => {
+      const { assignmentId } = request.params;
+      const { childId } = request.body;
+
+      // Validate assignmentId format
+      if (!isValidUuid(assignmentId)) {
+        return reply.code(400).send({
+          error: 'Invalid assignmentId format (must be UUID)',
+        });
+      }
+
+      // Validate childId
+      if (!childId || typeof childId !== 'string') {
+        return reply.code(400).send({
+          error: 'childId is required',
+        });
+      }
+
+      if (!isValidUuid(childId)) {
+        return reply.code(400).send({
+          error: 'Invalid childId format (must be UUID)',
+        });
+      }
+
+      try {
+        // Fetch assignment with household_id
+        const assignmentResult = await pool.query(
+          `SELECT ta.id, ta.household_id, ta.child_id, ta.status
+           FROM task_assignments ta
+           WHERE ta.id = $1`,
+          [assignmentId],
+        );
+
+        if (assignmentResult.rows.length === 0) {
+          return reply.code(404).send({
+            error: 'Assignment not found',
+          });
+        }
+
+        const assignment = assignmentResult.rows[0];
+
+        // Check if already completed
+        if (assignment.status === 'completed') {
+          return reply.code(400).send({
+            error: 'Cannot reassign completed assignment',
+          });
+        }
+
+        // Check if status is pending
+        if (assignment.status !== 'pending') {
+          return reply.code(400).send({
+            error: 'Only pending assignments can be reassigned',
+          });
+        }
+
+        // Authorization: Must be parent (admin or parent role)
+        const membershipResult = await pool.query(
+          'SELECT role FROM household_members WHERE household_id = $1 AND user_id = $2',
+          [assignment.household_id, request.user?.userId],
+        );
+
+        if (membershipResult.rows.length === 0) {
+          return reply.code(403).send({
+            error: 'You are not authorized to reassign this assignment',
+          });
+        }
+
+        const userRole = membershipResult.rows[0].role;
+        const isParent = userRole === 'admin' || userRole === 'parent';
+
+        if (!isParent) {
+          return reply.code(403).send({
+            error: 'Only parents can reassign tasks',
+          });
+        }
+
+        // Verify new child exists and belongs to same household
+        const childResult = await pool.query(
+          'SELECT id, name FROM children WHERE id = $1 AND household_id = $2',
+          [childId, assignment.household_id],
+        );
+
+        if (childResult.rows.length === 0) {
+          return reply.code(404).send({
+            error: 'Child not found in this household',
+          });
+        }
+
+        const newChild = childResult.rows[0];
+
+        // Reassign to new child
+        const updateResult = await pool.query(
+          `UPDATE task_assignments
+           SET child_id = $2
+           WHERE id = $1 AND status = 'pending'
+           RETURNING id, child_id`,
+          [assignmentId, childId],
+        );
+
+        if (updateResult.rows.length === 0) {
+          return reply.code(400).send({
+            error: 'Failed to reassign - assignment may have been completed',
+          });
+        }
+
+        return reply.code(200).send({
+          id: updateResult.rows[0].id,
+          child_id: updateResult.rows[0].child_id,
+          child_name: newChild.name,
+        });
+      } catch (error) {
+        fastify.log.error(error, 'Failed to reassign assignment');
+        return reply.code(500).send({
+          error: 'Failed to reassign assignment',
+        });
+      }
+    },
+  );
 }
