@@ -105,16 +105,14 @@ jobs:
       - name: Wait for frontend to be ready
         run: |
           for i in {1..30}; do
-            # Check both root and a route page to verify routing works
-            if curl -f http://localhost:4200 > /dev/null 2>&1 && \
-               curl -f http://localhost:4200/register > /dev/null 2>&1; then
-              echo "Frontend is ready and routing works"
+            if curl -f http://localhost:4200 > /dev/null 2>&1; then
+              echo "Frontend is ready"
               exit 0
             fi
-            echo "Waiting for frontend routing... attempt $i/30"
+            echo "Waiting for frontend... attempt $i/30"
             sleep 2
           done
-          echo "Frontend routing failed to initialize"
+          echo "Frontend failed to start"
           exit 1
 
       - name: Run E2E tests

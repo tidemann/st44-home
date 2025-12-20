@@ -5,20 +5,15 @@ import { Page } from '@playwright/test';
  * Navigates to login page, fills credentials, submits, and waits for redirect
  */
 export async function loginAsUser(page: Page, email: string, password: string): Promise<void> {
-  // Navigate to login page and wait for network to be idle
-  await page.goto('/login', { waitUntil: 'networkidle' });
-
-  // Wait for form to be visible and interactive
-  await page.waitForSelector('form', { state: 'visible', timeout: 10000 });
+  // Navigate to login page
+  await page.goto('/login');
 
   // Fill in credentials
   await page.getByLabel(/email/i).fill(email);
   await page.getByLabel(/password/i).fill(password);
 
-  // Wait for button to be visible and enabled before clicking
-  const submitButton = page.getByRole('button', { name: /log in|sign in/i });
-  await submitButton.waitFor({ state: 'visible', timeout: 10000 });
-  await submitButton.click();
+  // Submit form
+  await page.getByRole('button', { name: /log in|sign in/i }).click();
 
   // Wait for successful redirect (away from login page)
   await page.waitForURL((url) => !url.pathname.includes('/login'), { timeout: 5000 });
@@ -29,21 +24,16 @@ export async function loginAsUser(page: Page, email: string, password: string): 
  * Navigates to register page, fills credentials, submits, and waits for redirect
  */
 export async function registerUser(page: Page, email: string, password: string): Promise<void> {
-  // Navigate to registration page and wait for network to be idle
-  await page.goto('/register', { waitUntil: 'networkidle' });
-
-  // Wait for form to be visible and interactive
-  await page.waitForSelector('form', { state: 'visible', timeout: 10000 });
+  // Navigate to registration page
+  await page.goto('/register');
 
   // Fill in credentials
   await page.getByLabel(/email/i).fill(email);
   await page.getByLabel(/^password$/i).fill(password);
   await page.getByLabel(/confirm password/i).fill(password);
 
-  // Wait for button to be visible and enabled before clicking
-  const submitButton = page.getByRole('button', { name: /register|sign up/i });
-  await submitButton.waitFor({ state: 'visible', timeout: 10000 });
-  await submitButton.click();
+  // Submit form
+  await page.getByRole('button', { name: /register|sign up/i }).click();
 
   // Wait for successful redirect (away from register page)
   await page.waitForURL((url) => !url.pathname.includes('/register'), { timeout: 5000 });
