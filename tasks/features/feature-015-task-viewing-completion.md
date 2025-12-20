@@ -189,7 +189,7 @@ completeTask(id: number) {
 
 Total: 6 tasks (26-33 hours estimated, 4-5 days)
 
-- [ ] [task-094](../items/task-094-task-assignments-query-api.md): Task Assignments Query API (4-5h, backend-agent)
+- [x] [task-094](../items/done/task-094-task-assignments-query-api.md): Task Assignments Query API (4-5h, backend-agent) ✅ COMPLETED 2025-12-20
 - [ ] [task-095](../items/task-095-task-completion-reassignment-api.md): Task Completion & Reassignment API (4-5h, backend-agent)
 - [ ] [task-096](../items/task-096-frontend-task-service.md): Frontend TaskService for Viewing & Completion (3-4h, frontend-agent)
 - [ ] [task-097](../items/task-097-child-task-list-component.md): Child Task List Component (4-5h, frontend-agent)
@@ -197,13 +197,14 @@ Total: 6 tasks (26-33 hours estimated, 4-5 days)
 - [ ] [task-099](../items/task-099-viewing-completion-tests.md): Integration Tests for Viewing & Completion (6-8h, testing-agent)
 
 **Dependencies:**
-- task-094 → task-096 (service needs API)
+- task-094 → task-096 (service needs API) ✅ task-094 COMPLETE
 - task-095 → task-096 (service needs API)
 - task-096 → task-097, task-098 (components need service)
 - task-094, task-095, task-096, task-097, task-098 → task-099 (tests need all implementations)
 
-**Progress**: 0/6 tasks complete (0%)
+**Progress**: 1/6 tasks complete (17%)
 
 ## Progress Log
 - [2025-12-19 10:50] Feature created for Epic-002 breakdown
 - [2025-12-20 00:15] Feature broken down into 6 tasks by orchestrator-agent
+- [2025-12-20 01:30] Task-094 (Assignment Query API) completed and merged (PR #118) - 1/6 complete (17%)

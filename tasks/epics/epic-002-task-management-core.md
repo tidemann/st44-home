@@ -43,7 +43,9 @@ This is the core product feature that:
   - ISO week-based rotation logic
   - Repeating task scheduling
   - Idempotent execution
-- [ ] [feature-015](../features/feature-015-task-viewing-completion.md): Task Viewing & Completion (pending) - 4-5 days
+- [ ] [feature-015](../features/feature-015-task-viewing-completion.md): Task Viewing & Completion (in-progress) - 4-5 days 🔄
+  - 1/6 tasks complete (17%)
+  - Task-094 (Assignment Query API) completed ✅
   - Child task list view (today, week)
   - Parent task dashboard (all children)
   - Task completion functionality
@@ -137,3 +139,4 @@ interface TaskRule {
 - [2025-12-19 23:40] Feature-013 completed (100%) - Task Template Management ✅
 - [2025-12-19 23:40] Feature-014 completed (100%) - Task Assignment Rule Engine ✅
 - [2025-12-19 23:40] Epic progress: 2/3 features complete (67%)
+- [2025-12-20 01:35] Feature-015 in progress (17%) - Task-094 (Assignment Query API) completed and merged (PR #118)
