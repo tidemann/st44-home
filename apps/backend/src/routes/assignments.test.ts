@@ -627,6 +627,262 @@ describe('Assignments API', () => {
     });
   });
 
+  // ==================== Test Suite: GET /api/children/:childId/tasks ====================
+
+  describe('GET /api/children/:childId/tasks', () => {
+    beforeEach(async () => {
+      // Create test assignments for both children
+      const assignmentResult = await pool.query(
+        `INSERT INTO task_assignments (household_id, task_id, child_id, date, status)
+         VALUES 
+           ($1, $2, $3, '2025-01-20', 'pending'),
+           ($1, $2, $4, '2025-01-20', 'pending'),
+           ($1, $2, $3, '2025-01-21', 'completed'),
+           ($1, $2, $3, '2025-01-22', 'pending')
+         RETURNING id, child_id, date, status`,
+        [householdId, taskId, childIds[0], childIds[1]],
+      );
+
+      // Create task_completions record for the completed assignment (2025-01-21)
+      const completedAssignment = assignmentResult.rows.find((row) => row.status === 'completed');
+      if (completedAssignment) {
+        await pool.query(
+          `INSERT INTO task_completions (household_id, task_assignment_id, child_id, completed_at, points_earned)
+           VALUES ($1, $2, $3, '2025-01-21T10:00:00Z', 10)`,
+          [householdId, completedAssignment.id, completedAssignment.child_id],
+        );
+      }
+    });
+
+    test('returns child tasks for specified date', async () => {
+      const response = await app.inject({
+        method: 'GET',
+        url: `/api/children/${childIds[0]}/tasks?date=2025-01-20`,
+        headers: { Authorization: `Bearer ${adminToken}` },
+      });
+
+      assert.strictEqual(response.statusCode, 200);
+
+      const body = JSON.parse(response.body);
+      assert.ok(body.assignments);
+      assert.ok(Array.isArray(body.assignments));
+      assert.strictEqual(body.total, 1);
+
+      const assignment = body.assignments[0];
+      assert.ok(assignment.id);
+      assert.ok(assignment.task_id); // Use snake_case to match API convention
+      assert.ok(assignment.title);
+      assert.strictEqual(assignment.date, '2025-01-20');
+      assert.strictEqual(assignment.status, 'pending');
+    });
+
+    test('filters by status=pending', async () => {
+      const response = await app.inject({
+        method: 'GET',
+        url: `/api/children/${childIds[0]}/tasks?date=2025-01-20&status=pending`,
+        headers: { Authorization: `Bearer ${adminToken}` },
+      });
+
+      assert.strictEqual(response.statusCode, 200);
+
+      const body = JSON.parse(response.body);
+      assert.strictEqual(body.total, 1);
+      assert.strictEqual(body.assignments[0].status, 'pending');
+    });
+
+    test('filters by status=completed', async () => {
+      const response = await app.inject({
+        method: 'GET',
+        url: `/api/children/${childIds[0]}/tasks?date=2025-01-21&status=completed`,
+        headers: { Authorization: `Bearer ${adminToken}` },
+      });
+
+      assert.strictEqual(response.statusCode, 200);
+
+      const body = JSON.parse(response.body);
+      assert.strictEqual(body.total, 1);
+      assert.strictEqual(body.assignments[0].status, 'completed');
+      assert.ok(body.assignments[0].completed_at);
+    });
+
+    test('defaults to today if no date parameter', async () => {
+      // Create assignment for today
+      const today = new Date().toISOString().split('T')[0];
+      await pool.query(
+        `INSERT INTO task_assignments (household_id, task_id, child_id, date, status)
+         VALUES ($1, $2, $3, $4, 'pending')`,
+        [householdId, taskId, childIds[0], today],
+      );
+
+      const response = await app.inject({
+        method: 'GET',
+        url: `/api/children/${childIds[0]}/tasks`,
+        headers: { Authorization: `Bearer ${adminToken}` },
+      });
+
+      assert.strictEqual(response.statusCode, 200);
+
+      const body = JSON.parse(response.body);
+      assert.ok(body.assignments);
+      assert.ok(body.total >= 1);
+    });
+
+    test('returns empty array if no tasks match', async () => {
+      const response = await app.inject({
+        method: 'GET',
+        url: `/api/children/${childIds[0]}/tasks?date=2099-01-01`,
+        headers: { Authorization: `Bearer ${adminToken}` },
+      });
+
+      assert.strictEqual(response.statusCode, 200);
+
+      const body = JSON.parse(response.body);
+      assert.strictEqual(body.total, 0);
+      assert.ok(Array.isArray(body.assignments));
+      assert.strictEqual(body.assignments.length, 0);
+    });
+
+    test('returns 403 if child not in user household', async () => {
+      // Create another household with a child
+      const household2Response = await app.inject({
+        method: 'POST',
+        url: '/api/households',
+        headers: { Authorization: `Bearer ${outsiderToken}` },
+        payload: { name: 'Other Household' },
+      });
+      const household2Id = JSON.parse(household2Response.body).id;
+
+      const child2Result = await pool.query(
+        `INSERT INTO children (household_id, name, birth_year) VALUES ($1, $2, $3) RETURNING id`,
+        [household2Id, 'Other Child', 2015],
+      );
+      const otherChildId = child2Result.rows[0].id;
+
+      const response = await app.inject({
+        method: 'GET',
+        url: `/api/children/${otherChildId}/tasks`,
+        headers: { Authorization: `Bearer ${adminToken}` },
+      });
+
+      assert.strictEqual(response.statusCode, 403);
+
+      const body = JSON.parse(response.body);
+      assert.ok(body.error.includes('not authorized'));
+
+      // Cleanup
+      await pool.query('DELETE FROM children WHERE household_id = $1', [household2Id]);
+      await pool.query('DELETE FROM household_members WHERE household_id = $1', [household2Id]);
+      await pool.query('DELETE FROM households WHERE id = $1', [household2Id]);
+    });
+
+    test('returns 404 if child not found', async () => {
+      const fakeChildId = '00000000-0000-0000-0000-000000000000';
+
+      const response = await app.inject({
+        method: 'GET',
+        url: `/api/children/${fakeChildId}/tasks`,
+        headers: { Authorization: `Bearer ${adminToken}` },
+      });
+
+      assert.strictEqual(response.statusCode, 404);
+
+      const body = JSON.parse(response.body);
+      assert.ok(body.error.includes('not found'));
+    });
+
+    test('validates childId format (400 on invalid UUID)', async () => {
+      const response = await app.inject({
+        method: 'GET',
+        url: `/api/children/not-a-uuid/tasks`,
+        headers: { Authorization: `Bearer ${adminToken}` },
+      });
+
+      assert.strictEqual(response.statusCode, 400);
+
+      const body = JSON.parse(response.body);
+      assert.ok(body.error.toLowerCase().includes('uuid'));
+    });
+
+    test('validates date format (400 on invalid date)', async () => {
+      const response = await app.inject({
+        method: 'GET',
+        url: `/api/children/${childIds[0]}/tasks?date=invalid-date`,
+        headers: { Authorization: `Bearer ${adminToken}` },
+      });
+
+      assert.strictEqual(response.statusCode, 400);
+
+      const body = JSON.parse(response.body);
+      assert.ok(body.error.toLowerCase().includes('date'));
+    });
+
+    test('validates status parameter', async () => {
+      const response = await app.inject({
+        method: 'GET',
+        url: `/api/children/${childIds[0]}/tasks?date=2025-01-20&status=invalid-status`,
+        headers: { Authorization: `Bearer ${adminToken}` },
+      });
+
+      assert.strictEqual(response.statusCode, 400);
+
+      const body = JSON.parse(response.body);
+      assert.ok(body.error.includes('status'));
+    });
+
+    test('requires authentication (401 without token)', async () => {
+      const response = await app.inject({
+        method: 'GET',
+        url: `/api/children/${childIds[0]}/tasks`,
+      });
+
+      assert.strictEqual(response.statusCode, 401);
+    });
+
+    test('parent can view child tasks', async () => {
+      const response = await app.inject({
+        method: 'GET',
+        url: `/api/children/${childIds[0]}/tasks?date=2025-01-20`,
+        headers: { Authorization: `Bearer ${parentToken}` },
+      });
+
+      assert.strictEqual(response.statusCode, 200);
+
+      const body = JSON.parse(response.body);
+      assert.strictEqual(body.total, 1);
+    });
+
+    test('returns only tasks for specified child (not other children)', async () => {
+      const response = await app.inject({
+        method: 'GET',
+        url: `/api/children/${childIds[0]}/tasks?date=2025-01-20`,
+        headers: { Authorization: `Bearer ${adminToken}` },
+      });
+
+      assert.strictEqual(response.statusCode, 200);
+
+      const body = JSON.parse(response.body);
+      // Should have 1 task for child 0, not 2 (child 1 also has task on same date)
+      assert.strictEqual(body.total, 1);
+      assert.strictEqual(body.assignments[0].child_id, childIds[0]);
+    });
+
+    test('includes task details (title, description, rule_type)', async () => {
+      const response = await app.inject({
+        method: 'GET',
+        url: `/api/children/${childIds[0]}/tasks?date=2025-01-20`,
+        headers: { Authorization: `Bearer ${adminToken}` },
+      });
+
+      assert.strictEqual(response.statusCode, 200);
+
+      const body = JSON.parse(response.body);
+      const assignment = body.assignments[0];
+      assert.ok(assignment.title);
+      assert.strictEqual(assignment.title, 'Test Task');
+      assert.strictEqual(assignment.rule_type, 'daily');
+    });
+  });
+
   // ==================== Test Suite 9: PUT /api/assignments/:assignmentId/complete ====================
 
   describe('PUT /api/assignments/:assignmentId/complete', () => {

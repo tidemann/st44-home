@@ -587,4 +587,413 @@ describe('TaskService', () => {
       expect(tasksBefore).toEqual(tasksReference);
     });
   });
+
+  // ==================== Assignment Viewing & Completion Tests ====================
+
+  describe('getChildTasks', () => {
+    const mockAssignment = {
+      id: 'assignment-1',
+      task_id: 'task-1',
+      taskId: 'task-1',
+      child_id: 'child-1',
+      title: 'Feed the dog',
+      description: 'Give dog food and water',
+      rule_type: 'daily',
+      date: '2025-01-20',
+      status: 'pending',
+      completed_at: null,
+    };
+
+    const mockResponse = { assignments: [mockAssignment], total: 1 };
+
+    it('should call ApiService.get with correct endpoint and parameters', async () => {
+      mockApiService.get.mockResolvedValue(mockResponse);
+
+      const result$ = service.getChildTasks('child-1', '2025-01-20', 'pending');
+      await firstValueFrom(result$);
+
+      expect(mockApiService.get).toHaveBeenCalledWith(
+        '/children/child-1/tasks?date=2025-01-20&status=pending',
+      );
+    });
+
+    it('should call with date parameter only', async () => {
+      mockApiService.get.mockResolvedValue(mockResponse);
+
+      const result$ = service.getChildTasks('child-1', '2025-01-20');
+      await firstValueFrom(result$);
+
+      expect(mockApiService.get).toHaveBeenCalledWith('/children/child-1/tasks?date=2025-01-20');
+    });
+
+    it('should call with status parameter only', async () => {
+      mockApiService.get.mockResolvedValue(mockResponse);
+
+      const result$ = service.getChildTasks('child-1', undefined, 'completed');
+      await firstValueFrom(result$);
+
+      expect(mockApiService.get).toHaveBeenCalledWith('/children/child-1/tasks?status=completed');
+    });
+
+    it('should call without optional parameters', async () => {
+      mockApiService.get.mockResolvedValue(mockResponse);
+
+      const result$ = service.getChildTasks('child-1');
+      await firstValueFrom(result$);
+
+      expect(mockApiService.get).toHaveBeenCalledWith('/children/child-1/tasks');
+    });
+
+    it('should return assignments array', async () => {
+      mockApiService.get.mockResolvedValue(mockResponse);
+
+      const result$ = service.getChildTasks('child-1', '2025-01-20');
+      const result = await firstValueFrom(result$);
+
+      expect(result).toEqual([mockAssignment]);
+    });
+
+    it('should update assignments signal', async () => {
+      mockApiService.get.mockResolvedValue(mockResponse);
+
+      const result$ = service.getChildTasks('child-1', '2025-01-20');
+      await firstValueFrom(result$);
+
+      expect(service.assignments()).toEqual([mockAssignment]);
+    });
+
+    it('should handle empty assignments array', async () => {
+      mockApiService.get.mockResolvedValue({ assignments: [], total: 0 });
+
+      const result$ = service.getChildTasks('child-1', '2025-01-20');
+      const result = await firstValueFrom(result$);
+
+      expect(result).toEqual([]);
+      expect(service.assignments()).toEqual([]);
+    });
+
+    it('should set error on failure', async () => {
+      mockApiService.get.mockRejectedValue(new Error('Network error'));
+
+      const result$ = service.getChildTasks('child-1', '2025-01-20');
+
+      await expect(firstValueFrom(result$)).rejects.toThrow();
+      expect(service.assignmentsError()).toBe('Failed to load child tasks');
+    });
+  });
+
+  describe('getHouseholdAssignments', () => {
+    const mockAssignments = [
+      {
+        id: 'assignment-1',
+        task_id: 'task-1',
+        taskId: 'task-1',
+        child_id: 'child-1',
+        child_name: 'Emma',
+        title: 'Feed the dog',
+        date: '2025-01-20',
+        status: 'pending',
+      },
+      {
+        id: 'assignment-2',
+        task_id: 'task-2',
+        taskId: 'task-2',
+        child_id: 'child-2',
+        child_name: 'Noah',
+        title: 'Take out trash',
+        date: '2025-01-20',
+        status: 'completed',
+        completed_at: '2025-01-20T10:00:00Z',
+      },
+    ];
+
+    const mockResponse = { assignments: mockAssignments, total: 2 };
+
+    it('should call ApiService.get with household ID and filters', async () => {
+      mockApiService.get.mockResolvedValue(mockResponse);
+
+      const result$ = service.getHouseholdAssignments('household-1', {
+        date: '2025-01-20',
+        child_id: 'child-1',
+        status: 'pending',
+      });
+      await firstValueFrom(result$);
+
+      expect(mockApiService.get).toHaveBeenCalledWith(
+        '/households/household-1/assignments?date=2025-01-20&child_id=child-1&status=pending',
+      );
+    });
+
+    it('should call without optional filters', async () => {
+      mockApiService.get.mockResolvedValue(mockResponse);
+
+      const result$ = service.getHouseholdAssignments('household-1');
+      await firstValueFrom(result$);
+
+      expect(mockApiService.get).toHaveBeenCalledWith('/households/household-1/assignments');
+    });
+
+    it('should return assignments array', async () => {
+      mockApiService.get.mockResolvedValue(mockResponse);
+
+      const result$ = service.getHouseholdAssignments('household-1');
+      const result = await firstValueFrom(result$);
+
+      expect(result).toEqual(mockAssignments);
+    });
+
+    it('should update assignments signal', async () => {
+      mockApiService.get.mockResolvedValue(mockResponse);
+
+      const result$ = service.getHouseholdAssignments('household-1');
+      await firstValueFrom(result$);
+
+      expect(service.assignments()).toEqual(mockAssignments);
+    });
+
+    it('should set error on failure', async () => {
+      mockApiService.get.mockRejectedValue(new Error('Unauthorized'));
+
+      const result$ = service.getHouseholdAssignments('household-1');
+
+      await expect(firstValueFrom(result$)).rejects.toThrow();
+      expect(service.assignmentsError()).toBe('Failed to load household assignments');
+    });
+  });
+
+  describe('completeTask', () => {
+    const mockAssignment = {
+      id: 'assignment-1',
+      task_id: 'task-1',
+      child_id: 'child-1',
+      date: '2025-01-20',
+      status: 'pending',
+    };
+
+    const completedAssignment = {
+      ...mockAssignment,
+      status: 'completed',
+      completed_at: '2025-01-20T12:00:00Z',
+    };
+
+    beforeEach(async () => {
+      // Set up initial state
+      mockApiService.get.mockResolvedValue({ assignments: [mockAssignment], total: 1 });
+      const result$ = service.getChildTasks('child-1');
+      await firstValueFrom(result$);
+    });
+
+    it('should perform optimistic update', () => {
+      mockApiService.put.mockResolvedValue(completedAssignment);
+
+      service.completeTask('assignment-1');
+
+      // Should update immediately
+      const assignments = service.assignments();
+      expect(assignments[0].status).toBe('completed');
+    });
+
+    it('should call ApiService.put with correct endpoint', async () => {
+      mockApiService.put.mockResolvedValue(completedAssignment);
+
+      const result$ = service.completeTask('assignment-1');
+      await firstValueFrom(result$);
+
+      expect(mockApiService.put).toHaveBeenCalledWith('/assignments/assignment-1/complete', {});
+    });
+
+    it('should return completed assignment', async () => {
+      mockApiService.put.mockResolvedValue(completedAssignment);
+
+      const result$ = service.completeTask('assignment-1');
+      const result = await firstValueFrom(result$);
+
+      expect(result.status).toBe('completed');
+      expect(result.completed_at).toBe('2025-01-20T12:00:00Z');
+    });
+
+    it('should rollback optimistic update on API error', async () => {
+      mockApiService.put.mockRejectedValue(new Error('Already completed'));
+
+      const result$ = service.completeTask('assignment-1');
+
+      try {
+        await firstValueFrom(result$);
+      } catch {
+        // Expected
+      }
+
+      // Should rollback to original state
+      const assignments = service.assignments();
+      expect(assignments[0].status).toBe('pending');
+    });
+
+    it('should set error message on failure', async () => {
+      mockApiService.put.mockRejectedValue(new Error('Server error'));
+
+      const result$ = service.completeTask('assignment-1');
+
+      await expect(firstValueFrom(result$)).rejects.toThrow();
+      expect(service.assignmentsError()).toBe('Failed to complete task');
+    });
+
+    it('should not affect other assignments', async () => {
+      // Add second assignment
+      const assignment2 = { ...mockAssignment, id: 'assignment-2' };
+      mockApiService.get.mockResolvedValue({
+        assignments: [mockAssignment, assignment2],
+        total: 2,
+      });
+      const getTasks$ = service.getChildTasks('child-1');
+      await firstValueFrom(getTasks$);
+
+      mockApiService.put.mockResolvedValue(completedAssignment);
+
+      const result$ = service.completeTask('assignment-1');
+      await firstValueFrom(result$);
+
+      const assignments = service.assignments();
+      expect(assignments.length).toBe(2);
+      expect(assignments[0].status).toBe('completed');
+      expect(assignments[1].status).toBe('pending');
+    });
+  });
+
+  describe('reassignTask', () => {
+    const mockAssignment = {
+      id: 'assignment-1',
+      task_id: 'task-1',
+      child_id: 'child-1',
+      child_name: 'Emma',
+      date: '2025-01-20',
+      status: 'pending',
+    };
+
+    const reassignedAssignment = {
+      ...mockAssignment,
+      child_id: 'child-2',
+      child_name: 'Noah',
+    };
+
+    beforeEach(async () => {
+      // Set up initial state
+      mockApiService.get.mockResolvedValue({ assignments: [mockAssignment], total: 1 });
+      const result$ = service.getHouseholdAssignments('household-1');
+      await firstValueFrom(result$);
+    });
+
+    it('should call ApiService.put with correct endpoint and data', async () => {
+      mockApiService.put.mockResolvedValue(reassignedAssignment);
+
+      const result$ = service.reassignTask('assignment-1', 'child-2');
+      await firstValueFrom(result$);
+
+      expect(mockApiService.put).toHaveBeenCalledWith('/assignments/assignment-1/reassign', {
+        child_id: 'child-2',
+      });
+    });
+
+    it('should return reassigned assignment', async () => {
+      mockApiService.put.mockResolvedValue(reassignedAssignment);
+
+      const result$ = service.reassignTask('assignment-1', 'child-2');
+      const result = await firstValueFrom(result$);
+
+      expect(result.child_id).toBe('child-2');
+      expect(result.child_name).toBe('Noah');
+    });
+
+    it('should update assignment in state', async () => {
+      mockApiService.put.mockResolvedValue(reassignedAssignment);
+
+      const result$ = service.reassignTask('assignment-1', 'child-2');
+      await firstValueFrom(result$);
+
+      const assignments = service.assignments();
+      expect(assignments[0].child_id).toBe('child-2');
+      expect(assignments[0].child_name).toBe('Noah');
+    });
+
+    it('should set error on failure', async () => {
+      mockApiService.put.mockRejectedValue(new Error('Child not found'));
+
+      const result$ = service.reassignTask('assignment-1', 'invalid-child');
+
+      await expect(firstValueFrom(result$)).rejects.toThrow();
+      expect(service.assignmentsError()).toBe('Failed to reassign task');
+    });
+
+    it('should not affect other assignments', async () => {
+      // Add second assignment
+      const assignment2 = { ...mockAssignment, id: 'assignment-2', child_id: 'child-3' };
+      mockApiService.get.mockResolvedValue({
+        assignments: [mockAssignment, assignment2],
+        total: 2,
+      });
+      const getTasks$ = service.getHouseholdAssignments('household-1');
+      await firstValueFrom(getTasks$);
+
+      mockApiService.put.mockResolvedValue(reassignedAssignment);
+
+      const result$ = service.reassignTask('assignment-1', 'child-2');
+      await firstValueFrom(result$);
+
+      const assignments = service.assignments();
+      expect(assignments.length).toBe(2);
+      expect(assignments[0].child_id).toBe('child-2');
+      expect(assignments[1].child_id).toBe('child-3'); // Unchanged
+    });
+  });
+
+  describe('Computed Assignment Signals', () => {
+    const mockAssignments = [
+      {
+        id: 'assignment-1',
+        status: 'pending',
+        date: '2025-01-20',
+      },
+      {
+        id: 'assignment-2',
+        status: 'completed',
+        date: '2025-01-20',
+        completed_at: '2025-01-20T10:00:00Z',
+      },
+      {
+        id: 'assignment-3',
+        status: 'pending',
+        date: '2025-01-19', // Yesterday - overdue
+      },
+    ];
+
+    beforeEach(async () => {
+      mockApiService.get.mockResolvedValue({ assignments: mockAssignments, total: 3 });
+      const result$ = service.getHouseholdAssignments('household-1');
+      await firstValueFrom(result$);
+    });
+
+    it('should compute pendingAssignments correctly', () => {
+      const pending = service.pendingAssignments();
+      expect(pending.length).toBe(2);
+      expect(pending.every((a) => a.status === 'pending')).toBe(true);
+    });
+
+    it('should compute completedAssignments correctly', () => {
+      const completed = service.completedAssignments();
+      expect(completed.length).toBe(1);
+      expect(completed[0].status).toBe('completed');
+    });
+
+    it('should update computed signals after completion', async () => {
+      mockApiService.put.mockResolvedValue({
+        ...mockAssignments[0],
+        status: 'completed',
+      });
+
+      const result$ = service.completeTask('assignment-1');
+      await firstValueFrom(result$);
+
+      expect(service.pendingAssignments().length).toBe(1);
+      expect(service.completedAssignments().length).toBe(2);
+    });
+  });
 });
