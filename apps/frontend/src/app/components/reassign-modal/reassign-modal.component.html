@@ -1,0 +1,72 @@
+<div
+  class="modal-backdrop"
+  (click)="onBackdropClick($event)"
+  (keydown.escape)="onCancel()"
+  role="dialog"
+  aria-modal="true"
+  aria-labelledby="modal-title"
+  tabindex="0"
+>
+  <div class="modal-content">
+    <div class="modal-header">
+      <h3 id="modal-title">Reassign Task</h3>
+      <button class="close-button" (click)="onCancel()" type="button" aria-label="Close modal">
+        ×
+      </button>
+    </div>
+
+    <div class="modal-body">
+      @if (assignment(); as task) {
+        <div class="task-info">
+          <h4>{{ task.title }}</h4>
+          <p class="current-child">
+            Currently assigned to: <strong>{{ getChildName(task.child_id || '') }}</strong>
+          </p>
+        </div>
+
+        @if (errorMessage()) {
+          <div class="error-message" role="alert">
+            {{ errorMessage() }}
+          </div>
+        }
+
+        <form (submit)="onSubmit(); $event.preventDefault()">
+          <div class="form-group">
+            <label for="child-select">Reassign to:</label>
+            <select
+              id="child-select"
+              [(ngModel)]="selectedChildId"
+              name="childId"
+              class="child-select"
+              [disabled]="isSubmitting()"
+              required
+            >
+              <option [ngValue]="null">Select a child...</option>
+              @for (child of availableChildren(); track child.id) {
+                <option [ngValue]="child.id">{{ child.name }}</option>
+              }
+            </select>
+          </div>
+
+          <div class="modal-actions">
+            <button
+              type="button"
+              class="cancel-button"
+              (click)="onCancel()"
+              [disabled]="isSubmitting()"
+            >
+              Cancel
+            </button>
+            <button type="submit" class="submit-button" [disabled]="!canSubmit()">
+              @if (isSubmitting()) {
+                <span>Reassigning...</span>
+              } @else {
+                <span>Reassign Task</span>
+              }
+            </button>
+          </div>
+        </form>
+      }
+    </div>
+  </div>
+</div>
