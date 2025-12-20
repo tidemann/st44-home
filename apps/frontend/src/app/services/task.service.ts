@@ -53,6 +53,31 @@ export interface UpdateTaskRequest {
 }
 
 /**
+ * Task assignment interface for viewing and completion
+ */
+export interface TaskAssignment {
+  id: string;
+  task_id: string;
+  title: string;
+  description: string | null;
+  rule_type: 'daily' | 'repeating' | 'weekly_rotation';
+  child_id?: string;
+  child_name?: string;
+  date: string; // ISO date
+  status: 'pending' | 'completed';
+  completed_at?: string; // ISO timestamp
+}
+
+/**
+ * Filters for querying task assignments
+ */
+export interface AssignmentFilters {
+  date?: string;
+  child_id?: string;
+  status?: 'pending' | 'completed';
+}
+
+/**
  * Service for managing task templates with signals-based state management
  *
  * This service provides:
@@ -67,20 +92,45 @@ export interface UpdateTaskRequest {
 export class TaskService {
   private apiService = inject(ApiService);
 
-  // State signals (private writable)
+  // Task templates state signals (private writable)
   private tasksSignal = signal<TaskTemplate[]>([]);
   private loadingSignal = signal<boolean>(false);
   private errorSignal = signal<string | null>(null);
 
-  // Public readonly signals
+  // Task assignments state signals (private writable)
+  private assignmentsSignal = signal<TaskAssignment[]>([]);
+  private assignmentsLoadingSignal = signal<boolean>(false);
+  private assignmentsErrorSignal = signal<string | null>(null);
+
+  // Public readonly signals for templates
   public readonly tasks = this.tasksSignal.asReadonly();
   public readonly loading = this.loadingSignal.asReadonly();
   public readonly error = this.errorSignal.asReadonly();
 
-  // Computed signals for filtered lists
+  // Public readonly signals for assignments
+  public readonly assignments = this.assignmentsSignal.asReadonly();
+  public readonly assignmentsLoading = this.assignmentsLoadingSignal.asReadonly();
+  public readonly assignmentsError = this.assignmentsErrorSignal.asReadonly();
+
+  // Computed signals for filtered template lists
   public readonly activeTasks = computed(() => this.tasksSignal().filter((t) => t.active));
 
   public readonly inactiveTasks = computed(() => this.tasksSignal().filter((t) => !t.active));
+
+  // Computed signals for filtered assignment lists
+  public readonly pendingAssignments = computed(() =>
+    this.assignmentsSignal().filter((a) => a.status === 'pending'),
+  );
+
+  public readonly completedAssignments = computed(() =>
+    this.assignmentsSignal().filter((a) => a.status === 'completed'),
+  );
+
+  public readonly overdueAssignments = computed(() =>
+    this.assignmentsSignal().filter(
+      (a) => a.status === 'pending' && new Date(a.date) < new Date(new Date().toDateString()),
+    ),
+  );
 
   /**
    * Create a new task template
@@ -221,9 +271,144 @@ export class TaskService {
   }
 
   /**
+   * Get task assignments for a child
+   *
+   * @param childId - ID of the child
+   * @param date - Optional date filter (ISO format YYYY-MM-DD)
+   * @param status - Optional status filter ('pending' | 'completed')
+   * @returns Observable of task assignment array
+   */
+  getChildTasks(childId: string, date?: string, status?: string): Observable<TaskAssignment[]> {
+    this.assignmentsLoadingSignal.set(true);
+    this.assignmentsErrorSignal.set(null);
+
+    let endpoint = `/children/${childId}/tasks`;
+    const params: string[] = [];
+    if (date) params.push(`date=${date}`);
+    if (status) params.push(`status=${status}`);
+    if (params.length > 0) endpoint += `?${params.join('&')}`;
+
+    return from(this.apiService.get<{ assignments: TaskAssignment[] }>(endpoint)).pipe(
+      map((response) => response.assignments),
+      tap((assignments) => {
+        this.assignmentsSignal.set(assignments);
+        this.assignmentsLoadingSignal.set(false);
+      }),
+      catchError((err) => {
+        this.assignmentsErrorSignal.set('Failed to load child tasks');
+        this.assignmentsLoadingSignal.set(false);
+        return throwError(() => err);
+      }),
+    );
+  }
+
+  /**
+   * Get task assignments for a household with optional filters
+   *
+   * @param householdId - ID of the household
+   * @param filters - Optional filters (date, child_id, status)
+   * @returns Observable of task assignment array
+   */
+  getHouseholdAssignments(
+    householdId: string,
+    filters?: AssignmentFilters,
+  ): Observable<TaskAssignment[]> {
+    this.assignmentsLoadingSignal.set(true);
+    this.assignmentsErrorSignal.set(null);
+
+    let endpoint = `/households/${householdId}/assignments`;
+    const params: string[] = [];
+    if (filters?.date) params.push(`date=${filters.date}`);
+    if (filters?.child_id) params.push(`child_id=${filters.child_id}`);
+    if (filters?.status) params.push(`status=${filters.status}`);
+    if (params.length > 0) endpoint += `?${params.join('&')}`;
+
+    return from(this.apiService.get<{ assignments: TaskAssignment[] }>(endpoint)).pipe(
+      map((response) => response.assignments),
+      tap((assignments) => {
+        this.assignmentsSignal.set(assignments);
+        this.assignmentsLoadingSignal.set(false);
+      }),
+      catchError((err) => {
+        this.assignmentsErrorSignal.set('Failed to load household assignments');
+        this.assignmentsLoadingSignal.set(false);
+        return throwError(() => err);
+      }),
+    );
+  }
+
+  /**
+   * Mark a task assignment as complete (with optimistic update)
+   *
+   * @param assignmentId - ID of the task assignment
+   * @returns Observable of the updated task assignment
+   */
+  completeTask(assignmentId: string): Observable<TaskAssignment> {
+    // Optimistic update
+    const previousAssignments = this.assignmentsSignal();
+    const now = new Date().toISOString();
+
+    this.assignmentsSignal.update((assignments) =>
+      assignments.map((a) =>
+        a.id === assignmentId ? { ...a, status: 'completed' as const, completed_at: now } : a,
+      ),
+    );
+
+    // API call
+    return from(
+      this.apiService.put<TaskAssignment>(`/assignments/${assignmentId}/complete`, {}),
+    ).pipe(
+      tap((updatedAssignment) => {
+        // Update with server response
+        this.assignmentsSignal.update((assignments) =>
+          assignments.map((a) => (a.id === assignmentId ? updatedAssignment : a)),
+        );
+      }),
+      catchError((err) => {
+        // Rollback on error
+        this.assignmentsSignal.set(previousAssignments);
+        this.assignmentsErrorSignal.set('Failed to complete task');
+        return throwError(() => err);
+      }),
+    );
+  }
+
+  /**
+   * Reassign a task to a different child
+   *
+   * @param assignmentId - ID of the task assignment
+   * @param newChildId - ID of the child to reassign to
+   * @returns Observable of the updated task assignment
+   */
+  reassignTask(assignmentId: string, newChildId: string): Observable<TaskAssignment> {
+    this.assignmentsLoadingSignal.set(true);
+    this.assignmentsErrorSignal.set(null);
+
+    return from(
+      this.apiService.put<TaskAssignment>(`/assignments/${assignmentId}/reassign`, {
+        child_id: newChildId,
+      }),
+    ).pipe(
+      tap((updatedAssignment) => {
+        // Update in state
+        this.assignmentsSignal.update((assignments) =>
+          assignments.map((a) => (a.id === assignmentId ? updatedAssignment : a)),
+        );
+        this.assignmentsLoadingSignal.set(false);
+      }),
+      catchError((err) => {
+        this.assignmentsErrorSignal.set('Failed to reassign task');
+        this.assignmentsLoadingSignal.set(false);
+        return throwError(() => err);
+      }),
+    );
+  }
+
+  /**
    * Clear error state
    */
   clearError(): void {
     this.errorSignal.set(null);
+    this.assignmentsErrorSignal.set(null);
   }
 }
