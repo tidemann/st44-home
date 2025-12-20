@@ -35,6 +35,6 @@
   <button type="button" class="create-button" (click)="openCreateForm()">Add Task</button>
 
   @if (showTaskForm()) {
-    <app-task-form [householdId]="householdId()" [task]="editingTask()" (close)="closeForm()" />
+    <app-task-form [householdId]="householdId()" [task]="editingTask()" (formClose)="closeForm()" />
   }
 </div>

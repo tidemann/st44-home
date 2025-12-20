@@ -25,7 +25,7 @@ export class TaskFormComponent implements OnInit {
 
   householdId = input.required<string>();
   task = input<TaskTemplate | null>(null);
-  close = output<void>();
+  formClose = output<void>();
 
   form!: FormGroup;
   isSubmitting = signal(false);
@@ -112,7 +112,7 @@ export class TaskFormComponent implements OnInit {
     request$.subscribe({
       next: () => {
         this.isSubmitting.set(false);
-        this.close.emit();
+        this.formClose.emit();
       },
       error: (error) => {
         this.isSubmitting.set(false);
@@ -140,6 +140,6 @@ export class TaskFormComponent implements OnInit {
   }
 
   onCancel() {
-    this.close.emit();
+    this.formClose.emit();
   }
 }

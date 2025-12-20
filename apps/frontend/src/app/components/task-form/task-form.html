@@ -1,5 +1,12 @@
-<div class="modal-overlay" (click)="onCancel()">
-  <div class="modal-content" (click)="$event.stopPropagation()">
+<div class="modal-overlay" (click)="onCancel()" (keydown.escape)="onCancel()" tabindex="-1">
+  <div
+    class="modal-content"
+    (click)="$event.stopPropagation()"
+    (keydown)="$event.stopPropagation()"
+    tabindex="0"
+    role="dialog"
+    aria-modal="true"
+  >
     <h2>{{ task() ? 'Edit Task' : 'Add Task' }}</h2>
 
     @if (errorMessage()) {
@@ -32,8 +39,8 @@
       </div>
 
       @if (form.value.rule_type === 'repeating') {
-        <div class="form-field">
-          <label>Select days *</label>
+        <fieldset class="form-field">
+          <legend>Select days *</legend>
           <div class="day-selection">
             <label>
               <input
@@ -99,7 +106,7 @@
               Sunday
             </label>
           </div>
-        </div>
+        </fieldset>
       }
 
       <div class="form-actions">
