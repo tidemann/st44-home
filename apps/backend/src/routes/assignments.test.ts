@@ -626,4 +626,450 @@ describe('Assignments API', () => {
       assert.strictEqual(body.total, 5);
     });
   });
+
+  // ==================== Test Suite 9: PUT /api/assignments/:assignmentId/complete ====================
+
+  describe('PUT /api/assignments/:assignmentId/complete', () => {
+    let assignmentId: string;
+
+    beforeEach(async () => {
+      // Create a pending assignment
+      const result = await pool.query(
+        `INSERT INTO task_assignments (household_id, task_id, child_id, date, status)
+         VALUES ($1, $2, $3, '2025-01-15', 'pending')
+         RETURNING id`,
+        [householdId, taskId, childIds[0]],
+      );
+      assignmentId = result.rows[0].id;
+    });
+
+    test('successfully marks assignment as complete', async () => {
+      const response = await app.inject({
+        method: 'PUT',
+        url: `/api/assignments/${assignmentId}/complete`,
+        headers: { Authorization: `Bearer ${adminToken}` },
+      });
+
+      assert.strictEqual(response.statusCode, 200);
+
+      const body = JSON.parse(response.body);
+      assert.strictEqual(body.id, assignmentId);
+      assert.strictEqual(body.status, 'completed');
+      assert.ok(body.completed_at);
+      assert.ok(body.child_id);
+      assert.ok(body.task_id);
+
+      // Verify database state
+      const dbResult = await pool.query('SELECT status FROM task_assignments WHERE id = $1', [
+        assignmentId,
+      ]);
+      assert.strictEqual(dbResult.rows[0].status, 'completed');
+    });
+
+    test('parent can complete assignment', async () => {
+      const response = await app.inject({
+        method: 'PUT',
+        url: `/api/assignments/${assignmentId}/complete`,
+        headers: { Authorization: `Bearer ${parentToken}` },
+      });
+
+      assert.strictEqual(response.statusCode, 200);
+
+      const body = JSON.parse(response.body);
+      assert.strictEqual(body.status, 'completed');
+    });
+
+    test('returns 404 if assignment not found', async () => {
+      const fakeId = '00000000-0000-0000-0000-000000000000';
+
+      const response = await app.inject({
+        method: 'PUT',
+        url: `/api/assignments/${fakeId}/complete`,
+        headers: { Authorization: `Bearer ${adminToken}` },
+      });
+
+      assert.strictEqual(response.statusCode, 404);
+
+      const body = JSON.parse(response.body);
+      assert.ok(body.error.includes('not found'));
+    });
+
+    test('returns 400 if assignment already completed', async () => {
+      // First completion
+      await app.inject({
+        method: 'PUT',
+        url: `/api/assignments/${assignmentId}/complete`,
+        headers: { Authorization: `Bearer ${adminToken}` },
+      });
+
+      // Second completion attempt
+      const response = await app.inject({
+        method: 'PUT',
+        url: `/api/assignments/${assignmentId}/complete`,
+        headers: { Authorization: `Bearer ${adminToken}` },
+      });
+
+      assert.strictEqual(response.statusCode, 400);
+
+      const body = JSON.parse(response.body);
+      assert.ok(body.error.includes('already completed'));
+    });
+
+    test('returns 400 for invalid UUID format', async () => {
+      const response = await app.inject({
+        method: 'PUT',
+        url: `/api/assignments/not-a-uuid/complete`,
+        headers: { Authorization: `Bearer ${adminToken}` },
+      });
+
+      assert.strictEqual(response.statusCode, 400);
+
+      const body = JSON.parse(response.body);
+      assert.ok(body.error.toLowerCase().includes('uuid'));
+    });
+
+    test('requires authentication (401 without token)', async () => {
+      const response = await app.inject({
+        method: 'PUT',
+        url: `/api/assignments/${assignmentId}/complete`,
+      });
+
+      assert.strictEqual(response.statusCode, 401);
+    });
+
+    test('returns 403 if not authorized (outsider)', async () => {
+      const response = await app.inject({
+        method: 'PUT',
+        url: `/api/assignments/${assignmentId}/complete`,
+        headers: { Authorization: `Bearer ${outsiderToken}` },
+      });
+
+      assert.strictEqual(response.statusCode, 403);
+
+      const body = JSON.parse(response.body);
+      assert.ok(body.error.includes('not authorized'));
+    });
+
+    test('records completed_at timestamp', async () => {
+      const beforeTime = new Date();
+
+      const response = await app.inject({
+        method: 'PUT',
+        url: `/api/assignments/${assignmentId}/complete`,
+        headers: { Authorization: `Bearer ${adminToken}` },
+      });
+
+      const afterTime = new Date();
+
+      assert.strictEqual(response.statusCode, 200);
+
+      const body = JSON.parse(response.body);
+      const completedAt = new Date(body.completed_at);
+
+      assert.ok(completedAt >= beforeTime);
+      assert.ok(completedAt <= afterTime);
+    });
+
+    test('does not modify other assignments', async () => {
+      // Create another assignment
+      const otherResult = await pool.query(
+        `INSERT INTO task_assignments (household_id, task_id, child_id, date, status)
+         VALUES ($1, $2, $3, '2025-01-16', 'pending')
+         RETURNING id`,
+        [householdId, taskId, childIds[1]],
+      );
+      const otherAssignmentId = otherResult.rows[0].id;
+
+      // Complete first assignment
+      await app.inject({
+        method: 'PUT',
+        url: `/api/assignments/${assignmentId}/complete`,
+        headers: { Authorization: `Bearer ${adminToken}` },
+      });
+
+      // Verify other assignment is still pending
+      const dbResult = await pool.query('SELECT status FROM task_assignments WHERE id = $1', [
+        otherAssignmentId,
+      ]);
+      assert.strictEqual(dbResult.rows[0].status, 'pending');
+    });
+
+    test('returns all required fields', async () => {
+      const response = await app.inject({
+        method: 'PUT',
+        url: `/api/assignments/${assignmentId}/complete`,
+        headers: { Authorization: `Bearer ${adminToken}` },
+      });
+
+      assert.strictEqual(response.statusCode, 200);
+
+      const body = JSON.parse(response.body);
+      assert.ok(body.id);
+      assert.ok(body.status);
+      assert.ok(body.completed_at);
+      assert.ok(body.child_id);
+      assert.ok(body.task_id);
+    });
+  });
+
+  // ==================== Test Suite 10: PUT /api/assignments/:assignmentId/reassign ====================
+
+  describe('PUT /api/assignments/:assignmentId/reassign', () => {
+    let assignmentId: string;
+
+    beforeEach(async () => {
+      // Create a pending assignment assigned to child 0
+      const result = await pool.query(
+        `INSERT INTO task_assignments (household_id, task_id, child_id, date, status)
+         VALUES ($1, $2, $3, '2025-01-15', 'pending')
+         RETURNING id`,
+        [householdId, taskId, childIds[0]],
+      );
+      assignmentId = result.rows[0].id;
+    });
+
+    test('successfully reassigns to different child', async () => {
+      const response = await app.inject({
+        method: 'PUT',
+        url: `/api/assignments/${assignmentId}/reassign`,
+        headers: { Authorization: `Bearer ${adminToken}` },
+        payload: { childId: childIds[1] },
+      });
+
+      assert.strictEqual(response.statusCode, 200);
+
+      const body = JSON.parse(response.body);
+      assert.strictEqual(body.id, assignmentId);
+      assert.strictEqual(body.child_id, childIds[1]);
+      assert.strictEqual(body.child_name, 'Bob');
+
+      // Verify database state
+      const dbResult = await pool.query('SELECT child_id FROM task_assignments WHERE id = $1', [
+        assignmentId,
+      ]);
+      assert.strictEqual(dbResult.rows[0].child_id, childIds[1]);
+    });
+
+    test('parent can reassign', async () => {
+      const response = await app.inject({
+        method: 'PUT',
+        url: `/api/assignments/${assignmentId}/reassign`,
+        headers: { Authorization: `Bearer ${parentToken}` },
+        payload: { childId: childIds[1] },
+      });
+
+      assert.strictEqual(response.statusCode, 200);
+
+      const body = JSON.parse(response.body);
+      assert.strictEqual(body.child_id, childIds[1]);
+    });
+
+    test('returns 404 if assignment not found', async () => {
+      const fakeId = '00000000-0000-0000-0000-000000000000';
+
+      const response = await app.inject({
+        method: 'PUT',
+        url: `/api/assignments/${fakeId}/reassign`,
+        headers: { Authorization: `Bearer ${adminToken}` },
+        payload: { childId: childIds[1] },
+      });
+
+      assert.strictEqual(response.statusCode, 404);
+
+      const body = JSON.parse(response.body);
+      assert.ok(body.error.includes('not found'));
+    });
+
+    test('returns 404 if child not found', async () => {
+      const fakeChildId = '00000000-0000-0000-0000-000000000001';
+
+      const response = await app.inject({
+        method: 'PUT',
+        url: `/api/assignments/${assignmentId}/reassign`,
+        headers: { Authorization: `Bearer ${adminToken}` },
+        payload: { childId: fakeChildId },
+      });
+
+      assert.strictEqual(response.statusCode, 404);
+
+      const body = JSON.parse(response.body);
+      assert.ok(body.error.includes('Child not found'));
+    });
+
+    test('returns 400 if assignment already completed', async () => {
+      // Mark as completed
+      await pool.query(`UPDATE task_assignments SET status = 'completed' WHERE id = $1`, [
+        assignmentId,
+      ]);
+
+      const response = await app.inject({
+        method: 'PUT',
+        url: `/api/assignments/${assignmentId}/reassign`,
+        headers: { Authorization: `Bearer ${adminToken}` },
+        payload: { childId: childIds[1] },
+      });
+
+      assert.strictEqual(response.statusCode, 400);
+
+      const body = JSON.parse(response.body);
+      assert.ok(body.error.includes('completed'));
+    });
+
+    test('returns 400 for invalid assignment UUID format', async () => {
+      const response = await app.inject({
+        method: 'PUT',
+        url: `/api/assignments/not-a-uuid/reassign`,
+        headers: { Authorization: `Bearer ${adminToken}` },
+        payload: { childId: childIds[1] },
+      });
+
+      assert.strictEqual(response.statusCode, 400);
+
+      const body = JSON.parse(response.body);
+      assert.ok(body.error.toLowerCase().includes('uuid'));
+    });
+
+    test('returns 400 for invalid child UUID format', async () => {
+      const response = await app.inject({
+        method: 'PUT',
+        url: `/api/assignments/${assignmentId}/reassign`,
+        headers: { Authorization: `Bearer ${adminToken}` },
+        payload: { childId: 'not-a-uuid' },
+      });
+
+      assert.strictEqual(response.statusCode, 400);
+
+      const body = JSON.parse(response.body);
+      assert.ok(body.error.toLowerCase().includes('uuid'));
+    });
+
+    test('returns 400 if childId missing', async () => {
+      const response = await app.inject({
+        method: 'PUT',
+        url: `/api/assignments/${assignmentId}/reassign`,
+        headers: { Authorization: `Bearer ${adminToken}` },
+        payload: {},
+      });
+
+      assert.strictEqual(response.statusCode, 400);
+
+      const body = JSON.parse(response.body);
+      assert.ok(body.error.includes('childId'));
+    });
+
+    test('requires authentication (401 without token)', async () => {
+      const response = await app.inject({
+        method: 'PUT',
+        url: `/api/assignments/${assignmentId}/reassign`,
+        payload: { childId: childIds[1] },
+      });
+
+      assert.strictEqual(response.statusCode, 401);
+    });
+
+    test('returns 403 if not authorized (outsider)', async () => {
+      const response = await app.inject({
+        method: 'PUT',
+        url: `/api/assignments/${assignmentId}/reassign`,
+        headers: { Authorization: `Bearer ${outsiderToken}` },
+        payload: { childId: childIds[1] },
+      });
+
+      assert.strictEqual(response.statusCode, 403);
+
+      const body = JSON.parse(response.body);
+      assert.ok(body.error.includes('not authorized'));
+    });
+
+    test('verifies child belongs to same household', async () => {
+      // Create another household with a child
+      const household2Response = await app.inject({
+        method: 'POST',
+        url: '/api/households',
+        headers: { Authorization: `Bearer ${outsiderToken}` },
+        payload: { name: 'Other Household 2' },
+      });
+      const household2Id = JSON.parse(household2Response.body).id;
+
+      const otherChildResult = await pool.query(
+        `INSERT INTO children (household_id, name, birth_year) VALUES ($1, $2, $3) RETURNING id`,
+        [household2Id, 'Other Child', 2015],
+      );
+      const otherChildId = otherChildResult.rows[0].id;
+
+      // Try to reassign to child from different household
+      const response = await app.inject({
+        method: 'PUT',
+        url: `/api/assignments/${assignmentId}/reassign`,
+        headers: { Authorization: `Bearer ${adminToken}` },
+        payload: { childId: otherChildId },
+      });
+
+      assert.strictEqual(response.statusCode, 404);
+
+      const body = JSON.parse(response.body);
+      assert.ok(body.error.includes('Child not found in this household'));
+
+      // Cleanup
+      await pool.query('DELETE FROM children WHERE household_id = $1', [household2Id]);
+      await pool.query('DELETE FROM household_members WHERE household_id = $1', [household2Id]);
+      await pool.query('DELETE FROM households WHERE id = $1', [household2Id]);
+    });
+
+    test('allows reassigning to same child (no-op)', async () => {
+      const response = await app.inject({
+        method: 'PUT',
+        url: `/api/assignments/${assignmentId}/reassign`,
+        headers: { Authorization: `Bearer ${adminToken}` },
+        payload: { childId: childIds[0] },
+      });
+
+      assert.strictEqual(response.statusCode, 200);
+
+      const body = JSON.parse(response.body);
+      assert.strictEqual(body.child_id, childIds[0]);
+      assert.strictEqual(body.child_name, 'Alice');
+    });
+
+    test('does not modify other assignments', async () => {
+      // Create another assignment
+      const otherResult = await pool.query(
+        `INSERT INTO task_assignments (household_id, task_id, child_id, date, status)
+         VALUES ($1, $2, $3, '2025-01-16', 'pending')
+         RETURNING id`,
+        [householdId, taskId, childIds[1]],
+      );
+      const otherAssignmentId = otherResult.rows[0].id;
+
+      // Reassign first assignment
+      await app.inject({
+        method: 'PUT',
+        url: `/api/assignments/${assignmentId}/reassign`,
+        headers: { Authorization: `Bearer ${adminToken}` },
+        payload: { childId: childIds[1] },
+      });
+
+      // Verify other assignment still has original child
+      const dbResult = await pool.query('SELECT child_id FROM task_assignments WHERE id = $1', [
+        otherAssignmentId,
+      ]);
+      assert.strictEqual(dbResult.rows[0].child_id, childIds[1]);
+    });
+
+    test('returns all required fields', async () => {
+      const response = await app.inject({
+        method: 'PUT',
+        url: `/api/assignments/${assignmentId}/reassign`,
+        headers: { Authorization: `Bearer ${adminToken}` },
+        payload: { childId: childIds[1] },
+      });
+
+      assert.strictEqual(response.statusCode, 200);
+
+      const body = JSON.parse(response.body);
+      assert.ok(body.id);
+      assert.ok(body.child_id);
+      assert.ok(body.child_name);
+    });
+  });
 });
