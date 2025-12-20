@@ -312,22 +312,23 @@ export default async function assignmentRoutes(fastify: FastifyInstance) {
       }
 
       // Handle days parameter (for backward compatibility with existing endpoint)
-      let endDateStr = date;
+      // Default to 7 days if not provided
+      let daysNum = 7;
       if (days) {
-        const daysNum = parseInt(days, 10);
+        daysNum = parseInt(days, 10);
 
         if (isNaN(daysNum) || daysNum < 1 || daysNum > 30) {
           return reply.code(400).send({
             error: 'days must be between 1 and 30',
           });
         }
-
-        // Calculate end date
-        const startDate = new Date(date);
-        const endDate = new Date(startDate);
-        endDate.setDate(endDate.getDate() + daysNum - 1);
-        endDateStr = endDate.toISOString().split('T')[0];
       }
+
+      // Calculate end date
+      const startDate = new Date(date);
+      const endDate = new Date(startDate);
+      endDate.setDate(endDate.getDate() + daysNum - 1);
+      const endDateStr = endDate.toISOString().split('T')[0];
 
       // Query assignments with joins and optional filters
       try {
@@ -353,16 +354,10 @@ export default async function assignmentRoutes(fastify: FastifyInstance) {
         const queryParams: (string | undefined)[] = [householdId];
         let paramIndex = 2;
 
-        // Add date range filter
-        if (days) {
-          query += ` AND ta.date >= $${paramIndex} AND ta.date <= $${paramIndex + 1}`;
-          queryParams.push(date, endDateStr);
-          paramIndex += 2;
-        } else {
-          query += ` AND ta.date = $${paramIndex}`;
-          queryParams.push(date);
-          paramIndex += 1;
-        }
+        // Add date range filter (always present now with default of 7 days)
+        query += ` AND ta.date >= $${paramIndex} AND ta.date <= $${paramIndex + 1}`;
+        queryParams.push(date, endDateStr);
+        paramIndex += 2;
 
         // Add optional childId filter
         if (childId) {
@@ -382,21 +377,21 @@ export default async function assignmentRoutes(fastify: FastifyInstance) {
 
         const result = await pool.query(query, queryParams);
 
-        // Transform to expected response format
+        // Transform to expected response format (snake_case to match existing API)
         const assignments = result.rows.map((row) => ({
           id: row.id,
-          taskId: row.task_id,
-          title: row.title,
-          description: row.description,
-          childId: row.child_id,
-          childName: row.child_name,
+          task_id: row.task_id,
+          task_name: row.title,
+          child_id: row.child_id,
+          child_name: row.child_name,
           date: row.date,
           status: row.status,
-          completedAt: row.completed_at || null,
+          completed_at: row.completed_at || null,
         }));
 
         return reply.code(200).send({
           assignments,
+          total: assignments.length,
         });
       } catch (error) {
         fastify.log.error(error, 'Failed to fetch assignments');
