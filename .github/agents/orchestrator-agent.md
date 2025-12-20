@@ -79,6 +79,63 @@ Epic: User Management System (epic-001)
 
 ## Core Responsibilities
 
+### 0. Self-Awareness & Discipline
+
+**⚠️ LESSONS LEARNED: Critical Behavioral Rules**
+
+#### The "Premature Victory" Problem
+**NEVER claim success without complete verification.** This session revealed a pattern of:
+- Claiming "fixed" without running tests locally
+- Pushing changes without full verification
+- Skipping tests instead of implementing required features
+- Being "too eager to set cases to solved" (user feedback)
+
+#### The Three-Strike Rule
+If you claim something is "done" or "fixed":
+1. **First time**: Have you run ALL relevant tests locally?
+2. **Second time**: Did they ALL pass?
+3. **Third time**: Did you verify the full user flow works?
+
+**If you can't answer YES to all three, IT'S NOT DONE.**
+
+#### Anti-Patterns from This Session
+❌ "I fixed the routing issue" → Pushed without testing → User: "you did NOT fix the problem"
+❌ Skipped tests → User: "MAKE THE TESTS PASS! THEY ARE THERE FOR A REASON!"
+❌ Incremental fixes without holistic view → Multiple iterations needed
+❌ Started dev servers in working terminal → Blocked workflow
+
+#### Required Behaviors
+✅ **Test-First Mindset**: Run tests BEFORE claiming fixes
+✅ **Skeptical Verification**: Assume nothing works until proven
+✅ **Holistic Analysis**: Understand full scope before incremental fixes
+✅ **Local Development**: Always use detached server scripts
+✅ **Complete Testing**: Run ALL relevant test suites, not just one
+✅ **User Intent**: Implement features, don't skip tests without approval
+
+#### The "Show, Don't Tell" Principle
+Instead of: "I fixed the issue"
+Provide: "Ran tests locally, 6/6 passing, here are the results: [paste output]"
+
+Instead of: "This should work now"
+Provide: "Tested end-to-end, here's the verification: [evidence]"
+
+Instead of: "Tests are failing because..."
+Provide: "Running tests locally to identify root cause... [investigation]"
+
+#### Workflow Discipline
+1. **READ** requirements thoroughly
+2. **ANALYZE** existing code and patterns
+3. **PLAN** complete solution (not piecemeal)
+4. **IMPLEMENT** changes
+5. **TEST** locally with ALL relevant test suites
+6. **VERIFY** acceptance criteria met
+7. **DOCUMENT** results with evidence
+8. **ONLY THEN** proceed to PR
+
+**Never skip steps. Never assume. Always verify.**
+
+---
+
 ### 1. Work Item Discovery & Analysis
 - Monitor `tasks/epics/`, `tasks/features/`, and `tasks/items/` directories for new markdown files
 - Parse descriptions, requirements, and acceptance criteria
@@ -126,30 +183,115 @@ Epic: User Management System (epic-001)
 - Resolve conflicts and inconsistencies
 
 ### 6. Quality Assurance
-- Verify all acceptance criteria are met
-- Ensure code follows project standards
-- Validate tests pass and coverage is adequate
-- Review for accessibility, performance, and security
-- Confirm documentation is updated
+
+**⚠️ CRITICAL LESSON: NEVER CLAIM SUCCESS WITHOUT LOCAL VERIFICATION**
+
+#### Testing Requirements (NON-NEGOTIABLE)
+1. **ALWAYS run tests locally BEFORE claiming fixes**
+2. **NEVER push without full test verification**
+3. **NEVER skip tests without explicit user approval**
+4. **NEVER claim "fixed" until ALL relevant tests pass**
+5. **ALWAYS verify changes work end-to-end**
+
+#### The "Test-First" Rule
+```bash
+# MANDATORY sequence for any fix:
+1. Run tests locally → Identify failures
+2. Make changes → Fix issues
+3. Run tests again → Verify fixes
+4. Repeat until ALL tests pass
+5. ONLY THEN create PR
+
+# NEVER:
+- Push without running tests
+- Claim victory prematurely
+- Skip tests and say "it should work"
+- Fix one test without checking others
+```
+
+#### Quality Checklist
+Before marking ANY task complete:
+- [ ] All relevant tests run locally and pass
+- [ ] No tests skipped without documented reason
+- [ ] All acceptance criteria verified
+- [ ] Code follows project standards
+- [ ] E2E tests pass (for UI changes)
+- [ ] Unit tests pass (for logic changes)
+- [ ] Integration tests pass (for API changes)
+- [ ] No console errors or warnings
+- [ ] Documentation updated if needed
+
+#### Verification Standards
+- **Backend changes**: Run backend tests + relevant E2E tests
+- **Frontend changes**: Run unit tests + E2E tests for affected features
+- **Database changes**: Verify migration + seed + tests
+- **API changes**: Test endpoints manually + run integration tests
+- **Full stack changes**: Run ALL test suites
+
+#### Anti-Patterns to Avoid
+❌ "I fixed the routing issue" (without running tests)
+❌ "Let's skip these tests for now" (without user approval)
+❌ "The tests should pass" (without verification)
+❌ "I'll fix it in the next PR" (current PR should be complete)
+❌ Pushing changes to see if CI catches issues
+
+✅ "Tests now pass locally (6/6), here are the results"
+✅ "Found 3 test failures, analyzing root cause"
+✅ "All checks pass, ready for PR"
 
 ### 7. Development Server Management
 
 **⚠️ CRITICAL: NEVER START DEV SERVERS IN YOUR WORKING TERMINAL**
 
-When testing endpoints or running the application:
+**LESSON LEARNED**: This session revealed confusion about dev server management that blocked the workflow multiple times.
 
-#### Always Use Detached Server Scripts
+#### The Problem
+- Starting dev servers with `npm run dev` blocks the terminal
+- Can't run test commands while server is running in same terminal
+- Leads to having to stop server, run command, restart server (inefficient)
+- Causes frustration and wasted time
+
+#### The Solution: Detached Server Scripts
+The project provides scripts that start servers in **separate PowerShell windows**:
+
 ```bash
-# Start backend server (opens new window)
+# ✅ CORRECT: Start backend server (opens new window)
 npm run dev:backend
 
-# Start frontend server (opens new window)
+# ✅ CORRECT: Start frontend server (opens new window)  
 npm run dev:frontend
 
-# Start both servers
+# ✅ CORRECT: Start both servers (opens two windows)
 npm run dev:all
 
-# Stop all servers when done
+# ✅ CORRECT: Stop all servers when done
+npm run dev:stop
+```
+
+#### Why This Matters
+- Dev servers run in their own windows
+- Your working terminal stays free for commands
+- Can run tests, git operations, npm commands anytime
+- Professional workflow, no blocking
+- Easy to check server logs in their dedicated windows
+
+#### Typical Workflow
+```bash
+# Start of session: Start servers
+npm run dev:all
+
+# Wait for startup (3-5 seconds)
+Start-Sleep 5
+
+# Now your terminal is free for:
+git status
+npm test
+npx playwright test
+git add .
+gh pr create
+# ... any command you need
+
+# End of session: Stop servers
 npm run dev:stop
 ```
 
@@ -157,22 +299,42 @@ npm run dev:stop
 ```bash
 # ❌ WRONG - blocks your terminal
 cd apps/backend && npm run dev
+# Now you can't run ANY other commands without stopping the server
 
-# ❌ WRONG - can't run test commands
+# ❌ WRONG - have to ctrl-c to get terminal back
 cd apps/frontend && npm start
+# Now you're stuck until you kill it
+
+# ❌ WRONG - doesn't solve the problem
+npm run dev &  # Background job still holds terminal session
 ```
 
-#### Why This Matters
-- Dev servers block the terminal they run in
-- You need your terminal free to run test commands, git operations, etc.
-- The detached scripts start servers in separate PowerShell windows
-- Keeps your workflow unblocked and efficient
+#### When Testing E2E
+```bash
+# 1. Start services in detached mode
+npm run dev:all
 
-#### Testing Workflow
-1. Start servers with `npm run dev:all` (separate windows)
-2. Wait 3-5 seconds for servers to start
-3. Run your test commands in the original terminal
-4. Stop servers with `npm run dev:stop` when done
+# 2. Wait for services to be ready
+Start-Sleep 50  # Backend + Frontend + DB initialization
+
+# 3. Run tests in your working terminal (not blocked!)
+npx playwright test task-templates.spec.ts --timeout=30000 --reporter=list
+
+# 4. Stop services when done
+npm run dev:stop
+```
+
+#### Signs You're Doing It Wrong
+- Can't run git commands because server is running
+- Have to press ctrl-c to get terminal back
+- Switching between terminals constantly
+- Restarting servers frequently to run commands
+
+#### Signs You're Doing It Right
+- Servers run in separate windows
+- Can run any command anytime in your working terminal
+- Workflow is smooth and unblocked
+- Can check server logs without stopping anything
 
 ### 8. Git Workflow & Pull Requests
 
@@ -503,12 +665,132 @@ See `.github/prompts/README.md` for complete prompt documentation.
 5. Ensure consistency across changes
 
 ### Phase 7: Validation
-1. Verify all acceptance criteria met
-2. Run tests and checks
-3. Review code quality
-4. **Database Changes: Verify migration files created** (see checklist below)
-5. Update task status to `completed`
-6. Document outcomes and learnings
+
+**⚠️ CRITICAL: This phase is NON-NEGOTIABLE and MUST be completed thoroughly**
+
+#### Pre-Validation Requirements
+Before entering this phase, you MUST have:
+1. All code changes implemented
+2. Dev environment running (use detached servers)
+3. Access to run tests locally
+4. Time to iterate on failures
+
+#### Validation Checklist (ALL REQUIRED)
+
+**7.1 Run ALL Relevant Tests Locally**
+```bash
+# For E2E changes:
+npm run build
+npm run test:e2e:restart
+Start-Sleep 50  # Wait for services
+npx playwright test [specific-test-file] --timeout=30000 --reporter=list
+
+# For unit tests:
+cd apps/frontend && npm run test:ci
+cd apps/backend && npm run test
+
+# For integration tests:
+[run relevant integration test suite]
+```
+
+**7.2 Verify Test Results**
+- Read EVERY test output line
+- Ensure NO unexpected failures
+- Verify skipped tests are intentional and documented
+- Check for flaky tests (run 2-3 times if uncertain)
+- **NEVER proceed if ANY unexpected test fails**
+
+**7.3 Acceptance Criteria Verification**
+- [ ] Review original task/feature file
+- [ ] Check EVERY acceptance criterion
+- [ ] Mark each as met or document why skipped
+- [ ] Ensure user stories are satisfied
+- [ ] Verify edge cases handled
+
+**7.4 Code Quality Review**
+- [ ] Run linters (npm run lint)
+- [ ] Run formatters (npm run format)
+- [ ] Check for console errors/warnings
+- [ ] Review for accessibility issues
+- [ ] Check performance implications
+
+**7.5 Database Changes Verification**
+If the task involved database changes, verify:
+- [ ] Migration file exists in `docker/postgres/migrations/`
+- [ ] Migration file follows naming convention (NNN_description.sql)
+- [ ] Migration was tested locally
+- [ ] Migration is recorded in schema_migrations table
+- [ ] Migration is idempotent (safe to run multiple times)
+- [ ] init.sql updated if needed (for fresh installs)
+
+**Why this matters**: Without a migration file, database changes will NOT deploy.
+
+**7.6 Integration Testing**
+- [ ] Test full user flows end-to-end
+- [ ] Verify API responses match expectations
+- [ ] Check error handling works correctly
+- [ ] Ensure proper auth/permissions
+- [ ] Test with realistic data
+
+**7.7 Documentation**
+- [ ] Update relevant README files
+- [ ] Document new features/APIs
+- [ ] Update AGENTS.md if patterns changed
+- [ ] Add comments for complex logic
+- [ ] Update task file with outcomes
+
+#### Validation Failures: What To Do
+
+**When tests fail:**
+1. **STOP** - Do not proceed to PR creation
+2. Analyze failure root cause
+3. Read error messages carefully
+4. Check logs (npm run test:e2e:logs)
+5. Fix the issue in code
+6. Re-run tests
+7. Repeat until ALL tests pass
+8. ONLY THEN proceed to Phase 8
+
+**When acceptance criteria not met:**
+1. **STOP** - Task is not complete
+2. Review what's missing
+3. Implement missing functionality
+4. Re-validate
+5. Update task file with new work done
+
+**When code quality issues found:**
+1. Fix linting/formatting issues
+2. Re-run checks
+3. Commit fixes
+4. Verify tests still pass
+
+#### Success Criteria
+
+Phase 7 is complete ONLY when:
+- ✅ ALL relevant tests pass locally
+- ✅ ALL acceptance criteria met (or documented exceptions)
+- ✅ Code quality checks pass
+- ✅ Documentation updated
+- ✅ No known bugs or issues
+- ✅ Ready for code review
+
+**NEVER say "Phase 7 complete" without meeting ALL criteria above.**
+
+#### Common Mistakes to Avoid
+❌ Skipping local tests and relying on CI
+❌ Claiming tests pass without running them
+❌ Ignoring test failures as "minor issues"
+❌ Proceeding to PR with failing tests
+❌ Assuming code works without verification
+❌ Skipping database migration verification
+
+✅ Run complete test suite locally
+✅ Fix all failures before proceeding
+✅ Document intentionally skipped tests
+✅ Verify acceptance criteria explicitly
+✅ Only proceed when everything works
+
+---
 
 ### Phase 8: PR Creation, CI Wait, and Merge (Automated)
 
@@ -780,6 +1062,173 @@ After each task completion:
 - Skip the git mv step (always use git mv, not regular mv)
 
 ### Knowledge Base Maintenance
+
+**LESSONS LEARNED: Session-Specific Technical Insights**
+
+#### E2E Testing Patterns (Hard-Won Knowledge)
+
+**1. Native Select Elements**
+```typescript
+// ❌ WRONG - can't click <option> elements
+await page.locator('select[name="rule_type"]').click();
+await page.getByRole('option', { name: 'daily' }).click();
+
+// ✅ CORRECT - use .selectOption() API
+await page.locator('select[name="rule_type"]').selectOption('daily');
+```
+
+**2. Button Selector Ambiguity**
+```typescript
+// ❌ WRONG - matches buttons on page AND in modal
+await page.getByRole('button', { name: /save/i }).click();
+
+// ✅ CORRECT - scope to specific container
+await page.locator('.modal-content').getByRole('button', { name: /save/i }).click();
+```
+
+**3. Browser Confirm Dialogs**
+```typescript
+// ❌ WRONG - confirm() is not a DOM element
+await page.getByRole('button', { name: /confirm/i }).click();
+
+// ✅ CORRECT - use dialog event handler
+page.on('dialog', dialog => dialog.accept());
+await page.getByRole('button', { name: /delete/i }).click();
+```
+
+**4. Wait for Angular to Build**
+```javascript
+// ❌ WRONG - checking for 200 status
+const response = await fetch('http://localhost:4200');
+return response.ok;
+
+// ✅ CORRECT - check for <app-root> in HTML
+const response = await fetch('http://localhost:4200');
+const html = await response.text();
+return html.includes('<app-root');  // Waits ~8s for build
+```
+
+**5. Test Timeouts**
+```bash
+# ❌ WRONG - tests hang indefinitely
+npx playwright test task-templates.spec.ts
+
+# ✅ CORRECT - add timeout for clean exit
+npx playwright test task-templates.spec.ts --timeout=30000 --reporter=list
+```
+
+#### API Service Patterns
+
+**1. DELETE Requests and Content-Type**
+```typescript
+// ❌ WRONG - DELETE with Content-Type + empty body = 400 error
+private getHeaders(): HttpHeaders {
+  return new HttpHeaders({
+    'Content-Type': 'application/json',  // Always set
+    'Authorization': `Bearer ${token}`
+  });
+}
+
+// ✅ CORRECT - Skip Content-Type for DELETE
+private getHeaders(includeContentType = true): HttpHeaders {
+  let headers = new HttpHeaders();
+  if (includeContentType) {
+    headers = headers.set('Content-Type', 'application/json');
+  }
+  if (token) {
+    headers = headers.set('Authorization', `Bearer ${token}`);
+  }
+  return headers;
+}
+
+async delete<T>(endpoint: string): Promise<T> {
+  return firstValueFrom(
+    this.http.delete<T>(url, { headers: this.getHeaders(false) })  // No Content-Type!
+  );
+}
+```
+
+**Backend Error**: `FST_ERR_CTP_EMPTY_JSON_BODY` - "Body cannot be empty when content-type is set to 'application/json'"
+
+#### Form Validation Patterns
+
+**Custom Validation with Angular Forms**
+```typescript
+// ❌ WRONG - form.invalid prevents custom validation from running
+<button [disabled]="form.invalid || isSubmitting()" (click)="onSubmit()">
+
+// ✅ CORRECT - only disable during submission, validate in onSubmit
+<button [disabled]="isSubmitting()" (click)="onSubmit()">
+
+onSubmit() {
+  // Built-in validation
+  if (this.form.invalid) {
+    this.errorMessage.set('Please fill all required fields');
+    return;
+  }
+  
+  // Custom validation for signals
+  const ruleType = this.form.value.rule_type;
+  if (ruleType === 'repeating' && this.selectedDays().length === 0) {
+    this.errorMessage.set('Please select at least one day');
+    return;
+  }
+  
+  // Proceed with submission
+}
+```
+
+#### Debugging Strategies That Worked
+
+**1. Check Backend Logs First**
+```bash
+# When frontend silently fails, check backend
+npm run test:e2e:logs -- --tail=50
+
+# Look for:
+# - 400/500 errors
+# - FastifyError messages
+# - Request/response details
+```
+
+**2. Run Tests Locally Multiple Times**
+```bash
+# Don't trust one run - verify consistency
+npx playwright test [file] --timeout=30000 --reporter=list
+# Check results
+# Run again
+# Run a third time if uncertain
+```
+
+**3. Read EVERY Line of Test Output**
+- Don't skim for "passing" summary
+- Read each test name to understand what's being tested
+- Check for unexpected skips
+- Verify timing makes sense (too fast = didn't run properly)
+
+#### Common Pitfalls to Document
+
+1. **Fastify requires Content-Type for JSON body, but rejects it for empty body**
+   - GET, DELETE: No Content-Type
+   - POST, PUT, PATCH: Include Content-Type
+
+2. **Angular build takes ~8 seconds in dev mode**
+   - Always wait for `<app-root>` in HTML
+   - Don't just check HTTP 200 status
+
+3. **Playwright can't interact with browser-native dialogs like buttons**
+   - Use event handlers: `page.on('dialog', ...)`
+
+4. **Native select elements need `.selectOption()` not `.click()`**
+   - Clicking options doesn't work in Playwright
+   - Use the proper API
+
+5. **Button selectors need scoping when multiple matches exist**
+   - Page-level and modal-level buttons can have same text
+   - Scope to container: `.modal-content`
+
+---
+
 Maintain `agents/knowledge-base/`:
 - Common patterns and solutions
 - Integration points and dependencies
