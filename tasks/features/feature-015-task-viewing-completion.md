@@ -192,17 +192,17 @@ Total: 6 tasks (26-33 hours estimated, 4-5 days)
 - [x] [task-094](../items/done/task-094-task-assignments-query-api.md): Task Assignments Query API (4-5h, backend-agent) ✅ COMPLETED 2025-12-20
 - [x] [task-095](../items/done/task-095-task-completion-reassignment-api.md): Task Completion & Reassignment API (4-5h, backend-agent) ✅ COMPLETED 2025-12-20
 - [x] [task-096](../items/done/task-096-frontend-task-service.md): Frontend TaskService for Viewing & Completion (3-4h, frontend-agent) ✅ COMPLETED 2025-12-20
-- [ ] [task-097](../items/task-097-child-task-list-component.md): Child Task List Component (4-5h, frontend-agent)
-- [ ] [task-098](../items/task-098-parent-task-dashboard.md): Parent Task Dashboard Component (5-6h, frontend-agent)
-- [ ] [task-099](../items/task-099-viewing-completion-tests.md): Integration Tests for Viewing & Completion (6-8h, testing-agent)
+- [x] [task-097](../items/done/task-097-child-task-list-component.md): Child Task List Component (4-5h, frontend-agent) ✅ COMPLETED 2025-12-20
+- [x] [task-098](../items/done/task-098-parent-task-dashboard.md): Parent Task Dashboard Component (5-6h, frontend-agent) ✅ COMPLETED 2025-12-20
+- [ ] [task-099](../items/task-099-viewing-completion-tests.md): Integration Tests for Viewing & Completion (6-8h, testing-agent) **NEXT PRIORITY** ⚡
 
 **Dependencies:**
 - task-094 → task-096 (service needs API) ✅ task-094 COMPLETE
 - task-095 → task-096 (service needs API) ✅ task-095 COMPLETE
 - task-096 → task-097, task-098 (components need service) ✅ task-096 COMPLETE
-- task-094, task-095, task-096, task-097, task-098 → task-099 (tests need all implementations)
+- task-094, task-095, task-096, task-097, task-098 → task-099 (tests need all implementations) ✅ ALL DEPENDENCIES COMPLETE
 
-**Progress**: 3/6 tasks complete (50%)
+**Progress**: 5/6 tasks complete (83%)
 
 ## Progress Log
 - [2025-12-19 10:50] Feature created for Epic-002 breakdown
@@ -210,3 +210,6 @@ Total: 6 tasks (26-33 hours estimated, 4-5 days)
 - [2025-12-20 01:30] Task-094 (Assignment Query API) completed and merged (PR #118) - 1/6 complete (17%)
 - [2025-12-20 02:00] Task-095 (Completion & Reassignment API) completed and merged (PR #119) - 2/6 complete (33%)
 - [2025-12-20 10:45] Task-096 (Frontend TaskService) completed and merged (PR #122) - 3/6 complete (50%)
+- [2025-12-20 11:30] Task-097 (Child Task List Component) completed and merged (PR #123) - 4/6 complete (67%)
+- [2025-12-20 11:45] Task-098 (Parent Task Dashboard) completed and merged (PR #124) - 5/6 complete (83%)
+- [2025-12-20 11:45] Feature status updated: 5/6 tasks complete, only task-099 (E2E tests) remaining
