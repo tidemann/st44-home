@@ -1,0 +1,292 @@
+# Task: OpenAPI Contract Implementation
+
+## Metadata
+- **ID**: task-100
+- **Feature**: Technical Infrastructure
+- **Epic**: epic-006 - Testing & Quality Assurance
+- **Status**: pending
+- **Priority**: high
+- **Created**: 2025-12-20
+- **Assigned Agent**: backend-agent, frontend-agent
+- **Estimated Duration**: 8-12 hours (1.5-2 days)
+
+## Description
+Implement OpenAPI 3.1 specification for the backend API to establish a contract between frontend and backend. This prevents the type of snake_case vs camelCase mismatches encountered in Task-099 where backend responses didn't match frontend expectations, causing multiple test failures and debugging cycles.
+
+**Problem Context:** During Task-099, we encountered:
+- Backend returned `{tasks: [...]}`, frontend expected `{assignments: [...], total: number}`
+- Backend used camelCase (`taskId`), API convention requires snake_case (`task_id`)
+- Missing response fields (`child_id`)
+- These issues caused 15 backend test failures and 5 frontend test failures
+
+**Solution:** OpenAPI specification provides:
+- Single source of truth for API schemas
+- Auto-generated TypeScript types for frontend
+- Runtime request/response validation in backend
+- API documentation for developers
+- Prevents contract mismatches at compile time
+
+## Requirements
+
+### Backend OpenAPI Setup
+- Install and configure `@fastify/swagger` and `@fastify/swagger-ui`
+- Define OpenAPI 3.1 specification for all existing endpoints
+- Add JSON Schema definitions for request/response bodies
+- Enable request validation using schemas
+- Enable response serialization using schemas
+- Set up Swagger UI at `/api/docs` for development
+
+### Schema Definitions (Priority Endpoints)
+All schemas must use snake_case for consistency:
+
+1. **Authentication Endpoints**
+   - POST /api/auth/register
+   - POST /api/auth/login
+   - POST /api/auth/google
+
+2. **Household Endpoints**
+   - GET /api/households
+   - POST /api/households
+   - GET /api/households/:id
+   - PUT /api/households/:id
+   - DELETE /api/households/:id
+
+3. **Children Endpoints**
+   - GET /api/households/:householdId/children
+   - POST /api/households/:householdId/children
+   - PUT /api/children/:id
+   - DELETE /api/children/:id
+
+4. **Task Template Endpoints**
+   - GET /api/households/:householdId/tasks
+   - POST /api/households/:householdId/tasks
+   - PUT /api/tasks/:id
+   - DELETE /api/tasks/:id
+
+5. **Assignment Endpoints** (Critical - recently added)
+   - GET /api/children/:childId/tasks
+   - GET /api/households/:householdId/tasks/assignments
+   - POST /api/tasks/generate-assignments
+   - PUT /api/tasks/assignments/:assignmentId/complete
+   - PUT /api/tasks/assignments/:assignmentId/reassign
+
+### Frontend Type Generation
+- Install `openapi-typescript` package
+- Add script to generate TypeScript types from OpenAPI spec
+- Configure to output types to `src/app/types/api.generated.ts`
+- Update build process to regenerate types automatically
+- Create wrapper utilities for type-safe API calls
+
+### Frontend Integration
+- Update `ApiService` to use generated types
+- Update `TaskService` to use generated types
+- Update all HTTP calls to be type-safe
+- Remove manual type definitions that duplicate API types
+- Add generic type helpers for common patterns
+
+### Documentation
+- Document OpenAPI setup in backend README
+- Add instructions for generating types in frontend README
+- Create guide for adding new endpoints with schemas
+- Document snake_case convention in API design guide
+
+## Acceptance Criteria
+- [x] Problem identified (snake_case vs camelCase mismatches)
+- [ ] `@fastify/swagger` installed and configured in backend
+- [ ] OpenAPI schemas defined for all 20+ existing endpoints
+- [ ] Swagger UI accessible at `/api/docs` in development
+- [ ] Request validation enabled for POST/PUT endpoints
+- [ ] Response serialization validates all responses
+- [ ] `openapi-typescript` installed in frontend
+- [ ] TypeScript types generated from OpenAPI spec
+- [ ] Types exported from `src/app/types/api.generated.ts`
+- [ ] `ApiService` refactored to use generated types
+- [ ] `TaskService` refactored to use generated types
+- [ ] All HTTP calls are type-safe with IntelliSense
+- [ ] No type mismatches between backend responses and frontend expectations
+- [ ] All existing tests still pass (272 backend, 222 frontend)
+- [ ] Documentation updated with OpenAPI workflow
+- [ ] Backend README has OpenAPI setup instructions
+- [ ] Frontend README has type generation instructions
+
+## Dependencies
+- Epic-001 (Multi-Tenant Foundation) - COMPLETE ✅
+- Epic-002 (Task Management Core) - COMPLETE ✅
+- All existing API endpoints must be stable
+
+## Technical Notes
+
+### Fastify OpenAPI Integration
+```typescript
+// Example schema definition
+const taskAssignmentSchema = {
+  type: 'object',
+  properties: {
+    id: { type: 'number' },
+    household_id: { type: 'string', format: 'uuid' },
+    task_id: { type: 'number' },
+    child_id: { type: 'number' },
+    date: { type: 'string', format: 'date' },
+    status: { type: 'string', enum: ['pending', 'completed', 'overdue'] },
+    completed_at: { type: 'string', format: 'date-time', nullable: true }
+  },
+  required: ['id', 'household_id', 'task_id', 'child_id', 'date', 'status']
+};
+
+// Route with schema
+fastify.get('/api/children/:childId/tasks', {
+  schema: {
+    params: { type: 'object', properties: { childId: { type: 'number' } } },
+    querystring: {
+      type: 'object',
+      properties: {
+        date: { type: 'string', format: 'date' },
+        status: { type: 'string', enum: ['pending', 'completed'] }
+      }
+    },
+    response: {
+      200: {
+        type: 'object',
+        properties: {
+          assignments: { type: 'array', items: taskAssignmentSchema },
+          total: { type: 'number' }
+        }
+      }
+    }
+  }
+}, handler);
+```
+
+### Type Generation in Frontend
+```bash
+# Add to package.json scripts
+"generate:types": "openapi-typescript http://localhost:3000/api/docs/json -o src/app/types/api.generated.ts"
+```
+
+### Type-Safe API Calls
+```typescript
+// Generated types
+import type { paths } from './types/api.generated';
+
+type GetChildTasksResponse = paths['/api/children/{childId}/tasks']['get']['responses']['200']['content']['application/json'];
+
+// Usage in service
+getChildTasks(childId: number): Observable<GetChildTasksResponse> {
+  return this.http.get<GetChildTasksResponse>(`/api/children/${childId}/tasks`);
+}
+```
+
+### Snake Case Convention
+All API responses MUST use snake_case for consistency with:
+- PostgreSQL column names
+- Database naming conventions
+- Common REST API patterns
+- Python/Ruby style guides
+
+Do NOT use camelCase in API responses even though TypeScript prefers it.
+
+### Validation Benefits
+- Catch invalid requests before they reach handler
+- Return structured error messages (400 Bad Request)
+- Prevent accidental schema drift
+- Enforce required fields
+- Validate data types, formats, ranges
+
+## Affected Areas
+- [x] Frontend (Angular) - Type generation and integration
+- [x] Backend (Fastify/Node.js) - OpenAPI setup and schemas
+- [ ] Database (PostgreSQL) - No changes needed
+- [ ] Infrastructure (Docker/Nginx) - No changes needed
+- [ ] CI/CD - May need to add type generation step
+- [x] Documentation - API docs, setup guides
+
+## Implementation Plan
+
+### Phase 1: Backend OpenAPI Setup (4-5 hours)
+1. Install `@fastify/swagger` and `@fastify/swagger-ui`
+2. Configure Swagger plugin with OpenAPI 3.1
+3. Set up Swagger UI at `/api/docs`
+4. Extract existing response types to JSON Schema
+5. Define schemas for all 20+ endpoints
+6. Add schema validation to routes
+7. Test Swagger UI displays all endpoints
+8. Verify schemas match actual responses
+
+### Phase 2: Frontend Type Generation (2-3 hours)
+1. Install `openapi-typescript` in frontend
+2. Add `generate:types` script to package.json
+3. Generate initial types from OpenAPI spec
+4. Review generated types for correctness
+5. Create utility types for common patterns
+6. Add type generation to CI workflow
+7. Document type generation process
+
+### Phase 3: Frontend Integration (2-3 hours)
+1. Update `ApiService` to use generated types
+2. Update `TaskService` to use generated types
+3. Update all HTTP calls with proper types
+4. Remove duplicate manual type definitions
+5. Fix any type errors revealed by generated types
+6. Verify IntelliSense works correctly
+7. Run all tests to ensure no regressions
+
+### Phase 4: Documentation & Testing (1-2 hours)
+1. Update backend README with OpenAPI setup
+2. Update frontend README with type generation
+3. Create API design guide with snake_case convention
+4. Document endpoint addition workflow
+5. Verify all 272 backend tests pass
+6. Verify all 222 frontend tests pass
+7. Manual testing of type safety in IDE
+
+## Testing Strategy
+- **Backend**: Existing tests should pass, no new tests needed
+- **Frontend**: Existing tests should pass, no new tests needed
+- **Manual**: Verify Swagger UI displays all endpoints correctly
+- **Manual**: Verify type generation produces correct TypeScript types
+- **Manual**: Verify IntelliSense shows correct types in IDE
+- **Integration**: Verify no type mismatches in actual API calls
+
+## Benefits
+
+### Immediate
+- Prevents Task-099 style mismatches (snake_case vs camelCase)
+- Catches contract violations at compile time
+- IntelliSense provides autocomplete for API responses
+- Swagger UI for API exploration and testing
+
+### Long-term
+- New developers understand API contracts quickly
+- Reduces debugging time for integration issues
+- Enforces consistency across all endpoints
+- API documentation stays in sync with implementation
+- Easier to onboard new team members
+- Supports API versioning in future
+
+## Risks
+- **Medium**: Initial setup time investment (8-12 hours)
+- **Low**: Type generation might produce overly complex types
+- **Low**: CI might need updates for type generation step
+
+## Mitigation
+- Start with high-priority endpoints (assignments, tasks)
+- Simplify complex generated types with utility types
+- Add type generation to pre-commit hook if CI is complex
+
+## Progress Log
+- [2025-12-20 13:30] Task created based on user feedback about snake_case/camelCase issues in Task-099
+- [2025-12-20 13:30] Status: pending (awaiting orchestrator assignment)
+
+## Related Issues
+- Task-099: Encountered snake_case vs camelCase mismatches
+  - Backend returned wrong response format: `{tasks}` vs `{assignments, total}`
+  - Backend used camelCase: `taskId` vs `task_id`
+  - Missing fields: `child_id` not in response
+  - Required multiple debugging cycles and PR updates
+  - 15 backend test failures, 5 frontend test failures fixed
+
+## Lessons Learned
+[To be filled after completion]
+
+## Related PRs
+[To be filled during implementation]
