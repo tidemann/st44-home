@@ -4,10 +4,11 @@
 - **ID**: task-099
 - **Feature**: [feature-015-task-viewing-completion](../features/feature-015-task-viewing-completion.md)
 - **Epic**: [epic-002-task-management-core](../epics/epic-002-task-management-core.md)
-- **Status**: in-progress
+- **Status**: completed
 - **Priority**: high
 - **Created**: 2025-12-20
 - **Started**: 2025-12-20
+- **Completed**: 2025-12-20
 - **Estimated Duration**: 6-8 hours
 - **Agent Assignment**: testing-agent | orchestrator-agent
 
@@ -392,3 +393,17 @@ async function setupTestData() {
 
 ## Progress Log
 - [2025-12-20 00:10] Task created for feature-015 breakdown
+- [2025-12-20 12:00] Status changed to in-progress - starting implementation
+- [2025-12-20 12:05] Created comprehensive backend tests (17 cases) for GET /api/children/:childId/tasks
+- [2025-12-20 12:10] Fixed endpoint response format - using snake_case keys, assignments array structure
+- [2025-12-20 12:15] Added frontend service tests (24 cases) for assignment methods
+- [2025-12-20 12:20] Created E2E test file with 17 scenarios covering child/parent perspectives
+- [2025-12-20 12:25] Debugged and fixed backend test failures - schema alignment, test setup corrections
+- [2025-12-20 12:30] All local validation passing - 272 backend tests, all frontend tests passing
+- [2025-12-20 12:40] PR #125 created - comprehensive integration tests for task viewing and completion
+- [2025-12-20 12:45] Fixed ESLint error (removed explicit any type)
+- [2025-12-20 12:50] Fixed TypeScript error (days parameter not in AssignmentFilters)
+- [2025-12-20 13:00] Fixed test failures - use assignmentsError() signal, fix reassignTask parameter names
+- [2025-12-20 13:20] All CI checks passing - frontend and backend SUCCESS
+- [2025-12-20 13:22] PR #125 merged successfully via squash merge
+- [2025-12-20 13:23] Status changed to completed - all acceptance criteria met
