@@ -3,10 +3,12 @@
 ## Metadata
 - **ID**: feature-015
 - **Epic**: [epic-002-task-management-core](../epics/epic-002-task-management-core.md)
-- **Status**: in-progress
+- **Status**: completed
 - **Priority**: critical
 - **Created**: 2025-12-19
+- **Completed**: 2025-12-20
 - **Estimated Duration**: 4-5 days
+- **Actual Duration**: 1.5 days
 
 ## Description
 Children can view their assigned tasks and mark them complete. Parents can view all household tasks with status, override assignments, and see completion history. Different views optimized for parent vs child perspectives.
@@ -194,15 +196,15 @@ Total: 6 tasks (26-33 hours estimated, 4-5 days)
 - [x] [task-096](../items/done/task-096-frontend-task-service.md): Frontend TaskService for Viewing & Completion (3-4h, frontend-agent) ✅ COMPLETED 2025-12-20
 - [x] [task-097](../items/done/task-097-child-task-list-component.md): Child Task List Component (4-5h, frontend-agent) ✅ COMPLETED 2025-12-20
 - [x] [task-098](../items/done/task-098-parent-task-dashboard.md): Parent Task Dashboard Component (5-6h, frontend-agent) ✅ COMPLETED 2025-12-20
-- [ ] [task-099](../items/task-099-viewing-completion-tests.md): Integration Tests for Viewing & Completion (6-8h, testing-agent) **NEXT PRIORITY** ⚡
+- [x] [task-099](../items/done/task-099-viewing-completion-tests.md): Integration Tests for Viewing & Completion (6-8h, testing-agent) ✅ COMPLETED 2025-12-20
 
-**Dependencies:**
-- task-094 → task-096 (service needs API) ✅ task-094 COMPLETE
-- task-095 → task-096 (service needs API) ✅ task-095 COMPLETE
-- task-096 → task-097, task-098 (components need service) ✅ task-096 COMPLETE
-- task-094, task-095, task-096, task-097, task-098 → task-099 (tests need all implementations) ✅ ALL DEPENDENCIES COMPLETE
+**Dependencies:** ✅ ALL COMPLETE
+- task-094 → task-096 (service needs API) ✅
+- task-095 → task-096 (service needs API) ✅
+- task-096 → task-097, task-098 (components need service) ✅
+- task-094, task-095, task-096, task-097, task-098 → task-099 (tests need all implementations) ✅
 
-**Progress**: 5/6 tasks complete (83%)
+**Progress**: 6/6 tasks complete (100%) ✅
 
 ## Progress Log
 - [2025-12-19 10:50] Feature created for Epic-002 breakdown
@@ -212,4 +214,6 @@ Total: 6 tasks (26-33 hours estimated, 4-5 days)
 - [2025-12-20 10:45] Task-096 (Frontend TaskService) completed and merged (PR #122) - 3/6 complete (50%)
 - [2025-12-20 11:30] Task-097 (Child Task List Component) completed and merged (PR #123) - 4/6 complete (67%)
 - [2025-12-20 11:45] Task-098 (Parent Task Dashboard) completed and merged (PR #124) - 5/6 complete (83%)
-- [2025-12-20 11:45] Feature status updated: 5/6 tasks complete, only task-099 (E2E tests) remaining
+- [2025-12-20 13:23] Task-099 (Integration Tests) completed and merged (PR #125) - 6/6 complete (100%) ✅
+- [2025-12-20 13:25] Feature status changed to completed - All 6 tasks done!
+- [2025-12-20 13:25] **FEATURE-015 COMPLETE** 🎉 Task Viewing & Completion is live!
