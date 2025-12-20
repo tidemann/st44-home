@@ -45,11 +45,30 @@ async function waitForBackend() {
 }
 
 /**
- * Wait for frontend to serve content
+ * Wait for frontend to serve content AND have Angular app built
  * @returns {Promise<boolean>}
  */
 async function waitForFrontend() {
-  return checkService(E2E_FRONTEND_URL, 'Frontend');
+  try {
+    const response = await fetch(E2E_FRONTEND_URL);
+    if (response.ok) {
+      const html = await response.text();
+      // Check if Angular app is built (contains app-root and script tags)
+      if (html.includes('<app-root>') && html.includes('main.js')) {
+        console.log(`✅ Frontend is healthy and Angular app is built (${response.status})`);
+        return true;
+      } else {
+        console.log(`⏳ Frontend returned ${response.status} but Angular app not built yet, waiting...`);
+        return false;
+      }
+    } else {
+      console.log(`⏳ Frontend returned ${response.status}, waiting...`);
+      return false;
+    }
+  } catch (error) {
+    console.log(`⏳ Frontend not ready yet: ${error.message}`);
+    return false;
+  }
 }
 
 /**

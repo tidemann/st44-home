@@ -10,7 +10,7 @@ export async function loginAsUser(page: Page, email: string, password: string): 
 
   // Fill in credentials
   await page.getByLabel(/email/i).fill(email);
-  await page.getByLabel(/password/i).fill(password);
+  await page.getByRole('textbox', { name: /password/i }).fill(password);
 
   // Submit form
   await page.getByRole('button', { name: /log in|sign in/i }).click();
@@ -29,11 +29,11 @@ export async function registerUser(page: Page, email: string, password: string):
 
   // Fill in credentials
   await page.getByLabel(/email/i).fill(email);
-  await page.getByLabel(/^password$/i).fill(password);
-  await page.getByLabel(/confirm password/i).fill(password);
+  await page.getByRole('textbox', { name: /^password$/i }).fill(password);
+  await page.getByRole('textbox', { name: /confirm password/i }).fill(password);
 
   // Submit form
-  await page.getByRole('button', { name: /register|sign up/i }).click();
+  await page.getByRole('button', { name: /create account|register|sign up/i }).click();
 
   // Wait for successful redirect (away from register page)
   await page.waitForURL((url) => !url.pathname.includes('/register'), { timeout: 5000 });
