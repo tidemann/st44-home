@@ -4,11 +4,12 @@
 - **ID**: task-099
 - **Feature**: [feature-015-task-viewing-completion](../features/feature-015-task-viewing-completion.md)
 - **Epic**: [epic-002-task-management-core](../epics/epic-002-task-management-core.md)
-- **Status**: pending
+- **Status**: in-progress
 - **Priority**: high
 - **Created**: 2025-12-20
+- **Started**: 2025-12-20
 - **Estimated Duration**: 6-8 hours
-- **Agent Assignment**: testing-agent
+- **Agent Assignment**: testing-agent | orchestrator-agent
 
 ## Description
 Comprehensive integration tests for task viewing and completion functionality. Covers backend API endpoints, frontend service methods, and E2E user flows for both child and parent perspectives.

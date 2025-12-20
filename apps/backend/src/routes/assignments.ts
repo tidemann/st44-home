@@ -244,20 +244,22 @@ export default async function assignmentRoutes(fastify: FastifyInstance) {
 
         const result = await pool.query(query, queryParams);
 
-        // Transform to expected response format
-        const tasks = result.rows.map((row) => ({
+        // Transform to expected response format (snake_case to match API convention)
+        const assignments = result.rows.map((row) => ({
           id: row.id,
-          taskId: row.task_id,
+          task_id: row.task_id,
+          child_id: childId, // From request params
           title: row.title,
           description: row.description,
-          ruleType: row.rule_type,
+          rule_type: row.rule_type,
           date: row.date,
           status: row.status,
-          completedAt: row.completed_at || null,
+          completed_at: row.completed_at || null,
         }));
 
         return reply.code(200).send({
-          tasks,
+          assignments,
+          total: assignments.length,
         });
       } catch (error) {
         fastify.log.error(error, 'Failed to fetch child tasks');
