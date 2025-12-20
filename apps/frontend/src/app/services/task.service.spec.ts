@@ -975,7 +975,7 @@ describe('TaskService', () => {
     it('should compute pendingAssignments correctly', () => {
       const pending = service.pendingAssignments();
       expect(pending.length).toBe(2);
-      expect(pending.every((a: any) => a.status === 'pending')).toBe(true);
+      expect(pending.every((a) => a.status === 'pending')).toBe(true);
     });
 
     it('should compute completedAssignments correctly', () => {
