@@ -4,7 +4,7 @@
 - **ID**: task-097
 - **Feature**: [feature-015-task-viewing-completion](../features/feature-015-task-viewing-completion.md)
 - **Epic**: [epic-002-task-management-core](../epics/epic-002-task-management-core.md)
-- **Status**: pending
+- **Status**: in-progress
 - **Priority**: high
 - **Created**: 2025-12-20
 - **Estimated Duration**: 4-5 hours

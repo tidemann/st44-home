@@ -1,0 +1,137 @@
+.task-card {
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  padding: 16px;
+  margin-bottom: 12px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  transition: all 0.2s ease;
+}
+
+.task-card:hover {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.task-card.completed {
+  background: #f0fdf4;
+  border-color: #86efac;
+}
+
+.task-card.overdue {
+  border-color: #fca5a5;
+  border-width: 2px;
+}
+
+.task-info {
+  flex: 1;
+  min-width: 0; /* Allow text truncation */
+}
+
+.task-info h3 {
+  margin: 0 0 4px 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: #1f2937;
+}
+
+.task-card.completed .task-info h3 {
+  color: #059669;
+  text-decoration: line-through;
+}
+
+.task-info .description {
+  margin: 0;
+  font-size: 14px;
+  color: #6b7280;
+  line-height: 1.4;
+}
+
+.task-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.badge.completed {
+  background: #d1fae5;
+  color: #059669;
+}
+
+.badge.overdue {
+  background: #fee2e2;
+  color: #dc2626;
+}
+
+.badge .icon {
+  font-size: 16px;
+}
+
+.complete-btn {
+  padding: 8px 16px;
+  border: 2px solid #3b82f6;
+  border-radius: 6px;
+  background: white;
+  color: #3b82f6;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+  min-height: 44px; /* Mobile touch target */
+  min-width: 44px;
+}
+
+.complete-btn:hover {
+  background: #eff6ff;
+}
+
+.complete-btn:active {
+  background: #dbeafe;
+  transform: scale(0.98);
+}
+
+.complete-btn.primary {
+  background: #3b82f6;
+  color: white;
+}
+
+.complete-btn.primary:hover {
+  background: #2563eb;
+}
+
+.complete-btn:focus {
+  outline: 2px solid #3b82f6;
+  outline-offset: 2px;
+}
+
+/* Mobile optimizations */
+@media (max-width: 640px) {
+  .task-card {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .task-actions {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .complete-btn {
+    flex: 1;
+  }
+}

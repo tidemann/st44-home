@@ -1,0 +1,76 @@
+<div class="child-task-list">
+  <header class="header">
+    <h1>My Tasks</h1>
+    <div class="filter-buttons">
+      <button
+        class="filter-btn"
+        [class.active]="dateFilter() === 'today'"
+        (click)="filterDate('today')"
+        aria-label="Show today's tasks"
+      >
+        Today
+      </button>
+      <button
+        class="filter-btn"
+        [class.active]="dateFilter() === 'week'"
+        (click)="filterDate('week')"
+        aria-label="Show this week's tasks"
+      >
+        This Week
+      </button>
+    </div>
+  </header>
+
+  @if (loading()) {
+    <div class="loading-state" role="status" aria-live="polite">
+      <div class="spinner"></div>
+      <p>Loading tasks...</p>
+    </div>
+  }
+
+  @if (error()) {
+    <div class="error-state" role="alert">
+      <p>{{ error() }}</p>
+      <button class="retry-btn" (click)="filterDate(dateFilter())">Try Again</button>
+    </div>
+  }
+
+  @if (!loading() && !error()) {
+    @if (tasks().length === 0) {
+      <div class="empty-state">
+        <div class="emoji">🎉</div>
+        <h2>No tasks {{ dateFilter() === 'today' ? 'today' : 'this week' }}!</h2>
+        <p>Great job! You're all caught up!</p>
+      </div>
+    } @else {
+      <div class="progress-section">
+        <div class="progress-text">
+          <span class="completed">{{ completedCount() }}</span>
+          <span class="divider">of</span>
+          <span class="total">{{ tasks().length }}</span>
+          <span class="label">complete</span>
+        </div>
+        <div class="progress-bar-container">
+          <div
+            class="progress-bar"
+            role="progressbar"
+            [attr.aria-valuenow]="completedCount()"
+            [attr.aria-valuemin]="0"
+            [attr.aria-valuemax]="tasks().length"
+            [attr.aria-label]="completedCount() + ' of ' + tasks().length + ' tasks complete'"
+            [style.width.%]="progressPercent()"
+          ></div>
+        </div>
+        @if (progressPercent() === 100) {
+          <div class="congrats-message">🌟 All done! Amazing work!</div>
+        }
+      </div>
+
+      <div class="task-list">
+        @for (task of tasks(); track task.id) {
+          <app-task-card [task]="task" (complete)="onComplete($event)" />
+        }
+      </div>
+    }
+  }
+</div>
