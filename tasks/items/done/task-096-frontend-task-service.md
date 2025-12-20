@@ -4,7 +4,7 @@
 - **ID**: task-096
 - **Feature**: [feature-015-task-viewing-completion](../features/feature-015-task-viewing-completion.md)
 - **Epic**: [epic-002-task-management-core](../epics/epic-002-task-management-core.md)
-- **Status**: pending
+- **Status**: completed
 - **Priority**: high
 - **Created**: 2025-12-19
 - **Estimated Duration**: 3-4 hours
@@ -108,19 +108,19 @@ export interface AssignmentFilters {
 ```
 
 ## Acceptance Criteria
-- [ ] Service extends or creates new TaskService with assignments methods
-- [ ] getChildTasks() calls GET /api/children/:childId/tasks
-- [ ] getHouseholdAssignments() calls GET /api/households/:householdId/assignments
-- [ ] Passes query parameters correctly
-- [ ] completeTask() calls PUT /api/assignments/:id/complete
-- [ ] Optimistic update for completion
-- [ ] Rollback on error
-- [ ] reassignTask() calls PUT /api/assignments/:id/reassign
-- [ ] Uses signals for state management
-- [ ] Computed signals for filtered views
-- [ ] Handles loading states
-- [ ] Handles error responses
-- [ ] All methods tested with unit tests
+- [x] Service extends or creates new TaskService with assignments methods
+- [x] getChildTasks() calls GET /api/children/:childId/tasks
+- [x] getHouseholdAssignments() calls GET /api/households/:householdId/assignments
+- [x] Passes query parameters correctly
+- [x] completeTask() calls PUT /api/assignments/:id/complete
+- [x] Optimistic update for completion
+- [x] Rollback on error
+- [x] reassignTask() calls PUT /api/assignments/:id/reassign
+- [x] Uses signals for state management
+- [x] Computed signals for filtered views
+- [x] Handles loading states
+- [x] Handles error responses
+- [x] All methods tested with unit tests
 
 ## Dependencies
 - task-094 ✅ Backend query API
@@ -191,3 +191,15 @@ formatDate(date: string): string {
 
 ## Progress Log
 - [2025-12-19 23:55] Task created for feature-015 breakdown
+- [2025-12-20 08:30] Status changed to in-progress - extending TaskService with assignment methods
+- [2025-12-20 10:40] Implementation complete:
+  - Added TaskAssignment and AssignmentFilters interfaces
+  - Extended TaskService with assignment state signals
+  - Added getChildTasks() method with query parameters
+  - Added getHouseholdAssignments() method with filters
+  - Added completeTask() with optimistic updates and rollback
+  - Added reassignTask() method
+  - Added computed signals for pending, completed, overdue assignments
+  - All methods handle loading and error states
+  - 195 frontend tests passing (including existing tests)
+- [2025-12-20 10:40] Status changed to completed - All acceptance criteria met
