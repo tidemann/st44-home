@@ -48,6 +48,14 @@ export const routes: Routes = [
     loadComponent: () => import('./pages/task-list/task-list').then((m) => m.TaskListComponent),
     canActivate: [authGuard],
   },
+  {
+    path: 'tasks',
+    loadComponent: () =>
+      import('./components/child-task-list/child-task-list.component').then(
+        (m) => m.ChildTaskListComponent,
+      ),
+    canActivate: [authGuard],
+  },
 
   // Default redirect
   {

@@ -1,0 +1,41 @@
+<div
+  class="task-card"
+  [class.completed]="task().status === 'completed'"
+  [class.overdue]="isOverdue()"
+>
+  <div class="task-info">
+    <h3>{{ task().title }}</h3>
+    @if (task().description) {
+      <p class="description">{{ task().description }}</p>
+    }
+  </div>
+
+  <div class="task-actions">
+    @if (task().status === 'completed') {
+      <span class="badge completed" aria-label="Task completed">
+        <span class="icon">✓</span>
+        <span class="text">Done</span>
+      </span>
+    } @else if (isOverdue()) {
+      <span class="badge overdue" aria-label="Task is overdue">
+        <span class="icon">⚠</span>
+        <span class="text">Overdue</span>
+      </span>
+      <button
+        class="complete-btn"
+        (click)="onCompleteClick()"
+        [attr.aria-label]="'Mark ' + task().title + ' as complete'"
+      >
+        Mark Complete
+      </button>
+    } @else {
+      <button
+        class="complete-btn primary"
+        (click)="onCompleteClick()"
+        [attr.aria-label]="'Mark ' + task().title + ' as complete'"
+      >
+        Mark Complete
+      </button>
+    }
+  </div>
+</div>
