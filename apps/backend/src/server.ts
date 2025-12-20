@@ -1,5 +1,7 @@
 import Fastify, { FastifyRequest, FastifyReply } from 'fastify';
 import cors from '@fastify/cors';
+import swagger from '@fastify/swagger';
+import swaggerUi from '@fastify/swagger-ui';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import { OAuth2Client } from 'google-auth-library';
@@ -66,6 +68,50 @@ async function buildApp() {
   // Register CORS
   await fastify.register(cors, {
     origin: process.env.CORS_ORIGIN || '*',
+  });
+
+  // Register Swagger for API documentation
+  await fastify.register(swagger, {
+    openapi: {
+      info: {
+        title: 'Diddit API',
+        description: 'Multi-tenant household chores management API',
+        version: '1.0.0',
+      },
+      servers: [
+        {
+          url: 'http://localhost:3000',
+          description: 'Development server',
+        },
+      ],
+      components: {
+        securitySchemes: {
+          bearerAuth: {
+            type: 'http',
+            scheme: 'bearer',
+            bearerFormat: 'JWT',
+          },
+        },
+      },
+      tags: [
+        { name: 'auth', description: 'Authentication endpoints' },
+        { name: 'households', description: 'Household management' },
+        { name: 'children', description: 'Child profile management' },
+        { name: 'tasks', description: 'Task template management' },
+        { name: 'assignments', description: 'Task assignment management' },
+        { name: 'invitations', description: 'Household invitation system' },
+      ],
+    },
+  });
+
+  // Register Swagger UI
+  await fastify.register(swaggerUi, {
+    routePrefix: '/api/docs',
+    uiConfig: {
+      docExpansion: 'list',
+      deepLinking: true,
+    },
+    staticCSP: true,
   });
 
   // Authentication Middleware

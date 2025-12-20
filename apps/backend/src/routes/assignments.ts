@@ -3,6 +3,13 @@ import { authenticateUser } from '../middleware/auth.js';
 import { validateHouseholdMembership } from '../middleware/household-membership.js';
 import { pool } from '../database.js';
 import { generateAssignments } from '../services/assignment-generator.js';
+import {
+  getChildTasksSchema,
+  getHouseholdAssignmentsSchema,
+  completeAssignmentSchema,
+  reassignTaskSchema,
+  generateAssignmentsSchema,
+} from '../schemas/assignments.js';
 
 const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 const DATE_REGEX = /^\d{4}-\d{2}-\d{2}$/;
@@ -157,6 +164,7 @@ export default async function assignmentRoutes(fastify: FastifyInstance) {
   }>(
     '/api/children/:childId/tasks',
     {
+      schema: getChildTasksSchema,
       preHandler: [authenticateUser],
     },
     async (request, reply) => {
