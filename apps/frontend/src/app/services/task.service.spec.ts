@@ -678,7 +678,7 @@ describe('TaskService', () => {
       const result$ = service.getChildTasks('child-1', '2025-01-20');
 
       await expect(firstValueFrom(result$)).rejects.toThrow();
-      expect(service.error()).toBe('Failed to load child tasks');
+      expect(service.assignmentsError()).toBe('Failed to load child tasks');
     });
   });
 
@@ -714,14 +714,13 @@ describe('TaskService', () => {
 
       const result$ = service.getHouseholdAssignments('household-1', {
         date: '2025-01-20',
-        days: 7,
-        childId: 'child-1',
+        child_id: 'child-1',
         status: 'pending',
       });
       await firstValueFrom(result$);
 
       expect(mockApiService.get).toHaveBeenCalledWith(
-        '/households/household-1/assignments?date=2025-01-20&days=7&childId=child-1&status=pending',
+        '/households/household-1/assignments?date=2025-01-20&child_id=child-1&status=pending',
       );
     });
 
@@ -758,7 +757,7 @@ describe('TaskService', () => {
       const result$ = service.getHouseholdAssignments('household-1');
 
       await expect(firstValueFrom(result$)).rejects.toThrow();
-      expect(service.error()).toBe('Failed to load household assignments');
+      expect(service.assignmentsError()).toBe('Failed to load household assignments');
     });
   });
 
@@ -835,7 +834,7 @@ describe('TaskService', () => {
       const result$ = service.completeTask('assignment-1');
 
       await expect(firstValueFrom(result$)).rejects.toThrow();
-      expect(service.error()).toBe('Failed to complete task');
+      expect(service.assignmentsError()).toBe('Failed to complete task');
     });
 
     it('should not affect other assignments', async () => {
@@ -890,7 +889,7 @@ describe('TaskService', () => {
       await firstValueFrom(result$);
 
       expect(mockApiService.put).toHaveBeenCalledWith('/assignments/assignment-1/reassign', {
-        childId: 'child-2',
+        child_id: 'child-2',
       });
     });
 
@@ -921,7 +920,7 @@ describe('TaskService', () => {
       const result$ = service.reassignTask('assignment-1', 'invalid-child');
 
       await expect(firstValueFrom(result$)).rejects.toThrow();
-      expect(service.error()).toBe('Failed to reassign task');
+      expect(service.assignmentsError()).toBe('Failed to reassign task');
     });
 
     it('should not affect other assignments', async () => {
