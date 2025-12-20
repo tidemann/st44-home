@@ -11,6 +11,13 @@ import childrenRoutes from './routes/children.js';
 import taskRoutes from './routes/tasks.js';
 import { invitationRoutes } from './routes/invitations.js';
 import assignmentRoutes from './routes/assignments.js';
+import {
+  registerSchema,
+  loginSchema,
+  refreshTokenSchema,
+  googleAuthSchema,
+  healthCheckSchema,
+} from './schemas/auth.js';
 
 // JWT Configuration
 const JWT_SECRET = process.env.JWT_SECRET || 'dev-secret-change-in-production';
@@ -219,56 +226,6 @@ async function buildApp() {
       exp: number;
     }
 
-    // JSON Schema for Registration
-    const registerSchema = {
-      body: {
-        type: 'object',
-        required: ['email', 'password'],
-        properties: {
-          email: {
-            type: 'string',
-            format: 'email',
-            maxLength: 255,
-          },
-          password: {
-            type: 'string',
-            minLength: 8,
-            maxLength: 128,
-          },
-        },
-      },
-    };
-
-    // JSON Schema for Login
-    const loginSchema = {
-      body: {
-        type: 'object',
-        required: ['email', 'password'],
-        properties: {
-          email: {
-            type: 'string',
-            format: 'email',
-          },
-          password: {
-            type: 'string',
-          },
-        },
-      },
-    };
-
-    // JSON Schema for Token Refresh
-    const refreshSchema = {
-      body: {
-        type: 'object',
-        required: ['refreshToken'],
-        properties: {
-          refreshToken: {
-            type: 'string',
-          },
-        },
-      },
-    };
-
     // Registration endpoint
     fastify.post<RegisterRequest, { Reply: RegisterResponse | ErrorResponse }>(
       '/api/auth/register',
@@ -380,7 +337,7 @@ async function buildApp() {
     fastify.post<RefreshRequest, { Reply: RefreshResponse | ErrorResponse }>(
       '/api/auth/refresh',
       {
-        schema: refreshSchema,
+        schema: refreshTokenSchema,
       },
       async (request, reply) => {
         const { refreshToken } = request.body;
@@ -612,12 +569,18 @@ async function buildApp() {
   // Health Check Endpoints
 
   // Basic health check
-  fastify.get('/health', async () => {
-    return {
-      status: 'healthy',
-      timestamp: new Date().toISOString(),
-    };
-  });
+  fastify.get(
+    '/health',
+    {
+      schema: healthCheckSchema,
+    },
+    async () => {
+      return {
+        status: 'healthy',
+        timestamp: new Date().toISOString(),
+      };
+    },
+  );
 
   // Database health check with schema validation
   fastify.get('/health/database', async (request, reply) => {
