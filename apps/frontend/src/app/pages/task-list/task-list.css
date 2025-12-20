@@ -1,0 +1,100 @@
+.task-list-container {
+  padding: 2rem;
+}
+
+.error {
+  color: #d32f2f;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  background-color: #ffebee;
+  border-radius: 4px;
+}
+
+.loading {
+  padding: 2rem;
+  text-align: center;
+}
+
+.no-data {
+  padding: 2rem;
+  text-align: center;
+  color: #757575;
+}
+
+.tasks {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.task-item {
+  padding: 1rem;
+  border: 1px solid #e0e0e0;
+  border-radius: 4px;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1rem;
+}
+
+.task-info {
+  flex: 1;
+}
+
+.task-info h3 {
+  margin: 0 0 0.5rem 0;
+}
+
+.task-info p {
+  margin: 0 0 0.5rem 0;
+  color: #616161;
+}
+
+.task-meta {
+  display: flex;
+  gap: 1rem;
+  font-size: 0.875rem;
+  color: #757575;
+}
+
+.task-actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.task-actions button {
+  padding: 0.5rem 1rem;
+  border: 1px solid #ccc;
+  background: white;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.875rem;
+}
+
+.task-actions button:hover {
+  background: #f5f5f5;
+}
+
+.task-actions button.delete {
+  color: #d32f2f;
+  border-color: #d32f2f;
+}
+
+.task-actions button.delete:hover {
+  background: #ffebee;
+}
+
+.create-button {
+  padding: 0.75rem 1.5rem;
+  background-color: #1976d2;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 1rem;
+}
+
+.create-button:hover {
+  background-color: #1565c0;
+}

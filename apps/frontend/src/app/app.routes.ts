@@ -43,6 +43,11 @@ export const routes: Routes = [
       import('./pages/parent-dashboard/parent-dashboard').then((m) => m.ParentDashboardComponent),
     canActivate: [authGuard],
   },
+  {
+    path: 'households/:householdId/tasks',
+    loadComponent: () => import('./pages/task-list/task-list').then((m) => m.TaskListComponent),
+    canActivate: [authGuard],
+  },
 
   // Default redirect
   {

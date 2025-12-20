@@ -58,7 +58,9 @@ async function waitForFrontend() {
         console.log(`✅ Frontend is healthy and Angular app is built (${response.status})`);
         return true;
       } else {
-        console.log(`⏳ Frontend returned ${response.status} but Angular app not built yet, waiting...`);
+        console.log(
+          `⏳ Frontend returned ${response.status} but Angular app not built yet, waiting...`,
+        );
         return false;
       }
     } else {

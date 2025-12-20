@@ -25,7 +25,7 @@ This roadmap outlines planned features and epics for the project. It's maintaine
 - **Achievement**: Foundation for entire application - NOW COMPLETE
 - **Features**: 4/4 features completed
   - ✅ [feature-001](features/done/feature-001-user-authentication.md): User Authentication (10 tasks, 2 days) **COMPLETED** 2025-12-14
-  - ✅ [feature-002](features/done/feature-002-multi-tenant-schema.md): Multi-Tenant Schema (10 tasks, 7 hours) **COMPLETED** 2025-12-14  
+  - ✅ [feature-002](features/done/feature-002-multi-tenant-schema.md): Multi-Tenant Schema (10 tasks, 7 hours) **COMPLETED** 2025-12-14
   - ✅ [feature-003](features/done/feature-003-household-management.md): Household Management (11 tasks, 3-4 days) **COMPLETED** 2025-12-17
   - ✅ [feature-004](features/done/feature-004-user-invitation-system.md): User Invitations (11 tasks, 2-3 days) **COMPLETED** 2025-12-17
 
@@ -140,6 +140,19 @@ This roadmap outlines planned features and epics for the project. It's maintaine
 
 **NEXT UP**: Feature-015 (Task Viewing & Completion) - Ready to start!
 
+**Task-102: Evaluate and Enhance Shared Test Utilities** 🧪 **UPCOMING**
+- **Priority**: Medium (Developer Experience & Maintainability)
+- **Status**: pending (Dec 20, 2025)
+- **Duration**: 2-3 days
+- **File**: [task-102-evaluate-shared-test-utilities.md](items/task-102-evaluate-shared-test-utilities.md)
+- **Description**: Audit test code for duplication, design and implement comprehensive shared test utilities
+- **Scope**: User fixtures, child/household/task fixtures, auth helpers, data generators, API helpers
+- **Goal**: 20%+ reduction in test code, easier to write new tests, consistent patterns across all tests
+- **Impact**: Improved test maintainability, faster test development, reduced duplication
+- **Dependencies**: feature-006 (E2E infrastructure), feature-011 (backend testing)
+- **Assigned**: testing-agent (with orchestrator coordination)
+- **Why Now**: We have enough test files to identify patterns, prevent future duplication
+
 ---
 
 ### 🏠 User Experience
@@ -187,7 +200,7 @@ Week 6-7:     Epic-004 (Notifications)
 Week 7-8:     Epic-005 (Parent Dashboard)
 ```
 
-**MVP Status**: **AHEAD OF SCHEDULE** 🚀  
+**MVP Status**: **AHEAD OF SCHEDULE** 🚀
 - Epic-001 complete in ~4 days (vs 2 weeks planned)
 - Epic-006 testing infrastructure 60% complete (3/5 features)
 - Ready to start Epic-002 (core product features)
