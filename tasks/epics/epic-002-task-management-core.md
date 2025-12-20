@@ -44,8 +44,9 @@ This is the core product feature that:
   - Repeating task scheduling
   - Idempotent execution
 - [ ] [feature-015](../features/feature-015-task-viewing-completion.md): Task Viewing & Completion (in-progress) - 4-5 days 🔄
-  - 1/6 tasks complete (17%)
+  - 2/6 tasks complete (33%)
   - Task-094 (Assignment Query API) completed ✅
+  - Task-095 (Completion & Reassignment API) completed ✅
   - Child task list view (today, week)
   - Parent task dashboard (all children)
   - Task completion functionality
@@ -140,3 +141,4 @@ interface TaskRule {
 - [2025-12-19 23:40] Feature-014 completed (100%) - Task Assignment Rule Engine ✅
 - [2025-12-19 23:40] Epic progress: 2/3 features complete (67%)
 - [2025-12-20 01:35] Feature-015 in progress (17%) - Task-094 (Assignment Query API) completed and merged (PR #118)
+- [2025-12-20 02:00] Feature-015 in progress (33%) - Task-095 (Completion & Reassignment API) completed and merged (PR #119)
