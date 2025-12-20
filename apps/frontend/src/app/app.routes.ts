@@ -56,6 +56,14 @@ export const routes: Routes = [
       ),
     canActivate: [authGuard],
   },
+  {
+    path: 'household/tasks',
+    loadComponent: () =>
+      import('./features/tasks/parent-task-dashboard.component').then(
+        (m) => m.ParentTaskDashboardComponent,
+      ),
+    canActivate: [authGuard],
+  },
 
   // Default redirect
   {
