@@ -1,0 +1,113 @@
+<div class="modal-overlay" (click)="onCancel()">
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <h2>{{ task() ? 'Edit Task' : 'Add Task' }}</h2>
+
+    @if (errorMessage()) {
+      <div class="error">{{ errorMessage() }}</div>
+    }
+
+    <form [formGroup]="form" (ngSubmit)="onSubmit()">
+      <div class="form-field">
+        <label for="name">Name *</label>
+        <input id="name" type="text" formControlName="name" />
+      </div>
+
+      <div class="form-field">
+        <label for="description">Description</label>
+        <textarea id="description" formControlName="description" rows="3"></textarea>
+      </div>
+
+      <div class="form-field">
+        <label for="points">Points *</label>
+        <input id="points" type="number" formControlName="points" min="0" />
+      </div>
+
+      <div class="form-field">
+        <label for="rule_type">Type *</label>
+        <select id="rule_type" name="rule_type" formControlName="rule_type">
+          <option value="daily">Daily</option>
+          <option value="repeating">Repeating</option>
+          <option value="weekly_rotation">Weekly Rotation</option>
+        </select>
+      </div>
+
+      @if (form.value.rule_type === 'repeating') {
+        <div class="form-field">
+          <label>Select days *</label>
+          <div class="day-selection">
+            <label>
+              <input
+                type="checkbox"
+                [checked]="isDaySelected(1)"
+                (change)="toggleDay(1)"
+                aria-label="Monday"
+              />
+              Monday
+            </label>
+            <label>
+              <input
+                type="checkbox"
+                [checked]="isDaySelected(2)"
+                (change)="toggleDay(2)"
+                aria-label="Tuesday"
+              />
+              Tuesday
+            </label>
+            <label>
+              <input
+                type="checkbox"
+                [checked]="isDaySelected(3)"
+                (change)="toggleDay(3)"
+                aria-label="Wednesday"
+              />
+              Wednesday
+            </label>
+            <label>
+              <input
+                type="checkbox"
+                [checked]="isDaySelected(4)"
+                (change)="toggleDay(4)"
+                aria-label="Thursday"
+              />
+              Thursday
+            </label>
+            <label>
+              <input
+                type="checkbox"
+                [checked]="isDaySelected(5)"
+                (change)="toggleDay(5)"
+                aria-label="Friday"
+              />
+              Friday
+            </label>
+            <label>
+              <input
+                type="checkbox"
+                [checked]="isDaySelected(6)"
+                (change)="toggleDay(6)"
+                aria-label="Saturday"
+              />
+              Saturday
+            </label>
+            <label>
+              <input
+                type="checkbox"
+                [checked]="isDaySelected(0)"
+                (change)="toggleDay(0)"
+                aria-label="Sunday"
+              />
+              Sunday
+            </label>
+          </div>
+        </div>
+      }
+
+      <div class="form-actions">
+        <button type="button" (click)="onCancel()" [disabled]="isSubmitting()">Cancel</button>
+        <button type="submit" [disabled]="isSubmitting()">
+          {{ isSubmitting() ? 'Saving...' : task() ? 'Save' : 'Create' }}
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
