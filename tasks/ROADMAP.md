@@ -111,17 +111,17 @@ This roadmap outlines planned features and epics for the project. It's maintaine
 
 ---
 
-### 🎯 Next Priority: Epic-002 (Task Management Core) - IN PROGRESS! 🚀
+### 🎯 Epic-002: Task Management Core - **100% COMPLETE!** 🎉
 
-**Epic-002: Task Management Core** ⭐ **IN PROGRESS** (2/3 features complete)
+**Epic-002: Task Management Core** ⭐ **COMPLETED** ✅
 - **Priority**: Critical (Core Product)
-- **Status**: in-progress (feature-013 ✅ complete, feature-014 ✅ complete)
-- **Duration**: 2 weeks (13-16 days) - **~7 days completed**
+- **Status**: completed
+- **Duration**: 2 weeks (13-16 days) - **COMPLETED IN ~7 DAYS** ⚡
 - **File**: [epic-002-task-management-core.md](epics/epic-002-task-management-core.md)
 - **Description**: Rule-based task creation, automatic assignment, completion tracking
-- **Why Now**: Core value proposition of the product
+- **Achievement**: Complete task management system operational - core product MVP feature!
 - **Dependencies**: Epic-001 ✅ **COMPLETE**
-- **Features**: 3 features defined (13-16 days total)
+- **Features**: 3/3 features complete (100%)
   - ✅ [feature-013](features/done/feature-013-task-template-management.md): Task Template Management (4-5 days) **COMPLETED** 2025-12-19 🎉
     - All 6 tasks completed: Backend API, Frontend Service, 3 UI Components, Integration Tests
     - 181 backend tests passing, 195 frontend tests passing, 15 E2E scenarios
@@ -134,11 +134,17 @@ This roadmap outlines planned features and epics for the project. It's maintaine
     - Complete assignment generation with idempotency and multi-tenant isolation
     - Database migration 020 (generator schema) + 021 (rename due_date→date)
     - PRs #115, #116, #117 merged
-  - [ ] [feature-015](features/feature-015-task-viewing-completion.md): Task Viewing & Completion (4-5 days) **NEXT PRIORITY** ⚡
+  - ✅ [feature-015](features/done/feature-015-task-viewing-completion.md): Task Viewing & Completion (4-5 days) **COMPLETED** 2025-12-20 🎉
+    - All 6 tasks completed: Backend Query API, Completion API, Frontend Service, Child View, Parent Dashboard, Integration Tests
+    - 272 backend tests passing (incl 17 new assignment endpoint tests)
+    - 222 frontend tests passing (incl 24 new service tests)
+    - 17 E2E test scenarios for child/parent perspectives
+    - Complete task viewing, filtering, completion, and reassignment flows
+    - PRs #118, #119, #122, #123, #124, #125 merged
 
-**Progress**: 67% complete (2 of 3 features done) - Epic-002 progressing fast!
+**Progress**: 100% complete (3 of 3 features done) ✅ - **Epic-002 COMPLETE!**
 
-**NEXT UP**: Feature-015 (Task Viewing & Completion) - Ready to start!
+**Result**: Parents can create task templates, system generates assignments automatically, children can view and complete tasks, parents can monitor and reassign. Complete end-to-end task management system operational!
 
 **Task-102: Evaluate and Enhance Shared Test Utilities** 🧪 **UPCOMING**
 - **Priority**: Medium (Developer Experience & Maintainability)

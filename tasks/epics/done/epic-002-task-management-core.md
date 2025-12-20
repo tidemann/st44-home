@@ -2,10 +2,12 @@
 
 ## Metadata
 - **ID**: epic-002
-- **Status**: pending
+- **Status**: completed
 - **Priority**: critical
 - **Created**: 2025-12-13
+- **Completed**: 2025-12-20
 - **Estimated Duration**: 2 weeks
+- **Actual Duration**: 7 days
 - **Business Value**: Core product functionality
 
 ## Description
@@ -43,26 +45,30 @@ This is the core product feature that:
   - ISO week-based rotation logic
   - Repeating task scheduling
   - Idempotent execution
-- [ ] [feature-015](../features/feature-015-task-viewing-completion.md): Task Viewing & Completion (in-progress) - 4-5 days 🔄
-  - 2/6 tasks complete (33%)
+- [x] [feature-015](../features/done/feature-015-task-viewing-completion.md): Task Viewing & Completion (completed) - 4-5 days ✅
+  - 6/6 tasks complete (100%) 🎉
   - Task-094 (Assignment Query API) completed ✅
   - Task-095 (Completion & Reassignment API) completed ✅
+  - Task-096 (Frontend TaskService) completed ✅
+  - Task-097 (Child Task List Component) completed ✅
+  - Task-098 (Parent Task Dashboard) completed ✅
+  - Task-099 (Integration Tests) completed ✅
   - Child task list view (today, week)
   - Parent task dashboard (all children)
   - Task completion functionality
   - Assignment reassignment
 
 ## Success Criteria
-- [ ] Parents can create tasks with detailed rules
-- [ ] Rule engine correctly calculates assignments
-- [ ] Odd/even week rotation works accurately
-- [ ] Repeating tasks generate correct instances
-- [ ] Children see only their assigned tasks
-- [ ] Task completion updates immediately
-- [ ] Parents can see all household tasks
-- [ ] Task history preserved correctly
-- [ ] System handles week boundaries correctly
-- [ ] No duplicate task assignments created
+- [x] Parents can create tasks with detailed rules
+- [x] Rule engine correctly calculates assignments
+- [x] Odd/even week rotation works accurately
+- [x] Repeating tasks generate correct instances
+- [x] Children see only their assigned tasks
+- [x] Task completion updates immediately
+- [x] Parents can see all household tasks
+- [x] Task history preserved correctly
+- [x] System handles week boundaries correctly
+- [x] No duplicate task assignments created
 
 ## Risks
 - **High**: Rule engine complexity and edge cases
@@ -89,18 +95,18 @@ This is the core product feature that:
 2 weeks with 1 backend developer + 1 frontend developer
 
 ## Acceptance Criteria
-- [ ] Can create task with title, description, rules
-- [ ] Can specify odd/even week rotation
-- [ ] Can specify repeating days (Mon, Wed, Fri)
-- [ ] Can assign task to specific child or use rotation
-- [ ] Assignment generation runs automatically
-- [ ] Children see correct tasks for current date/week
-- [ ] Marking task complete updates status immediately
-- [ ] Parents can override automatic assignments
-- [ ] Can edit task rules (affects future assignments)
-- [ ] Can delete tasks (preserves history)
-- [ ] UI clearly shows task rules and assignment
-- [ ] Mobile-optimized task list and detail views
+- [x] Can create task with title, description, rules
+- [x] Can specify odd/even week rotation
+- [x] Can specify repeating days (Mon, Wed, Fri)
+- [x] Can assign task to specific child or use rotation
+- [x] Assignment generation runs automatically
+- [x] Children see correct tasks for current date/week
+- [x] Marking task complete updates status immediately
+- [x] Parents can override automatic assignments
+- [x] Can edit task rules (affects future assignments)
+- [x] Can delete tasks (preserves history)
+- [x] UI clearly shows task rules and assignment
+- [x] Mobile-optimized task list and detail views
 
 ## Technical Considerations
 
@@ -142,3 +148,10 @@ interface TaskRule {
 - [2025-12-19 23:40] Epic progress: 2/3 features complete (67%)
 - [2025-12-20 01:35] Feature-015 in progress (17%) - Task-094 (Assignment Query API) completed and merged (PR #118)
 - [2025-12-20 02:00] Feature-015 in progress (33%) - Task-095 (Completion & Reassignment API) completed and merged (PR #119)
+- [2025-12-20 10:45] Feature-015 in progress (50%) - Task-096 (Frontend TaskService) completed and merged (PR #122)
+- [2025-12-20 11:30] Feature-015 in progress (67%) - Task-097 (Child Task List Component) completed and merged (PR #123)
+- [2025-12-20 11:45] Feature-015 in progress (83%) - Task-098 (Parent Task Dashboard) completed and merged (PR #124)
+- [2025-12-20 13:23] Feature-015 completed (100%) - Task-099 (Integration Tests) completed and merged (PR #125) ✅
+- [2025-12-20 13:25] **EPIC-002 COMPLETE** 🎉 All 3 features done (100%)
+- [2025-12-20 13:25] Epic status changed to completed
+- [2025-12-20 13:25] **Achievement**: Complete end-to-end task management system operational in 7 days (vs 14 days estimated)!
