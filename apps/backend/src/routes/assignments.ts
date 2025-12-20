@@ -60,6 +60,7 @@ export default async function assignmentRoutes(fastify: FastifyInstance) {
   fastify.post<{ Body: GenerateAssignmentsBody }>(
     '/api/admin/tasks/generate-assignments',
     {
+      schema: generateAssignmentsSchema,
       preHandler: [authenticateUser],
     },
     async (request, reply) => {
@@ -288,6 +289,7 @@ export default async function assignmentRoutes(fastify: FastifyInstance) {
   }>(
     '/api/households/:householdId/assignments',
     {
+      schema: getHouseholdAssignmentsSchema,
       preHandler: [authenticateUser, validateHouseholdMembership],
     },
     async (request, reply) => {
@@ -422,6 +424,7 @@ export default async function assignmentRoutes(fastify: FastifyInstance) {
   }>(
     '/api/assignments/:assignmentId/complete',
     {
+      schema: completeAssignmentSchema,
       preHandler: [authenticateUser],
     },
     async (request, reply) => {
@@ -542,6 +545,7 @@ export default async function assignmentRoutes(fastify: FastifyInstance) {
   }>(
     '/api/assignments/:assignmentId/reassign',
     {
+      schema: reassignTaskSchema,
       preHandler: [authenticateUser],
     },
     async (request, reply) => {
