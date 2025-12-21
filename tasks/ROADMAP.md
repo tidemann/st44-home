@@ -165,33 +165,34 @@ This roadmap outlines planned features and epics for the project. It's maintaine
 
 **Epic-003: User Onboarding & Experience** ⭐ High
 - **Priority**: High (User Activation)
-- **Status**: partially-complete (feature-012 partially done)
+- **Status**: partially-complete (feature-012 complete!)
 - **Duration**: 1 week
 - **File**: [epic-003-user-onboarding.md](epics/epic-003-user-onboarding.md)
 - **Description**: Smooth onboarding flow, guided task creation, household setup
 - **Why Now**: Critical for user activation and retention
-- **Dependencies**: Epic-001 ✅ **COMPLETE**, Epic-002 (needs to start)
+- **Dependencies**: Epic-001 ✅ **COMPLETE**, Epic-002 ✅ **COMPLETE**
 - **Features**:
-  - [feature-012](features/feature-012-landing-pages-after-login.md): Landing Pages After Login (partially-complete)
+  - ✅ [feature-012](features/done/feature-012-landing-pages-after-login.md): Landing Pages After Login **COMPLETED** 2025-12-21 🎉
 
-**Feature-012: Landing Pages After Login** 🏠 PARENT DASHBOARD COMPLETE ✅
+**Feature-012: Landing Pages After Login** 🏠 **100% COMPLETE!** ✅
 - **Priority**: High (User Experience)
-- **Status**: partially-complete (5/8 tasks done, parent dashboard functional)
-- **Duration**: 3-4 days (22-31 hours) - **15-18h completed**
-- **File**: [feature-012-landing-pages-after-login.md](features/feature-012-landing-pages-after-login.md)
+- **Status**: completed (7/7 tasks done - 100%)
+- **Duration**: 3-4 days (22-31 hours) - **~5 days actual**
+- **Completed**: 2025-12-21
+- **File**: [feature-012-landing-pages-after-login.md](features/done/feature-012-landing-pages-after-login.md)
 - **Description**: Role-appropriate landing pages for parents (dashboard) and children (task list)
-- **Achievement**: Parent dashboard is live and functional!
-- **Tasks**: 8 tasks estimated (5 complete, 3 deferred)
+- **Achievement**: Complete post-login experience for both parent and child roles! 🎉
+- **Tasks**: 8 tasks estimated (7 complete, 1 N/A)
   - [x] task-059: Create dashboard summary API endpoint **DONE** [PR #90]
+  - [x] task-060: Create child tasks API endpoint **DONE**
   - [x] task-061: Implement auth guards and role-based routing **DONE** [PR #93]
   - [x] task-062: Build parent dashboard component **DONE** [PR #92]
+  - [x] task-063: Build child dashboard component **DONE** [PR #127]
   - [x] task-064: Create dashboard service **DONE** [PR #91]
+  - [x] task-065: Integrate household context **N/A** (already integrated via auth guards)
   - [x] task-066: Write landing pages tests **DONE** [PR #94]
-  - [ ] task-060: Create child tasks API endpoint **DEFERRED** (requires 'child' role in schema)
-  - [ ] task-063: Build child dashboard component **DEFERRED** (requires 'child' role in schema)
-  - [ ] task-065: Integrate household context **N/A** (already integrated)
+- **Result**: Parents → /dashboard (household overview, week summary, children stats). Children → /my-tasks (child-friendly task list with points display). Complete post-login UX operational! ✅
 - **Dependencies**: feature-001 ✅, feature-002 ✅, feature-003 ✅ **ALL COMPLETE**
-- **Note**: Parent dashboard complete. Child dashboard deferred until 'child' role added to schema.
 
 ---
 
@@ -199,19 +200,31 @@ This roadmap outlines planned features and epics for the project. It's maintaine
 ```
 Week 0:       Feature-005 (Production Fix) ✅ COMPLETE
 Week 1:       Epic-001 (Foundation) ✅ COMPLETE (faster than planned!)
-Week 1-2:     Epic-006 (Testing QA) ✅ MOSTLY COMPLETE (3/5 features)
-Week 2-4:     Epic-002 (Task Core) ⚡ READY TO START
-Week 5:       Epic-003 (Onboarding) - partially started (feature-012)
+Week 1-2:     Epic-006 (Testing QA) ✅ CRITICAL PHASE COMPLETE (3/5 features)
+Week 2-4:     Epic-002 (Task Core) ✅ COMPLETE (faster than planned!)
+Week 3-4:     Feature-012 (Landing Pages) ✅ COMPLETE
+Week 5:       Epic-003 (Onboarding) - feature-012 complete
 Week 6-7:     Epic-004 (Notifications)
 Week 7-8:     Epic-005 (Parent Dashboard)
 ```
 
-**MVP Status**: **AHEAD OF SCHEDULE** 🚀
+**MVP Status**: **SIGNIFICANTLY AHEAD OF SCHEDULE** 🚀
 - Epic-001 complete in ~4 days (vs 2 weeks planned)
+- Epic-002 complete in ~7 days (vs 2 weeks planned) ⚡
 - Epic-006 testing infrastructure 60% complete (3/5 features)
-- Ready to start Epic-002 (core product features)
+- Feature-012 complete (post-login UX operational)
+- **Core product features operational!**
 
-**MVP Launch Target**: End of Week 8 (on track!)
+**MVP Launch Target**: End of Week 8 (significantly ahead!)
+
+**What's Working:**
+- ✅ User authentication and registration
+- ✅ Household management and invitations
+- ✅ Task template creation (parents)
+- ✅ Task assignment generation (automatic)
+- ✅ Task viewing and completion (children)
+- ✅ Parent and child dashboards
+- ✅ E2E test coverage (42/42 tests passing)
 
 ---
 
@@ -262,6 +275,16 @@ _Features under consideration but not yet prioritized_
 ### December 2025
 
 #### Features
+- 🎉 **Feature-012: Landing Pages After Login** (2025-12-21) **COMPLETED**
+  - Role-appropriate landing pages for parents (dashboard) and children (task list)
+  - Parent dashboard: Household overview, week summary, children stats, quick actions
+  - Child dashboard: Task list, points display, mark complete, child-friendly design
+  - DashboardService with getMyTasks() and getDashboard() methods
+  - Complete routing: /dashboard (parent), /my-tasks (child)
+  - Auth guards and role-based routing integrated
+  - 7/7 tasks completed in ~5 days (task-065 marked N/A - already integrated)
+  - Achievement: Complete post-login experience for both user roles operational
+  - [See all related PRs] #90, #91, #92, #93, #94, #127
 - 🎉 **Feature-014: Task Assignment Rule Engine** (2025-12-19) **COMPLETED**
   - Assignment generation service with all 4 rule types: Daily, Repeating, Weekly Odd/Even, Alternating
   - Backend: 181 passing integration tests (42 service + 22 API + 117 existing)
