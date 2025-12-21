@@ -80,7 +80,7 @@ jobs:
           PGPASSWORD: postgres
 
       - name: Run unit tests
-        run: npx tsx --test src/utils/*.test.ts src/middleware/auth.test.ts
+        run: cross-env NODE_ENV=test npx tsx --test src/utils/*.test.ts src/middleware/auth.test.ts
         working-directory: apps/backend
         env:
           DB_HOST: localhost
@@ -90,7 +90,7 @@ jobs:
           DB_PASSWORD: postgres
 
       - name: Run integration tests
-        run: npx tsx --test src/routes/*.test.ts src/middleware/household-membership.test.ts src/server.test.ts
+        run: cross-env NODE_ENV=test npx tsx --test src/routes/*.test.ts src/middleware/household-membership.test.ts src/server.test.ts
         working-directory: apps/backend
         timeout-minutes: 5
         env:
