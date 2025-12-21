@@ -24,6 +24,9 @@ jobs:
           filters: |
             code:
               - 'apps/**'
+              - '!apps/**/e2e/**'
+              - '!apps/**/*.spec.ts'
+              - '!apps/**/*.test.ts'
               - 'infra/**'
               - 'docker/**'
               - '.github/workflows/**'
