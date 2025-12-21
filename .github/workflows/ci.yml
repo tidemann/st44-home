@@ -79,20 +79,9 @@ jobs:
         env:
           PGPASSWORD: postgres
 
-      - name: Run unit tests
-        run: cross-env NODE_ENV=test npx tsx --test src/utils/*.test.ts src/middleware/auth.test.ts
+      - name: Run tests
+        run: npm test
         working-directory: apps/backend
-        env:
-          DB_HOST: localhost
-          DB_PORT: 5432
-          DB_NAME: st44_test
-          DB_USER: postgres
-          DB_PASSWORD: postgres
-
-      - name: Run integration tests
-        run: cross-env NODE_ENV=test npx tsx --test src/routes/*.test.ts src/middleware/household-membership.test.ts src/server.test.ts
-        working-directory: apps/backend
-        timeout-minutes: 5
         env:
           DB_HOST: localhost
           DB_PORT: 5432
