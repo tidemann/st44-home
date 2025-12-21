@@ -1,11 +1,11 @@
-/**
+﻿/**
  * OpenAPI schemas for assignment-related endpoints
  * These schemas enforce snake_case convention for all API responses
  */
 
-import { uuidSchema, dateSchema, timestampSchema, errorResponseSchema } from './common.js';
+import { uuidSchema, dateSchema, timestampSchema, errorResponseSchema, stripResponseValidation } from './common.js';
 
-export const taskAssignmentSchema = {
+const taskAssignmentSchemaBase = {
   type: 'object',
   properties: {
     id: uuidSchema,
@@ -28,7 +28,7 @@ export const taskAssignmentSchema = {
 } as const;
 
 // GET /api/children/:childId/tasks
-export const getChildTasksSchema = {
+const getChildTasksSchemaBase = {
   summary: 'Get tasks for a specific child',
   description: 'Retrieve task assignments for a child, optionally filtered by date and status',
   tags: ['assignments'],
@@ -58,7 +58,7 @@ export const getChildTasksSchema = {
       properties: {
         assignments: {
           type: 'array',
-          items: taskAssignmentSchema,
+          items: taskAssignmentSchemaBase,
         },
         total: { type: 'number' },
       },
@@ -84,7 +84,7 @@ export const getChildTasksSchema = {
 } as const;
 
 // GET /api/households/:householdId/assignments
-export const getHouseholdAssignmentsSchema = {
+const getHouseholdAssignmentsSchemaBase = {
   summary: 'Get all assignments for a household',
   description: 'Retrieve all task assignments for a household with optional filters',
   tags: ['assignments'],
@@ -151,7 +151,7 @@ export const getHouseholdAssignmentsSchema = {
 } as const;
 
 // PUT /api/assignments/:assignmentId/complete
-export const completeAssignmentSchema = {
+const completeAssignmentSchemaBase = {
   summary: 'Mark task assignment as complete',
   description: 'Complete a pending task assignment',
   tags: ['assignments'],
@@ -185,7 +185,7 @@ export const completeAssignmentSchema = {
 } as const;
 
 // PUT /api/assignments/:assignmentId/reassign
-export const reassignTaskSchema = {
+const reassignTaskSchemaBase = {
   summary: 'Reassign task to a different child',
   description: 'Change which child is assigned to a task',
   tags: ['assignments'],
@@ -225,7 +225,7 @@ export const reassignTaskSchema = {
 } as const;
 
 // POST /api/admin/tasks/generate-assignments
-export const generateAssignmentsSchema = {
+const generateAssignmentsSchemaBase = {
   summary: 'Manually trigger assignment generation',
   description: 'Generate task assignments for a household for a specified date range',
   tags: ['assignments'],
@@ -268,3 +268,12 @@ export const generateAssignmentsSchema = {
     500: errorResponseSchema,
   },
 } as const;
+
+
+// Export schemas with conditional response validation stripping
+export const taskAssignmentSchema = stripResponseValidation(taskAssignmentSchemaBase);
+export const getChildTasksSchema = stripResponseValidation(getChildTasksSchemaBase);
+export const getHouseholdAssignmentsSchema = stripResponseValidation(getHouseholdAssignmentsSchemaBase);
+export const completeAssignmentSchema = stripResponseValidation(completeAssignmentSchemaBase);
+export const reassignTaskSchema = stripResponseValidation(reassignTaskSchemaBase);
+export const generateAssignmentsSchema = stripResponseValidation(generateAssignmentsSchemaBase);

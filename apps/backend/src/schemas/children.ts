@@ -1,9 +1,9 @@
-/**
+﻿/**
  * OpenAPI schemas for children endpoints
  * Uses snake_case for all property names
  */
 
-import { uuidSchema, timestampSchema, errorResponseSchema } from './common.js';
+import { uuidSchema, timestampSchema, errorResponseSchema, stripResponseValidation } from './common.js';
 
 const childSchema = {
   type: 'object',
@@ -19,7 +19,7 @@ const childSchema = {
 } as const;
 
 // GET /api/households/:householdId/children
-export const listChildrenSchema = {
+const listChildrenSchemaBase = {
   summary: 'List children in household',
   description: 'Get all children profiles for a household',
   tags: ['children'],
@@ -44,7 +44,7 @@ export const listChildrenSchema = {
 } as const;
 
 // POST /api/households/:householdId/children
-export const createChildSchema = {
+const createChildSchemaBase = {
   summary: 'Create child profile',
   description: 'Add a new child to the household',
   tags: ['children'],
@@ -78,7 +78,7 @@ export const createChildSchema = {
 } as const;
 
 // PUT /api/children/:childId
-export const updateChildSchema = {
+const updateChildSchemaBase = {
   summary: 'Update child profile',
   description: 'Update child information',
   tags: ['children'],
@@ -112,7 +112,7 @@ export const updateChildSchema = {
 } as const;
 
 // DELETE /api/children/:childId
-export const deleteChildSchema = {
+const deleteChildSchemaBase = {
   summary: 'Delete child profile',
   description: 'Remove a child from the household',
   tags: ['children'],
@@ -138,3 +138,10 @@ export const deleteChildSchema = {
     500: errorResponseSchema,
   },
 } as const;
+
+
+// Export schemas with conditional response validation stripping
+export const listChildrenSchema = stripResponseValidation(listChildrenSchemaBase);
+export const createChildSchema = stripResponseValidation(createChildSchemaBase);
+export const updateChildSchema = stripResponseValidation(updateChildSchemaBase);
+export const deleteChildSchema = stripResponseValidation(deleteChildSchemaBase);

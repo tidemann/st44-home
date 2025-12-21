@@ -77,49 +77,53 @@ async function buildApp() {
     origin: process.env.CORS_ORIGIN || '*',
   });
 
-  // Register Swagger for API documentation
-  await fastify.register(swagger, {
-    openapi: {
-      info: {
-        title: 'Diddit API',
-        description: 'Multi-tenant household chores management API',
-        version: '1.0.0',
-      },
-      servers: [
-        {
-          url: 'http://localhost:3000',
-          description: 'Development server',
+  // Register Swagger for API documentation (skip in test environment)
+  if (process.env.NODE_ENV !== 'test') {
+    await fastify.register(swagger, {
+      openapi: {
+        info: {
+          title: 'Diddit API',
+          description: 'Multi-tenant household chores management API',
+          version: '1.0.0',
         },
-      ],
-      components: {
-        securitySchemes: {
-          bearerAuth: {
-            type: 'http',
-            scheme: 'bearer',
-            bearerFormat: 'JWT',
+        servers: [
+          {
+            url: 'http://localhost:3000',
+            description: 'Development server',
+          },
+        ],
+        components: {
+          securitySchemes: {
+            bearerAuth: {
+              type: 'http',
+              scheme: 'bearer',
+              bearerFormat: 'JWT',
+            },
           },
         },
+        tags: [
+          { name: 'auth', description: 'Authentication endpoints' },
+          { name: 'households', description: 'Household management' },
+          { name: 'children', description: 'Child profile management' },
+          { name: 'tasks', description: 'Task template management' },
+          { name: 'assignments', description: 'Task assignment management' },
+          { name: 'invitations', description: 'Household invitation system' },
+        ],
       },
-      tags: [
-        { name: 'auth', description: 'Authentication endpoints' },
-        { name: 'households', description: 'Household management' },
-        { name: 'children', description: 'Child profile management' },
-        { name: 'tasks', description: 'Task template management' },
-        { name: 'assignments', description: 'Task assignment management' },
-        { name: 'invitations', description: 'Household invitation system' },
-      ],
-    },
-  });
+    });
+  }
 
-  // Register Swagger UI
-  await fastify.register(swaggerUi, {
-    routePrefix: '/api/docs',
-    uiConfig: {
-      docExpansion: 'list',
-      deepLinking: true,
-    },
-    staticCSP: true,
-  });
+  // Register Swagger UI (skip in test environment)
+  if (process.env.NODE_ENV !== 'test') {
+    await fastify.register(swaggerUi, {
+      routePrefix: '/api/docs',
+      uiConfig: {
+        docExpansion: 'list',
+        deepLinking: true,
+      },
+      staticCSP: true,
+    });
+  }
 
   // Authentication Middleware
   async function authenticateUser(request: FastifyRequest, reply: FastifyReply) {

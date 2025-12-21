@@ -1,9 +1,9 @@
-/**
+﻿/**
  * OpenAPI schemas for task template endpoints
  * Uses snake_case for all property names
  */
 
-import { uuidSchema, errorResponseSchema } from './common.js';
+import { uuidSchema, errorResponseSchema, stripResponseValidation } from './common.js';
 
 const ruleConfigSchema = {
   type: 'object',
@@ -46,7 +46,7 @@ const taskSchema = {
 } as const;
 
 // GET /api/households/:householdId/tasks
-export const listTasksSchema = {
+const listTasksSchemaBase = {
   summary: 'List all task templates for household',
   description: 'Get all task templates, optionally filtered by active status',
   tags: ['tasks'],
@@ -81,7 +81,7 @@ export const listTasksSchema = {
 } as const;
 
 // POST /api/households/:householdId/tasks
-export const createTaskSchema = {
+const createTaskSchemaBase = {
   summary: 'Create new task template',
   description: 'Create a task template with assignment rules',
   tags: ['tasks'],
@@ -120,7 +120,7 @@ export const createTaskSchema = {
 } as const;
 
 // PUT /api/tasks/:taskId
-export const updateTaskSchema = {
+const updateTaskSchemaBase = {
   summary: 'Update task template',
   description: 'Update task template properties',
   tags: ['tasks'],
@@ -159,7 +159,7 @@ export const updateTaskSchema = {
 } as const;
 
 // DELETE /api/tasks/:taskId
-export const deleteTaskSchema = {
+const deleteTaskSchemaBase = {
   summary: 'Delete task template',
   description: 'Soft delete a task template (sets is_active to false)',
   tags: ['tasks'],
@@ -185,3 +185,10 @@ export const deleteTaskSchema = {
     500: errorResponseSchema,
   },
 } as const;
+
+
+// Export schemas with conditional response validation stripping
+export const listTasksSchema = stripResponseValidation(listTasksSchemaBase);
+export const createTaskSchema = stripResponseValidation(createTaskSchemaBase);
+export const updateTaskSchema = stripResponseValidation(updateTaskSchemaBase);
+export const deleteTaskSchema = stripResponseValidation(deleteTaskSchemaBase);

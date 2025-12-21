@@ -1,9 +1,9 @@
-/**
+﻿/**
  * OpenAPI schemas for household endpoints
  * Uses snake_case for all property names
  */
 
-import { uuidSchema, timestampSchema, errorResponseSchema } from './common.js';
+import { uuidSchema, timestampSchema, errorResponseSchema, stripResponseValidation } from './common.js';
 
 const householdSchema = {
   type: 'object',
@@ -31,7 +31,7 @@ const membershipSchema = {
 } as const;
 
 // GET /api/households
-export const listHouseholdsSchema = {
+const listHouseholdsSchemaBase = {
   summary: 'List user households',
   description: 'Get all households the authenticated user belongs to',
   tags: ['households'],
@@ -54,7 +54,7 @@ export const listHouseholdsSchema = {
 } as const;
 
 // POST /api/households
-export const createHouseholdSchema = {
+const createHouseholdSchemaBase = {
   summary: 'Create new household',
   description: 'Create a household and become its admin',
   tags: ['households'],
@@ -78,7 +78,7 @@ export const createHouseholdSchema = {
 } as const;
 
 // GET /api/households/:householdId
-export const getHouseholdSchema = {
+const getHouseholdSchemaBase = {
   summary: 'Get household details',
   description: 'Get detailed information about a specific household',
   tags: ['households'],
@@ -103,7 +103,7 @@ export const getHouseholdSchema = {
 } as const;
 
 // PUT /api/households/:householdId
-export const updateHouseholdSchema = {
+const updateHouseholdSchemaBase = {
   summary: 'Update household',
   description: 'Update household name (admin/parent only)',
   tags: ['households'],
@@ -136,7 +136,7 @@ export const updateHouseholdSchema = {
 } as const;
 
 // DELETE /api/households/:householdId
-export const deleteHouseholdSchema = {
+const deleteHouseholdSchemaBase = {
   summary: 'Delete household',
   description: 'Delete household and all associated data (admin only)',
   tags: ['households'],
@@ -164,7 +164,7 @@ export const deleteHouseholdSchema = {
 } as const;
 
 // GET /api/households/:householdId/members
-export const listMembersSchema = {
+const listMembersSchemaBase = {
   summary: 'List household members',
   description: 'Get all members of a household',
   tags: ['households'],
@@ -196,3 +196,12 @@ export const listMembersSchema = {
     500: errorResponseSchema,
   },
 } as const;
+
+
+// Export schemas with conditional response validation stripping
+export const listHouseholdsSchema = stripResponseValidation(listHouseholdsSchemaBase);
+export const createHouseholdSchema = stripResponseValidation(createHouseholdSchemaBase);
+export const getHouseholdSchema = stripResponseValidation(getHouseholdSchemaBase);
+export const updateHouseholdSchema = stripResponseValidation(updateHouseholdSchemaBase);
+export const deleteHouseholdSchema = stripResponseValidation(deleteHouseholdSchemaBase);
+export const listMembersSchema = stripResponseValidation(listMembersSchemaBase);

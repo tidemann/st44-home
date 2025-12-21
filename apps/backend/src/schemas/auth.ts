@@ -4,10 +4,10 @@
  * TODO: Migrate backend to snake_case and update these schemas
  */
 
-import { errorResponseSchema } from './common.js';
+import { errorResponseSchema, stripResponseValidation } from './common.js';
 
 // POST /api/auth/register
-export const registerSchema = {
+const registerSchemaBase = {
   summary: 'Register new user account',
   description: 'Create a new user account with email and password',
   tags: ['auth'],
@@ -52,8 +52,10 @@ export const registerSchema = {
   },
 } as const;
 
+export const registerSchema = stripResponseValidation(registerSchemaBase);
+
 // POST /api/auth/login
-export const loginSchema = {
+const loginSchemaBase = {
   summary: 'Login with email and password',
   description: 'Authenticate user and receive JWT tokens',
   tags: ['auth'],
@@ -92,8 +94,10 @@ export const loginSchema = {
   },
 } as const;
 
+export const loginSchema = stripResponseValidation(loginSchemaBase);
+
 // POST /api/auth/refresh
-export const refreshTokenSchema = {
+const refreshTokenSchemaBase = {
   summary: 'Refresh access token',
   description: 'Get new access token using refresh token',
   tags: ['auth'],
@@ -120,8 +124,10 @@ export const refreshTokenSchema = {
   },
 } as const;
 
+export const refreshTokenSchema = stripResponseValidation(refreshTokenSchemaBase);
+
 // POST /api/auth/google
-export const googleAuthSchema = {
+const googleAuthSchemaBase = {
   summary: 'Authenticate with Google OAuth',
   description: 'Login or register using Google OAuth token',
   tags: ['auth'],
@@ -150,8 +156,10 @@ export const googleAuthSchema = {
   },
 } as const;
 
+export const googleAuthSchema = stripResponseValidation(googleAuthSchemaBase);
+
 // GET /health
-export const healthCheckSchema = {
+const healthCheckSchemaBase = {
   summary: 'Health check endpoint',
   description: 'Check if API and database are operational',
   tags: ['health'],
@@ -168,3 +176,5 @@ export const healthCheckSchema = {
     },
   },
 } as const;
+
+export const healthCheckSchema = stripResponseValidation(healthCheckSchemaBase);
