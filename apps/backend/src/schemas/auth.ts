@@ -1,5 +1,7 @@
 /**
  * OpenAPI schemas for authentication endpoints
+ * NOTE: Currently using camelCase to match existing backend responses
+ * TODO: Migrate backend to snake_case and update these schemas
  */
 
 import { errorResponseSchema } from './common.js';
