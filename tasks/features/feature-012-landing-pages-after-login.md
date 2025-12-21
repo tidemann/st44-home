@@ -7,7 +7,7 @@
 - **Priority**: high
 - **Created**: 2025-12-16
 - **Estimated Duration**: 3-4 days (22-31 hours)
-- **Completion Note**: Parent dashboard complete (5/8 tasks), child dashboard deferred pending schema changes
+- **Completion Note**: Parent dashboard complete (5/8 tasks), child tasks API complete (task-060), child dashboard UI remaining (task-063)
 
 ## Description
 Create role-appropriate landing pages that users see after logging in. Parents see a dashboard with household overview and quick actions. Children (users with child role) see a simplified task list focused on their daily assignments. This feature establishes the core post-authentication experience and provides the foundation for more detailed dashboards in Epic-005.
@@ -85,9 +85,10 @@ Create role-appropriate landing pages that users see after logging in. Parents s
 - [x] **task-059**: Create dashboard summary API endpoint (3-4h) **COMPLETED** [PR #90]
   - GET /api/households/:id/dashboard
   - Returns week summary, children stats, recent activity
-- [ ] **task-060**: Create child tasks API endpoint (2-3h) **DEFERRED** - requires 'child' role in household_members schema
-  - GET /api/households/:id/my-tasks
+- [x] **task-060**: Create child tasks API endpoint (2-3h) **COMPLETED** [Commit d8f8eab]
+  - GET /api/children/my-tasks
   - Returns today's tasks for authenticated child user
+  - Previously deferred - no longer blocked
 
 ### Frontend Tasks (5 tasks, 13-18 hours)
 - [x] **task-061**: Implement auth guards and role-based routing (3-4h) **COMPLETED** [PR #93]
@@ -119,10 +120,10 @@ Create role-appropriate landing pages that users see after logging in. Parents s
   - E2E tests for login → dashboard flow
 
 **Total**: 8 tasks, 22-31 hours (3-4 days)
-**Completed**: 5/8 tasks (059, 061, 062, 064, 066)
-**Deferred**: 2 tasks (060, 063) - pending 'child' role implementation
+**Completed**: 6/8 tasks (059, 060, 061, 062, 064, 066)
+**Remaining**: 1 task (063)
 **N/A**: 1 task (065) - functionality already implemented
-**Critical Path**: task-059 → task-064 → task-062 → task-061
+**Critical Path**: task-059 → task-064 → task-062 → task-061 → task-060 ✅
 
 ## Dependencies
 - **Required**: feature-001 (User Authentication) ✅ Complete
