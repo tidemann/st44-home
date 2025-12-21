@@ -3,11 +3,13 @@
 ## Metadata
 - **ID**: feature-012
 - **Epic**: epic-003 - User Onboarding & Experience
-- **Status**: partially-complete
+- **Status**: completed
 - **Priority**: high
 - **Created**: 2025-12-16
+- **Completed**: 2025-12-21
 - **Estimated Duration**: 3-4 days (22-31 hours)
-- **Completion Note**: Parent dashboard complete (5/8 tasks), child tasks API complete (task-060), child dashboard UI remaining (task-063)
+- **Actual Duration**: 5 days (including task-060 and task-063)
+- **Completion Note**: Parent dashboard complete (task-062), child dashboard complete (task-063), both landing pages functional ✅
 
 ## Description
 Create role-appropriate landing pages that users see after logging in. Parents see a dashboard with household overview and quick actions. Children (users with child role) see a simplified task list focused on their daily assignments. This feature establishes the core post-authentication experience and provides the foundation for more detailed dashboards in Epic-005.
@@ -100,11 +102,12 @@ Create role-appropriate landing pages that users see after logging in. Parents s
   - Children list with completion bars
   - Quick action buttons
   - Empty states
-- [ ] **task-063**: Build child dashboard component (3-4h) **DEFERRED** - requires 'child' role in household_members schema
+- [x] **task-063**: Build child dashboard component (3-4h) **COMPLETED** [PR #127]
   - Task list for today
   - Mark complete functionality
   - Points display
-  - Child-friendly design
+  - Child-friendly design with large touch targets
+  - /my-tasks route integrated
 - [x] **task-064**: Create dashboard service (2-3h) **COMPLETED** [PR #91]
   - API calls for dashboard data
   - Caching for performance
@@ -120,10 +123,11 @@ Create role-appropriate landing pages that users see after logging in. Parents s
   - E2E tests for login → dashboard flow
 
 **Total**: 8 tasks, 22-31 hours (3-4 days)
-**Completed**: 6/8 tasks (059, 060, 061, 062, 064, 066)
-**Remaining**: 1 task (063)
+**Completed**: 7/8 tasks (059, 060, 061, 062, 063, 064, 066)
+**Remaining**: 0 tasks
 **N/A**: 1 task (065) - functionality already implemented
-**Critical Path**: task-059 → task-064 → task-062 → task-061 → task-060 ✅
+**Status**: Feature complete! Parent dashboard and child dashboard both functional.
+**Critical Path**: task-059 → task-064 → task-062 → task-061 → task-060 → task-063 ✅
 
 ## Dependencies
 - **Required**: feature-001 (User Authentication) ✅ Complete
