@@ -22,13 +22,13 @@ interface CreateHouseholdRequest {
 
 interface GetHouseholdRequest {
   Params: {
-    id: string;
+    householdId: string;
   };
 }
 
 interface UpdateHouseholdRequest {
   Params: {
-    id: string;
+    householdId: string;
   };
   Body: {
     name: string;
@@ -123,7 +123,9 @@ async function listHouseholds(request: FastifyRequest, reply: FastifyReply) {
     const result = await db.query(
       `SELECT 
         h.id, 
-        h.name, 
+        h.name,
+        h.created_at,
+        h.updated_at,
         hm.role, 
         hm.joined_at,
         (SELECT COUNT(*) FROM household_members WHERE household_id = h.id) as member_count,
@@ -142,9 +144,11 @@ async function listHouseholds(request: FastifyRequest, reply: FastifyReply) {
       memberCount: parseInt(row.member_count, 10),
       childrenCount: parseInt(row.children_count, 10),
       joinedAt: row.joined_at,
+      created_at: row.created_at,
+      updated_at: row.updated_at,
     }));
 
-    return reply.send({ households });
+    return reply.send(households);
   } catch (error) {
     request.log.error(error, 'Failed to list households');
     return reply.status(500).send({
@@ -159,7 +163,7 @@ async function listHouseholds(request: FastifyRequest, reply: FastifyReply) {
  * Returns household details if user is a member
  */
 async function getHousehold(request: FastifyRequest<GetHouseholdRequest>, reply: FastifyReply) {
-  const { id } = request.params;
+  const { householdId: id } = request.params;
   const role = request.household?.role;
 
   if (!role) {
@@ -219,7 +223,7 @@ async function updateHousehold(
   request: FastifyRequest<UpdateHouseholdRequest>,
   reply: FastifyReply,
 ) {
-  const { id } = request.params;
+  const { householdId: id } = request.params;
   const { name } = request.body;
 
   // Validate household name
@@ -275,7 +279,7 @@ async function getHouseholdDashboard(
   request: FastifyRequest<GetHouseholdRequest>,
   reply: FastifyReply,
 ) {
-  const { id } = request.params;
+  const { householdId: id } = request.params;
 
   try {
     // Get household info
@@ -372,7 +376,7 @@ async function getHouseholdMembers(
   request: FastifyRequest<GetHouseholdRequest>,
   reply: FastifyReply,
 ) {
-  const { id } = request.params;
+  const { householdId: id } = request.params;
 
   try {
     const result = await db.query(
@@ -425,28 +429,28 @@ export default async function householdRoutes(server: FastifyInstance) {
   });
 
   // Get household details (member access)
-  server.get('/api/households/:id', {
+  server.get('/api/households/:householdId', {
     schema: getHouseholdSchema,
     preHandler: [authenticateUser, validateHouseholdMembership],
     handler: getHousehold,
   });
 
   // Update household (admin only)
-  server.put('/api/households/:id', {
+  server.put('/api/households/:householdId', {
     schema: updateHouseholdSchema,
     preHandler: [authenticateUser, validateHouseholdMembership, requireHouseholdAdmin],
     handler: updateHousehold,
   });
 
   // Get household members (member access)
-  server.get('/api/households/:id/members', {
+  server.get('/api/households/:householdId/members', {
     schema: listMembersSchema,
     preHandler: [authenticateUser, validateHouseholdMembership],
     handler: getHouseholdMembers,
   });
 
   // Get household dashboard (member access)
-  server.get('/api/households/:id/dashboard', {
+  server.get('/api/households/:householdId/dashboard', {
     preHandler: [authenticateUser, validateHouseholdMembership],
     handler: getHouseholdDashboard,
   });
