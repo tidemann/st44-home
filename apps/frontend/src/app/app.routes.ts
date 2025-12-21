@@ -44,6 +44,12 @@ export const routes: Routes = [
     canActivate: [authGuard],
   },
   {
+    path: 'my-tasks',
+    loadComponent: () =>
+      import('./pages/child-dashboard/child-dashboard').then((m) => m.ChildDashboardComponent),
+    canActivate: [authGuard],
+  },
+  {
     path: 'households/:householdId/tasks',
     loadComponent: () => import('./pages/task-list/task-list').then((m) => m.TaskListComponent),
     canActivate: [authGuard],

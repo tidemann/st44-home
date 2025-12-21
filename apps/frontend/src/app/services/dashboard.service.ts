@@ -36,6 +36,29 @@ export interface DashboardSummary {
 }
 
 /**
+ * Child's individual task from my-tasks endpoint
+ */
+export interface ChildTask {
+  id: string;
+  task_name: string;
+  task_description: string;
+  points: number;
+  date: string;
+  status: 'pending' | 'completed';
+  completed_at: string | null;
+}
+
+/**
+ * Response from /api/children/my-tasks endpoint
+ */
+export interface MyTasksResponse {
+  tasks: ChildTask[];
+  total_points_today: number;
+  completed_points: number;
+  child_name: string;
+}
+
+/**
  * Service for fetching dashboard data
  *
  * Provides methods to retrieve parent and child dashboard data
@@ -57,5 +80,27 @@ export class DashboardService {
    */
   async getDashboard(householdId: string): Promise<DashboardSummary> {
     return this.api.get<DashboardSummary>(`/households/${householdId}/dashboard`);
+  }
+
+  /**
+   * Fetch child's tasks for today or specified date
+   * Used by child dashboard to show assigned tasks and points
+   *
+   * @param householdId - Optional household ID (uses current household if not provided)
+   * @param date - Optional date in YYYY-MM-DD format (defaults to today)
+   * @returns Promise<MyTasksResponse> - Child's tasks, points, and name
+   * @throws Error if user is not a child or child profile not found
+   */
+  async getMyTasks(householdId?: string, date?: string): Promise<MyTasksResponse> {
+    const params = new URLSearchParams();
+    if (householdId) {
+      params.set('household_id', householdId);
+    }
+    if (date) {
+      params.set('date', date);
+    }
+
+    const query = params.toString() ? `?${params.toString()}` : '';
+    return this.api.get<MyTasksResponse>(`/children/my-tasks${query}`);
   }
 }
