@@ -186,7 +186,6 @@ const deleteTaskSchemaBase = {
   },
 } as const;
 
-
 // Export schemas with conditional response validation stripping
 export const listTasksSchema = stripResponseValidation(listTasksSchemaBase);
 export const createTaskSchema = stripResponseValidation(createTaskSchemaBase);

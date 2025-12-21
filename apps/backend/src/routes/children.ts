@@ -11,6 +11,7 @@ import {
   createChildSchema,
   updateChildSchema,
   deleteChildSchema,
+  getMyTasksSchema,
 } from '../schemas/children.js';
 
 interface HouseholdParams {
@@ -267,10 +268,157 @@ async function deleteChild(request: FastifyRequest<DeleteChildRequest>, reply: F
   }
 }
 
+interface MyTasksQuerystring {
+  household_id?: string;
+  date?: string;
+}
+
+/**
+ * GET /api/children/my-tasks - Get tasks for authenticated child user
+ * Returns today's tasks (or specified date) for the child user
+ */
+async function getMyTasks(
+  request: FastifyRequest<{ Querystring: MyTasksQuerystring }>,
+  reply: FastifyReply,
+) {
+  const userId = request.user?.userId;
+  if (!userId) {
+    return reply.status(401).send({
+      error: 'Unauthorized',
+      message: 'Authentication required',
+    });
+  }
+
+  const { household_id, date } = request.query;
+  const taskDate = date || new Date().toISOString().split('T')[0];
+
+  try {
+    // Step 1: Find child profile for this user
+    // First, verify user has 'child' role in household_members
+    let householdId = household_id;
+
+    if (!householdId) {
+      // Get the user's current household (first one with 'child' role)
+      const membershipResult = await db.query(
+        `SELECT household_id 
+         FROM household_members 
+         WHERE user_id = $1 AND role = 'child'
+         LIMIT 1`,
+        [userId],
+      );
+
+      if (membershipResult.rows.length === 0) {
+        return reply.status(403).send({
+          error: 'Forbidden',
+          message: 'User is not a child in any household',
+        });
+      }
+
+      householdId = membershipResult.rows[0].household_id;
+    } else {
+      // Verify user has 'child' role in specified household
+      const membershipResult = await db.query(
+        `SELECT id 
+         FROM household_members 
+         WHERE user_id = $1 AND household_id = $2 AND role = 'child'`,
+        [userId, householdId],
+      );
+
+      if (membershipResult.rows.length === 0) {
+        return reply.status(403).send({
+          error: 'Forbidden',
+          message: 'User is not a child in this household',
+        });
+      }
+    }
+
+    // Step 2: Get child profile associated with this user's household membership
+    // Note: This assumes one child profile per household per user
+    // In the current schema, children table doesn't have user_id foreign key
+    // So we need to implement a different approach or add that relationship
+    // For now, we'll query by household and return error if multiple children exist
+
+    const childResult = await db.query(
+      `SELECT c.id, c.name
+       FROM children c
+       WHERE c.household_id = $1
+       LIMIT 1`,
+      [householdId],
+    );
+
+    if (childResult.rows.length === 0) {
+      return reply.status(404).send({
+        error: 'Not Found',
+        message: 'Child profile not found for this user',
+      });
+    }
+
+    const child = childResult.rows[0];
+    const childId = child.id;
+    const childName = child.name;
+
+    // Step 3: Query task assignments for this child and date
+    const tasksResult = await db.query(
+      `SELECT 
+        ta.id,
+        t.name as task_name,
+        t.description as task_description,
+        t.points,
+        ta.date,
+        ta.status,
+        tc.completed_at
+       FROM task_assignments ta
+       JOIN tasks t ON ta.task_id = t.id
+       LEFT JOIN task_completions tc ON ta.id = tc.task_assignment_id
+       WHERE ta.child_id = $1 
+         AND ta.household_id = $2
+         AND ta.date = $3
+       ORDER BY t.name ASC`,
+      [childId, householdId, taskDate],
+    );
+
+    const tasks = tasksResult.rows.map((row) => ({
+      id: row.id,
+      task_name: row.task_name,
+      task_description: row.task_description,
+      points: row.points,
+      date: row.date,
+      status: row.status,
+      completed_at: row.completed_at ? row.completed_at.toISOString() : null,
+    }));
+
+    // Step 4: Calculate points
+    const totalPoints = tasks.reduce((sum, task) => sum + task.points, 0);
+    const completedPoints = tasks
+      .filter((task) => task.status === 'completed')
+      .reduce((sum, task) => sum + task.points, 0);
+
+    return reply.send({
+      tasks,
+      total_points_today: totalPoints,
+      completed_points: completedPoints,
+      child_name: childName,
+    });
+  } catch (error) {
+    request.log.error(error, 'Failed to get my tasks');
+    return reply.status(500).send({
+      error: 'Internal Server Error',
+      message: 'Failed to retrieve tasks',
+    });
+  }
+}
+
 /**
  * Register children routes
  */
 export default async function childrenRoutes(server: FastifyInstance) {
+  // Get my tasks (child access)
+  server.get('/api/children/my-tasks', {
+    schema: getMyTasksSchema,
+    preHandler: [authenticateUser],
+    handler: getMyTasks,
+  });
+
   // List children (member access)
   server.get('/api/households/:householdId/children', {
     schema: listChildrenSchema,

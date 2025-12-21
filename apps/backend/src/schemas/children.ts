@@ -3,7 +3,12 @@
  * Uses snake_case for all property names
  */
 
-import { uuidSchema, timestampSchema, errorResponseSchema, stripResponseValidation } from './common.js';
+import {
+  uuidSchema,
+  timestampSchema,
+  errorResponseSchema,
+  stripResponseValidation,
+} from './common.js';
 
 const childSchema = {
   type: 'object',
@@ -139,9 +144,70 @@ const deleteChildSchemaBase = {
   },
 } as const;
 
+// GET /api/children/my-tasks
+const getMyTasksSchemaBase = {
+  summary: 'Get my tasks for today',
+  description:
+    'Returns tasks assigned to the authenticated child user for the specified date (defaults to today)',
+  tags: ['children'],
+  security: [{ bearerAuth: [] }],
+  querystring: {
+    type: 'object',
+    properties: {
+      household_id: {
+        ...uuidSchema,
+        description: 'Household ID (optional, uses current household from membership)',
+      },
+      date: {
+        type: 'string',
+        format: 'date',
+        description: 'Date to get tasks for (YYYY-MM-DD), defaults to today',
+      },
+    },
+  },
+  response: {
+    200: {
+      description: 'Child tasks for the specified date',
+      type: 'object',
+      properties: {
+        tasks: {
+          type: 'array',
+          items: {
+            type: 'object',
+            properties: {
+              id: uuidSchema,
+              task_name: { type: 'string' },
+              task_description: { type: 'string', nullable: true },
+              points: { type: 'integer' },
+              date: { type: 'string', format: 'date' },
+              status: { type: 'string', enum: ['pending', 'completed', 'overdue'] },
+              completed_at: { ...timestampSchema, nullable: true },
+            },
+            required: ['id', 'task_name', 'points', 'date', 'status'],
+          },
+        },
+        total_points_today: { type: 'integer' },
+        completed_points: { type: 'integer' },
+        child_name: { type: 'string' },
+      },
+      required: ['tasks', 'total_points_today', 'completed_points', 'child_name'],
+    },
+    401: errorResponseSchema,
+    403: {
+      description: 'User is not a child in this household',
+      ...errorResponseSchema,
+    },
+    404: {
+      description: 'Child profile not found',
+      ...errorResponseSchema,
+    },
+    500: errorResponseSchema,
+  },
+} as const;
 
 // Export schemas with conditional response validation stripping
 export const listChildrenSchema = stripResponseValidation(listChildrenSchemaBase);
 export const createChildSchema = stripResponseValidation(createChildSchemaBase);
 export const updateChildSchema = stripResponseValidation(updateChildSchemaBase);
 export const deleteChildSchema = stripResponseValidation(deleteChildSchemaBase);
+export const getMyTasksSchema = stripResponseValidation(getMyTasksSchemaBase);

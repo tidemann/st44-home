@@ -3,7 +3,12 @@
  * Uses snake_case for all property names
  */
 
-import { uuidSchema, timestampSchema, errorResponseSchema, stripResponseValidation } from './common.js';
+import {
+  uuidSchema,
+  timestampSchema,
+  errorResponseSchema,
+  stripResponseValidation,
+} from './common.js';
 
 const householdSchema = {
   type: 'object',
@@ -196,7 +201,6 @@ const listMembersSchemaBase = {
     500: errorResponseSchema,
   },
 } as const;
-
 
 // Export schemas with conditional response validation stripping
 export const listHouseholdsSchema = stripResponseValidation(listHouseholdsSchemaBase);

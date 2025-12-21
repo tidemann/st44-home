@@ -3,7 +3,13 @@
  * These schemas enforce snake_case convention for all API responses
  */
 
-import { uuidSchema, dateSchema, timestampSchema, errorResponseSchema, stripResponseValidation } from './common.js';
+import {
+  uuidSchema,
+  dateSchema,
+  timestampSchema,
+  errorResponseSchema,
+  stripResponseValidation,
+} from './common.js';
 
 const taskAssignmentSchemaBase = {
   type: 'object',
@@ -269,11 +275,13 @@ const generateAssignmentsSchemaBase = {
   },
 } as const;
 
-
 // Export schemas with conditional response validation stripping
-export const taskAssignmentSchema = stripResponseValidation(taskAssignmentSchemaBase);
+// Note: taskAssignmentSchemaBase is just a schema object, not a route schema, so it doesn't need stripping
+export const taskAssignmentSchema = taskAssignmentSchemaBase;
 export const getChildTasksSchema = stripResponseValidation(getChildTasksSchemaBase);
-export const getHouseholdAssignmentsSchema = stripResponseValidation(getHouseholdAssignmentsSchemaBase);
+export const getHouseholdAssignmentsSchema = stripResponseValidation(
+  getHouseholdAssignmentsSchemaBase,
+);
 export const completeAssignmentSchema = stripResponseValidation(completeAssignmentSchemaBase);
 export const reassignTaskSchema = stripResponseValidation(reassignTaskSchemaBase);
 export const generateAssignmentsSchema = stripResponseValidation(generateAssignmentsSchemaBase);
