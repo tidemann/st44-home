@@ -1,0 +1,131 @@
+<div class="child-dashboard">
+  <!-- Loading State -->
+  @if (isLoading()) {
+    <div class="loading-container">
+      <div class="loading-spinner"></div>
+      <p>Loading your tasks...</p>
+    </div>
+  }
+
+  <!-- Error State -->
+  @if (!isLoading() && errorMessage()) {
+    <div class="error-container">
+      <div class="error-icon">⚠️</div>
+      <p class="error-message">{{ errorMessage() }}</p>
+      <button class="retry-button" (click)="loadMyTasks()">Try Again</button>
+    </div>
+  }
+
+  <!-- Main Content -->
+  @if (!isLoading() && !errorMessage()) {
+    <!-- Greeting -->
+    <header class="greeting-section">
+      <h1 class="greeting">Hi {{ childName() }}! 👋</h1>
+    </header>
+
+    <!-- Points Progress -->
+    <section class="points-section">
+      <div class="points-header">
+        <h2>Today's Points</h2>
+        <div class="points-display">
+          <span class="completed-points">{{ completedPoints() }}</span>
+          <span class="points-separator">/</span>
+          <span class="total-points">{{ totalPoints() }}</span>
+        </div>
+      </div>
+      <div class="progress-bar-container">
+        <div
+          class="progress-bar"
+          [class]="getProgressClass()"
+          [style.width.%]="progressPercent()"
+          role="progressbar"
+          [attr.aria-valuenow]="progressPercent()"
+          [attr.aria-valuemin]="0"
+          [attr.aria-valuemax]="100"
+        ></div>
+      </div>
+      @if (allCompleted() && hasTasks()) {
+        <div class="celebration">🎉 All tasks complete! Great job!</div>
+      }
+    </section>
+
+    <!-- Tasks List -->
+    <section class="tasks-section">
+      <h2>Today's Tasks</h2>
+
+      @if (!hasTasks()) {
+        <!-- Empty State -->
+        <div class="empty-state">
+          <div class="empty-icon">🎉</div>
+          <p class="empty-message">No tasks for today!</p>
+          <p class="empty-subtitle">Enjoy your free time!</p>
+        </div>
+      } @else {
+        <!-- Pending Tasks -->
+        @if (pendingTasks().length > 0) {
+          <div class="task-group">
+            <h3 class="task-group-title">To Do</h3>
+            @for (task of pendingTasks(); track task.id) {
+              <div
+                class="task-card pending"
+                role="article"
+                [attr.aria-label]="'Task: ' + task.task_name"
+              >
+                <div class="task-header">
+                  <h4 class="task-name">{{ task.task_name }}</h4>
+                  <span class="task-points" [attr.aria-label]="task.points + ' points'">
+                    {{ task.points }} pts
+                  </span>
+                </div>
+                @if (task.task_description) {
+                  <p class="task-description">{{ task.task_description }}</p>
+                }
+                <button
+                  class="mark-done-button"
+                  (click)="onMarkDone(task)"
+                  [disabled]="isCompleting(task.id)"
+                  [attr.aria-label]="'Mark ' + task.task_name + ' as done'"
+                >
+                  @if (isCompleting(task.id)) {
+                    <span class="button-spinner"></span>
+                    <span>Marking...</span>
+                  } @else {
+                    <span>✓ Mark Done</span>
+                  }
+                </button>
+              </div>
+            }
+          </div>
+        }
+
+        <!-- Completed Tasks -->
+        @if (completedTasks().length > 0) {
+          <div class="task-group">
+            <h3 class="task-group-title">Completed</h3>
+            @for (task of completedTasks(); track task.id) {
+              <div
+                class="task-card completed"
+                role="article"
+                [attr.aria-label]="'Completed task: ' + task.task_name"
+              >
+                <div class="task-header">
+                  <h4 class="task-name">{{ task.task_name }}</h4>
+                  <span class="task-points" [attr.aria-label]="task.points + ' points earned'">
+                    {{ task.points }} pts
+                  </span>
+                </div>
+                @if (task.task_description) {
+                  <p class="task-description">{{ task.task_description }}</p>
+                }
+                <div class="completed-badge">
+                  <span class="checkmark">✓</span>
+                  <span>Done!</span>
+                </div>
+              </div>
+            }
+          </div>
+        }
+      }
+    </section>
+  }
+</div>
