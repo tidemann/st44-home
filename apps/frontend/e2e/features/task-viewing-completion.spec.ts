@@ -1,5 +1,5 @@
 import { test, expect, Page } from '@playwright/test';
-import { loginAsParent, loginAsChild } from '../helpers/auth';
+import { loginAsParent, loginAsChild } from '../helpers/auth-helpers';
 import { resetDatabase, seedTestData } from '../helpers/database';
 
 // Test data
