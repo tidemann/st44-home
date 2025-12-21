@@ -5,6 +5,12 @@ import {
   validateHouseholdMembership,
   requireHouseholdParent,
 } from '../middleware/household-membership.js';
+import {
+  listTasksSchema,
+  createTaskSchema,
+  updateTaskSchema,
+  deleteTaskSchema,
+} from '../schemas/tasks.js';
 
 interface HouseholdParams {
   householdId: string;
@@ -494,6 +500,7 @@ async function deleteTask(request: FastifyRequest<{ Params: TaskParams }>, reply
 export default async function taskRoutes(server: FastifyInstance) {
   // List tasks (member access)
   server.get('/api/households/:householdId/tasks', {
+    schema: listTasksSchema,
     preHandler: [authenticateUser, validateHouseholdMembership],
     handler: listTasks,
   });
@@ -506,18 +513,21 @@ export default async function taskRoutes(server: FastifyInstance) {
 
   // Create task (parent/admin access)
   server.post('/api/households/:householdId/tasks', {
+    schema: createTaskSchema,
     preHandler: [authenticateUser, validateHouseholdMembership, requireHouseholdParent],
     handler: createTask,
   });
 
   // Update task (parent/admin access)
   server.put('/api/households/:householdId/tasks/:taskId', {
+    schema: updateTaskSchema,
     preHandler: [authenticateUser, validateHouseholdMembership, requireHouseholdParent],
     handler: updateTask,
   });
 
   // Delete task (parent/admin access)
   server.delete('/api/households/:householdId/tasks/:taskId', {
+    schema: deleteTaskSchema,
     preHandler: [authenticateUser, validateHouseholdMembership, requireHouseholdParent],
     handler: deleteTask,
   });

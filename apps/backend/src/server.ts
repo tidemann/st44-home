@@ -1,5 +1,7 @@
 import Fastify, { FastifyRequest, FastifyReply } from 'fastify';
 import cors from '@fastify/cors';
+import swagger from '@fastify/swagger';
+import swaggerUi from '@fastify/swagger-ui';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import { OAuth2Client } from 'google-auth-library';
@@ -9,6 +11,13 @@ import childrenRoutes from './routes/children.js';
 import taskRoutes from './routes/tasks.js';
 import { invitationRoutes } from './routes/invitations.js';
 import assignmentRoutes from './routes/assignments.js';
+import {
+  registerSchema,
+  loginSchema,
+  refreshTokenSchema,
+  googleAuthSchema,
+  healthCheckSchema,
+} from './schemas/auth.js';
 
 // JWT Configuration
 const JWT_SECRET = process.env.JWT_SECRET || 'dev-secret-change-in-production';
@@ -67,6 +76,54 @@ async function buildApp() {
   await fastify.register(cors, {
     origin: process.env.CORS_ORIGIN || '*',
   });
+
+  // Register Swagger for API documentation (skip in test environment)
+  if (process.env.NODE_ENV !== 'test') {
+    await fastify.register(swagger, {
+      openapi: {
+        info: {
+          title: 'Diddit API',
+          description: 'Multi-tenant household chores management API',
+          version: '1.0.0',
+        },
+        servers: [
+          {
+            url: 'http://localhost:3000',
+            description: 'Development server',
+          },
+        ],
+        components: {
+          securitySchemes: {
+            bearerAuth: {
+              type: 'http',
+              scheme: 'bearer',
+              bearerFormat: 'JWT',
+            },
+          },
+        },
+        tags: [
+          { name: 'auth', description: 'Authentication endpoints' },
+          { name: 'households', description: 'Household management' },
+          { name: 'children', description: 'Child profile management' },
+          { name: 'tasks', description: 'Task template management' },
+          { name: 'assignments', description: 'Task assignment management' },
+          { name: 'invitations', description: 'Household invitation system' },
+        ],
+      },
+    });
+  }
+
+  // Register Swagger UI (skip in test environment)
+  if (process.env.NODE_ENV !== 'test') {
+    await fastify.register(swaggerUi, {
+      routePrefix: '/api/docs',
+      uiConfig: {
+        docExpansion: 'list',
+        deepLinking: true,
+      },
+      staticCSP: true,
+    });
+  }
 
   // Authentication Middleware
   async function authenticateUser(request: FastifyRequest, reply: FastifyReply) {
@@ -172,56 +229,6 @@ async function buildApp() {
       iat: number;
       exp: number;
     }
-
-    // JSON Schema for Registration
-    const registerSchema = {
-      body: {
-        type: 'object',
-        required: ['email', 'password'],
-        properties: {
-          email: {
-            type: 'string',
-            format: 'email',
-            maxLength: 255,
-          },
-          password: {
-            type: 'string',
-            minLength: 8,
-            maxLength: 128,
-          },
-        },
-      },
-    };
-
-    // JSON Schema for Login
-    const loginSchema = {
-      body: {
-        type: 'object',
-        required: ['email', 'password'],
-        properties: {
-          email: {
-            type: 'string',
-            format: 'email',
-          },
-          password: {
-            type: 'string',
-          },
-        },
-      },
-    };
-
-    // JSON Schema for Token Refresh
-    const refreshSchema = {
-      body: {
-        type: 'object',
-        required: ['refreshToken'],
-        properties: {
-          refreshToken: {
-            type: 'string',
-          },
-        },
-      },
-    };
 
     // Registration endpoint
     fastify.post<RegisterRequest, { Reply: RegisterResponse | ErrorResponse }>(
@@ -334,7 +341,7 @@ async function buildApp() {
     fastify.post<RefreshRequest, { Reply: RefreshResponse | ErrorResponse }>(
       '/api/auth/refresh',
       {
-        schema: refreshSchema,
+        schema: refreshTokenSchema,
       },
       async (request, reply) => {
         const { refreshToken } = request.body;
@@ -566,12 +573,18 @@ async function buildApp() {
   // Health Check Endpoints
 
   // Basic health check
-  fastify.get('/health', async () => {
-    return {
-      status: 'healthy',
-      timestamp: new Date().toISOString(),
-    };
-  });
+  fastify.get(
+    '/health',
+    {
+      schema: healthCheckSchema,
+    },
+    async () => {
+      return {
+        status: 'healthy',
+        timestamp: new Date().toISOString(),
+      };
+    },
+  );
 
   // Database health check with schema validation
   fastify.get('/health/database', async (request, reply) => {

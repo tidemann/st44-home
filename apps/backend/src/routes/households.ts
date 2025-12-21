@@ -5,6 +5,14 @@ import {
   validateHouseholdMembership,
   requireHouseholdAdmin,
 } from '../middleware/household-membership.js';
+import {
+  listHouseholdsSchema,
+  createHouseholdSchema,
+  getHouseholdSchema,
+  updateHouseholdSchema,
+  deleteHouseholdSchema,
+  listMembersSchema,
+} from '../schemas/households.js';
 
 interface CreateHouseholdRequest {
   Body: {
@@ -404,30 +412,35 @@ async function getHouseholdMembers(
 export default async function householdRoutes(server: FastifyInstance) {
   // Create household
   server.post('/api/households', {
+    schema: createHouseholdSchema,
     preHandler: [authenticateUser],
     handler: createHousehold,
   });
 
   // List user's households
   server.get('/api/households', {
+    schema: listHouseholdsSchema,
     preHandler: [authenticateUser],
     handler: listHouseholds,
   });
 
   // Get household details (member access)
   server.get('/api/households/:id', {
+    schema: getHouseholdSchema,
     preHandler: [authenticateUser, validateHouseholdMembership],
     handler: getHousehold,
   });
 
   // Update household (admin only)
   server.put('/api/households/:id', {
+    schema: updateHouseholdSchema,
     preHandler: [authenticateUser, validateHouseholdMembership, requireHouseholdAdmin],
     handler: updateHousehold,
   });
 
   // Get household members (member access)
   server.get('/api/households/:id/members', {
+    schema: listMembersSchema,
     preHandler: [authenticateUser, validateHouseholdMembership],
     handler: getHouseholdMembers,
   });

@@ -6,6 +6,12 @@ import {
   requireHouseholdParent,
   requireHouseholdAdmin,
 } from '../middleware/household-membership.js';
+import {
+  listChildrenSchema,
+  createChildSchema,
+  updateChildSchema,
+  deleteChildSchema,
+} from '../schemas/children.js';
 
 interface HouseholdParams {
   householdId: string;
@@ -267,24 +273,28 @@ async function deleteChild(request: FastifyRequest<DeleteChildRequest>, reply: F
 export default async function childrenRoutes(server: FastifyInstance) {
   // List children (member access)
   server.get('/api/households/:householdId/children', {
+    schema: listChildrenSchema,
     preHandler: [authenticateUser, validateHouseholdMembership],
     handler: listChildren,
   });
 
   // Create child (parent/admin access)
   server.post('/api/households/:householdId/children', {
+    schema: createChildSchema,
     preHandler: [authenticateUser, validateHouseholdMembership, requireHouseholdParent],
     handler: createChild,
   });
 
   // Update child (parent/admin access)
   server.put('/api/households/:householdId/children/:id', {
+    schema: updateChildSchema,
     preHandler: [authenticateUser, validateHouseholdMembership, requireHouseholdParent],
     handler: updateChild,
   });
 
   // Delete child (admin only)
   server.delete('/api/households/:householdId/children/:id', {
+    schema: deleteChildSchema,
     preHandler: [authenticateUser, validateHouseholdMembership, requireHouseholdAdmin],
     handler: deleteChild,
   });
