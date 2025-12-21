@@ -572,16 +572,26 @@ async function buildApp() {
 
   // Health Check Endpoints
 
-  // Basic health check
+  // Basic health check with database connectivity
   fastify.get(
     '/health',
     {
       schema: healthCheckSchema,
     },
     async () => {
+      // Check database connectivity
+      let dbStatus: 'connected' | 'disconnected' = 'disconnected';
+      try {
+        await pool.query('SELECT 1');
+        dbStatus = 'connected';
+      } catch (error) {
+        fastify.log.error({ err: error }, 'Health check: database connection failed');
+      }
+
       return {
-        status: 'healthy',
+        status: 'ok',
         timestamp: new Date().toISOString(),
+        database: dbStatus,
       };
     },
   );
