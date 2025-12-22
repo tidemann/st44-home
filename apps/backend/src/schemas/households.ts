@@ -97,8 +97,18 @@ const getHouseholdSchemaBase = {
   },
   response: {
     200: {
-      description: 'Household details',
-      ...householdSchema,
+      description: 'Household details with membership info',
+      type: 'object',
+      properties: {
+        id: uuidSchema,
+        name: { type: 'string', minLength: 1, maxLength: 255 },
+        role: { type: 'string', enum: ['admin', 'parent', 'child'] },
+        memberCount: { type: 'number', minimum: 1 },
+        childrenCount: { type: 'number', minimum: 0 },
+        createdAt: timestampSchema,
+        updatedAt: timestampSchema,
+      },
+      required: ['id', 'name', 'role', 'memberCount', 'childrenCount', 'createdAt'],
     },
     401: errorResponseSchema,
     403: errorResponseSchema,
@@ -130,7 +140,13 @@ const updateHouseholdSchemaBase = {
   response: {
     200: {
       description: 'Household updated successfully',
-      ...householdSchema,
+      type: 'object',
+      properties: {
+        id: uuidSchema,
+        name: { type: 'string', minLength: 1, maxLength: 255 },
+        updatedAt: timestampSchema,
+      },
+      required: ['id', 'name', 'updatedAt'],
     },
     400: errorResponseSchema,
     401: errorResponseSchema,
