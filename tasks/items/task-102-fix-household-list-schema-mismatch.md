@@ -1,10 +1,11 @@
 # Task-102: Fix Household List Endpoint Schema Mismatch
 
-**Status**: `pending`  
+**Status**: `in-progress`  
 **Priority**: `🔴 CRITICAL - PRODUCTION BLOCKER`  
 **Assignee**: Backend Agent  
 **Epic**: None (Urgent Bug Fix)  
-**Created**: 2025-12-22  
+**Created**: 2025-12-22
+**Started**: 2025-12-22  
 **Related**: Task-100, Task-101 (OpenAPI Schema Alignment)
 
 ---

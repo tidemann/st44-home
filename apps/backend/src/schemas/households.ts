@@ -48,9 +48,16 @@ const listHouseholdsSchemaBase = {
       items: {
         type: 'object',
         properties: {
-          ...householdSchema.properties,
+          id: uuidSchema,
+          name: { type: 'string', minLength: 1, maxLength: 255 },
           role: { type: 'string', enum: ['admin', 'parent', 'child'] },
+          memberCount: { type: 'number', minimum: 1 },
+          childrenCount: { type: 'number', minimum: 0 },
+          joinedAt: timestampSchema,
+          createdAt: timestampSchema,
+          updatedAt: timestampSchema,
         },
+        required: ['id', 'name', 'role', 'createdAt', 'updatedAt'],
       },
     },
     401: errorResponseSchema,

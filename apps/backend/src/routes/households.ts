@@ -137,6 +137,7 @@ async function listHouseholds(request: FastifyRequest, reply: FastifyReply) {
       [userId],
     );
 
+    // Transform to camelCase for API response
     const households = result.rows.map((row) => ({
       id: row.id,
       name: row.name,
@@ -144,8 +145,8 @@ async function listHouseholds(request: FastifyRequest, reply: FastifyReply) {
       memberCount: parseInt(row.member_count, 10),
       childrenCount: parseInt(row.children_count, 10),
       joinedAt: row.joined_at,
-      created_at: row.created_at,
-      updated_at: row.updated_at,
+      createdAt: row.created_at,
+      updatedAt: row.updated_at,
     }));
 
     return reply.send(households);
