@@ -61,8 +61,7 @@ export class HouseholdService {
   }
 
   async listHouseholds(): Promise<Household[]> {
-    const response = await this.apiService.get<{ households: Household[] }>('/households');
-    return response.households;
+    return this.apiService.get<Household[]>('/households');
   }
 
   async getHousehold(id: string): Promise<Household> {
@@ -74,9 +73,8 @@ export class HouseholdService {
   }
 
   async getHouseholdMembers(householdId: string): Promise<HouseholdMember[]> {
-    const response = await this.apiService.get<{ members: HouseholdMember[] }>(
+    return this.apiService.get<HouseholdMember[]>(
       `/households/${householdId}/members`,
     );
-    return response.members;
   }
 }
