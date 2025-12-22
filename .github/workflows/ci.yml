@@ -71,6 +71,10 @@ jobs:
       - name: Install dependencies (workspace root)
         run: npm ci
 
+      - name: Build shared types package
+        run: npm run build
+        working-directory: packages/types
+
       - name: Prettier Format Check
         run: npm run format:check
         working-directory: apps/backend

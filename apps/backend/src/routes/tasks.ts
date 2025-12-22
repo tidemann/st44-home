@@ -1,16 +1,19 @@
 import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
+import {
+  TaskSchema,
+  CreateTaskRequestSchema,
+  UpdateTaskRequestSchema,
+  type Task,
+} from '@st44/types';
+import { z, zodToOpenAPI, generateAPISchemas, CommonErrors } from '@st44/types/generators';
 import { db } from '../database.js';
 import { authenticateUser } from '../middleware/auth.js';
 import {
   validateHouseholdMembership,
   requireHouseholdParent,
 } from '../middleware/household-membership.js';
-import {
-  listTasksSchema,
-  createTaskSchema,
-  updateTaskSchema,
-  deleteTaskSchema,
-} from '../schemas/tasks.js';
+import { validateRequest, handleZodError } from '../utils/validation.js';
+import { stripResponseValidation } from '../schemas/common.js';
 
 interface HouseholdParams {
   householdId: string;
@@ -60,31 +63,21 @@ interface ListTasksRequest {
 /**
  * Validates task data based on rule type
  * Returns array of error messages (empty if valid)
+ * Zod handles basic validation (types, min/max), this handles business logic
  */
 function validateTaskData(
-  data: CreateTaskRequest['Body'] | UpdateTaskRequest['Body'],
+  data: {
+    name?: string;
+    description?: string | null;
+    points?: number;
+    rule_type?: string;
+    rule_config?: any;
+  },
   isUpdate: boolean = false,
 ): string[] {
   const errors: string[] = [];
 
-  // Name validation
-  if (!isUpdate && (!data.name || data.name.trim().length === 0)) {
-    errors.push('Name is required');
-  }
-  if (data.name && data.name.length > 255) {
-    errors.push('Name must be 255 characters or less');
-  }
-
-  // Points validation
-  if (data.points !== undefined && (data.points < 0 || data.points > 1000)) {
-    errors.push('Points must be between 0 and 1000');
-  }
-
-  // Rule type validation
-  const validRuleTypes = ['weekly_rotation', 'repeating', 'daily'];
-  if (data.rule_type && !validRuleTypes.includes(data.rule_type)) {
-    errors.push('Invalid rule_type. Must be: weekly_rotation, repeating, or daily');
-  }
+  // Basic Zod validation is already done, this is business logic validation
 
   // Rule-specific validation
   if (data.rule_type) {
@@ -108,12 +101,6 @@ function validateTaskData(
       // Repeat days required
       if (!config.repeat_days || config.repeat_days.length < 1) {
         errors.push('repeat_days required for repeating tasks (array of 0-6)');
-      } else {
-        // Validate days are 0-6
-        const invalidDays = config.repeat_days.filter((day) => day < 0 || day > 6);
-        if (invalidDays.length > 0) {
-          errors.push('repeat_days must be integers between 0 (Sunday) and 6 (Saturday)');
-        }
       }
 
       // Assigned children required (min 1)
@@ -155,33 +142,42 @@ async function validateChildrenBelongToHousehold(
  */
 async function createTask(request: FastifyRequest<CreateTaskRequest>, reply: FastifyReply) {
   const { householdId } = request.params;
-  const { name, description, points, rule_type, rule_config } = request.body;
-
-  // Validate task data
-  const validationErrors = validateTaskData(request.body);
-  if (validationErrors.length > 0) {
-    return reply.status(400).send({
-      error: 'Bad Request',
-      message: 'Validation failed',
-      details: validationErrors,
-    });
-  }
-
-  // Validate assigned children belong to household
-  if (rule_config?.assigned_children && rule_config.assigned_children.length > 0) {
-    const childrenValid = await validateChildrenBelongToHousehold(
-      rule_config.assigned_children,
-      householdId,
-    );
-    if (!childrenValid) {
-      return reply.status(400).send({
-        error: 'Bad Request',
-        message: 'One or more assigned children do not belong to this household',
-      });
-    }
-  }
 
   try {
+    // Validate request body with Zod schema
+    const validatedData = validateRequest(CreateTaskRequestSchema, request.body);
+    const { name, description, points, rule_type, rule_config } = validatedData;
+
+    // Validate task data based on rule type
+    const validationErrors = validateTaskData({
+      name,
+      description,
+      points,
+      rule_type,
+      rule_config,
+    });
+    if (validationErrors.length > 0) {
+      return reply.status(400).send({
+        error: 'Bad Request',
+        message: 'Validation failed',
+        details: validationErrors,
+      });
+    }
+
+    // Validate assigned children belong to household
+    if (rule_config?.assigned_children && rule_config.assigned_children.length > 0) {
+      const childrenValid = await validateChildrenBelongToHousehold(
+        rule_config.assigned_children,
+        householdId,
+      );
+      if (!childrenValid) {
+        return reply.status(400).send({
+          error: 'Bad Request',
+          message: 'One or more assigned children do not belong to this household',
+        });
+      }
+    }
+
     const result = await db.query(
       `INSERT INTO tasks (household_id, name, description, points, rule_type, rule_config)
        VALUES ($1, $2, $3, $4, $5, $6)
@@ -210,6 +206,11 @@ async function createTask(request: FastifyRequest<CreateTaskRequest>, reply: Fas
       updated_at: task.updated_at,
     });
   } catch (error) {
+    // Handle Zod validation errors
+    if (error instanceof z.ZodError) {
+      return handleZodError(error, reply);
+    }
+
     request.log.error(error, 'Failed to create task');
     return reply.status(500).send({
       error: 'Internal Server Error',
@@ -321,7 +322,6 @@ async function getTask(request: FastifyRequest<{ Params: TaskParams }>, reply: F
  */
 async function updateTask(request: FastifyRequest<UpdateTaskRequest>, reply: FastifyReply) {
   const { householdId, taskId } = request.params;
-  const { name, description, points, rule_type, rule_config } = request.body;
 
   // Validate UUID format
   const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
@@ -332,33 +332,37 @@ async function updateTask(request: FastifyRequest<UpdateTaskRequest>, reply: Fas
     });
   }
 
-  // Validate update data
-  if (rule_type) {
-    const validationErrors = validateTaskData({ ...request.body, rule_type }, true);
-    if (validationErrors.length > 0) {
-      return reply.status(400).send({
-        error: 'Bad Request',
-        message: 'Validation failed',
-        details: validationErrors,
-      });
-    }
-  }
-
-  // Validate assigned children if provided
-  if (rule_config?.assigned_children && rule_config.assigned_children.length > 0) {
-    const childrenValid = await validateChildrenBelongToHousehold(
-      rule_config.assigned_children,
-      householdId,
-    );
-    if (!childrenValid) {
-      return reply.status(400).send({
-        error: 'Bad Request',
-        message: 'One or more assigned children do not belong to this household',
-      });
-    }
-  }
-
   try {
+    // Validate request body with Zod schema
+    const validatedData = validateRequest(UpdateTaskRequestSchema, request.body);
+    const { name, description, points, rule_type, rule_config } = validatedData;
+
+    // Validate update data if rule_type is being changed
+    if (rule_type) {
+      const validationErrors = validateTaskData({ ...validatedData, rule_type }, true);
+      if (validationErrors.length > 0) {
+        return reply.status(400).send({
+          error: 'Bad Request',
+          message: 'Validation failed',
+          details: validationErrors,
+        });
+      }
+    }
+
+    // Validate assigned children if provided
+    if (rule_config?.assigned_children && rule_config.assigned_children.length > 0) {
+      const childrenValid = await validateChildrenBelongToHousehold(
+        rule_config.assigned_children,
+        householdId,
+      );
+      if (!childrenValid) {
+        return reply.status(400).send({
+          error: 'Bad Request',
+          message: 'One or more assigned children do not belong to this household',
+        });
+      }
+    }
+
     // Build dynamic update query
     const updates: string[] = [];
     const values: (string | number | null)[] = [];
@@ -428,6 +432,11 @@ async function updateTask(request: FastifyRequest<UpdateTaskRequest>, reply: Fas
       updated_at: task.updated_at,
     });
   } catch (error) {
+    // Handle Zod validation errors
+    if (error instanceof z.ZodError) {
+      return handleZodError(error, reply);
+    }
+
     request.log.error(error, 'Failed to update task');
     return reply.status(500).send({
       error: 'Internal Server Error',
@@ -498,36 +507,124 @@ async function deleteTask(request: FastifyRequest<{ Params: TaskParams }>, reply
  * Register task routes
  */
 export default async function taskRoutes(server: FastifyInstance) {
+  // OpenAPI schemas from Zod
+  const ParamsSchema = z.object({ householdId: z.string().uuid() });
+  const TaskParamsSchema = z.object({
+    householdId: z.string().uuid(),
+    taskId: z.string().uuid(),
+  });
+  const QuerySchema = z.object({ active: z.enum(['true', 'false']).optional() });
+
   // List tasks (member access)
   server.get('/api/households/:householdId/tasks', {
-    schema: listTasksSchema,
+    schema: stripResponseValidation({
+      summary: 'List all task templates for household',
+      description: 'Get all task templates, optionally filtered by active status',
+      tags: ['tasks'],
+      security: [{ bearerAuth: [] }],
+      params: zodToOpenAPI(ParamsSchema),
+      querystring: zodToOpenAPI(QuerySchema),
+      response: {
+        200: zodToOpenAPI(z.array(TaskSchema), {
+          description: 'List of task templates',
+        }),
+        ...CommonErrors.Unauthorized,
+        ...CommonErrors.Forbidden,
+        ...CommonErrors.InternalServerError,
+      },
+    }),
     preHandler: [authenticateUser, validateHouseholdMembership],
     handler: listTasks,
   });
 
   // Get task details (member access)
   server.get('/api/households/:householdId/tasks/:taskId', {
+    schema: stripResponseValidation({
+      summary: 'Get task template details',
+      description: 'Get a single task template by ID',
+      tags: ['tasks'],
+      security: [{ bearerAuth: [] }],
+      params: zodToOpenAPI(TaskParamsSchema),
+      response: {
+        200: zodToOpenAPI(TaskSchema),
+        ...CommonErrors.BadRequest,
+        ...CommonErrors.Unauthorized,
+        ...CommonErrors.Forbidden,
+        ...CommonErrors.NotFound,
+        ...CommonErrors.InternalServerError,
+      },
+    }),
     preHandler: [authenticateUser, validateHouseholdMembership],
     handler: getTask,
   });
 
   // Create task (parent/admin access)
   server.post('/api/households/:householdId/tasks', {
-    schema: createTaskSchema,
+    schema: stripResponseValidation({
+      summary: 'Create new task template',
+      description: 'Create a task template with assignment rules',
+      tags: ['tasks'],
+      security: [{ bearerAuth: [] }],
+      params: zodToOpenAPI(ParamsSchema),
+      body: zodToOpenAPI(CreateTaskRequestSchema),
+      response: {
+        201: zodToOpenAPI(TaskSchema, { description: 'Task created successfully' }),
+        ...CommonErrors.BadRequest,
+        ...CommonErrors.Unauthorized,
+        ...CommonErrors.Forbidden,
+        ...CommonErrors.InternalServerError,
+      },
+    }),
     preHandler: [authenticateUser, validateHouseholdMembership, requireHouseholdParent],
     handler: createTask,
   });
 
   // Update task (parent/admin access)
   server.put('/api/households/:householdId/tasks/:taskId', {
-    schema: updateTaskSchema,
+    schema: stripResponseValidation({
+      summary: 'Update task template',
+      description: 'Update task template properties',
+      tags: ['tasks'],
+      security: [{ bearerAuth: [] }],
+      params: zodToOpenAPI(TaskParamsSchema),
+      body: zodToOpenAPI(UpdateTaskRequestSchema),
+      response: {
+        200: zodToOpenAPI(TaskSchema, { description: 'Task updated successfully' }),
+        ...CommonErrors.BadRequest,
+        ...CommonErrors.Unauthorized,
+        ...CommonErrors.Forbidden,
+        ...CommonErrors.NotFound,
+        ...CommonErrors.InternalServerError,
+      },
+    }),
     preHandler: [authenticateUser, validateHouseholdMembership, requireHouseholdParent],
     handler: updateTask,
   });
 
   // Delete task (parent/admin access)
   server.delete('/api/households/:householdId/tasks/:taskId', {
-    schema: deleteTaskSchema,
+    schema: stripResponseValidation({
+      summary: 'Delete task template',
+      description: 'Soft delete a task template (sets active to false)',
+      tags: ['tasks'],
+      security: [{ bearerAuth: [] }],
+      params: zodToOpenAPI(TaskParamsSchema),
+      response: {
+        200: {
+          description: 'Task deleted successfully',
+          type: 'object',
+          properties: {
+            success: { type: 'boolean' },
+            message: { type: 'string' },
+          },
+        },
+        ...CommonErrors.BadRequest,
+        ...CommonErrors.Unauthorized,
+        ...CommonErrors.Forbidden,
+        ...CommonErrors.NotFound,
+        ...CommonErrors.InternalServerError,
+      },
+    }),
     preHandler: [authenticateUser, validateHouseholdMembership, requireHouseholdParent],
     handler: deleteTask,
   });

@@ -1,7 +1,7 @@
 /**
  * Assignment Schema - Task assignments to children
  */
-import { z } from 'zod';
+import { z } from '../generators/openapi.generator.js';
 import { TaskRuleTypeSchema } from './task.schema.js';
 
 /**

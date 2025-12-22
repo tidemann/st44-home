@@ -1,18 +1,19 @@
 import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
+import {
+  HouseholdSchema,
+  CreateHouseholdRequestSchema,
+  UpdateHouseholdRequestSchema,
+  type Household,
+} from '@st44/types';
+import { z, zodToOpenAPI, CommonErrors } from '@st44/types/generators';
 import { db } from '../database.js';
 import { authenticateUser } from '../middleware/auth.js';
 import {
   validateHouseholdMembership,
   requireHouseholdAdmin,
 } from '../middleware/household-membership.js';
-import {
-  listHouseholdsSchema,
-  createHouseholdSchema,
-  getHouseholdSchema,
-  updateHouseholdSchema,
-  deleteHouseholdSchema,
-  listMembersSchema,
-} from '../schemas/households.js';
+import { validateRequest, handleZodError } from '../utils/validation.js';
+import { stripResponseValidation } from '../schemas/common.js';
 
 interface CreateHouseholdRequest {
   Body: {
@@ -43,7 +44,6 @@ async function createHousehold(
   request: FastifyRequest<CreateHouseholdRequest>,
   reply: FastifyReply,
 ) {
-  const { name } = request.body;
   const userId = request.user?.userId;
 
   if (!userId) {
@@ -53,22 +53,11 @@ async function createHousehold(
     });
   }
 
-  // Validate household name
-  if (!name || name.trim().length === 0) {
-    return reply.status(400).send({
-      error: 'Bad Request',
-      message: 'Household name is required',
-    });
-  }
-
-  if (name.length > 100) {
-    return reply.status(400).send({
-      error: 'Bad Request',
-      message: 'Household name must be 100 characters or less',
-    });
-  }
-
   try {
+    // Validate request body with Zod schema
+    const validatedData = validateRequest(CreateHouseholdRequestSchema, request.body);
+    const { name } = validatedData;
+
     // Begin transaction
     await db.query('BEGIN');
 
@@ -96,6 +85,10 @@ async function createHousehold(
       updatedAt: household.updated_at,
     });
   } catch (error) {
+    // Handle Zod validation errors
+    if (error instanceof z.ZodError) {
+      return handleZodError(error, reply);
+    }
     await db.query('ROLLBACK');
     request.log.error(error, 'Failed to create household');
     return reply.status(500).send({
@@ -225,24 +218,12 @@ async function updateHousehold(
   reply: FastifyReply,
 ) {
   const { householdId: id } = request.params;
-  const { name } = request.body;
-
-  // Validate household name
-  if (!name || name.trim().length === 0) {
-    return reply.status(400).send({
-      error: 'Bad Request',
-      message: 'Household name is required',
-    });
-  }
-
-  if (name.length > 100) {
-    return reply.status(400).send({
-      error: 'Bad Request',
-      message: 'Household name must be 100 characters or less',
-    });
-  }
 
   try {
+    // Validate request body with Zod schema
+    const validatedData = validateRequest(UpdateHouseholdRequestSchema, request.body);
+    const { name } = validatedData;
+
     // Update household (middleware already validated admin role)
     const result = await db.query(
       'UPDATE households SET name = $1, updated_at = NOW() WHERE id = $2 RETURNING id, name, updated_at',
@@ -264,6 +245,11 @@ async function updateHousehold(
       updatedAt: household.updated_at,
     });
   } catch (error) {
+    // Handle Zod validation errors
+    if (error instanceof z.ZodError) {
+      return handleZodError(error, reply);
+    }
+
     request.log.error(error, 'Failed to update household');
     return reply.status(500).send({
       error: 'Internal Server Error',
@@ -415,43 +401,162 @@ async function getHouseholdMembers(
  * Register household routes
  */
 export default async function householdRoutes(server: FastifyInstance) {
+  // Define param schemas
+  const HouseholdParamsSchema = z.object({ householdId: z.string().uuid() });
+
   // Create household
   server.post('/api/households', {
-    schema: createHouseholdSchema,
+    schema: stripResponseValidation({
+      summary: 'Create new household',
+      description: 'Creates a household and assigns creator as admin',
+      tags: ['households'],
+      security: [{ bearerAuth: [] }],
+      body: zodToOpenAPI(CreateHouseholdRequestSchema),
+      response: {
+        201: zodToOpenAPI(HouseholdSchema),
+        ...CommonErrors.BadRequest,
+        ...CommonErrors.Unauthorized,
+        ...CommonErrors.InternalServerError,
+      },
+    }),
     preHandler: [authenticateUser],
     handler: createHousehold,
   });
 
   // List user's households
   server.get('/api/households', {
-    schema: listHouseholdsSchema,
+    schema: stripResponseValidation({
+      summary: 'List user households',
+      description: 'Get all households the authenticated user is a member of',
+      tags: ['households'],
+      security: [{ bearerAuth: [] }],
+      response: {
+        200: {
+          type: 'array',
+          items: zodToOpenAPI(HouseholdSchema),
+        },
+        ...CommonErrors.Unauthorized,
+        ...CommonErrors.InternalServerError,
+      },
+    }),
     preHandler: [authenticateUser],
     handler: listHouseholds,
   });
 
   // Get household details (member access)
   server.get('/api/households/:householdId', {
-    schema: getHouseholdSchema,
+    schema: stripResponseValidation({
+      summary: 'Get household details',
+      description: 'Get details of a specific household',
+      tags: ['households'],
+      security: [{ bearerAuth: [] }],
+      params: zodToOpenAPI(HouseholdParamsSchema),
+      response: {
+        200: zodToOpenAPI(HouseholdSchema),
+        ...CommonErrors.BadRequest,
+        ...CommonErrors.Unauthorized,
+        ...CommonErrors.Forbidden,
+        ...CommonErrors.NotFound,
+        ...CommonErrors.InternalServerError,
+      },
+    }),
     preHandler: [authenticateUser, validateHouseholdMembership],
     handler: getHousehold,
   });
 
   // Update household (admin only)
   server.put('/api/households/:householdId', {
-    schema: updateHouseholdSchema,
+    schema: stripResponseValidation({
+      summary: 'Update household',
+      description: 'Update household details (admin only)',
+      tags: ['households'],
+      security: [{ bearerAuth: [] }],
+      params: zodToOpenAPI(HouseholdParamsSchema),
+      body: zodToOpenAPI(UpdateHouseholdRequestSchema),
+      response: {
+        200: zodToOpenAPI(HouseholdSchema),
+        ...CommonErrors.BadRequest,
+        ...CommonErrors.Unauthorized,
+        ...CommonErrors.Forbidden,
+        ...CommonErrors.NotFound,
+        ...CommonErrors.InternalServerError,
+      },
+    }),
     preHandler: [authenticateUser, validateHouseholdMembership, requireHouseholdAdmin],
     handler: updateHousehold,
   });
 
   // Get household members (member access)
   server.get('/api/households/:householdId/members', {
-    schema: listMembersSchema,
+    schema: stripResponseValidation({
+      summary: 'List household members',
+      description: 'Get all members of a household',
+      tags: ['households'],
+      security: [{ bearerAuth: [] }],
+      params: zodToOpenAPI(HouseholdParamsSchema),
+      response: {
+        200: {
+          type: 'array',
+          items: {
+            type: 'object',
+            properties: {
+              user_id: { type: 'string', format: 'uuid' },
+              email: { type: 'string', format: 'email' },
+              role: { type: 'string', enum: ['admin', 'parent', 'child'] },
+              joined_at: { type: 'string', format: 'date-time' },
+            },
+          },
+        },
+        ...CommonErrors.Unauthorized,
+        ...CommonErrors.Forbidden,
+        ...CommonErrors.InternalServerError,
+      },
+    }),
     preHandler: [authenticateUser, validateHouseholdMembership],
     handler: getHouseholdMembers,
   });
 
   // Get household dashboard (member access)
   server.get('/api/households/:householdId/dashboard', {
+    schema: stripResponseValidation({
+      summary: 'Get household dashboard data',
+      description: 'Get summary statistics for household dashboard',
+      tags: ['households'],
+      security: [{ bearerAuth: [] }],
+      params: zodToOpenAPI(HouseholdParamsSchema),
+      response: {
+        200: {
+          type: 'object',
+          properties: {
+            household: zodToOpenAPI(HouseholdSchema),
+            stats: {
+              type: 'object',
+              properties: {
+                totalChildren: { type: 'integer' },
+                activeTasks: { type: 'integer' },
+                completedToday: { type: 'integer' },
+                pointsEarnedThisWeek: { type: 'integer' },
+              },
+            },
+            children: {
+              type: 'array',
+              items: {
+                type: 'object',
+                properties: {
+                  id: { type: 'string', format: 'uuid' },
+                  name: { type: 'string' },
+                  points_balance: { type: 'integer' },
+                  tasks_completed_today: { type: 'integer' },
+                },
+              },
+            },
+          },
+        },
+        ...CommonErrors.Unauthorized,
+        ...CommonErrors.Forbidden,
+        ...CommonErrors.InternalServerError,
+      },
+    }),
     preHandler: [authenticateUser, validateHouseholdMembership],
     handler: getHouseholdDashboard,
   });

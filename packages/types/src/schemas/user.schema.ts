@@ -1,7 +1,7 @@
 /**
  * User Schema - Authentication and user management
  */
-import { z } from 'zod';
+import { z } from '../generators/openapi.generator.js';
 
 /**
  * Base User Schema

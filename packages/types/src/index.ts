@@ -13,5 +13,9 @@ export * from './schemas/index.js';
 export * from './types/index.js';
 export * from './generators/index.js';
 
+// Re-export extended Zod instance for convenience
+// IMPORTANT: Always use this z instance in backend routes, NOT 'import { z } from "zod"'
+export { z } from './generators/openapi.generator.js';
+
 // Version export for debugging and compatibility checks
 export const VERSION = '1.0.0';
