@@ -1,7 +1,7 @@
 import { Component, OnInit, signal, inject, ChangeDetectionStrategy } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { TaskService } from '../../services/task.service';
-import { TaskTemplate } from '../../services/task.service';
+import type { Task } from '@st44/types';
 import { CommonModule } from '@angular/common';
 import { TaskFormComponent } from '../../components/task-form/task-form';
 
@@ -23,7 +23,7 @@ export class TaskListComponent implements OnInit {
   isLoading = signal(false);
   errorMessage = signal('');
   showTaskForm = signal(false);
-  editingTask = signal<TaskTemplate | null>(null);
+  editingTask = signal<Task | null>(null);
 
   ngOnInit() {
     const id = this.route.snapshot.paramMap.get('householdId');
@@ -56,7 +56,7 @@ export class TaskListComponent implements OnInit {
     this.showTaskForm.set(true);
   }
 
-  openEditForm(task: TaskTemplate) {
+  openEditForm(task: Task) {
     this.editingTask.set(task);
     this.showTaskForm.set(true);
   }
@@ -67,7 +67,7 @@ export class TaskListComponent implements OnInit {
     this.loadTasks(); // Reload to show changes
   }
 
-  deleteTask(task: TaskTemplate) {
+  deleteTask(task: Task) {
     if (!confirm(`Delete task "${task.name}"?`)) {
       return;
     }

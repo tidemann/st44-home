@@ -1,28 +1,19 @@
 import { Injectable, inject } from '@angular/core';
+import type { Child, CreateChildRequest, UpdateChildRequest } from '@st44/types';
 import { ApiService } from './api.service';
 
-export interface Child {
-  id: string;
-  name: string;
-  birthYear: number;
-  createdAt: string;
-  updatedAt?: string;
-}
-
-export interface CreateChildRequest {
-  name: string;
-  birthYear: number;
-}
-
-export interface UpdateChildRequest {
-  name: string;
-  birthYear: number;
-}
-
+/**
+ * List children API response wrapper
+ * Backend returns { children: Child[] }
+ */
 export interface ListChildrenResponse {
   children: Child[];
 }
 
+/**
+ * Delete child API response
+ * Backend returns { success: boolean, message: string }
+ */
 export interface DeleteChildResponse {
   success: boolean;
   message: string;

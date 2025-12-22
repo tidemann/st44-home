@@ -9,8 +9,10 @@ import {
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { ChildrenService, Child } from '../../services/children.service';
-import { TaskService, TaskAssignment } from '../../services/task.service';
+import type { Child } from '@st44/types';
+import { ChildrenService } from '../../services/children.service';
+import type { Assignment } from '@st44/types';
+import { TaskService } from '../../services/task.service';
 
 @Component({
   selector: 'app-reassign-modal',
@@ -24,7 +26,7 @@ export class ReassignModalComponent {
   private readonly taskService = inject(TaskService);
 
   // Inputs
-  assignment = input.required<TaskAssignment | null>();
+  assignment = input.required<Assignment | null>();
   children = input.required<Child[]>();
 
   // Outputs

@@ -1,7 +1,8 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { TaskList } from './task-list';
-import { TaskService, TaskTemplate } from '../../services/task.service';
-import { ChildrenService, Child } from '../../services/children.service';
+import type { Task, Child } from '@st44/types';
+import { TaskService } from '../../services/task.service';
+import { ChildrenService } from '../../services/children.service';
 import { HouseholdService } from '../../services/household.service';
 import { signal } from '@angular/core';
 import { of, throwError } from 'rxjs';
@@ -19,8 +20,8 @@ describe.skip('TaskList', () => {
     getTasks: ReturnType<typeof vi.fn>;
     deleteTask: ReturnType<typeof vi.fn>;
     updateTask: ReturnType<typeof vi.fn>;
-    tasks: ReturnType<typeof signal<TaskTemplate[]>>;
-    activeTasks: ReturnType<typeof signal<TaskTemplate[]>>;
+    tasks: ReturnType<typeof signal<Task[]>>;
+    activeTasks: ReturnType<typeof signal<Task[]>>;
     loading: ReturnType<typeof signal<boolean>>;
     error: ReturnType<typeof signal<string | null>>;
   };
@@ -33,12 +34,36 @@ describe.skip('TaskList', () => {
   };
 
   const mockChildren: Child[] = [
-    { id: '1', name: 'Alice', birthYear: 2015, createdAt: '2025-01-01' },
-    { id: '2', name: 'Bob', birthYear: 2017, createdAt: '2025-01-01' },
-    { id: '3', name: 'Charlie', birthYear: 2019, createdAt: '2025-01-01' },
+    {
+      id: '1',
+      household_id: 'h1',
+      name: 'Alice',
+      birthYear: 2015,
+      avatar_url: null,
+      created_at: '2025-01-01',
+      updated_at: '2025-01-01',
+    },
+    {
+      id: '2',
+      household_id: 'h1',
+      name: 'Bob',
+      birthYear: 2017,
+      avatar_url: null,
+      created_at: '2025-01-01',
+      updated_at: '2025-01-01',
+    },
+    {
+      id: '3',
+      household_id: 'h1',
+      name: 'Charlie',
+      birthYear: 2019,
+      avatar_url: null,
+      created_at: '2025-01-01',
+      updated_at: '2025-01-01',
+    },
   ];
 
-  const mockTasks: TaskTemplate[] = [
+  const mockTasks: Task[] = [
     {
       id: '1',
       household_id: 'h1',
@@ -249,7 +274,7 @@ describe.skip('TaskList', () => {
     });
 
     it('should handle missing children IDs gracefully', () => {
-      const task: TaskTemplate = {
+      const task: Task = {
         ...mockTasks[1],
         rule_config: { assigned_children: ['999'] }, // Non-existent child
       };

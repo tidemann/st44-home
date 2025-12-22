@@ -22,6 +22,10 @@ jobs:
       - name: Install dependencies (workspace root)
         run: npm ci
 
+      - name: Build shared types package
+        run: npm run build
+        working-directory: packages/types
+
       - name: Install native bindings and jsdom
         run: npm install --no-save @tailwindcss/oxide-linux-x64-gnu lightningcss-linux-x64-gnu jsdom
 

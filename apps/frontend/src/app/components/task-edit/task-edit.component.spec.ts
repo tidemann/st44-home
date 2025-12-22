@@ -1,6 +1,7 @@
 import { TestBed, ComponentFixture } from '@angular/core/testing';
 import { TaskEditComponent } from './task-edit.component';
-import { TaskService, TaskTemplate } from '../../services/task.service';
+import type { Task } from '@st44/types';
+import { TaskService } from '../../services/task.service';
 import { ChildrenService } from '../../services/children.service';
 import { HouseholdService } from '../../services/household.service';
 import { of, throwError } from 'rxjs';
@@ -33,7 +34,7 @@ describe('TaskEditComponent', () => {
     { id: '2', name: 'Noah', birthYear: 2017, createdAt: new Date().toISOString() },
   ];
 
-  const mockTask: TaskTemplate = {
+  const mockTask: Task = {
     id: 'task-1',
     household_id: 'household-1',
     name: 'Take out trash',
@@ -116,7 +117,7 @@ describe('TaskEditComponent', () => {
 
   describe('Form Pre-fill with different rule types', () => {
     it('should pre-fill daily task correctly', () => {
-      const dailyTask: TaskTemplate = {
+      const dailyTask: Task = {
         ...mockTask,
         rule_type: 'daily',
         rule_config: null,
@@ -131,7 +132,7 @@ describe('TaskEditComponent', () => {
     });
 
     it('should pre-fill weekly_rotation task correctly', () => {
-      const rotationTask: TaskTemplate = {
+      const rotationTask: Task = {
         ...mockTask,
         rule_type: 'weekly_rotation',
         rule_config: {
@@ -203,7 +204,7 @@ describe('TaskEditComponent', () => {
     });
 
     it('should not mark hasChanges when form is pre-filled', () => {
-      const newTask: TaskTemplate = { ...mockTask, name: 'Different task' };
+      const newTask: Task = { ...mockTask, name: 'Different task' };
       fixture.componentRef.setInput('task', newTask);
       fixture.detectChanges();
 
@@ -406,7 +407,7 @@ describe('TaskEditComponent', () => {
 
   describe('Complex Scenarios', () => {
     it('should handle editing from daily to repeating', () => {
-      const dailyTask: TaskTemplate = {
+      const dailyTask: Task = {
         ...mockTask,
         rule_type: 'daily',
         rule_config: null,

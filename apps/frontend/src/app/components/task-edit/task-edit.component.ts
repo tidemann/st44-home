@@ -16,8 +16,10 @@ import {
   FormArray,
   AbstractControl,
 } from '@angular/forms';
-import { TaskService, TaskTemplate } from '../../services/task.service';
-import { ChildrenService, Child } from '../../services/children.service';
+import type { Task } from '@st44/types';
+import { TaskService } from '../../services/task.service';
+import type { Child } from '@st44/types';
+import { ChildrenService } from '../../services/children.service';
 import { HouseholdService } from '../../services/household.service';
 
 @Component({
@@ -34,7 +36,7 @@ export class TaskEditComponent {
   private householdService = inject(HouseholdService);
 
   // Inputs/Outputs
-  readonly task = input.required<TaskTemplate>();
+  readonly task = input.required<Task>();
   readonly closed = output<void>();
 
   // Signals (public for testing)
@@ -100,7 +102,7 @@ export class TaskEditComponent {
     }
   }
 
-  private prefillForm(task: TaskTemplate): void {
+  private prefillForm(task: Task): void {
     // Clear arrays
     (this.taskForm.get('repeat_days') as FormArray).clear();
     (this.taskForm.get('assigned_children') as FormArray).clear();
@@ -113,11 +115,13 @@ export class TaskEditComponent {
 
     // Populate repeat_days FormArray
     const repeatDaysArray = this.taskForm.get('repeat_days') as FormArray;
-    repeatDays.forEach((day) => repeatDaysArray.push(this.fb.control(day)));
+    repeatDays.forEach((day: number) => repeatDaysArray.push(this.fb.control(day)));
 
     // Populate assigned_children FormArray
     const assignedChildrenArray = this.taskForm.get('assigned_children') as FormArray;
-    assignedChildren.forEach((childId) => assignedChildrenArray.push(this.fb.control(childId)));
+    assignedChildren.forEach((childId: string) =>
+      assignedChildrenArray.push(this.fb.control(childId)),
+    );
 
     // Set form values
     this.taskForm.patchValue(

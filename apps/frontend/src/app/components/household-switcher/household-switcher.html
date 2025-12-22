@@ -16,8 +16,8 @@
           <span class="switcher-toggle__name">{{ active.name }}</span>
           <span
             class="switcher-toggle__role"
-            [class.switcher-toggle__role--admin]="active.role === 'admin'"
             [class.switcher-toggle__role--parent]="active.role === 'parent'"
+            [class.switcher-toggle__role--child]="active.role === 'child'"
           >
             {{ active.role }}
           </span>
@@ -62,8 +62,8 @@
               <span class="switcher-item__name">{{ household.name }}</span>
               <span
                 class="switcher-item__role"
-                [class.switcher-item__role--admin]="household.role === 'admin'"
                 [class.switcher-item__role--parent]="household.role === 'parent'"
+                [class.switcher-item__role--child]="household.role === 'child'"
               >
                 {{ household.role }}
               </span>

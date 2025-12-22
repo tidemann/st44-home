@@ -8,7 +8,8 @@ import {
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { format, startOfWeek, endOfWeek, isWithinInterval, parseISO } from 'date-fns';
-import { TaskService, TaskAssignment } from '../../services/task.service';
+import type { Assignment } from '@st44/types';
+import { TaskService } from '../../services/task.service';
 import { AuthService } from '../../services/auth.service';
 import { TaskCardComponent } from '../task-card/task-card.component';
 
@@ -107,7 +108,7 @@ export class ChildTaskListComponent implements OnInit {
   /**
    * Filter assignments by date range
    */
-  private filterByDateRange(tasks: TaskAssignment[], filter: 'today' | 'week'): TaskAssignment[] {
+  private filterByDateRange(tasks: Assignment[], filter: 'today' | 'week'): Assignment[] {
     const now = new Date();
     const today = format(now, 'yyyy-MM-dd');
 
