@@ -74,7 +74,15 @@ const createHouseholdSchemaBase = {
   response: {
     201: {
       description: 'Household created successfully',
-      ...householdSchema,
+      type: 'object',
+      properties: {
+        id: uuidSchema,
+        name: { type: 'string', minLength: 1, maxLength: 255 },
+        role: { type: 'string', enum: ['admin', 'parent', 'child'] },
+        createdAt: timestampSchema,
+        updatedAt: timestampSchema,
+      },
+      required: ['id', 'name', 'role', 'createdAt', 'updatedAt'],
     },
     400: errorResponseSchema,
     401: errorResponseSchema,
