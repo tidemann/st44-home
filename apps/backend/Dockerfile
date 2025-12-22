@@ -28,14 +28,21 @@ WORKDIR /app
 # Copy workspace root package files
 COPY package*.json ./
 
-# Copy packages/types (production dependency)
+# Copy packages/types source and build it
 COPY packages/types/package.json ./packages/types/
-COPY packages/types/dist ./packages/types/dist
+COPY packages/types/tsconfig.json ./packages/types/
+COPY packages/types/src ./packages/types/src
 
 # Copy backend package files
 COPY apps/backend/package.json ./apps/backend/
 
-# Install production dependencies only
+# Install all dependencies (including dev for building types)
+RUN npm ci
+
+# Build types package
+RUN npm run build --workspace=packages/types
+
+# Now install production dependencies only
 RUN npm ci --omit=dev --workspace=apps/backend
 
 # Copy built backend files
