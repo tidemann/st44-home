@@ -22,9 +22,8 @@ jobs:
       - name: Install dependencies (workspace root)
         run: npm ci
 
-      - name: Rebuild native dependencies (frontend)
-        run: npm rebuild lightningcss
-        working-directory: apps/frontend
+      - name: Install lightningcss native bindings
+        run: npm install --no-save lightningcss-linux-x64-gnu@1.30.2
 
       - name: Lint
         run: npm run lint
