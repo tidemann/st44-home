@@ -38,14 +38,14 @@ export class HouseholdSettingsComponent implements OnInit {
 
   household = signal<HouseholdListItem | null>(null);
   members = signal<HouseholdMember[]>([]);
-  currentUserRole = signal<'parent' | 'child' | null>(null);
+  currentUserRole = signal<'admin' | 'parent' | 'child' | null>(null);
   isLoading = signal(false);
   isSaving = signal(false);
   errorMessage = signal('');
   successMessage = signal('');
 
-  // Parents have admin privileges in the household
-  isAdmin = computed(() => this.currentUserRole() === 'parent');
+  // Admin role has household admin privileges
+  isAdmin = computed(() => this.currentUserRole() === 'admin');
 
   householdForm: FormGroup = this.fb.group({
     name: ['', [Validators.required, Validators.minLength(1), Validators.maxLength(100)]],

@@ -151,7 +151,8 @@ async function updateChild(request: FastifyRequest<UpdateChildRequest>, reply: F
       id: child.id,
       household_id: child.household_id,
       name: child.name,
-      birth_year: child.birth_year,
+      birthYear: child.birth_year,
+      avatar_url: null,
       created_at: child.created_at,
       updated_at: child.updated_at,
     });
