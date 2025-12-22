@@ -38,6 +38,57 @@ dist/
 **/dist/
 ```
 
+### package-lock.json and Platform-Specific Binaries (CRITICAL)
+
+**CRITICAL ISSUE**: Using `npm ci` with a `package-lock.json` generated on Windows/macOS can cause native binding failures in Alpine Linux Docker containers, even with `.dockerignore` configured correctly.
+
+**Problem**: The lock file contains metadata about optional platform-specific dependencies that npm tries to honor, leading to incorrect binary downloads for nested workspace node_modules.
+
+**Solution**: Use `npm install` instead of `npm ci` in Docker builds:
+
+```dockerfile
+# Copy workspace root package files
+COPY package*.json ./
+
+# Copy shared types package
+COPY packages/types ./packages/types
+
+# Copy frontend package files
+COPY apps/frontend/package*.json ./apps/frontend/
+
+# Delete package-lock.json to force fresh install with correct platform binaries
+RUN rm -f package-lock.json
+
+# Install dependencies fresh (without lock file constraints)
+RUN npm install
+```
+
+**Why This Works**:
+- Removes lock file constraints that may reference wrong platform binaries
+- Forces npm to resolve dependencies fresh in Alpine Linux environment
+- Downloads correct `lightningcss.linux-x64-musl.node` and other musl binaries
+- npm detects the platform automatically and installs correct optional dependencies
+
+**Trade-offs**:
+- ✅ Correct platform binaries guaranteed
+- ✅ No native module errors
+- ❌ Slower builds (no lock file caching)
+- ❌ Non-deterministic versions (minor/patch updates possible)
+- ❌ Build reproducibility reduced
+
+**When to Use**:
+- **Docker builds**: Always use `npm install` without lock file
+- **Local development**: Use `npm install` or `npm ci` with lock file (platform matches)
+- **CI/CD tests**: Use `npm ci` with lock file (faster, reproducible)
+
+**Alternative** (if you need reproducible builds):
+```dockerfile
+# Keep lock file but force platform detection
+RUN npm ci --force
+RUN npm rebuild --workspace=apps/frontend
+```
+This is slower and may still have issues, so `npm install` is recommended.
+
 ## Current Workspace Structure
 
 ```
