@@ -10,7 +10,7 @@ import { z } from '../generators/openapi.generator.js';
 export const HouseholdSchema = z.object({
   id: z.string().uuid(),
   name: z.string().min(1).max(100),
-  admin_user_id: z.string().uuid(),
+  admin_user_id: z.string().uuid().optional(),
   created_at: z.string().datetime(),
   updated_at: z.string().datetime(),
 });

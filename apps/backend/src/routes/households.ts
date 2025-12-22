@@ -226,7 +226,7 @@ async function updateHousehold(
 
     // Update household (middleware already validated admin role)
     const result = await db.query(
-      'UPDATE households SET name = $1, updated_at = NOW() WHERE id = $2 RETURNING id, name, updated_at',
+      'UPDATE households SET name = $1, updated_at = NOW() WHERE id = $2 RETURNING id, name, created_at, updated_at',
       [name.trim(), id],
     );
 
@@ -242,7 +242,8 @@ async function updateHousehold(
     return reply.send({
       id: household.id,
       name: household.name,
-      updatedAt: household.updated_at,
+      created_at: household.created_at,
+      updated_at: household.updated_at,
     });
   } catch (error) {
     // Handle Zod validation errors
@@ -270,7 +271,7 @@ async function getHouseholdDashboard(
 
   try {
     // Get household info
-    const householdResult = await db.query('SELECT id, name FROM households WHERE id = $1', [id]);
+    const householdResult = await db.query('SELECT id, name, created_at, updated_at FROM households WHERE id = $1', [id]);
 
     if (householdResult.rows.length === 0) {
       return reply.status(404).send({
@@ -336,6 +337,8 @@ async function getHouseholdDashboard(
       household: {
         id: household.id,
         name: household.name,
+        created_at: household.created_at,
+        updated_at: household.updated_at,
       },
       weekSummary: {
         total,
