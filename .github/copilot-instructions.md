@@ -13,6 +13,12 @@ This is a monorepo with:
 - Prefer type inference when the type is obvious
 - Avoid the `any` type; use `unknown` when type is uncertain
 - Use ESM modules (`type: "module"` in package.json)
+- **CRITICAL: Use camelCase for ALL identifiers** (variables, properties, functions, database columns)
+  - NO snake_case allowed in new code (forbidden: `first_name`, `created_at`, `user_id`)
+  - Use camelCase everywhere: `firstName`, `createdAt`, `userId`
+  - Database columns must be camelCase or aliased to camelCase in queries
+  - This applies to frontend, backend, schemas, database, and APIs
+  - Legacy snake_case must be migrated (see migration tasks)
 
 ## Angular Best Practices (Frontend)
 
@@ -65,6 +71,16 @@ This is a monorepo with:
 ## Backend Best Practices (Fastify)
 
 - Use Fastify for API routes with proper type safety
+- **CRITICAL: Schema-Query Alignment** - SELECT queries MUST match schema fields exactly
+  - Required schema fields MUST be in SELECT or marked optional
+  - Check database schema (init.sql/SCHEMA.md) before defining schemas
+  - Test endpoints locally with real database before committing
+  - Use @st44/types schemas when available for consistency
+- **CRITICAL: Build-Time Validation** - Run type-check + build before every commit
+  - `npm run type-check` - Catches type mismatches
+  - `npm run build` - Verifies compilation
+  - `npm run test` - Catches runtime errors
+  - Fix ALL errors before committing (no "will fix later")
 - Use async/await for asynchronous operations
 - Implement proper error handling and logging
 - Use environment variables for configuration (database credentials, ports, etc.)

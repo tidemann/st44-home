@@ -708,8 +708,13 @@ cd apps/backend && npm run test
 - [ ] Verify edge cases handled
 
 **7.4 Code Quality Review**
+- [ ] **Verify camelCase naming** (NO snake_case in new code)
 - [ ] Run linters (npm run lint)
 - [ ] Run formatters (npm run format)
+- [ ] **Backend: Run type-check (npm run type-check)**
+- [ ] **Backend: Verify schema-query alignment** (SELECT matches schema)
+- [ ] **Backend: Check database schema** (confirm fields exist/nullable)
+- [ ] **Backend: Test endpoints locally** (no serialization errors)
 - [ ] Check for console errors/warnings
 - [ ] Review for accessibility issues
 - [ ] Check performance implications

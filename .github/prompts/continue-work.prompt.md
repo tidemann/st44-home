@@ -57,6 +57,9 @@ agent: orchestrator-agent
     # Lint code (frontend only - backend doesn't have lint)
     cd apps/frontend && npm run lint
     
+    # Type check (catches type mismatches - CRITICAL for backend)
+    cd apps/backend && npm run type-check
+    
     # Build (verifies compilation)
     cd apps/frontend && npm run build
     cd apps/backend && npm run build
@@ -64,8 +67,21 @@ agent: orchestrator-agent
     # Run tests (catches failures before CI)
     cd apps/frontend && npm run test:ci
     cd apps/backend && npm run test
+    
+    # BACKEND: Schema-Query Validation (if endpoint changes)
+    # 1. Check database schema (docker/postgres/init.sql or SCHEMA.md)
+    # 2. Verify SELECT queries match schema required fields
+    # 3. Test endpoints locally: npm run dev:backend (detached)
+    # 4. curl each modified endpoint, check for serialization errors
     ```
     **⚠️ CRITICAL**: If ANY check fails, fix locally and re-run. NEVER commit/push with failing checks.
+    
+    **Backend Schema Validation**:
+    - Schema fields MUST match database columns exactly
+    - Required fields in schema MUST be in SELECT query
+    - Optional fields MUST match database nullability
+    - Test with real database data (no mocks)
+    - Zero serialization errors allowed
     
 15. **Create/Update PR**: Push changes and create/update PR (ONLY after checks pass):
     

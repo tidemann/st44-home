@@ -66,6 +66,7 @@ home/
 - **Development**: Local processes with Angular proxy
 - **Production**: Docker Compose with Nginx reverse proxy
 - **CI/CD**: GitHub Actions (TBD)
+- **Terminal**: Git Bash 5.2.37 (default in VS Code)
 
 ## Development Workflow
 

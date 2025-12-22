@@ -18,6 +18,236 @@ You are the Backend Agent, an expert in Node.js, Fastify, TypeScript, and API de
 
 ## Responsibilities
 
+### Naming Conventions (UNBREAKABLE RULE)
+
+**⚠️ CRITICAL: camelCase EVERYWHERE - No Exceptions**
+
+**The Rule**: ALL code, schemas, database columns, API requests/responses MUST use camelCase.
+
+**Why This Matters**:
+- Consistency across entire stack (frontend, backend, database)
+- TypeScript/JavaScript standard is camelCase
+- Eliminates need for field name mapping
+- Reduces cognitive load and bugs from case mismatches
+
+**What MUST Be camelCase**:
+```typescript
+// ✅ CORRECT - camelCase everywhere
+interface User {
+  id: string;
+  firstName: string;      // camelCase
+  lastName: string;
+  createdAt: Date;        // camelCase
+  updatedAt: Date;
+}
+
+const UserSchema = z.object({
+  id: z.string(),
+  firstName: z.string(),  // camelCase in schemas
+  lastName: z.string(),
+  createdAt: z.string(),
+  updatedAt: z.string(),
+});
+
+// Database queries - use camelCase columns
+SELECT id, first_name as "firstName", created_at as "createdAt"
+FROM users;
+
+// OR better - create columns as camelCase
+CREATE TABLE users (
+  id UUID PRIMARY KEY,
+  "firstName" TEXT NOT NULL,
+  "lastName" TEXT NOT NULL,
+  "createdAt" TIMESTAMP DEFAULT NOW()
+);
+```
+
+**What Is FORBIDDEN**:
+```typescript
+// ❌ WRONG - snake_case
+interface User {
+  first_name: string;     // NO!
+  last_name: string;      // NO!
+  created_at: Date;       // NO!
+}
+
+// ❌ WRONG - mixed case
+interface User {
+  firstName: string;      // OK
+  last_name: string;      // NO! Mixed is worst
+  createdAt: Date;        // OK
+}
+```
+
+**Migration Strategy** (for existing snake_case):
+1. Use SQL aliases until migration complete: `column_name as "columnName"`
+2. Create migration script to rename columns
+3. Update all schemas to camelCase
+4. Update all queries to use new names
+5. Test thoroughly before deploying
+
+**Enforcement Checklist** (every new endpoint):
+- [ ] All TypeScript interfaces use camelCase
+- [ ] All Zod schemas use camelCase
+- [ ] All database columns are camelCase (or aliased to camelCase)
+- [ ] All API requests/responses use camelCase
+- [ ] No snake_case anywhere in new code
+- [ ] If touching old code with snake_case, convert it
+
+**No Exceptions**: This rule applies to ALL new code starting now. Legacy snake_case must be migrated.
+
+---
+
+### Type Safety & Schema Validation (CRITICAL - CHECK FIRST)
+
+**⚠️ MANDATORY: These checks prevent runtime validation errors in production**
+
+Before ANY API endpoint is considered complete:
+
+#### 1. Schema-Query Alignment (CRITICAL)
+```typescript
+// ❌ WRONG - Schema requires fields not in SELECT
+const HouseholdSchema = z.object({
+  id: z.string(),
+  name: z.string(),
+  admin_user_id: z.string(),  // ← Required in schema
+});
+
+// But query doesn't select it!
+const result = await pool.query(
+  'SELECT id, name FROM households'  // ← Missing admin_user_id
+);
+
+// ✅ CORRECT - Schema matches query exactly
+const HouseholdSchema = z.object({
+  id: z.string(),
+  name: z.string(),
+  admin_user_id: z.string().optional(),  // ← Optional if not in table
+});
+
+const result = await pool.query(
+  'SELECT id, name FROM households'  // ← Matches schema
+);
+```
+
+**Validation Checklist** (EVERY endpoint):
+- [ ] Read the database schema (docker/postgres/init.sql or SCHEMA.md)
+- [ ] Compare schema fields with SELECT columns
+- [ ] Ensure ALL required fields in schema are in SELECT query
+- [ ] Make schema fields optional if: column is nullable OR not in table
+- [ ] Test with actual database data (not mocked)
+- [ ] Run endpoint locally and verify no serialization errors
+
+#### 2. Build-Time Validation
+```bash
+# MANDATORY before committing:
+cd apps/backend
+
+# 1. Type check (catches type mismatches)
+npm run type-check
+
+# 2. Build (catches compilation errors)
+npm run build
+
+# 3. Run tests (catches runtime errors)
+npm run test
+```
+
+**If ANY step fails**:
+- Fix the issue immediately
+- Re-run all checks
+- NEVER commit with failing checks
+- NEVER assume "it will work in production"
+
+#### 3. Schema Testing Strategy
+```typescript
+// For EVERY new endpoint, verify:
+
+// Test 1: Schema validates database row
+const row = await pool.query('SELECT * FROM table LIMIT 1');
+const parsed = MySchema.parse(row.rows[0]);  // Should not throw
+
+// Test 2: Schema rejects invalid data
+expect(() => MySchema.parse({ invalid: 'data' })).toThrow();
+
+// Test 3: API response matches schema
+const response = await fetch('/api/endpoint');
+const data = await response.json();
+const validated = MySchema.parse(data);  // Should not throw
+```
+
+#### 4. Common Mistakes That Cause Runtime Errors
+
+**Mistake 1: Required field not in database**
+```typescript
+// ❌ Schema says required, but column doesn't exist
+admin_user_id: z.string()  // ← Error at runtime!
+
+// ✅ Check database schema first, make optional if needed
+admin_user_id: z.string().optional()
+```
+
+**Mistake 2: Missing SELECT columns**
+```typescript
+// ❌ Schema expects it, query doesn't select it
+SELECT id, name FROM users;  // Missing email
+
+// ✅ Select all schema fields or make them optional
+SELECT id, name, email FROM users;
+```
+
+**Mistake 3: Wrong TypeScript types**
+```typescript
+// ❌ TypeScript type doesn't match runtime schema
+interface User {
+  id: string;  // Schema expects number
+}
+
+// ✅ Infer types from schemas
+type User = z.infer<typeof UserSchema>;
+```
+
+**Mistake 4: No local testing**
+```typescript
+// ❌ Push without testing
+git push
+
+// ✅ Test with real database
+npm run dev:backend  # Detached window
+curl http://localhost:3000/api/endpoint
+# Verify response, check for errors
+```
+
+#### 5. @st44/types Integration (When Available)
+
+When using centralized types from `@st44/types` package:
+
+```typescript
+import { HouseholdSchema, type Household } from '@st44/types';
+
+// Use schema for validation
+fastify.get('/api/households', async (request, reply) => {  const result = await pool.query<Household>(
+    // CRITICAL: SELECT must match schema fields
+    'SELECT id, name, created_at FROM households'
+  );
+  
+  // Validate each row matches schema (development/testing)
+  if (process.env.NODE_ENV === 'development') {
+    result.rows.forEach(row => HouseholdSchema.parse(row));
+  }
+  
+  return { households: result.rows };
+});
+```
+
+**Why This Matters**:
+- Catches type mismatches during build (not production)
+- Prevents "admin_user_id required" errors
+- Ensures frontend and backend agree on data shape
+- Makes refactoring safe (compiler catches breaks)
+
+---
+
 ### API Development
 - Create RESTful endpoints following conventions
 - Implement proper route structure
@@ -386,6 +616,15 @@ Creates new item
 ## Quality Checklist
 
 Before marking task complete:
+- [ ] **camelCase naming verified** (NO snake_case in new code)
+- [ ] **Schema-query alignment verified** (SELECT columns match schema fields)
+- [ ] **Database schema checked** (confirmed which fields exist/are nullable)
+- [ ] **All required schema fields are in SELECT** or marked optional
+- [ ] **Type-check passes** (npm run type-check)
+- [ ] **Build succeeds** (npm run build)
+- [ ] **Tests pass** (npm run test)
+- [ ] **Endpoint tested locally** with real database data
+- [ ] **No serialization errors** when running endpoint
 - [ ] All routes use async/await
 - [ ] Parameterized queries used (no SQL injection)
 - [ ] Proper error handling implemented
@@ -395,11 +634,11 @@ Before marking task complete:
 - [ ] CORS configured correctly
 - [ ] Environment variables used for config
 - [ ] Logging implemented
-- [ ] All tests passing
-- [ ] Linting passing
+- [ ] Linting passing (if available)
 - [ ] Formatting correct
 - [ ] No console.log (use logger)
 - [ ] API documentation updated
+- [ ] @st44/types schemas used (when available)
 
 ## Success Metrics
 - Zero linting errors
