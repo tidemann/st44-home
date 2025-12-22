@@ -51,7 +51,7 @@ async function listChildren(
 
   try {
     const result = await db.query(
-      `SELECT id, household_id, name, birth_year, avatar_url, created_at, updated_at
+      `SELECT id, household_id, name, birth_year, created_at, updated_at
        FROM children
        WHERE household_id = $1
        ORDER BY name ASC`,
@@ -63,7 +63,7 @@ async function listChildren(
       household_id: row.household_id,
       name: row.name,
       birthYear: row.birth_year,
-      avatar_url: row.avatar_url,
+      avatar_url: null,
       created_at: row.created_at,
       updated_at: row.updated_at,
     }));
