@@ -1,6 +1,6 @@
 import { test, expect, Page } from '@playwright/test';
 import { loginAsParent, loginAsChild } from '../helpers/auth-helpers';
-import { resetDatabase, seedTestData } from '../helpers/database';
+import { resetDatabase, seedTestData } from '../helpers/seed-database';
 
 // Test data
 const TEST_PARENT = {
