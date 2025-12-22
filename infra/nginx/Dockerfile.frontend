@@ -13,23 +13,22 @@ COPY packages/types ./packages/types
 # Copy frontend package files
 COPY apps/frontend/package*.json ./apps/frontend/
 
-# Install dependencies at root (includes workspace linking)
-RUN npm ci
+# Delete package-lock.json to force fresh install with correct platform binaries
+RUN rm -f package-lock.json
+
+# Install dependencies fresh (without lock file constraints)
+RUN npm install
 
 # Build shared types package
 RUN npm run build --workspace=packages/types
 
-# Copy frontend source files (node_modules already installed from npm ci)
+# Copy frontend source files (node_modules already installed from npm install)
 COPY apps/frontend/src ./apps/frontend/src
 COPY apps/frontend/public ./apps/frontend/public
 COPY apps/frontend/angular.json ./apps/frontend/angular.json
 COPY apps/frontend/tsconfig*.json ./apps/frontend/
 COPY apps/frontend/.postcssrc.json ./apps/frontend/.postcssrc.json
 COPY apps/frontend/eslint.config.js ./apps/frontend/eslint.config.js
-
-# Rebuild native dependencies for the correct platform (Alpine Linux musl)
-# This ensures lightningcss and other native packages have correct binaries
-RUN npm rebuild --workspace=apps/frontend
 
 # Build frontend
 RUN npm run build --workspace=apps/frontend --omit=dev
