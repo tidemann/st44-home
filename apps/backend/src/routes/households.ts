@@ -279,7 +279,10 @@ async function getHouseholdDashboard(
 
   try {
     // Get household info
-    const householdResult = await db.query('SELECT id, name, created_at, updated_at FROM households WHERE id = $1', [id]);
+    const householdResult = await db.query(
+      'SELECT id, name, created_at, updated_at FROM households WHERE id = $1',
+      [id],
+    );
 
     if (householdResult.rows.length === 0) {
       return reply.status(404).send({
@@ -401,9 +404,13 @@ async function getHouseholdMembers(
     );
   } catch (error) {
     request.log.error(error, 'Failed to get household members');
-    return reply.status(500).send({      statusCode: 500,      error: 'Internal Server Error',
-      message: 'Failed to retrieve household members',
-    });
+    return reply
+      .status(500)
+      .send({
+        statusCode: 500,
+        error: 'Internal Server Error',
+        message: 'Failed to retrieve household members',
+      });
   }
 }
 
