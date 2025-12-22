@@ -404,13 +404,11 @@ async function getHouseholdMembers(
     );
   } catch (error) {
     request.log.error(error, 'Failed to get household members');
-    return reply
-      .status(500)
-      .send({
-        statusCode: 500,
-        error: 'Internal Server Error',
-        message: 'Failed to retrieve household members',
-      });
+    return reply.status(500).send({
+      statusCode: 500,
+      error: 'Internal Server Error',
+      message: 'Failed to retrieve household members',
+    });
   }
 }
 
