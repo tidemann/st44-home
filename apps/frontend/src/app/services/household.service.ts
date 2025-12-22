@@ -12,7 +12,7 @@ export interface Household {
 }
 
 export interface HouseholdMember {
-  user_id: number;
+  user_id: string;
   email: string;
   display_name: string | null;
   role: 'admin' | 'parent';

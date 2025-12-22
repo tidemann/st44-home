@@ -4,9 +4,10 @@
 - **ID**: task-104
 - **Feature**: feature-012 - Landing Pages After Login
 - **Epic**: epic-003 - User Onboarding
-- **Status**: pending
+- **Status**: in-progress
 - **Priority**: high
 - **Created**: 2025-12-22
+- **Started**: 2025-12-22
 - **Assigned Agent**: orchestrator
 - **Estimated Duration**: 3-5 hours
 

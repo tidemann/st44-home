@@ -159,6 +159,28 @@ This roadmap outlines planned features and epics for the project. It's maintaine
 - **Assigned**: testing-agent (with orchestrator coordination)
 - **Why Now**: We have enough test files to identify patterns, prevent future duplication
 
+**Feature-016: Shared TypeScript Schema & Type System** 🔧 **NEW** (High Priority)
+- **Priority**: High (Code Quality & Developer Experience)
+- **Status**: ready-for-implementation (Dec 22, 2025)
+- **Duration**: 5-7 days (35-50 hours estimated)
+- **File**: [feature-016-shared-type-system.md](features/feature-016-shared-type-system.md)
+- **Description**: Create shared TypeScript schemas using Zod for type-safe API integration between frontend and backend
+- **Problem**: Types duplicated in frontend services and backend schemas, leading to inconsistencies and maintenance burden
+- **Solution**: Single source of truth in `packages/types/` with Zod schemas → TypeScript types + OpenAPI schemas
+- **Achievement**: Compile-time type safety, runtime validation, auto-generated API docs, 30%+ code reduction
+- **Technologies**: Zod (schema validation), TypeScript type inference, OpenAPI schema generation
+- **Tasks**: 7 tasks created (task-104 through task-110)
+  - [ ] task-104: Create shared types package structure (4-6h)
+  - [ ] task-105: Define core domain schemas with Zod (6-8h)
+  - [ ] task-106: Implement OpenAPI schema generator (5-7h)
+  - [ ] task-107: Migrate backend to use shared types (6-8h)
+  - [ ] task-108: Migrate frontend services to use shared types (5-7h)
+  - [ ] task-109: Update build pipeline for type compilation (3-4h)
+  - [ ] task-110: Integration testing and documentation (4-5h)
+- **Dependencies**: Epic-002 complete ✅
+- **Impact**: Eliminates type duplication, prevents API mismatches, improves developer velocity
+- **Why Now**: We have 3 complete features (tasks, households, children) to migrate - perfect baseline
+
 ---
 
 ### 🏠 User Experience
@@ -576,6 +598,28 @@ Features are prioritized based on:
 4. Suggest new features for consideration
 
 ## Changelog
+
+### 2025-12-22 (Feature-016 Created! 🔧 + 7 Tasks)
+- 🔧 **Feature-016: Shared TypeScript Schema & Type System** - CREATED (HIGH PRIORITY)
+  - Create shared `packages/types/` with Zod schemas for frontend/backend
+  - Single source of truth eliminates type duplication (30%+ code reduction)
+  - Compile-time type safety + runtime validation + auto-generated OpenAPI docs
+  - Technologies: Zod, TypeScript type inference, OpenAPI generation
+  - 7 tasks created (task-104 through task-110) totaling 35-50 hours (5-7 days)
+  - **Problem**: Types duplicated in frontend services and backend schemas
+  - **Solution**: Shared Zod schemas → TypeScript types + validation + docs
+  - **Impact**: Prevents API mismatches, improves developer velocity, reduces maintenance
+  - **Why Now**: Epic-002 complete with 3 features to migrate (tasks, households, children)
+  - Added to "Now" section with high priority
+  - Status: ready-for-implementation (all tasks defined)
+- 📋 **Tasks Created**:
+  - task-104: Create shared types package structure (4-6h)
+  - task-105: Define core domain schemas with Zod (6-8h)
+  - task-106: Implement OpenAPI schema generator (5-7h)
+  - task-107: Migrate backend to use shared types (6-8h)
+  - task-108: Migrate frontend services to use shared types (5-7h)
+  - task-109: Update build pipeline for type compilation (3-4h)
+  - task-110: Integration testing and documentation (4-5h)
 
 ### 2025-12-19 (Task-089 Created! 🔥 + Task-088 Updated)
 - 🔥 **Task-089: Fix Test Watch Mode for Agent Workflows** - CREATED (CRITICAL)
