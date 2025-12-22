@@ -89,6 +89,7 @@ export class ChildrenManagementComponent implements OnInit {
   async addChild() {
     if (this.addForm.invalid) {
       this.addForm.markAllAsTouched();
+      this.errorMessage.set('Please fill in all required fields correctly.');
       return;
     }
 
