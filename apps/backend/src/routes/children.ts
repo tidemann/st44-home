@@ -91,7 +91,7 @@ async function createChild(request: FastifyRequest<CreateChildRequest>, reply: F
       `INSERT INTO children (household_id, name, birth_year)
        VALUES ($1, $2, $3)
        RETURNING id, household_id, name, birth_year, created_at`,
-      [householdId, validatedData.name.trim(), validatedData.birthYear],
+      [householdId, validatedData.name, validatedData.birthYear],
     );
 
     const child = result.rows[0];
@@ -130,7 +130,7 @@ async function updateChild(request: FastifyRequest<UpdateChildRequest>, reply: F
        SET name = $1, birth_year = $2, updated_at = NOW()
        WHERE id = $3 AND household_id = $4
        RETURNING id, household_id, name, birth_year, created_at, updated_at`,
-      [validatedData.name.trim(), validatedData.birthYear, id, householdId],
+      [validatedData.name, validatedData.birthYear, id, householdId],
     );
 
     if (result.rows.length === 0) {
