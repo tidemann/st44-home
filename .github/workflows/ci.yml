@@ -22,8 +22,9 @@ jobs:
       - name: Install dependencies (workspace root)
         run: npm ci
 
-      - name: Rebuild native dependencies
+      - name: Rebuild native dependencies (frontend)
         run: npm rebuild lightningcss
+        working-directory: apps/frontend
 
       - name: Lint
         run: npm run lint
