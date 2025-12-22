@@ -2,6 +2,10 @@
   "name": "st44-home",
   "version": "1.0.0",
   "private": true,
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
   "scripts": {
     "dev:backend": "pwsh -Command \"cd apps/backend; Start-Process pwsh -ArgumentList '-NoExit', '-Command', 'npm run dev'\"",
     "dev:frontend": "pwsh -Command \"cd apps/frontend; Start-Process pwsh -ArgumentList '-NoExit', '-Command', 'npm start'\"",
