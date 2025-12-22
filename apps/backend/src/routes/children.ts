@@ -469,7 +469,12 @@ export default async function childrenRoutes(server: FastifyInstance) {
       security: [{ bearerAuth: [] }],
       params: zodToOpenAPI(ChildParamsSchema),
       response: {
-        204: z.object({}).describe('Child deleted successfully'),
+        204: {
+          type: 'object',
+          properties: {},
+          required: [],
+          description: 'Child deleted successfully',
+        },
         ...CommonErrors.BadRequest,
         ...CommonErrors.Unauthorized,
         ...CommonErrors.Forbidden,
