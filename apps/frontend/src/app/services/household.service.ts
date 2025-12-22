@@ -4,9 +4,13 @@ import { ApiService } from './api.service';
 
 /**
  * Enriched Household response from list/get endpoints
- * Extends base Household schema with computed/aggregated fields
+ * Contains base Household fields plus computed/aggregated fields
  */
-export interface HouseholdListItem extends Omit<Household, 'admin_user_id'> {
+export interface HouseholdListItem {
+  id: string;
+  name: string;
+  created_at: string;
+  updated_at: string;
   role: 'parent' | 'child'; // User's role in this household
   memberCount?: number;
   childrenCount?: number;
