@@ -19,7 +19,10 @@ jobs:
         with:
           node-version: 24
 
-      - name: Install dependencies
+      - name: Install root dependencies (workspaces)
+        run: npm ci
+
+      - name: Install frontend dependencies
         run: npm ci
         working-directory: apps/frontend
 
@@ -66,7 +69,10 @@ jobs:
         with:
           node-version: 24
 
-      - name: Install dependencies
+      - name: Install root dependencies (workspaces)
+        run: npm ci
+
+      - name: Install backend dependencies
         run: npm ci
         working-directory: apps/backend
 
