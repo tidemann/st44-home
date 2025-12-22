@@ -27,6 +27,10 @@ COPY apps/frontend/tsconfig*.json ./apps/frontend/
 COPY apps/frontend/.postcssrc.json ./apps/frontend/.postcssrc.json
 COPY apps/frontend/eslint.config.js ./apps/frontend/eslint.config.js
 
+# Rebuild native dependencies for the correct platform (Alpine Linux musl)
+# This ensures lightningcss and other native packages have correct binaries
+RUN npm rebuild --workspace=apps/frontend
+
 # Build frontend
 RUN npm run build --workspace=apps/frontend --omit=dev
 
