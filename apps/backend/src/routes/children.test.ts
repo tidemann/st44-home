@@ -147,8 +147,9 @@ describe('Children API', () => {
 
       assert.strictEqual(response.statusCode, 200);
       const body = JSON.parse(response.body);
-      assert.ok(Array.isArray(body));
-      assert.ok(body.length >= 1);
+      assert.ok(body.children, 'Response should have children property');
+      assert.ok(Array.isArray(body.children), 'children should be an array');
+      assert.ok(body.children.length >= 1, 'Should have at least one child');
     });
 
     test('should reject by non-member', async () => {
