@@ -19,8 +19,13 @@ RUN npm ci
 # Build shared types package
 RUN npm run build --workspace=packages/types
 
-# Copy frontend source
-COPY apps/frontend ./apps/frontend
+# Copy frontend source files (node_modules already installed from npm ci)
+COPY apps/frontend/src ./apps/frontend/src
+COPY apps/frontend/public ./apps/frontend/public
+COPY apps/frontend/angular.json ./apps/frontend/angular.json
+COPY apps/frontend/tsconfig*.json ./apps/frontend/
+COPY apps/frontend/.postcssrc.json ./apps/frontend/.postcssrc.json
+COPY apps/frontend/eslint.config.js ./apps/frontend/eslint.config.js
 
 # Build frontend
 RUN npm run build --workspace=apps/frontend --omit=dev
