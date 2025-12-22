@@ -11,7 +11,7 @@ export const ChildSchema = z.object({
   id: z.string().uuid(),
   household_id: z.string().uuid(),
   name: z.string().min(1).max(255),
-  birthday: z.string().date().nullable(),
+  birthYear: z.number().int().min(1900).max(new Date().getFullYear()).nullable(),
   avatar_url: z.string().url().nullable(),
   created_at: z.string().datetime(),
   updated_at: z.string().datetime(),
@@ -32,7 +32,7 @@ export type Child = z.infer<typeof ChildSchema>;
  */
 export const CreateChildRequestSchema = z.object({
   name: z.string().min(1).max(255).trim(),
-  birthday: z.string().date().optional(),
+  birthYear: z.number().int().min(1900).max(new Date().getFullYear()).optional(),
   avatar_url: z.string().url().optional(),
 });
 
@@ -44,7 +44,7 @@ export type CreateChildRequest = z.infer<typeof CreateChildRequestSchema>;
  */
 export const UpdateChildRequestSchema = z.object({
   name: z.string().min(1).max(255).trim().optional(),
-  birthday: z.string().date().nullable().optional(),
+  birthYear: z.number().int().min(1900).max(new Date().getFullYear()).nullable().optional(),
   avatar_url: z.string().url().nullable().optional(),
 });
 
