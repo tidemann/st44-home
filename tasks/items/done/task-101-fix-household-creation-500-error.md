@@ -1,11 +1,12 @@
 # Task-101: Fix Household Creation 500 Error
 
-**Status**: `in-progress`  
+**Status**: `completed`  
 **Priority**: `🔴 URGENT - PRODUCTION BLOCKER`  
 **Assignee**: Backend Agent  
 **Epic**: None (Urgent Bug Fix)  
 **Created**: 2025-12-22
-**Started**: 2025-12-22  
+**Started**: 2025-12-22
+**Completed**: 2025-12-22 (PR #129)  
 **Related**: Task-100 (OpenAPI Schema Alignment)
 
 ---
