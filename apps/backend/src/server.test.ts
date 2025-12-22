@@ -228,8 +228,8 @@ describe('Authentication API', () => {
       const body = JSON.parse(response.body);
       assert.ok(body.accessToken);
       assert.ok(body.refreshToken);
-      assert.ok(body.user.id);
-      assert.strictEqual(body.user.email, testEmail);
+      assert.ok(body.userId);
+      assert.strictEqual(body.email, testEmail);
       assert.strictEqual(body.password, undefined); // Password should not be returned
     });
 
