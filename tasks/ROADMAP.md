@@ -161,7 +161,7 @@ This roadmap outlines planned features and epics for the project. It's maintaine
 
 **Feature-016: Shared TypeScript Schema & Type System** 🔧 **IN PROGRESS** (High Priority)
 - **Priority**: High (Code Quality & Developer Experience)
-- **Status**: in-progress (Dec 22, 2025) - 30% complete (2/7 tasks)
+- **Status**: in-progress (Dec 22, 2025) - 43% complete (3/7 tasks)
 - **Duration**: 5-7 days (35-50 hours estimated)
 - **File**: [feature-016-shared-type-system.md](features/feature-016-shared-type-system.md)
 - **Description**: Create shared TypeScript schemas using Zod for type-safe API integration between frontend and backend
@@ -172,8 +172,8 @@ This roadmap outlines planned features and epics for the project. It's maintaine
 - **Tasks**: 7 tasks created (task-104 through task-110)
   - [x] task-104: Create shared types package structure (4-6h) **COMPLETED** 2025-12-22
   - [x] task-105: Define core domain schemas with Zod (6-8h) **COMPLETED** 2025-12-22
-  - [~] task-106: Implement OpenAPI schema generator (5-7h) **IN PROGRESS** - Library research complete, needs rewrite
-  - [ ] task-107: Migrate backend to use shared types (6-8h)
+  - [x] task-106: Implement OpenAPI schema generator (5-7h) **COMPLETED** 2025-12-22 [PR #135]
+  - [ ] task-107: Migrate backend to use shared types (6-8h) **NEXT**
   - [ ] task-108: Migrate frontend services to use shared types (5-7h)
   - [ ] task-109: Update build pipeline for type compilation (3-4h)
   - [ ] task-110: Integration testing and documentation (4-5h)
@@ -183,8 +183,9 @@ This roadmap outlines planned features and epics for the project. It's maintaine
 - **Progress Notes**: 
   - ✅ Package structure created with proper exports and build configuration
   - ✅ All domain schemas complete (User, Household, Child, Task, Assignment) with 50 passing tests
-  - ⚠️ Task-106: Discovered zod-to-json-schema incompatible with Zod 4.x, switched to @asteasolutions/zod-to-openapi
-  - 🔄 Task-106: Initial implementation needs rewrite with new library (research complete, library verified working)
+  - ✅ Task-106: OpenAPI generator complete with @asteasolutions/zod-to-openapi (34 tests passing)
+  - ✅ Full test suite: 84/84 tests pass (Dec 22, 2025)
+  - 🔄 Ready for backend migration (task-107)
 
 ---
 
