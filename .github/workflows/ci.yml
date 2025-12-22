@@ -19,12 +19,8 @@ jobs:
         with:
           node-version: 24
 
-      - name: Install root dependencies (workspaces)
+      - name: Install dependencies (workspace root)
         run: npm ci
-
-      - name: Install frontend dependencies
-        run: npm ci
-        working-directory: apps/frontend
 
       - name: Lint
         run: npm run lint
@@ -69,12 +65,8 @@ jobs:
         with:
           node-version: 24
 
-      - name: Install root dependencies (workspaces)
+      - name: Install dependencies (workspace root)
         run: npm ci
-
-      - name: Install backend dependencies
-        run: npm ci
-        working-directory: apps/backend
 
       - name: Prettier Format Check
         run: npm run format:check
