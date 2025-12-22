@@ -1,10 +1,11 @@
 # Task-103: Fix Household Members 500 Error and Improve Error UX
 
-**Status**: pending  
+**Status**: completed  
 **Priority**: critical  
 **Epic**: epic-002 (Task Management Core)  
 **Feature**: feature-006 (Testing Infrastructure)  
 **Created**: 2025-12-22  
+**Completed**: 2025-12-22
 **Time Estimate**: 30 minutes  
 
 ## Problem
