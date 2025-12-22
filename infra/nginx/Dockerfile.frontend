@@ -4,13 +4,26 @@
 FROM node:24-alpine AS build
 WORKDIR /app
 
-# Install dependencies
-COPY apps/frontend/package*.json ./
+# Copy workspace root package files
+COPY package*.json ./
+
+# Copy shared types package
+COPY packages/types ./packages/types
+
+# Copy frontend package files
+COPY apps/frontend/package*.json ./apps/frontend/
+
+# Install dependencies at root (includes workspace linking)
 RUN npm ci
 
-# Copy source and build
-COPY apps/frontend ./
-RUN npm run build --omit=dev
+# Build shared types package
+RUN npm run build --workspace=packages/types
+
+# Copy frontend source
+COPY apps/frontend ./apps/frontend
+
+# Build frontend
+RUN npm run build --workspace=apps/frontend --omit=dev
 
 # -----------------------------------------------------------
 #  Runtime Stage (Nginx)
@@ -22,7 +35,7 @@ WORKDIR /usr/share/nginx/html
 RUN rm -rf ./*
 
 # Copy built Angular app
-COPY --from=build /app/dist/home/browser ./
+COPY --from=build /app/apps/frontend/dist/home/browser ./
 
 # Provide custom nginx config
 COPY infra/nginx/nginx.conf /etc/nginx/conf.d/default.conf
