@@ -115,7 +115,7 @@ export class TaskEditComponent {
 
     // Populate repeat_days FormArray
     const repeatDaysArray = this.taskForm.get('repeat_days') as FormArray;
-    repeatDays.forEach((day: string) => repeatDaysArray.push(this.fb.control(day)));
+    repeatDays.forEach((day: number) => repeatDaysArray.push(this.fb.control(day)));
 
     // Populate assigned_children FormArray
     const assignedChildrenArray = this.taskForm.get('assigned_children') as FormArray;
