@@ -1,0 +1,47 @@
+{
+  "name": "@st44/types",
+  "version": "1.0.0",
+  "description": "Shared TypeScript types and schemas for st44-home project",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./schemas": {
+      "types": "./dist/schemas/index.d.ts",
+      "default": "./dist/schemas/index.js"
+    },
+    "./types": {
+      "types": "./dist/types/index.d.ts",
+      "default": "./dist/types/index.js"
+    }
+  },
+  "scripts": {
+    "clean": "node -e \"require('fs').rmSync('dist', {recursive: true, force: true})\"",
+    "build": "npm run clean && tsc",
+    "watch": "tsc --watch",
+    "type-check": "tsc --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:ci": "vitest run"
+  },
+  "keywords": [
+    "typescript",
+    "types",
+    "schemas",
+    "shared"
+  ],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@vitest/ui": "^4.0.16",
+    "typescript": "^5.7.2",
+    "vitest": "^4.0.16"
+  },
+  "dependencies": {
+    "zod": "^4.2.1"
+  }
+}
