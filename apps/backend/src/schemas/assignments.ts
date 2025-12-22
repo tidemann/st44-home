@@ -15,8 +15,8 @@ const taskAssignmentSchemaBase = {
   type: 'object',
   properties: {
     id: uuidSchema,
-    task_id: { type: 'number' },
-    child_id: { type: 'number' },
+    task_id: uuidSchema,
+    child_id: uuidSchema,
     title: { type: 'string' },
     description: { type: 'string', nullable: true },
     rule_type: {
@@ -42,7 +42,7 @@ const getChildTasksSchemaBase = {
   params: {
     type: 'object',
     properties: {
-      childId: { type: 'number', description: 'Child ID' },
+      childId: { ...uuidSchema, description: 'Child ID' },
     },
     required: ['childId'],
   },
@@ -131,7 +131,7 @@ const getHouseholdAssignmentsSchemaBase = {
             type: 'object',
             properties: {
               id: uuidSchema,
-              task_id: { type: 'number' },
+              task_id: uuidSchema,
               title: { type: 'string' },
               description: { type: 'string', nullable: true },
               child_id: { ...uuidSchema, nullable: true },
@@ -177,8 +177,8 @@ const completeAssignmentSchemaBase = {
         id: uuidSchema,
         status: { type: 'string', enum: ['completed'] },
         completed_at: timestampSchema,
-        child_id: { type: 'number' },
-        task_id: { type: 'number' },
+        child_id: uuidSchema,
+        task_id: uuidSchema,
       },
       required: ['id', 'status', 'completed_at', 'task_id'],
     },
@@ -206,7 +206,7 @@ const reassignTaskSchemaBase = {
   body: {
     type: 'object',
     properties: {
-      childId: { type: 'number', description: 'New child ID to assign the task to' },
+      childId: { ...uuidSchema, description: 'New child ID to assign the task to' },
     },
     required: ['childId'],
   },
@@ -216,9 +216,9 @@ const reassignTaskSchemaBase = {
       type: 'object',
       properties: {
         id: uuidSchema,
-        child_id: { type: 'number' },
+        child_id: uuidSchema,
         child_name: { type: 'string' },
-        task_id: { type: 'number' },
+        task_id: uuidSchema,
       },
       required: ['id', 'child_id', 'task_id'],
     },
