@@ -16,9 +16,9 @@ const childSchema = {
     id: uuidSchema,
     household_id: uuidSchema,
     name: { type: 'string', minLength: 1, maxLength: 255 },
-    age: { type: 'number', minimum: 0, maximum: 150, nullable: true },
-    avatar_url: { type: 'string', nullable: true },
+    birth_year: { type: 'number', minimum: 1900, maximum: 2100, nullable: true },
     created_at: timestampSchema,
+    updated_at: { ...timestampSchema, nullable: true },
   },
   required: ['id', 'household_id', 'name'],
 } as const;
@@ -65,8 +65,7 @@ const createChildSchemaBase = {
     type: 'object',
     properties: {
       name: { type: 'string', minLength: 1, maxLength: 255 },
-      age: { type: 'number', minimum: 0, maximum: 150, nullable: true },
-      avatar_url: { type: 'string', nullable: true },
+      birth_year: { type: 'number', minimum: 1900, maximum: 2100, nullable: true },
     },
     required: ['name'],
   },
@@ -99,8 +98,7 @@ const updateChildSchemaBase = {
     type: 'object',
     properties: {
       name: { type: 'string', minLength: 1, maxLength: 255 },
-      age: { type: 'number', minimum: 0, maximum: 150, nullable: true },
-      avatar_url: { type: 'string', nullable: true },
+      birth_year: { type: 'number', minimum: 1900, maximum: 2100, nullable: true },
     },
   },
   response: {

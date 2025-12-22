@@ -19,7 +19,7 @@ interface HouseholdParams {
 }
 
 interface ChildParams extends HouseholdParams {
-  id: string;
+  childId: string;
 }
 
 interface CreateChildRequest {
@@ -54,7 +54,7 @@ async function listChildren(
 
   try {
     const result = await db.query(
-      `SELECT id, name, birth_year, created_at, updated_at
+      `SELECT id, household_id, name, birth_year, created_at, updated_at
        FROM children
        WHERE household_id = $1
        ORDER BY name ASC`,
@@ -63,13 +63,14 @@ async function listChildren(
 
     const children = result.rows.map((row) => ({
       id: row.id,
+      household_id: row.household_id,
       name: row.name,
-      birthYear: row.birth_year,
-      createdAt: row.created_at,
-      updatedAt: row.updated_at,
+      birth_year: row.birth_year,
+      created_at: row.created_at,
+      updated_at: row.updated_at,
     }));
 
-    return reply.send({ children });
+    return reply.send(children);
   } catch (error) {
     request.log.error(error, 'Failed to list children');
     return reply.status(500).send({
@@ -122,7 +123,7 @@ async function createChild(request: FastifyRequest<CreateChildRequest>, reply: F
     const result = await db.query(
       `INSERT INTO children (household_id, name, birth_year)
        VALUES ($1, $2, $3)
-       RETURNING id, name, birth_year, created_at`,
+       RETURNING id, household_id, name, birth_year, created_at`,
       [householdId, name.trim(), birthYear],
     );
 
@@ -130,9 +131,10 @@ async function createChild(request: FastifyRequest<CreateChildRequest>, reply: F
 
     return reply.status(201).send({
       id: child.id,
+      household_id: child.household_id,
       name: child.name,
-      birthYear: child.birth_year,
-      createdAt: child.created_at,
+      birth_year: child.birth_year,
+      created_at: child.created_at,
     });
   } catch (error) {
     request.log.error(error, 'Failed to create child');
@@ -148,7 +150,7 @@ async function createChild(request: FastifyRequest<CreateChildRequest>, reply: F
  * Requires parent or admin role
  */
 async function updateChild(request: FastifyRequest<UpdateChildRequest>, reply: FastifyReply) {
-  const { householdId, id } = request.params;
+  const { householdId, childId: id } = request.params;
   const { name, birthYear } = request.body;
 
   // Validate name
@@ -196,7 +198,7 @@ async function updateChild(request: FastifyRequest<UpdateChildRequest>, reply: F
       `UPDATE children
        SET name = $1, birth_year = $2, updated_at = NOW()
        WHERE id = $3 AND household_id = $4
-       RETURNING id, name, birth_year, updated_at`,
+       RETURNING id, household_id, name, birth_year, created_at, updated_at`,
       [name.trim(), birthYear, id, householdId],
     );
 
@@ -211,9 +213,11 @@ async function updateChild(request: FastifyRequest<UpdateChildRequest>, reply: F
 
     return reply.send({
       id: child.id,
+      household_id: child.household_id,
       name: child.name,
-      birthYear: child.birth_year,
-      updatedAt: child.updated_at,
+      birth_year: child.birth_year,
+      created_at: child.created_at,
+      updated_at: child.updated_at,
     });
   } catch (error) {
     request.log.error(error, 'Failed to update child');
@@ -229,7 +233,7 @@ async function updateChild(request: FastifyRequest<UpdateChildRequest>, reply: F
  * Requires admin role
  */
 async function deleteChild(request: FastifyRequest<DeleteChildRequest>, reply: FastifyReply) {
-  const { householdId, id } = request.params;
+  const { householdId, childId: id } = request.params;
 
   // Validate child ID format (UUID)
   const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
@@ -434,14 +438,14 @@ export default async function childrenRoutes(server: FastifyInstance) {
   });
 
   // Update child (parent/admin access)
-  server.put('/api/households/:householdId/children/:id', {
+  server.put('/api/households/:householdId/children/:childId', {
     schema: updateChildSchema,
     preHandler: [authenticateUser, validateHouseholdMembership, requireHouseholdParent],
     handler: updateChild,
   });
 
   // Delete child (admin only)
-  server.delete('/api/households/:householdId/children/:id', {
+  server.delete('/api/households/:householdId/children/:childId', {
     schema: deleteChildSchema,
     preHandler: [authenticateUser, validateHouseholdMembership, requireHouseholdAdmin],
     handler: deleteChild,

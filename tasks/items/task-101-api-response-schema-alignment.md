@@ -4,11 +4,12 @@
 - **ID**: task-101
 - **Feature**: Technical Infrastructure
 - **Epic**: epic-006 - Testing & Quality Assurance
-- **Status**: pending
-- **Priority**: medium (technical debt from task-100)
+- **Status**: in-progress
+- **Priority**: high (production deployment fixes)
 - **Created**: 2025-12-21
-- **Assigned Agent**: backend-agent, orchestrator-agent
+- **Assigned Agent**: orchestrator-agent
 - **Estimated Duration**: 3-5 days (24-40 hours)
+- **Actual Duration**: ~3 hours so far
 
 ## Description
 Fix 68 backend test failures caused by OpenAPI response schema mismatches identified in Task-100. Backend API responses don't match OpenAPI schema expectations due to inconsistent response structures (mixed field names, nested vs flat objects, extra fields like `message`). This task aligns actual responses with documented schemas OR updates schemas to match responses, ensuring consistency.
@@ -209,6 +210,53 @@ After fixes, update `.github/workflows/ci.yml` to remove stripResponseValidation
 - [2025-12-21 04:35] Task created as follow-up to Task-100 Phase 1
 - [2025-12-21 04:35] Status: pending (awaiting orchestrator assignment)
 - [2025-12-21 04:35] Priority: Medium (technical debt, not blocking new features)
+- [2025-12-22 10:00] **URGENT**: User reported production deployment broken
+- [2025-12-22 10:15] Fixed health endpoint (added database field) - deployed ✅
+
+### Initial State (Task-100 completion)
+- **Total**: 273 tests
+- **Passing**: 204 (74.7%)
+- **Failing**: 68 (25.0%)
+- **Skipped**: 1
+
+### After Health + Login + Household Fixes
+- **Total**: 273 tests
+- **Passing**: 218 (79.9%)
+- **Failing**: 54 (19.8%)
+- **Fixed**: 14 tests (health, auth, households)
+
+### After Assignment Schema UUID Fixes (Current)
+- **Total**: 273 tests
+- **Passing**: 239 (87.5%)
+- **Failing**: 33 (12.1%)
+- **Fixed**: 35 tests total (51% of original failures)
+
+### Remaining Failures (33 tests)
+**Categories:**
+1. **Validation tests** (~15-20): Testing error messages/formats
+   - householdId format validation
+   - date format validation
+   - range validations
+   - These tests expect specific error messages that changed with schema validation
+2. **Children endpoints** (~4-6): Response format and field name mismatches
+   - Wrapped object vs array
+   - birthYear vs age
+   - camelCase vs snake_case
+3. **Tasks endpoints** (~6-8): Update operation failures
+   - PUT /api/households/:householdId/tasks/:taskId
+4. **Household test** (1): Expects wrapped response `{households: [...]}`
+
+### Target
+- **Goal**: 270+/273 passing (99%+)
+- **Remaining**: 33 tests to fix
+- **Estimate**: 2-3 more hours structure) - deployed ✅
+- [2025-12-22 10:45] Fixed household routes (parameter names + response format) - deployed ✅
+- [2025-12-22 11:00] User asked: "are all endpoints fixed?" - Reality check
+- [2025-12-22 11:05] Tests: 218/273 passing (54 failures remain - only 21% fixed)
+- [2025-12-22 11:10] User: "yes" - Continue systematic fix
+- [2025-12-22 11:30] Fixed assignment schemas (number → UUID types) - deployed ✅
+- [2025-12-22 11:35] Tests: 239/273 passing (33 failures remain - 51% fixed!)
+- [2025-12-22 11:40] **Progress**: 68 → 54 → 33 failures (35 tests fixed in 90 mins)
 
 ## Testing Results
 [To be filled during testing phase - target 270+/273 passing]
