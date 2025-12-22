@@ -52,13 +52,13 @@ Create a shared TypeScript schema and type system that ensures consistency betwe
 ## Tasks
 **✅ Feature broken down into 7 implementation tasks (35-50 hours total)**
 
-- [ ] **task-104**: Create shared types package structure and build setup (4-6 hours)
-- [ ] **task-105**: Define core domain schemas with Zod (User, Household, Child, Task, Assignment) (6-8 hours)
-- [ ] **task-106**: Implement OpenAPI schema generator (5-7 hours)
-- [ ] **task-107**: Migrate backend to use shared types (3 endpoints: tasks, households, children) (6-8 hours)
-- [ ] **task-108**: Migrate frontend services to use shared types (TaskService, HouseholdService, ChildrenService) (5-7 hours)
-- [ ] **task-109**: Update build pipeline for type compilation order (3-4 hours)
-- [ ] **task-110**: Integration testing and developer documentation (4-5 hours)
+- [ ] [task-104](../items/task-104-create-shared-types-package.md): Create shared types package structure and build setup (4-6 hours)
+- [ ] [task-105](../items/task-105-define-core-domain-schemas.md): Define core domain schemas with Zod (User, Household, Child, Task, Assignment) (6-8 hours)
+- [ ] [task-106](../items/task-106-openapi-schema-generator.md): Implement OpenAPI schema generator (5-7 hours)
+- [ ] [task-107](../items/task-107-migrate-backend-shared-types.md): Migrate backend to use shared types (3 endpoints: tasks, households, children) (6-8 hours)
+- [ ] [task-108](../items/task-108-migrate-frontend-shared-types.md): Migrate frontend services to use shared types (TaskService, HouseholdService, ChildrenService) (5-7 hours)
+- [ ] [task-109](../items/task-109-update-build-pipeline.md): Update build pipeline for type compilation order (3-4 hours)
+- [ ] [task-110](../items/task-110-integration-testing-docs.md): Integration testing and developer documentation (4-5 hours)
 
 ## Dependencies
 - Epic-001 (Multi-Tenant Foundation) - ✅ Complete

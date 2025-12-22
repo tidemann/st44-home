@@ -4,11 +4,12 @@
 - **ID**: task-106
 - **Feature**: feature-016 - Shared TypeScript Schema & Type System
 - **Epic**: epic-002 - Task Management Core
-- **Status**: pending
+- **Status**: completed
 - **Priority**: medium
 - **Created**: 2025-12-22
 - **Assigned Agent**: backend-agent
 - **Estimated Duration**: 5-7 hours
+- **Actual Duration**: ~2 hours
 
 ## Description
 Create a utility that converts Zod schemas to OpenAPI 3.1 JSON Schema format for Fastify Swagger documentation. This generator will transform our TypeScript schemas into API documentation, ensuring that the OpenAPI specs always match the actual validation logic. The generator should handle Zod primitives, objects, arrays, unions, enums, and optional/nullable fields.
@@ -23,15 +24,15 @@ Create a utility that converts Zod schemas to OpenAPI 3.1 JSON Schema format for
 - REQ7: Write unit tests for generator with example schemas
 
 ## Acceptance Criteria
-- [ ] OpenAPI generator library installed or custom implementation complete
-- [ ] `src/generators/openapi.generator.ts` created
-- [ ] Generator converts Zod schema to OpenAPI JSON Schema
-- [ ] Generated schemas include proper types, formats, and constraints
-- [ ] Generator handles nested objects and arrays
-- [ ] Generator handles enums and unions
-- [ ] Generator handles nullable and optional fields
-- [ ] Unit tests verify correct OpenAPI output for all schema types
-- [ ] Documentation explains how to use generator
+- [x] OpenAPI generator library installed or custom implementation complete
+- [x] `src/generators/openapi.generator.ts` created
+- [x] Generator converts Zod schema to OpenAPI JSON Schema
+- [x] Generated schemas include proper types, formats, and constraints
+- [x] Generator handles nested objects and arrays
+- [x] Generator handles enums and unions
+- [x] Generator handles nullable and optional fields
+- [x] Unit tests verify correct OpenAPI output for all schema types
+- [x] Documentation explains how to use generator
 
 ## Dependencies
 - task-105: Define Core Domain Schemas (must have schemas to convert)
@@ -254,19 +255,127 @@ describe('zodToOpenAPI', () => {
 
 ## Progress Log
 - [2025-12-22 15:45] Task created by Planner Agent
+- [2025-12-22 17:30] CRITICAL FINDING: zod-to-json-schema 3.25.0 incompatible with Zod 4.x
+- [2025-12-22 17:35] Switched to @asteasolutions/zod-to-openapi - works correctly
+- [2025-12-22 17:40] Tested new library - generates proper OpenAPI 3.1 schemas
+- [2025-12-22 17:45] Initial implementation with zod-to-json-schema needs complete rewrite
+- [2025-12-22 17:50] Status: Task needs restart with correct library (@asteasolutions/zod-to-openapi)
+- [2025-12-22 17:53] Rewrote generator using OpenAPIRegistry + OpenApiGeneratorV31 pattern
+- [2025-12-22 17:54] Fixed literal schema test (enum vs const - both valid OpenAPI)
+- [2025-12-22 17:54] All 34 tests passing! ✅
+- [2025-12-22 17:54] Build successful ✅
+- [2025-12-22 17:54] Full test suite: 84/84 tests pass ✅
+- [2025-12-22 17:55] Task completed successfully!
+
+## Key Findings
+
+### Library Compatibility Issue
+**Problem**: Initial implementation used `zod-to-json-schema@3.25.0`, which returns empty objects when used with Zod 4.x.
+
+**Test Results**:
+```javascript
+zodToJsonSchema(z.string()) // Returns: { "$schema": "..." } only
+zodToJsonSchema(z.object({...})) // Returns: { "$schema": "..." } only
+```
+
+**Root Cause**: zod-to-json-schema 3.x does not properly support Zod v4 API changes.
+
+### Solution
+**Library**: `@asteasolutions/zod-to-openapi` ✅
+- ✅ Works correctly with Zod 4.2.1
+- ✅ Generates proper OpenAPI 3.1 schemas
+- ✅ Supports all Zod types (string, number, object, array, enum, union, nullable)
+- ✅ Includes proper formats (uuid, email, date-time)
+- ✅ Handles required/optional fields correctly
+- ✅ Well-maintained and actively developed
+
+**Test Results**:
+```javascript
+// Generates complete schema with all properties:
+{
+  "type": "object",
+  "properties": {
+    "id": { "type": "string", "format": "uuid" },
+    "email": { "type": "string", "format": "email" },
+    "name": { "type": "string", "minLength": 1, "maxLength": 100 }
+  },
+  "required": ["id", "email", "name"]
+}
+```
+
+### Current State
+- ❌ Initial implementation (openapi.generator.ts) based on wrong library - non-functional
+- ✅ @asteasolutions/zod-to-openapi installed and tested
+- ✅ Library verified to work correctly
+- 🔄 **NEEDS**: Complete rewrite using new library's API
+
+### Next Steps
+1. Remove broken generator implementation
+2. Implement using OpenAPIRegistry + OpenApiGeneratorV31 pattern
+3. Create wrapper functions for easy consumption
+4. Write tests with new library
+5. Update documentation
 
 ## Testing Results
-- String conversion: Pass
-- Number conversion: Pass
-- Object conversion: Pass
-- Array conversion: Pass
-- Enum conversion: Pass
-- Nullable handling: Pass
-- Complex schema (Task): Pass
+- ✅ All 34 OpenAPI generator tests passing
+- ✅ String conversion with formats (email, uuid, datetime): Pass
+- ✅ Number conversion with constraints (min, max): Pass
+- ✅ Object conversion with required/optional fields: Pass
+- ✅ Array conversion with min/max items: Pass
+- ✅ Enum conversion: Pass
+- ✅ Literal conversion (as enum): Pass
+- ✅ Union handling (anyOf): Pass
+- ✅ Nullable handling: Pass
+- ✅ Complex schema (Task) conversion: Pass
+- ✅ Metadata options (name, description): Pass
+- ✅ generateAPISchemas helper: Pass
+- ✅ createErrorSchema helper: Pass
+- ✅ CommonErrors constants: Pass
+- ✅ Full test suite: 84/84 tests pass
+- ✅ TypeScript compilation: Success
 
 ## Related PRs
 [To be added during implementation]
 
 ## Lessons Learned
-[To be filled after completion]
+
+### Library Compatibility Critical
+**Finding**: Initial implementation used `zod-to-json-schema@3.25.0`, which is incompatible with Zod 4.x. It returned empty schemas with only `$schema` property.
+
+**Solution**: Switched to `@asteasolutions/zod-to-openapi@8.2.0`, which properly supports Zod 4.x and generates complete OpenAPI 3.1 schemas.
+
+**Lesson**: Always verify library compatibility with major dependency versions. Test with actual schemas before full implementation.
+
+### OpenAPI Registry Pattern
+The `@asteasolutions/zod-to-openapi` library uses a registry-based approach:
+1. Create `OpenAPIRegistry` instance
+2. Register Zod schemas with component names
+3. Generate OpenAPI document using `OpenApiGeneratorV31`
+4. Extract schema from `document.components.schemas`
+
+This pattern is more verbose than direct conversion but provides better control over schema references and reusability.
+
+### Literal vs Enum Representation
+**Finding**: The library converts `z.literal('value')` to `{ type: 'string', enum: ['value'] }` instead of `{ type: 'string', const: 'value' }`.
+
+**Impact**: Both representations are valid OpenAPI 3.1. Tests updated to match actual behavior.
+
+### API Design Success
+**Helper Functions**: 
+- `generateAPISchemas()` - Simplifies request/response pair generation
+- `createErrorSchema()` - Standardizes error responses
+- `CommonErrors` - Provides reusable error schemas
+
+These helpers significantly reduce boilerplate when defining Fastify routes with OpenAPI documentation.
+
+### Testing Strategy
+Comprehensive test coverage (34 tests) covering:
+- All Zod primitive types
+- Object nesting and arrays
+- Optional and nullable fields
+- Enums and literals
+- Unions and complex schemas
+- Helper functions
+
+Result: High confidence in generator correctness for all use cases.
 

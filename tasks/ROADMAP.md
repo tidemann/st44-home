@@ -159,9 +159,9 @@ This roadmap outlines planned features and epics for the project. It's maintaine
 - **Assigned**: testing-agent (with orchestrator coordination)
 - **Why Now**: We have enough test files to identify patterns, prevent future duplication
 
-**Feature-016: Shared TypeScript Schema & Type System** 🔧 **NEW** (High Priority)
+**Feature-016: Shared TypeScript Schema & Type System** 🔧 **IN PROGRESS** (High Priority)
 - **Priority**: High (Code Quality & Developer Experience)
-- **Status**: ready-for-implementation (Dec 22, 2025)
+- **Status**: in-progress (Dec 22, 2025) - 30% complete (2/7 tasks)
 - **Duration**: 5-7 days (35-50 hours estimated)
 - **File**: [feature-016-shared-type-system.md](features/feature-016-shared-type-system.md)
 - **Description**: Create shared TypeScript schemas using Zod for type-safe API integration between frontend and backend
@@ -170,9 +170,9 @@ This roadmap outlines planned features and epics for the project. It's maintaine
 - **Achievement**: Compile-time type safety, runtime validation, auto-generated API docs, 30%+ code reduction
 - **Technologies**: Zod (schema validation), TypeScript type inference, OpenAPI schema generation
 - **Tasks**: 7 tasks created (task-104 through task-110)
-  - [ ] task-104: Create shared types package structure (4-6h)
-  - [ ] task-105: Define core domain schemas with Zod (6-8h)
-  - [ ] task-106: Implement OpenAPI schema generator (5-7h)
+  - [x] task-104: Create shared types package structure (4-6h) **COMPLETED** 2025-12-22
+  - [x] task-105: Define core domain schemas with Zod (6-8h) **COMPLETED** 2025-12-22
+  - [~] task-106: Implement OpenAPI schema generator (5-7h) **IN PROGRESS** - Library research complete, needs rewrite
   - [ ] task-107: Migrate backend to use shared types (6-8h)
   - [ ] task-108: Migrate frontend services to use shared types (5-7h)
   - [ ] task-109: Update build pipeline for type compilation (3-4h)
@@ -180,6 +180,11 @@ This roadmap outlines planned features and epics for the project. It's maintaine
 - **Dependencies**: Epic-002 complete ✅
 - **Impact**: Eliminates type duplication, prevents API mismatches, improves developer velocity
 - **Why Now**: We have 3 complete features (tasks, households, children) to migrate - perfect baseline
+- **Progress Notes**: 
+  - ✅ Package structure created with proper exports and build configuration
+  - ✅ All domain schemas complete (User, Household, Child, Task, Assignment) with 50 passing tests
+  - ⚠️ Task-106: Discovered zod-to-json-schema incompatible with Zod 4.x, switched to @asteasolutions/zod-to-openapi
+  - 🔄 Task-106: Initial implementation needs rewrite with new library (research complete, library verified working)
 
 ---
 
