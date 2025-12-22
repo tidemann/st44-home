@@ -23,12 +23,25 @@
     "clean": "node -e \"require('fs').rmSync('dist', {recursive: true, force: true})\"",
     "build": "npm run clean && tsc",
     "watch": "tsc --watch",
-    "type-check": "tsc --noEmit"
+    "type-check": "tsc --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:ci": "vitest run"
   },
-  "keywords": ["typescript", "types", "schemas", "shared"],
+  "keywords": [
+    "typescript",
+    "types",
+    "schemas",
+    "shared"
+  ],
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "typescript": "^5.7.2"
+    "@vitest/ui": "^4.0.16",
+    "typescript": "^5.7.2",
+    "vitest": "^4.0.16"
+  },
+  "dependencies": {
+    "zod": "^4.2.1"
   }
 }

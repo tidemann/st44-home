@@ -1,11 +1,23 @@
 /**
- * Schemas module - Placeholder for future Zod schemas
+ * Schemas module - Zod validation schemas
  * 
- * This module will contain runtime validation schemas using Zod.
- * Schemas will be defined in task-105.
+ * This module contains runtime validation schemas using Zod for all domain models.
+ * Each schema provides both runtime validation and TypeScript type inference.
  * 
  * @module @st44/types/schemas
  */
 
-// Placeholder export to make TypeScript compilation work
-export const SCHEMAS_PLACEHOLDER = 'Schemas will be added in task-105';
+// User schemas
+export * from './user.schema.js';
+
+// Household schemas
+export * from './household.schema.js';
+
+// Child schemas
+export * from './child.schema.js';
+
+// Task schemas
+export * from './task.schema.js';
+
+// Assignment schemas
+export * from './assignment.schema.js';
