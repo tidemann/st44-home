@@ -4,12 +4,20 @@
  * Converts Zod schemas to OpenAPI 3.1 JSON Schema format for API documentation.
  * This ensures that API documentation always matches the actual validation logic.
  * 
+ * Uses @asteasolutions/zod-to-openapi library which properly supports Zod 4.x
+ * 
  * @module @st44/types/generators/openapi
  */
 
-import { zodToJsonSchema } from 'zod-to-json-schema';
-import type { z } from 'zod';
-import type { JsonSchema7Type } from 'zod-to-json-schema';
+import {
+  extendZodWithOpenApi,
+  OpenAPIRegistry,
+  OpenApiGeneratorV31,
+} from '@asteasolutions/zod-to-openapi';
+import { z } from 'zod';
+
+// Extend Zod with OpenAPI metadata support
+extendZodWithOpenApi(z);
 
 /**
  * OpenAPI 3.1 Schema format
@@ -57,22 +65,9 @@ export interface OpenAPIGeneratorOptions {
   description?: string;
   
   /**
-   * Whether to include $ref definitions
-   * @default false
+   * Example value for the schema
    */
-  includeRefs?: boolean;
-  
-  /**
-   * Target OpenAPI version
-   * @default 'openApi3'
-   */
-  target?: 'openApi3' | 'jsonSchema7';
-  
-  /**
-   * Whether to mark all fields as nullable by default
-   * @default false
-   */
-  nullableByDefault?: boolean;
+  example?: any;
 }
 
 /**
@@ -103,66 +98,46 @@ export function zodToOpenAPI(
   zodSchema: z.ZodType<any, any, any>,
   options: OpenAPIGeneratorOptions = {}
 ): OpenAPISchema {
-  const {
-    name,
-    description,
-    includeRefs = false,
-    target = 'openApi3',
-    nullableByDefault = false,
-  } = options;
+  const { name, description, example } = options;
 
-  // Convert Zod schema to JSON Schema
-  // Type cast needed due to Zod version compatibility
-  const jsonSchema = zodToJsonSchema(zodSchema as any, {
-    name,
-    target,
-    $refStrategy: includeRefs ? 'root' : 'none',
+  // Create a registry and register the schema
+  const registry = new OpenAPIRegistry();
+  
+  // Register the schema with metadata
+  const componentName = name || 'Schema';
+  registry.register(componentName, zodSchema);
+
+  // Generate OpenAPI document
+  const generator = new OpenApiGeneratorV31(registry.definitions);
+  const document = generator.generateDocument({
+    openapi: '3.1.0',
+    info: {
+      title: 'Temporary',
+      version: '1.0.0',
+    },
   });
 
-  // Create OpenAPI schema from JSON Schema (type assertion since output is compatible)
-  const openApiSchema = { ...jsonSchema } as OpenAPISchema;
+  // Extract the schema from components
+  const schema = document.components?.schemas?.[componentName] as OpenAPISchema;
+  
+  if (!schema) {
+    throw new Error(`Failed to generate schema for ${componentName}`);
+  }
 
-  // Add custom description if provided
+  // Apply custom metadata
+  if (name) {
+    schema.title = name;
+  }
+  
   if (description) {
-    openApiSchema.description = description;
+    schema.description = description;
+  }
+  
+  if (example !== undefined) {
+    schema.example = example;
   }
 
-  // Handle nullable by default option
-  if (nullableByDefault) {
-    makeNullable(openApiSchema);
-  }
-
-  // Remove JSON Schema specific properties that aren't in OpenAPI 3.1
-  if (openApiSchema.$schema) {
-    delete openApiSchema.$schema;
-  }
-
-  return openApiSchema;
-}
-
-/**
- * Make all properties in a schema nullable
- * 
- * @param schema - Schema to modify
- */
-function makeNullable(schema: OpenAPISchema): void {
-  if (schema.type && !Array.isArray(schema.type)) {
-    schema.type = [schema.type, 'null'];
-  }
-
-  if (schema.properties) {
-    for (const prop of Object.values(schema.properties)) {
-      makeNullable(prop);
-    }
-  }
-
-  if (schema.items) {
-    if (Array.isArray(schema.items)) {
-      schema.items.forEach(makeNullable);
-    } else {
-      makeNullable(schema.items);
-    }
-  }
+  return schema;
 }
 
 /**

@@ -228,9 +228,11 @@ describe('zodToOpenAPI', () => {
       const schema = z.literal('daily');
       const result = zodToOpenAPI(schema);
 
+      // Note: @asteasolutions/zod-to-openapi converts literals to enum with single value
+      // Both representations are valid OpenAPI: { const: 'daily' } or { enum: ['daily'] }
       expect(result).toMatchObject({
         type: 'string',
-        const: 'daily',
+        enum: ['daily'],
       });
     });
   });
