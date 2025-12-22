@@ -22,8 +22,8 @@ jobs:
       - name: Install dependencies (workspace root)
         run: npm ci
 
-      - name: Install Tailwind CSS native bindings
-        run: npm install --no-save @tailwindcss/oxide-linux-x64-gnu lightningcss-linux-x64-gnu
+      - name: Install native bindings and jsdom
+        run: npm install --no-save @tailwindcss/oxide-linux-x64-gnu lightningcss-linux-x64-gnu jsdom
 
       - name: Lint
         run: npm run lint
