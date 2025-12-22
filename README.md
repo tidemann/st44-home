@@ -285,6 +285,11 @@ The project uses GitHub Actions for CI/CD:
 - **CI Workflow** (`.github/workflows/ci.yml`): Runs on PRs and pushes to main
   - Tests, lints, and builds both frontend and backend
   
+- **Docker Build Test** (`.github/workflows/docker-build-test.yml`): Runs on PRs and pushes
+  - Validates Docker builds for frontend and backend
+  - Catches workspace dependency issues before deployment
+  - See [docs/WORKSPACE_DEPENDENCIES.md](docs/WORKSPACE_DEPENDENCIES.md) for details
+  
 - **E2E Workflow** (`.github/workflows/e2e.yml`): Optional workflow for E2E testing
   - Manual trigger via Actions tab
   - Scheduled daily at 2 AM UTC
@@ -306,6 +311,8 @@ The application is containerized with three services:
 - **db**: PostgreSQL database
 
 See [infra/docker-compose.yml](infra/docker-compose.yml) for configuration.
+
+**Important**: When adding workspace dependencies, update Dockerfiles accordingly. See [docs/WORKSPACE_DEPENDENCIES.md](docs/WORKSPACE_DEPENDENCIES.md) for complete guide.
 
 ## Environment Variables
 

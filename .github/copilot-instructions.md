@@ -81,6 +81,12 @@ This is a monorepo with:
   - `npm run build` - Verifies compilation
   - `npm run test` - Catches runtime errors
   - Fix ALL errors before committing (no "will fix later")
+- **CRITICAL: Workspace Dependencies** - When adding shared packages (e.g., @st44/types)
+  - Add dependency to package.json
+  - Run `npm install` at workspace root
+  - Update Dockerfile to copy and build shared package
+  - Test Docker build locally before committing
+  - See docs/WORKSPACE_DEPENDENCIES.md for complete guide
 - Use async/await for asynchronous operations
 - Implement proper error handling and logging
 - Use environment variables for configuration (database credentials, ports, etc.)
