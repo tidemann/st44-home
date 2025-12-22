@@ -1,7 +1,8 @@
 import { Component, inject, signal, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { ChildrenService, Child } from '../../services/children.service';
+import type { Child } from '@st44/types';
+import { ChildrenService } from '../../services/children.service';
 import { HouseholdService } from '../../services/household.service';
 
 @Component({
@@ -214,7 +215,8 @@ export class ChildrenManagementComponent implements OnInit {
   /**
    * Calculate child age from birth year
    */
-  getAge(birthYear: number): number {
+  getAge(birthYear: number | null): number {
+    if (!birthYear) return 0;
     return this.currentYear - birthYear;
   }
 

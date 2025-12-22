@@ -1,6 +1,6 @@
 import { Component, input, output, computed, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { TaskAssignment } from '../../services/task.service';
+import type { Assignment } from '@st44/types';
 
 /**
  * Reusable task card component for displaying individual task assignments
@@ -19,7 +19,7 @@ export class TaskCardComponent {
   /**
    * Task assignment to display
    */
-  task = input.required<TaskAssignment>();
+  task = input.required<Assignment>();
 
   /**
    * Event emitted when user clicks "Mark Complete" button

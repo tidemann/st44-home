@@ -2,80 +2,14 @@ import { Injectable, signal, computed, inject } from '@angular/core';
 import { Observable, from, map, tap, catchError, throwError } from 'rxjs';
 import { ApiService } from './api.service';
 
-/**
- * Task template interface matching backend API response
- */
-export interface TaskTemplate {
-  id: string;
-  household_id: string;
-  name: string;
-  description: string | null;
-  points: number;
-  rule_type: 'weekly_rotation' | 'repeating' | 'daily';
-  rule_config: {
-    rotation_type?: 'odd_even_week' | 'alternating';
-    repeat_days?: number[];
-    assigned_children?: string[];
-  } | null;
-  active: boolean;
-  created_at: string;
-  updated_at: string;
-}
-
-/**
- * Request payload for creating a new task template
- */
-export interface CreateTaskRequest {
-  name: string;
-  description?: string;
-  points?: number;
-  rule_type: 'weekly_rotation' | 'repeating' | 'daily';
-  rule_config?: {
-    rotation_type?: 'odd_even_week' | 'alternating';
-    repeat_days?: number[];
-    assigned_children?: string[];
-  };
-}
-
-/**
- * Request payload for updating an existing task template
- */
-export interface UpdateTaskRequest {
-  name?: string;
-  description?: string;
-  points?: number;
-  rule_type?: 'weekly_rotation' | 'repeating' | 'daily';
-  rule_config?: {
-    rotation_type?: 'odd_even_week' | 'alternating';
-    repeat_days?: number[];
-    assigned_children?: string[];
-  };
-}
-
-/**
- * Task assignment interface for viewing and completion
- */
-export interface TaskAssignment {
-  id: string;
-  task_id: string;
-  title: string;
-  description: string | null;
-  rule_type: 'daily' | 'repeating' | 'weekly_rotation';
-  child_id?: string;
-  child_name?: string;
-  date: string; // ISO date
-  status: 'pending' | 'completed';
-  completed_at?: string; // ISO timestamp
-}
-
-/**
- * Filters for querying task assignments
- */
-export interface AssignmentFilters {
-  date?: string;
-  child_id?: string;
-  status?: 'pending' | 'completed';
-}
+// Import shared types from @st44/types
+import type {
+  Task,
+  CreateTaskRequest,
+  UpdateTaskRequest,
+  Assignment,
+  AssignmentFilters,
+} from '@st44/types';
 
 /**
  * Service for managing task templates with signals-based state management
@@ -93,12 +27,12 @@ export class TaskService {
   private apiService = inject(ApiService);
 
   // Task templates state signals (private writable)
-  private tasksSignal = signal<TaskTemplate[]>([]);
+  private tasksSignal = signal<Task[]>([]);
   private loadingSignal = signal<boolean>(false);
   private errorSignal = signal<string | null>(null);
 
   // Task assignments state signals (private writable)
-  private assignmentsSignal = signal<TaskAssignment[]>([]);
+  private assignmentsSignal = signal<Assignment[]>([]);
   private assignmentsLoadingSignal = signal<boolean>(false);
   private assignmentsErrorSignal = signal<string | null>(null);
 
@@ -139,11 +73,11 @@ export class TaskService {
    * @param data - Task template data
    * @returns Observable of the created task template
    */
-  createTask(householdId: string, data: CreateTaskRequest): Observable<TaskTemplate> {
+  createTask(householdId: string, data: CreateTaskRequest): Observable<Task> {
     this.loadingSignal.set(true);
     this.errorSignal.set(null);
 
-    return from(this.apiService.post<TaskTemplate>(`/households/${householdId}/tasks`, data)).pipe(
+    return from(this.apiService.post<Task>(`/households/${householdId}/tasks`, data)).pipe(
       tap((task) => {
         // Add to state
         this.tasksSignal.update((tasks) => [...tasks, task]);
@@ -164,7 +98,7 @@ export class TaskService {
    * @param activeOnly - Filter for active tasks only (default: true)
    * @returns Observable of task template array
    */
-  getTasks(householdId: string, activeOnly = true): Observable<TaskTemplate[]> {
+  getTasks(householdId: string, activeOnly = true): Observable<Task[]> {
     this.loadingSignal.set(true);
     this.errorSignal.set(null);
 
@@ -172,7 +106,7 @@ export class TaskService {
       ? `/households/${householdId}/tasks?active=true`
       : `/households/${householdId}/tasks`;
 
-    return from(this.apiService.get<{ tasks: TaskTemplate[] }>(endpoint)).pipe(
+    return from(this.apiService.get<{ tasks: Task[] }>(endpoint)).pipe(
       map((response) => response.tasks),
       tap((tasks) => {
         this.tasksSignal.set(tasks);
@@ -193,13 +127,11 @@ export class TaskService {
    * @param taskId - ID of the task template
    * @returns Observable of the task template
    */
-  getTask(householdId: string, taskId: string): Observable<TaskTemplate> {
+  getTask(householdId: string, taskId: string): Observable<Task> {
     this.loadingSignal.set(true);
     this.errorSignal.set(null);
 
-    return from(
-      this.apiService.get<TaskTemplate>(`/households/${householdId}/tasks/${taskId}`),
-    ).pipe(
+    return from(this.apiService.get<Task>(`/households/${householdId}/tasks/${taskId}`)).pipe(
       tap(() => {
         this.loadingSignal.set(false);
       }),
@@ -219,17 +151,11 @@ export class TaskService {
    * @param data - Updated task template data
    * @returns Observable of the updated task template
    */
-  updateTask(
-    householdId: string,
-    taskId: string,
-    data: UpdateTaskRequest,
-  ): Observable<TaskTemplate> {
+  updateTask(householdId: string, taskId: string, data: UpdateTaskRequest): Observable<Task> {
     this.loadingSignal.set(true);
     this.errorSignal.set(null);
 
-    return from(
-      this.apiService.put<TaskTemplate>(`/households/${householdId}/tasks/${taskId}`, data),
-    ).pipe(
+    return from(this.apiService.put<Task>(`/households/${householdId}/tasks/${taskId}`, data)).pipe(
       tap((updatedTask) => {
         // Update in state
         this.tasksSignal.update((tasks) => tasks.map((t) => (t.id === taskId ? updatedTask : t)));
@@ -278,7 +204,7 @@ export class TaskService {
    * @param status - Optional status filter ('pending' | 'completed')
    * @returns Observable of task assignment array
    */
-  getChildTasks(childId: string, date?: string, status?: string): Observable<TaskAssignment[]> {
+  getChildTasks(childId: string, date?: string, status?: string): Observable<Assignment[]> {
     this.assignmentsLoadingSignal.set(true);
     this.assignmentsErrorSignal.set(null);
 
@@ -288,7 +214,7 @@ export class TaskService {
     if (status) params.push(`status=${status}`);
     if (params.length > 0) endpoint += `?${params.join('&')}`;
 
-    return from(this.apiService.get<{ assignments: TaskAssignment[] }>(endpoint)).pipe(
+    return from(this.apiService.get<{ assignments: Assignment[] }>(endpoint)).pipe(
       map((response) => response.assignments),
       tap((assignments) => {
         this.assignmentsSignal.set(assignments);
@@ -312,7 +238,7 @@ export class TaskService {
   getHouseholdAssignments(
     householdId: string,
     filters?: AssignmentFilters,
-  ): Observable<TaskAssignment[]> {
+  ): Observable<Assignment[]> {
     this.assignmentsLoadingSignal.set(true);
     this.assignmentsErrorSignal.set(null);
 
@@ -323,7 +249,7 @@ export class TaskService {
     if (filters?.status) params.push(`status=${filters.status}`);
     if (params.length > 0) endpoint += `?${params.join('&')}`;
 
-    return from(this.apiService.get<{ assignments: TaskAssignment[] }>(endpoint)).pipe(
+    return from(this.apiService.get<{ assignments: Assignment[] }>(endpoint)).pipe(
       map((response) => response.assignments),
       tap((assignments) => {
         this.assignmentsSignal.set(assignments);
@@ -343,7 +269,7 @@ export class TaskService {
    * @param assignmentId - ID of the task assignment
    * @returns Observable of the updated task assignment
    */
-  completeTask(assignmentId: string): Observable<TaskAssignment> {
+  completeTask(assignmentId: string): Observable<Assignment> {
     // Optimistic update
     const previousAssignments = this.assignmentsSignal();
     const now = new Date().toISOString();
@@ -355,9 +281,7 @@ export class TaskService {
     );
 
     // API call
-    return from(
-      this.apiService.put<TaskAssignment>(`/assignments/${assignmentId}/complete`, {}),
-    ).pipe(
+    return from(this.apiService.put<Assignment>(`/assignments/${assignmentId}/complete`, {})).pipe(
       tap((updatedAssignment) => {
         // Update with server response
         this.assignmentsSignal.update((assignments) =>
@@ -380,12 +304,12 @@ export class TaskService {
    * @param newChildId - ID of the child to reassign to
    * @returns Observable of the updated task assignment
    */
-  reassignTask(assignmentId: string, newChildId: string): Observable<TaskAssignment> {
+  reassignTask(assignmentId: string, newChildId: string): Observable<Assignment> {
     this.assignmentsLoadingSignal.set(true);
     this.assignmentsErrorSignal.set(null);
 
     return from(
-      this.apiService.put<TaskAssignment>(`/assignments/${assignmentId}/reassign`, {
+      this.apiService.put<Assignment>(`/assignments/${assignmentId}/reassign`, {
         child_id: newChildId,
       }),
     ).pipe(

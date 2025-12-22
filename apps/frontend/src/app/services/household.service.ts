@@ -1,21 +1,26 @@
 import { Injectable, signal, computed, inject } from '@angular/core';
+import type { Household, CreateHouseholdRequest, UpdateHouseholdRequest } from '@st44/types';
 import { ApiService } from './api.service';
 
-export interface Household {
-  id: string;
-  name: string;
-  role: 'admin' | 'parent';
+/**
+ * Enriched Household response from list/get endpoints
+ * Extends base Household schema with computed/aggregated fields
+ */
+export interface HouseholdListItem extends Omit<Household, 'admin_user_id'> {
+  role: 'parent' | 'child'; // User's role in this household
   memberCount?: number;
   childrenCount?: number;
-  createdAt?: string;
-  updatedAt?: string;
 }
 
+/**
+ * Household member interface matching backend response
+ * TODO: Migrate to @st44/types when HouseholdMember response schema added
+ */
 export interface HouseholdMember {
   user_id: string;
   email: string;
   display_name: string | null;
-  role: 'admin' | 'parent';
+  role: 'parent' | 'child';
   joined_at: string;
 }
 
@@ -57,19 +62,23 @@ export class HouseholdService {
   }
 
   async createHousehold(name: string): Promise<Household> {
-    return this.apiService.post<Household>('/households', { name });
+    return this.apiService.post<Household>('/households', {
+      name,
+    } satisfies CreateHouseholdRequest);
   }
 
-  async listHouseholds(): Promise<Household[]> {
-    return this.apiService.get<Household[]>('/households');
+  async listHouseholds(): Promise<HouseholdListItem[]> {
+    return this.apiService.get<HouseholdListItem[]>('/households');
   }
 
-  async getHousehold(id: string): Promise<Household> {
-    return this.apiService.get<Household>(`/households/${id}`);
+  async getHousehold(id: string): Promise<HouseholdListItem> {
+    return this.apiService.get<HouseholdListItem>(`/households/${id}`);
   }
 
   async updateHousehold(id: string, name: string): Promise<Household> {
-    return this.apiService.put<Household>(`/households/${id}`, { name });
+    return this.apiService.put<Household>(`/households/${id}`, {
+      name,
+    } satisfies UpdateHouseholdRequest);
   }
 
   async getHouseholdMembers(householdId: string): Promise<HouseholdMember[]> {

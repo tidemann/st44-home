@@ -9,7 +9,8 @@ import {
   AbstractControl,
 } from '@angular/forms';
 import { TaskService } from '../../services/task.service';
-import { ChildrenService, Child } from '../../services/children.service';
+import type { Child } from '@st44/types';
+import { ChildrenService } from '../../services/children.service';
 import { HouseholdService } from '../../services/household.service';
 
 @Component({

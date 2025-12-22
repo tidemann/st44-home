@@ -1,6 +1,6 @@
 import { Component, signal, inject, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { Router } from '@angular/router';
-import { HouseholdService, Household } from '../../services/household.service';
+import { HouseholdService, HouseholdListItem } from '../../services/household.service';
 
 @Component({
   selector: 'app-household-switcher',
@@ -13,7 +13,7 @@ export class HouseholdSwitcherComponent implements OnInit {
   private router = inject(Router);
   private householdService = inject(HouseholdService);
 
-  households = signal<Household[]>([]);
+  households = signal<HouseholdListItem[]>([]);
   activeHouseholdId = signal<string | null>(null);
   isOpen = signal(false);
   isLoading = signal(false);
@@ -53,7 +53,7 @@ export class HouseholdSwitcherComponent implements OnInit {
     this.isOpen.set(false);
   }
 
-  async switchHousehold(household: Household) {
+  async switchHousehold(household: HouseholdListItem) {
     if (household.id === this.activeHouseholdId()) {
       this.closeDropdown();
       return;
@@ -69,12 +69,12 @@ export class HouseholdSwitcherComponent implements OnInit {
     await this.router.navigateByUrl(currentUrl);
   }
 
-  getActiveHousehold(): Household | undefined {
+  getActiveHousehold(): HouseholdListItem | undefined {
     const activeId = this.activeHouseholdId();
     return this.households().find((h) => h.id === activeId);
   }
 
-  onKeyDown(event: KeyboardEvent, household: Household) {
+  onKeyDown(event: KeyboardEvent, household: HouseholdListItem) {
     if (event.key === 'Enter' || event.key === ' ') {
       event.preventDefault();
       this.switchHousehold(household);

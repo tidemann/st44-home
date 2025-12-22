@@ -9,7 +9,11 @@ import {
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { DatePipe } from '@angular/common';
-import { HouseholdService, Household, HouseholdMember } from '../../services/household.service';
+import {
+  HouseholdService,
+  HouseholdListItem,
+  HouseholdMember,
+} from '../../services/household.service';
 import { ChildrenManagementComponent } from '../children-management/children-management';
 import { InviteUserComponent } from '../invite-user/invite-user';
 import { InvitationsSentListComponent } from '../invitations-sent-list/invitations-sent-list';
@@ -32,15 +36,16 @@ export class HouseholdSettingsComponent implements OnInit {
   private router = inject(Router);
   private householdService = inject(HouseholdService);
 
-  household = signal<Household | null>(null);
+  household = signal<HouseholdListItem | null>(null);
   members = signal<HouseholdMember[]>([]);
-  currentUserRole = signal<'admin' | 'parent' | null>(null);
+  currentUserRole = signal<'parent' | 'child' | null>(null);
   isLoading = signal(false);
   isSaving = signal(false);
   errorMessage = signal('');
   successMessage = signal('');
 
-  isAdmin = computed(() => this.currentUserRole() === 'admin');
+  // Parents have admin privileges in the household
+  isAdmin = computed(() => this.currentUserRole() === 'parent');
 
   householdForm: FormGroup = this.fb.group({
     name: ['', [Validators.required, Validators.minLength(1), Validators.maxLength(100)]],

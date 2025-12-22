@@ -7,8 +7,9 @@ import {
   OnInit,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { TaskService, TaskTemplate } from '../../services/task.service';
-import { ChildrenService, Child } from '../../services/children.service';
+import type { Task, Child } from '@st44/types';
+import { TaskService } from '../../services/task.service';
+import { ChildrenService } from '../../services/children.service';
 import { HouseholdService } from '../../services/household.service';
 
 type SortOption = 'created' | 'title' | 'rule_type';
@@ -28,7 +29,7 @@ export class TaskList implements OnInit {
   // Signals
   protected showActiveOnly = signal<boolean>(true);
   protected sortBy = signal<SortOption>('created');
-  protected taskToDelete = signal<TaskTemplate | null>(null);
+  protected taskToDelete = signal<Task | null>(null);
   protected children = signal<Child[]>([]);
 
   // Computed: filtered and sorted tasks
@@ -85,12 +86,12 @@ export class TaskList implements OnInit {
     this.sortBy.set(target.value as SortOption);
   }
 
-  protected onEdit(task: TaskTemplate): void {
+  protected onEdit(task: Task): void {
     // TODO: Implement edit functionality
     console.log('Edit task:', task);
   }
 
-  protected onDeleteClick(task: TaskTemplate): void {
+  protected onDeleteClick(task: Task): void {
     this.taskToDelete.set(task);
   }
 
@@ -115,7 +116,7 @@ export class TaskList implements OnInit {
     this.taskToDelete.set(null);
   }
 
-  protected onToggleActive(task: TaskTemplate): void {
+  protected onToggleActive(task: Task): void {
     const householdId = this.householdService.getActiveHouseholdId();
     if (!householdId) return;
 
@@ -131,14 +132,14 @@ export class TaskList implements OnInit {
       .subscribe();
   }
 
-  protected getChildrenNames(task: TaskTemplate): string {
+  protected getChildrenNames(task: Task): string {
     const childIds = task.rule_config?.assigned_children;
     if (!childIds || childIds.length === 0) return 'All children';
 
     const children = this.children();
     const names = childIds
-      .map((id) => children.find((c) => c.id === id)?.name)
-      .filter((name) => name);
+      .map((id: string) => children.find((c) => c.id === id)?.name)
+      .filter((name: string | undefined): name is string => !!name);
 
     return names.length > 0 ? names.join(', ') : 'Unknown';
   }

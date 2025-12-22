@@ -4,10 +4,11 @@
 - **ID**: task-108
 - **Feature**: feature-016 - Shared TypeScript Schema & Type System
 - **Epic**: epic-002 - Task Management Core
-- **Status**: pending
+- **Status**: in-progress
 - **Priority**: high
 - **Created**: 2025-12-22
-- **Assigned Agent**: frontend-agent
+- **Started**: 2025-12-22
+- **Assigned Agent**: frontend-agent | orchestrator-agent
 - **Estimated Duration**: 5-7 hours
 
 ## Description

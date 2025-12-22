@@ -9,8 +9,10 @@ import {
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { format, parseISO } from 'date-fns';
-import { TaskService, TaskAssignment } from '../../services/task.service';
-import { ChildrenService, Child } from '../../services/children.service';
+import type { Assignment } from '@st44/types';
+import { TaskService } from '../../services/task.service';
+import type { Child } from '@st44/types';
+import { ChildrenService } from '../../services/children.service';
 import { HouseholdService } from '../../services/household.service';
 import { ReassignModalComponent } from '../../components/reassign-modal/reassign-modal.component';
 
@@ -48,7 +50,7 @@ export class ParentTaskDashboardComponent implements OnInit {
   protected error = computed(() => this.taskService.assignmentsError());
 
   protected showReassignModal = signal(false);
-  protected selectedAssignment = signal<TaskAssignment | null>(null);
+  protected selectedAssignment = signal<Assignment | null>(null);
 
   // Computed: All assignments with child names
   protected assignments = computed(() => {
@@ -171,7 +173,7 @@ export class ParentTaskDashboardComponent implements OnInit {
   /**
    * Open reassign modal
    */
-  protected openReassignModal(assignment: TaskAssignment): void {
+  protected openReassignModal(assignment: Assignment): void {
     this.selectedAssignment.set(assignment);
     this.showReassignModal.set(true);
   }

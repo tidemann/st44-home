@@ -8,7 +8,8 @@ import {
   ChangeDetectionStrategy,
 } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
-import { TaskService, TaskTemplate } from '../../services/task.service';
+import type { Task } from '@st44/types';
+import { TaskService } from '../../services/task.service';
 import { CommonModule } from '@angular/common';
 
 @Component({
@@ -24,7 +25,7 @@ export class TaskFormComponent implements OnInit {
   private taskService = inject(TaskService);
 
   householdId = input.required<string>();
-  task = input<TaskTemplate | null>(null);
+  task = input<Task | null>(null);
   formClose = output<void>();
 
   form!: FormGroup;
@@ -53,7 +54,7 @@ export class TaskFormComponent implements OnInit {
     });
   }
 
-  private populateForm(task: TaskTemplate) {
+  private populateForm(task: Task) {
     this.form.patchValue({
       name: task.name,
       description: task.description,

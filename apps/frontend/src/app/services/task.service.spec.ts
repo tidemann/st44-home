@@ -1,7 +1,8 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { TestBed } from '@angular/core/testing';
 import { firstValueFrom } from 'rxjs';
-import { TaskService, TaskTemplate, CreateTaskRequest, UpdateTaskRequest } from './task.service';
+import type { Task, CreateTaskRequest, UpdateTaskRequest } from '@st44/types';
+import { TaskService } from './task.service';
 import { ApiService } from './api.service';
 
 describe('TaskService', () => {
@@ -13,7 +14,7 @@ describe('TaskService', () => {
     delete: ReturnType<typeof vi.fn>;
   };
 
-  const mockTask: TaskTemplate = {
+  const mockTask: Task = {
     id: 'task-1',
     household_id: 'household-1',
     name: 'Daily Chores',
@@ -26,7 +27,7 @@ describe('TaskService', () => {
     updated_at: '2025-12-19T10:00:00Z',
   };
 
-  const mockTask2: TaskTemplate = {
+  const mockTask2: Task = {
     id: 'task-2',
     household_id: 'household-1',
     name: 'Weekly Rotation',
@@ -42,7 +43,7 @@ describe('TaskService', () => {
     updated_at: '2025-12-19T11:00:00Z',
   };
 
-  const mockInactiveTask: TaskTemplate = {
+  const mockInactiveTask: Task = {
     id: 'task-3',
     household_id: 'household-1',
     name: 'Old Task',
@@ -323,7 +324,7 @@ describe('TaskService', () => {
       description: 'Updated description',
     };
 
-    const updatedTask: TaskTemplate = {
+    const updatedTask: Task = {
       ...mockTask,
       name: 'Updated Title',
       description: 'Updated description',
