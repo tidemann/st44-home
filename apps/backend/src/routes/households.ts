@@ -48,6 +48,7 @@ async function createHousehold(
 
   if (!userId) {
     return reply.status(401).send({
+      statusCode: 401,
       error: 'Unauthorized',
       message: 'Authentication required',
     });
@@ -92,6 +93,7 @@ async function createHousehold(
     await db.query('ROLLBACK');
     request.log.error(error, 'Failed to create household');
     return reply.status(500).send({
+      statusCode: 500,
       error: 'Internal Server Error',
       message: 'Failed to create household',
     });
@@ -107,6 +109,7 @@ async function listHouseholds(request: FastifyRequest, reply: FastifyReply) {
 
   if (!userId) {
     return reply.status(401).send({
+      statusCode: 401,
       error: 'Unauthorized',
       message: 'Authentication required',
     });
@@ -130,22 +133,23 @@ async function listHouseholds(request: FastifyRequest, reply: FastifyReply) {
       [userId],
     );
 
-    // Transform to camelCase for API response
+    // Transform to snake_case for API response
     const households = result.rows.map((row) => ({
       id: row.id,
       name: row.name,
+      created_at: row.created_at,
+      updated_at: row.updated_at,
       role: row.role,
       memberCount: parseInt(row.member_count, 10),
       childrenCount: parseInt(row.children_count, 10),
       joinedAt: row.joined_at,
-      createdAt: row.created_at,
-      updatedAt: row.updated_at,
     }));
 
     return reply.send(households);
   } catch (error) {
     request.log.error(error, 'Failed to list households');
     return reply.status(500).send({
+      statusCode: 500,
       error: 'Internal Server Error',
       message: 'Failed to retrieve households',
     });
@@ -194,15 +198,17 @@ async function getHousehold(request: FastifyRequest<GetHouseholdRequest>, reply:
     return reply.send({
       id: household.id,
       name: household.name,
+      created_at: household.created_at,
+      updated_at: household.updated_at,
       role,
       memberCount: parseInt(household.member_count, 10),
       childrenCount: parseInt(household.children_count, 10),
-      createdAt: household.created_at,
       updatedAt: household.updated_at,
     });
   } catch (error) {
     request.log.error(error, 'Failed to get household');
     return reply.status(500).send({
+      statusCode: 500,
       error: 'Internal Server Error',
       message: 'Failed to retrieve household',
     });
@@ -232,6 +238,7 @@ async function updateHousehold(
 
     if (result.rows.length === 0) {
       return reply.status(404).send({
+        statusCode: 404,
         error: 'Not Found',
         message: 'Household not found',
       });
@@ -253,6 +260,7 @@ async function updateHousehold(
 
     request.log.error(error, 'Failed to update household');
     return reply.status(500).send({
+      statusCode: 500,
       error: 'Internal Server Error',
       message: 'Failed to update household',
     });
@@ -393,8 +401,7 @@ async function getHouseholdMembers(
     );
   } catch (error) {
     request.log.error(error, 'Failed to get household members');
-    return reply.status(500).send({
-      error: 'Internal Server Error',
+    return reply.status(500).send({      statusCode: 500,      error: 'Internal Server Error',
       message: 'Failed to retrieve household members',
     });
   }
