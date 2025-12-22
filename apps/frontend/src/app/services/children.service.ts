@@ -41,7 +41,10 @@ export class ChildrenService {
    * List all children in a household
    */
   async listChildren(householdId: string): Promise<Child[]> {
-    return this.api.get<Child[]>(`/households/${householdId}/children`);
+    const response = await this.api.get<ListChildrenResponse>(
+      `/households/${householdId}/children`,
+    );
+    return response.children;
   }
 
   /**
