@@ -6,13 +6,10 @@ import {
   requireHouseholdParent,
   requireHouseholdAdmin,
 } from '../middleware/household-membership.js';
-import {
-  listChildrenSchema,
-  createChildSchema,
-  updateChildSchema,
-  deleteChildSchema,
-  getMyTasksSchema,
-} from '../schemas/children.js';
+import { ChildSchema, CreateChildRequestSchema, UpdateChildRequestSchema } from '@st44/types';
+import { z, zodToOpenAPI, CommonErrors } from '@st44/types/generators';
+import { validateRequest, handleZodError } from '../utils/validation.js';
+import { stripResponseValidation } from '../schemas/common.js';
 
 interface HouseholdParams {
   householdId: string;
@@ -86,45 +83,15 @@ async function listChildren(
  */
 async function createChild(request: FastifyRequest<CreateChildRequest>, reply: FastifyReply) {
   const { householdId } = request.params;
-  const { name, birthYear } = request.body;
-
-  // Validate name
-  if (!name || typeof name !== 'string' || name.trim().length === 0) {
-    return reply.status(400).send({
-      error: 'Bad Request',
-      message: 'Child name is required',
-    });
-  }
-
-  if (name.trim().length > 100) {
-    return reply.status(400).send({
-      error: 'Bad Request',
-      message: 'Child name must be 100 characters or less',
-    });
-  }
-
-  // Validate birthYear
-  if (!birthYear || typeof birthYear !== 'number') {
-    return reply.status(400).send({
-      error: 'Bad Request',
-      message: 'Birth year is required and must be a number',
-    });
-  }
-
-  const currentYear = new Date().getFullYear();
-  if (birthYear < 1900 || birthYear > currentYear) {
-    return reply.status(400).send({
-      error: 'Bad Request',
-      message: `Birth year must be between 1900 and ${currentYear}`,
-    });
-  }
 
   try {
+    const validatedData = validateRequest(CreateChildRequestSchema, request.body);
+
     const result = await db.query(
       `INSERT INTO children (household_id, name, birth_year)
        VALUES ($1, $2, $3)
        RETURNING id, household_id, name, birth_year, created_at`,
-      [householdId, name.trim(), birthYear],
+      [householdId, validatedData.name.trim(), validatedData.birthYear],
     );
 
     const child = result.rows[0];
@@ -137,6 +104,9 @@ async function createChild(request: FastifyRequest<CreateChildRequest>, reply: F
       created_at: child.created_at,
     });
   } catch (error) {
+    if (error instanceof z.ZodError) {
+      return handleZodError(error, reply);
+    }
     request.log.error(error, 'Failed to create child');
     return reply.status(500).send({
       error: 'Internal Server Error',
@@ -151,55 +121,16 @@ async function createChild(request: FastifyRequest<CreateChildRequest>, reply: F
  */
 async function updateChild(request: FastifyRequest<UpdateChildRequest>, reply: FastifyReply) {
   const { householdId, childId: id } = request.params;
-  const { name, birthYear } = request.body;
-
-  // Validate name
-  if (!name || typeof name !== 'string' || name.trim().length === 0) {
-    return reply.status(400).send({
-      error: 'Bad Request',
-      message: 'Child name is required',
-    });
-  }
-
-  if (name.trim().length > 100) {
-    return reply.status(400).send({
-      error: 'Bad Request',
-      message: 'Child name must be 100 characters or less',
-    });
-  }
-
-  // Validate birthYear
-  if (!birthYear || typeof birthYear !== 'number') {
-    return reply.status(400).send({
-      error: 'Bad Request',
-      message: 'Birth year is required and must be a number',
-    });
-  }
-
-  const currentYear = new Date().getFullYear();
-  if (birthYear < 1900 || birthYear > currentYear) {
-    return reply.status(400).send({
-      error: 'Bad Request',
-      message: `Birth year must be between 1900 and ${currentYear}`,
-    });
-  }
-
-  // Validate child ID format (UUID)
-  const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
-  if (!uuidRegex.test(id)) {
-    return reply.status(400).send({
-      error: 'Bad Request',
-      message: 'Invalid child ID format',
-    });
-  }
 
   try {
+    const validatedData = validateRequest(UpdateChildRequestSchema, request.body);
+
     const result = await db.query(
       `UPDATE children
        SET name = $1, birth_year = $2, updated_at = NOW()
        WHERE id = $3 AND household_id = $4
        RETURNING id, household_id, name, birth_year, created_at, updated_at`,
-      [name.trim(), birthYear, id, householdId],
+      [validatedData.name.trim(), validatedData.birthYear, id, householdId],
     );
 
     if (result.rows.length === 0) {
@@ -220,6 +151,9 @@ async function updateChild(request: FastifyRequest<UpdateChildRequest>, reply: F
       updated_at: child.updated_at,
     });
   } catch (error) {
+    if (error instanceof z.ZodError) {
+      return handleZodError(error, reply);
+    }
     request.log.error(error, 'Failed to update child');
     return reply.status(500).send({
       error: 'Internal Server Error',
@@ -417,36 +351,132 @@ async function getMyTasks(
  */
 export default async function childrenRoutes(server: FastifyInstance) {
   // Get my tasks (child access)
+  // Define local param schemas
+  const HouseholdParamsSchema = z.object({
+    householdId: z.string().uuid(),
+  });
+
+  const ChildParamsSchema = z.object({
+    householdId: z.string().uuid(),
+    childId: z.string().uuid(),
+  });
+
+  const TaskQuerySchema = z.object({
+    date: z
+      .string()
+      .regex(/^\d{4}-\d{2}-\d{2}$/)
+      .optional(),
+    status: z.enum(['pending', 'completed']).optional(),
+  });
+
+  // Get my tasks (for logged-in children)
   server.get('/api/children/my-tasks', {
-    schema: getMyTasksSchema,
+    schema: stripResponseValidation({
+      summary: 'Get tasks for logged-in child',
+      description: 'Returns tasks assigned to the authenticated child user',
+      tags: ['children'],
+      security: [{ bearerAuth: [] }],
+      querystring: zodToOpenAPI(TaskQuerySchema),
+      response: {
+        200: zodToOpenAPI(
+          z.object({
+            tasks: z.array(z.any()), // TaskAssignment type not in shared schemas yet
+          }),
+        ),
+        ...CommonErrors.Unauthorized,
+        ...CommonErrors.InternalServerError,
+      },
+    }),
     preHandler: [authenticateUser],
     handler: getMyTasks,
   });
 
   // List children (member access)
   server.get('/api/households/:householdId/children', {
-    schema: listChildrenSchema,
+    schema: stripResponseValidation({
+      summary: 'List children in household',
+      description: 'Returns all children in the specified household',
+      tags: ['children'],
+      security: [{ bearerAuth: [] }],
+      params: zodToOpenAPI(HouseholdParamsSchema),
+      response: {
+        200: zodToOpenAPI(
+          z.object({
+            children: z.array(ChildSchema),
+          }),
+        ),
+        ...CommonErrors.BadRequest,
+        ...CommonErrors.Unauthorized,
+        ...CommonErrors.Forbidden,
+        ...CommonErrors.NotFound,
+        ...CommonErrors.InternalServerError,
+      },
+    }),
     preHandler: [authenticateUser, validateHouseholdMembership],
     handler: listChildren,
   });
 
   // Create child (parent/admin access)
   server.post('/api/households/:householdId/children', {
-    schema: createChildSchema,
+    schema: stripResponseValidation({
+      summary: 'Create new child',
+      description: 'Creates a new child in the household (parent/admin only)',
+      tags: ['children'],
+      security: [{ bearerAuth: [] }],
+      params: zodToOpenAPI(HouseholdParamsSchema),
+      body: zodToOpenAPI(CreateChildRequestSchema),
+      response: {
+        201: zodToOpenAPI(ChildSchema),
+        ...CommonErrors.BadRequest,
+        ...CommonErrors.Unauthorized,
+        ...CommonErrors.Forbidden,
+        ...CommonErrors.NotFound,
+        ...CommonErrors.InternalServerError,
+      },
+    }),
     preHandler: [authenticateUser, validateHouseholdMembership, requireHouseholdParent],
     handler: createChild,
   });
 
   // Update child (parent/admin access)
   server.put('/api/households/:householdId/children/:childId', {
-    schema: updateChildSchema,
+    schema: stripResponseValidation({
+      summary: 'Update child details',
+      description: 'Updates child information (parent/admin only)',
+      tags: ['children'],
+      security: [{ bearerAuth: [] }],
+      params: zodToOpenAPI(ChildParamsSchema),
+      body: zodToOpenAPI(UpdateChildRequestSchema),
+      response: {
+        200: zodToOpenAPI(ChildSchema),
+        ...CommonErrors.BadRequest,
+        ...CommonErrors.Unauthorized,
+        ...CommonErrors.Forbidden,
+        ...CommonErrors.NotFound,
+        ...CommonErrors.InternalServerError,
+      },
+    }),
     preHandler: [authenticateUser, validateHouseholdMembership, requireHouseholdParent],
     handler: updateChild,
   });
 
   // Delete child (admin only)
   server.delete('/api/households/:householdId/children/:childId', {
-    schema: deleteChildSchema,
+    schema: stripResponseValidation({
+      summary: 'Delete child',
+      description: 'Permanently deletes a child from the household (admin only)',
+      tags: ['children'],
+      security: [{ bearerAuth: [] }],
+      params: zodToOpenAPI(ChildParamsSchema),
+      response: {
+        204: z.object({}).describe('Child deleted successfully'),
+        ...CommonErrors.BadRequest,
+        ...CommonErrors.Unauthorized,
+        ...CommonErrors.Forbidden,
+        ...CommonErrors.NotFound,
+        ...CommonErrors.InternalServerError,
+      },
+    }),
     preHandler: [authenticateUser, validateHouseholdMembership, requireHouseholdAdmin],
     handler: deleteChild,
   });
