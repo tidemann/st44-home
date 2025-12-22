@@ -395,7 +395,7 @@ async function getHouseholdMembers(
 
     return reply.send(
       result.rows.map((row: unknown) => ({
-        user_id: (row as { user_id: number }).user_id,
+        user_id: (row as { user_id: string }).user_id,
         email: (row as { email: string }).email,
         display_name: null, // TODO: Add display_name column to users table
         role: (row as { role: string }).role,

@@ -137,17 +137,17 @@ export class HouseholdSettingsComponent implements OnInit {
     }
   }
 
-  private getCurrentUserId(): number {
+  private getCurrentUserId(): string {
     // TODO: Get from auth service when available
     // For now, decode from JWT
     const token = localStorage.getItem('accessToken') || sessionStorage.getItem('accessToken');
-    if (!token) return 0;
+    if (!token) return '';
 
     try {
       const payload = JSON.parse(atob(token.split('.')[1]));
-      return payload.userId || 0;
+      return payload.userId || '';
     } catch {
-      return 0;
+      return '';
     }
   }
 
