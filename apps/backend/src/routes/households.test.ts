@@ -261,8 +261,8 @@ describe('Household API', () => {
 
       assert.strictEqual(response.statusCode, 200);
       const body = JSON.parse(response.body);
-      assert.ok(Array.isArray(body.members));
-      assert.strictEqual(body.members.length, 2);
+      assert.ok(Array.isArray(body)); // Now returns array directly
+      assert.strictEqual(body.length, 2);
     });
 
     test('should reject without authentication', async () => {
