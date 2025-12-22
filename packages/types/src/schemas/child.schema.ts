@@ -1,7 +1,7 @@
 /**
  * Child Schema - Household children management
  */
-import { z } from 'zod';
+import { z } from '../generators/openapi.generator.js';
 
 /**
  * Base Child Schema

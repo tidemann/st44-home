@@ -1,7 +1,7 @@
 /**
  * Household Schema - Multi-tenant household management
  */
-import { z } from 'zod';
+import { z } from '../generators/openapi.generator.js';
 
 /**
  * Base Household Schema

@@ -1,7 +1,7 @@
 /**
  * Task Schema - Task templates and rules
  */
-import { z } from 'zod';
+import { z } from '../generators/openapi.generator.js';
 
 /**
  * Task Rule Types

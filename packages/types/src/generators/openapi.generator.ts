@@ -19,6 +19,10 @@ import { z } from 'zod';
 // Extend Zod with OpenAPI metadata support
 extendZodWithOpenApi(z);
 
+// Re-export the extended Zod instance for use in route definitions
+// CRITICAL: Backend routes must use this z instance, not import from 'zod' directly
+export { z };
+
 /**
  * OpenAPI 3.1 Schema format
  */
@@ -260,14 +264,29 @@ export function createErrorSchema(
 }
 
 /**
- * Common error response schemas
+ * Common error response schemas for Fastify routes
+ * Each error includes the status code as the key for Fastify response schemas
  */
 export const CommonErrors = {
-  BadRequest: createErrorSchema(400, 'Bad Request - Invalid input'),
-  Unauthorized: createErrorSchema(401, 'Unauthorized - Authentication required'),
-  Forbidden: createErrorSchema(403, 'Forbidden - Insufficient permissions'),
-  NotFound: createErrorSchema(404, 'Not Found - Resource does not exist'),
-  Conflict: createErrorSchema(409, 'Conflict - Resource already exists'),
-  UnprocessableEntity: createErrorSchema(422, 'Unprocessable Entity - Validation failed'),
-  InternalServerError: createErrorSchema(500, 'Internal Server Error'),
+  BadRequest: {
+    400: createErrorSchema(400, 'Bad Request - Invalid input'),
+  },
+  Unauthorized: {
+    401: createErrorSchema(401, 'Unauthorized - Authentication required'),
+  },
+  Forbidden: {
+    403: createErrorSchema(403, 'Forbidden - Insufficient permissions'),
+  },
+  NotFound: {
+    404: createErrorSchema(404, 'Not Found - Resource does not exist'),
+  },
+  Conflict: {
+    409: createErrorSchema(409, 'Conflict - Resource already exists'),
+  },
+  UnprocessableEntity: {
+    422: createErrorSchema(422, 'Unprocessable Entity - Validation failed'),
+  },
+  InternalServerError: {
+    500: createErrorSchema(500, 'Internal Server Error'),
+  },
 } as const;

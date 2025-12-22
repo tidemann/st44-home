@@ -414,36 +414,43 @@ describe('createErrorSchema', () => {
 describe('CommonErrors', () => {
   it('should have BadRequest error schema', () => {
     expect(CommonErrors.BadRequest).toBeDefined();
-    expect(CommonErrors.BadRequest.properties?.statusCode.const).toBe(400);
+    expect(CommonErrors.BadRequest[400]).toBeDefined();
+    expect(CommonErrors.BadRequest[400].properties?.statusCode.const).toBe(400);
   });
 
   it('should have Unauthorized error schema', () => {
     expect(CommonErrors.Unauthorized).toBeDefined();
-    expect(CommonErrors.Unauthorized.properties?.statusCode.const).toBe(401);
+    expect(CommonErrors.Unauthorized[401]).toBeDefined();
+    expect(CommonErrors.Unauthorized[401].properties?.statusCode.const).toBe(401);
   });
 
   it('should have Forbidden error schema', () => {
     expect(CommonErrors.Forbidden).toBeDefined();
-    expect(CommonErrors.Forbidden.properties?.statusCode.const).toBe(403);
+    expect(CommonErrors.Forbidden[403]).toBeDefined();
+    expect(CommonErrors.Forbidden[403].properties?.statusCode.const).toBe(403);
   });
 
   it('should have NotFound error schema', () => {
     expect(CommonErrors.NotFound).toBeDefined();
-    expect(CommonErrors.NotFound.properties?.statusCode.const).toBe(404);
+    expect(CommonErrors.NotFound[404]).toBeDefined();
+    expect(CommonErrors.NotFound[404].properties?.statusCode.const).toBe(404);
   });
 
   it('should have Conflict error schema', () => {
     expect(CommonErrors.Conflict).toBeDefined();
-    expect(CommonErrors.Conflict.properties?.statusCode.const).toBe(409);
+    expect(CommonErrors.Conflict[409]).toBeDefined();
+    expect(CommonErrors.Conflict[409].properties?.statusCode.const).toBe(409);
   });
 
   it('should have UnprocessableEntity error schema', () => {
     expect(CommonErrors.UnprocessableEntity).toBeDefined();
-    expect(CommonErrors.UnprocessableEntity.properties?.statusCode.const).toBe(422);
+    expect(CommonErrors.UnprocessableEntity[422]).toBeDefined();
+    expect(CommonErrors.UnprocessableEntity[422].properties?.statusCode.const).toBe(422);
   });
 
   it('should have InternalServerError error schema', () => {
     expect(CommonErrors.InternalServerError).toBeDefined();
-    expect(CommonErrors.InternalServerError.properties?.statusCode.const).toBe(500);
+    expect(CommonErrors.InternalServerError[500]).toBeDefined();
+    expect(CommonErrors.InternalServerError[500].properties?.statusCode.const).toBe(500);
   });
 });
