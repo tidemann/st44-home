@@ -127,26 +127,69 @@ Access the services:
 
 ### Building
 
-```bash
-# Build frontend
-npm run build:frontend
+**Build Pipeline**
 
-# Build backend
-npm run build:backend
+The project uses a monorepo build system where the shared types package must be built before other packages can compile. The build order is critical:
+
 ```
+1. packages/types → 2. apps/backend → 3. apps/frontend
+```
+
+**Full Build** (builds everything in correct order):
+```bash
+# Build all packages (types → backend → frontend)
+npm run build
+
+# Or build individually in order:
+npm run build:types      # Step 1: Compile shared types
+npm run build:backend    # Step 2: Build backend (requires types)
+npm run build:frontend   # Step 3: Build frontend (requires types)
+```
+
+**Pre-build Hooks**:
+- Backend and frontend automatically build types package when you run `npm run dev` or `npm test`
+- This ensures types are always up-to-date before development starts
+
+**Type Checking**:
+```bash
+# Check TypeScript types in all packages
+npm run type-check
+
+# Or check individually:
+npm run type-check:types
+npm run type-check:backend
+```
+
+**Troubleshooting "Module Not Found" Errors**:
+
+If you see `Error: Cannot find module '@st44/types'`:
+
+1. Check types package is built: `ls packages/types/dist/`
+2. Rebuild types: `npm run build:types`
+3. Re-link workspaces: `npm install` at root
+4. Clear and reinstall: `rm -rf node_modules && npm install`
 
 ### Testing & Linting
 
+**Testing**:
 ```bash
-# Run frontend tests
-npm run test:frontend
+# Run all tests (types → backend → frontend)
+npm run test
+
+# Or run individually:
+npm run test:types       # Shared types validation tests
+npm run test:backend     # Backend unit/integration tests
+npm run test:frontend    # Frontend unit tests
 
 # Run E2E tests (requires backend + database running)
 cd apps/frontend
 npm run test:e2e
+```
 
+**Linting & Formatting**:
+```bash
 # Lint frontend
-npm run lint:frontend
+cd apps/frontend && npm run lint
 
 # Format check all workspaces
 npm run format:check

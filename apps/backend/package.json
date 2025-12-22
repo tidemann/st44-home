@@ -6,9 +6,12 @@
     "build": "tsc",
     "start": "node dist/server.js",
     "dev": "tsx watch src/server.ts",
+    "predev": "cd ../../packages/types && npm run build",
+    "pretest": "cd ../../packages/types && npm run build",
     "test": "cross-env NODE_ENV=test tsx --test src/**/*.test.ts",
     "test:coverage": "c8 npm test",
     "test:coverage:report": "c8 report --reporter=text --reporter=lcov",
+    "type-check": "tsc --noEmit",
     "format": "prettier --write .",
     "format:check": "prettier --check ."
   },
