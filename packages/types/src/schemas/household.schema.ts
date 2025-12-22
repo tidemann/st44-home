@@ -9,7 +9,7 @@ import { z } from '../generators/openapi.generator.js';
  */
 export const HouseholdSchema = z.object({
   id: z.string().uuid(),
-  name: z.string().min(1).max(255),
+  name: z.string().min(1).max(100),
   admin_user_id: z.string().uuid(),
   created_at: z.string().datetime(),
   updated_at: z.string().datetime(),
@@ -29,7 +29,14 @@ export type Household = z.infer<typeof HouseholdSchema>;
  * Used when creating a new household
  */
 export const CreateHouseholdRequestSchema = z.object({
-  name: z.string().min(1).max(255).trim(),
+  name: z
+    .string()
+    .min(1)
+    .max(100)
+    .trim()
+    .refine((val) => val.length > 0, {
+      message: 'Name must not be empty after trimming whitespace',
+    }),
 });
 
 export type CreateHouseholdRequest = z.infer<typeof CreateHouseholdRequestSchema>;
@@ -39,7 +46,14 @@ export type CreateHouseholdRequest = z.infer<typeof CreateHouseholdRequestSchema
  * Used for updating household details
  */
 export const UpdateHouseholdRequestSchema = z.object({
-  name: z.string().min(1).max(255).trim(),
+  name: z
+    .string()
+    .min(1)
+    .max(100)
+    .trim()
+    .refine((val) => val.length > 0, {
+      message: 'Name must not be empty after trimming whitespace',
+    }),
 });
 
 export type UpdateHouseholdRequest = z.infer<typeof UpdateHouseholdRequestSchema>;
