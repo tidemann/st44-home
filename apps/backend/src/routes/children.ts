@@ -51,7 +51,7 @@ async function listChildren(
 
   try {
     const result = await db.query(
-      `SELECT id, household_id, name, birth_year, created_at, updated_at
+      `SELECT id, household_id, name, birth_year, avatar_url, created_at, updated_at
        FROM children
        WHERE household_id = $1
        ORDER BY name ASC`,
@@ -62,15 +62,17 @@ async function listChildren(
       id: row.id,
       household_id: row.household_id,
       name: row.name,
-      birth_year: row.birth_year,
+      birthYear: row.birth_year,
+      avatar_url: row.avatar_url,
       created_at: row.created_at,
       updated_at: row.updated_at,
     }));
 
-    return reply.send(children);
+    return reply.send({ children });
   } catch (error) {
     request.log.error(error, 'Failed to list children');
     return reply.status(500).send({
+      statusCode: 500,
       error: 'Internal Server Error',
       message: 'Failed to retrieve children',
     });
@@ -100,8 +102,10 @@ async function createChild(request: FastifyRequest<CreateChildRequest>, reply: F
       id: child.id,
       household_id: child.household_id,
       name: child.name,
-      birth_year: child.birth_year,
+      birthYear: child.birth_year,
+      avatar_url: null,
       created_at: child.created_at,
+      updated_at: child.created_at,
     });
   } catch (error) {
     if (error instanceof z.ZodError) {
@@ -109,6 +113,7 @@ async function createChild(request: FastifyRequest<CreateChildRequest>, reply: F
     }
     request.log.error(error, 'Failed to create child');
     return reply.status(500).send({
+      statusCode: 500,
       error: 'Internal Server Error',
       message: 'Failed to create child',
     });
@@ -156,6 +161,7 @@ async function updateChild(request: FastifyRequest<UpdateChildRequest>, reply: F
     }
     request.log.error(error, 'Failed to update child');
     return reply.status(500).send({
+      statusCode: 500,
       error: 'Internal Server Error',
       message: 'Failed to update child',
     });
@@ -200,6 +206,7 @@ async function deleteChild(request: FastifyRequest<DeleteChildRequest>, reply: F
   } catch (error) {
     request.log.error(error, 'Failed to delete child');
     return reply.status(500).send({
+      statusCode: 500,
       error: 'Internal Server Error',
       message: 'Failed to delete child',
     });
@@ -222,6 +229,7 @@ async function getMyTasks(
   const userId = request.user?.userId;
   if (!userId) {
     return reply.status(401).send({
+      statusCode: 401,
       error: 'Unauthorized',
       message: 'Authentication required',
     });
@@ -340,6 +348,7 @@ async function getMyTasks(
   } catch (error) {
     request.log.error(error, 'Failed to get my tasks');
     return reply.status(500).send({
+      statusCode: 500,
       error: 'Internal Server Error',
       message: 'Failed to retrieve tasks',
     });
