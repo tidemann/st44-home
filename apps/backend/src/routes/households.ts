@@ -393,15 +393,15 @@ async function getHouseholdMembers(
       [id],
     );
 
-    return reply.send({
-      members: result.rows.map((row: unknown) => ({
+    return reply.send(
+      result.rows.map((row: unknown) => ({
         user_id: (row as { user_id: number }).user_id,
         email: (row as { email: string }).email,
         display_name: null, // TODO: Add display_name column to users table
         role: (row as { role: string }).role,
         joined_at: (row as { joined_at: Date }).joined_at,
       })),
-    });
+    );
   } catch (error) {
     request.log.error(error, 'Failed to get household members');
     return reply.status(500).send({

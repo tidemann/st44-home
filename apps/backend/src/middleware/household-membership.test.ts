@@ -160,7 +160,7 @@ describe('Household Membership Middleware', () => {
       });
       assert.strictEqual(response.statusCode, 200);
       const body = JSON.parse(response.body);
-      assert.ok(Array.isArray(body.members));
+      assert.ok(Array.isArray(body)); // Now returns array directly
     });
 
     test('should fail at auth middleware first', async () => {
