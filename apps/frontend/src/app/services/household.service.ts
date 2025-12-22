@@ -73,8 +73,6 @@ export class HouseholdService {
   }
 
   async getHouseholdMembers(householdId: string): Promise<HouseholdMember[]> {
-    return this.apiService.get<HouseholdMember[]>(
-      `/households/${householdId}/members`,
-    );
+    return this.apiService.get<HouseholdMember[]>(`/households/${householdId}/members`);
   }
 }

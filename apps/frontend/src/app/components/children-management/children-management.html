@@ -82,14 +82,24 @@
       </div>
 
       <div class="form-actions">
-        <button type="submit" class="btn btn-primary" [disabled]="isLoading()">
-          {{ isLoading() ? 'Adding...' : 'Add Child' }}
+        <button
+          type="submit"
+          class="btn btn-primary"
+          [disabled]="isLoading() || addForm.invalid"
+          aria-label="Add child to household"
+        >
+          @if (isLoading()) {
+            Adding...
+          } @else {
+            Add Child
+          }
         </button>
         <button
           type="button"
           class="btn btn-secondary"
           (click)="toggleAddForm()"
           [disabled]="isLoading()"
+          aria-label="Cancel adding child"
         >
           Cancel
         </button>
