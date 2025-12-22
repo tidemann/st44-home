@@ -36,18 +36,21 @@ COPY packages/types/src ./packages/types/src
 # Copy backend package files
 COPY apps/backend/package.json ./apps/backend/
 
-# Install all dependencies (including dev for building types)
-RUN npm ci
+# Install production dependencies for entire workspace
+RUN npm ci --omit=dev
 
-# Build types package
-RUN npm run build --workspace=packages/types
+# Build types package (TypeScript needed from dev dependencies of types package)
+WORKDIR /app/packages/types
+RUN npm install --save-dev typescript
+RUN npm run build
 
-# Now install production dependencies only
-RUN npm ci --omit=dev --workspace=apps/backend
+# Back to root
+WORKDIR /app
 
-# Copy built backend files
+# Copy built backend files from build stage
 COPY --from=build /app/apps/backend/dist ./apps/backend/dist
 
+# Set working directory to backend
 WORKDIR /app/apps/backend
 
 EXPOSE 3000
