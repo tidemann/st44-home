@@ -4,7 +4,7 @@
 - **ID**: task-106
 - **Feature**: feature-016 - Shared TypeScript Schema & Type System
 - **Epic**: epic-002 - Task Management Core
-- **Status**: pending
+- **Status**: in-progress
 - **Priority**: medium
 - **Created**: 2025-12-22
 - **Assigned Agent**: backend-agent
@@ -254,6 +254,60 @@ describe('zodToOpenAPI', () => {
 
 ## Progress Log
 - [2025-12-22 15:45] Task created by Planner Agent
+- [2025-12-22 17:30] CRITICAL FINDING: zod-to-json-schema 3.25.0 incompatible with Zod 4.x
+- [2025-12-22 17:35] Switched to @asteasolutions/zod-to-openapi - works correctly
+- [2025-12-22 17:40] Tested new library - generates proper OpenAPI 3.1 schemas
+- [2025-12-22 17:45] Initial implementation with zod-to-json-schema needs complete rewrite
+- [2025-12-22 17:50] Status: Task needs restart with correct library (@asteasolutions/zod-to-openapi)
+
+## Key Findings
+
+### Library Compatibility Issue
+**Problem**: Initial implementation used `zod-to-json-schema@3.25.0`, which returns empty objects when used with Zod 4.x.
+
+**Test Results**:
+```javascript
+zodToJsonSchema(z.string()) // Returns: { "$schema": "..." } only
+zodToJsonSchema(z.object({...})) // Returns: { "$schema": "..." } only
+```
+
+**Root Cause**: zod-to-json-schema 3.x does not properly support Zod v4 API changes.
+
+### Solution
+**Library**: `@asteasolutions/zod-to-openapi` ✅
+- ✅ Works correctly with Zod 4.2.1
+- ✅ Generates proper OpenAPI 3.1 schemas
+- ✅ Supports all Zod types (string, number, object, array, enum, union, nullable)
+- ✅ Includes proper formats (uuid, email, date-time)
+- ✅ Handles required/optional fields correctly
+- ✅ Well-maintained and actively developed
+
+**Test Results**:
+```javascript
+// Generates complete schema with all properties:
+{
+  "type": "object",
+  "properties": {
+    "id": { "type": "string", "format": "uuid" },
+    "email": { "type": "string", "format": "email" },
+    "name": { "type": "string", "minLength": 1, "maxLength": 100 }
+  },
+  "required": ["id", "email", "name"]
+}
+```
+
+### Current State
+- ❌ Initial implementation (openapi.generator.ts) based on wrong library - non-functional
+- ✅ @asteasolutions/zod-to-openapi installed and tested
+- ✅ Library verified to work correctly
+- 🔄 **NEEDS**: Complete rewrite using new library's API
+
+### Next Steps
+1. Remove broken generator implementation
+2. Implement using OpenAPIRegistry + OpenApiGeneratorV31 pattern
+3. Create wrapper functions for easy consumption
+4. Write tests with new library
+5. Update documentation
 
 ## Testing Results
 - String conversion: Pass

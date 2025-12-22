@@ -42,6 +42,7 @@
     "vitest": "^4.0.16"
   },
   "dependencies": {
+    "@asteasolutions/zod-to-openapi": "^8.2.0",
     "zod": "^4.2.1"
   }
 }
