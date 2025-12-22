@@ -4,6 +4,40 @@
 
 This project uses npm workspaces to manage shared packages. When adding dependencies between workspaces (e.g., frontend/backend depending on shared packages), specific steps are required to ensure both local development and Docker builds work correctly.
 
+## Critical Requirements
+
+### .dockerignore File (MANDATORY)
+
+**The project MUST have a `.dockerignore` file at the repository root** to prevent copying `node_modules/` from the host machine into Docker builds. This is critical because:
+
+1. **Platform-specific native bindings**: Packages like `lightningcss`, `esbuild`, and other tools with native code have different binaries for each platform (Windows, macOS, Linux)
+2. **Alpine Linux uses musl**: Our Docker images use `node:24-alpine` which requires `musl` bindings, not `glibc`
+3. **Lock file mismatch**: Installing from a lock file generated on Windows/macOS will download wrong binaries if node_modules is copied
+
+**Without `.dockerignore`**:
+```bash
+# Host machine (Windows/macOS)
+node_modules/lightningcss/lightningcss.win32-x64-msvc.node
+
+# Docker COPY copies this ↑
+# Docker container tries to use Windows binary on Linux → ERROR!
+Error: Cannot find module '../lightningcss.linux-x64-musl.node'
+```
+
+**With `.dockerignore`**:
+```bash
+# node_modules/ is excluded from Docker build context
+# npm ci runs fresh in container → downloads correct Linux musl binaries ✅
+```
+
+**Required `.dockerignore` contents**:
+```gitignore
+node_modules/
+**/node_modules/
+dist/
+**/dist/
+```
+
 ## Current Workspace Structure
 
 ```
