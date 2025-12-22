@@ -7,7 +7,7 @@
 - **Priority**: high
 - **Created**: 2025-12-22
 - **Estimated Duration**: 5-7 days (35-50 hours)
-- **Progress**: 4/7 tasks complete (57%)
+- **Progress**: 5/7 tasks complete (71%)
 
 ## Description
 Create a shared TypeScript schema and type system that ensures consistency between frontend and backend. Currently, types are duplicated across frontend services and backend schemas, leading to potential mismatches, maintenance overhead, and API inconsistencies. This feature introduces a centralized schema package that generates TypeScript types for both frontend and backend, as well as OpenAPI schemas for API documentation and validation.
@@ -57,7 +57,7 @@ Create a shared TypeScript schema and type system that ensures consistency betwe
 - [x] [task-105](../items/done/task-105-define-core-domain-schemas.md): Define core domain schemas with Zod (User, Household, Child, Task, Assignment) (6-8 hours) **COMPLETED** 2025-12-22
 - [x] [task-106](../items/done/task-106-openapi-schema-generator.md): Implement OpenAPI schema generator (5-7 hours) **COMPLETED** 2025-12-22 [PR #135]
 - [x] [task-107](../items/done/task-107-migrate-backend-shared-types.md): Migrate backend to use shared types (3 endpoints: tasks, households, children) (6-8 hours) **COMPLETED** 2025-12-22 [PR #136]
-- [ ] [task-108](../items/task-108-migrate-frontend-shared-types.md): Migrate frontend services to use shared types (TaskService, HouseholdService, ChildrenService) (5-7 hours)
+- [x] [task-108](../items/done/task-108-migrate-frontend-shared-types.md): Migrate frontend services to use shared types (TaskService, HouseholdService, ChildrenService) - **COMPLETED** (5-7 hours)
 - [ ] [task-109](../items/task-109-update-build-pipeline.md): Update build pipeline for type compilation order (3-4 hours)
 - [ ] [task-110](../items/task-110-integration-testing-docs.md): Integration testing and developer documentation (4-5 hours)
 

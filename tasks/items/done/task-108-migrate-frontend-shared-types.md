@@ -4,10 +4,11 @@
 - **ID**: task-108
 - **Feature**: feature-016 - Shared TypeScript Schema & Type System
 - **Epic**: epic-002 - Task Management Core
-- **Status**: in-progress
+- **Status**: completed
 - **Priority**: high
 - **Created**: 2025-12-22
 - **Started**: 2025-12-22
+- **Completed**: 2025-12-22
 - **Assigned Agent**: frontend-agent | orchestrator-agent
 - **Estimated Duration**: 5-7 hours
 
@@ -25,16 +26,16 @@ Migrate frontend Angular services to use shared TypeScript types from `@st44/typ
 - REQ8: Handle snake_case → camelCase conversion if needed
 
 ## Acceptance Criteria
-- [ ] Frontend package.json includes `@st44/types` dependency
-- [ ] TaskService imports types from `@st44/types`
-- [ ] HouseholdService imports types from `@st44/types`
-- [ ] ChildrenService imports types from `@st44/types`
-- [ ] No duplicate interface definitions remain in service files
-- [ ] All service method signatures use shared types
-- [ ] HTTP request/response bodies use shared types
-- [ ] All existing frontend unit tests pass (222 tests)
-- [ ] TypeScript compilation succeeds with no errors
-- [ ] Components using services still work correctly
+- [x] Frontend package.json includes `@st44/types` dependency
+- [x] TaskService imports types from `@st44/types`
+- [x] HouseholdService imports types from `@st44/types`
+- [x] ChildrenService imports types from `@st44/types`
+- [x] No duplicate interface definitions remain in service files
+- [x] All service method signatures use shared types
+- [x] HTTP request/response bodies use shared types
+- [x] All existing frontend unit tests pass (222 tests)
+- [x] TypeScript compilation succeeds with no errors
+- [x] Components using services still work correctly
 
 ## Dependencies
 - task-104: Create Shared Types Package (must be built)
@@ -273,6 +274,14 @@ const mockTask: Task = {
 
 ## Progress Log
 - [2025-12-22 15:45] Task created by Planner Agent
+- [2025-12-22 21:30] Started migration - added @st44/types dependency, migrated TaskService, HouseholdService, ChildrenService
+- [2025-12-22 21:45] Updated 9 component files to use shared types
+- [2025-12-22 21:50] Local build passed, tests timed out locally
+- [2025-12-22 22:00] PR #137 created
+- [2025-12-22 22:05] CI failed - missing types build step in frontend workflow + type errors
+- [2025-12-22 22:30] Fixed CI: Added types build step, fixed HouseholdListItem interface, corrected day parameter type
+- [2025-12-22 22:45] Fixed pre-existing backend test failure in children.test.ts
+- [2025-12-22 23:15] All CI checks passing - PR merged successfully
 
 ## Testing Results
 - Frontend unit tests: 222/222 passing
@@ -282,8 +291,14 @@ const mockTask: Task = {
 - Manual browser testing: All features working
 
 ## Related PRs
-[To be added during implementation]
+- PR #137: feat(task-108): Migrate frontend services to shared types - **MERGED**
+  - https://github.com/tidemann/st44-home/pull/137
+  - 26 files changed, 187 insertions(+), 205 deletions(-)
 
 ## Lessons Learned
-[To be filled after completion]
+1. **CI Configuration Critical**: Frontend CI workflow was missing "Build shared types package" step that backend had, causing module not found errors. Always verify CI builds dependencies before tests.
+2. **Type Strictness Differs**: Local TypeScript compilation was more lenient than CI. Using `Omit<>` utility type created index signatures that CI's strict mode rejected. Prefer explicit interface definitions for clarity.
+3. **Test Data Types Matter**: Used `string` type annotation for `day` parameter but schema defines it as `number` (0-6 for days of week). Always check schema definitions before adding type annotations.
+4. **Pre-existing Test Failures**: Backend had unrelated test failure (children list expecting array instead of {children: []}). Important to investigate test failures even if they seem unrelated - blocking PR merge.
+5. **Successful Pattern**: Migration eliminated 205 lines of duplicate code while adding only 187 lines, demonstrating value of shared type system.
 
