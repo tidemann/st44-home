@@ -29,7 +29,7 @@ const ruleConfigSchema = {
 const taskSchema = {
   type: 'object',
   properties: {
-    id: { type: 'number' },
+    id: uuidSchema,
     household_id: uuidSchema,
     name: { type: 'string' },
     description: { type: 'string', nullable: true },
@@ -39,10 +39,11 @@ const taskSchema = {
       enum: ['daily', 'repeating', 'weekly_rotation'],
     },
     rule_config: { ...ruleConfigSchema, nullable: true },
-    is_active: { type: 'boolean' },
+    active: { type: 'boolean' },
     created_at: { type: 'string', format: 'date-time' },
+    updated_at: { type: 'string', format: 'date-time' },
   },
-  required: ['id', 'household_id', 'name', 'rule_type', 'is_active'],
+  required: ['id', 'household_id', 'name', 'rule_type', 'active'],
 } as const;
 
 // GET /api/households/:householdId/tasks
@@ -128,7 +129,7 @@ const updateTaskSchemaBase = {
   params: {
     type: 'object',
     properties: {
-      taskId: { type: 'number' },
+      taskId: uuidSchema,
     },
     required: ['taskId'],
   },
@@ -167,7 +168,7 @@ const deleteTaskSchemaBase = {
   params: {
     type: 'object',
     properties: {
-      taskId: { type: 'number' },
+      taskId: uuidSchema,
     },
     required: ['taskId'],
   },

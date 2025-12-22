@@ -254,7 +254,7 @@ async function listTasks(request: FastifyRequest<ListTasksRequest>, reply: Fasti
       updated_at: row.updated_at,
     }));
 
-    return reply.send({ tasks });
+    return reply.send(tasks);
   } catch (error) {
     request.log.error(error, 'Failed to list tasks');
     return reply.status(500).send({

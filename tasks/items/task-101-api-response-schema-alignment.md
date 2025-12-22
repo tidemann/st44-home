@@ -257,6 +257,9 @@ After fixes, update `.github/workflows/ci.yml` to remove stripResponseValidation
 - [2025-12-22 11:30] Fixed assignment schemas (number → UUID types) - deployed ✅
 - [2025-12-22 11:35] Tests: 239/273 passing (33 failures remain - 51% fixed!)
 - [2025-12-22 11:40] **Progress**: 68 → 54 → 33 failures (35 tests fixed in 90 mins)
+- [2025-12-22 11:50] Fixed children endpoints (array response, snake_case) - deployed ✅
+- [2025-12-22 11:55] Tests: 243/273 passing (29 failures remain - 57% fixed!)
+- [2025-12-22 11:55] **Progress**: 68 → 33 → 29 failures (39 tests fixed total)
 
 ## Testing Results
 [To be filled during testing phase - target 270+/273 passing]
