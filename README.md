@@ -78,6 +78,7 @@ A monorepo containing the frontend (Angular) and backend (Fastify) applications 
 - Node.js 24+
 - npm 11.6.2+
 - Docker & Docker Compose
+- Git Bash 5.2.37 (configured as default terminal in VS Code)
 
 ### Installation
 

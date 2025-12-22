@@ -25,6 +25,8 @@ npm run dev:stop
 
 ## How It Works
 
+**Default Terminal**: This project uses **Git Bash 5.2.37** as the default terminal in VS Code.
+
 The `npm run dev:*` scripts use PowerShell's `Start-Process` to launch dev servers in **separate, detached PowerShell windows**. This means:
 
 ✅ **Your working terminal stays free** for running commands  
