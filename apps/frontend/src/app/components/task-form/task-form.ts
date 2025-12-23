@@ -6,6 +6,7 @@ import {
   input,
   output,
   computed,
+  effect,
   ChangeDetectionStrategy,
 } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
@@ -29,7 +30,7 @@ export class TaskFormComponent implements OnInit {
   task = input<Task | null>(null);
   formClose = output<void>();
 
-  form!: FormGroup;
+  form: FormGroup;
   isSubmitting = signal(false);
   errorMessage = signal('');
   selectedDays = signal<number[]>([]);
@@ -42,14 +43,8 @@ export class TaskFormComponent implements OnInit {
     return this.task() ? 'Save' : 'Create';
   });
 
-  ngOnInit() {
-    this.initForm();
-    if (this.task()) {
-      this.populateForm(this.task()!);
-    }
-  }
-
-  private initForm() {
+  constructor() {
+    // Initialize form in constructor to ensure it's always defined
     this.form = this.fb.group({
       name: ['', [Validators.required, Validators.minLength(1)]],
       description: [''],
@@ -61,7 +56,24 @@ export class TaskFormComponent implements OnInit {
     this.form.get('ruleType')?.valueChanges.subscribe(() => {
       this.selectedDays.set([]);
     });
+
+    // Use effect to populate form when task input changes
+    effect(() => {
+      const currentTask = this.task();
+      if (currentTask) {
+        this.populateForm(currentTask);
+      }
+    });
   }
+
+  ngOnInit() {
+    // Form is already initialized in constructor
+    // Just populate if task was already set
+    if (this.task()) {
+      this.populateForm(this.task()!);
+    }
+  }
+
 
   private populateForm(task: Task) {
     this.form.patchValue({
