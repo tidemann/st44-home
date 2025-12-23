@@ -168,6 +168,8 @@ Provide: "Running tests locally to identify root cause... [investigation]"
 - Verify all edge cases are considered
 
 ### 5. Agent Coordination & Delegation
+
+#### Agent Assignment
 - Assign subtasks to specialized expert agents:
   - **Frontend Agent**: Angular components, services, UI/UX
   - **Backend Agent**: Fastify APIs, business logic, middleware
@@ -181,6 +183,167 @@ Provide: "Running tests locally to identify root cause... [investigation]"
 - Coordinate dependencies between agents
 - Integrate work from multiple agents
 - Resolve conflicts and inconsistencies
+
+#### Subagent Delegation Pattern (MANDATORY)
+
+**⚠️ CRITICAL**: Always follow this handover pattern when delegating to subagents.
+
+According to CLAUDE.md, each subagent must be given:
+1. ✅ **Path to agent spec file for context**
+2. ✅ **Task description and acceptance criteria**
+3. ✅ **Relevant files to read/modify**
+
+**Template for Handovers:**
+
+```markdown
+**Context Files** (read these first):
+1. .github/agents/[AGENT-TYPE]-agent.md - Agent-specific patterns and conventions
+2. CLAUDE.md - Project-wide conventions (especially "Key Conventions" section)
+3. tasks/[items|features]/[TASK-FILE].md - Task specification and acceptance criteria
+
+**Implementation Files** (your targets):
+- [Exact file path to create/modify - be specific]
+- [Another file path]
+
+**Reference Files** (for examples/patterns):
+- [Existing file that shows patterns to follow]
+
+**Task**:
+[Clear, focused description of what needs to be done]
+
+**Acceptance Criteria**:
+- [ ] Criterion 1
+- [ ] Criterion 2
+- [ ] All tests pass
+
+**Priority**: [High/Medium/Low] - [Why this matters]
+
+**Testing**: [Which tests to run and how]
+```
+
+**Agent Type Selection:**
+
+❌ **DON'T**: Use "general-purpose" for everything
+✅ **DO**: Use specialized agent types
+
+- **Backend work**: Use backend-focused subagent
+  - Read: `.github/agents/backend-agent.md`
+  - Use for: Fastify APIs, routes, middleware, business logic
+
+- **Frontend work**: Use frontend-focused subagent
+  - Read: `.github/agents/frontend-agent.md`
+  - Use for: Angular components, services, UI/UX
+
+- **Database work**: Use database-focused subagent
+  - Read: `.github/agents/database-agent.md`
+  - Use for: Migrations, schema changes, queries
+
+- **General-purpose**: Only for cross-cutting concerns
+  - Use when work spans multiple domains without clear boundaries
+  - Use for documentation-only tasks
+  - Use for complex analysis requiring multiple perspectives
+
+**Example Handover (Backend Test Utilities):**
+
+```
+**Context Files** (read these first):
+1. .github/agents/backend-agent.md - Backend patterns and conventions
+2. CLAUDE.md - Project conventions (camelCase, async/await, parameterized queries)
+3. tasks/items/task-102-evaluate-shared-test-utilities.md - Task specification
+
+**Implementation Files** (your targets):
+- apps/backend/src/test-helpers/http.ts (create new)
+- apps/backend/src/test-helpers/generators.ts (create new)
+- apps/backend/src/test-helpers/fixtures.ts (enhance existing)
+- apps/backend/src/test-helpers/index.ts (update exports)
+- apps/backend/src/test-helpers/README.md (update documentation)
+
+**Reference Files** (for examples/patterns):
+- apps/backend/src/test-helpers/README.md - Current test patterns
+- apps/backend/src/routes/tasks.test.ts - Example integration test
+- apps/backend/src/routes/auth.test.ts - Test setup patterns
+
+**Task**:
+Create comprehensive shared test utilities for backend tests. Audit existing test files
+for duplication, design shared utility modules (HTTP client, data generators, enhanced
+fixtures), and implement them in test-helpers/. Goal is 60%+ reduction in test setup code.
+
+**Acceptance Criteria**:
+- [ ] HTTP test client created with expectSuccess/expectError helpers
+- [ ] Data generators created (25+ functions for realistic test data)
+- [ ] Enhanced fixtures (createCompleteTestScenario, createHouseholdWithMembers)
+- [ ] All 272 backend tests still pass
+- [ ] Documentation updated with usage examples
+- [ ] Before/after examples showing code reduction
+
+**Priority**: Medium - Improves developer experience and test maintainability
+
+**Testing**: Run `npm run test:backend` to verify all tests pass
+```
+
+**Example Handover (Frontend Documentation):**
+
+```
+**Context Files** (read these first):
+1. .github/agents/frontend-agent.md - Angular patterns (signals, standalone, inject)
+2. CLAUDE.md - Project conventions (camelCase, OnPush, control flow syntax)
+3. tasks/items/task-110-integration-testing-docs.md - Task specification
+
+**Implementation Files** (your targets):
+- packages/types/README.md (create comprehensive guide - 500+ lines)
+- apps/backend/AGENTS.md (add "Shared Types Usage" section)
+- apps/frontend/AGENTS.md (add "Shared Types Usage" section)
+- tasks/items/task-110-integration-testing-docs.md (update completion status)
+
+**Reference Files** (for examples/patterns):
+- apps/backend/src/test-helpers/README.md - Example of good documentation
+- packages/types/src/schemas/task.schema.ts - Schema patterns to document
+- packages/types/src/generators/openapi.generator.ts - OpenAPI patterns
+
+**Task**:
+Create comprehensive developer documentation for the shared types system. Write
+packages/types/README.md with usage examples, conventions, troubleshooting.
+Update AGENTS.md files with shared types patterns for backend and frontend developers.
+
+**Acceptance Criteria**:
+- [ ] README.md covers: overview, usage, adding schemas, conventions, troubleshooting
+- [ ] Backend AGENTS.md updated with Zod validation patterns
+- [ ] Frontend AGENTS.md updated with type import patterns
+- [ ] Before/after examples showing improvements
+- [ ] Architecture diagram or code flow examples
+- [ ] All tests still pass (no code changes, just docs)
+
+**Priority**: High - Ensures developers can use the new type system effectively
+
+**Testing**: No code changes, verify documentation completeness by review
+```
+
+**Quality Checklist for Handovers:**
+
+Before spawning a subagent, verify:
+- [ ] Referenced the agent spec file (`.github/agents/[TYPE]-agent.md`)
+- [ ] Referenced CLAUDE.md for project conventions
+- [ ] Listed exact file paths for implementation
+- [ ] Provided reference files for patterns
+- [ ] Clear task description
+- [ ] Explicit acceptance criteria as checkboxes
+- [ ] Explained priority and why it matters
+- [ ] Specified how to test the work
+
+**Common Mistakes to Avoid:**
+
+❌ Never reference agent spec file
+❌ Using "general-purpose" for everything
+❌ Vague file paths ("update backend files")
+❌ No reference to CLAUDE.md conventions
+❌ Missing acceptance criteria
+❌ No testing instructions
+
+✅ Always: "Read .github/agents/backend-agent.md for context"
+✅ Always: "Read CLAUDE.md for project conventions"
+✅ Always: List exact file paths
+✅ Always: Provide clear acceptance criteria
+✅ Always: Explain how to test
 
 ### 6. Quality Assurance
 
