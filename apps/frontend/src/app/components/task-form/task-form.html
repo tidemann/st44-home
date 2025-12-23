@@ -13,6 +13,7 @@
       <div class="error">{{ errorMessage() }}</div>
     }
 
+    @if (formReady()) {
     <form [formGroup]="form" (ngSubmit)="onSubmit()">
       <div class="form-field">
         <label for="name">Name *</label>
@@ -116,5 +117,6 @@
         </button>
       </div>
     </form>
+    }
   </div>
 </div>

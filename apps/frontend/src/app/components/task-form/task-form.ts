@@ -34,6 +34,7 @@ export class TaskFormComponent implements OnInit {
   isSubmitting = signal(false);
   errorMessage = signal('');
   selectedDays = signal<number[]>([]);
+  formReady = signal(false);
 
   // Computed signal for button text
   buttonText = computed(() => {
@@ -64,6 +65,9 @@ export class TaskFormComponent implements OnInit {
         this.populateForm(currentTask);
       }
     });
+
+    // Mark form as ready after initialization
+    this.formReady.set(true);
   }
 
   ngOnInit() {
