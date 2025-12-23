@@ -1,0 +1,38 @@
+{
+  "$schema": "https://claude.ai/code/settings-schema.json",
+  "permissions": {
+    "allow": [
+      "Bash(npm run *)",
+      "Bash(npx *)",
+      "Bash(git *)",
+      "Bash(gh *)",
+      "Bash(cd *)",
+      "Bash(ls *)",
+      "Bash(mkdir *)",
+      "Bash(docker *)",
+      "Bash(docker-compose *)",
+      "Bash(curl *)",
+      "Bash(pwsh *)",
+      "Bash(Start-Sleep *)",
+      "Bash(Test-Path *)",
+      "Bash(Get-Content *)",
+      "Bash(Remove-Item *)",
+      "Bash(Move-Item *)",
+      "Read(*)",
+      "Write(apps/**)",
+      "Write(packages/**)",
+      "Write(docker/**)",
+      "Write(infra/**)",
+      "Write(tasks/**)",
+      "Write(docs/**)",
+      "Write(.claude/**)",
+      "Edit(*)"
+    ],
+    "deny": [
+      "Bash(rm -rf /)",
+      "Bash(*--force*push*main*)",
+      "Bash(*push*--force*origin main*)",
+      "Bash(*push origin main*)"
+    ]
+  }
+}
