@@ -1,17 +1,48 @@
 # Database Agent Task
 
-You are the Database Agent. Read `.github/agents/database-agent.md` and `docker/postgres/migrations/README.md` for full context.
+**Usage**: `/database $ISSUE_NUMBER [$TABLE_NAME]`
+
+**Arguments**:
+
+- `$ISSUE_NUMBER` - GitHub issue number to implement (required)
+- `$TABLE_NAME` - Specific table being modified (optional)
+
+**Examples**:
+
+- `/database 123` - Implement GitHub issue #123
+- `/database 45 users` - Implement issue #45 for users table migration
+
+You are the Database Agent. Read `.claude/agents/database.md` for full context and patterns.
+
+**Before starting**: Read the `/database` skill documentation in `.claude/skills/database/SKILL.md`
+
+## Quick Reference
+
+**Read for full context**: `.claude/agents/database.md`
+
+## CRITICAL: MIGRATION-FIRST WORKFLOW
+
+**EVERY database schema change MUST create a migration file**
+
+Without migration file:
+
+- Changes will NOT deploy to production
+- Changes will be LOST when database recreated
 
 ## Your Role
-Implement database changes following project conventions:
-- ALWAYS create migration files in `docker/postgres/migrations/`
-- Use naming convention: `NNN_descriptive_name.sql`
-- Make migrations idempotent (IF NOT EXISTS, ON CONFLICT DO NOTHING)
-- Wrap in BEGIN/COMMIT transactions
-- Update schema_migrations table
-- Also update init.sql for fresh installs
+
+Implement database changes following migration-first workflow:
+
+1. Find next migration number
+2. Create migration file in `docker/postgres/migrations/`
+3. Write idempotent SQL (IF NOT EXISTS, ON CONFLICT DO NOTHING)
+4. Wrap in BEGIN/COMMIT
+5. Record in schema_migrations table
+6. Test locally
+7. Update init.sql if needed
 
 ## Migration Template
+
 ```sql
 -- Migration: NNN_description
 -- Description: What this changes
@@ -20,7 +51,7 @@ Implement database changes following project conventions:
 
 BEGIN;
 
--- Your changes here
+-- Idempotent SQL
 CREATE TABLE IF NOT EXISTS ...
 
 -- Record migration
@@ -31,16 +62,31 @@ ON CONFLICT (version) DO NOTHING;
 COMMIT;
 ```
 
+## MANDATORY: Migration Testing
+
+```bash
+# 1. Apply migration
+docker exec -i st44-db psql -U postgres -d st44 < docker/postgres/migrations/NNN_name.sql
+
+# 2. Verify recorded
+docker exec -it st44-db psql -U postgres -d st44 -c "SELECT * FROM schema_migrations ORDER BY version;"
+
+# 3. Test idempotency (run again - should not error)
+docker exec -i st44-db psql -U postgres -d st44 < docker/postgres/migrations/NNN_name.sql
+```
+
 ## Before Starting
-1. Check existing migrations: `ls docker/postgres/migrations/*.sql`
-2. Find next version number
-3. Read task requirements
+
+1. Read `.claude/agents/database.md` for patterns
+2. Check existing migrations: `ls docker/postgres/migrations/*.sql`
+3. Find next version number
+4. Read task requirements
 
 ## After Completing
-1. Test migration locally:
-   ```bash
-   docker exec -i st44-db psql -U postgres -d st44 < docker/postgres/migrations/NNN_name.sql
-   ```
-2. Verify in schema_migrations table
-3. Update init.sql if needed
-4. Report results back to orchestrator
+
+1. Test migration locally (see above)
+2. Verify idempotency
+3. Update init.sql if creating new core tables
+4. Report results with evidence
+
+**Your migration file IS your deployment guarantee**
