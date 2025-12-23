@@ -62,4 +62,20 @@ export class ChildrenService {
   async deleteChild(householdId: string, childId: string): Promise<DeleteChildResponse> {
     return this.api.delete<DeleteChildResponse>(`/households/${householdId}/children/${childId}`);
   }
+
+  /**
+   * Create a user account for a child
+   * Links the child profile to a new user account with 'child' role
+   */
+  async createChildAccount(
+    householdId: string,
+    childId: string,
+    email: string,
+    password: string,
+  ): Promise<Child> {
+    return this.api.post<Child>(`/households/${householdId}/children/${childId}/create-account`, {
+      email,
+      password,
+    });
+  }
 }

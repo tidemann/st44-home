@@ -10,6 +10,7 @@ import { z } from '../generators/openapi.generator.js';
 export const ChildSchema = z.object({
   id: z.string().uuid(),
   householdId: z.string().uuid(),
+  userId: z.string().uuid().nullable().optional(),
   name: z.string().min(1).max(255),
   birthYear: z.number().int().min(1900).max(new Date().getFullYear()).nullable().optional(),
   avatarUrl: z.string().url().nullable().optional(),
@@ -49,6 +50,28 @@ export const UpdateChildRequestSchema = z.object({
 });
 
 export type UpdateChildRequest = z.infer<typeof UpdateChildRequestSchema>;
+
+/**
+ * Create Child User Account Request
+ * Used when creating a user account for a child
+ */
+export const CreateChildUserAccountRequestSchema = z.object({
+  childId: z.string().uuid(),
+  email: z.string().email(),
+  password: z.string().min(8).max(128),
+});
+
+export type CreateChildUserAccountRequest = z.infer<typeof CreateChildUserAccountRequestSchema>;
+
+/**
+ * Link Child to User Request
+ * Used when linking an existing child to a user account
+ */
+export const LinkChildToUserRequestSchema = z.object({
+  userId: z.string().uuid(),
+});
+
+export type LinkChildToUserRequest = z.infer<typeof LinkChildToUserRequestSchema>;
 
 /**
  * Child with Stats Response
