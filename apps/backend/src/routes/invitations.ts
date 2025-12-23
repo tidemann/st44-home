@@ -4,6 +4,7 @@ import { db } from '../database.js';
 import { authenticateUser } from '../middleware/auth.js';
 import { validateHouseholdMembership } from '../middleware/household-membership.js';
 import { validateCanInvite } from '../middleware/invitation-auth.js';
+import { getEmailService } from '../services/email.service.js';
 
 interface CreateInvitationRequest {
   Params: {
@@ -115,8 +116,31 @@ async function createInvitation(
       });
     }
 
+    // Get household name and inviter email for email template
+    const householdResult = await db.query(
+      `SELECT h.name, u.email as inviter_email
+       FROM households h
+       JOIN users u ON u.id = $1
+       WHERE h.id = $2`,
+      [userId, householdId],
+    );
+
+    if (householdResult.rows.length === 0) {
+      return reply.status(404).send({
+        error: 'Not Found',
+        message: 'Household not found',
+      });
+    }
+
+    const householdName = householdResult.rows[0].name;
+    const inviterEmail = householdResult.rows[0].inviter_email;
+
     // Generate unique token
     const token = generateInvitationToken();
+
+    // Calculate expiration date (7 days from now)
+    const expiresAt = new Date();
+    expiresAt.setDate(expiresAt.getDate() + 7);
 
     // Insert invitation
     const result = await db.query(
@@ -127,6 +151,33 @@ async function createInvitation(
     );
 
     const invitation = result.rows[0];
+
+    // Send invitation email (non-blocking - log errors but don't fail the request)
+    const emailService = getEmailService(request.log);
+    emailService
+      .sendInvitationEmailSafe(email, {
+        householdName,
+        inviterEmail,
+        token,
+        expiresAt: invitation.expires_at,
+      })
+      .then((success) => {
+        if (success) {
+          request.log.info({ email, householdId }, 'Invitation email sent successfully');
+        } else {
+          request.log.warn(
+            { email, householdId },
+            'Failed to send invitation email - invitation created but email not delivered',
+          );
+        }
+      })
+      .catch((error) => {
+        // This should never happen with sendInvitationEmailSafe, but handle it just in case
+        request.log.error(
+          { error, email, householdId },
+          'Unexpected error sending invitation email',
+        );
+      });
 
     return reply.status(201).send({
       id: invitation.id,
