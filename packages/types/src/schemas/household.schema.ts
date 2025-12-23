@@ -10,9 +10,9 @@ import { z } from '../generators/openapi.generator.js';
 export const HouseholdSchema = z.object({
   id: z.string().uuid(),
   name: z.string().min(1).max(100),
-  admin_user_id: z.string().uuid().optional(),
-  created_at: z.string().datetime(),
-  updated_at: z.string().datetime(),
+  adminUserId: z.string().uuid().optional(),
+  createdAt: z.string().datetime(),
+  updatedAt: z.string().datetime(),
 });
 
 /**
@@ -64,10 +64,10 @@ export type UpdateHouseholdRequest = z.infer<typeof UpdateHouseholdRequestSchema
  */
 export const HouseholdMemberSchema = z.object({
   id: z.string().uuid(),
-  household_id: z.string().uuid(),
-  user_id: z.string().uuid(),
+  householdId: z.string().uuid(),
+  userId: z.string().uuid(),
   role: z.enum(['parent', 'child']),
-  joined_at: z.string().datetime(),
+  joinedAt: z.string().datetime(),
 });
 
 export type HouseholdMember = z.infer<typeof HouseholdMemberSchema>;
@@ -88,12 +88,12 @@ export type HouseholdWithMembers = z.infer<typeof HouseholdWithMembersSchema>;
  */
 export const InvitationSchema = z.object({
   id: z.string().uuid(),
-  household_id: z.string().uuid(),
+  householdId: z.string().uuid(),
   email: z.string().email(),
   token: z.string(),
-  invited_by_user_id: z.string().uuid(),
-  expires_at: z.string().datetime(),
-  created_at: z.string().datetime(),
+  invitedByUserId: z.string().uuid(),
+  expiresAt: z.string().datetime(),
+  createdAt: z.string().datetime(),
 });
 
 export type Invitation = z.infer<typeof InvitationSchema>;

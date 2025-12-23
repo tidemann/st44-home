@@ -12,7 +12,7 @@ import { TaskService } from '../../services/task.service';
 import { ChildrenService } from '../../services/children.service';
 import { HouseholdService } from '../../services/household.service';
 
-type SortOption = 'created' | 'title' | 'rule_type';
+type SortOption = 'created' | 'title' | 'ruleType';
 
 @Component({
   selector: 'app-task-list',
@@ -40,12 +40,12 @@ export class TaskList implements OnInit {
     const sort = this.sortBy();
     if (sort === 'title') {
       tasks = [...tasks].sort((a, b) => a.name.localeCompare(b.name));
-    } else if (sort === 'rule_type') {
-      tasks = [...tasks].sort((a, b) => a.rule_type.localeCompare(b.rule_type));
+    } else if (sort === 'ruleType') {
+      tasks = [...tasks].sort((a, b) => a.ruleType.localeCompare(b.ruleType));
     } else {
       // Default: created (newest first)
       tasks = [...tasks].sort(
-        (a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime(),
+        (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
       );
     }
 
@@ -126,14 +126,15 @@ export class TaskList implements OnInit {
         name: task.name,
         description: task.description || undefined,
         points: task.points,
-        rule_type: task.rule_type,
-        rule_config: task.rule_config || undefined,
+        ruleType: task.ruleType,
+        ruleConfig: task.ruleConfig || undefined,
+        active: !task.active,
       })
       .subscribe();
   }
 
   protected getChildrenNames(task: Task): string {
-    const childIds = task.rule_config?.assigned_children;
+    const childIds = task.ruleConfig?.assignedChildren;
     if (!childIds || childIds.length === 0) return 'All children';
 
     const children = this.children();

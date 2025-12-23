@@ -69,22 +69,22 @@
               <div
                 class="task-card pending"
                 role="article"
-                [attr.aria-label]="'Task: ' + task.task_name"
+                [attr.aria-label]="'Task: ' + task.taskName"
               >
                 <div class="task-header">
-                  <h4 class="task-name">{{ task.task_name }}</h4>
+                  <h4 class="task-name">{{ task.taskName }}</h4>
                   <span class="task-points" [attr.aria-label]="task.points + ' points'">
                     {{ task.points }} pts
                   </span>
                 </div>
-                @if (task.task_description) {
-                  <p class="task-description">{{ task.task_description }}</p>
+                @if (task.taskDescription) {
+                  <p class="task-description">{{ task.taskDescription }}</p>
                 }
                 <button
                   class="mark-done-button"
                   (click)="onMarkDone(task)"
                   [disabled]="isCompleting(task.id)"
-                  [attr.aria-label]="'Mark ' + task.task_name + ' as done'"
+                  [attr.aria-label]="'Mark ' + task.taskName + ' as done'"
                 >
                   @if (isCompleting(task.id)) {
                     <span class="button-spinner"></span>
@@ -106,16 +106,16 @@
               <div
                 class="task-card completed"
                 role="article"
-                [attr.aria-label]="'Completed task: ' + task.task_name"
+                [attr.aria-label]="'Completed task: ' + task.taskName"
               >
                 <div class="task-header">
-                  <h4 class="task-name">{{ task.task_name }}</h4>
+                  <h4 class="task-name">{{ task.taskName }}</h4>
                   <span class="task-points" [attr.aria-label]="task.points + ' points earned'">
                     {{ task.points }} pts
                   </span>
                 </div>
-                @if (task.task_description) {
-                  <p class="task-description">{{ task.task_description }}</p>
+                @if (task.taskDescription) {
+                  <p class="task-description">{{ task.taskDescription }}</p>
                 }
                 <div class="completed-badge">
                   <span class="checkmark">✓</span>

@@ -30,5 +30,8 @@
     "db:test:down": "cd infra && docker compose -f docker-compose.test.yml down -v",
     "db:test:migrate": "pwsh -Command \"docker exec -i st44-db-test psql -U postgres -d st44_test < docker/postgres/init.sql\""
   },
-  "packageManager": "npm@11.6.2"
+  "packageManager": "npm@11.6.2",
+  "devDependencies": {
+    "jsdom": "^27.2.0"
+  }
 }

@@ -9,12 +9,12 @@ import { z } from '../generators/openapi.generator.js';
  */
 export const ChildSchema = z.object({
   id: z.string().uuid(),
-  household_id: z.string().uuid(),
+  householdId: z.string().uuid(),
   name: z.string().min(1).max(255),
-  birthYear: z.number().int().min(1900).max(new Date().getFullYear()).nullable(),
-  avatar_url: z.string().url().nullable(),
-  created_at: z.string().datetime(),
-  updated_at: z.string().datetime(),
+  birthYear: z.number().int().min(1900).max(new Date().getFullYear()).nullable().optional(),
+  avatarUrl: z.string().url().nullable().optional(),
+  createdAt: z.string().datetime(),
+  updatedAt: z.string().datetime(),
 });
 
 /**
@@ -33,7 +33,7 @@ export type Child = z.infer<typeof ChildSchema>;
 export const CreateChildRequestSchema = z.object({
   name: z.string().min(1).max(255).trim(),
   birthYear: z.number().int().min(1900).max(new Date().getFullYear()).optional(),
-  avatar_url: z.string().url().optional(),
+  avatarUrl: z.string().url().optional(),
 });
 
 export type CreateChildRequest = z.infer<typeof CreateChildRequestSchema>;
@@ -45,7 +45,7 @@ export type CreateChildRequest = z.infer<typeof CreateChildRequestSchema>;
 export const UpdateChildRequestSchema = z.object({
   name: z.string().min(1).max(255).trim().optional(),
   birthYear: z.number().int().min(1900).max(new Date().getFullYear()).nullable().optional(),
-  avatar_url: z.string().url().nullable().optional(),
+  avatarUrl: z.string().url().nullable().optional(),
 });
 
 export type UpdateChildRequest = z.infer<typeof UpdateChildRequestSchema>;
@@ -55,10 +55,10 @@ export type UpdateChildRequest = z.infer<typeof UpdateChildRequestSchema>;
  * Extended child info including task statistics
  */
 export const ChildWithStatsSchema = ChildSchema.extend({
-  total_tasks: z.number().int().nonnegative().optional(),
-  completed_tasks: z.number().int().nonnegative().optional(),
-  pending_tasks: z.number().int().nonnegative().optional(),
-  total_points: z.number().int().nonnegative().optional(),
+  totalTasks: z.number().int().nonnegative().optional(),
+  completedTasks: z.number().int().nonnegative().optional(),
+  pendingTasks: z.number().int().nonnegative().optional(),
+  totalPoints: z.number().int().nonnegative().optional(),
 });
 
 export type ChildWithStats = z.infer<typeof ChildWithStatsSchema>;

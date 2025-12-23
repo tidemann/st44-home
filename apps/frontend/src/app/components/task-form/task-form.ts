@@ -44,12 +44,12 @@ export class TaskFormComponent implements OnInit {
     this.form = this.fb.group({
       name: ['', [Validators.required, Validators.minLength(1)]],
       description: [''],
-      points: [0, [Validators.required, Validators.min(0)]],
-      rule_type: ['daily', Validators.required],
+      points: [10, [Validators.required, Validators.min(0)]],
+      ruleType: ['daily', Validators.required],
     });
 
-    // Watch rule_type changes to clear day selection
-    this.form.get('rule_type')?.valueChanges.subscribe(() => {
+    // Watch ruleType changes to clear day selection
+    this.form.get('ruleType')?.valueChanges.subscribe(() => {
       this.selectedDays.set([]);
     });
   }
@@ -59,12 +59,17 @@ export class TaskFormComponent implements OnInit {
       name: task.name,
       description: task.description,
       points: task.points,
-      rule_type: task.rule_type,
+      ruleType: task.ruleType,
     });
 
     // Populate days if repeating
-    if (task.rule_type === 'repeating' && task.rule_config) {
-      const config = task.rule_config as { days?: number[] };
+    if (task.ruleType === 'repeating' && task.ruleConfig?.repeatDays) {
+      this.selectedDays.set(task.ruleConfig.repeatDays);
+    }
+
+    // Populate days if repeating (legacy support)
+    if (task.ruleType === 'repeating' && task.ruleConfig && 'days' in task.ruleConfig) {
+      const config = task.ruleConfig as unknown as { days?: number[] };
       if (config.days) {
         this.selectedDays.set(config.days);
       }
@@ -90,7 +95,7 @@ export class TaskFormComponent implements OnInit {
       return;
     }
 
-    const ruleType = this.form.value.rule_type;
+    const ruleType = this.form.value.ruleType;
     if (ruleType === 'repeating' && this.selectedDays().length === 0) {
       this.errorMessage.set('Please select at least one day');
       return;
@@ -101,9 +106,8 @@ export class TaskFormComponent implements OnInit {
 
     const formData = {
       ...this.form.value,
-      household_id: this.householdId(),
       active: true,
-      rule_config: this.getRuleConfig(),
+      ruleConfig: this.getRuleConfig(),
     };
 
     const request$ = this.task()
@@ -124,17 +128,17 @@ export class TaskFormComponent implements OnInit {
   }
 
   private getRuleConfig() {
-    const ruleType = this.form.value.rule_type;
+    const ruleType = this.form.value.ruleType;
     if (ruleType === 'repeating') {
       return {
-        repeat_days: this.selectedDays(),
-        assigned_children: [], // TODO: Implement proper child selection
+        repeatDays: this.selectedDays(),
+        assignedChildren: [], // TODO: Implement proper child selection
       };
     }
     if (ruleType === 'weekly_rotation') {
       return {
-        rotation_type: 'alternating',
-        assigned_children: [], // TODO: Implement proper child selection
+        rotationType: 'alternating',
+        assignedChildren: [], // TODO: Implement proper child selection
       };
     }
     return null;

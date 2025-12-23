@@ -40,12 +40,12 @@ export interface DashboardSummary {
  */
 export interface ChildTask {
   id: string;
-  task_name: string;
-  task_description: string;
+  taskName: string;
+  taskDescription: string;
   points: number;
   date: string;
   status: 'pending' | 'completed';
-  completed_at: string | null;
+  completedAt: string | null;
 }
 
 /**
@@ -53,9 +53,9 @@ export interface ChildTask {
  */
 export interface MyTasksResponse {
   tasks: ChildTask[];
-  total_points_today: number;
-  completed_points: number;
-  child_name: string;
+  totalPointsToday: number;
+  completedPoints: number;
+  childName: string;
 }
 
 /**
@@ -94,7 +94,7 @@ export class DashboardService {
   async getMyTasks(householdId?: string, date?: string): Promise<MyTasksResponse> {
     const params = new URLSearchParams();
     if (householdId) {
-      params.set('household_id', householdId);
+      params.set('householdId', householdId);
     }
     if (date) {
       params.set('date', date);

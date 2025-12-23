@@ -63,10 +63,10 @@ export class TaskEditComponent {
     this.taskForm = this.fb.group({
       name: ['', [Validators.required, Validators.maxLength(200)]],
       description: [''],
-      rule_type: ['daily', Validators.required],
-      rotation_type: [''],
-      repeat_days: this.fb.array([]),
-      assigned_children: this.fb.array([]),
+      ruleType: ['daily', Validators.required],
+      rotationType: [''],
+      repeatDays: this.fb.array([]),
+      assignedChildren: this.fb.array([]),
       active: [true],
     });
 
@@ -76,7 +76,7 @@ export class TaskEditComponent {
     });
 
     // Update validators when rule type changes
-    this.taskForm.get('rule_type')?.valueChanges.subscribe((ruleType) => {
+    this.taskForm.get('ruleType')?.valueChanges.subscribe((ruleType) => {
       this.updateValidators(ruleType);
     });
 
@@ -104,21 +104,21 @@ export class TaskEditComponent {
 
   private prefillForm(task: Task): void {
     // Clear arrays
-    (this.taskForm.get('repeat_days') as FormArray).clear();
-    (this.taskForm.get('assigned_children') as FormArray).clear();
+    (this.taskForm.get('repeatDays') as FormArray).clear();
+    (this.taskForm.get('assignedChildren') as FormArray).clear();
 
     // Get rule config
-    const ruleConfig = task.rule_config || {};
-    const repeatDays = ruleConfig.repeat_days || [];
-    const assignedChildren = ruleConfig.assigned_children || [];
-    const rotationType = ruleConfig.rotation_type || '';
+    const ruleConfig = task.ruleConfig || {};
+    const repeatDays = ruleConfig.repeatDays || [];
+    const assignedChildren = ruleConfig.assignedChildren || [];
+    const rotationType = ruleConfig.rotationType || '';
 
-    // Populate repeat_days FormArray
-    const repeatDaysArray = this.taskForm.get('repeat_days') as FormArray;
+    // Populate repeatDays FormArray
+    const repeatDaysArray = this.taskForm.get('repeatDays') as FormArray;
     repeatDays.forEach((day: number) => repeatDaysArray.push(this.fb.control(day)));
 
-    // Populate assigned_children FormArray
-    const assignedChildrenArray = this.taskForm.get('assigned_children') as FormArray;
+    // Populate assignedChildren FormArray
+    const assignedChildrenArray = this.taskForm.get('assignedChildren') as FormArray;
     assignedChildren.forEach((childId: string) =>
       assignedChildrenArray.push(this.fb.control(childId)),
     );
@@ -128,24 +128,24 @@ export class TaskEditComponent {
       {
         name: task.name,
         description: task.description || '',
-        rule_type: task.rule_type,
-        rotation_type: rotationType,
+        ruleType: task.ruleType,
+        rotationType: rotationType,
         active: task.active,
       },
       { emitEvent: false },
     );
 
     // Update validators for current rule type
-    this.updateValidators(task.rule_type);
+    this.updateValidators(task.ruleType);
 
     // Reset change tracking
     this.hasChanges.set(false);
   }
 
   private updateValidators(ruleType: string): void {
-    const rotationType = this.taskForm.get('rotation_type');
-    const repeatDays = this.taskForm.get('repeat_days');
-    const assignedChildren = this.taskForm.get('assigned_children');
+    const rotationType = this.taskForm.get('rotationType');
+    const repeatDays = this.taskForm.get('repeatDays');
+    const assignedChildren = this.taskForm.get('assignedChildren');
 
     // Clear all conditional validators
     rotationType?.clearValidators();
@@ -176,7 +176,7 @@ export class TaskEditComponent {
   }
 
   onDayChange(dayValue: number, checked: boolean): void {
-    const repeatDays = this.taskForm.get('repeat_days') as FormArray;
+    const repeatDays = this.taskForm.get('repeatDays') as FormArray;
 
     if (checked) {
       repeatDays.push(this.fb.control(dayValue));
@@ -191,7 +191,7 @@ export class TaskEditComponent {
   }
 
   onChildChange(childId: string, checked: boolean): void {
-    const assignedChildren = this.taskForm.get('assigned_children') as FormArray;
+    const assignedChildren = this.taskForm.get('assignedChildren') as FormArray;
 
     if (checked) {
       assignedChildren.push(this.fb.control(childId));
@@ -206,12 +206,12 @@ export class TaskEditComponent {
   }
 
   isDaySelected(dayValue: number): boolean {
-    const repeatDays = this.taskForm.get('repeat_days') as FormArray;
+    const repeatDays = this.taskForm.get('repeatDays') as FormArray;
     return repeatDays.controls.some((ctrl) => ctrl.value === dayValue);
   }
 
   isChildSelected(childId: string): boolean {
-    const assignedChildren = this.taskForm.get('assigned_children') as FormArray;
+    const assignedChildren = this.taskForm.get('assignedChildren') as FormArray;
     return assignedChildren.controls.some((ctrl) => ctrl.value === childId);
   }
 
@@ -227,12 +227,13 @@ export class TaskEditComponent {
     const updateData = {
       name: this.taskForm.get('name')?.value,
       description: this.taskForm.get('description')?.value || undefined,
-      rule_type: this.taskForm.get('rule_type')?.value,
-      rule_config: {
-        rotation_type: this.taskForm.get('rotation_type')?.value || undefined,
-        repeat_days: (this.taskForm.get('repeat_days') as FormArray).value,
-        assigned_children: (this.taskForm.get('assigned_children') as FormArray).value,
+      ruleType: this.taskForm.get('ruleType')?.value,
+      ruleConfig: {
+        rotationType: this.taskForm.get('rotationType')?.value || undefined,
+        repeatDays: (this.taskForm.get('repeatDays') as FormArray).value,
+        assignedChildren: (this.taskForm.get('assignedChildren') as FormArray).value,
       },
+      active: this.taskForm.get('active')?.value,
     };
 
     this.taskService.updateTask(householdId, taskId, updateData).subscribe({
@@ -279,7 +280,7 @@ export class TaskEditComponent {
   }
 
   protected get ruleType(): string {
-    return this.taskForm.get('rule_type')?.value;
+    return this.taskForm.get('ruleType')?.value;
   }
 
   protected get taskServiceLoading(): boolean {

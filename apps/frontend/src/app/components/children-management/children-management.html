@@ -189,7 +189,7 @@
               <div class="child-details">
                 <h3>{{ child.name }}</h3>
                 <p class="child-age">
-                  Age: {{ getAge(child.birthYear) }} (Born {{ child.birthYear }})
+                  Age: {{ getAge(child.birthYear ?? null) }} (Born {{ child.birthYear }})
                 </p>
               </div>
               <div class="child-actions">

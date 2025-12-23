@@ -232,7 +232,7 @@ export class TaskService {
    * Get task assignments for a household with optional filters
    *
    * @param householdId - ID of the household
-   * @param filters - Optional filters (date, child_id, status)
+   * @param filters - Optional filters (date, childId, status)
    * @returns Observable of task assignment array
    */
   getHouseholdAssignments(
@@ -245,7 +245,7 @@ export class TaskService {
     let endpoint = `/households/${householdId}/assignments`;
     const params: string[] = [];
     if (filters?.date) params.push(`date=${filters.date}`);
-    if (filters?.child_id) params.push(`child_id=${filters.child_id}`);
+    if (filters?.childId) params.push(`childId=${filters.childId}`);
     if (filters?.status) params.push(`status=${filters.status}`);
     if (params.length > 0) endpoint += `?${params.join('&')}`;
 
@@ -276,7 +276,7 @@ export class TaskService {
 
     this.assignmentsSignal.update((assignments) =>
       assignments.map((a) =>
-        a.id === assignmentId ? { ...a, status: 'completed' as const, completed_at: now } : a,
+        a.id === assignmentId ? { ...a, status: 'completed' as const, completedAt: now } : a,
       ),
     );
 
@@ -310,7 +310,7 @@ export class TaskService {
 
     return from(
       this.apiService.put<Assignment>(`/assignments/${assignmentId}/reassign`, {
-        child_id: newChildId,
+        childId: newChildId,
       }),
     ).pipe(
       tap((updatedAssignment) => {

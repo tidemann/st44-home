@@ -16,10 +16,10 @@ describe('UserSchema', () => {
     const validUser = {
       id: '123e4567-e89b-12d3-a456-426614174000',
       email: 'test@example.com',
-      google_id: null,
-      password_hash: '$2b$10$abcdefg...',
-      created_at: '2025-12-22T10:00:00Z',
-      updated_at: '2025-12-22T10:00:00Z',
+      googleId: null,
+      passwordHash: '$2b$10$abcdefg...',
+      createdAt: '2025-12-22T10:00:00Z',
+      updatedAt: '2025-12-22T10:00:00Z',
     };
 
     expect(() => UserSchema.parse(validUser)).not.toThrow();
@@ -31,10 +31,10 @@ describe('UserSchema', () => {
     const invalidUser = {
       id: '123e4567-e89b-12d3-a456-426614174000',
       email: 'invalid-email',
-      google_id: null,
-      password_hash: null,
-      created_at: '2025-12-22T10:00:00Z',
-      updated_at: '2025-12-22T10:00:00Z',
+      googleId: null,
+      passwordHash: null,
+      createdAt: '2025-12-22T10:00:00Z',
+      updatedAt: '2025-12-22T10:00:00Z',
     };
 
     expect(() => UserSchema.parse(invalidUser)).toThrow();
@@ -44,10 +44,10 @@ describe('UserSchema', () => {
     const invalidUser = {
       id: 'not-a-uuid',
       email: 'test@example.com',
-      google_id: null,
-      password_hash: null,
-      created_at: '2025-12-22T10:00:00Z',
-      updated_at: '2025-12-22T10:00:00Z',
+      googleId: null,
+      passwordHash: null,
+      createdAt: '2025-12-22T10:00:00Z',
+      updatedAt: '2025-12-22T10:00:00Z',
     };
 
     expect(() => UserSchema.parse(invalidUser)).toThrow();
@@ -67,7 +67,7 @@ describe('CreateUserRequestSchema', () => {
   it('validates Google OAuth registration', () => {
     const validRequest = {
       email: 'googleuser@example.com',
-      google_id: 'google-oauth-id-123',
+      googleId: 'google-oauth-id-123',
     };
 
     expect(() => CreateUserRequestSchema.parse(validRequest)).not.toThrow();
@@ -113,16 +113,16 @@ describe('LoginRequestSchema', () => {
 });
 
 describe('UserResponseSchema', () => {
-  it('excludes password_hash field', () => {
+  it('excludes passwordHash field', () => {
     const user = {
       id: '123e4567-e89b-12d3-a456-426614174000',
       email: 'test@example.com',
-      google_id: null,
-      created_at: '2025-12-22T10:00:00Z',
-      updated_at: '2025-12-22T10:00:00Z',
+      googleId: null,
+      createdAt: '2025-12-22T10:00:00Z',
+      updatedAt: '2025-12-22T10:00:00Z',
     };
 
     const parsed = UserResponseSchema.parse(user);
-    expect(parsed).not.toHaveProperty('password_hash');
+    expect(parsed).not.toHaveProperty('passwordHash');
   });
 });

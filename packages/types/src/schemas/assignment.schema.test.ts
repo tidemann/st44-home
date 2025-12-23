@@ -14,16 +14,16 @@ describe('AssignmentSchema', () => {
   it('validates pending assignment', () => {
     const validAssignment = {
       id: '123e4567-e89b-12d3-a456-426614174000',
-      task_id: '123e4567-e89b-12d3-a456-426614174001',
+      taskId: '123e4567-e89b-12d3-a456-426614174001',
       title: 'Clean Room',
       description: 'Clean your bedroom',
-      rule_type: 'daily' as const,
-      child_id: '123e4567-e89b-12d3-a456-426614174002',
-      child_name: 'Alice',
+      ruleType: 'daily' as const,
+      childId: '123e4567-e89b-12d3-a456-426614174002',
+      childName: 'Alice',
       date: '2025-12-22',
       status: 'pending' as const,
-      completed_at: null,
-      created_at: '2025-12-22T10:00:00Z',
+      completedAt: null,
+      createdAt: '2025-12-22T10:00:00Z',
     };
 
     expect(() => AssignmentSchema.parse(validAssignment)).not.toThrow();
@@ -34,37 +34,37 @@ describe('AssignmentSchema', () => {
   it('validates completed assignment', () => {
     const validAssignment = {
       id: '123e4567-e89b-12d3-a456-426614174000',
-      task_id: '123e4567-e89b-12d3-a456-426614174001',
+      taskId: '123e4567-e89b-12d3-a456-426614174001',
       title: 'Clean Room',
       description: null,
-      rule_type: 'daily' as const,
-      child_id: '123e4567-e89b-12d3-a456-426614174002',
-      child_name: 'Bob',
+      ruleType: 'daily' as const,
+      childId: '123e4567-e89b-12d3-a456-426614174002',
+      childName: 'Bob',
       date: '2025-12-22',
       status: 'completed' as const,
-      completed_at: '2025-12-22T15:30:00Z',
-      created_at: '2025-12-22T10:00:00Z',
+      completedAt: '2025-12-22T15:30:00Z',
+      createdAt: '2025-12-22T10:00:00Z',
     };
 
     expect(() => AssignmentSchema.parse(validAssignment)).not.toThrow();
     const parsed = AssignmentSchema.parse(validAssignment);
     expect(parsed.status).toBe('completed');
-    expect(parsed.completed_at).toBe('2025-12-22T15:30:00Z');
+    expect(parsed.completedAt).toBe('2025-12-22T15:30:00Z');
   });
 
   it('validates unassigned task (null child_id)', () => {
     const validAssignment = {
       id: '123e4567-e89b-12d3-a456-426614174000',
-      task_id: '123e4567-e89b-12d3-a456-426614174001',
+      taskId: '123e4567-e89b-12d3-a456-426614174001',
       title: 'Shared Task',
       description: null,
-      rule_type: 'daily' as const,
-      child_id: null,
-      child_name: null,
+      ruleType: 'daily' as const,
+      childId: null,
+      childName: null,
       date: '2025-12-22',
       status: 'pending' as const,
-      completed_at: null,
-      created_at: '2025-12-22T10:00:00Z',
+      completedAt: null,
+      createdAt: '2025-12-22T10:00:00Z',
     };
 
     expect(() => AssignmentSchema.parse(validAssignment)).not.toThrow();
@@ -73,16 +73,16 @@ describe('AssignmentSchema', () => {
   it('rejects invalid status', () => {
     const invalidAssignment = {
       id: '123e4567-e89b-12d3-a456-426614174000',
-      task_id: '123e4567-e89b-12d3-a456-426614174001',
+      taskId: '123e4567-e89b-12d3-a456-426614174001',
       title: 'Task',
       description: null,
-      rule_type: 'daily' as const,
-      child_id: null,
-      child_name: null,
+      ruleType: 'daily' as const,
+      childId: null,
+      childName: null,
       date: '2025-12-22',
       status: 'invalid_status',
-      completed_at: null,
-      created_at: '2025-12-22T10:00:00Z',
+      completedAt: null,
+      createdAt: '2025-12-22T10:00:00Z',
     };
 
     expect(() => AssignmentSchema.parse(invalidAssignment)).toThrow();
@@ -91,16 +91,16 @@ describe('AssignmentSchema', () => {
   it('rejects invalid date format', () => {
     const invalidAssignment = {
       id: '123e4567-e89b-12d3-a456-426614174000',
-      task_id: '123e4567-e89b-12d3-a456-426614174001',
+      taskId: '123e4567-e89b-12d3-a456-426614174001',
       title: 'Task',
       description: null,
-      rule_type: 'daily' as const,
-      child_id: null,
-      child_name: null,
+      ruleType: 'daily' as const,
+      childId: null,
+      childName: null,
       date: '12/22/2025', // Wrong format
       status: 'pending' as const,
-      completed_at: null,
-      created_at: '2025-12-22T10:00:00Z',
+      completedAt: null,
+      createdAt: '2025-12-22T10:00:00Z',
     };
 
     expect(() => AssignmentSchema.parse(invalidAssignment)).toThrow();
@@ -122,7 +122,7 @@ describe('AssignmentFiltersSchema', () => {
 
   it('validates child_id filter', () => {
     const validFilters = {
-      child_id: '123e4567-e89b-12d3-a456-426614174000',
+      childId: '123e4567-e89b-12d3-a456-426614174000',
     };
     expect(() => AssignmentFiltersSchema.parse(validFilters)).not.toThrow();
   });
@@ -136,8 +136,8 @@ describe('AssignmentFiltersSchema', () => {
 
   it('validates date range filter', () => {
     const validFilters = {
-      start_date: '2025-12-01',
-      end_date: '2025-12-31',
+      startDate: '2025-12-01',
+      endDate: '2025-12-31',
     };
     expect(() => AssignmentFiltersSchema.parse(validFilters)).not.toThrow();
   });
@@ -146,7 +146,7 @@ describe('AssignmentFiltersSchema', () => {
 describe('CompleteAssignmentRequestSchema', () => {
   it('validates request with timestamp', () => {
     const validRequest = {
-      completed_at: '2025-12-22T15:30:00Z',
+      completedAt: '2025-12-22T15:30:00Z',
     };
     expect(() => CompleteAssignmentRequestSchema.parse(validRequest)).not.toThrow();
   });
@@ -160,15 +160,22 @@ describe('CompleteAssignmentRequestSchema', () => {
 describe('ReassignTaskRequestSchema', () => {
   it('validates reassignment to child', () => {
     const validRequest = {
-      child_id: '123e4567-e89b-12d3-a456-426614174000',
+      childId: '123e4567-e89b-12d3-a456-426614174000',
     };
     expect(() => ReassignTaskRequestSchema.parse(validRequest)).not.toThrow();
   });
 
   it('rejects invalid UUID', () => {
     const invalidRequest = {
-      child_id: 'not-a-uuid',
+      childId: 'not-a-uuid',
     };
     expect(() => ReassignTaskRequestSchema.parse(invalidRequest)).toThrow();
+  });
+});
+
+describe('AssignmentStatusSchema', () => {
+  it('validates valid status values', () => {
+    expect(() => AssignmentStatusSchema.parse('pending')).not.toThrow();
+    expect(() => AssignmentStatusSchema.parse('completed')).not.toThrow();
   });
 });

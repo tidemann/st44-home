@@ -42,10 +42,10 @@ export class ChildDashboardComponent implements OnInit {
   completingTasks = signal<Set<string>>(new Set());
 
   // Computed values
-  childName = computed(() => this.childDashboard()?.child_name ?? '');
+  childName = computed(() => this.childDashboard()?.childName ?? '');
   tasks = computed(() => this.childDashboard()?.tasks ?? []);
-  totalPoints = computed(() => this.childDashboard()?.total_points_today ?? 0);
-  completedPoints = computed(() => this.childDashboard()?.completed_points ?? 0);
+  totalPoints = computed(() => this.childDashboard()?.totalPointsToday ?? 0);
+  completedPoints = computed(() => this.childDashboard()?.completedPoints ?? 0);
   progressPercent = computed(() => {
     const total = this.totalPoints();
     if (total === 0) return 0;

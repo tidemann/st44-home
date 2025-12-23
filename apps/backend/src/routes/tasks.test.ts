@@ -123,10 +123,10 @@ describe('Tasks API', () => {
           name: 'Take out trash',
           description: 'Take the trash bins to the curb',
           points: 15,
-          rule_type: 'weekly_rotation',
-          rule_config: {
-            rotation_type: 'odd_even_week',
-            assigned_children: [childId1, childId2],
+          ruleType: 'weekly_rotation',
+          ruleConfig: {
+            rotationType: 'odd_even_week',
+            assignedChildren: [childId1, childId2],
           },
         },
       });
@@ -140,9 +140,9 @@ describe('Tasks API', () => {
       assert.ok(body.id);
       assert.strictEqual(body.name, 'Take out trash');
       assert.strictEqual(body.points, 15);
-      assert.strictEqual(body.rule_type, 'weekly_rotation');
-      assert.deepStrictEqual(body.rule_config.rotation_type, 'odd_even_week');
-      assert.deepStrictEqual(body.rule_config.assigned_children, [childId1, childId2]);
+      assert.strictEqual(body.ruleType, 'weekly_rotation');
+      assert.deepStrictEqual(body.ruleConfig.rotationType, 'odd_even_week');
+      assert.deepStrictEqual(body.ruleConfig.assignedChildren, [childId1, childId2]);
 
       // Save taskId for other tests
       taskId = body.id;
@@ -156,10 +156,10 @@ describe('Tasks API', () => {
         payload: {
           name: 'Feed the cat',
           points: 5,
-          rule_type: 'repeating',
-          rule_config: {
-            repeat_days: [1, 3, 5], // Monday, Wednesday, Friday
-            assigned_children: [childId1],
+          ruleType: 'repeating',
+          ruleConfig: {
+            repeatDays: [1, 3, 5], // Monday, Wednesday, Friday
+            assignedChildren: [childId1],
           },
         },
       });
@@ -168,8 +168,8 @@ describe('Tasks API', () => {
       const body = JSON.parse(response.body);
       assert.ok(body.id);
       assert.strictEqual(body.name, 'Feed the cat');
-      assert.strictEqual(body.rule_type, 'repeating');
-      assert.deepStrictEqual(body.rule_config.repeat_days, [1, 3, 5]);
+      assert.strictEqual(body.ruleType, 'repeating');
+      assert.deepStrictEqual(body.ruleConfig.repeatDays, [1, 3, 5]);
     });
 
     test('should create a daily task', async () => {
@@ -179,9 +179,9 @@ describe('Tasks API', () => {
         headers: { Authorization: `Bearer ${adminToken}` },
         payload: {
           name: 'Make your bed',
-          rule_type: 'daily',
-          rule_config: {
-            assigned_children: [childId1, childId2],
+          ruleType: 'daily',
+          ruleConfig: {
+            assignedChildren: [childId1, childId2],
           },
         },
       });
@@ -189,7 +189,7 @@ describe('Tasks API', () => {
       assert.strictEqual(response.statusCode, 201);
       const body = JSON.parse(response.body);
       assert.strictEqual(body.name, 'Make your bed');
-      assert.strictEqual(body.rule_type, 'daily');
+      assert.strictEqual(body.ruleType, 'daily');
       assert.strictEqual(body.points, 10); // Default points
     });
 
@@ -200,16 +200,16 @@ describe('Tasks API', () => {
         headers: { Authorization: `Bearer ${adminToken}` },
         payload: {
           name: 'Invalid task',
-          rule_type: 'weekly_rotation',
-          rule_config: {
-            assigned_children: [childId1, childId2],
+          ruleType: 'weekly_rotation',
+          ruleConfig: {
+            assignedChildren: [childId1, childId2],
           },
         },
       });
 
       assert.strictEqual(response.statusCode, 400);
       const body = JSON.parse(response.body);
-      assert.ok(body.details.some((err: string) => err.includes('rotation_type required')));
+      assert.ok(body.details.some((err: string) => err.includes('rotationType required')));
     });
 
     test('should reject weekly_rotation with less than 2 children', async () => {
@@ -219,17 +219,17 @@ describe('Tasks API', () => {
         headers: { Authorization: `Bearer ${adminToken}` },
         payload: {
           name: 'Invalid task',
-          rule_type: 'weekly_rotation',
-          rule_config: {
-            rotation_type: 'alternating',
-            assigned_children: [childId1],
+          ruleType: 'weekly_rotation',
+          ruleConfig: {
+            rotationType: 'alternating',
+            assignedChildren: [childId1],
           },
         },
       });
 
       assert.strictEqual(response.statusCode, 400);
       const body = JSON.parse(response.body);
-      assert.ok(body.details.some((err: string) => err.includes('At least 2 assigned_children')));
+      assert.ok(body.details.some((err: string) => err.includes('At least 2 assignedChildren')));
     });
 
     test('should reject repeating without repeat_days', async () => {
@@ -239,16 +239,16 @@ describe('Tasks API', () => {
         headers: { Authorization: `Bearer ${adminToken}` },
         payload: {
           name: 'Invalid task',
-          rule_type: 'repeating',
-          rule_config: {
-            assigned_children: [childId1],
+          ruleType: 'repeating',
+          ruleConfig: {
+            assignedChildren: [childId1],
           },
         },
       });
 
       assert.strictEqual(response.statusCode, 400);
       const body = JSON.parse(response.body);
-      assert.ok(body.details.some((err: string) => err.includes('repeat_days required')));
+      assert.ok(body.details.some((err: string) => err.includes('repeatDays required')));
     });
 
     test('should reject invalid child IDs', async () => {
@@ -258,10 +258,10 @@ describe('Tasks API', () => {
         headers: { Authorization: `Bearer ${adminToken}` },
         payload: {
           name: 'Invalid task',
-          rule_type: 'repeating',
-          rule_config: {
-            repeat_days: [1, 2],
-            assigned_children: ['00000000-0000-0000-0000-000000000000'],
+          ruleType: 'repeating',
+          ruleConfig: {
+            repeatDays: [1, 2],
+            assignedChildren: ['00000000-0000-0000-0000-000000000000'],
           },
         },
       });
@@ -278,7 +278,7 @@ describe('Tasks API', () => {
         headers: { Authorization: `Bearer ${adminToken}` },
         payload: {
           name: 'A'.repeat(300),
-          rule_type: 'daily',
+          ruleType: 'daily',
         },
       });
 
@@ -293,7 +293,7 @@ describe('Tasks API', () => {
         headers: { Authorization: `Bearer ${outsiderToken}` },
         payload: {
           name: 'Unauthorized task',
-          rule_type: 'daily',
+          ruleType: 'daily',
         },
       });
 
@@ -306,7 +306,7 @@ describe('Tasks API', () => {
         url: `/api/households/${householdId}/tasks`,
         payload: {
           name: 'Unauthorized task',
-          rule_type: 'daily',
+          ruleType: 'daily',
         },
       });
 
@@ -424,16 +424,16 @@ describe('Tasks API', () => {
         url: `/api/households/${householdId}/tasks/${taskId}`,
         headers: { Authorization: `Bearer ${adminToken}` },
         payload: {
-          rule_config: {
-            rotation_type: 'alternating',
-            assigned_children: [childId1, childId2],
+          ruleConfig: {
+            rotationType: 'alternating',
+            assignedChildren: [childId1, childId2],
           },
         },
       });
 
       assert.strictEqual(response.statusCode, 200);
       const body = JSON.parse(response.body);
-      assert.strictEqual(body.rule_config.rotation_type, 'alternating');
+      assert.strictEqual(body.ruleConfig.rotationType, 'alternating');
     });
 
     test('should return 404 for non-existent task', async () => {
@@ -520,7 +520,7 @@ describe('Tasks API', () => {
         headers: { Authorization: `Bearer ${adminToken}` },
         payload: {
           name: 'Task to delete',
-          rule_type: 'daily',
+          ruleType: 'daily',
         },
       });
       const newTaskId = JSON.parse(createResponse.body).id;

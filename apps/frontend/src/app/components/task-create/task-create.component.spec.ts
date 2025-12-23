@@ -69,14 +69,15 @@ describe.skip('TaskCreateComponent', () => {
 
     it('should initialize form with default values', () => {
       expect(component.taskForm).toBeDefined();
-      expect(component.taskForm.get('rule_type')?.value).toBe('daily');
-      expect(component.taskForm.get('title')?.value).toBe('');
+      expect(component.taskForm.get('ruleType')?.value).toBe('daily');
+      expect(component.taskForm.get('name')?.value).toBe('');
       expect(component.taskForm.get('description')?.value).toBe('');
+      expect(component.taskForm.get('points')?.value).toBe(10);
     });
 
-    it('should initialize repeat_days and assigned_children as FormArrays', () => {
-      expect(component.taskForm.get('repeat_days')).toBeInstanceOf(FormArray);
-      expect(component.taskForm.get('assigned_children')).toBeInstanceOf(FormArray);
+    it('should initialize repeatDays and assignedChildren as FormArrays', () => {
+      expect(component.taskForm.get('repeatDays')).toBeInstanceOf(FormArray);
+      expect(component.taskForm.get('assignedChildren')).toBeInstanceOf(FormArray);
     });
 
     it('should have daysOfWeek array with 7 days', () => {
@@ -85,26 +86,26 @@ describe.skip('TaskCreateComponent', () => {
   });
 
   describe('Form Validation', () => {
-    it('should require title', () => {
-      const title = component.taskForm.get('title');
-      title?.setValue('');
-      expect(title?.hasError('required')).toBe(true);
+    it('should require name', () => {
+      const name = component.taskForm.get('name');
+      name?.setValue('');
+      expect(name?.hasError('required')).toBe(true);
     });
 
-    it('should limit title to 200 characters', () => {
-      const title = component.taskForm.get('title');
-      title?.setValue('a'.repeat(201));
-      expect(title?.hasError('maxlength')).toBe(true);
+    it('should limit name to 200 characters', () => {
+      const name = component.taskForm.get('name');
+      name?.setValue('a'.repeat(201));
+      expect(name?.hasError('maxlength')).toBe(true);
     });
 
-    it('should accept title under 200 characters', () => {
-      const title = component.taskForm.get('title');
-      title?.setValue('Take out trash');
-      expect(title?.valid).toBe(true);
+    it('should accept name under 200 characters', () => {
+      const name = component.taskForm.get('name');
+      name?.setValue('Take out trash');
+      expect(name?.valid).toBe(true);
     });
 
-    it('should require rule_type', () => {
-      const ruleType = component.taskForm.get('rule_type');
+    it('should require ruleType', () => {
+      const ruleType = component.taskForm.get('ruleType');
       ruleType?.setValue('');
       expect(ruleType?.hasError('required')).toBe(true);
     });
@@ -112,43 +113,43 @@ describe.skip('TaskCreateComponent', () => {
 
   describe('Dynamic Validation - Daily Rule', () => {
     beforeEach(() => {
-      component.taskForm.get('rule_type')?.setValue('daily');
-      component.taskForm.get('title')?.setValue('Daily task');
+      component.taskForm.get('ruleType')?.setValue('daily');
+      component.taskForm.get('name')?.setValue('Daily task');
     });
 
-    it('should not require rotation_type for daily rule', () => {
-      expect(component.taskForm.get('rotation_type')?.hasError('required')).toBe(false);
+    it('should not require rotationType for daily rule', () => {
+      expect(component.taskForm.get('rotationType')?.hasError('required')).toBe(false);
     });
 
-    it('should not require repeat_days for daily rule', () => {
-      expect(component.taskForm.get('repeat_days')?.hasError('required')).toBe(false);
+    it('should not require repeatDays for daily rule', () => {
+      expect(component.taskForm.get('repeatDays')?.hasError('required')).toBe(false);
     });
 
-    it('should not require assigned_children for daily rule', () => {
-      expect(component.taskForm.get('assigned_children')?.hasError('required')).toBe(false);
+    it('should not require assignedChildren for daily rule', () => {
+      expect(component.taskForm.get('assignedChildren')?.hasError('required')).toBe(false);
     });
 
-    it('should have valid form with just title for daily rule', () => {
+    it('should have valid form with just name for daily rule', () => {
       expect(component.taskForm.valid).toBe(true);
     });
   });
 
   describe('Dynamic Validation - Repeating Rule', () => {
     beforeEach(() => {
-      component.taskForm.get('rule_type')?.setValue('repeating');
-      component.taskForm.get('title')?.setValue('Repeating task');
+      component.taskForm.get('ruleType')?.setValue('repeating');
+      component.taskForm.get('name')?.setValue('Repeating task');
     });
 
-    it('should require repeat_days for repeating rule', () => {
-      expect(component.taskForm.get('repeat_days')?.hasError('required')).toBe(true);
+    it('should require repeatDays for repeating rule', () => {
+      expect(component.taskForm.get('repeatDays')?.hasError('required')).toBe(true);
     });
 
-    it('should require assigned_children for repeating rule', () => {
-      expect(component.taskForm.get('assigned_children')?.hasError('required')).toBe(true);
+    it('should require assignedChildren for repeating rule', () => {
+      expect(component.taskForm.get('assignedChildren')?.hasError('required')).toBe(true);
     });
 
-    it('should require at least 1 day in repeat_days', () => {
-      const repeatDays = component.taskForm.get('repeat_days') as FormArray;
+    it('should require at least 1 day in repeatDays', () => {
+      const repeatDays = component.taskForm.get('repeatDays') as FormArray;
       expect(repeatDays.hasError('minLength')).toBe(true);
     });
 
@@ -159,57 +160,57 @@ describe.skip('TaskCreateComponent', () => {
       expect(component.taskForm.valid).toBe(true);
     });
 
-    it('should not require rotation_type for repeating rule', () => {
-      expect(component.taskForm.get('rotation_type')?.hasError('required')).toBe(false);
+    it('should not require rotationType for repeating rule', () => {
+      expect(component.taskForm.get('rotationType')?.hasError('required')).toBe(false);
     });
   });
 
   describe('Dynamic Validation - Weekly Rotation', () => {
     beforeEach(() => {
-      component.taskForm.get('rule_type')?.setValue('weekly_rotation');
-      component.taskForm.get('title')?.setValue('Rotation task');
+      component.taskForm.get('ruleType')?.setValue('weekly_rotation');
+      component.taskForm.get('name')?.setValue('Rotation task');
     });
 
-    it('should require rotation_type for weekly_rotation rule', () => {
-      expect(component.taskForm.get('rotation_type')?.hasError('required')).toBe(true);
+    it('should require rotationType for weekly_rotation rule', () => {
+      expect(component.taskForm.get('rotationType')?.hasError('required')).toBe(true);
     });
 
-    it('should require assigned_children for weekly_rotation rule', () => {
-      expect(component.taskForm.get('assigned_children')?.hasError('required')).toBe(true);
+    it('should require assignedChildren for weekly_rotation rule', () => {
+      expect(component.taskForm.get('assignedChildren')?.hasError('required')).toBe(true);
     });
 
     it('should require at least 2 children for weekly_rotation', () => {
       component.onChildChange('1', true); // Emma
       fixture.detectChanges();
-      const assignedChildren = component.taskForm.get('assigned_children');
+      const assignedChildren = component.taskForm.get('assignedChildren');
       expect(assignedChildren?.hasError('minLength')).toBe(true);
     });
 
-    it('should be valid with rotation_type and 2+ children', () => {
-      component.taskForm.get('rotation_type')?.setValue('odd_even_week');
+    it('should be valid with rotationType and 2+ children', () => {
+      component.taskForm.get('rotationType')?.setValue('odd_even_week');
       component.onChildChange('1', true); // Emma
       component.onChildChange('2', true); // Noah
       fixture.detectChanges();
       expect(component.taskForm.valid).toBe(true);
     });
 
-    it('should not require repeat_days for weekly_rotation rule', () => {
-      expect(component.taskForm.get('repeat_days')?.hasError('required')).toBe(false);
+    it('should not require repeatDays for weekly_rotation rule', () => {
+      expect(component.taskForm.get('repeatDays')?.hasError('required')).toBe(false);
     });
   });
 
   describe('Day Selection', () => {
-    it('should add day to repeat_days when checked', () => {
+    it('should add day to repeatDays when checked', () => {
       component.onDayChange(1, true); // Monday
-      const repeatDays = component.taskForm.get('repeat_days') as FormArray;
+      const repeatDays = component.taskForm.get('repeatDays') as FormArray;
       expect(repeatDays.length).toBe(1);
       expect(repeatDays.at(0).value).toBe(1);
     });
 
-    it('should remove day from repeat_days when unchecked', () => {
+    it('should remove day from repeatDays when unchecked', () => {
       component.onDayChange(1, true); // Add Monday
       component.onDayChange(1, false); // Remove Monday
-      const repeatDays = component.taskForm.get('repeat_days') as FormArray;
+      const repeatDays = component.taskForm.get('repeatDays') as FormArray;
       expect(repeatDays.length).toBe(0);
     });
 
@@ -217,7 +218,7 @@ describe.skip('TaskCreateComponent', () => {
       component.onDayChange(1, true); // Monday
       component.onDayChange(3, true); // Wednesday
       component.onDayChange(5, true); // Friday
-      const repeatDays = component.taskForm.get('repeat_days') as FormArray;
+      const repeatDays = component.taskForm.get('repeatDays') as FormArray;
       expect(repeatDays.length).toBe(3);
       expect(repeatDays.value).toEqual([1, 3, 5]);
     });
@@ -233,24 +234,24 @@ describe.skip('TaskCreateComponent', () => {
   });
 
   describe('Child Selection', () => {
-    it('should add child to assigned_children when checked', () => {
+    it('should add child to assignedChildren when checked', () => {
       component.onChildChange('1', true); // Emma
-      const assignedChildren = component.taskForm.get('assigned_children') as FormArray;
+      const assignedChildren = component.taskForm.get('assignedChildren') as FormArray;
       expect(assignedChildren.length).toBe(1);
       expect(assignedChildren.at(0).value).toBe('1');
     });
 
-    it('should remove child from assigned_children when unchecked', () => {
+    it('should remove child from assignedChildren when unchecked', () => {
       component.onChildChange('1', true); // Add Emma
       component.onChildChange('1', false); // Remove Emma
-      const assignedChildren = component.taskForm.get('assigned_children') as FormArray;
+      const assignedChildren = component.taskForm.get('assignedChildren') as FormArray;
       expect(assignedChildren.length).toBe(0);
     });
 
     it('should allow multiple children to be selected', () => {
       component.onChildChange('1', true); // Emma
       component.onChildChange('2', true); // Noah
-      const assignedChildren = component.taskForm.get('assigned_children') as FormArray;
+      const assignedChildren = component.taskForm.get('assignedChildren') as FormArray;
       expect(assignedChildren.length).toBe(2);
       expect(assignedChildren.value).toEqual(['1', '2']);
     });
@@ -267,37 +268,37 @@ describe.skip('TaskCreateComponent', () => {
 
   describe('Form Submission', () => {
     it('should not submit if form is invalid', () => {
-      component.taskForm.get('title')?.setValue('');
+      component.taskForm.get('name')?.setValue('');
       component.onSubmit();
       expect(mockTaskService.createTask).not.toHaveBeenCalled();
     });
 
     it('should not submit if no household selected', () => {
       mockHouseholdService.getActiveHouseholdId.mockReturnValue(null);
-      component.taskForm.get('title')?.setValue('Test task');
+      component.taskForm.get('name')?.setValue('Test task');
       component.onSubmit();
       expect(mockTaskService.createTask).not.toHaveBeenCalled();
     });
 
     it('should call createTask with form data on valid submission', () => {
-      const mockTask = { id: '1', title: 'Test task', rule_type: 'daily' };
+      const mockTask = { id: '1', name: 'Test task', ruleType: 'daily' };
       mockTaskService.createTask.mockReturnValue(of(mockTask));
 
       component.taskForm.patchValue({
-        title: 'Test task',
+        name: 'Test task',
         description: 'Test description',
-        rule_type: 'daily',
+        ruleType: 'daily',
       });
 
       component.onSubmit();
 
       expect(mockTaskService.createTask).toHaveBeenCalledWith('1', {
-        title: 'Test task',
+        name: 'Test task',
         description: 'Test description',
-        rule_type: 'daily',
-        rotation_type: '',
-        repeat_days: [],
-        assigned_children: [],
+        points: 10,
+        ruleType: 'daily',
+        ruleConfig: null,
+        active: true,
       });
     });
 
@@ -305,23 +306,24 @@ describe.skip('TaskCreateComponent', () => {
       mockTaskService.createTask.mockReturnValue(of({}));
 
       component.taskForm.patchValue({
-        title: 'Test task',
-        rule_type: 'daily',
+        name: 'Test task',
+        ruleType: 'daily',
       });
 
       component.onSubmit();
 
       await new Promise((resolve) => setTimeout(resolve, 10));
       expect(component.successMessage()).toBe('Task template created successfully!');
-      expect(component.taskForm.get('title')?.value).toBe('');
+      expect(component.taskForm.get('name')?.value).toBe('');
+      expect(component.taskForm.get('points')?.value).toBe(10);
     });
 
     it('should clear success message after 3 seconds', async () => {
       mockTaskService.createTask.mockReturnValue(of({}));
 
       component.taskForm.patchValue({
-        title: 'Test task',
-        rule_type: 'daily',
+        name: 'Test task',
+        ruleType: 'daily',
       });
 
       component.onSubmit();
@@ -334,8 +336,8 @@ describe.skip('TaskCreateComponent', () => {
       mockTaskService.createTask.mockReturnValue(throwError(() => new Error('API error')));
 
       component.taskForm.patchValue({
-        title: 'Test task',
-        rule_type: 'daily',
+        name: 'Test task',
+        ruleType: 'daily',
       });
 
       component.onSubmit();
@@ -348,7 +350,7 @@ describe.skip('TaskCreateComponent', () => {
   describe('Cancel', () => {
     it('should reset form on cancel', () => {
       component.taskForm.patchValue({
-        title: 'Test task',
+        name: 'Test task',
         description: 'Test description',
       });
       component.onDayChange(1, true);
@@ -356,32 +358,33 @@ describe.skip('TaskCreateComponent', () => {
 
       component.onCancel();
 
-      expect(component.taskForm.get('title')?.value).toBe('');
+      expect(component.taskForm.get('name')?.value).toBe('');
       expect(component.taskForm.get('description')?.value).toBe('');
-      expect((component.taskForm.get('repeat_days') as FormArray).length).toBe(0);
-      expect((component.taskForm.get('assigned_children') as FormArray).length).toBe(0);
+      expect((component.taskForm.get('repeatDays') as FormArray).length).toBe(0);
+      expect((component.taskForm.get('assignedChildren') as FormArray).length).toBe(0);
     });
 
-    it('should reset rule_type to daily on cancel', () => {
-      component.taskForm.get('rule_type')?.setValue('weekly_rotation');
+    it('should reset ruleType to daily on cancel', () => {
+      component.taskForm.get('ruleType')?.setValue('weekly_rotation');
       component.onCancel();
-      expect(component.taskForm.get('rule_type')?.value).toBe('daily');
+      expect(component.taskForm.get('ruleType')?.value).toBe('daily');
+      expect(component.taskForm.get('points')?.value).toBe(10);
     });
   });
 
   describe('Getters', () => {
-    it('titleChars should return character count', () => {
-      component.taskForm.get('title')?.setValue('Hello');
-      expect(component['titleChars']).toBe(5);
+    it('nameChars should return character count', () => {
+      component.taskForm.get('name')?.setValue('Hello');
+      expect(component['nameChars']).toBe(5);
     });
 
-    it('titleChars should return 0 for empty title', () => {
-      component.taskForm.get('title')?.setValue('');
-      expect(component['titleChars']).toBe(0);
+    it('nameChars should return 0 for empty name', () => {
+      component.taskForm.get('name')?.setValue('');
+      expect(component['nameChars']).toBe(0);
     });
 
-    it('ruleType should return current rule_type', () => {
-      component.taskForm.get('rule_type')?.setValue('repeating');
+    it('ruleType should return current ruleType', () => {
+      component.taskForm.get('ruleType')?.setValue('repeating');
       expect(component['ruleType']).toBe('repeating');
     });
 
@@ -399,9 +402,9 @@ describe.skip('TaskCreateComponent', () => {
       mockTaskService.createTask.mockReturnValue(of({}));
 
       component.taskForm.patchValue({
-        title: 'Water plants',
+        name: 'Water plants',
         description: 'Water all plants in the house',
-        rule_type: 'repeating',
+        ruleType: 'repeating',
       });
       component.onDayChange(1, true); // Monday
       component.onDayChange(3, true); // Wednesday
@@ -411,12 +414,12 @@ describe.skip('TaskCreateComponent', () => {
       component.onSubmit();
 
       expect(mockTaskService.createTask).toHaveBeenCalledWith('1', {
-        title: 'Water plants',
+        name: 'Water plants',
         description: 'Water all plants in the house',
-        rule_type: 'repeating',
-        rotation_type: '',
-        repeat_days: [1, 3, 5],
-        assigned_children: ['1'],
+        points: 10,
+        ruleType: 'repeating',
+        ruleConfig: { repeatDays: [1, 3, 5], assignedChildren: ['1'] },
+        active: true,
       });
     });
 
@@ -424,10 +427,10 @@ describe.skip('TaskCreateComponent', () => {
       mockTaskService.createTask.mockReturnValue(of({}));
 
       component.taskForm.patchValue({
-        title: 'Clean room',
+        name: 'Clean room',
         description: 'Clean entire bedroom',
-        rule_type: 'weekly_rotation',
-        rotation_type: 'odd_even_week',
+        ruleType: 'weekly_rotation',
+        rotationType: 'odd_even_week',
       });
       component.onChildChange('1', true); // Emma
       component.onChildChange('2', true); // Noah
@@ -435,25 +438,25 @@ describe.skip('TaskCreateComponent', () => {
       component.onSubmit();
 
       expect(mockTaskService.createTask).toHaveBeenCalledWith('1', {
-        title: 'Clean room',
+        name: 'Clean room',
         description: 'Clean entire bedroom',
-        rule_type: 'weekly_rotation',
-        rotation_type: 'odd_even_week',
-        repeat_days: [],
-        assigned_children: ['1', '2'],
+        points: 10,
+        ruleType: 'weekly_rotation',
+        ruleConfig: { rotationType: 'odd_even_week', assignedChildren: ['1', '2'] },
+        active: true,
       });
     });
 
     it('should validate form correctly when switching from repeating to daily', () => {
       component.taskForm.patchValue({
-        title: 'Test task',
-        rule_type: 'repeating',
+        name: 'Test task',
+        ruleType: 'repeating',
       });
       component.onDayChange(1, true);
       component.onChildChange('1', true);
       expect(component.taskForm.valid).toBe(true);
 
-      component.taskForm.get('rule_type')?.setValue('daily');
+      component.taskForm.get('ruleType')?.setValue('daily');
       fixture.detectChanges();
       expect(component.taskForm.valid).toBe(true); // Still valid without days/children
     });

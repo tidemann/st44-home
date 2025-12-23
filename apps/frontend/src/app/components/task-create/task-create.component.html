@@ -2,22 +2,22 @@
   <h2>Create Task Template</h2>
 
   <form [formGroup]="taskForm" (ngSubmit)="onSubmit()">
-    <!-- Title -->
+    <!-- Name -->
     <div class="form-group">
-      <label for="title"> Task Title <span class="required">*</span> </label>
+      <label for="name"> Task Title <span class="required">*</span> </label>
       <input
-        id="title"
+        id="name"
         type="text"
-        formControlName="title"
+        formControlName="name"
         placeholder="e.g., Take out trash"
-        [attr.aria-invalid]="taskForm.get('title')?.invalid && taskForm.get('title')?.touched"
+        [attr.aria-invalid]="taskForm.get('name')?.invalid && taskForm.get('name')?.touched"
         [attr.aria-describedby]="
-          taskForm.get('title')?.invalid && taskForm.get('title')?.touched ? 'title-error' : null
+          taskForm.get('name')?.invalid && taskForm.get('name')?.touched ? 'name-error' : null
         "
       />
-      <span class="char-count" aria-live="polite">{{ titleChars }}/200</span>
-      @if (taskForm.get('title')?.invalid && taskForm.get('title')?.touched) {
-        <p id="title-error" class="error" role="alert">Title is required (max 200 characters)</p>
+      <span class="char-count" aria-live="polite">{{ nameChars }}/200</span>
+      @if (taskForm.get('name')?.invalid && taskForm.get('name')?.touched) {
+        <p id="name-error" class="error" role="alert">Title is required (max 200 characters)</p>
       }
     </div>
 
@@ -40,7 +40,7 @@
           <label class="rule-option">
             <input
               type="radio"
-              formControlName="rule_type"
+              formControlName="ruleType"
               value="daily"
               aria-describedby="daily-desc"
             />
@@ -52,7 +52,7 @@
           <label class="rule-option">
             <input
               type="radio"
-              formControlName="rule_type"
+              formControlName="ruleType"
               value="repeating"
               aria-describedby="repeating-desc"
             />
@@ -64,7 +64,7 @@
           <label class="rule-option">
             <input
               type="radio"
-              formControlName="rule_type"
+              formControlName="ruleType"
               value="weekly_rotation"
               aria-describedby="rotation-desc"
             />
@@ -95,7 +95,7 @@
               </label>
             }
           </div>
-          @if (taskForm.get('repeat_days')?.invalid && taskForm.get('repeat_days')?.touched) {
+          @if (taskForm.get('repeatDays')?.invalid && taskForm.get('repeatDays')?.touched) {
             <p class="error" role="alert">Select at least one day</p>
           }
         </fieldset>
@@ -111,7 +111,7 @@
             <label class="rotation-option">
               <input
                 type="radio"
-                formControlName="rotation_type"
+                formControlName="rotationType"
                 value="odd_even_week"
                 aria-describedby="odd-even-desc"
               />
@@ -123,7 +123,7 @@
             <label class="rotation-option">
               <input
                 type="radio"
-                formControlName="rotation_type"
+                formControlName="rotationType"
                 value="alternating"
                 aria-describedby="alternating-desc"
               />
@@ -133,7 +133,7 @@
               </div>
             </label>
           </div>
-          @if (taskForm.get('rotation_type')?.invalid && taskForm.get('rotation_type')?.touched) {
+          @if (taskForm.get('rotationType')?.invalid && taskForm.get('rotationType')?.touched) {
             <p class="error" role="alert">Please select a rotation type</p>
           }
         </fieldset>
@@ -164,7 +164,7 @@
             }
           </div>
           @if (
-            taskForm.get('assigned_children')?.invalid && taskForm.get('assigned_children')?.touched
+            taskForm.get('assignedChildren')?.invalid && taskForm.get('assignedChildren')?.touched
           ) {
             <p class="error" role="alert">
               @if (ruleType === 'weekly_rotation') {
