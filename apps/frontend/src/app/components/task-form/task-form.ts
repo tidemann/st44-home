@@ -6,7 +6,6 @@ import {
   input,
   output,
   computed,
-  effect,
   ChangeDetectionStrategy,
 } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
@@ -58,23 +57,15 @@ export class TaskFormComponent implements OnInit {
       this.selectedDays.set([]);
     });
 
-    // Use effect to populate form when task input changes
-    effect(() => {
-      const currentTask = this.task();
-      if (currentTask) {
-        this.populateForm(currentTask);
-      }
-    });
-
     // Mark form as ready after initialization
     this.formReady.set(true);
   }
 
   ngOnInit() {
-    // Form is already initialized in constructor
-    // Just populate if task was already set
-    if (this.task()) {
-      this.populateForm(this.task()!);
+    // Populate form if editing existing task
+    const currentTask = this.task();
+    if (currentTask) {
+      this.populateForm(currentTask);
     }
   }
 
@@ -119,7 +110,9 @@ export class TaskFormComponent implements OnInit {
       return;
     }
 
-    const ruleType = this.form.value.ruleType;
+    const formValues = this.form.getRawValue();
+    const ruleType = formValues.ruleType;
+
     if (ruleType === 'repeating' && this.selectedDays().length === 0) {
       this.errorMessage.set('Please select at least one day');
       return;
@@ -129,10 +122,14 @@ export class TaskFormComponent implements OnInit {
     this.errorMessage.set('');
 
     const formData = {
-      ...this.form.value,
-      active: true,
+      name: formValues.name || '',
+      description: formValues.description || '',
+      points: Number(formValues.points) || 0,
+      ruleType: formValues.ruleType || 'daily',
       ruleConfig: this.getRuleConfig(),
     };
+
+    console.log('Submitting form data:', formData);
 
     const request$ = this.task()
       ? this.taskService.updateTask(this.householdId(), this.task()!.id, formData)
@@ -147,22 +144,25 @@ export class TaskFormComponent implements OnInit {
         this.isSubmitting.set(false);
         this.errorMessage.set('Failed to save task');
         console.error('Failed to save task:', error);
+        console.error('Error details:', JSON.stringify(error, null, 2));
       },
     });
   }
 
   private getRuleConfig() {
-    const ruleType = this.form.value.ruleType;
+    const formValues = this.form.getRawValue();
+    const ruleType = formValues.ruleType;
+
     if (ruleType === 'repeating') {
       return {
         repeatDays: this.selectedDays(),
-        assignedChildren: [], // TODO: Implement proper child selection
+        assignedChildren: [] as string[], // TODO: Implement proper child selection
       };
     }
     if (ruleType === 'weekly_rotation') {
       return {
-        rotationType: 'alternating',
-        assignedChildren: [], // TODO: Implement proper child selection
+        rotationType: 'alternating' as const,
+        assignedChildren: [] as string[], // TODO: Implement proper child selection
       };
     }
     return null;
