@@ -9,7 +9,6 @@ import {
 import { Router } from '@angular/router';
 import { DashboardService, MyTasksResponse, ChildTask } from '../../services/dashboard.service';
 import { TaskService } from '../../services/task.service';
-import { HouseholdService } from '../../services/household.service';
 
 /**
  * Child Dashboard Component
@@ -33,7 +32,6 @@ export class ChildDashboardComponent implements OnInit {
   private router = inject(Router);
   private dashboardService = inject(DashboardService);
   private taskService = inject(TaskService);
-  private householdService = inject(HouseholdService);
 
   // State
   childDashboard = signal<MyTasksResponse | null>(null);
@@ -68,25 +66,23 @@ export class ChildDashboardComponent implements OnInit {
     this.errorMessage.set('');
 
     try {
-      const householdId = this.householdService.getActiveHouseholdId();
-
       // Get today's date in YYYY-MM-DD format
       const today = new Date().toISOString().split('T')[0];
 
-      const data = await this.dashboardService.getMyTasks(householdId ?? undefined, today);
+      const data = await this.dashboardService.getMyTasks(today);
       this.childDashboard.set(data);
     } catch (error: unknown) {
       const httpError = error as { status?: number };
 
       if (httpError?.status === 401) {
-        await this.router.navigate(['/login']);
+        await this.router.navigate(['/child-login']);
         return;
       } else if (httpError?.status === 403) {
-        this.errorMessage.set('You are not a child in this household.');
+        this.errorMessage.set('Oops! It looks like you need to be a child to see this page.');
       } else if (httpError?.status === 404) {
-        this.errorMessage.set('Your profile was not found. Please contact a parent.');
+        this.errorMessage.set("We couldn't find your profile. Please ask a parent for help.");
       } else {
-        this.errorMessage.set('Failed to load your tasks. Please try again.');
+        this.errorMessage.set("We couldn't load your tasks right now. Please try again!");
       }
     } finally {
       this.isLoading.set(false);

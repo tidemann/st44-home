@@ -1,5 +1,5 @@
 import { Routes } from '@angular/router';
-import { authGuard } from './guards/auth.guard';
+import { roleGuard } from './guards/role.guard';
 
 export const routes: Routes = [
   // Public routes
@@ -16,14 +16,14 @@ export const routes: Routes = [
     loadComponent: () => import('./auth/child-login.component').then((m) => m.ChildLoginComponent),
   },
 
-  // Protected routes
+  // Protected routes - Parent and Admin only
   {
     path: 'household/create',
     loadComponent: () =>
       import('./components/household-create/household-create').then(
         (m) => m.HouseholdCreateComponent,
       ),
-    canActivate: [authGuard],
+    canActivate: [roleGuard(['admin', 'parent'])],
   },
   {
     path: 'household/settings',
@@ -31,7 +31,7 @@ export const routes: Routes = [
       import('./components/household-settings/household-settings').then(
         (m) => m.HouseholdSettingsComponent,
       ),
-    canActivate: [authGuard],
+    canActivate: [roleGuard(['admin', 'parent'])],
   },
   {
     path: 'invitations',
@@ -39,32 +39,18 @@ export const routes: Routes = [
       import('./components/invitation-inbox/invitation-inbox').then(
         (m) => m.InvitationInboxComponent,
       ),
-    canActivate: [authGuard],
+    canActivate: [roleGuard(['admin', 'parent'])],
   },
   {
     path: 'dashboard',
     loadComponent: () =>
       import('./pages/parent-dashboard/parent-dashboard').then((m) => m.ParentDashboardComponent),
-    canActivate: [authGuard],
-  },
-  {
-    path: 'my-tasks',
-    loadComponent: () =>
-      import('./pages/child-dashboard/child-dashboard').then((m) => m.ChildDashboardComponent),
-    canActivate: [authGuard],
+    canActivate: [roleGuard(['admin', 'parent'])],
   },
   {
     path: 'households/:householdId/tasks',
     loadComponent: () => import('./pages/task-list/task-list').then((m) => m.TaskListComponent),
-    canActivate: [authGuard],
-  },
-  {
-    path: 'tasks',
-    loadComponent: () =>
-      import('./components/child-task-list/child-task-list.component').then(
-        (m) => m.ChildTaskListComponent,
-      ),
-    canActivate: [authGuard],
+    canActivate: [roleGuard(['admin', 'parent'])],
   },
   {
     path: 'household/tasks',
@@ -72,7 +58,23 @@ export const routes: Routes = [
       import('./features/tasks/parent-task-dashboard.component').then(
         (m) => m.ParentTaskDashboardComponent,
       ),
-    canActivate: [authGuard],
+    canActivate: [roleGuard(['admin', 'parent'])],
+  },
+
+  // Protected routes - Child only
+  {
+    path: 'my-tasks',
+    loadComponent: () =>
+      import('./pages/child-dashboard/child-dashboard').then((m) => m.ChildDashboardComponent),
+    canActivate: [roleGuard(['child'])],
+  },
+  {
+    path: 'tasks',
+    loadComponent: () =>
+      import('./components/child-task-list/child-task-list.component').then(
+        (m) => m.ChildTaskListComponent,
+      ),
+    canActivate: [roleGuard(['child'])],
   },
 
   // Default redirect

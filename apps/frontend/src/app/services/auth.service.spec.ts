@@ -5,6 +5,25 @@ import { HttpTestingController, provideHttpClientTesting } from '@angular/common
 import { Router } from '@angular/router';
 import { AuthService } from './auth.service';
 
+/**
+ * Helper function to create a valid JWT token for testing
+ */
+function createMockJWT(userId: string, email: string, role?: 'admin' | 'parent' | 'child'): string {
+  const header = btoa(JSON.stringify({ alg: 'HS256', typ: 'JWT' }));
+  const payload = btoa(
+    JSON.stringify({
+      userId,
+      email,
+      role,
+      type: 'access',
+      iat: Math.floor(Date.now() / 1000),
+      exp: Math.floor(Date.now() / 1000) + 3600, // Expires in 1 hour
+    }),
+  );
+  const signature = 'mock-signature';
+  return `${header}.${payload}.${signature}`;
+}
+
 describe('AuthService', () => {
   let service: AuthService;
   let httpMock: HttpTestingController;
@@ -87,13 +106,14 @@ describe('AuthService', () => {
   });
 
   describe('login', () => {
+    const mockAccessToken = createMockJWT('123', 'test@example.com', 'parent');
     const mockLoginResponse = {
       message: 'Login successful',
       user: {
         id: '123',
         email: 'test@example.com',
       },
-      accessToken: 'mock-access-token',
+      accessToken: mockAccessToken,
       refreshToken: 'mock-refresh-token',
     };
 
@@ -101,7 +121,7 @@ describe('AuthService', () => {
       service.login('test@example.com', 'Test1234', false).subscribe({
         next: () => {
           // Check sessionStorage
-          expect(sessionStorage.getItem('accessToken')).toBe('mock-access-token');
+          expect(sessionStorage.getItem('accessToken')).toBe(mockAccessToken);
           expect(sessionStorage.getItem('refreshToken')).toBe('mock-refresh-token');
 
           // Ensure localStorage is empty
@@ -120,7 +140,7 @@ describe('AuthService', () => {
       service.login('test@example.com', 'Test1234', true).subscribe({
         next: () => {
           // Check localStorage
-          expect(localStorage.getItem('accessToken')).toBe('mock-access-token');
+          expect(localStorage.getItem('accessToken')).toBe(mockAccessToken);
           expect(localStorage.getItem('refreshToken')).toBe('mock-refresh-token');
 
           // Ensure sessionStorage is empty
@@ -140,6 +160,7 @@ describe('AuthService', () => {
           expect(service.currentUser()).toEqual({
             id: '123',
             email: 'test@example.com',
+            role: 'parent',
           });
         },
       });
@@ -173,7 +194,7 @@ describe('AuthService', () => {
         next: () => {
           expect(localStorage.getItem('accessToken')).toBeNull();
           expect(localStorage.getItem('refreshToken')).toBeNull();
-          expect(sessionStorage.getItem('accessToken')).toBe('mock-access-token');
+          expect(sessionStorage.getItem('accessToken')).toBe(mockAccessToken);
         },
       });
 
@@ -292,8 +313,9 @@ describe('AuthService', () => {
       localStorage.clear();
       sessionStorage.clear();
 
-      // Store a token before creating service
-      localStorage.setItem('accessToken', 'existing-token');
+      // Store a valid JWT token before creating service
+      const mockToken = createMockJWT('user-123', 'test@example.com', 'parent');
+      localStorage.setItem('accessToken', mockToken);
 
       // Create new service instance (simulates app startup)
       TestBed.resetTestingModule();
@@ -308,6 +330,11 @@ describe('AuthService', () => {
       const newService = TestBed.inject(AuthService);
 
       expect(newService.isAuthenticated()).toBe(true);
+      expect(newService.currentUser()).toEqual({
+        id: 'user-123',
+        email: 'test@example.com',
+        role: 'parent',
+      });
 
       // Clean up
       localStorage.clear();

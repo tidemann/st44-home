@@ -69,11 +69,7 @@
       }
 
       <!-- Submit Button -->
-      <button
-        type="submit"
-        class="submit-button"
-        [disabled]="loginForm.invalid || isLoading()"
-      >
+      <button type="submit" class="submit-button" [disabled]="loginForm.invalid || isLoading()">
         @if (isLoading()) {
           <span class="spinner"></span>
           <span>Logging In...</span>

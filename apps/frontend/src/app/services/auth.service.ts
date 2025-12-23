@@ -27,6 +27,16 @@ export interface AuthResponse {
 export interface User {
   id: string;
   email: string;
+  role?: 'admin' | 'parent' | 'child';
+}
+
+interface DecodedToken {
+  userId: string;
+  email: string;
+  role?: 'admin' | 'parent' | 'child';
+  type: string;
+  iat: number;
+  exp: number;
 }
 
 @Injectable({
@@ -50,9 +60,47 @@ export class AuthService {
     const accessToken =
       localStorage.getItem('accessToken') || sessionStorage.getItem('accessToken');
     if (accessToken) {
-      // TODO: Validate token with backend or decode JWT to get user info
-      // For now, just mark as authenticated
-      this.isAuthenticated.set(true);
+      // Decode JWT to get user info including role
+      const user = this.decodeToken(accessToken);
+      if (user) {
+        this.currentUser.set(user);
+        this.isAuthenticated.set(true);
+      }
+    }
+  }
+
+  /**
+   * Decode JWT token to extract user information
+   * @param token - The JWT access token
+   * @returns User object or null if token is invalid
+   */
+  private decodeToken(token: string): User | null {
+    try {
+      // JWT tokens have 3 parts separated by dots: header.payload.signature
+      const parts = token.split('.');
+      if (parts.length !== 3) {
+        return null;
+      }
+
+      // Decode the payload (second part)
+      const payload = parts[1];
+      const decodedPayload = atob(payload.replace(/-/g, '+').replace(/_/g, '/'));
+      const decoded = JSON.parse(decodedPayload) as DecodedToken;
+
+      // Check if token is expired
+      const now = Math.floor(Date.now() / 1000);
+      if (decoded.exp && decoded.exp < now) {
+        return null;
+      }
+
+      return {
+        id: decoded.userId,
+        email: decoded.email,
+        role: decoded.role,
+      };
+    } catch (error) {
+      console.error('Failed to decode token:', error);
+      return null;
     }
   }
 
@@ -81,9 +129,12 @@ export class AuthService {
           otherStorage.removeItem('accessToken');
           otherStorage.removeItem('refreshToken');
 
-          // Update state
-          this.currentUser.set(response.user);
-          this.isAuthenticated.set(true);
+          // Decode token to get user info with role
+          const user = this.decodeToken(response.accessToken);
+          if (user) {
+            this.currentUser.set(user);
+            this.isAuthenticated.set(true);
+          }
         }),
       );
   }
@@ -103,9 +154,12 @@ export class AuthService {
           sessionStorage.removeItem('accessToken');
           sessionStorage.removeItem('refreshToken');
 
-          // Update state
-          this.currentUser.set(response.user);
-          this.isAuthenticated.set(true);
+          // Decode token to get user info with role
+          const user = this.decodeToken(response.accessToken);
+          if (user) {
+            this.currentUser.set(user);
+            this.isAuthenticated.set(true);
+          }
         }),
       );
   }
@@ -134,5 +188,32 @@ export class AuthService {
 
   getRefreshToken(): string | null {
     return localStorage.getItem('refreshToken') || sessionStorage.getItem('refreshToken');
+  }
+
+  /**
+   * Get the current user's role
+   * @returns The role or undefined if not authenticated
+   */
+  getUserRole(): 'admin' | 'parent' | 'child' | undefined {
+    return this.currentUser()?.role;
+  }
+
+  /**
+   * Check if the current user has a specific role
+   * @param role - The role to check
+   * @returns True if the user has the specified role
+   */
+  hasRole(role: 'admin' | 'parent' | 'child'): boolean {
+    return this.currentUser()?.role === role;
+  }
+
+  /**
+   * Check if the current user has any of the specified roles
+   * @param roles - Array of roles to check
+   * @returns True if the user has any of the specified roles
+   */
+  hasAnyRole(roles: ('admin' | 'parent' | 'child')[]): boolean {
+    const userRole = this.currentUser()?.role;
+    return userRole !== undefined && roles.includes(userRole);
   }
 }

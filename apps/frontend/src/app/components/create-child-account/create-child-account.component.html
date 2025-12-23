@@ -1,14 +1,7 @@
 <div class="create-account-modal">
   <div class="modal-header">
     <h2>Create Account for {{ child().name }}</h2>
-    <button
-      type="button"
-      class="btn-close"
-      (click)="onCancel()"
-      aria-label="Close"
-    >
-      &times;
-    </button>
+    <button type="button" class="btn-close" (click)="onCancel()" aria-label="Close">&times;</button>
   </div>
 
   <div class="modal-body">
@@ -106,19 +99,18 @@
           [type]="showPassword() ? 'text' : 'password'"
           formControlName="confirmPassword"
           class="form-control"
-          [class.invalid]="(confirmPasswordControl.invalid || form.hasError('passwordMismatch')) && confirmPasswordControl.touched"
+          [class.invalid]="
+            (confirmPasswordControl.invalid || form.hasError('passwordMismatch')) &&
+            confirmPasswordControl.touched
+          "
           placeholder="Re-enter password"
           autocomplete="new-password"
         />
         @if (confirmPasswordControl.invalid && confirmPasswordControl.touched) {
-          <div class="error-message">
-            Confirm password is required
-          </div>
+          <div class="error-message">Confirm password is required</div>
         }
         @if (form.hasError('passwordMismatch') && confirmPasswordControl.touched) {
-          <div class="error-message">
-            Passwords do not match
-          </div>
+          <div class="error-message">Passwords do not match</div>
         }
       </div>
 
@@ -132,11 +124,7 @@
         >
           Cancel
         </button>
-        <button
-          type="submit"
-          class="btn btn-primary"
-          [disabled]="form.invalid || isSubmitting()"
-        >
+        <button type="submit" class="btn btn-primary" [disabled]="form.invalid || isSubmitting()">
           @if (isSubmitting()) {
             Creating Account...
           } @else {
