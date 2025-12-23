@@ -6,7 +6,12 @@ import {
   requireHouseholdParent,
   requireHouseholdAdmin,
 } from '../middleware/household-membership.js';
-import { ChildSchema, CreateChildRequestSchema, UpdateChildRequestSchema, CreateChildUserAccountRequestSchema } from '@st44/types';
+import {
+  ChildSchema,
+  CreateChildRequestSchema,
+  UpdateChildRequestSchema,
+  CreateChildUserAccountRequestSchema,
+} from '@st44/types';
 import { z, zodToOpenAPI, CommonErrors } from '@st44/types/generators';
 import { validateRequest, handleZodError } from '../utils/validation.js';
 import { stripResponseValidation } from '../schemas/common.js';
@@ -324,10 +329,7 @@ async function createChildUserAccount(
     }
 
     // 2. Check email isn't already in use
-    const emailCheckResult = await client.query(
-      'SELECT id FROM users WHERE email = $1',
-      [email],
-    );
+    const emailCheckResult = await client.query('SELECT id FROM users WHERE email = $1', [email]);
 
     if (emailCheckResult.rows.length > 0) {
       await client.query('ROLLBACK');
@@ -350,10 +352,10 @@ async function createChildUserAccount(
     const userId = userResult.rows[0].id;
 
     // 5. Link child to user by setting children.user_id
-    await client.query(
-      'UPDATE children SET user_id = $1, updated_at = NOW() WHERE id = $2',
-      [userId, childId],
-    );
+    await client.query('UPDATE children SET user_id = $1, updated_at = NOW() WHERE id = $2', [
+      userId,
+      childId,
+    ]);
 
     // 6. Add household_members entry with role='child'
     await client.query(
@@ -391,8 +393,9 @@ interface MyTasksQuerystring {
 }
 
 /**
- * GET /api/children/my-tasks - Get tasks for authenticated child user
- * Returns today's tasks (or specified date) for the child user
+ * GET /api/children/me/tasks - Get tasks for authenticated child user
+ * Returns tasks for the child user (today's tasks by default)
+ * Security: Only returns tasks for child linked to authenticated user
  */
 async function getMyTasks(
   request: FastifyRequest<{ Querystring: MyTasksQuerystring }>,
@@ -411,15 +414,14 @@ async function getMyTasks(
   const taskDate = date || new Date().toISOString().split('T')[0];
 
   try {
-    // Step 1: Find child profile for this user
-    // First, verify user has 'child' role in household_members
+    // Step 1: Find child profile linked to authenticated user
     let householdId = householdIdParam;
 
     if (!householdId) {
       // Get the user's current household (first one with 'child' role)
       const membershipResult = await db.query(
-        `SELECT household_id 
-         FROM household_members 
+        `SELECT household_id
+         FROM household_members
          WHERE user_id = $1 AND role = 'child'
          LIMIT 1`,
         [userId],
@@ -436,8 +438,8 @@ async function getMyTasks(
     } else {
       // Verify user has 'child' role in specified household
       const membershipResult = await db.query(
-        `SELECT id 
-         FROM household_members 
+        `SELECT id
+         FROM household_members
          WHERE user_id = $1 AND household_id = $2 AND role = 'child'`,
         [userId, householdId],
       );
@@ -450,24 +452,19 @@ async function getMyTasks(
       }
     }
 
-    // Step 2: Get child profile associated with this user's household membership
-    // Note: This assumes one child profile per household per user
-    // In the current schema, children table doesn't have user_id foreign key
-    // So we need to implement a different approach or add that relationship
-    // For now, we'll query by household and return error if multiple children exist
-
+    // Step 2: Get child profile using user_id column (added in migration 022)
+    // SECURITY: This ensures child can only access their own tasks
     const childResult = await db.query(
-      `SELECT c.id, c.name
-       FROM children c
-       WHERE c.household_id = $1
-       LIMIT 1`,
-      [householdId],
+      `SELECT id, name, household_id
+       FROM children
+       WHERE user_id = $1 AND household_id = $2`,
+      [userId, householdId],
     );
 
     if (childResult.rows.length === 0) {
       return reply.status(404).send({
         error: 'Not Found',
-        message: 'Child profile not found for this user',
+        message: 'Child profile not found',
       });
     }
 
@@ -476,8 +473,9 @@ async function getMyTasks(
     const childName = child.name;
 
     // Step 3: Query task assignments for this child and date
+    // SECURITY: WHERE clause ensures only tasks for authenticated child are returned
     const tasksResult = await db.query(
-      `SELECT 
+      `SELECT
         ta.id,
         t.name as task_name,
         t.description as task_description,
@@ -488,7 +486,7 @@ async function getMyTasks(
        FROM task_assignments ta
        JOIN tasks t ON ta.task_id = t.id
        LEFT JOIN task_completions tc ON ta.id = tc.task_assignment_id
-       WHERE ta.child_id = $1 
+       WHERE ta.child_id = $1
          AND ta.household_id = $2
          AND ta.date = $3
        ORDER BY t.name ASC`,

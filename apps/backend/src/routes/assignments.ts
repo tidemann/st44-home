@@ -483,20 +483,33 @@ export default async function assignmentRoutes(fastify: FastifyInstance) {
         const userRole = membershipResult.rows[0].role;
         const isParent = userRole === 'admin' || userRole === 'parent';
 
-        // For child role, check if they are the assigned child
+        // For child role, verify they are the assigned child
+        // SECURITY: Child can only complete tasks assigned to their child profile
         if (!isParent && userRole === 'child') {
-          // Get the child_id for this user
-          const childResult = await pool.query(
-            'SELECT id FROM children WHERE household_id = $1 AND name = $2',
-            [assignment.household_id, request.user?.email.split('@')[0]], // This is a placeholder - should be improved
-          );
-
-          // For now, allow any child in the household since we don't have child-user linkage
-          // In production, you'd have a proper child-user relationship
-          // For this implementation, if user is a child member, we'll check if assignment is for any child
           if (!assignment.child_id) {
             return reply.code(403).send({
-              error: 'Only parents or the assigned child can complete this assignment',
+              error: 'Only parents can complete household-wide tasks',
+            });
+          }
+
+          // Verify the assignment belongs to the child linked to this user
+          const childResult = await pool.query(
+            'SELECT id FROM children WHERE user_id = $1 AND household_id = $2',
+            [request.user?.userId, assignment.household_id],
+          );
+
+          if (childResult.rows.length === 0) {
+            return reply.code(403).send({
+              error: 'Child profile not found for this user',
+            });
+          }
+
+          const childId = childResult.rows[0].id;
+
+          // SECURITY: Verify assignment is for this child
+          if (assignment.child_id !== childId) {
+            return reply.code(403).send({
+              error: 'You can only complete tasks assigned to you',
             });
           }
         }
