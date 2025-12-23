@@ -367,3 +367,102 @@ export function generateTestEmail(prefix = 'test'): string {
 export function generateTestName(prefix = 'Test'): string {
   return `${prefix} ${Date.now()}-${Math.random().toString(36).slice(2, 6)}`;
 }
+
+/**
+ * Create a complete test scenario with household, children, and tasks
+ */
+export interface CompleteTestScenario {
+  owner: TestUser;
+  household: TestHousehold;
+  children: TestChild[];
+  tasks: TestTask[];
+  assignments: TestTaskAssignment[];
+}
+
+export interface CreateCompleteScenarioOptions {
+  childrenCount?: number;
+  tasksCount?: number;
+  createAssignments?: boolean;
+}
+
+export async function createCompleteTestScenario(
+  options: CreateCompleteScenarioOptions = {},
+): Promise<CompleteTestScenario> {
+  // Create household with children
+  const { user: owner, household, children } = await createCompleteTestSetup({
+    childrenCount: options.childrenCount ?? 2,
+  });
+
+  // Create tasks
+  const tasks: TestTask[] = [];
+  const tasksCount = options.tasksCount ?? 2;
+
+  for (let i = 0; i < tasksCount; i++) {
+    const task = await createTestTask({
+      householdId: household.id,
+      title: `Task ${i + 1}`,
+      points: 10 + i * 5,
+    });
+    tasks.push(task);
+  }
+
+  // Create assignments if requested
+  const assignments: TestTaskAssignment[] = [];
+  if (options.createAssignments && children.length > 0 && tasks.length > 0) {
+    for (const task of tasks) {
+      for (const child of children) {
+        const assignment = await createTestTaskAssignment({
+          taskId: task.id,
+          childId: child.id,
+        });
+        assignments.push(assignment);
+      }
+    }
+  }
+
+  return { owner, household, children, tasks, assignments };
+}
+
+/**
+ * Create a household with multiple members
+ */
+export interface HouseholdWithMembers {
+  household: TestHousehold;
+  owner: TestUser;
+  admins: TestUser[];
+  members: TestUser[];
+}
+
+export interface CreateHouseholdWithMembersOptions {
+  name?: string;
+  adminCount?: number;
+  memberCount?: number;
+}
+
+export async function createHouseholdWithMembers(
+  options: CreateHouseholdWithMembersOptions = {},
+): Promise<HouseholdWithMembers> {
+  const { household, owner } = await createTestHousehold({ name: options.name });
+
+  const admins: TestUser[] = [];
+  const adminCount = options.adminCount ?? 0;
+  for (let i = 0; i < adminCount; i++) {
+    const { user } = await addHouseholdMember({
+      householdId: household.id,
+      role: 'admin',
+    });
+    admins.push(user);
+  }
+
+  const members: TestUser[] = [];
+  const memberCount = options.memberCount ?? 0;
+  for (let i = 0; i < memberCount; i++) {
+    const { user } = await addHouseholdMember({
+      householdId: household.id,
+      role: 'member',
+    });
+    members.push(user);
+  }
+
+  return { household, owner, admins, members };
+}

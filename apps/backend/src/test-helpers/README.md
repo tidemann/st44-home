@@ -35,6 +35,79 @@ describe('My Feature', () => {
 
 ## Modules
 
+### HTTP Test Client (`http.ts`)
+
+Simplified HTTP client for integration tests.
+
+```typescript
+import { createHttpClient, expectSuccess } from './test-helpers/index.ts';
+
+const http = createHttpClient(app);
+
+// Make authenticated requests
+const response = await http.post('/api/households', { name: 'Test' }, { auth: token });
+const household = expectSuccess(response, 201);
+```
+
+**Functions:**
+
+- `createHttpClient(app)` - Create HTTP client for Fastify app
+- `http.get(url, options?)` - Make GET request
+- `http.post(url, payload?, options?)` - Make POST request
+- `http.put(url, payload?, options?)` - Make PUT request
+- `http.patch(url, payload?, options?)` - Make PATCH request
+- `http.delete(url, options?)` - Make DELETE request
+- `expectSuccess<T>(response, statusCode?)` - Assert success and parse JSON
+- `expectError(response, statusCode, messageContains?)` - Assert error response
+
+### Data Generators (`generators.ts`)
+
+Random data generators for robust tests.
+
+```typescript
+import {
+  randomEmail,
+  randomPassword,
+  randomHouseholdName,
+  generateUserTestData,
+  generateTaskTestData,
+} from './test-helpers/index.ts';
+
+const email = randomEmail('test');
+const password = randomPassword();
+const household = randomHouseholdName();
+
+// Or use bundles
+const userData = generateUserTestData();
+const taskData = generateTaskTestData();
+```
+
+**Functions:**
+
+- `randomInt(min, max)` - Random integer
+- `randomElement(array)` - Random array element
+- `randomString(length)` - Random string
+- `randomUUID()` - Random UUID v4
+- `randomEmail(prefix?)` - Random email address
+- `randomPassword(length?)` - Random password (meets requirements)
+- `randomName(type?)` - Random first/last name
+- `randomFullName()` - Random full name
+- `randomAge(min?, max?)` - Random age
+- `randomBirthYear(currentYear?)` - Random birth year
+- `randomHouseholdName()` - Random household name
+- `randomTaskName()` - Random task name
+- `randomTaskDescription()` - Random task description
+- `randomTaskFrequency()` - Random task frequency
+- `randomTaskPoints()` - Random task points
+- `randomDate(start, end)` - Random date in range
+- `randomISODate()` - Random ISO date string
+- `randomAssignmentStatus()` - Random assignment status
+- `randomHouseholdRole()` - Random household role
+- `generateUserTestData(prefix?)` - Complete user test data bundle
+- `generateHouseholdTestData()` - Complete household test data bundle
+- `generateChildTestData()` - Complete child test data bundle
+- `generateTaskTestData()` - Complete task test data bundle
+
 ### Database (`database.ts`)
 
 Test database utilities for setup, cleanup, and queries.
@@ -135,6 +208,20 @@ const task = await createTestTask({
 const { user, household, children } = await createCompleteTestSetup({
   childrenCount: 2,
   householdName: 'Smith Family',
+});
+
+// Create complete scenario with tasks and assignments
+const { owner, household, children, tasks, assignments } = await createCompleteTestScenario({
+  childrenCount: 2,
+  tasksCount: 3,
+  createAssignments: true,
+});
+
+// Create household with multiple members
+const { household, owner, admins, members } = await createHouseholdWithMembers({
+  name: 'Test Household',
+  adminCount: 1,
+  memberCount: 2,
 });
 ```
 

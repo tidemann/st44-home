@@ -36,6 +36,8 @@ export {
   createTestTaskAssignment,
   createTestInvitation,
   createCompleteTestSetup,
+  createCompleteTestScenario,
+  createHouseholdWithMembers,
   generateTestEmail,
   generateTestName,
   type TestUser,
@@ -46,6 +48,8 @@ export {
   type TestTaskAssignment,
   type TestInvitation,
   type CompleteTestSetup,
+  type CompleteTestScenario,
+  type HouseholdWithMembers,
   type CreateTestUserOptions,
   type CreateTestHouseholdOptions,
   type AddHouseholdMemberOptions,
@@ -54,6 +58,8 @@ export {
   type CreateTestTaskAssignmentOptions,
   type CreateTestInvitationOptions,
   type CreateCompleteTestSetupOptions,
+  type CreateCompleteScenarioOptions,
+  type CreateHouseholdWithMembersOptions,
 } from './fixtures.ts';
 
 // Mock utilities
@@ -103,3 +109,44 @@ export {
   assertTruthy,
   assertFalsy,
 } from './assertions.ts';
+
+// HTTP test client
+export {
+  createHttpClient,
+  expectSuccess,
+  expectError,
+  HttpTestClient,
+  type HttpResponse,
+  type HttpClientOptions,
+} from './http.ts';
+
+// Data generators
+export {
+  randomInt,
+  randomElement,
+  randomString,
+  randomUUID,
+  randomEmail,
+  randomPassword,
+  randomName,
+  randomFullName,
+  randomAge,
+  randomBirthYear,
+  randomHouseholdName,
+  randomTaskName,
+  randomTaskDescription,
+  randomTaskFrequency,
+  randomTaskPoints,
+  randomDate,
+  randomISODate,
+  randomAssignmentStatus,
+  randomHouseholdRole,
+  generateUserTestData,
+  generateHouseholdTestData,
+  generateChildTestData,
+  generateTaskTestData,
+  type UserTestData,
+  type HouseholdTestData,
+  type ChildTestData,
+  type TaskTestData,
+} from './generators.ts';
