@@ -98,6 +98,7 @@ import type { Task, CreateTaskRequest, UpdateTaskRequest } from '@st44/types/typ
 ```
 
 **Key Points**:
+
 - Import schemas from `@st44/types/schemas` for runtime validation
 - Import types from `@st44/types/types` for TypeScript type safety
 - Import `zodToOpenAPI` from `@st44/types/generators` for OpenAPI schema generation
@@ -142,11 +143,12 @@ fastify.post<{ Body: CreateTaskRequest; Reply: Task }>(
       reply.code(500);
       return { error: 'Failed to create task' };
     }
-  }
+  },
 );
 ```
 
 **Key Points**:
+
 - Use `zodToOpenAPI()` to convert Zod schemas to OpenAPI format for Fastify
 - Use `.parse()` for runtime validation (throws `ZodError` on invalid data)
 - Use `.safeParse()` for validation without throwing (returns result object)
@@ -185,6 +187,7 @@ const validatedData = result.data;
 ### DO's and DON'Ts
 
 **DO**:
+
 - ✅ Import all types from `@st44/types`
 - ✅ Use `zodToOpenAPI()` for Fastify schema documentation
 - ✅ Validate all request bodies with Zod `.parse()` or `.safeParse()`
@@ -193,6 +196,7 @@ const validatedData = result.data;
 - ✅ Handle `ZodError` and return 400 with validation details
 
 **DON'T**:
+
 - ❌ Create local interface definitions for API types
 - ❌ Skip runtime validation of request data
 - ❌ Return data that doesn't match shared type schemas

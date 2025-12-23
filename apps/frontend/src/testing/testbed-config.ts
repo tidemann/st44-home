@@ -105,9 +105,7 @@ export function configureComponentTest<T>(config: ComponentTestConfig<T>): Compo
   let mockRouter: MockRouter | undefined;
 
   // Check if HTTP testing is needed
-  const needsHttp = config.providers?.some((p) =>
-    String(p).includes('provideHttpClient'),
-  );
+  const needsHttp = config.providers?.some((p) => String(p).includes('provideHttpClient'));
   if (needsHttp) {
     providers.push(provideHttpClient(), provideHttpClientTesting());
   }
@@ -156,10 +154,7 @@ export function queryElement<T>(
 /**
  * Helper to query all elements
  */
-export function queryAllElements<T>(
-  fixture: ComponentFixture<T>,
-  selector: string,
-): HTMLElement[] {
+export function queryAllElements<T>(fixture: ComponentFixture<T>, selector: string): HTMLElement[] {
   const element = getElement(fixture);
   return Array.from(element.querySelectorAll(selector));
 }

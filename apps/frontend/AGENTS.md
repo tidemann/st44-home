@@ -253,6 +253,7 @@ import type { Child, Household, Assignment } from '@st44/types/types';
 ```
 
 **Key Points**:
+
 - Always use `import type` for type-only imports (tree-shaking optimization)
 - Import from `@st44/types/types` (not `@st44/types/schemas`)
 - Frontend does NOT use Zod schemas (backend handles validation)
@@ -296,6 +297,7 @@ export class TaskService {
 ```
 
 **Key Points**:
+
 - Use shared types for request parameters and response types
 - TypeScript ensures you pass correct data to API
 - Backend validates at runtime, frontend validates at compile-time
@@ -334,7 +336,7 @@ export class TaskListComponent {
     this.loading.set(true);
     this.taskService.createTask(householdId, request).subscribe({
       next: (task: Task) => {
-        this.tasks.update(tasks => [...tasks, task]);
+        this.tasks.update((tasks) => [...tasks, task]);
         this.loading.set(false);
       },
       error: (err) => {
@@ -347,6 +349,7 @@ export class TaskListComponent {
 ```
 
 **Key Points**:
+
 - Use typed signals for state management
 - TypeScript enforces request structure matches backend expectations
 - Type safety prevents common integration bugs
@@ -355,6 +358,7 @@ export class TaskListComponent {
 ### DO's and DON'Ts
 
 **DO**:
+
 - ✅ Import all types from `@st44/types/types`
 - ✅ Use `import type` for type-only imports
 - ✅ Type all service method parameters and return values
@@ -363,6 +367,7 @@ export class TaskListComponent {
 - ✅ Trust backend validation (don't duplicate in frontend)
 
 **DON'T**:
+
 - ❌ Define local interfaces for API types
 - ❌ Import Zod schemas in frontend code
 - ❌ Perform runtime validation with Zod (backend's job)

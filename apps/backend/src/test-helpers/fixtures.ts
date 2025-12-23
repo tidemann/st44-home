@@ -389,7 +389,11 @@ export async function createCompleteTestScenario(
   options: CreateCompleteScenarioOptions = {},
 ): Promise<CompleteTestScenario> {
   // Create household with children
-  const { user: owner, household, children } = await createCompleteTestSetup({
+  const {
+    user: owner,
+    household,
+    children,
+  } = await createCompleteTestSetup({
     childrenCount: options.childrenCount ?? 2,
   });
 

@@ -151,10 +151,7 @@ export function verifyNoOutstandingRequests(httpMock: HttpTestingController): vo
 /**
  * Match HTTP request by URL and method
  */
-export function matchRequest(
-  url: string,
-  method: string,
-): (req: HttpRequest<unknown>) => boolean {
+export function matchRequest(url: string, method: string): (req: HttpRequest<unknown>) => boolean {
   return (req) => req.url === url && req.method === method;
 }
 

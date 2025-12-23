@@ -128,9 +128,7 @@ export function createHttpClient(app: FastifyInstance): HttpTestClient {
  */
 export function expectSuccess<T = unknown>(response: HttpResponse, statusCode = 200): T {
   if (response.statusCode !== statusCode) {
-    throw new Error(
-      `Expected status ${statusCode}, got ${response.statusCode}: ${response.body}`,
-    );
+    throw new Error(`Expected status ${statusCode}, got ${response.statusCode}: ${response.body}`);
   }
   return response.json<T>();
 }

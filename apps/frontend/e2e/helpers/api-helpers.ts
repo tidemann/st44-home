@@ -100,10 +100,7 @@ export interface ApiHousehold {
   role: string;
 }
 
-export async function createApiHousehold(
-  name: string,
-  token: string,
-): Promise<ApiHousehold> {
+export async function createApiHousehold(name: string, token: string): Promise<ApiHousehold> {
   return apiRequest<ApiHousehold>('/api/households', {
     method: 'POST',
     body: { name },
@@ -247,10 +244,7 @@ export function getDbPool(): Pool {
 /**
  * Query database directly
  */
-export async function dbQuery<T = unknown>(
-  text: string,
-  params?: unknown[],
-): Promise<T[]> {
+export async function dbQuery<T = unknown>(text: string, params?: unknown[]): Promise<T[]> {
   const pool = getDbPool();
   try {
     const result = await pool.query(text, params);

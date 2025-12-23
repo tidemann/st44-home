@@ -7,11 +7,7 @@ Shared testing utilities for Angular components and services. These utilities re
 The testing utilities are available at `src/testing`:
 
 ```typescript
-import {
-  configureServiceTest,
-  expectHttpPost,
-  mockLoginResponse,
-} from '../testing';
+import { configureServiceTest, expectHttpPost, mockLoginResponse } from '../testing';
 ```
 
 ## Quick Start
@@ -48,7 +44,7 @@ describe('AuthService', () => {
       httpMock,
       '/api/auth/login',
       { email: 'test@example.com', password: 'password' },
-      response
+      response,
     );
   });
 });
@@ -68,7 +64,9 @@ describe('LoginComponent', () => {
   beforeEach(() => {
     const testBed = configureComponentTest({
       component: LoginComponent,
-      imports: [/* your imports */],
+      imports: [
+        /* your imports */
+      ],
     });
     component = testBed.component;
     fixture = testBed.fixture;
@@ -96,16 +94,20 @@ Configure TestBed for service testing with automatic HTTP mock setup.
 const { service, httpMock, mockRouter } = configureServiceTest({
   service: AuthService,
   mocks: { Router: createMockRouter() },
-  providers: [/* additional providers */],
+  providers: [
+    /* additional providers */
+  ],
 });
 ```
 
 **Parameters:**
+
 - `service` - Service class to test
 - `mocks?` - Mock objects (e.g., Router)
 - `providers?` - Additional providers
 
 **Returns:**
+
 - `service` - Injected service instance
 - `httpMock` - HttpTestingController for mocking HTTP requests
 - `mockRouter?` - Mock router if provided in mocks
@@ -123,12 +125,14 @@ const { fixture, component, element, httpMock } = configureComponentTest({
 ```
 
 **Parameters:**
+
 - `component` - Component class to test
 - `imports?` - Module imports
 - `providers?` - Service providers
 - `declarations?` - Component declarations (if needed)
 
 **Returns:**
+
 - `fixture` - ComponentFixture
 - `component` - Component instance
 - `element` - Native HTML element
@@ -188,7 +192,7 @@ expectHttpPost(
   httpMock,
   '/api/auth/login',
   { email: 'test@example.com', password: 'password' },
-  mockLoginResponse()
+  mockLoginResponse(),
 );
 ```
 
@@ -205,12 +209,7 @@ expectHttpGet(httpMock, '/api/households', [mockHouseholdResponse()]);
 Expect PUT request and flush response.
 
 ```typescript
-expectHttpPut(
-  httpMock,
-  '/api/households/123',
-  { name: 'Updated Name' },
-  mockHouseholdResponse()
-);
+expectHttpPut(httpMock, '/api/households/123', { name: 'Updated Name' }, mockHouseholdResponse());
 ```
 
 #### `expectHttpError(httpMock, url, status, statusText, error?)`
@@ -223,7 +222,7 @@ expectHttpError(
   '/api/auth/login',
   401,
   'Unauthorized',
-  mockErrorResponse('Invalid credentials')
+  mockErrorResponse('Invalid credentials'),
 );
 ```
 
@@ -373,11 +372,7 @@ describe('AuthService', () => {
     sessionStorage.clear();
 
     TestBed.configureTestingModule({
-      providers: [
-        provideHttpClient(),
-        provideHttpClientTesting(),
-        AuthService,
-      ],
+      providers: [provideHttpClient(), provideHttpClientTesting(), AuthService],
     });
 
     service = TestBed.inject(AuthService);
@@ -431,7 +426,7 @@ describe('AuthService', () => {
       httpMock,
       '/api/auth/login',
       { email: 'test@example.com', password: 'password' },
-      mockLoginResponse()
+      mockLoginResponse(),
     );
   });
 });
@@ -442,6 +437,7 @@ describe('AuthService', () => {
 ## Examples
 
 See these test files for real-world examples:
+
 - `src/app/services/auth.service.spec.ts` - Service testing
 - `src/app/auth/login.component.spec.ts` - Component testing
 - `src/app/components/task-list/task-list.component.spec.ts` - Component with HTTP
