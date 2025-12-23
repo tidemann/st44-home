@@ -3,7 +3,9 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ParentDashboardComponent } from './parent-dashboard';
 import { HouseholdService } from '../../services/household.service';
 import { DashboardService, DashboardSummary } from '../../services/dashboard.service';
+import { ChildrenService } from '../../services/children.service';
 import { Router, provideRouter } from '@angular/router';
+import { of } from 'rxjs';
 
 describe('ParentDashboardComponent', () => {
   let component: ParentDashboardComponent;
@@ -13,6 +15,7 @@ describe('ParentDashboardComponent', () => {
     listHouseholds: ReturnType<typeof vi.fn>;
   };
   let mockDashboardService: { getDashboard: ReturnType<typeof vi.fn> };
+  let mockChildrenService: { listChildren: ReturnType<typeof vi.fn> };
   let router: Router;
 
   const mockDashboard: DashboardSummary = {
@@ -40,12 +43,17 @@ describe('ParentDashboardComponent', () => {
       getDashboard: vi.fn().mockResolvedValue(mockDashboard),
     };
 
+    mockChildrenService = {
+      listChildren: vi.fn().mockReturnValue(of([])),
+    };
+
     TestBed.configureTestingModule({
       imports: [ParentDashboardComponent],
       providers: [
         provideRouter([]),
         { provide: HouseholdService, useValue: mockHouseholdService },
         { provide: DashboardService, useValue: mockDashboardService },
+        { provide: ChildrenService, useValue: mockChildrenService },
       ],
     });
 
