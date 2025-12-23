@@ -147,28 +147,43 @@ const result = await pool.query(
 - [ ] Test with actual database data (not mocked)
 - [ ] Run endpoint locally and verify no serialization errors
 
-#### 2. Build-Time Validation
+#### 2. Build-Time Validation (MANDATORY BEFORE EVERY PUSH)
+
+**⚠️ CRITICAL**: ALWAYS run ALL checks locally before pushing to GitHub. The CI feedback loop is too slow for debugging.
+
+**Complete Backend Check Sequence** (run from `apps/backend`):
 
 ```bash
-# MANDATORY before committing:
 cd apps/backend
 
-# 1. Type check (catches type mismatches)
+# 1. Type check - catches type mismatches
 npm run type-check
 
-# 2. Build (catches compilation errors)
-npm run build
+# 2. Format check - verifies code formatting
+npm run format:check
 
-# 3. Run tests (catches runtime errors)
+# 3. Run tests - catches runtime errors
 npm run test
+
+# 4. Build - catches compilation errors
+npm run build
 ```
 
-**If ANY step fails**:
+**⚠️ If ANY step fails**:
 
-- Fix the issue immediately
-- Re-run all checks
-- NEVER commit with failing checks
-- NEVER assume "it will work in production"
+1. **STOP** - Do not proceed to commit or push
+2. Fix the issue immediately
+3. Re-run ALL checks (not just the one that failed)
+4. Only proceed when **ALL checks pass**
+5. **NEVER commit and push hoping CI will pass**
+6. **NEVER assume "it will work in production"**
+
+**Why This Matters**:
+
+- CI feedback loop takes 3-5 minutes vs. local checks in under 1 minute
+- Debugging locally is 10x faster than debugging via CI logs
+- Type errors in production cause runtime failures
+- Tests catch schema-query mismatches before deployment
 
 #### 3. Schema Testing Strategy
 

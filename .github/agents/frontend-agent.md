@@ -171,18 +171,49 @@ apps/frontend/
 - Test in browser
 - Check responsive design
 
-### 6. Validate
+### 6. Validate (MANDATORY BEFORE EVERY PUSH)
 
-- **Pre-commit hooks automatically run**: lint-staged formats and lints all staged files
-- If you need to manually validate:
-  - Run `npm run lint` (from apps/frontend)
-  - Run `npm run format:check` (from apps/frontend)
-- Ensure all tests pass: `npm test`
-- Verify accessibility with browser DevTools (AXE)
-- Verify acceptance criteria met
-- Update documentation if needed
+**⚠️ CRITICAL**: ALWAYS run ALL checks locally before pushing to GitHub. The CI feedback loop is too slow for debugging.
 
-**Note**: Pre-commit hooks will automatically format and lint your changes when you commit. You don't need to manually run formatters before committing.
+**Complete Frontend Check Sequence** (run from `apps/frontend`):
+
+```bash
+cd apps/frontend
+
+# 1. Lint check - catches code quality issues
+npm run lint
+
+# 2. Format check - verifies pre-commit hooks worked
+npm run format:check
+
+# 3. Run tests - catches logic errors
+npm run test:ci
+
+# 4. Build - verifies TypeScript compilation
+npm run build
+```
+
+**⚠️ If ANY check fails**:
+
+1. **STOP** - Do not proceed to commit or push
+2. Fix the issues locally
+3. Re-run ALL checks (not just the one that failed)
+4. Only proceed when **ALL checks pass**
+5. **NEVER push hoping CI will catch it**
+
+**Additional Validation**:
+
+- [ ] Verify accessibility with browser DevTools (AXE)
+- [ ] Test in browser if UI changes
+- [ ] Verify acceptance criteria met
+- [ ] Update documentation if needed
+
+**Why This Matters**:
+
+- CI feedback loop takes 3-5 minutes vs. local checks in under 1 minute
+- Debugging locally is 10x faster
+- Pre-commit hooks don't catch everything
+- Tests catch issues linters miss
 
 ## Code Standards
 

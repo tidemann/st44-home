@@ -655,39 +655,60 @@ When work is complete, follow this workflow WITHOUT stopping for user confirmati
 
 **Step 1: Local Checks (MANDATORY - NEVER SKIP)**
 
+**⚠️ CRITICAL LESSON FROM PRODUCTION**:
+
+**NEVER push to GitHub without running ALL checks locally first.** The CI feedback loop is too slow for debugging. Catch all issues locally to avoid wasting time.
+
+**Complete Check Sequence** (run this EVERY TIME before push):
+
 ```bash
-# NOTE: Formatting/linting is now AUTOMATIC via pre-commit hooks!
-# When you commit, Husky will automatically:
-# - Run prettier on all staged files
-# - Run eslint --fix on frontend TypeScript files
-# You DO NOT need to manually run format/lint commands
+# Frontend checks (run ALL of these)
+cd apps/frontend
 
-# Build (verifies TypeScript compilation) - REQUIRED
-cd apps/frontend && npm run build
-cd ../backend && npm run build
+# 1. Lint check
+npm run lint
 
-# Run tests (catches failures before CI) - REQUIRED
-cd apps/frontend && npm run test:ci
-cd ../backend && npm run test
+# 2. Format check (verify pre-commit hooks worked)
+npm run format:check
+
+# 3. Run tests
+npm run test:ci
+
+# 4. Build (TypeScript compilation)
+npm run build
+
+# Backend checks (run ALL of these)
+cd ../backend
+
+# 1. Type check
+npm run type-check
+
+# 2. Format check
+npm run format:check
+
+# 3. Run tests
+npm run test
+
+# 4. Build
+npm run build
 ```
-
-**✅ What's Automated (via pre-commit hooks)**:
-
-- Code formatting (Prettier)
-- Linting (ESLint with --fix)
-- Applied automatically when you `git commit`
-
-**⚠️ What You MUST Run Manually**:
-
-- Build checks (TypeScript compilation)
-- Tests (unit, integration)
 
 **⚠️ CRITICAL**: If ANY check fails:
 
-1. Fix the issues locally
-2. Re-run the checks
-3. Only proceed when ALL checks pass
-4. NEVER commit and push hoping CI will pass
+1. **STOP** - Do not proceed to commit or push
+2. Fix the issues locally
+3. Re-run ALL checks (not just the one that failed)
+4. Only proceed when **ALL checks pass**
+5. **NEVER commit and push hoping CI will pass**
+
+**Why This Matters**:
+
+- CI feedback loop takes 3-5 minutes per iteration
+- Local checks complete in under 1 minute
+- Debugging locally is 10x faster than debugging via CI failures
+- Pre-commit hooks may not catch everything (format:check verifies)
+- Tests catch issues that linters miss
+- Build catches TypeScript errors early
 
 **Step 2: Commit Changes**
 
