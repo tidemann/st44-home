@@ -24,7 +24,7 @@ export interface HouseholdMember {
   userId: string;
   email: string;
   displayName: string | null;
-  role: 'parent' | 'child';
+  role: 'admin' | 'parent' | 'child';
   joinedAt: string;
 }
 
