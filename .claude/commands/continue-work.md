@@ -1,6 +1,6 @@
 # Continue Work - Autonomous Development Loop
 
-Execute the autonomous development workflow. Pick up the next priority from the roadmap and work through tasks continuously.
+Execute the autonomous development workflow. Pick up the next priority from GitHub Issues and work through tasks continuously.
 
 ## Current Status
 
@@ -9,14 +9,23 @@ Recent commits: 6bf9569 chore: add Claude config and types integration test (#14
 f621b13 fix: return camelCase household members (#143)
 b651da5 fix: return camelCase timestamps for households (#142)
 
+**⚠️ IMPORTANT: All work is now tracked in GitHub Issues, not local markdown files.**
+
 ## Workflow
 
-1. Read `tasks/ROADMAP.md` for current priorities
-2. Pick the top item from "Now" section
-3. If feature without tasks → break it down first
-4. Delegate to specialized subagents (frontend, backend, database)
-5. Run tests locally, create PR, wait for CI, merge
-6. Pull main, then **automatically continue to next task**
+1. Query GitHub Issues for next priority (delegate to GitHub Issues Agent)
+   ```bash
+   gh issue list --label "mvp-blocker" --state open
+   gh issue list --milestone "MVP Launch" --state open --json number,title,labels
+   ```
+2. Pick the top priority issue (mvp-blocker > critical > high-priority)
+3. Read issue details: `gh issue view <NUMBER>`
+4. If feature without tasks → break it down first (delegate to GitHub Issues Agent)
+5. Mark issue as "in-progress": `gh issue edit <NUMBER> --add-label "in-progress"`
+6. Delegate to specialized subagents (frontend, backend, database, github-issues)
+7. Run tests locally, create PR with "Closes #<NUMBER>", wait for CI, merge
+8. Issue auto-closes when PR merges
+9. Pull main, then **automatically continue to next issue**
 
 ## Subagent Delegation Pattern
 
@@ -30,7 +39,15 @@ When spawning a subagent, structure your prompt like this:
 **Context Files** (read these first):
 1. .github/agents/[AGENT-TYPE]-agent.md - Agent-specific patterns and conventions
 2. CLAUDE.md - Project-wide conventions (especially "Key Conventions" section)
-3. tasks/[items|features]/[TASK-FILE].md - Task specification and acceptance criteria
+3. GitHub Issue #XXX - Task specification and acceptance criteria
+
+**GitHub Issue Tracking**:
+- Issue: #XXX
+- Labels: [labels from issue]
+- Milestone: [milestone name]
+- **Action**: Mark as "in-progress" when starting
+- **Action**: Comment with progress updates
+- **Action**: Close with "Closes #XXX" in PR description
 
 **Implementation Files** (your targets):
 - [Exact file path to create/modify - be specific]
@@ -42,7 +59,7 @@ When spawning a subagent, structure your prompt like this:
 **Task**:
 [Clear, focused description of what needs to be done]
 
-**Acceptance Criteria**:
+**Acceptance Criteria** (from GitHub issue):
 - [ ] Criterion 1
 - [ ] Criterion 2
 - [ ] All tests pass
@@ -56,6 +73,10 @@ When spawning a subagent, structure your prompt like this:
 
 Use specialized agent types (NOT "general-purpose") when applicable:
 
+- **GitHub Issues work**: Use GitHub Issues Agent
+  - Read: `.github/agents/github-issues-agent.md`
+  - Use for: Creating issues, milestones, labels, querying, updating status
+
 - **Backend work**: Use backend-focused subagent
   - Read: `.github/agents/backend-agent.md`
   - Use for: Fastify APIs, routes, middleware, business logic
@@ -68,9 +89,12 @@ Use specialized agent types (NOT "general-purpose") when applicable:
   - Read: `.github/agents/database-agent.md`
   - Use for: Migrations, schema changes, queries
 
+- **CI/CD work**: Use CI/CD Agent
+  - Read: `.github/agents/cicd-agent.md`
+  - Use for: Monitoring workflows, fixing CI failures, quality gates
+
 - **General-purpose**: Only for cross-cutting concerns
   - Use when work spans multiple domains without clear boundaries
-  - Use for documentation-only tasks
   - Use for complex analysis requiring multiple perspectives
 
 ### Example Handover (Backend)
@@ -79,54 +103,67 @@ Use specialized agent types (NOT "general-purpose") when applicable:
 **Context Files** (read these first):
 1. .github/agents/backend-agent.md - Backend patterns and conventions
 2. CLAUDE.md - Project conventions (camelCase, async/await, parameterized queries)
-3. tasks/items/task-102-evaluate-shared-test-utilities.md - Task specification
+3. GitHub Issue #150 - Task specification and acceptance criteria
+
+**GitHub Issue Tracking**:
+- Issue: #150
+- Labels: feature, backend, high-priority
+- Milestone: MVP Launch
+- **Action**: Mark as "in-progress" when starting
+- **Action**: Comment with progress updates
+- **Action**: Close with "Closes #150" in PR description
 
 **Implementation Files** (your targets):
-- apps/backend/src/test-helpers/http.ts (create new)
-- apps/backend/src/test-helpers/generators.ts (create new)
-- apps/backend/src/test-helpers/fixtures.ts (enhance existing)
-- apps/backend/src/test-helpers/index.ts (update exports)
+- apps/backend/src/routes/invitations.ts (create email sending)
+- apps/backend/src/services/email.service.ts (create new)
+- apps/backend/.env.example (add email config)
 
 **Reference Files** (for examples/patterns):
-- apps/backend/src/test-helpers/README.md - Current test patterns
-- apps/backend/src/routes/tasks.test.ts - Example integration test
+- apps/backend/src/routes/auth.ts - Service integration pattern
+- apps/backend/src/middleware/auth.ts - Configuration pattern
 
 **Task**:
-Create comprehensive shared test utilities for backend tests. Audit existing test files for duplication, design shared utility modules (HTTP client, data generators, enhanced fixtures), and implement them in test-helpers/. Goal is 60%+ reduction in test setup code.
+Integrate email service to send notifications when invitations are created. Use SendGrid API.
 
-**Acceptance Criteria**:
-- [ ] HTTP test client created with expectSuccess/expectError helpers
-- [ ] Data generators created (25+ functions for realistic test data)
-- [ ] Enhanced fixtures (createCompleteTestScenario, createHouseholdWithMembers)
-- [ ] All 272 backend tests still pass
-- [ ] Documentation updated with usage examples
+**Acceptance Criteria** (from GitHub issue #150):
+- [ ] SendGrid SDK integrated
+- [ ] Email template for invitations created
+- [ ] Email sent on invitation creation
+- [ ] Failed emails logged and handled
+- [ ] All backend tests pass
 
-**Priority**: Medium - Improves developer experience and test maintainability
+**Priority**: Critical - MVP blocker (users can't invite others)
 
 **Testing**: Run `npm run test:backend` to verify all tests pass
 ```
 
-### Example Handover (Frontend)
+### Example Handover (GitHub Issues)
 
 ```
 **Context Files** (read these first):
-1. .github/agents/frontend-agent.md - Angular patterns (signals, standalone, inject)
-2. CLAUDE.md - Project conventions (camelCase, OnPush, control flow syntax)
-3. tasks/items/task-110-integration-testing-docs.md - Task specification
+1. .github/agents/github-issues-agent.md - Issue management workflows
 
-**Implementation Files** (your targets):
-- packages/types/README.md (create comprehensive guide)
-- apps/backend/AGENTS.md (add "Shared Types Usage" section)
-- apps/frontend/AGENTS.md (add "Shared Types Usage" section)
+**Task**:
+Create GitHub issues for all MVP blocker bugs found in audit:
+1. Bug: Task creation buttons disabled
+2. Bug: Children cannot log in
+3. Feature: Email notifications for invitations
+4. Task: Fix empty state UI on dashboard
 
-**Reference Files** (for examples/patterns):
-- apps/backend/src/test-helpers/README.md - Example of good documentation
-- packages/types/src/schemas/task.schema.ts - Schema patterns to document
+**Actions Required**:
+- Create milestone "MVP Launch" if it doesn't exist
+- Create 4 issues with proper labels (bug/feature/task, mvp-blocker, priority)
+- Add detailed descriptions with acceptance criteria
+- Link related issues via comments
+
+**Testing**: Verify with `gh issue list --milestone "MVP Launch"`
+```
 
 **Task**:
 Create comprehensive developer documentation for the shared types system. Write packages/types/README.md with usage examples, conventions, troubleshooting. Update AGENTS.md files with shared types patterns for backend and frontend developers.
 
 **Acceptance Criteria**:
+
 - [ ] README.md covers: overview, usage, adding schemas, conventions, troubleshooting
 - [ ] Backend AGENTS.md updated with Zod validation patterns
 - [ ] Frontend AGENTS.md updated with type import patterns
@@ -136,19 +173,21 @@ Create comprehensive developer documentation for the shared types system. Write 
 **Priority**: High - Ensures developers can use the new type system effectively
 
 **Testing**: No code changes, verify documentation completeness
+
 ```
 
 ## Critical Rules
 
 1. **Never push to main** - Always use feature branches
 2. **Test before PR** - Run `npm test` and `npm run type-check` locally
-3. **Update ROADMAP.md** - After completing work, update status
-4. **Move to done/** - Completed tasks go to `tasks/items/done/`
-5. **Pull after merge** - Always `git checkout main && git pull` after merge
+3. **Track in GitHub** - ALL work must have a GitHub issue
+4. **Update issue status** - Mark as "in-progress" when starting, comment with progress
+5. **Close via PR** - Use "Closes #XXX" in PR description
+6. **Pull after merge** - Always `git checkout main && git pull` after merge
 
 ## Quality Checklist
 
-Before marking ANY task complete:
+Before marking ANY issue complete:
 - [ ] All relevant tests run locally and pass
 - [ ] Followed the handover pattern for subagent delegation
 - [ ] Referenced agent spec files in prompts
@@ -157,7 +196,12 @@ Before marking ANY task complete:
 - [ ] All acceptance criteria verified
 - [ ] Code follows project standards (camelCase, type safety)
 - [ ] Documentation updated if needed
+- [ ] GitHub issue marked "in-progress" and updated with comments
+- [ ] PR references issue with "Closes #XXX"
 
 ## Start
 
-Read `tasks/ROADMAP.md` now and begin executing the top priority. Do not ask for confirmation - work autonomously until the roadmap is complete or you hit a blocker.
+Query GitHub Issues now and begin executing the top priority issue. Do not ask for confirmation - work autonomously until all MVP blockers are resolved or you hit a blocker.
+
+**First command**: `gh issue list --label "mvp-blocker" --state open`
+```
