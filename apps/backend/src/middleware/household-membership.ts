@@ -12,7 +12,7 @@ function isValidUuid(value: string): boolean {
 declare module 'fastify' {
   interface FastifyRequest {
     household?: {
-      role: 'admin' | 'parent';
+      role: 'admin' | 'parent' | 'child';
       householdId: string;
     };
   }

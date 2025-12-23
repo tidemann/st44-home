@@ -29,8 +29,8 @@ const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID || '';
 const googleClient = new OAuth2Client(GOOGLE_CLIENT_ID);
 
 // JWT Utility Functions
-function generateAccessToken(userId: string, email: string): string {
-  return jwt.sign({ userId, email, type: 'access' }, JWT_SECRET, {
+function generateAccessToken(userId: string, email: string, role?: string): string {
+  return jwt.sign({ userId, email, role, type: 'access' }, JWT_SECRET, {
     expiresIn: JWT_ACCESS_EXPIRY,
   });
 }
@@ -53,6 +53,7 @@ declare module 'fastify' {
     user?: {
       userId: string;
       email: string;
+      role?: string;
     };
   }
 }
@@ -61,6 +62,7 @@ declare module 'fastify' {
 interface AccessTokenPayload {
   userId: string;
   email: string;
+  role?: string;
   type: string;
   iat: number;
   exp: number;
@@ -154,6 +156,7 @@ async function buildApp() {
       request.user = {
         userId: decoded.userId,
         email: decoded.email,
+        role: decoded.role,
       };
 
       // Middleware successful - continue to route handler
@@ -211,6 +214,8 @@ async function buildApp() {
       refreshToken: string;
       userId: string;
       email: string;
+      role?: string;
+      householdId?: string;
     }
 
     interface RefreshRequest {
@@ -312,11 +317,25 @@ async function buildApp() {
             return { error: 'Invalid email or password' };
           }
 
-          // Generate tokens
-          const accessToken = generateAccessToken(user.id, user.email);
+          // Query household_members to get user's role and household
+          const householdResult = await pool.query(
+            'SELECT household_id, role FROM household_members WHERE user_id = $1 LIMIT 1',
+            [user.id],
+          );
+
+          let role: string | undefined;
+          let householdId: string | undefined;
+
+          if (householdResult.rows.length > 0) {
+            role = householdResult.rows[0].role;
+            householdId = householdResult.rows[0].household_id;
+          }
+
+          // Generate tokens with role
+          const accessToken = generateAccessToken(user.id, user.email, role);
           const refreshToken = generateRefreshToken(user.id);
 
-          fastify.log.info({ userId: user.id, email }, 'Successful login');
+          fastify.log.info({ userId: user.id, email, role, householdId }, 'Successful login');
 
           reply.code(200);
           return {
@@ -324,6 +343,8 @@ async function buildApp() {
             refreshToken,
             userId: user.id,
             email: user.email,
+            role,
+            householdId,
           };
         } catch (error: unknown) {
           // Log error but don't expose internal details
@@ -365,8 +386,16 @@ async function buildApp() {
             return { error: 'Invalid or expired refresh token' };
           }
 
-          // Generate new access token
-          const accessToken = generateAccessToken(decoded.userId, result.rows[0].email);
+          // Query household_members to get user's role
+          const householdResult = await pool.query(
+            'SELECT role FROM household_members WHERE user_id = $1 LIMIT 1',
+            [decoded.userId],
+          );
+
+          const role = householdResult.rows.length > 0 ? householdResult.rows[0].role : undefined;
+
+          // Generate new access token with role
+          const accessToken = generateAccessToken(decoded.userId, result.rows[0].email, role);
 
           fastify.log.info({ userId: decoded.userId }, 'Token refreshed successfully');
 
@@ -499,8 +528,22 @@ async function buildApp() {
             );
           }
 
-          // Generate JWT tokens (same as email/password login)
-          const accessToken = generateAccessToken(userId, userEmail);
+          // Query household_members to get user's role and household
+          const householdResult = await pool.query(
+            'SELECT household_id, role FROM household_members WHERE user_id = $1 LIMIT 1',
+            [userId],
+          );
+
+          let role: string | undefined;
+          let householdId: string | undefined;
+
+          if (householdResult.rows.length > 0) {
+            role = householdResult.rows[0].role;
+            householdId = householdResult.rows[0].household_id;
+          }
+
+          // Generate JWT tokens with role
+          const accessToken = generateAccessToken(userId, userEmail, role);
           const refreshToken = generateRefreshToken(userId);
 
           reply.code(200);
@@ -509,6 +552,8 @@ async function buildApp() {
             refreshToken,
             userId,
             email: userEmail,
+            role,
+            householdId,
           };
         } catch (error) {
           fastify.log.error(error, 'Google OAuth error');

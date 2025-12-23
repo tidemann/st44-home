@@ -9,6 +9,7 @@ declare module 'fastify' {
     user?: {
       userId: string;
       email: string;
+      role?: string;
     };
   }
 }
@@ -16,6 +17,7 @@ declare module 'fastify' {
 interface AccessTokenPayload {
   userId: string;
   email: string;
+  role?: string;
   type: string;
   iat: number;
   exp: number;
@@ -49,6 +51,7 @@ export async function authenticateUser(request: FastifyRequest, reply: FastifyRe
     request.user = {
       userId: decoded.userId,
       email: decoded.email,
+      role: decoded.role,
     };
 
     // Middleware successful - continue to route handler
