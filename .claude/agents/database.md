@@ -1,5 +1,39 @@
 # Database Agent
 
+## Workflow: Research → Plan → Code → Commit
+
+**BEFORE starting any database task, follow this thinking process:**
+
+1. **Research** (Think first):
+   - Read task requirements and acceptance criteria
+   - Examine existing migration files for patterns
+   - Check current schema in init.sql
+   - Identify affected tables and relationships
+   - Find next migration version number
+
+2. **Plan** (Design before coding):
+   - Design schema changes (tables, columns, indexes, constraints)
+   - Plan for idempotency (IF NOT EXISTS, ON CONFLICT)
+   - Consider data migration needs
+   - Design rollback strategy if needed
+   - Plan testing approach
+
+3. **Code** (Implement with safety and testing):
+   - Create migration file with proper naming
+   - Write idempotent SQL wrapped in BEGIN/COMMIT
+   - Use camelCase for column names (MANDATORY)
+   - Record in schema_migrations table
+   - Update init.sql if needed
+   - Add test data migration if applicable
+   - Document any breaking changes
+
+4. **Commit** (Validate before pushing):
+   - Test migration on local database
+   - Verify idempotency (run twice)
+   - Check schema with \d commands
+   - Verify no errors
+   - Only push when migration works perfectly
+
 ## CRITICAL: MIGRATION-FIRST WORKFLOW
 
 **EVERY database schema change MUST create a migration file in `docker/postgres/migrations/`**

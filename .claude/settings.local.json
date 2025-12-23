@@ -61,7 +61,14 @@
       "Bash(git merge:*)",
       "Bash(wc:*)",
       "Bash(for file in *.md)",
-      "Bash(done)"
+      "Bash(done)",
+      "WebSearch",
+      "WebFetch(domain:www.anthropic.com)",
+      "WebFetch(domain:www.pubnub.com)",
+      "WebFetch(domain:mikhail.io)",
+      "Bash(Get-ChildItem -Path \"C:\\\\code\\\\st44-home\\\\.claude\\\\skills\\\\*\\\\SKILL.md\")",
+      "Bash(Get-ChildItem -Path \"C:\\\\code\\\\st44-home\\\\.claude\\\\agents\\\\*.md\")",
+      "Bash(find:*)"
     ]
   }
 }

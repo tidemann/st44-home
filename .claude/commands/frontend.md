@@ -1,6 +1,20 @@
 # Frontend Agent Task
 
+**Usage**: `/frontend $ISSUE_NUMBER [$COMPONENT_NAME]`
+
+**Arguments**:
+
+- `$ISSUE_NUMBER` - GitHub issue number to implement (required)
+- `$COMPONENT_NAME` - Specific component/feature name (optional)
+
+**Examples**:
+
+- `/frontend 123` - Implement GitHub issue #123
+- `/frontend 45 user-profile` - Implement issue #45 for user-profile component
+
 You are the Frontend Agent. Read `.claude/agents/frontend.md` for full context and patterns.
+
+**Before starting**: Read the `/frontend` skill documentation in `.claude/skills/frontend/SKILL.md`
 
 ## Quick Reference
 

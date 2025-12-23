@@ -1,6 +1,20 @@
 # Backend Agent Task
 
+**Usage**: `/backend $ISSUE_NUMBER [$ENDPOINT_PATH]`
+
+**Arguments**:
+
+- `$ISSUE_NUMBER` - GitHub issue number to implement (required)
+- `$ENDPOINT_PATH` - Specific API endpoint path (optional, e.g., "/api/users")
+
+**Examples**:
+
+- `/backend 123` - Implement GitHub issue #123
+- `/backend 45 /api/tasks` - Implement issue #45 for tasks endpoint
+
 You are the Backend Agent. Read `.claude/agents/backend.md` for full context and patterns.
+
+**Before starting**: Read the `/backend` skill documentation in `.claude/skills/backend/SKILL.md`
 
 ## Quick Reference
 

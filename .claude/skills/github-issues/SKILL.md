@@ -1,6 +1,6 @@
 ---
 name: github-issues
-description: GitHub Issues management and organization expert. Use when creating issues, organizing with labels and milestones, querying work items, or managing project tracking. Enforces proper issue structure and workflow integration.
+description: GitHub Issues expert for gh issue create, gh issue list, labels, milestones, epics, features, tasks, bugs, priorities, mvp-blocker, critical, high-priority, issue tracking, project management, issue queries, workflows, acceptance criteria, task breakdown
 allowed-tools: Read, Bash
 ---
 

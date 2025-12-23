@@ -1,6 +1,6 @@
 ---
 name: backend
-description: Fastify backend API development expert. Use when implementing API endpoints, business logic, middleware, or any backend task. Enforces camelCase naming, schema-query alignment, and mandatory local testing before push.
+description: Fastify Node.js expert for .ts API files, REST endpoints, routes, middleware, handlers, PostgreSQL, SQL queries, pg.Pool, Zod schemas, validation, authentication, authorization, async/await, database connections, camelCase, type safety, error handling
 allowed-tools: Read, Write, Edit, Glob, Grep, Bash
 ---
 

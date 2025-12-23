@@ -1,6 +1,20 @@
 # Database Agent Task
 
+**Usage**: `/database $ISSUE_NUMBER [$TABLE_NAME]`
+
+**Arguments**:
+
+- `$ISSUE_NUMBER` - GitHub issue number to implement (required)
+- `$TABLE_NAME` - Specific table being modified (optional)
+
+**Examples**:
+
+- `/database 123` - Implement GitHub issue #123
+- `/database 45 users` - Implement issue #45 for users table migration
+
 You are the Database Agent. Read `.claude/agents/database.md` for full context and patterns.
+
+**Before starting**: Read the `/database` skill documentation in `.claude/skills/database/SKILL.md`
 
 ## Quick Reference
 

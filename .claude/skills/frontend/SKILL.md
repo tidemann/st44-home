@@ -1,6 +1,6 @@
 ---
 name: frontend
-description: Angular 21+ frontend development expert. Use when implementing UI components, services, routing, forms, or any frontend task. Enforces standalone components, signals, OnPush change detection, and mandatory local testing before push.
+description: Angular 21+ expert for .ts .html .css files, @Component, UI, components, pages, services, routing, forms, templates, signals, RxJS, HttpClient, inject(), reactive forms, validators, accessibility, WCAG, AXE, browser testing, Karma, Jasmine, e2e, Playwright
 allowed-tools: Read, Write, Edit, Glob, Grep, Bash
 ---
 

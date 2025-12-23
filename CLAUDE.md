@@ -1,10 +1,12 @@
 # CLAUDE.md
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+**IMPORTANT**: This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository. YOU MUST follow all conventions and workflows described here.
 
 ## Project Overview
 
 Full-stack TypeScript monorepo: Angular 21+ frontend, Fastify backend, PostgreSQL database.
+
+**CRITICAL**: This is a production application with strict quality requirements. Always run local tests before pushing.
 
 ## Commands
 
@@ -96,11 +98,13 @@ infra/                           # Docker Compose configuration
 
 ## Key Conventions
 
+**YOU MUST follow these conventions in all code:**
+
 ### TypeScript
 
-- **camelCase everywhere** - variables, properties, database columns (no snake_case)
+- **CRITICAL: camelCase everywhere** - variables, properties, database columns (NEVER use snake_case)
 - Strict mode, ESM modules
-- Use `unknown` over `any`
+- **NEVER use `any`** - use `unknown` instead
 
 ### Angular (Frontend)
 
@@ -121,20 +125,27 @@ infra/                           # Docker Compose configuration
 
 ### Database
 
-- Migrations in `docker/postgres/migrations/NNN_name.sql`
+**CRITICAL - MIGRATION-FIRST WORKFLOW (MANDATORY)**:
+
+- **ALL database changes MUST have a migration file** in `docker/postgres/migrations/NNN_name.sql`
+- **WITHOUT MIGRATION, CHANGES WILL NOT DEPLOY TO PRODUCTION**
 - Make migrations idempotent (`IF NOT EXISTS`, `ON CONFLICT DO NOTHING`)
 - Wrap in `BEGIN`/`COMMIT` transactions
 - Update `schema_migrations` table in each migration
 - Also update `init.sql` for new tables
+- Test migrations locally BEFORE pushing
 
 ## Git Workflow
 
+**CRITICAL: NEVER PUSH DIRECTLY TO MAIN - Always use feature branches**
+
 1. Create feature branch: `git checkout -b feature/name`
 2. Make changes (pre-commit hooks automatically format/lint on commit)
-3. Push and create PR: `gh pr create --base main`
-4. Squash merge after CI passes
+3. **YOU MUST run all tests locally before pushing** (see Testing section above)
+4. Push and create PR: `gh pr create --base main`
+5. Squash merge after CI passes
 
-Never push directly to main.
+**Pre-push validation is MANDATORY** - if tests fail locally, DO NOT push.
 
 ## Shared Types (@st44/types)
 

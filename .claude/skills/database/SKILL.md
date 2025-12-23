@@ -1,6 +1,6 @@
 ---
 name: database
-description: PostgreSQL database migration and schema management expert. Use when creating tables, modifying schemas, adding columns, or any database changes. Enforces migration-first workflow with idempotency and deployment guarantees.
+description: PostgreSQL expert for .sql migration files, CREATE TABLE, ALTER TABLE, indexes, constraints, foreign keys, schema changes, docker/postgres/migrations/, init.sql, idempotent SQL, transactions, BEGIN/COMMIT, psql, database testing, schema_migrations
 allowed-tools: Read, Write, Edit, Glob, Grep, Bash
 ---
 

@@ -1,6 +1,6 @@
 ---
 name: cicd
-description: CI/CD pipeline monitoring and quality gates expert. Use when monitoring GitHub Actions workflows, analyzing CI failures, fixing pipeline issues, or ensuring code quality before merge. Enforces pre-commit quality gates and automated failure remediation.
+description: GitHub Actions expert for CI/CD pipelines, workflows, build failures, test failures, lint errors, format checks, gh run, gh pr checks, ESLint, Prettier, TypeScript errors, quality gates, automated fixes, pipeline debugging, workflow monitoring
 allowed-tools: Read, Write, Edit, Bash
 ---
 
