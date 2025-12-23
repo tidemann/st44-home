@@ -165,8 +165,21 @@
 
   <!-- Create Account Modal -->
   @if (selectedChildForAccount()) {
-    <div class="modal-overlay" (click)="onCreateAccountCancelled()">
-      <div class="modal-content" (click)="$event.stopPropagation()">
+    <div
+      class="modal-overlay"
+      role="button"
+      tabindex="0"
+      (click)="onCreateAccountCancelled()"
+      (keydown.enter)="onCreateAccountCancelled()"
+      (keydown.escape)="onCreateAccountCancelled()"
+    >
+      <div
+        class="modal-content"
+        role="dialog"
+        tabindex="-1"
+        (click)="$event.stopPropagation()"
+        (keydown)="$event.stopPropagation()"
+      >
         <app-create-child-account
           [child]="selectedChildForAccount()!"
           [householdId]="household()!.id"
