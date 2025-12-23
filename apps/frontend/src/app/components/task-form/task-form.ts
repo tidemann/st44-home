@@ -74,7 +74,6 @@ export class TaskFormComponent implements OnInit {
     }
   }
 
-
   private populateForm(task: Task) {
     this.form.patchValue({
       name: task.name,
