@@ -6,10 +6,11 @@ import {
   requireHouseholdParent,
   requireHouseholdAdmin,
 } from '../middleware/household-membership.js';
-import { ChildSchema, CreateChildRequestSchema, UpdateChildRequestSchema } from '@st44/types';
+import { ChildSchema, CreateChildRequestSchema, UpdateChildRequestSchema, CreateChildUserAccountRequestSchema } from '@st44/types';
 import { z, zodToOpenAPI, CommonErrors } from '@st44/types/generators';
 import { validateRequest, handleZodError } from '../utils/validation.js';
 import { stripResponseValidation } from '../schemas/common.js';
+import bcrypt from 'bcrypt';
 
 interface HouseholdParams {
   householdId: string;
@@ -51,7 +52,7 @@ async function listChildren(
 
   try {
     const result = await db.query(
-      `SELECT id, household_id, name, birth_year, created_at, updated_at
+      `SELECT id, household_id, user_id, name, birth_year, created_at, updated_at
        FROM children
        WHERE household_id = $1
        ORDER BY name ASC`,
@@ -61,6 +62,7 @@ async function listChildren(
     const children = result.rows.map((row) => ({
       id: row.id,
       householdId: row.household_id,
+      userId: row.user_id,
       name: row.name,
       birthYear: row.birth_year,
       avatarUrl: null,
@@ -170,6 +172,51 @@ async function updateChild(request: FastifyRequest<UpdateChildRequest>, reply: F
 }
 
 /**
+ * GET /api/households/:householdId/children/:childId - Get single child
+ * Returns child details including userId
+ */
+async function getChild(request: FastifyRequest<{ Params: ChildParams }>, reply: FastifyReply) {
+  const { householdId, childId } = request.params;
+
+  try {
+    const result = await db.query(
+      `SELECT id, household_id, user_id, name, birth_year, created_at, updated_at
+       FROM children
+       WHERE id = $1 AND household_id = $2`,
+      [childId, householdId],
+    );
+
+    if (result.rows.length === 0) {
+      return reply.status(404).send({
+        statusCode: 404,
+        error: 'Not Found',
+        message: 'Child not found in this household',
+      });
+    }
+
+    const child = result.rows[0];
+
+    return reply.send({
+      id: child.id,
+      householdId: child.household_id,
+      userId: child.user_id,
+      name: child.name,
+      birthYear: child.birth_year,
+      avatarUrl: null,
+      createdAt: child.created_at,
+      updatedAt: child.updated_at,
+    });
+  } catch (error) {
+    request.log.error(error, 'Failed to get child');
+    return reply.status(500).send({
+      statusCode: 500,
+      error: 'Internal Server Error',
+      message: 'Failed to retrieve child',
+    });
+  }
+}
+
+/**
  * DELETE /api/households/:householdId/children/:id - Remove child
  * Requires admin role
  */
@@ -211,6 +258,130 @@ async function deleteChild(request: FastifyRequest<DeleteChildRequest>, reply: F
       error: 'Internal Server Error',
       message: 'Failed to delete child',
     });
+  }
+}
+
+interface CreateChildUserAccountRequest {
+  Params: ChildParams;
+  Body: {
+    email: string;
+    password: string;
+  };
+}
+
+/**
+ * POST /api/households/:householdId/children/:childId/create-account - Create user account for child
+ * Requires parent or admin role
+ * Creates user with hashed password and links to child profile
+ */
+async function createChildUserAccount(
+  request: FastifyRequest<CreateChildUserAccountRequest>,
+  reply: FastifyReply,
+) {
+  const { householdId, childId } = request.params;
+  const { email, password } = request.body;
+
+  // Validate request body
+  try {
+    CreateChildUserAccountRequestSchema.parse({ childId, email, password });
+  } catch (error) {
+    if (error instanceof z.ZodError) {
+      return handleZodError(error, reply);
+    }
+  }
+
+  // Start transaction
+  const client = await db.connect();
+  try {
+    await client.query('BEGIN');
+
+    // 1. Check child exists and doesn't already have a user account
+    const childResult = await client.query(
+      `SELECT id, user_id, household_id, name
+       FROM children
+       WHERE id = $1 AND household_id = $2`,
+      [childId, householdId],
+    );
+
+    if (childResult.rows.length === 0) {
+      await client.query('ROLLBACK');
+      return reply.status(404).send({
+        statusCode: 404,
+        error: 'Not Found',
+        message: 'Child not found in this household',
+      });
+    }
+
+    const child = childResult.rows[0];
+
+    if (child.user_id) {
+      await client.query('ROLLBACK');
+      return reply.status(400).send({
+        statusCode: 400,
+        error: 'Bad Request',
+        message: 'Child already has a user account',
+      });
+    }
+
+    // 2. Check email isn't already in use
+    const emailCheckResult = await client.query(
+      'SELECT id FROM users WHERE email = $1',
+      [email],
+    );
+
+    if (emailCheckResult.rows.length > 0) {
+      await client.query('ROLLBACK');
+      return reply.status(400).send({
+        statusCode: 400,
+        error: 'Bad Request',
+        message: 'Email already in use',
+      });
+    }
+
+    // 3. Hash password with bcrypt (10 rounds)
+    const passwordHash = await bcrypt.hash(password, 10);
+
+    // 4. Create user in users table
+    const userResult = await client.query(
+      'INSERT INTO users (email, password_hash) VALUES ($1, $2) RETURNING id',
+      [email, passwordHash],
+    );
+
+    const userId = userResult.rows[0].id;
+
+    // 5. Link child to user by setting children.user_id
+    await client.query(
+      'UPDATE children SET user_id = $1, updated_at = NOW() WHERE id = $2',
+      [userId, childId],
+    );
+
+    // 6. Add household_members entry with role='child'
+    await client.query(
+      `INSERT INTO household_members (household_id, user_id, role)
+       VALUES ($1, $2, 'child')`,
+      [householdId, userId],
+    );
+
+    // Commit transaction
+    await client.query('COMMIT');
+
+    request.log.info({ childId, userId, email }, 'Child user account created successfully');
+
+    return reply.status(201).send({
+      success: true,
+      userId,
+      message: 'User account created successfully',
+    });
+  } catch (error) {
+    await client.query('ROLLBACK');
+    request.log.error(error, 'Failed to create child user account');
+    return reply.status(500).send({
+      statusCode: 500,
+      error: 'Internal Server Error',
+      message: 'Failed to create user account',
+    });
+  } finally {
+    client.release();
   }
 }
 
@@ -427,6 +598,27 @@ export default async function childrenRoutes(server: FastifyInstance) {
     handler: listChildren,
   });
 
+  // Get single child (member access)
+  server.get('/api/households/:householdId/children/:childId', {
+    schema: stripResponseValidation({
+      summary: 'Get child details',
+      description: 'Returns details for a specific child',
+      tags: ['children'],
+      security: [{ bearerAuth: [] }],
+      params: zodToOpenAPI(ChildParamsSchema),
+      response: {
+        200: zodToOpenAPI(ChildSchema),
+        ...CommonErrors.BadRequest,
+        ...CommonErrors.Unauthorized,
+        ...CommonErrors.Forbidden,
+        ...CommonErrors.NotFound,
+        ...CommonErrors.InternalServerError,
+      },
+    }),
+    preHandler: [authenticateUser, validateHouseholdMembership],
+    handler: getChild,
+  });
+
   // Create child (parent/admin access)
   server.post('/api/households/:householdId/children', {
     schema: stripResponseValidation({
@@ -469,6 +661,39 @@ export default async function childrenRoutes(server: FastifyInstance) {
     }),
     preHandler: [authenticateUser, validateHouseholdMembership, requireHouseholdParent],
     handler: updateChild,
+  });
+
+  // Create child user account (parent/admin access)
+  server.post('/api/households/:householdId/children/:childId/create-account', {
+    schema: stripResponseValidation({
+      summary: 'Create user account for child',
+      description: 'Creates a user account for an existing child profile (parent/admin only)',
+      tags: ['children'],
+      security: [{ bearerAuth: [] }],
+      params: zodToOpenAPI(ChildParamsSchema),
+      body: zodToOpenAPI(
+        z.object({
+          email: z.string().email(),
+          password: z.string().min(8).max(128),
+        }),
+      ),
+      response: {
+        201: zodToOpenAPI(
+          z.object({
+            success: z.boolean(),
+            userId: z.string().uuid(),
+            message: z.string(),
+          }),
+        ),
+        ...CommonErrors.BadRequest,
+        ...CommonErrors.Unauthorized,
+        ...CommonErrors.Forbidden,
+        ...CommonErrors.NotFound,
+        ...CommonErrors.InternalServerError,
+      },
+    }),
+    preHandler: [authenticateUser, validateHouseholdMembership, requireHouseholdParent],
+    handler: createChildUserAccount,
   });
 
   // Delete child (admin only)

@@ -15,7 +15,7 @@ ON schema_migrations(applied_at);
 
 -- Record migrations as applied (since init.sql creates the current state)
 INSERT INTO schema_migrations (version, name, applied_at)
-VALUES 
+VALUES
   ('000', 'create_migrations_table', NOW()),
   ('001', 'create_users_table', NOW()),
   ('011', 'create_households_table', NOW()),
@@ -26,7 +26,8 @@ VALUES
   ('016', 'create_task_completions_table', NOW()),
   ('017', 'add_performance_indexes', NOW()),
   ('018', 'implement_row_level_security', NOW()),
-  ('021', 'rename_due_date_to_date', NOW())
+  ('021', 'rename_due_date_to_date', NOW()),
+  ('022', 'add_user_id_to_children', NOW())
 ON CONFLICT (version) DO NOTHING;
 
 -- Users table for authentication (supports email/password and OAuth)
@@ -98,6 +99,7 @@ CREATE INDEX IF NOT EXISTS idx_invitations_status ON invitations(status);
 CREATE TABLE IF NOT EXISTS children (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   household_id UUID NOT NULL REFERENCES households(id) ON DELETE CASCADE,
+  user_id UUID REFERENCES users(id) ON DELETE SET NULL, -- Added in migration 022 for child authentication
   name VARCHAR(255) NOT NULL,
   birth_year INTEGER,
   created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
@@ -106,6 +108,8 @@ CREATE TABLE IF NOT EXISTS children (
 
 CREATE INDEX IF NOT EXISTS idx_children_household ON children(household_id);
 CREATE INDEX IF NOT EXISTS idx_children_household_name ON children(household_id, name); -- Added in migration 017 for search optimization
+CREATE INDEX IF NOT EXISTS idx_children_user_id ON children(user_id); -- Added in migration 022 for auth performance
+CREATE UNIQUE INDEX IF NOT EXISTS idx_children_user_household_unique ON children(user_id, household_id) WHERE user_id IS NOT NULL; -- Added in migration 022 to prevent duplicate child profiles
 
 -- Tasks table (templates/definitions for household chores)
 CREATE TABLE IF NOT EXISTS tasks (

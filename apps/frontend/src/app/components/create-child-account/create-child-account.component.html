@@ -1,0 +1,149 @@
+<div class="create-account-modal">
+  <div class="modal-header">
+    <h2>Create Account for {{ child().name }}</h2>
+    <button
+      type="button"
+      class="btn-close"
+      (click)="onCancel()"
+      aria-label="Close"
+    >
+      &times;
+    </button>
+  </div>
+
+  <div class="modal-body">
+    <!-- Success Message -->
+    @if (successMessage()) {
+      <div class="alert alert-success" role="alert">
+        {{ successMessage() }}
+      </div>
+    }
+
+    <!-- Error Message -->
+    @if (errorMessage()) {
+      <div class="alert alert-error" role="alert">
+        {{ errorMessage() }}
+      </div>
+    }
+
+    <form [formGroup]="form" (ngSubmit)="onSubmit()">
+      <!-- Email Field -->
+      <div class="form-group">
+        <label for="email">Email Address</label>
+        <input
+          id="email"
+          type="email"
+          formControlName="email"
+          class="form-control"
+          [class.invalid]="emailControl.invalid && emailControl.touched"
+          placeholder="child@example.com"
+          autocomplete="email"
+        />
+        @if (emailControl.invalid && emailControl.touched) {
+          <div class="error-message">
+            @if (emailControl.hasError('required')) {
+              Email is required
+            }
+            @if (emailControl.hasError('email')) {
+              Please enter a valid email address
+            }
+          </div>
+        }
+      </div>
+
+      <!-- Password Field -->
+      <div class="form-group">
+        <label for="password">Password</label>
+        <div class="password-input-wrapper">
+          <input
+            id="password"
+            [type]="showPassword() ? 'text' : 'password'"
+            formControlName="password"
+            class="form-control"
+            [class.invalid]="passwordControl.invalid && passwordControl.touched"
+            placeholder="Minimum 8 characters"
+            autocomplete="new-password"
+          />
+          <button
+            type="button"
+            class="btn-toggle-password"
+            (click)="togglePasswordVisibility()"
+            [attr.aria-label]="showPassword() ? 'Hide password' : 'Show password'"
+          >
+            {{ showPassword() ? '👁️' : '👁️‍🗨️' }}
+          </button>
+        </div>
+
+        @if (passwordControl.value && passwordControl.value.length > 0) {
+          <div class="password-strength">
+            <div class="strength-meter" [class]="passwordStrength().class">
+              <div class="strength-bar"></div>
+            </div>
+            <span class="strength-label">{{ passwordStrength().label }}</span>
+          </div>
+        }
+
+        @if (passwordControl.invalid && passwordControl.touched) {
+          <div class="error-message">
+            @if (passwordControl.hasError('required')) {
+              Password is required
+            }
+            @if (passwordControl.hasError('minlength')) {
+              Password must be at least 8 characters
+            }
+            @if (passwordControl.hasError('passwordStrength')) {
+              Password must include uppercase, lowercase, number, and special character
+            }
+          </div>
+        }
+      </div>
+
+      <!-- Confirm Password Field -->
+      <div class="form-group">
+        <label for="confirmPassword">Confirm Password</label>
+        <input
+          id="confirmPassword"
+          [type]="showPassword() ? 'text' : 'password'"
+          formControlName="confirmPassword"
+          class="form-control"
+          [class.invalid]="(confirmPasswordControl.invalid || form.hasError('passwordMismatch')) && confirmPasswordControl.touched"
+          placeholder="Re-enter password"
+          autocomplete="new-password"
+        />
+        @if (confirmPasswordControl.invalid && confirmPasswordControl.touched) {
+          <div class="error-message">
+            Confirm password is required
+          </div>
+        }
+        @if (form.hasError('passwordMismatch') && confirmPasswordControl.touched) {
+          <div class="error-message">
+            Passwords do not match
+          </div>
+        }
+      </div>
+
+      <!-- Form Actions -->
+      <div class="form-actions">
+        <button
+          type="button"
+          class="btn btn-secondary"
+          (click)="onCancel()"
+          [disabled]="isSubmitting()"
+        >
+          Cancel
+        </button>
+        <button
+          type="submit"
+          class="btn btn-primary"
+          [disabled]="form.invalid || isSubmitting()"
+        >
+          @if (isSubmitting()) {
+            Creating Account...
+          } @else {
+            Create Account
+          }
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

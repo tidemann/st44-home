@@ -9,7 +9,10 @@ import {
 import { Router, RouterLink } from '@angular/router';
 import { HouseholdService } from '../../services/household.service';
 import { DashboardService, DashboardSummary, WeekSummary } from '../../services/dashboard.service';
+import { ChildrenService } from '../../services/children.service';
 import { HouseholdSwitcherComponent } from '../../components/household-switcher/household-switcher';
+import { CreateChildAccountComponent } from '../../components/create-child-account/create-child-account.component';
+import type { Child } from '@st44/types';
 
 /**
  * Parent Dashboard Component
@@ -22,7 +25,7 @@ import { HouseholdSwitcherComponent } from '../../components/household-switcher/
  */
 @Component({
   selector: 'app-parent-dashboard',
-  imports: [RouterLink, HouseholdSwitcherComponent],
+  imports: [RouterLink, HouseholdSwitcherComponent, CreateChildAccountComponent],
   templateUrl: './parent-dashboard.html',
   styleUrl: './parent-dashboard.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -31,11 +34,14 @@ export class ParentDashboardComponent implements OnInit {
   private router = inject(Router);
   private householdService = inject(HouseholdService);
   private dashboardService = inject(DashboardService);
+  private childrenService = inject(ChildrenService);
 
   // State
   dashboard = signal<DashboardSummary | null>(null);
+  childrenList = signal<Child[]>([]);
   isLoading = signal(true);
   errorMessage = signal('');
+  selectedChildForAccount = signal<Child | null>(null);
 
   // Computed values
   household = computed(() => this.dashboard()?.household ?? null);
@@ -61,8 +67,14 @@ export class ParentDashboardComponent implements OnInit {
         return;
       }
 
-      const data = await this.dashboardService.getDashboard(householdId);
+      // Load both dashboard summary and full children list
+      const [data, children] = await Promise.all([
+        this.dashboardService.getDashboard(householdId),
+        this.childrenService.listChildren(householdId),
+      ]);
+
       this.dashboard.set(data);
+      this.childrenList.set(children);
     } catch (error: unknown) {
       const httpError = error as { status?: number };
 
@@ -101,5 +113,35 @@ export class ParentDashboardComponent implements OnInit {
       overdue: 0,
       completionRate: 0,
     };
+  }
+
+  // Helper to find full child data by ID
+  getChildById(childId: string): Child | undefined {
+    return this.childrenList().find((c) => c.id === childId);
+  }
+
+  // Check if child has account
+  hasAccount(childId: string): boolean {
+    const child = this.getChildById(childId);
+    return !!child?.userId;
+  }
+
+  // Show create account modal
+  showCreateAccountModal(childId: string): void {
+    const child = this.getChildById(childId);
+    if (child) {
+      this.selectedChildForAccount.set(child);
+    }
+  }
+
+  // Handle account creation success
+  async onAccountCreated(): Promise<void> {
+    this.selectedChildForAccount.set(null);
+    await this.loadDashboard(); // Reload to get updated userId
+  }
+
+  // Handle cancel
+  onCreateAccountCancelled(): void {
+    this.selectedChildForAccount.set(null);
   }
 }

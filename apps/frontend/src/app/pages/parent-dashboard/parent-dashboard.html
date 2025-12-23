@@ -84,7 +84,18 @@
           @for (child of children(); track child.id) {
             <li class="child-item">
               <div class="child-info">
-                <span class="child-name">{{ child.name }}</span>
+                <div class="child-name-row">
+                  <span class="child-name">{{ child.name }}</span>
+                  @if (hasAccount(child.id)) {
+                    <span class="account-badge has-account" title="Has login account">
+                      <span aria-hidden="true">✓</span> Account
+                    </span>
+                  } @else {
+                    <span class="account-badge no-account" title="No login account">
+                      <span aria-hidden="true">⚠</span> No Account
+                    </span>
+                  }
+                </div>
                 @if (child.tasksTotal > 0) {
                   <span class="child-stats">
                     {{ child.tasksCompleted }}/{{ child.tasksTotal }} tasks
@@ -93,30 +104,41 @@
                   <span class="child-stats empty-state-text"> No tasks assigned yet </span>
                 }
               </div>
-              @if (child.tasksTotal > 0) {
-                <div class="progress-container">
-                  <div
-                    class="progress-bar"
-                    [class]="getCompletionClass(child.completionRate)"
-                    [style.width.%]="child.completionRate"
-                    role="progressbar"
-                    [attr.aria-valuenow]="child.completionRate"
-                    aria-valuemin="0"
-                    aria-valuemax="100"
-                    [attr.aria-label]="child.name + ' completion: ' + child.completionRate + '%'"
-                  ></div>
-                </div>
-                <span class="completion-rate" [class]="getCompletionClass(child.completionRate)">
-                  {{ child.completionRate }}%
-                </span>
-              } @else {
-                <a
-                  [routerLink]="['/households', household()!.id, 'tasks']"
-                  class="btn btn-sm btn-secondary"
-                >
-                  Assign Task
-                </a>
-              }
+              <div class="child-actions">
+                @if (child.tasksTotal > 0) {
+                  <div class="progress-container">
+                    <div
+                      class="progress-bar"
+                      [class]="getCompletionClass(child.completionRate)"
+                      [style.width.%]="child.completionRate"
+                      role="progressbar"
+                      [attr.aria-valuenow]="child.completionRate"
+                      aria-valuemin="0"
+                      aria-valuemax="100"
+                      [attr.aria-label]="child.name + ' completion: ' + child.completionRate + '%'"
+                    ></div>
+                  </div>
+                  <span class="completion-rate" [class]="getCompletionClass(child.completionRate)">
+                    {{ child.completionRate }}%
+                  </span>
+                }
+                @if (!hasAccount(child.id)) {
+                  <button
+                    type="button"
+                    class="btn btn-sm btn-primary"
+                    (click)="showCreateAccountModal(child.id)"
+                  >
+                    <span aria-hidden="true">+</span> Create Account
+                  </button>
+                } @else if (child.tasksTotal === 0) {
+                  <a
+                    [routerLink]="['/households', household()!.id, 'tasks']"
+                    class="btn btn-sm btn-secondary"
+                  >
+                    Assign Task
+                  </a>
+                }
+              </div>
             </li>
           }
         </ul>
@@ -139,5 +161,19 @@
         <span aria-hidden="true">📋</span> Manage Household
       </a>
     </footer>
+  }
+
+  <!-- Create Account Modal -->
+  @if (selectedChildForAccount()) {
+    <div class="modal-overlay" (click)="onCreateAccountCancelled()">
+      <div class="modal-content" (click)="$event.stopPropagation()">
+        <app-create-child-account
+          [child]="selectedChildForAccount()!"
+          [householdId]="household()!.id"
+          (accountCreated)="onAccountCreated()"
+          (cancelled)="onCreateAccountCancelled()"
+        />
+      </div>
+    </div>
   }
 </main>
