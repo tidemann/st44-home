@@ -228,6 +228,11 @@
   color: #6b7280;
 }
 
+.child-stats.empty-state-text {
+  font-style: italic;
+  color: #9ca3af;
+}
+
 .progress-container {
   width: 80px;
   height: 8px;
@@ -334,6 +339,11 @@
 
 .btn-secondary:hover:not(:disabled) {
   background: #e5e7eb;
+}
+
+.btn-sm {
+  padding: 0.5rem 0.875rem;
+  font-size: 0.8125rem;
 }
 
 /* Responsive */
