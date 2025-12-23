@@ -68,9 +68,9 @@
       } @else {
         <div class="empty-state">
           <p>No tasks this week. Create your first task!</p>
-          <button type="button" class="btn btn-primary" disabled title="Coming soon">
+          <a [routerLink]="['/households', household()!.id, 'tasks']" class="btn btn-primary">
             <span aria-hidden="true">+</span> Create Task
-          </button>
+          </a>
         </div>
       }
     </section>
@@ -119,9 +119,9 @@
 
     <!-- Quick Actions -->
     <footer class="quick-actions">
-      <button type="button" class="btn btn-primary" disabled title="Coming soon">
+      <a [routerLink]="['/households', household()!.id, 'tasks']" class="btn btn-primary">
         <span aria-hidden="true">+</span> Add Task
-      </button>
+      </a>
       <a routerLink="/household/settings" class="btn btn-secondary">
         <span aria-hidden="true">📋</span> Manage Household
       </a>
