@@ -64,7 +64,9 @@
   border: 1px solid #d1d5db;
   border-radius: 6px;
   font-size: 0.875rem;
-  transition: border-color 0.2s, box-shadow 0.2s;
+  transition:
+    border-color 0.2s,
+    box-shadow 0.2s;
 }
 
 .form-control:focus {
@@ -120,7 +122,9 @@
 
 .strength-bar {
   height: 100%;
-  transition: width 0.3s, background-color 0.3s;
+  transition:
+    width 0.3s,
+    background-color 0.3s;
   width: 100%;
 }
 
