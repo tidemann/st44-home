@@ -112,7 +112,7 @@
       <div class="form-actions">
         <button type="button" (click)="onCancel()" [disabled]="isSubmitting()">Cancel</button>
         <button type="submit" [disabled]="isSubmitting()">
-          {{ isSubmitting() ? 'Saving...' : task() ? 'Save' : 'Create' }}
+          {{ buttonText() }}
         </button>
       </div>
     </form>

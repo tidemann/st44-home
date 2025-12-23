@@ -5,6 +5,7 @@ import {
   inject,
   input,
   output,
+  computed,
   ChangeDetectionStrategy,
 } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
@@ -32,6 +33,14 @@ export class TaskFormComponent implements OnInit {
   isSubmitting = signal(false);
   errorMessage = signal('');
   selectedDays = signal<number[]>([]);
+
+  // Computed signal for button text
+  buttonText = computed(() => {
+    if (this.isSubmitting()) {
+      return 'Saving...';
+    }
+    return this.task() ? 'Save' : 'Create';
+  });
 
   ngOnInit() {
     this.initForm();
