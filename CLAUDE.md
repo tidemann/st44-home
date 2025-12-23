@@ -9,6 +9,7 @@ Full-stack TypeScript monorepo: Angular 21+ frontend, Fastify backend, PostgreSQ
 ## Commands
 
 ### Build
+
 ```bash
 npm run build                    # Build all (types → backend → frontend)
 npm run build:types              # Build shared types package
@@ -17,6 +18,7 @@ npm run build:frontend           # Build frontend only
 ```
 
 ### Development
+
 ```bash
 # Start database
 cd infra && docker compose up -d db
@@ -29,6 +31,7 @@ npm run dev:stop                 # Stop all dev servers
 ```
 
 ### Testing
+
 ```bash
 npm test                         # All tests
 npm run test:types               # packages/types tests (vitest)
@@ -49,12 +52,19 @@ npm run test:e2e:ui              # Interactive UI mode
 ```
 
 ### Type Checking & Formatting
+
 ```bash
 npm run type-check               # Check types (backend + types package)
-cd apps/frontend && npm run format && cd ../backend && npm run format  # Format before commit
+
+# Formatting is AUTOMATIC via pre-commit hooks (Husky + lint-staged)
+# When you commit, code is automatically formatted and linted
+# Manual formatting only needed for uncommitted changes:
+cd apps/frontend && npm run format  # Format frontend
+cd apps/backend && npm run format   # Format backend
 ```
 
 ### Docker
+
 ```bash
 npm run docker:up                # Start full stack
 npm run docker:down              # Stop stack
@@ -87,11 +97,13 @@ infra/                           # Docker Compose configuration
 ## Key Conventions
 
 ### TypeScript
+
 - **camelCase everywhere** - variables, properties, database columns (no snake_case)
 - Strict mode, ESM modules
 - Use `unknown` over `any`
 
 ### Angular (Frontend)
+
 - Standalone components only (no NgModules, `standalone: true` is implicit)
 - Use `signal()`, `computed()` for state (not RxJS for component state)
 - Use `inject()` for DI (not constructor injection)
@@ -101,12 +113,14 @@ infra/                           # Docker Compose configuration
 - `ChangeDetectionStrategy.OnPush` required
 
 ### Fastify (Backend)
+
 - Async/await, type-safe route handlers
 - Parameterized queries only (SQL injection prevention)
 - Use `@st44/types` schemas for validation
 - Connection pooling via `pg.Pool`
 
 ### Database
+
 - Migrations in `docker/postgres/migrations/NNN_name.sql`
 - Make migrations idempotent (`IF NOT EXISTS`, `ON CONFLICT DO NOTHING`)
 - Wrap in `BEGIN`/`COMMIT` transactions
@@ -116,7 +130,7 @@ infra/                           # Docker Compose configuration
 ## Git Workflow
 
 1. Create feature branch: `git checkout -b feature/name`
-2. Make changes, format code
+2. Make changes (pre-commit hooks automatically format/lint on commit)
 3. Push and create PR: `gh pr create --base main`
 4. Squash merge after CI passes
 
@@ -125,6 +139,7 @@ Never push directly to main.
 ## Shared Types (@st44/types)
 
 Zod schemas in `packages/types/src/schemas/` define validation for both frontend and backend:
+
 ```typescript
 import { TaskSchema, type Task } from '@st44/types/schemas';
 ```
@@ -133,52 +148,79 @@ When modifying schemas, rebuild: `npm run build:types`
 
 ## Autonomous Development Mode
 
+**⚠️ IMPORTANT: All work is now tracked in GitHub Issues, not local markdown files.**
+
 This repo supports fully autonomous development. To take over development:
 
 ### Start the Loop
-```
-Read tasks/ROADMAP.md and execute the top priority from the "Now" section
+
+```bash
+# Query GitHub Issues for next priority
+gh issue list --label "mvp-blocker" --state open
+gh issue list --milestone "MVP Launch" --state open
 ```
 
 ### Orchestrator Workflow
 
 The orchestrator runs an autonomous loop:
 
-1. **Read ROADMAP.md** → Get next priority (task, feature, or epic)
-2. **Break down if needed** → Features must be decomposed into tasks first
-3. **Delegate to subagents** → Spawn specialized agents for implementation
-4. **Validate** → Run tests locally, ensure all pass
-5. **Ship** → Create PR, wait for CI, merge
-6. **Loop** → Pull main, go back to step 1
+1. **Query GitHub Issues** → Get next priority (mvp-blocker > critical > high-priority)
+2. **Read issue details** → `gh issue view <NUMBER>`
+3. **Break down if needed** → Features must be decomposed into task issues first
+4. **Mark as in-progress** → `gh issue edit <NUMBER> --add-label "in-progress"`
+5. **Delegate to subagents** → Spawn specialized agents for implementation
+6. **Validate** → Run tests locally, ensure all pass
+7. **Ship** → Create PR with "Closes #<NUMBER>", wait for CI, merge
+8. **Auto-close** → Issue closes automatically when PR merges
+9. **Loop** → Pull main, go back to step 1
 
 ### Subagent Delegation
 
 Use the **Task tool** to spawn specialized agents. Each agent should be given:
-- The task description and acceptance criteria
+
+- GitHub issue number and details
 - Path to its agent spec file for context
 - Relevant files to read/modify
 
-**Frontend Agent** - Angular components, services, UI
+**GitHub Issues Agent** - Issue creation, tracking, milestones
+
 ```
 Spawn Task agent with prompt:
-"Read .github/agents/frontend-agent.md for context. Then implement: [task description]"
+"Read .github/agents/github-issues-agent.md for context. Create issues for: [description]"
+```
+
+**Frontend Agent** - Angular components, services, UI
+
+```
+Spawn Task agent with prompt:
+"Read .github/agents/frontend-agent.md for context. Implement GitHub issue #XXX"
 ```
 
 **Backend Agent** - Fastify routes, business logic, middleware
+
 ```
 Spawn Task agent with prompt:
-"Read .github/agents/backend-agent.md for context. Then implement: [task description]"
+"Read .github/agents/backend-agent.md for context. Implement GitHub issue #XXX"
 ```
 
 **Database Agent** - Migrations, schema changes, queries
+
 ```
 Spawn Task agent with prompt:
-"Read .github/agents/database-agent.md for context. Then implement: [task description]"
+"Read .github/agents/database-agent.md for context. Implement GitHub issue #XXX"
+```
+
+**CI/CD Agent** - GitHub Actions monitoring, quality gates
+
+```
+Spawn Task agent with prompt:
+"Read .github/agents/cicd-agent.md for context. Monitor CI for commit/PR"
 ```
 
 ### Parallel Execution
 
 When tasks are independent, spawn multiple agents in parallel:
+
 ```
 // Example: Feature requires both frontend and backend work
 1. Spawn backend agent for API endpoint (run_in_background: true)
@@ -191,26 +233,61 @@ When tasks are independent, spawn multiple agents in parallel:
 
 1. **Never push to main** - Always use feature branches
 2. **Test before PR** - Run `npm test` and `npm run type-check` locally
-3. **Update ROADMAP.md** - After completing work, update status
-4. **Move to done/** - Completed tasks go to `tasks/items/done/`
-5. **Pull after merge** - Always `git checkout main && git pull` after merge
+3. **Track in GitHub** - ALL work must have a GitHub issue
+4. **Update issue status** - Mark as "in-progress" when starting, comment with progress
+5. **Close via PR** - Use "Closes #XXX" in PR description
+6. **Pull after merge** - Always `git checkout main && git pull` after merge
 
-### Task System
+### Task System - GitHub Issues
 
-```
-tasks/
-├── ROADMAP.md           # Prioritized backlog (start here)
-├── epics/               # Large initiatives (weeks)
-├── features/            # User-facing functionality (days)
-├── items/               # Atomic tasks (hours)
-│   └── done/            # Completed tasks
-└── templates/           # Templates for new items
+**All work tracked as GitHub Issues with labels and milestones:**
+
+**Issue Types** (labels):
+
+- `epic` - Large initiatives (weeks), tracked in milestones
+- `feature` - User-facing functionality (days)
+- `task` - Atomic work items (hours)
+- `bug` - Defects to fix
+
+**Priority Labels**:
+
+- `mvp-blocker` - Must fix before launch
+- `critical` - Blocks core functionality
+- `high-priority` - Important for current milestone
+- `medium-priority`, `low-priority`
+
+**Workflow**:
+
+1. Create issue with proper labels and milestone
+2. Mark "in-progress" when starting
+3. Comment with progress updates
+4. Create PR with "Closes #XXX"
+5. Issue auto-closes on merge
+
+**Common Commands**:
+
+```bash
+# Find work
+gh issue list --label "mvp-blocker" --state open
+
+# Create issue
+gh issue create --title "..." --body "..." --label "..." --milestone "..."
+
+# Update status
+gh issue edit 123 --add-label "in-progress"
+gh issue comment 123 --body "Progress update..."
+
+# Close issue
+# (Automatic via PR with "Closes #123")
 ```
 
 ### Agent Specs
 
 Detailed agent specifications in `.github/agents/`:
+
 - `orchestrator-agent.md` - Full workflow documentation
+- `github-issues-agent.md` - Issue management workflows
 - `frontend-agent.md` - Angular patterns and conventions
 - `backend-agent.md` - Fastify patterns and conventions
 - `database-agent.md` - Migration and query patterns
+- `cicd-agent.md` - CI/CD monitoring and quality gates
