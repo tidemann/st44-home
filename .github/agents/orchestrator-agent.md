@@ -177,7 +177,11 @@ Provide: "Running tests locally to identify root cause... [investigation]"
     - ⚠️ **CRITICAL**: Database Agent MUST create migration files
     - Verify migrations exist before marking DB tasks complete
     - See `docker/postgres/migrations/README.md` for requirements
-  - **DevOps Agent**: Docker, CI/CD, deployment configurations
+  - **CI/CD Agent**: GitHub Actions monitoring, quality gates, build fixes
+    - ⚠️ **CRITICAL**: CI/CD Agent MUST monitor every push to ensure CI passes
+    - Delegate CI monitoring after EVERY commit
+    - See `.github/agents/cicd-agent.md` for monitoring workflows
+  - **DevOps Agent**: Docker, infrastructure, deployment configurations
   - **Testing Agent**: Unit tests, integration tests, E2E tests
 - Monitor agent progress and handle blockers
 - Coordinate dependencies between agents
@@ -567,16 +571,56 @@ gh pr create --title "type: description" \
   --base main
 ```
 
-**Step 4: Wait for CI and Merge (AUTOMATED)**
+**Step 4: Delegate to CI/CD Agent for Monitoring (MANDATORY)**
 ```bash
-# Poll CI status (repeat until complete)
-gh pr view <PR_NUMBER> --json statusCheckRollup,mergeable,state
+# After push, get the triggered CI run
+gh run list --limit 1 --json databaseId,headBranch
 
-# When checks PASS - merge automatically
+# Delegate monitoring to CI/CD Agent
+Spawn Task agent with:
+  subagent_type: "general-purpose"
+  prompt: """
+  **Context Files** (read these first):
+  1. .github/agents/cicd-agent.md - CI/CD monitoring workflows
+  2. .github/workflows/ci.yml - CI workflow configuration
+
+  **Task**:
+  Monitor CI/CD status for PR #<PR_NUMBER> / commit <SHA> on branch <BRANCH>.
+
+  If CI fails:
+  1. Analyze failure logs with `gh run view --log-failed`
+  2. Apply appropriate fixes (formatting, linting, tests, build)
+  3. Commit and push fixes
+  4. Re-monitor until all checks pass
+
+  **Acceptance Criteria**:
+  - [ ] All CI checks have conclusion = "SUCCESS"
+  - [ ] PR status is mergeable
+  - [ ] No formatting, linting, build, or test failures
+
+  **Testing**: Use `gh run watch <RUN_ID>` for real-time monitoring
+  """
+```
+
+**Alternative (if pushing directly to main - NOT RECOMMENDED)**:
+```bash
+# Get latest run ID
+RUN_ID=$(gh run list --limit 1 --json databaseId --jq '.[0].databaseId')
+
+# Watch CI run in real-time
+gh run watch $RUN_ID
+
+# If failure occurs, CI/CD agent should handle it automatically
+# OR manually fix and re-push
+```
+
+**Step 5: Merge When CI Passes**
+```bash
+# After CI/CD agent confirms all checks pass
 gh pr merge <PR_NUMBER> --squash --delete-branch
 ```
 
-**Step 5: CRITICAL - Update Local Main Branch (MANDATORY)**
+**Step 6: CRITICAL - Update Local Main Branch (MANDATORY)**
 ```bash
 # Switch to main and pull latest
 git checkout main
@@ -585,12 +629,6 @@ git pull origin main
 - **NEVER skip this step** - ensures next task starts from latest code
 - Prevents merge conflicts and outdated code issues
 - Critical for workflow continuity
-
-**Step 6: Handle CI Failures**
-- If CI checks still fail (should be rare after local checks): Fix issues, commit, push, and re-poll
-- Do NOT stop or ask user for help unless unresolvable
-- Continue with next priority after successful merge
-- **Remember**: Local checks should catch 99% of issues
 
 **Step 7: Auto-Resume**
 - After pulling main, immediately return to continue-work workflow
