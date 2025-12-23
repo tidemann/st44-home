@@ -11,6 +11,10 @@ export const routes: Routes = [
     path: 'register',
     loadComponent: () => import('./auth/register.component').then((m) => m.RegisterComponent),
   },
+  {
+    path: 'child-login',
+    loadComponent: () => import('./auth/child-login.component').then((m) => m.ChildLoginComponent),
+  },
 
   // Protected routes
   {
