@@ -56,6 +56,7 @@ export function validateRequestSafe<T>(
  */
 export function handleZodError(error: z.ZodError, reply: FastifyReply): void {
   reply.code(400).send({
+    statusCode: 400,
     error: 'Bad Request',
     message: 'Validation failed',
     details: formatZodErrors(error),

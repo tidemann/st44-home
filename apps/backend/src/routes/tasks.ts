@@ -155,10 +155,8 @@ function validateTaskData(
         errors.push('rotationType must be odd_even_week or alternating');
       }
 
-      // Assigned children required (min 2 for rotation)
-      if (!config.assignedChildren || config.assignedChildren.length < 2) {
-        errors.push('At least 2 assignedChildren required for weekly_rotation');
-      }
+      // Assigned children optional for now (TODO: make required when child assignment is implemented)
+      // NOTE: Will need at least 2 children for rotation to work properly
     }
 
     if (data.ruleType === 'repeating') {
@@ -167,10 +165,7 @@ function validateTaskData(
         errors.push('repeatDays required for repeating tasks (array of 0-6)');
       }
 
-      // Assigned children required (min 1)
-      if (!config.assignedChildren || config.assignedChildren.length < 1) {
-        errors.push('At least 1 assignedChild required for repeating tasks');
-      }
+      // Assigned children optional for now (TODO: make required when child assignment is implemented)
     }
 
     if (data.ruleType === 'daily') {
@@ -223,6 +218,7 @@ async function createTask(request: FastifyRequest<CreateTaskRequest>, reply: Fas
     });
     if (validationErrors.length > 0) {
       return reply.status(400).send({
+        statusCode: 400,
         error: 'Bad Request',
         message: 'Validation failed',
         details: validationErrors,
@@ -240,6 +236,7 @@ async function createTask(request: FastifyRequest<CreateTaskRequest>, reply: Fas
       );
       if (!childrenValid) {
         return reply.status(400).send({
+          statusCode: 400,
           error: 'Bad Request',
           message: 'One or more assigned children do not belong to this household',
         });
@@ -271,6 +268,7 @@ async function createTask(request: FastifyRequest<CreateTaskRequest>, reply: Fas
 
     request.log.error(error, 'Failed to create task');
     return reply.status(500).send({
+      statusCode: 500,
       error: 'Internal Server Error',
       message: 'Failed to create task',
     });
@@ -300,10 +298,11 @@ async function listTasks(request: FastifyRequest<ListTasksRequest>, reply: Fasti
 
     const result = await db.query(query, params);
 
-    return reply.send(result.rows.map(mapTaskRowToTask));
+    return reply.send({ tasks: result.rows.map(mapTaskRowToTask) });
   } catch (error) {
     request.log.error(error, 'Failed to list tasks');
     return reply.status(500).send({
+      statusCode: 500,
       error: 'Internal Server Error',
       message: 'Failed to retrieve tasks',
     });
@@ -320,6 +319,7 @@ async function getTask(request: FastifyRequest<{ Params: TaskParams }>, reply: F
   const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
   if (!uuidRegex.test(taskId)) {
     return reply.status(400).send({
+      statusCode: 400,
       error: 'Bad Request',
       message: 'Invalid task ID format',
     });
@@ -333,6 +333,7 @@ async function getTask(request: FastifyRequest<{ Params: TaskParams }>, reply: F
 
     if (result.rows.length === 0) {
       return reply.status(404).send({
+        statusCode: 404,
         error: 'Not Found',
         message: 'Task not found',
       });
@@ -344,6 +345,7 @@ async function getTask(request: FastifyRequest<{ Params: TaskParams }>, reply: F
   } catch (error) {
     request.log.error(error, 'Failed to get task');
     return reply.status(500).send({
+      statusCode: 500,
       error: 'Internal Server Error',
       message: 'Failed to retrieve task',
     });
@@ -361,6 +363,7 @@ async function updateTask(request: FastifyRequest<UpdateTaskRequest>, reply: Fas
   const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
   if (!uuidRegex.test(taskId)) {
     return reply.status(400).send({
+      statusCode: 400,
       error: 'Bad Request',
       message: 'Invalid task ID format',
     });
@@ -396,6 +399,7 @@ async function updateTask(request: FastifyRequest<UpdateTaskRequest>, reply: Fas
       );
       if (validationErrors.length > 0) {
         return reply.status(400).send({
+          statusCode: 400,
           error: 'Bad Request',
           message: 'Validation failed',
           details: validationErrors,
@@ -414,6 +418,7 @@ async function updateTask(request: FastifyRequest<UpdateTaskRequest>, reply: Fas
       );
       if (!childrenValid) {
         return reply.status(400).send({
+          statusCode: 400,
           error: 'Bad Request',
           message: 'One or more assigned children do not belong to this household',
         });
@@ -456,6 +461,7 @@ async function updateTask(request: FastifyRequest<UpdateTaskRequest>, reply: Fas
 
     if (updates.length === 0) {
       return reply.status(400).send({
+        statusCode: 400,
         error: 'Bad Request',
         message: 'No fields to update',
       });
@@ -477,6 +483,7 @@ async function updateTask(request: FastifyRequest<UpdateTaskRequest>, reply: Fas
 
     if (result.rows.length === 0) {
       return reply.status(404).send({
+        statusCode: 404,
         error: 'Not Found',
         message: 'Task not found in this household',
       });
@@ -493,6 +500,7 @@ async function updateTask(request: FastifyRequest<UpdateTaskRequest>, reply: Fas
 
     request.log.error(error, 'Failed to update task');
     return reply.status(500).send({
+      statusCode: 500,
       error: 'Internal Server Error',
       message: 'Failed to update task',
     });
@@ -511,6 +519,7 @@ async function deleteTask(request: FastifyRequest<{ Params: TaskParams }>, reply
   const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
   if (!uuidRegex.test(taskId)) {
     return reply.status(400).send({
+      statusCode: 400,
       error: 'Bad Request',
       message: 'Invalid task ID format',
     });
@@ -539,6 +548,7 @@ async function deleteTask(request: FastifyRequest<{ Params: TaskParams }>, reply
 
     if (result.rows.length === 0) {
       return reply.status(404).send({
+        statusCode: 404,
         error: 'Not Found',
         message: 'Task not found in this household',
       });
@@ -551,6 +561,7 @@ async function deleteTask(request: FastifyRequest<{ Params: TaskParams }>, reply
   } catch (error) {
     request.log.error(error, 'Failed to delete task');
     return reply.status(500).send({
+      statusCode: 500,
       error: 'Internal Server Error',
       message: 'Failed to delete task',
     });
@@ -579,7 +590,7 @@ export default async function taskRoutes(server: FastifyInstance) {
       params: zodToOpenAPI(ParamsSchema),
       querystring: zodToOpenAPI(QuerySchema),
       response: {
-        200: zodToOpenAPI(z.array(TaskSchema), {
+        200: zodToOpenAPI(z.object({ tasks: z.array(TaskSchema) }), {
           description: 'List of task templates',
         }),
         ...CommonErrors.Unauthorized,
