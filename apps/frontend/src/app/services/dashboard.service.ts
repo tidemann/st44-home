@@ -86,21 +86,17 @@ export class DashboardService {
    * Fetch child's tasks for today or specified date
    * Used by child dashboard to show assigned tasks and points
    *
-   * @param householdId - Optional household ID (uses current household if not provided)
    * @param date - Optional date in YYYY-MM-DD format (defaults to today)
    * @returns Promise<MyTasksResponse> - Child's tasks, points, and name
    * @throws Error if user is not a child or child profile not found
    */
-  async getMyTasks(householdId?: string, date?: string): Promise<MyTasksResponse> {
+  async getMyTasks(date?: string): Promise<MyTasksResponse> {
     const params = new URLSearchParams();
-    if (householdId) {
-      params.set('householdId', householdId);
-    }
     if (date) {
       params.set('date', date);
     }
 
     const query = params.toString() ? `?${params.toString()}` : '';
-    return this.api.get<MyTasksResponse>(`/children/my-tasks${query}`);
+    return this.api.get<MyTasksResponse>(`/children/me/tasks${query}`);
   }
 }
