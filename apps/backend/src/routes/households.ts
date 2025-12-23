@@ -15,6 +15,12 @@ import {
 import { validateRequest, handleZodError } from '../utils/validation.js';
 import { stripResponseValidation } from '../schemas/common.js';
 
+function toDateTimeString(value: unknown): string {
+  if (value instanceof Date) return value.toISOString();
+  if (typeof value === 'string') return value;
+  return new Date(String(value)).toISOString();
+}
+
 interface CreateHouseholdRequest {
   Body: {
     name: string;
@@ -133,16 +139,15 @@ async function listHouseholds(request: FastifyRequest, reply: FastifyReply) {
       [userId],
     );
 
-    // Transform to snake_case for API response
     const households = result.rows.map((row) => ({
       id: row.id,
       name: row.name,
-      created_at: row.created_at,
-      updated_at: row.updated_at,
       role: row.role,
       memberCount: parseInt(row.member_count, 10),
       childrenCount: parseInt(row.children_count, 10),
       joinedAt: row.joined_at,
+      createdAt: toDateTimeString(row.created_at),
+      updatedAt: toDateTimeString(row.updated_at),
     }));
 
     return reply.send(households);
@@ -198,12 +203,11 @@ async function getHousehold(request: FastifyRequest<GetHouseholdRequest>, reply:
     return reply.send({
       id: household.id,
       name: household.name,
-      created_at: household.created_at,
-      updated_at: household.updated_at,
       role,
       memberCount: parseInt(household.member_count, 10),
       childrenCount: parseInt(household.children_count, 10),
-      updatedAt: household.updated_at,
+      createdAt: toDateTimeString(household.created_at),
+      updatedAt: toDateTimeString(household.updated_at),
     });
   } catch (error) {
     request.log.error(error, 'Failed to get household');
@@ -249,8 +253,8 @@ async function updateHousehold(
     return reply.send({
       id: household.id,
       name: household.name,
-      created_at: household.created_at,
-      updated_at: household.updated_at,
+      createdAt: toDateTimeString(household.created_at),
+      updatedAt: toDateTimeString(household.updated_at),
     });
   } catch (error) {
     // Handle Zod validation errors
@@ -348,8 +352,8 @@ async function getHouseholdDashboard(
       household: {
         id: household.id,
         name: household.name,
-        created_at: household.created_at,
-        updated_at: household.updated_at,
+        createdAt: toDateTimeString(household.created_at),
+        updatedAt: toDateTimeString(household.updated_at),
       },
       weekSummary: {
         total,
