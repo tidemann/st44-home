@@ -241,6 +241,147 @@ export const routes: Routes = [
 <router-outlet></router-outlet>
 ```
 
+## Shared Types Usage
+
+All service methods MUST use types from `@st44/types` for consistency with backend API contracts.
+
+### Importing Shared Types
+
+```typescript
+import type { Task, CreateTaskRequest, UpdateTaskRequest } from '@st44/types/types';
+import type { Child, Household, Assignment } from '@st44/types/types';
+```
+
+**Key Points**:
+- Always use `import type` for type-only imports (tree-shaking optimization)
+- Import from `@st44/types/types` (not `@st44/types/schemas`)
+- Frontend does NOT use Zod schemas (backend handles validation)
+- TypeScript ensures API calls match backend expectations
+
+### Using Shared Types in Services
+
+**Standard Pattern**:
+
+```typescript
+import { Injectable, inject } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { Observable } from 'rxjs';
+import type { Task, CreateTaskRequest, UpdateTaskRequest } from '@st44/types/types';
+
+@Injectable({ providedIn: 'root' })
+export class TaskService {
+  private readonly http = inject(HttpClient);
+  private readonly apiUrl = '/api';
+
+  getTasks(householdId: string): Observable<Task[]> {
+    return this.http.get<Task[]>(`${this.apiUrl}/households/${householdId}/tasks`);
+  }
+
+  getTask(taskId: string): Observable<Task> {
+    return this.http.get<Task>(`${this.apiUrl}/tasks/${taskId}`);
+  }
+
+  createTask(householdId: string, request: CreateTaskRequest): Observable<Task> {
+    return this.http.post<Task>(`${this.apiUrl}/households/${householdId}/tasks`, request);
+  }
+
+  updateTask(taskId: string, request: UpdateTaskRequest): Observable<Task> {
+    return this.http.put<Task>(`${this.apiUrl}/tasks/${taskId}`, request);
+  }
+
+  deleteTask(taskId: string): Observable<void> {
+    return this.http.delete<void>(`${this.apiUrl}/tasks/${taskId}`);
+  }
+}
+```
+
+**Key Points**:
+- Use shared types for request parameters and response types
+- TypeScript ensures you pass correct data to API
+- Backend validates at runtime, frontend validates at compile-time
+- IDE autocomplete works perfectly with shared types
+
+### Using Types in Components
+
+**Component Pattern**:
+
+```typescript
+import { Component, signal, inject } from '@angular/core';
+import type { Task, CreateTaskRequest } from '@st44/types/types';
+import { TaskService } from '../services/task.service';
+
+@Component({
+  selector: 'app-task-list',
+  imports: [],
+  templateUrl: './task-list.html',
+  styleUrl: './task-list.css',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+})
+export class TaskListComponent {
+  private readonly taskService = inject(TaskService);
+
+  protected readonly tasks = signal<Task[]>([]);
+  protected readonly loading = signal(false);
+  protected readonly error = signal<string | null>(null);
+
+  protected createTask(householdId: string) {
+    const request: CreateTaskRequest = {
+      name: 'New Task',
+      ruleType: 'daily',
+      points: 10,
+    };
+
+    this.loading.set(true);
+    this.taskService.createTask(householdId, request).subscribe({
+      next: (task: Task) => {
+        this.tasks.update(tasks => [...tasks, task]);
+        this.loading.set(false);
+      },
+      error: (err) => {
+        this.error.set('Failed to create task');
+        this.loading.set(false);
+      },
+    });
+  }
+}
+```
+
+**Key Points**:
+- Use typed signals for state management
+- TypeScript enforces request structure matches backend expectations
+- Type safety prevents common integration bugs
+- IDE shows available fields and their types
+
+### DO's and DON'Ts
+
+**DO**:
+- ✅ Import all types from `@st44/types/types`
+- ✅ Use `import type` for type-only imports
+- ✅ Type all service method parameters and return values
+- ✅ Type all HTTP request/response generics
+- ✅ Use TypeScript strict mode
+- ✅ Trust backend validation (don't duplicate in frontend)
+
+**DON'T**:
+- ❌ Define local interfaces for API types
+- ❌ Import Zod schemas in frontend code
+- ❌ Perform runtime validation with Zod (backend's job)
+- ❌ Use `any` type for API data
+- ❌ Create duplicate type definitions
+- ❌ Skip typing Observable generics
+
+### When Types Change
+
+If shared types are updated, the types package is automatically rebuilt by the monorepo build pipeline. Your IDE will show TypeScript errors for any mismatches.
+
+If you need to manually rebuild:
+
+```bash
+npm run build:types
+```
+
+TypeScript will guide you to update your code to match the new types.
+
 ## Service Patterns
 
 ### HTTP Service

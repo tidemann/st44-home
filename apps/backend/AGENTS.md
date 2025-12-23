@@ -85,6 +85,135 @@ Returns all items from the `items` table, ordered by `created_at DESC`.
 { "error": "Failed to fetch items" }
 ```
 
+## Shared Types Usage
+
+All API request/response types MUST use `@st44/types` for consistency across frontend and backend.
+
+### Importing Shared Types
+
+```typescript
+import { TaskSchema, CreateTaskRequestSchema, UpdateTaskRequestSchema } from '@st44/types/schemas';
+import { zodToOpenAPI } from '@st44/types/generators';
+import type { Task, CreateTaskRequest, UpdateTaskRequest } from '@st44/types/types';
+```
+
+**Key Points**:
+- Import schemas from `@st44/types/schemas` for runtime validation
+- Import types from `@st44/types/types` for TypeScript type safety
+- Import `zodToOpenAPI` from `@st44/types/generators` for OpenAPI schema generation
+- Use `import type` for type-only imports (tree-shaking optimization)
+
+### Using Shared Types in Routes
+
+**Standard Pattern**:
+
+```typescript
+import { TaskSchema, CreateTaskRequestSchema } from '@st44/types/schemas';
+import { zodToOpenAPI } from '@st44/types/generators';
+import type { Task, CreateTaskRequest } from '@st44/types/types';
+import { z } from 'zod';
+
+fastify.post<{ Body: CreateTaskRequest; Reply: Task }>(
+  '/api/households/:householdId/tasks',
+  {
+    schema: {
+      body: zodToOpenAPI(CreateTaskRequestSchema),
+      response: {
+        201: zodToOpenAPI(TaskSchema),
+      },
+    },
+  },
+  async (request, reply) => {
+    try {
+      // Runtime validation with Zod
+      const validatedData = CreateTaskRequestSchema.parse(request.body);
+
+      // Business logic using validated data
+      const task = await createTask(request.params.householdId, validatedData);
+
+      reply.code(201);
+      return task;
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        reply.code(400);
+        return { error: 'Validation failed', details: error.errors };
+      }
+      fastify.log.error(error);
+      reply.code(500);
+      return { error: 'Failed to create task' };
+    }
+  }
+);
+```
+
+**Key Points**:
+- Use `zodToOpenAPI()` to convert Zod schemas to OpenAPI format for Fastify
+- Use `.parse()` for runtime validation (throws `ZodError` on invalid data)
+- Use `.safeParse()` for validation without throwing (returns result object)
+- Catch `ZodError` and return 400 Bad Request with validation details
+- TypeScript types ensure route handler matches request/response contracts
+
+### Validation Patterns
+
+**Parse (throws on error)**:
+
+```typescript
+try {
+  const validatedData = CreateTaskRequestSchema.parse(request.body);
+  // Use validatedData safely
+} catch (error) {
+  if (error instanceof z.ZodError) {
+    reply.code(400);
+    return { error: 'Validation failed', details: error.errors };
+  }
+  throw error;
+}
+```
+
+**SafeParse (no throwing)**:
+
+```typescript
+const result = CreateTaskRequestSchema.safeParse(request.body);
+if (!result.success) {
+  reply.code(400);
+  return { error: 'Validation failed', details: result.error.errors };
+}
+const validatedData = result.data;
+// Use validatedData safely
+```
+
+### DO's and DON'Ts
+
+**DO**:
+- ✅ Import all types from `@st44/types`
+- ✅ Use `zodToOpenAPI()` for Fastify schema documentation
+- ✅ Validate all request bodies with Zod `.parse()` or `.safeParse()`
+- ✅ Return validated data types that match `@st44/types` schemas
+- ✅ Use `import type` for type-only imports
+- ✅ Handle `ZodError` and return 400 with validation details
+
+**DON'T**:
+- ❌ Create local interface definitions for API types
+- ❌ Skip runtime validation of request data
+- ❌ Return data that doesn't match shared type schemas
+- ❌ Ignore `ZodError` validation errors
+- ❌ Use `any` type instead of proper schemas
+- ❌ Forget to rebuild types package after schema changes
+
+### When Types Change
+
+If shared types are updated, rebuild the types package:
+
+```bash
+npm run build:types
+```
+
+For active development, use watch mode:
+
+```bash
+cd packages/types && npm run watch
+```
+
 ## Conventions & Patterns
 
 ### Route Handler Pattern
