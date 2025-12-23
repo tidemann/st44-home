@@ -44,7 +44,7 @@ export class ReassignModalComponent {
     if (!currentAssignment) return this.children();
 
     // Filter out the child who currently has the task
-    return this.children().filter((child) => child.id !== currentAssignment.child_id);
+    return this.children().filter((child) => child.id !== currentAssignment.childId);
   });
 
   protected canSubmit = computed(() => {

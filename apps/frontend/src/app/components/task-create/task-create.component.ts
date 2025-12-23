@@ -9,7 +9,7 @@ import {
   AbstractControl,
 } from '@angular/forms';
 import { TaskService } from '../../services/task.service';
-import type { Child } from '@st44/types';
+import type { Child, CreateTaskRequest, TaskRuleConfig, TaskRuleType } from '@st44/types';
 import { ChildrenService } from '../../services/children.service';
 import { HouseholdService } from '../../services/household.service';
 
@@ -46,16 +46,17 @@ export class TaskCreateComponent implements OnInit {
 
   ngOnInit(): void {
     this.taskForm = this.fb.group({
-      title: ['', [Validators.required, Validators.maxLength(200)]],
+      name: ['', [Validators.required, Validators.maxLength(200)]],
       description: [''],
-      rule_type: ['daily', Validators.required],
-      rotation_type: [''],
-      repeat_days: this.fb.array([]),
-      assigned_children: this.fb.array([]),
+      points: [10, [Validators.required, Validators.min(0)]],
+      ruleType: ['daily', Validators.required],
+      rotationType: [''],
+      repeatDays: this.fb.array([]),
+      assignedChildren: this.fb.array([]),
     });
 
     // Update validators when rule type changes
-    this.taskForm.get('rule_type')?.valueChanges.subscribe((ruleType) => {
+    this.taskForm.get('ruleType')?.valueChanges.subscribe((ruleType) => {
       this.updateValidators(ruleType);
     });
 
@@ -76,9 +77,9 @@ export class TaskCreateComponent implements OnInit {
   }
 
   private updateValidators(ruleType: string): void {
-    const rotationType = this.taskForm.get('rotation_type');
-    const repeatDays = this.taskForm.get('repeat_days');
-    const assignedChildren = this.taskForm.get('assigned_children');
+    const rotationType = this.taskForm.get('rotationType');
+    const repeatDays = this.taskForm.get('repeatDays');
+    const assignedChildren = this.taskForm.get('assignedChildren');
 
     // Clear all conditional validators
     rotationType?.clearValidators();
@@ -109,7 +110,7 @@ export class TaskCreateComponent implements OnInit {
   }
 
   onDayChange(dayValue: number, checked: boolean): void {
-    const repeatDays = this.taskForm.get('repeat_days') as FormArray;
+    const repeatDays = this.taskForm.get('repeatDays') as FormArray;
 
     if (checked) {
       repeatDays.push(this.fb.control(dayValue));
@@ -124,7 +125,7 @@ export class TaskCreateComponent implements OnInit {
   }
 
   onChildChange(childId: string, checked: boolean): void {
-    const assignedChildren = this.taskForm.get('assigned_children') as FormArray;
+    const assignedChildren = this.taskForm.get('assignedChildren') as FormArray;
 
     if (checked) {
       assignedChildren.push(this.fb.control(childId));
@@ -139,12 +140,12 @@ export class TaskCreateComponent implements OnInit {
   }
 
   isDaySelected(dayValue: number): boolean {
-    const repeatDays = this.taskForm.get('repeat_days') as FormArray;
+    const repeatDays = this.taskForm.get('repeatDays') as FormArray;
     return repeatDays.controls.some((ctrl) => ctrl.value === dayValue);
   }
 
   isChildSelected(childId: string): boolean {
-    const assignedChildren = this.taskForm.get('assigned_children') as FormArray;
+    const assignedChildren = this.taskForm.get('assignedChildren') as FormArray;
     return assignedChildren.controls.some((ctrl) => ctrl.value === childId);
   }
 
@@ -157,10 +158,13 @@ export class TaskCreateComponent implements OnInit {
       return;
     }
 
-    const formData = {
-      ...this.taskForm.value,
-      repeat_days: (this.taskForm.get('repeat_days') as FormArray).value,
-      assigned_children: (this.taskForm.get('assigned_children') as FormArray).value,
+    const ruleType = this.taskForm.value.ruleType as TaskRuleType;
+    const formData: CreateTaskRequest = {
+      name: this.taskForm.value.name as string,
+      description: (this.taskForm.value.description as string) || undefined,
+      points: this.taskForm.value.points as number,
+      ruleType,
+      ruleConfig: this.getRuleConfig(ruleType),
     };
 
     this.taskService.createTask(householdId, formData).subscribe({
@@ -180,17 +184,35 @@ export class TaskCreateComponent implements OnInit {
   }
 
   private resetForm(): void {
-    this.taskForm.reset({ rule_type: 'daily' });
-    (this.taskForm.get('repeat_days') as FormArray).clear();
-    (this.taskForm.get('assigned_children') as FormArray).clear();
+    this.taskForm.reset({ ruleType: 'daily', points: 10 });
+    (this.taskForm.get('repeatDays') as FormArray).clear();
+    (this.taskForm.get('assignedChildren') as FormArray).clear();
   }
 
-  protected get titleChars(): number {
-    return this.taskForm.get('title')?.value?.length || 0;
+  private getRuleConfig(ruleType: TaskRuleType): TaskRuleConfig {
+    if (ruleType === 'repeating') {
+      return {
+        repeatDays: (this.taskForm.get('repeatDays') as FormArray).value as number[],
+        assignedChildren: (this.taskForm.get('assignedChildren') as FormArray).value as string[],
+      };
+    }
+
+    if (ruleType === 'weekly_rotation') {
+      return {
+        rotationType: this.taskForm.value.rotationType as 'odd_even_week' | 'alternating',
+        assignedChildren: (this.taskForm.get('assignedChildren') as FormArray).value as string[],
+      };
+    }
+
+    return null;
+  }
+
+  protected get nameChars(): number {
+    return this.taskForm.get('name')?.value?.length || 0;
   }
 
   protected get ruleType(): string {
-    return this.taskForm.get('rule_type')?.value;
+    return this.taskForm.get('ruleType')?.value;
   }
 
   protected get taskServiceLoading(): boolean {

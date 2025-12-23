@@ -36,75 +36,75 @@ describe.skip('TaskList', () => {
   const mockChildren: Child[] = [
     {
       id: '1',
-      household_id: 'h1',
+      householdId: 'h1',
       name: 'Alice',
       birthYear: 2015,
-      avatar_url: null,
-      created_at: '2025-01-01',
-      updated_at: '2025-01-01',
+      avatarUrl: null,
+      createdAt: '2025-01-01',
+      updatedAt: '2025-01-01',
     },
     {
       id: '2',
-      household_id: 'h1',
+      householdId: 'h1',
       name: 'Bob',
       birthYear: 2017,
-      avatar_url: null,
-      created_at: '2025-01-01',
-      updated_at: '2025-01-01',
+      avatarUrl: null,
+      createdAt: '2025-01-01',
+      updatedAt: '2025-01-01',
     },
     {
       id: '3',
-      household_id: 'h1',
+      householdId: 'h1',
       name: 'Charlie',
       birthYear: 2019,
-      avatar_url: null,
-      created_at: '2025-01-01',
-      updated_at: '2025-01-01',
+      avatarUrl: null,
+      createdAt: '2025-01-01',
+      updatedAt: '2025-01-01',
     },
   ];
 
   const mockTasks: Task[] = [
     {
       id: '1',
-      household_id: 'h1',
+      householdId: 'h1',
       name: 'Take out trash',
       description: 'Empty all bins',
       points: 5,
-      rule_type: 'daily',
-      rule_config: null,
+      ruleType: 'daily',
+      ruleConfig: null,
       active: true,
-      created_at: '2025-01-01T10:00:00Z',
-      updated_at: '2025-01-01T10:00:00Z',
+      createdAt: '2025-01-01T10:00:00Z',
+      updatedAt: '2025-01-01T10:00:00Z',
     },
     {
       id: '2',
-      household_id: 'h1',
+      householdId: 'h1',
       name: 'Water plants',
       description: null,
       points: 3,
-      rule_type: 'repeating',
-      rule_config: {
-        repeat_days: [1, 3, 5],
-        assigned_children: ['1', '2'],
+      ruleType: 'repeating',
+      ruleConfig: {
+        repeatDays: [1, 3, 5],
+        assignedChildren: ['1', '2'],
       },
       active: true,
-      created_at: '2025-01-02T10:00:00Z',
-      updated_at: '2025-01-02T10:00:00Z',
+      createdAt: '2025-01-02T10:00:00Z',
+      updatedAt: '2025-01-02T10:00:00Z',
     },
     {
       id: '3',
-      household_id: 'h1',
+      householdId: 'h1',
       name: 'Clean bathroom',
       description: 'Scrub and mop',
       points: 10,
-      rule_type: 'weekly_rotation',
-      rule_config: {
-        rotation_type: 'odd_even_week',
-        assigned_children: ['1', '2', '3'],
+      ruleType: 'weekly_rotation',
+      ruleConfig: {
+        rotationType: 'odd_even_week',
+        assignedChildren: ['1', '2', '3'],
       },
       active: false,
-      created_at: '2025-01-03T10:00:00Z',
-      updated_at: '2025-01-03T10:00:00Z',
+      createdAt: '2025-01-03T10:00:00Z',
+      updatedAt: '2025-01-03T10:00:00Z',
     },
   ];
 
@@ -206,13 +206,13 @@ describe.skip('TaskList', () => {
       expect(displayedTasks[1].name).toBe('Water plants');
     });
 
-    it('should sort tasks by rule type when sortBy is rule_type', () => {
-      component['sortBy'].set('rule_type');
+    it('should sort tasks by rule type when sortBy is ruleType', () => {
+      component['sortBy'].set('ruleType');
       fixture.detectChanges();
 
       const displayedTasks = component['displayedTasks']();
-      expect(displayedTasks[0].rule_type).toBe('daily');
-      expect(displayedTasks[1].rule_type).toBe('repeating');
+      expect(displayedTasks[0].ruleType).toBe('daily');
+      expect(displayedTasks[1].ruleType).toBe('repeating');
     });
   });
 
@@ -262,7 +262,7 @@ describe.skip('TaskList', () => {
     });
 
     it('should return "All children" when no children are assigned', () => {
-      const task = mockTasks[0]; // daily task with null rule_config
+      const task = mockTasks[0]; // daily task with null ruleConfig
       const result = component['getChildrenNames'](task);
       expect(result).toBe('All children');
     });
@@ -276,7 +276,7 @@ describe.skip('TaskList', () => {
     it('should handle missing children IDs gracefully', () => {
       const task: Task = {
         ...mockTasks[1],
-        rule_config: { assigned_children: ['999'] }, // Non-existent child
+        ruleConfig: { assignedChildren: ['999'] }, // Non-existent child
       };
       const result = component['getChildrenNames'](task);
       expect(result).toBe('Unknown');
@@ -346,10 +346,11 @@ describe.skip('TaskList', () => {
 
       expect(mockTaskService.updateTask).toHaveBeenCalledWith('h1', '1', {
         name: task.name,
-        description: task.description,
+        description: task.description || undefined,
         points: task.points,
-        rule_type: task.rule_type,
-        rule_config: undefined,
+        ruleType: task.ruleType,
+        ruleConfig: task.ruleConfig || undefined,
+        active: !task.active,
       });
     });
   });

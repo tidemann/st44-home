@@ -17,16 +17,16 @@ export type AssignmentStatus = z.infer<typeof AssignmentStatusSchema>;
  */
 export const AssignmentSchema = z.object({
   id: z.string().uuid(),
-  task_id: z.string().uuid(),
+  taskId: z.string().uuid(),
   title: z.string().min(1).max(255),
   description: z.string().nullable(),
-  rule_type: TaskRuleTypeSchema,
-  child_id: z.string().uuid().nullable(),
-  child_name: z.string().nullable(),
+  ruleType: TaskRuleTypeSchema,
+  childId: z.string().uuid().nullable(),
+  childName: z.string().nullable(),
   date: z.string().date(),
   status: AssignmentStatusSchema,
-  completed_at: z.string().datetime().nullable(),
-  created_at: z.string().datetime(),
+  completedAt: z.string().datetime().nullable(),
+  createdAt: z.string().datetime(),
 });
 
 /**
@@ -40,10 +40,10 @@ export type Assignment = z.infer<typeof AssignmentSchema>;
  */
 export const AssignmentFiltersSchema = z.object({
   date: z.string().date().optional(),
-  child_id: z.string().uuid().optional(),
+  childId: z.string().uuid().optional(),
   status: AssignmentStatusSchema.optional(),
-  start_date: z.string().date().optional(),
-  end_date: z.string().date().optional(),
+  startDate: z.string().date().optional(),
+  endDate: z.string().date().optional(),
 });
 
 export type AssignmentFilters = z.infer<typeof AssignmentFiltersSchema>;
@@ -57,7 +57,7 @@ export type AssignmentFilters = z.infer<typeof AssignmentFiltersSchema>;
  * Used when marking an assignment as complete
  */
 export const CompleteAssignmentRequestSchema = z.object({
-  completed_at: z.string().datetime().optional(),
+  completedAt: z.string().datetime().optional(),
 });
 
 export type CompleteAssignmentRequest = z.infer<typeof CompleteAssignmentRequestSchema>;
@@ -67,7 +67,7 @@ export type CompleteAssignmentRequest = z.infer<typeof CompleteAssignmentRequest
  * Used when reassigning a task to a different child
  */
 export const ReassignTaskRequestSchema = z.object({
-  child_id: z.string().uuid(),
+  childId: z.string().uuid(),
 });
 
 export type ReassignTaskRequest = z.infer<typeof ReassignTaskRequestSchema>;

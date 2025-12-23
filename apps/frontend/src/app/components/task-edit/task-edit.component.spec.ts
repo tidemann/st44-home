@@ -36,18 +36,18 @@ describe('TaskEditComponent', () => {
 
   const mockTask: Task = {
     id: 'task-1',
-    household_id: 'household-1',
+    householdId: 'household-1',
     name: 'Take out trash',
     description: 'Empty all bins',
     points: 10,
-    rule_type: 'repeating',
-    rule_config: {
-      repeat_days: [1, 3, 5],
-      assigned_children: ['1'],
+    ruleType: 'repeating',
+    ruleConfig: {
+      repeatDays: [1, 3, 5],
+      assignedChildren: ['1'],
     },
     active: true,
-    created_at: new Date().toISOString(),
-    updated_at: new Date().toISOString(),
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
   };
 
   beforeEach(() => {
@@ -94,18 +94,18 @@ describe('TaskEditComponent', () => {
     it('should pre-fill form with task data', () => {
       expect(component.taskForm.get('name')?.value).toBe('Take out trash');
       expect(component.taskForm.get('description')?.value).toBe('Empty all bins');
-      expect(component.taskForm.get('rule_type')?.value).toBe('repeating');
+      expect(component.taskForm.get('ruleType')?.value).toBe('repeating');
       expect(component.taskForm.get('active')?.value).toBe(true);
     });
 
-    it('should pre-fill repeat_days array', () => {
-      const repeatDays = component.taskForm.get('repeat_days') as FormArray;
+    it('should pre-fill repeatDays array', () => {
+      const repeatDays = component.taskForm.get('repeatDays') as FormArray;
       expect(repeatDays.length).toBe(3);
       expect(repeatDays.value).toEqual([1, 3, 5]);
     });
 
-    it('should pre-fill assigned_children array', () => {
-      const assignedChildren = component.taskForm.get('assigned_children') as FormArray;
+    it('should pre-fill assignedChildren array', () => {
+      const assignedChildren = component.taskForm.get('assignedChildren') as FormArray;
       expect(assignedChildren.length).toBe(1);
       expect(assignedChildren.value).toEqual(['1']);
     });
@@ -119,34 +119,34 @@ describe('TaskEditComponent', () => {
     it('should pre-fill daily task correctly', () => {
       const dailyTask: Task = {
         ...mockTask,
-        rule_type: 'daily',
-        rule_config: null,
+        ruleType: 'daily',
+        ruleConfig: null,
       };
 
       fixture.componentRef.setInput('task', dailyTask);
       fixture.detectChanges();
 
-      expect(component.taskForm.get('rule_type')?.value).toBe('daily');
-      expect((component.taskForm.get('repeat_days') as FormArray).length).toBe(0);
-      expect((component.taskForm.get('assigned_children') as FormArray).length).toBe(0);
+      expect(component.taskForm.get('ruleType')?.value).toBe('daily');
+      expect((component.taskForm.get('repeatDays') as FormArray).length).toBe(0);
+      expect((component.taskForm.get('assignedChildren') as FormArray).length).toBe(0);
     });
 
     it('should pre-fill weekly_rotation task correctly', () => {
       const rotationTask: Task = {
         ...mockTask,
-        rule_type: 'weekly_rotation',
-        rule_config: {
-          rotation_type: 'odd_even_week',
-          assigned_children: ['1', '2'],
+        ruleType: 'weekly_rotation',
+        ruleConfig: {
+          rotationType: 'odd_even_week',
+          assignedChildren: ['1', '2'],
         },
       };
 
       fixture.componentRef.setInput('task', rotationTask);
       fixture.detectChanges();
 
-      expect(component.taskForm.get('rule_type')?.value).toBe('weekly_rotation');
-      expect(component.taskForm.get('rotation_type')?.value).toBe('odd_even_week');
-      expect((component.taskForm.get('assigned_children') as FormArray).value).toEqual(['1', '2']);
+      expect(component.taskForm.get('ruleType')?.value).toBe('weekly_rotation');
+      expect(component.taskForm.get('rotationType')?.value).toBe('odd_even_week');
+      expect((component.taskForm.get('assignedChildren') as FormArray).value).toEqual(['1', '2']);
     });
   });
 
@@ -163,8 +163,8 @@ describe('TaskEditComponent', () => {
       expect(name?.hasError('maxlength')).toBe(true);
     });
 
-    it('should require rule_type', () => {
-      const ruleType = component.taskForm.get('rule_type');
+    it('should require ruleType', () => {
+      const ruleType = component.taskForm.get('ruleType');
       ruleType?.setValue('');
       expect(ruleType?.hasError('required')).toBe(true);
     });
@@ -172,28 +172,28 @@ describe('TaskEditComponent', () => {
 
   describe('Dynamic Validation Changes', () => {
     it('should update validators when rule type changes from repeating to daily', () => {
-      component.taskForm.get('rule_type')?.setValue('daily');
+      component.taskForm.get('ruleType')?.setValue('daily');
       fixture.detectChanges();
 
-      expect(component.taskForm.get('repeat_days')?.hasError('required')).toBe(false);
-      expect(component.taskForm.get('assigned_children')?.hasError('required')).toBe(false);
+      expect(component.taskForm.get('repeatDays')?.hasError('required')).toBe(false);
+      expect(component.taskForm.get('assignedChildren')?.hasError('required')).toBe(false);
     });
 
-    it('should require rotation_type when changing to weekly_rotation', () => {
-      component.taskForm.get('rule_type')?.setValue('weekly_rotation');
-      component.taskForm.get('rotation_type')?.setValue('');
+    it('should require rotationType when changing to weekly_rotation', () => {
+      component.taskForm.get('ruleType')?.setValue('weekly_rotation');
+      component.taskForm.get('rotationType')?.setValue('');
       fixture.detectChanges();
 
-      expect(component.taskForm.get('rotation_type')?.hasError('required')).toBe(true);
+      expect(component.taskForm.get('rotationType')?.hasError('required')).toBe(true);
     });
 
     it('should require 2+ children for weekly_rotation', () => {
-      component.taskForm.get('rule_type')?.setValue('weekly_rotation');
-      (component.taskForm.get('assigned_children') as FormArray).clear();
+      component.taskForm.get('ruleType')?.setValue('weekly_rotation');
+      (component.taskForm.get('assignedChildren') as FormArray).clear();
       component.onChildChange('1', true);
       fixture.detectChanges();
 
-      expect(component.taskForm.get('assigned_children')?.hasError('minLength')).toBe(true);
+      expect(component.taskForm.get('assignedChildren')?.hasError('minLength')).toBe(true);
     });
   });
 
@@ -213,15 +213,15 @@ describe('TaskEditComponent', () => {
   });
 
   describe('Day Selection', () => {
-    it('should add day to repeat_days when checked', () => {
+    it('should add day to repeatDays when checked', () => {
       component.onDayChange(6, true); // Saturday
-      const repeatDays = component.taskForm.get('repeat_days') as FormArray;
+      const repeatDays = component.taskForm.get('repeatDays') as FormArray;
       expect(repeatDays.value).toContain(6);
     });
 
-    it('should remove day from repeat_days when unchecked', () => {
+    it('should remove day from repeatDays when unchecked', () => {
       component.onDayChange(1, false); // Remove Monday
-      const repeatDays = component.taskForm.get('repeat_days') as FormArray;
+      const repeatDays = component.taskForm.get('repeatDays') as FormArray;
       expect(repeatDays.value).not.toContain(1);
     });
 
@@ -235,15 +235,15 @@ describe('TaskEditComponent', () => {
   });
 
   describe('Child Selection', () => {
-    it('should add child to assigned_children when checked', () => {
+    it('should add child to assignedChildren when checked', () => {
       component.onChildChange('2', true); // Noah
-      const assignedChildren = component.taskForm.get('assigned_children') as FormArray;
+      const assignedChildren = component.taskForm.get('assignedChildren') as FormArray;
       expect(assignedChildren.value).toContain('2');
     });
 
-    it('should remove child from assigned_children when unchecked', () => {
+    it('should remove child from assignedChildren when unchecked', () => {
       component.onChildChange('1', false); // Remove Emma
-      const assignedChildren = component.taskForm.get('assigned_children') as FormArray;
+      const assignedChildren = component.taskForm.get('assignedChildren') as FormArray;
       expect(assignedChildren.value).not.toContain('1');
     });
 
@@ -278,12 +278,13 @@ describe('TaskEditComponent', () => {
       expect(mockTaskService.updateTask).toHaveBeenCalledWith('household-1', 'task-1', {
         name: 'Updated task',
         description: 'Empty all bins',
-        rule_type: 'repeating',
-        rule_config: {
-          rotation_type: undefined,
-          repeat_days: [1, 3, 5],
-          assigned_children: ['1'],
+        ruleType: 'repeating',
+        ruleConfig: {
+          rotationType: undefined,
+          repeatDays: [1, 3, 5],
+          assignedChildren: ['1'],
         },
+        active: true,
       });
     });
 
@@ -392,7 +393,7 @@ describe('TaskEditComponent', () => {
       expect(component['nameChars']).toBe(5);
     });
 
-    it('ruleType should return current rule_type', () => {
+    it('ruleType should return current ruleType', () => {
       expect(component['ruleType']).toBe('repeating');
     });
 
@@ -409,14 +410,14 @@ describe('TaskEditComponent', () => {
     it('should handle editing from daily to repeating', () => {
       const dailyTask: Task = {
         ...mockTask,
-        rule_type: 'daily',
-        rule_config: null,
+        ruleType: 'daily',
+        ruleConfig: null,
       };
 
       fixture.componentRef.setInput('task', dailyTask);
       fixture.detectChanges();
 
-      component.taskForm.get('rule_type')?.setValue('repeating');
+      component.taskForm.get('ruleType')?.setValue('repeating');
       component.onDayChange(1, true);
       component.onDayChange(3, true);
       component.onChildChange('1', true);
@@ -426,13 +427,13 @@ describe('TaskEditComponent', () => {
     });
 
     it('should handle editing from repeating to weekly_rotation', () => {
-      component.taskForm.get('rule_type')?.setValue('weekly_rotation');
-      component.taskForm.get('rotation_type')?.setValue('alternating');
+      component.taskForm.get('ruleType')?.setValue('weekly_rotation');
+      component.taskForm.get('rotationType')?.setValue('alternating');
       component.onChildChange('2', true); // Add second child
       fixture.detectChanges();
 
       expect(component.taskForm.valid).toBe(true);
-      expect((component.taskForm.get('assigned_children') as FormArray).length).toBe(2);
+      expect((component.taskForm.get('assignedChildren') as FormArray).length).toBe(2);
     });
 
     it('should toggle active status', () => {

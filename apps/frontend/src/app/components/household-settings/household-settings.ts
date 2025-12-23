@@ -76,7 +76,7 @@ export class HouseholdSettingsComponent implements OnInit {
 
       // Determine current user role
       const currentUserId = this.getCurrentUserId();
-      const currentMember = members.find((m) => m.user_id === currentUserId);
+      const currentMember = members.find((m) => m.userId === currentUserId);
       this.currentUserRole.set(currentMember?.role || null);
 
       // Disable form if not admin

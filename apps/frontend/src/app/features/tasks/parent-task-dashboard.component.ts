@@ -59,7 +59,7 @@ export class ParentTaskDashboardComponent implements OnInit {
 
     // Enhance assignments with child names
     return assignments.map((a) => {
-      const child = children.find((c) => c.id === a.child_id);
+      const child = children.find((c) => c.id === a.childId);
       return {
         ...a,
         childName: child?.name ?? 'Unassigned',
@@ -74,7 +74,7 @@ export class ParentTaskDashboardComponent implements OnInit {
     // Filter by child
     const selectedChild = this.selectedChild();
     if (selectedChild) {
-      filtered = filtered.filter((a) => a.child_id === selectedChild);
+      filtered = filtered.filter((a) => a.childId === selectedChild);
     }
 
     // Filter by status
@@ -131,7 +131,7 @@ export class ParentTaskDashboardComponent implements OnInit {
 
     const filters: {
       date?: string;
-      child_id?: string;
+      childId?: string;
       status?: 'pending' | 'completed';
     } = {};
 

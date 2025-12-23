@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { TestBed } from '@angular/core/testing';
 import { firstValueFrom } from 'rxjs';
-import type { Task, CreateTaskRequest, UpdateTaskRequest } from '@st44/types';
+import type { Task, CreateTaskRequest, UpdateTaskRequest, Assignment } from '@st44/types';
 import { TaskService } from './task.service';
 import { ApiService } from './api.service';
 
@@ -16,47 +16,47 @@ describe('TaskService', () => {
 
   const mockTask: Task = {
     id: 'task-1',
-    household_id: 'household-1',
+    householdId: 'household-1',
     name: 'Daily Chores',
     description: 'Complete daily household chores',
     points: 10,
-    rule_type: 'daily',
-    rule_config: null,
+    ruleType: 'daily',
+    ruleConfig: null,
     active: true,
-    created_at: '2025-12-19T10:00:00Z',
-    updated_at: '2025-12-19T10:00:00Z',
+    createdAt: '2025-12-19T10:00:00Z',
+    updatedAt: '2025-12-19T10:00:00Z',
   };
 
   const mockTask2: Task = {
     id: 'task-2',
-    household_id: 'household-1',
+    householdId: 'household-1',
     name: 'Weekly Rotation',
     description: 'Rotate weekly tasks',
     points: 15,
-    rule_type: 'weekly_rotation',
-    rule_config: {
-      rotation_type: 'odd_even_week',
-      assigned_children: ['child-1', 'child-2', 'child-3'],
+    ruleType: 'weekly_rotation',
+    ruleConfig: {
+      rotationType: 'odd_even_week',
+      assignedChildren: ['child-1', 'child-2', 'child-3'],
     },
     active: true,
-    created_at: '2025-12-19T11:00:00Z',
-    updated_at: '2025-12-19T11:00:00Z',
+    createdAt: '2025-12-19T11:00:00Z',
+    updatedAt: '2025-12-19T11:00:00Z',
   };
 
   const mockInactiveTask: Task = {
     id: 'task-3',
-    household_id: 'household-1',
+    householdId: 'household-1',
     name: 'Old Task',
     description: 'Inactive task',
     points: 5,
-    rule_type: 'repeating',
-    rule_config: {
-      repeat_days: [1, 3, 5],
-      assigned_children: ['child-1'],
+    ruleType: 'repeating',
+    ruleConfig: {
+      repeatDays: [1, 3, 5],
+      assignedChildren: ['child-1'],
     },
     active: false,
-    created_at: '2025-12-01T10:00:00Z',
-    updated_at: '2025-12-15T10:00:00Z',
+    createdAt: '2025-12-01T10:00:00Z',
+    updatedAt: '2025-12-15T10:00:00Z',
   };
 
   beforeEach(() => {
@@ -101,7 +101,7 @@ describe('TaskService', () => {
       name: 'New Task',
       description: 'Test description',
       points: 10,
-      rule_type: 'daily',
+      ruleType: 'daily',
     };
 
     it('should call ApiService.post with correct endpoint and data', async () => {
@@ -594,15 +594,16 @@ describe('TaskService', () => {
   describe('getChildTasks', () => {
     const mockAssignment = {
       id: 'assignment-1',
-      task_id: 'task-1',
       taskId: 'task-1',
-      child_id: 'child-1',
+      childId: 'child-1',
       title: 'Feed the dog',
       description: 'Give dog food and water',
-      rule_type: 'daily',
+      ruleType: 'daily',
+      childName: null,
       date: '2025-01-20',
       status: 'pending',
-      completed_at: null,
+      completedAt: null,
+      createdAt: '2025-01-20T00:00:00Z',
     };
 
     const mockResponse = { assignments: [mockAssignment], total: 1 };
@@ -687,24 +688,29 @@ describe('TaskService', () => {
     const mockAssignments = [
       {
         id: 'assignment-1',
-        task_id: 'task-1',
         taskId: 'task-1',
-        child_id: 'child-1',
-        child_name: 'Emma',
+        childId: 'child-1',
+        childName: 'Emma',
         title: 'Feed the dog',
+        description: null,
+        ruleType: 'daily',
         date: '2025-01-20',
         status: 'pending',
+        completedAt: null,
+        createdAt: '2025-01-20T00:00:00Z',
       },
       {
         id: 'assignment-2',
-        task_id: 'task-2',
         taskId: 'task-2',
-        child_id: 'child-2',
-        child_name: 'Noah',
+        childId: 'child-2',
+        childName: 'Noah',
         title: 'Take out trash',
+        description: null,
+        ruleType: 'daily',
         date: '2025-01-20',
         status: 'completed',
-        completed_at: '2025-01-20T10:00:00Z',
+        completedAt: '2025-01-20T10:00:00Z',
+        createdAt: '2025-01-20T00:00:00Z',
       },
     ];
 
@@ -715,13 +721,13 @@ describe('TaskService', () => {
 
       const result$ = service.getHouseholdAssignments('household-1', {
         date: '2025-01-20',
-        child_id: 'child-1',
+        childId: 'child-1',
         status: 'pending',
       });
       await firstValueFrom(result$);
 
       expect(mockApiService.get).toHaveBeenCalledWith(
-        '/households/household-1/assignments?date=2025-01-20&child_id=child-1&status=pending',
+        '/households/household-1/assignments?date=2025-01-20&childId=child-1&status=pending',
       );
     });
 
@@ -763,18 +769,24 @@ describe('TaskService', () => {
   });
 
   describe('completeTask', () => {
-    const mockAssignment = {
+    const mockAssignment: Assignment = {
       id: 'assignment-1',
-      task_id: 'task-1',
-      child_id: 'child-1',
+      taskId: 'task-1',
+      title: 'Daily Chores',
+      description: null,
+      ruleType: 'daily',
+      childId: 'child-1',
+      childName: 'Emma',
       date: '2025-01-20',
       status: 'pending',
+      completedAt: null,
+      createdAt: '2025-01-19T10:00:00Z',
     };
 
-    const completedAssignment = {
+    const completedAssignment: Assignment = {
       ...mockAssignment,
       status: 'completed',
-      completed_at: '2025-01-20T12:00:00Z',
+      completedAt: '2025-01-20T12:00:00Z',
     };
 
     beforeEach(async () => {
@@ -810,7 +822,7 @@ describe('TaskService', () => {
       const result = await firstValueFrom(result$);
 
       expect(result.status).toBe('completed');
-      expect(result.completed_at).toBe('2025-01-20T12:00:00Z');
+      expect(result.completedAt).toBe('2025-01-20T12:00:00Z');
     });
 
     it('should rollback optimistic update on API error', async () => {
@@ -861,19 +873,24 @@ describe('TaskService', () => {
   });
 
   describe('reassignTask', () => {
-    const mockAssignment = {
+    const mockAssignment: Assignment = {
       id: 'assignment-1',
-      task_id: 'task-1',
-      child_id: 'child-1',
-      child_name: 'Emma',
+      taskId: 'task-1',
+      title: 'Daily Chores',
+      description: null,
+      ruleType: 'daily',
+      childId: 'child-1',
+      childName: 'Emma',
       date: '2025-01-20',
       status: 'pending',
+      completedAt: null,
+      createdAt: '2025-01-19T10:00:00Z',
     };
 
-    const reassignedAssignment = {
+    const reassignedAssignment: Assignment = {
       ...mockAssignment,
-      child_id: 'child-2',
-      child_name: 'Noah',
+      childId: 'child-2',
+      childName: 'Noah',
     };
 
     beforeEach(async () => {
@@ -890,7 +907,7 @@ describe('TaskService', () => {
       await firstValueFrom(result$);
 
       expect(mockApiService.put).toHaveBeenCalledWith('/assignments/assignment-1/reassign', {
-        child_id: 'child-2',
+        childId: 'child-2',
       });
     });
 
@@ -900,8 +917,8 @@ describe('TaskService', () => {
       const result$ = service.reassignTask('assignment-1', 'child-2');
       const result = await firstValueFrom(result$);
 
-      expect(result.child_id).toBe('child-2');
-      expect(result.child_name).toBe('Noah');
+      expect(result.childId).toBe('child-2');
+      expect(result.childName).toBe('Noah');
     });
 
     it('should update assignment in state', async () => {
@@ -911,8 +928,8 @@ describe('TaskService', () => {
       await firstValueFrom(result$);
 
       const assignments = service.assignments();
-      expect(assignments[0].child_id).toBe('child-2');
-      expect(assignments[0].child_name).toBe('Noah');
+      expect(assignments[0].childId).toBe('child-2');
+      expect(assignments[0].childName).toBe('Noah');
     });
 
     it('should set error on failure', async () => {
@@ -926,7 +943,7 @@ describe('TaskService', () => {
 
     it('should not affect other assignments', async () => {
       // Add second assignment
-      const assignment2 = { ...mockAssignment, id: 'assignment-2', child_id: 'child-3' };
+      const assignment2: Assignment = { ...mockAssignment, id: 'assignment-2', childId: 'child-3' };
       mockApiService.get.mockResolvedValue({
         assignments: [mockAssignment, assignment2],
         total: 2,
@@ -941,25 +958,39 @@ describe('TaskService', () => {
 
       const assignments = service.assignments();
       expect(assignments.length).toBe(2);
-      expect(assignments[0].child_id).toBe('child-2');
-      expect(assignments[1].child_id).toBe('child-3'); // Unchanged
+      expect(assignments[0].childId).toBe('child-2');
+      expect(assignments[1].childId).toBe('child-3'); // Unchanged
     });
   });
 
   describe('Computed Assignment Signals', () => {
-    const mockAssignments = [
+    const baseAssignment = {
+      taskId: 'task-1',
+      title: 'Daily Chores',
+      description: null,
+      ruleType: 'daily' as const,
+      childId: 'child-1',
+      childName: 'Emma',
+      createdAt: '2025-01-18T10:00:00Z',
+      completedAt: null,
+    };
+
+    const mockAssignments: Assignment[] = [
       {
+        ...baseAssignment,
         id: 'assignment-1',
         status: 'pending',
         date: '2025-01-20',
       },
       {
+        ...baseAssignment,
         id: 'assignment-2',
         status: 'completed',
         date: '2025-01-20',
-        completed_at: '2025-01-20T10:00:00Z',
+        completedAt: '2025-01-20T10:00:00Z',
       },
       {
+        ...baseAssignment,
         id: 'assignment-3',
         status: 'pending',
         date: '2025-01-19', // Yesterday - overdue
@@ -988,6 +1019,7 @@ describe('TaskService', () => {
       mockApiService.put.mockResolvedValue({
         ...mockAssignments[0],
         status: 'completed',
+        completedAt: '2025-01-20T11:00:00Z',
       });
 
       const result$ = service.completeTask('assignment-1');

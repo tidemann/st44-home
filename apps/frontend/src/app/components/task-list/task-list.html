@@ -32,7 +32,7 @@
         <select id="sort" (change)="onSortChange($event)" [value]="sortBy()">
           <option value="created">Newest first</option>
           <option value="title">Title (A-Z)</option>
-          <option value="rule_type">Rule type</option>
+          <option value="ruleType">Rule type</option>
         </select>
       </div>
     </div>
@@ -69,8 +69,8 @@
         <article class="task-card" [class.inactive]="!task.active">
           <div class="task-header">
             <h3>{{ task.name }}</h3>
-            <span class="rule-badge" [attr.data-rule]="task.rule_type">
-              {{ getRuleTypeLabel(task.rule_type) }}
+            <span class="rule-badge" [attr.data-rule]="task.ruleType">
+              {{ getRuleTypeLabel(task.ruleType) }}
             </span>
           </div>
 
@@ -91,17 +91,17 @@
               </div>
             }
 
-            @if (task.rule_type === 'repeating' && task.rule_config?.repeat_days) {
+            @if (task.ruleType === 'repeating' && task.ruleConfig?.repeatDays) {
               <div class="detail-row">
                 <strong>Days:</strong>
-                <span>{{ getRepeatDaysLabel(task.rule_config?.repeat_days) }}</span>
+                <span>{{ getRepeatDaysLabel(task.ruleConfig?.repeatDays) }}</span>
               </div>
             }
 
-            @if (task.rule_type === 'weekly_rotation' && task.rule_config?.rotation_type) {
+            @if (task.ruleType === 'weekly_rotation' && task.ruleConfig?.rotationType) {
               <div class="detail-row">
                 <strong>Rotation:</strong>
-                <span>{{ getRotationTypeLabel(task.rule_config?.rotation_type) }}</span>
+                <span>{{ getRotationTypeLabel(task.ruleConfig?.rotationType) }}</span>
               </div>
             }
 

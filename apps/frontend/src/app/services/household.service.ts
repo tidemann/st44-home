@@ -9,8 +9,8 @@ import { ApiService } from './api.service';
 export interface HouseholdListItem {
   id: string;
   name: string;
-  created_at: string;
-  updated_at: string;
+  createdAt: string;
+  updatedAt: string;
   role: 'parent' | 'child'; // User's role in this household
   memberCount?: number;
   childrenCount?: number;
@@ -21,11 +21,11 @@ export interface HouseholdListItem {
  * TODO: Migrate to @st44/types when HouseholdMember response schema added
  */
 export interface HouseholdMember {
-  user_id: string;
+  userId: string;
   email: string;
-  display_name: string | null;
+  displayName: string | null;
   role: 'parent' | 'child';
-  joined_at: string;
+  joinedAt: string;
 }
 
 /**

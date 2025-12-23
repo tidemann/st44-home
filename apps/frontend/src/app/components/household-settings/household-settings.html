@@ -83,11 +83,11 @@
 
         @if (members().length > 0) {
           <ul class="members-list" role="list">
-            @for (member of members(); track member.user_id) {
+            @for (member of members(); track member.userId) {
               <li class="member-item">
                 <div class="member-info">
                   <span class="member-name">
-                    {{ member.display_name || member.email }}
+                    {{ member.displayName || member.email }}
                   </span>
                   <span
                     class="member-role"
@@ -100,7 +100,7 @@
                 <div class="member-meta">
                   <span class="member-email">{{ member.email }}</span>
                   <span class="member-joined">
-                    Joined {{ member.joined_at | date: 'mediumDate' }}
+                    Joined {{ member.joinedAt | date: 'mediumDate' }}
                   </span>
                 </div>
               </li>

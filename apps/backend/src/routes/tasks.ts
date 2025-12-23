@@ -29,11 +29,11 @@ interface CreateTaskRequest {
     name: string;
     description?: string;
     points?: number;
-    rule_type: 'weekly_rotation' | 'repeating' | 'daily';
-    rule_config?: {
-      rotation_type?: 'odd_even_week' | 'alternating';
-      repeat_days?: number[];
-      assigned_children?: string[];
+    ruleType: 'weekly_rotation' | 'repeating' | 'daily';
+    ruleConfig?: {
+      rotationType?: 'odd_even_week' | 'alternating';
+      repeatDays?: number[];
+      assignedChildren?: string[];
     };
   };
 }
@@ -44,12 +44,13 @@ interface UpdateTaskRequest {
     name?: string;
     description?: string;
     points?: number;
-    rule_type?: string;
-    rule_config?: {
-      rotation_type?: string;
-      repeat_days?: number[];
-      assigned_children?: string[];
+    ruleType?: string;
+    ruleConfig?: {
+      rotationType?: string;
+      repeatDays?: number[];
+      assignedChildren?: string[];
     };
+    active?: boolean;
   };
 }
 
@@ -65,13 +66,76 @@ interface ListTasksRequest {
  * Returns array of error messages (empty if valid)
  * Zod handles basic validation (types, min/max), this handles business logic
  */
+type NormalizedRuleConfig = {
+  rotationType?: 'odd_even_week' | 'alternating';
+  repeatDays?: number[];
+  assignedChildren?: string[];
+} | null;
+
+function normalizeRuleConfig(ruleConfig: unknown): NormalizedRuleConfig | undefined {
+  if (ruleConfig === undefined) return undefined;
+  if (ruleConfig === null) return null;
+
+  let value: unknown = ruleConfig;
+  if (typeof value === 'string') {
+    try {
+      value = JSON.parse(value);
+    } catch {
+      return undefined;
+    }
+  }
+
+  if (typeof value !== 'object' || value === null) return undefined;
+
+  const obj = value as Record<string, unknown>;
+  const rotationType = (obj.rotationType ?? obj['rotation_type']) as unknown;
+  const repeatDays = (obj.repeatDays ?? obj['repeat_days']) as unknown;
+  const assignedChildren = (obj.assignedChildren ?? obj['assigned_children']) as unknown;
+
+  const normalized: Exclude<NormalizedRuleConfig, null> = {};
+  if (typeof rotationType === 'string') {
+    normalized.rotationType = rotationType as 'odd_even_week' | 'alternating';
+  }
+  if (Array.isArray(repeatDays)) {
+    normalized.repeatDays = repeatDays as number[];
+  }
+  if (Array.isArray(assignedChildren)) {
+    normalized.assignedChildren = assignedChildren as string[];
+  }
+
+  return normalized;
+}
+
+function toDateTimeString(value: unknown): string {
+  if (value instanceof Date) return value.toISOString();
+  if (typeof value === 'string') return value;
+  return new Date(String(value)).toISOString();
+}
+
+function mapTaskRowToTask(row: any): Task {
+  const normalizedRuleConfig = normalizeRuleConfig(row.rule_config);
+
+  return {
+    id: row.id,
+    householdId: row.household_id,
+    name: row.name,
+    description: row.description,
+    points: row.points,
+    ruleType: row.rule_type,
+    ruleConfig: normalizedRuleConfig === undefined ? null : normalizedRuleConfig,
+    active: row.active !== false,
+    createdAt: toDateTimeString(row.created_at),
+    updatedAt: toDateTimeString(row.updated_at),
+  };
+}
+
 function validateTaskData(
   data: {
     name?: string;
     description?: string | null;
     points?: number;
-    rule_type?: string;
-    rule_config?: any;
+    ruleType?: string;
+    ruleConfig?: unknown;
   },
   isUpdate: boolean = false,
 ): string[] {
@@ -80,36 +144,36 @@ function validateTaskData(
   // Basic Zod validation is already done, this is business logic validation
 
   // Rule-specific validation
-  if (data.rule_type) {
-    const config = data.rule_config || {};
+  if (data.ruleType) {
+    const config = normalizeRuleConfig(data.ruleConfig) || {};
 
-    if (data.rule_type === 'weekly_rotation') {
+    if (data.ruleType === 'weekly_rotation') {
       // Rotation type required
-      if (!config.rotation_type) {
-        errors.push('rotation_type required for weekly_rotation (odd_even_week or alternating)');
-      } else if (!['odd_even_week', 'alternating'].includes(config.rotation_type)) {
-        errors.push('rotation_type must be odd_even_week or alternating');
+      if (!config.rotationType) {
+        errors.push('rotationType required for weekly_rotation (odd_even_week or alternating)');
+      } else if (!['odd_even_week', 'alternating'].includes(config.rotationType)) {
+        errors.push('rotationType must be odd_even_week or alternating');
       }
 
       // Assigned children required (min 2 for rotation)
-      if (!config.assigned_children || config.assigned_children.length < 2) {
-        errors.push('At least 2 assigned_children required for weekly_rotation');
+      if (!config.assignedChildren || config.assignedChildren.length < 2) {
+        errors.push('At least 2 assignedChildren required for weekly_rotation');
       }
     }
 
-    if (data.rule_type === 'repeating') {
+    if (data.ruleType === 'repeating') {
       // Repeat days required
-      if (!config.repeat_days || config.repeat_days.length < 1) {
-        errors.push('repeat_days required for repeating tasks (array of 0-6)');
+      if (!config.repeatDays || config.repeatDays.length < 1) {
+        errors.push('repeatDays required for repeating tasks (array of 0-6)');
       }
 
       // Assigned children required (min 1)
-      if (!config.assigned_children || config.assigned_children.length < 1) {
-        errors.push('At least 1 assigned_child required for repeating tasks');
+      if (!config.assignedChildren || config.assignedChildren.length < 1) {
+        errors.push('At least 1 assignedChild required for repeating tasks');
       }
     }
 
-    if (data.rule_type === 'daily') {
+    if (data.ruleType === 'daily') {
       // Assigned children optional for daily tasks
       // No specific validation needed
     }
@@ -146,15 +210,16 @@ async function createTask(request: FastifyRequest<CreateTaskRequest>, reply: Fas
   try {
     // Validate request body with Zod schema
     const validatedData = validateRequest(CreateTaskRequestSchema, request.body);
-    const { name, description, points, rule_type, rule_config } = validatedData;
+    const { name, description, points, ruleType, ruleConfig } = validatedData;
+    const normalizedRuleConfig = normalizeRuleConfig(ruleConfig);
 
     // Validate task data based on rule type
     const validationErrors = validateTaskData({
       name,
       description,
       points,
-      rule_type,
-      rule_config,
+      ruleType,
+      ruleConfig: normalizedRuleConfig,
     });
     if (validationErrors.length > 0) {
       return reply.status(400).send({
@@ -165,9 +230,12 @@ async function createTask(request: FastifyRequest<CreateTaskRequest>, reply: Fas
     }
 
     // Validate assigned children belong to household
-    if (rule_config?.assigned_children && rule_config.assigned_children.length > 0) {
+    if (
+      normalizedRuleConfig?.assignedChildren &&
+      normalizedRuleConfig.assignedChildren.length > 0
+    ) {
       const childrenValid = await validateChildrenBelongToHousehold(
-        rule_config.assigned_children,
+        normalizedRuleConfig.assignedChildren,
         householdId,
       );
       if (!childrenValid) {
@@ -186,25 +254,15 @@ async function createTask(request: FastifyRequest<CreateTaskRequest>, reply: Fas
         householdId,
         name.trim(),
         description || null,
-        points || 10,
-        rule_type,
-        rule_config ? JSON.stringify(rule_config) : null,
+        points,
+        ruleType,
+        normalizedRuleConfig === undefined || normalizedRuleConfig === null
+          ? null
+          : JSON.stringify(normalizedRuleConfig),
       ],
     );
 
-    const task = result.rows[0];
-
-    return reply.status(201).send({
-      id: task.id,
-      household_id: task.household_id,
-      name: task.name,
-      description: task.description,
-      points: task.points,
-      rule_type: task.rule_type,
-      rule_config: task.rule_config,
-      created_at: task.created_at,
-      updated_at: task.updated_at,
-    });
+    return reply.status(201).send(mapTaskRowToTask(result.rows[0]));
   } catch (error) {
     // Handle Zod validation errors
     if (error instanceof z.ZodError) {
@@ -242,20 +300,7 @@ async function listTasks(request: FastifyRequest<ListTasksRequest>, reply: Fasti
 
     const result = await db.query(query, params);
 
-    const tasks = result.rows.map((row) => ({
-      id: row.id,
-      household_id: row.household_id,
-      name: row.name,
-      description: row.description,
-      points: row.points,
-      rule_type: row.rule_type,
-      rule_config: row.rule_config,
-      active: row.active !== false, // Default to true if column doesn't exist yet
-      created_at: row.created_at,
-      updated_at: row.updated_at,
-    }));
-
-    return reply.send(tasks);
+    return reply.send(result.rows.map(mapTaskRowToTask));
   } catch (error) {
     request.log.error(error, 'Failed to list tasks');
     return reply.status(500).send({
@@ -295,18 +340,7 @@ async function getTask(request: FastifyRequest<{ Params: TaskParams }>, reply: F
 
     const task = result.rows[0];
 
-    return reply.send({
-      id: task.id,
-      household_id: task.household_id,
-      name: task.name,
-      description: task.description,
-      points: task.points,
-      rule_type: task.rule_type,
-      rule_config: task.rule_config,
-      active: task.active !== false,
-      created_at: task.created_at,
-      updated_at: task.updated_at,
-    });
+    return reply.send(mapTaskRowToTask(task));
   } catch (error) {
     request.log.error(error, 'Failed to get task');
     return reply.status(500).send({
@@ -335,11 +369,31 @@ async function updateTask(request: FastifyRequest<UpdateTaskRequest>, reply: Fas
   try {
     // Validate request body with Zod schema
     const validatedData = validateRequest(UpdateTaskRequestSchema, request.body);
-    const { name, description, points, rule_type, rule_config } = validatedData;
+    const { name, description, points, ruleType, ruleConfig, active } = validatedData;
+    const normalizedRuleConfig = normalizeRuleConfig(ruleConfig);
+
+    // Ensure active column exists if we're about to update it
+    if (active !== undefined) {
+      try {
+        await db.query(`
+          ALTER TABLE tasks 
+          ADD COLUMN IF NOT EXISTS active BOOLEAN NOT NULL DEFAULT true
+        `);
+      } catch {
+        // If this fails, we'll still try to update; DB will error clearly if column truly missing.
+      }
+    }
 
     // Validate update data if rule_type is being changed
-    if (rule_type) {
-      const validationErrors = validateTaskData({ ...validatedData, rule_type }, true);
+    if (ruleType) {
+      const validationErrors = validateTaskData(
+        {
+          ...validatedData,
+          ruleType,
+          ruleConfig: normalizedRuleConfig,
+        },
+        true,
+      );
       if (validationErrors.length > 0) {
         return reply.status(400).send({
           error: 'Bad Request',
@@ -350,9 +404,12 @@ async function updateTask(request: FastifyRequest<UpdateTaskRequest>, reply: Fas
     }
 
     // Validate assigned children if provided
-    if (rule_config?.assigned_children && rule_config.assigned_children.length > 0) {
+    if (
+      normalizedRuleConfig?.assignedChildren &&
+      normalizedRuleConfig.assignedChildren.length > 0
+    ) {
       const childrenValid = await validateChildrenBelongToHousehold(
-        rule_config.assigned_children,
+        normalizedRuleConfig.assignedChildren,
         householdId,
       );
       if (!childrenValid) {
@@ -365,7 +422,7 @@ async function updateTask(request: FastifyRequest<UpdateTaskRequest>, reply: Fas
 
     // Build dynamic update query
     const updates: string[] = [];
-    const values: (string | number | null)[] = [];
+    const values: (string | number | boolean | null)[] = [];
     let paramIndex = 1;
 
     if (name !== undefined) {
@@ -380,13 +437,21 @@ async function updateTask(request: FastifyRequest<UpdateTaskRequest>, reply: Fas
       updates.push(`points = $${paramIndex++}`);
       values.push(points);
     }
-    if (rule_type !== undefined) {
+    if (ruleType !== undefined) {
       updates.push(`rule_type = $${paramIndex++}`);
-      values.push(rule_type);
+      values.push(ruleType);
     }
-    if (rule_config !== undefined) {
+    if (ruleConfig !== undefined) {
       updates.push(`rule_config = $${paramIndex++}`);
-      values.push(JSON.stringify(rule_config));
+      values.push(
+        normalizedRuleConfig === undefined || normalizedRuleConfig === null
+          ? null
+          : JSON.stringify(normalizedRuleConfig),
+      );
+    }
+    if (active !== undefined) {
+      updates.push(`active = $${paramIndex++}`);
+      values.push(active);
     }
 
     if (updates.length === 0) {
@@ -419,18 +484,7 @@ async function updateTask(request: FastifyRequest<UpdateTaskRequest>, reply: Fas
 
     const task = result.rows[0];
 
-    return reply.send({
-      id: task.id,
-      household_id: task.household_id,
-      name: task.name,
-      description: task.description,
-      points: task.points,
-      rule_type: task.rule_type,
-      rule_config: task.rule_config,
-      active: task.active !== false,
-      created_at: task.created_at,
-      updated_at: task.updated_at,
-    });
+    return reply.send(mapTaskRowToTask(task));
   } catch (error) {
     // Handle Zod validation errors
     if (error instanceof z.ZodError) {

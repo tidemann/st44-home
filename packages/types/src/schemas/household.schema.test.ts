@@ -14,9 +14,9 @@ describe('HouseholdSchema', () => {
     const validHousehold = {
       id: '123e4567-e89b-12d3-a456-426614174000',
       name: 'Smith Family',
-      admin_user_id: '123e4567-e89b-12d3-a456-426614174001',
-      created_at: '2025-12-22T10:00:00Z',
-      updated_at: '2025-12-22T10:00:00Z',
+      adminUserId: '123e4567-e89b-12d3-a456-426614174001',
+      createdAt: '2025-12-22T10:00:00Z',
+      updatedAt: '2025-12-22T10:00:00Z',
     };
 
     expect(() => HouseholdSchema.parse(validHousehold)).not.toThrow();
@@ -28,9 +28,9 @@ describe('HouseholdSchema', () => {
     const invalidHousehold = {
       id: '123e4567-e89b-12d3-a456-426614174000',
       name: '',
-      admin_user_id: '123e4567-e89b-12d3-a456-426614174001',
-      created_at: '2025-12-22T10:00:00Z',
-      updated_at: '2025-12-22T10:00:00Z',
+      adminUserId: '123e4567-e89b-12d3-a456-426614174001',
+      createdAt: '2025-12-22T10:00:00Z',
+      updatedAt: '2025-12-22T10:00:00Z',
     };
 
     expect(() => HouseholdSchema.parse(invalidHousehold)).toThrow();
@@ -64,16 +64,26 @@ describe('CreateHouseholdRequestSchema', () => {
   });
 });
 
+describe('UpdateHouseholdRequestSchema', () => {
+  it('validates household update', () => {
+    const validRequest = {
+      name: 'Updated Family Name',
+    };
+
+    expect(() => UpdateHouseholdRequestSchema.parse(validRequest)).not.toThrow();
+  });
+});
+
 describe('InvitationSchema', () => {
   it('validates correct invitation', () => {
     const validInvitation = {
       id: '123e4567-e89b-12d3-a456-426614174000',
-      household_id: '123e4567-e89b-12d3-a456-426614174001',
+      householdId: '123e4567-e89b-12d3-a456-426614174001',
       email: 'invited@example.com',
       token: 'abc123token',
-      invited_by_user_id: '123e4567-e89b-12d3-a456-426614174002',
-      expires_at: '2025-12-29T10:00:00Z',
-      created_at: '2025-12-22T10:00:00Z',
+      invitedByUserId: '123e4567-e89b-12d3-a456-426614174002',
+      expiresAt: '2025-12-29T10:00:00Z',
+      createdAt: '2025-12-22T10:00:00Z',
     };
 
     expect(() => InvitationSchema.parse(validInvitation)).not.toThrow();
@@ -82,12 +92,12 @@ describe('InvitationSchema', () => {
   it('rejects invalid email', () => {
     const invalidInvitation = {
       id: '123e4567-e89b-12d3-a456-426614174000',
-      household_id: '123e4567-e89b-12d3-a456-426614174001',
+      householdId: '123e4567-e89b-12d3-a456-426614174001',
       email: 'not-an-email',
       token: 'abc123token',
-      invited_by_user_id: '123e4567-e89b-12d3-a456-426614174002',
-      expires_at: '2025-12-29T10:00:00Z',
-      created_at: '2025-12-22T10:00:00Z',
+      invitedByUserId: '123e4567-e89b-12d3-a456-426614174002',
+      expiresAt: '2025-12-29T10:00:00Z',
+      createdAt: '2025-12-22T10:00:00Z',
     };
 
     expect(() => InvitationSchema.parse(invalidInvitation)).toThrow();

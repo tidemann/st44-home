@@ -10,10 +10,10 @@ import { z } from '../generators/openapi.generator.js';
 export const UserSchema = z.object({
   id: z.string().uuid(),
   email: z.string().email(),
-  google_id: z.string().nullable(),
-  password_hash: z.string().nullable(),
-  created_at: z.string().datetime(),
-  updated_at: z.string().datetime(),
+  googleId: z.string().nullable(),
+  passwordHash: z.string().nullable(),
+  createdAt: z.string().datetime(),
+  updatedAt: z.string().datetime(),
 });
 
 /**
@@ -32,7 +32,7 @@ export type User = z.infer<typeof UserSchema>;
 export const CreateUserRequestSchema = z.object({
   email: z.string().email(),
   password: z.string().min(8).max(128).optional(),
-  google_id: z.string().optional(),
+  googleId: z.string().optional(),
 });
 
 export type CreateUserRequest = z.infer<typeof CreateUserRequestSchema>;
@@ -71,10 +71,10 @@ export type GoogleOAuthRequest = z.infer<typeof GoogleOAuthRequestSchema>;
 
 /**
  * User Response Schema (safe for public API)
- * Excludes sensitive fields like password_hash
+ * Excludes sensitive fields like passwordHash
  */
 export const UserResponseSchema = UserSchema.omit({
-  password_hash: true,
+  passwordHash: true,
 });
 
 export type UserResponse = z.infer<typeof UserResponseSchema>;

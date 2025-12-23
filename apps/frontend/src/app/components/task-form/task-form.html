@@ -30,15 +30,15 @@
       </div>
 
       <div class="form-field">
-        <label for="rule_type">Type *</label>
-        <select id="rule_type" name="rule_type" formControlName="rule_type">
+        <label for="ruleType">Type *</label>
+        <select id="ruleType" name="ruleType" formControlName="ruleType">
           <option value="daily">Daily</option>
           <option value="repeating">Repeating</option>
           <option value="weekly_rotation">Weekly Rotation</option>
         </select>
       </div>
 
-      @if (form.value.rule_type === 'repeating') {
+      @if (form.value.ruleType === 'repeating') {
         <fieldset class="form-field">
           <legend>Select days *</legend>
           <div class="day-selection">

@@ -12,12 +12,12 @@ describe('ChildSchema', () => {
   it('validates correct child object', () => {
     const validChild = {
       id: '123e4567-e89b-12d3-a456-426614174000',
-      household_id: '123e4567-e89b-12d3-a456-426614174001',
+      householdId: '123e4567-e89b-12d3-a456-426614174001',
       name: 'Alice',
-      birthday: '2015-05-15',
-      avatar_url: 'https://example.com/avatar.jpg',
-      created_at: '2025-12-22T10:00:00Z',
-      updated_at: '2025-12-22T10:00:00Z',
+      birthYear: 2015,
+      avatarUrl: 'https://example.com/avatar.jpg',
+      createdAt: '2025-12-22T10:00:00Z',
+      updatedAt: '2025-12-22T10:00:00Z',
     };
 
     expect(() => ChildSchema.parse(validChild)).not.toThrow();
@@ -28,12 +28,12 @@ describe('ChildSchema', () => {
   it('validates child without optional fields', () => {
     const validChild = {
       id: '123e4567-e89b-12d3-a456-426614174000',
-      household_id: '123e4567-e89b-12d3-a456-426614174001',
+      householdId: '123e4567-e89b-12d3-a456-426614174001',
       name: 'Bob',
-      birthday: null,
-      avatar_url: null,
-      created_at: '2025-12-22T10:00:00Z',
-      updated_at: '2025-12-22T10:00:00Z',
+      birthYear: null,
+      avatarUrl: null,
+      createdAt: '2025-12-22T10:00:00Z',
+      updatedAt: '2025-12-22T10:00:00Z',
     };
 
     expect(() => ChildSchema.parse(validChild)).not.toThrow();
@@ -42,12 +42,12 @@ describe('ChildSchema', () => {
   it('rejects empty child name', () => {
     const invalidChild = {
       id: '123e4567-e89b-12d3-a456-426614174000',
-      household_id: '123e4567-e89b-12d3-a456-426614174001',
+      householdId: '123e4567-e89b-12d3-a456-426614174001',
       name: '',
-      birthday: null,
-      avatar_url: null,
-      created_at: '2025-12-22T10:00:00Z',
-      updated_at: '2025-12-22T10:00:00Z',
+      birthYear: null,
+      avatarUrl: null,
+      createdAt: '2025-12-22T10:00:00Z',
+      updatedAt: '2025-12-22T10:00:00Z',
     };
 
     expect(() => ChildSchema.parse(invalidChild)).toThrow();
@@ -56,12 +56,12 @@ describe('ChildSchema', () => {
   it('rejects invalid avatar URL', () => {
     const invalidChild = {
       id: '123e4567-e89b-12d3-a456-426614174000',
-      household_id: '123e4567-e89b-12d3-a456-426614174001',
+      householdId: '123e4567-e89b-12d3-a456-426614174001',
       name: 'Charlie',
-      birthday: null,
-      avatar_url: 'not-a-url',
-      created_at: '2025-12-22T10:00:00Z',
-      updated_at: '2025-12-22T10:00:00Z',
+      birthYear: null,
+      avatarUrl: 'not-a-url',
+      createdAt: '2025-12-22T10:00:00Z',
+      updatedAt: '2025-12-22T10:00:00Z',
     };
 
     expect(() => ChildSchema.parse(invalidChild)).toThrow();
@@ -77,10 +77,10 @@ describe('CreateChildRequestSchema', () => {
     expect(() => CreateChildRequestSchema.parse(validRequest)).not.toThrow();
   });
 
-  it('validates child with birthday', () => {
+  it('validates child with birth year', () => {
     const validRequest = {
-      name: 'Child with Birthday',
-      birthday: '2018-03-20',
+      name: 'Child with Birth Year',
+      birthYear: 2018,
     };
 
     expect(() => CreateChildRequestSchema.parse(validRequest)).not.toThrow();
@@ -113,9 +113,9 @@ describe('UpdateChildRequestSchema', () => {
     expect(() => UpdateChildRequestSchema.parse(validRequest)).not.toThrow();
   });
 
-  it('validates clearing birthday', () => {
+  it('validates clearing birth year', () => {
     const validRequest = {
-      birthday: null,
+      birthYear: null,
     };
 
     expect(() => UpdateChildRequestSchema.parse(validRequest)).not.toThrow();

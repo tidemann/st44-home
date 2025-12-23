@@ -60,12 +60,12 @@ async function listChildren(
 
     const children = result.rows.map((row) => ({
       id: row.id,
-      household_id: row.household_id,
+      householdId: row.household_id,
       name: row.name,
       birthYear: row.birth_year,
-      avatar_url: null,
-      created_at: row.created_at,
-      updated_at: row.updated_at,
+      avatarUrl: null,
+      createdAt: row.created_at,
+      updatedAt: row.updated_at,
     }));
 
     return reply.send({ children });
@@ -100,12 +100,12 @@ async function createChild(request: FastifyRequest<CreateChildRequest>, reply: F
 
     return reply.status(201).send({
       id: child.id,
-      household_id: child.household_id,
+      householdId: child.household_id,
       name: child.name,
       birthYear: child.birth_year,
-      avatar_url: null,
-      created_at: child.created_at,
-      updated_at: child.created_at,
+      avatarUrl: null,
+      createdAt: child.created_at,
+      updatedAt: child.created_at,
     });
   } catch (error) {
     if (error instanceof z.ZodError) {
@@ -149,12 +149,12 @@ async function updateChild(request: FastifyRequest<UpdateChildRequest>, reply: F
 
     return reply.send({
       id: child.id,
-      household_id: child.household_id,
+      householdId: child.household_id,
       name: child.name,
       birthYear: child.birth_year,
-      avatar_url: null,
-      created_at: child.created_at,
-      updated_at: child.updated_at,
+      avatarUrl: null,
+      createdAt: child.created_at,
+      updatedAt: child.updated_at,
     });
   } catch (error) {
     if (error instanceof z.ZodError) {
@@ -215,7 +215,7 @@ async function deleteChild(request: FastifyRequest<DeleteChildRequest>, reply: F
 }
 
 interface MyTasksQuerystring {
-  household_id?: string;
+  householdId?: string;
   date?: string;
 }
 
@@ -236,13 +236,13 @@ async function getMyTasks(
     });
   }
 
-  const { household_id, date } = request.query;
+  const { householdId: householdIdParam, date } = request.query;
   const taskDate = date || new Date().toISOString().split('T')[0];
 
   try {
     // Step 1: Find child profile for this user
     // First, verify user has 'child' role in household_members
-    let householdId = household_id;
+    let householdId = householdIdParam;
 
     if (!householdId) {
       // Get the user's current household (first one with 'child' role)
@@ -326,12 +326,12 @@ async function getMyTasks(
 
     const tasks = tasksResult.rows.map((row) => ({
       id: row.id,
-      task_name: row.task_name,
-      task_description: row.task_description,
+      taskName: row.task_name,
+      taskDescription: row.task_description,
       points: row.points,
       date: row.date,
       status: row.status,
-      completed_at: row.completed_at ? row.completed_at.toISOString() : null,
+      completedAt: row.completed_at ? row.completed_at.toISOString() : null,
     }));
 
     // Step 4: Calculate points
@@ -342,9 +342,9 @@ async function getMyTasks(
 
     return reply.send({
       tasks,
-      total_points_today: totalPoints,
-      completed_points: completedPoints,
-      child_name: childName,
+      totalPointsToday: totalPoints,
+      completedPoints,
+      childName,
     });
   } catch (error) {
     request.log.error(error, 'Failed to get my tasks');
@@ -372,6 +372,7 @@ export default async function childrenRoutes(server: FastifyInstance) {
   });
 
   const TaskQuerySchema = z.object({
+    householdId: z.string().uuid().optional(),
     date: z
       .string()
       .regex(/^\d{4}-\d{2}-\d{2}$/)
