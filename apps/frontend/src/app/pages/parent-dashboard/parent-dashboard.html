@@ -90,9 +90,7 @@
                     {{ child.tasksCompleted }}/{{ child.tasksTotal }} tasks
                   </span>
                 } @else {
-                  <span class="child-stats empty-state-text">
-                    No tasks assigned yet
-                  </span>
+                  <span class="child-stats empty-state-text"> No tasks assigned yet </span>
                 }
               </div>
               @if (child.tasksTotal > 0) {
@@ -112,7 +110,10 @@
                   {{ child.completionRate }}%
                 </span>
               } @else {
-                <a [routerLink]="['/households', household()!.id, 'tasks']" class="btn btn-sm btn-secondary">
+                <a
+                  [routerLink]="['/households', household()!.id, 'tasks']"
+                  class="btn btn-sm btn-secondary"
+                >
                   Assign Task
                 </a>
               }
