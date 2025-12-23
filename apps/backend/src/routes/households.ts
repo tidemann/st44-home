@@ -399,11 +399,11 @@ async function getHouseholdMembers(
 
     return reply.send(
       result.rows.map((row: unknown) => ({
-        user_id: (row as { user_id: string }).user_id,
+        userId: (row as { user_id: string }).user_id,
         email: (row as { email: string }).email,
-        display_name: null, // TODO: Add display_name column to users table
+        displayName: null, // TODO: Add display_name column to users table
         role: (row as { role: string }).role,
-        joined_at: (row as { joined_at: Date }).joined_at,
+        joinedAt: toDateTimeString((row as { joined_at: Date }).joined_at),
       })),
     );
   } catch (error) {
@@ -519,10 +519,11 @@ export default async function householdRoutes(server: FastifyInstance) {
           items: {
             type: 'object',
             properties: {
-              user_id: { type: 'string', format: 'uuid' },
+              userId: { type: 'string', format: 'uuid' },
               email: { type: 'string', format: 'email' },
+              displayName: { type: ['string', 'null'] },
               role: { type: 'string', enum: ['admin', 'parent', 'child'] },
-              joined_at: { type: 'string', format: 'date-time' },
+              joinedAt: { type: 'string', format: 'date-time' },
             },
           },
         },
