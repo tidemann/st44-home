@@ -19,11 +19,15 @@ jobs:
         with:
           fetch-depth: 0  # Fetch full history for proper change detection
 
+      - name: Get previous commit SHA
+        id: prev-commit
+        run: echo "sha=$(git rev-parse HEAD~1)" >> $GITHUB_OUTPUT
+
       - name: Check for code changes
         uses: dorny/paths-filter@v3
         id: filter
         with:
-          base: HEAD~1  # Compare against previous commit on main (fixes squash merge detection)
+          base: ${{ steps.prev-commit.outputs.sha }}  # Compare against previous commit SHA
           filters: |
             code:
               - 'apps/**'
