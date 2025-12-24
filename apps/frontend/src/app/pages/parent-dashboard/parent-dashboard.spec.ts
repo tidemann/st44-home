@@ -5,7 +5,6 @@ import { HouseholdService } from '../../services/household.service';
 import { DashboardService, DashboardSummary } from '../../services/dashboard.service';
 import { ChildrenService } from '../../services/children.service';
 import { Router, provideRouter } from '@angular/router';
-import { of } from 'rxjs';
 
 describe('ParentDashboardComponent', () => {
   let component: ParentDashboardComponent;
@@ -44,7 +43,7 @@ describe('ParentDashboardComponent', () => {
     };
 
     mockChildrenService = {
-      listChildren: vi.fn().mockReturnValue(of([])),
+      listChildren: vi.fn().mockResolvedValue([]),
     };
 
     TestBed.configureTestingModule({
