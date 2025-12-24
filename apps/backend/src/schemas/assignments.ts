@@ -322,6 +322,60 @@ const generateAssignmentsSchemaBase = {
   },
 } as const;
 
+// POST /api/households/:householdId/assignments/generate
+const generateHouseholdAssignmentsSchemaBase = {
+  summary: 'Generate assignments for a household',
+  description: 'Generate task assignments for a household for a specific date (defaults to today)',
+  tags: ['assignments'],
+  security: [{ bearerAuth: [] }],
+  params: {
+    type: 'object',
+    properties: {
+      householdId: uuidSchema,
+    },
+    required: ['householdId'],
+  },
+  body: {
+    type: 'object',
+    properties: {
+      date: { ...dateSchema, description: 'Date to generate assignments for (defaults to today)' },
+      taskId: {
+        ...uuidSchema,
+        description:
+          'Optional task ID to generate assignments for (if omitted, generates for all active tasks)',
+      },
+    },
+  },
+  response: {
+    200: {
+      description: 'Assignments generated successfully',
+      type: 'object',
+      properties: {
+        generated: { type: 'number', description: 'Number of assignments created' },
+        assignments: {
+          type: 'array',
+          items: {
+            type: 'object',
+            properties: {
+              id: uuidSchema,
+              taskId: uuidSchema,
+              childId: { ...uuidSchema, nullable: true },
+              date: dateSchema,
+              status: { type: 'string', enum: ['pending'] },
+            },
+            required: ['id', 'taskId', 'date', 'status'],
+          },
+        },
+      },
+      required: ['generated', 'assignments'],
+    },
+    400: errorResponseSchema,
+    401: errorResponseSchema,
+    403: errorResponseSchema,
+    500: errorResponseSchema,
+  },
+} as const;
+
 // Export schemas with conditional response validation stripping
 // Note: taskAssignmentSchemaBase is just a schema object, not a route schema, so it doesn't need stripping
 export const taskAssignmentSchema = taskAssignmentSchemaBase;
@@ -335,3 +389,6 @@ export const postCompleteAssignmentSchema = stripResponseValidation(
 );
 export const reassignTaskSchema = stripResponseValidation(reassignTaskSchemaBase);
 export const generateAssignmentsSchema = stripResponseValidation(generateAssignmentsSchemaBase);
+export const generateHouseholdAssignmentsSchema = stripResponseValidation(
+  generateHouseholdAssignmentsSchemaBase,
+);

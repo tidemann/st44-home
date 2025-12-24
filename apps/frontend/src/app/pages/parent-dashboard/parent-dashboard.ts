@@ -10,6 +10,7 @@ import { Router, RouterLink } from '@angular/router';
 import { HouseholdService } from '../../services/household.service';
 import { DashboardService, DashboardSummary, WeekSummary } from '../../services/dashboard.service';
 import { ChildrenService } from '../../services/children.service';
+import { AssignmentService } from '../../services/assignment.service';
 import { HouseholdSwitcherComponent } from '../../components/household-switcher/household-switcher';
 import { CreateChildAccountComponent } from '../../components/create-child-account/create-child-account.component';
 import type { Child } from '@st44/types';
@@ -35,6 +36,7 @@ export class ParentDashboardComponent implements OnInit {
   private householdService = inject(HouseholdService);
   private dashboardService = inject(DashboardService);
   private childrenService = inject(ChildrenService);
+  private assignmentService = inject(AssignmentService);
 
   // State
   dashboard = signal<DashboardSummary | null>(null);
@@ -42,6 +44,8 @@ export class ParentDashboardComponent implements OnInit {
   isLoading = signal(true);
   errorMessage = signal('');
   selectedChildForAccount = signal<Child | null>(null);
+  isGenerating = signal(false);
+  generationMessage = signal('');
 
   // Computed values
   household = computed(() => this.dashboard()?.household ?? null);
@@ -143,5 +147,50 @@ export class ParentDashboardComponent implements OnInit {
   // Handle cancel
   onCreateAccountCancelled(): void {
     this.selectedChildForAccount.set(null);
+  }
+
+  // Generate today's assignments
+  async generateTodaysTasks(): Promise<void> {
+    const householdId = this.household()?.id;
+    if (!householdId) {
+      return;
+    }
+
+    this.isGenerating.set(true);
+    this.generationMessage.set('');
+
+    try {
+      const result = await this.assignmentService.generateAssignments(householdId);
+
+      if (result.generated > 0) {
+        this.generationMessage.set(
+          `Generated ${result.generated} task${result.generated === 1 ? '' : 's'} for today`,
+        );
+        // Reload dashboard to show new assignments
+        await this.loadDashboard();
+      } else {
+        this.generationMessage.set('No new tasks to generate for today');
+      }
+
+      // Clear message after 3 seconds
+      setTimeout(() => {
+        this.generationMessage.set('');
+      }, 3000);
+    } catch (error: unknown) {
+      const httpError = error as { status?: number; error?: { error?: string } };
+
+      if (httpError?.status === 403) {
+        this.generationMessage.set('You do not have permission to generate assignments');
+      } else {
+        this.generationMessage.set('Failed to generate assignments. Please try again.');
+      }
+
+      // Clear message after 5 seconds for errors
+      setTimeout(() => {
+        this.generationMessage.set('');
+      }, 5000);
+    } finally {
+      this.isGenerating.set(false);
+    }
   }
 }

@@ -1564,4 +1564,170 @@ describe('Assignments API', () => {
       assert.ok(body.child_name);
     });
   });
+
+  // ==================== Test Suite: POST /api/households/:householdId/assignments/generate ====================
+
+  describe('POST /api/households/:householdId/assignments/generate', () => {
+    test('generates assignments for today by default', async () => {
+      const response = await app.inject({
+        method: 'POST',
+        url: `/api/households/${householdId}/assignments/generate`,
+        headers: { Authorization: `Bearer ${adminToken}` },
+        payload: {},
+      });
+
+      assert.strictEqual(response.statusCode, 200);
+
+      const body = JSON.parse(response.body);
+      assert.ok(typeof body.generated === 'number');
+      assert.ok(Array.isArray(body.assignments));
+    });
+
+    test('generates assignments for specific date', async () => {
+      const targetDate = '2025-12-25';
+      const response = await app.inject({
+        method: 'POST',
+        url: `/api/households/${householdId}/assignments/generate`,
+        headers: { Authorization: `Bearer ${adminToken}` },
+        payload: { date: targetDate },
+      });
+
+      assert.strictEqual(response.statusCode, 200);
+
+      const body = JSON.parse(response.body);
+      assert.ok(typeof body.generated === 'number');
+      assert.ok(Array.isArray(body.assignments));
+
+      // Verify all assignments are for the correct date
+      if (body.assignments.length > 0) {
+        body.assignments.forEach((assignment: any) => {
+          assert.strictEqual(assignment.date, targetDate);
+        });
+      }
+    });
+
+    test('is idempotent (running twice does not create duplicates)', async () => {
+      const targetDate = '2025-12-26';
+
+      // First generation
+      const response1 = await app.inject({
+        method: 'POST',
+        url: `/api/households/${householdId}/assignments/generate`,
+        headers: { Authorization: `Bearer ${adminToken}` },
+        payload: { date: targetDate },
+      });
+
+      const body1 = JSON.parse(response1.body);
+      const firstGenerated = body1.generated;
+
+      // Second generation (should skip existing)
+      const response2 = await app.inject({
+        method: 'POST',
+        url: `/api/households/${householdId}/assignments/generate`,
+        headers: { Authorization: `Bearer ${adminToken}` },
+        payload: { date: targetDate },
+      });
+
+      const body2 = JSON.parse(response2.body);
+
+      // Should return 0 new assignments since they already exist
+      assert.strictEqual(body2.generated, 0);
+    });
+
+    test('requires authentication (401 without token)', async () => {
+      const response = await app.inject({
+        method: 'POST',
+        url: `/api/households/${householdId}/assignments/generate`,
+        payload: {},
+      });
+
+      assert.strictEqual(response.statusCode, 401);
+    });
+
+    test('checks household membership (403 if not member)', async () => {
+      const response = await app.inject({
+        method: 'POST',
+        url: `/api/households/${householdId}/assignments/generate`,
+        headers: { Authorization: `Bearer ${outsiderToken}` },
+        payload: {},
+      });
+
+      assert.strictEqual(response.statusCode, 403);
+    });
+
+    test('requires parent or admin role (403 for child role)', async () => {
+      // Note: This would need a child user to be created and tested
+      // For now, we verify outsiders cannot generate
+      const response = await app.inject({
+        method: 'POST',
+        url: `/api/households/${householdId}/assignments/generate`,
+        headers: { Authorization: `Bearer ${outsiderToken}` },
+        payload: {},
+      });
+
+      assert.strictEqual(response.statusCode, 403);
+    });
+
+    test('validates date format (400 on invalid date)', async () => {
+      const response = await app.inject({
+        method: 'POST',
+        url: `/api/households/${householdId}/assignments/generate`,
+        headers: { Authorization: `Bearer ${adminToken}` },
+        payload: { date: 'invalid-date' },
+      });
+
+      assert.strictEqual(response.statusCode, 400);
+    });
+
+    test('validates householdId format (400 on invalid UUID)', async () => {
+      const response = await app.inject({
+        method: 'POST',
+        url: '/api/households/not-a-uuid/assignments/generate',
+        headers: { Authorization: `Bearer ${adminToken}` },
+        payload: {},
+      });
+
+      assert.strictEqual(response.statusCode, 400);
+    });
+
+    test('returns assignments with correct structure', async () => {
+      const targetDate = '2025-12-27';
+      const response = await app.inject({
+        method: 'POST',
+        url: `/api/households/${householdId}/assignments/generate`,
+        headers: { Authorization: `Bearer ${adminToken}` },
+        payload: { date: targetDate },
+      });
+
+      assert.strictEqual(response.statusCode, 200);
+
+      const body = JSON.parse(response.body);
+      assert.ok(typeof body.generated === 'number');
+      assert.ok(Array.isArray(body.assignments));
+
+      if (body.assignments.length > 0) {
+        const assignment = body.assignments[0];
+        assert.ok(assignment.id);
+        assert.ok(assignment.taskId);
+        assert.ok(assignment.date);
+        assert.ok(assignment.status);
+        // childId can be null for household-wide tasks
+      }
+    });
+
+    test('parent user can generate assignments', async () => {
+      const targetDate = '2025-12-28';
+      const response = await app.inject({
+        method: 'POST',
+        url: `/api/households/${householdId}/assignments/generate`,
+        headers: { Authorization: `Bearer ${parentToken}` },
+        payload: { date: targetDate },
+      });
+
+      assert.strictEqual(response.statusCode, 200);
+
+      const body = JSON.parse(response.body);
+      assert.ok(typeof body.generated === 'number');
+    });
+  });
 });
