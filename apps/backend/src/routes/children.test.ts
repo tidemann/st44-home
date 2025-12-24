@@ -25,11 +25,11 @@ describe('Children API', () => {
     await app.ready();
 
     pool = new pg.Pool({
-      host: process.env.DB_HOST || 'localhost',
+      host: process.env.TEST_DB_HOST || process.env.DB_HOST || 'localhost',
       port: parseInt(process.env.TEST_DB_PORT || '55432'),
-      database: process.env.DB_NAME || 'st44',
-      user: process.env.DB_USER || 'postgres',
-      password: process.env.DB_PASSWORD || 'postgres',
+      database: process.env.TEST_DB_NAME || 'st44_test',
+      user: process.env.TEST_DB_USER || process.env.DB_USER || 'postgres',
+      password: process.env.TEST_DB_PASSWORD || process.env.DB_PASSWORD || 'postgres',
     });
 
     const adminEmail = `test-children-admin-${Date.now()}@example.com`;
