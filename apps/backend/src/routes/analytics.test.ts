@@ -70,12 +70,18 @@ describe('Analytics API', () => {
     );
     childId = childProfileResult.rows[0].id;
 
-    // Create a task
+    // Create two tasks for testing multiple assignments per day
     const taskResult = await pool.query(
       'INSERT INTO tasks (household_id, name, description, points, rule_type, active) VALUES ($1, $2, $3, $4, $5, $6) RETURNING id',
-      [householdId, 'Test Task', 'A test task for analytics', 10, 'daily', true],
+      [householdId, 'Test Task 1', 'First test task for analytics', 10, 'daily', true],
     );
     taskId = taskResult.rows[0].id;
+
+    const task2Result = await pool.query(
+      'INSERT INTO tasks (household_id, name, description, points, rule_type, active) VALUES ($1, $2, $3, $4, $5, $6) RETURNING id',
+      [householdId, 'Test Task 2', 'Second test task for analytics', 10, 'daily', true],
+    );
+    const task2Id = task2Result.rows[0].id;
 
     // Create task assignments with various statuses across multiple days
     const today = new Date();
@@ -96,7 +102,7 @@ describe('Analytics API', () => {
 
     const completedAssignment1 = await pool.query(
       'INSERT INTO task_assignments (household_id, task_id, child_id, date, status) VALUES ($1, $2, $3, $4, $5) RETURNING id',
-      [householdId, taskId, childId, dates[0], 'completed'],
+      [householdId, task2Id, childId, dates[0], 'completed'],
     );
 
     // Record completion
