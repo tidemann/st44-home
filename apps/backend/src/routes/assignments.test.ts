@@ -1730,4 +1730,232 @@ describe('Assignments API', () => {
       assert.ok(typeof body.generated === 'number');
     });
   });
+
+  // ==================== Test Suite: POST /api/assignments/manual ====================
+
+  describe('POST /api/assignments/manual', () => {
+    test('creates manual assignment successfully (admin)', async () => {
+      const targetDate = '2026-01-15';
+      const response = await app.inject({
+        method: 'POST',
+        url: '/api/assignments/manual',
+        headers: { Authorization: `Bearer ${adminToken}` },
+        payload: {
+          taskId: taskId,
+          childId: childIds[0],
+          date: targetDate,
+        },
+      });
+
+      assert.strictEqual(response.statusCode, 201);
+
+      const body = JSON.parse(response.body);
+      assert.ok(body.assignment);
+      assert.strictEqual(body.assignment.taskId, taskId);
+      assert.strictEqual(body.assignment.childId, childIds[0]);
+      assert.strictEqual(body.assignment.date, targetDate);
+      assert.strictEqual(body.assignment.status, 'pending');
+      assert.ok(body.assignment.id);
+      assert.ok(body.assignment.createdAt);
+    });
+
+    test('creates manual assignment successfully (parent)', async () => {
+      const targetDate = '2026-01-16';
+      const response = await app.inject({
+        method: 'POST',
+        url: '/api/assignments/manual',
+        headers: { Authorization: `Bearer ${parentToken}` },
+        payload: {
+          taskId: taskId,
+          childId: childIds[1],
+          date: targetDate,
+        },
+      });
+
+      assert.strictEqual(response.statusCode, 201);
+
+      const body = JSON.parse(response.body);
+      assert.ok(body.assignment);
+      assert.strictEqual(body.assignment.taskId, taskId);
+      assert.strictEqual(body.assignment.childId, childIds[1]);
+    });
+
+    test('returns 409 on duplicate assignment', async () => {
+      const targetDate = '2026-01-17';
+
+      // Create first assignment
+      await app.inject({
+        method: 'POST',
+        url: '/api/assignments/manual',
+        headers: { Authorization: `Bearer ${adminToken}` },
+        payload: {
+          taskId: taskId,
+          childId: childIds[0],
+          date: targetDate,
+        },
+      });
+
+      // Try to create duplicate
+      const response = await app.inject({
+        method: 'POST',
+        url: '/api/assignments/manual',
+        headers: { Authorization: `Bearer ${adminToken}` },
+        payload: {
+          taskId: taskId,
+          childId: childIds[0],
+          date: targetDate,
+        },
+      });
+
+      assert.strictEqual(response.statusCode, 409);
+    });
+
+    test('requires authentication (401)', async () => {
+      const response = await app.inject({
+        method: 'POST',
+        url: '/api/assignments/manual',
+        payload: {
+          taskId: taskId,
+          childId: childIds[0],
+          date: '2026-01-18',
+        },
+      });
+
+      assert.strictEqual(response.statusCode, 401);
+    });
+
+    test('rejects outsider (403)', async () => {
+      const response = await app.inject({
+        method: 'POST',
+        url: '/api/assignments/manual',
+        headers: { Authorization: `Bearer ${outsiderToken}` },
+        payload: {
+          taskId: taskId,
+          childId: childIds[0],
+          date: '2026-01-19',
+        },
+      });
+
+      assert.strictEqual(response.statusCode, 403);
+    });
+
+    test('validates taskId format (400)', async () => {
+      const response = await app.inject({
+        method: 'POST',
+        url: '/api/assignments/manual',
+        headers: { Authorization: `Bearer ${adminToken}` },
+        payload: {
+          taskId: 'not-a-uuid',
+          childId: childIds[0],
+          date: '2026-01-20',
+        },
+      });
+
+      assert.strictEqual(response.statusCode, 400);
+    });
+
+    test('validates childId format (400)', async () => {
+      const response = await app.inject({
+        method: 'POST',
+        url: '/api/assignments/manual',
+        headers: { Authorization: `Bearer ${adminToken}` },
+        payload: {
+          taskId: taskId,
+          childId: 'not-a-uuid',
+          date: '2026-01-21',
+        },
+      });
+
+      assert.strictEqual(response.statusCode, 400);
+    });
+
+    test('validates date format (400)', async () => {
+      const response = await app.inject({
+        method: 'POST',
+        url: '/api/assignments/manual',
+        headers: { Authorization: `Bearer ${adminToken}` },
+        payload: {
+          taskId: taskId,
+          childId: childIds[0],
+          date: 'invalid-date',
+        },
+      });
+
+      assert.strictEqual(response.statusCode, 400);
+    });
+
+    test('returns 404 for non-existent task', async () => {
+      const fakeTaskId = '00000000-0000-0000-0000-000000000000';
+      const response = await app.inject({
+        method: 'POST',
+        url: '/api/assignments/manual',
+        headers: { Authorization: `Bearer ${adminToken}` },
+        payload: {
+          taskId: fakeTaskId,
+          childId: childIds[0],
+          date: '2026-01-22',
+        },
+      });
+
+      assert.strictEqual(response.statusCode, 404);
+    });
+
+    test('returns 404 for non-existent child', async () => {
+      const fakeChildId = '00000000-0000-0000-0000-000000000000';
+      const response = await app.inject({
+        method: 'POST',
+        url: '/api/assignments/manual',
+        headers: { Authorization: `Bearer ${adminToken}` },
+        payload: {
+          taskId: taskId,
+          childId: fakeChildId,
+          date: '2026-01-23',
+        },
+      });
+
+      assert.strictEqual(response.statusCode, 404);
+    });
+
+    test('allows null childId for household-wide assignment', async () => {
+      const targetDate = '2026-01-24';
+      const response = await app.inject({
+        method: 'POST',
+        url: '/api/assignments/manual',
+        headers: { Authorization: `Bearer ${adminToken}` },
+        payload: {
+          taskId: taskId,
+          childId: null,
+          date: targetDate,
+        },
+      });
+
+      assert.strictEqual(response.statusCode, 201);
+
+      const body = JSON.parse(response.body);
+      assert.strictEqual(body.assignment.childId, null);
+    });
+
+    test('rejects inactive task (400)', async () => {
+      // Create an inactive task
+      const inactiveTaskResult = await pool.query(
+        `INSERT INTO tasks (household_id, name, rule_type, rule_config, active)
+         VALUES ($1, $2, $3, $4, $5) RETURNING id`,
+        [householdId, 'Inactive Task', 'daily', JSON.stringify({}), false],
+      );
+      const inactiveTaskId = inactiveTaskResult.rows[0].id;
+
+      const response = await app.inject({
+        method: 'POST',
+        url: '/api/assignments/manual',
+        headers: { Authorization: `Bearer ${adminToken}` },
+        payload: {
+          taskId: inactiveTaskId,
+          childId: childIds[0],
+          date: '2026-01-25',
+        },
+      });
+
+      assert.strictEqual(response.statusCode, 400);
+    });
+  });
 });

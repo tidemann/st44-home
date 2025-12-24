@@ -27,7 +27,9 @@ VALUES
   ('017', 'add_performance_indexes', NOW()),
   ('018', 'implement_row_level_security', NOW()),
   ('021', 'rename_due_date_to_date', NOW()),
-  ('022', 'add_user_id_to_children', NOW())
+  ('022', 'add_user_id_to_children', NOW()),
+  ('023', 'add_rewards_system', NOW()),
+  ('038', 'create_password_reset_tokens_table', NOW())
 ON CONFLICT (version) DO NOTHING;
 
 -- Users table for authentication (supports email/password and OAuth)
@@ -94,6 +96,20 @@ CREATE INDEX IF NOT EXISTS idx_invitations_household ON invitations(household_id
 CREATE INDEX IF NOT EXISTS idx_invitations_email ON invitations(invited_email);
 CREATE UNIQUE INDEX IF NOT EXISTS idx_invitations_token ON invitations(token);
 CREATE INDEX IF NOT EXISTS idx_invitations_status ON invitations(status);
+
+-- Password reset tokens table (for password recovery flow)
+CREATE TABLE IF NOT EXISTS password_reset_tokens (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  token VARCHAR(255) NOT NULL UNIQUE,
+  expires_at TIMESTAMP NOT NULL,
+  used BOOLEAN DEFAULT FALSE,
+  created_at TIMESTAMP DEFAULT NOW()
+);
+
+CREATE INDEX IF NOT EXISTS idx_password_reset_tokens_user_id ON password_reset_tokens(user_id);
+CREATE UNIQUE INDEX IF NOT EXISTS idx_password_reset_tokens_token ON password_reset_tokens(token);
+CREATE INDEX IF NOT EXISTS idx_password_reset_tokens_expires_at ON password_reset_tokens(expires_at);
 
 -- Children table (profiles for household task assignments)
 CREATE TABLE IF NOT EXISTS children (
@@ -162,6 +178,51 @@ CREATE TABLE IF NOT EXISTS task_completions (
 CREATE INDEX IF NOT EXISTS idx_task_completions_household ON task_completions(household_id);
 CREATE INDEX IF NOT EXISTS idx_task_completions_child ON task_completions(child_id);
 
+-- Rewards table (parents create rewards for household)
+CREATE TABLE IF NOT EXISTS rewards (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  household_id UUID NOT NULL REFERENCES households(id) ON DELETE CASCADE,
+  name VARCHAR(255) NOT NULL,
+  description TEXT,
+  points_cost INTEGER NOT NULL CHECK (points_cost > 0),
+  quantity INTEGER, -- NULL = unlimited, >0 = limited stock
+  active BOOLEAN DEFAULT TRUE,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+CREATE INDEX IF NOT EXISTS idx_rewards_household ON rewards(household_id);
+CREATE INDEX IF NOT EXISTS idx_rewards_active ON rewards(household_id, active);
+
+-- Reward redemptions table (track when children redeem rewards)
+CREATE TABLE IF NOT EXISTS reward_redemptions (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  household_id UUID NOT NULL REFERENCES households(id) ON DELETE CASCADE,
+  reward_id UUID NOT NULL REFERENCES rewards(id) ON DELETE CASCADE,
+  child_id UUID NOT NULL REFERENCES children(id) ON DELETE CASCADE,
+  points_spent INTEGER NOT NULL,
+  status VARCHAR(50) DEFAULT 'pending' CHECK (status IN ('pending', 'approved', 'fulfilled', 'rejected')),
+  redeemed_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  fulfilled_at TIMESTAMP WITH TIME ZONE
+);
+
+CREATE INDEX IF NOT EXISTS idx_reward_redemptions_child ON reward_redemptions(child_id);
+CREATE INDEX IF NOT EXISTS idx_reward_redemptions_reward ON reward_redemptions(reward_id);
+CREATE INDEX IF NOT EXISTS idx_reward_redemptions_household_status ON reward_redemptions(household_id, status);
+
+-- View for child points balance (earned from task completions minus spent on redemptions)
+CREATE OR REPLACE VIEW child_points_balance AS
+SELECT
+  c.id as child_id,
+  c.household_id,
+  COALESCE(SUM(tc.points_earned), 0) as points_earned,
+  COALESCE(SUM(rr.points_spent), 0) as points_spent,
+  COALESCE(SUM(tc.points_earned), 0) - COALESCE(SUM(rr.points_spent), 0) as points_balance
+FROM children c
+LEFT JOIN task_completions tc ON c.id = tc.child_id
+LEFT JOIN reward_redemptions rr ON c.id = rr.child_id AND rr.status != 'rejected'
+GROUP BY c.id, c.household_id;
+
 -- Sample items table (for testing)
 CREATE TABLE IF NOT EXISTS items (
   id SERIAL PRIMARY KEY,
@@ -211,6 +272,11 @@ BEFORE UPDATE ON tasks
 FOR EACH ROW
 EXECUTE FUNCTION update_updated_at_column();
 
+CREATE TRIGGER update_rewards_updated_at
+BEFORE UPDATE ON rewards
+FOR EACH ROW
+EXECUTE FUNCTION update_updated_at_column();
+
 CREATE TRIGGER update_items_updated_at
 BEFORE UPDATE ON items
 FOR EACH ROW
@@ -230,6 +296,8 @@ ALTER TABLE children ENABLE ROW LEVEL SECURITY;
 ALTER TABLE tasks ENABLE ROW LEVEL SECURITY;
 ALTER TABLE task_assignments ENABLE ROW LEVEL SECURITY;
 ALTER TABLE task_completions ENABLE ROW LEVEL SECURITY;
+ALTER TABLE rewards ENABLE ROW LEVEL SECURITY;
+ALTER TABLE reward_redemptions ENABLE ROW LEVEL SECURITY;
 
 -- Create RLS policies (application sets app.current_household_id per request)
 -- Note: PostgreSQL 17 doesn't support IF NOT EXISTS for CREATE POLICY, so drop first
@@ -265,5 +333,15 @@ USING (household_id = current_setting('app.current_household_id', TRUE)::UUID);
 
 DROP POLICY IF EXISTS task_completions_isolation ON task_completions;
 CREATE POLICY task_completions_isolation ON task_completions
+FOR ALL
+USING (household_id = current_setting('app.current_household_id', TRUE)::UUID);
+
+DROP POLICY IF EXISTS rewards_isolation ON rewards;
+CREATE POLICY rewards_isolation ON rewards
+FOR ALL
+USING (household_id = current_setting('app.current_household_id', TRUE)::UUID);
+
+DROP POLICY IF EXISTS reward_redemptions_isolation ON reward_redemptions;
+CREATE POLICY reward_redemptions_isolation ON reward_redemptions
 FOR ALL
 USING (household_id = current_setting('app.current_household_id', TRUE)::UUID);
