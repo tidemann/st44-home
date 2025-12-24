@@ -26,7 +26,7 @@ describe('Children API', () => {
 
     pool = new pg.Pool({
       host: process.env.DB_HOST || 'localhost',
-      port: parseInt(process.env.DB_PORT || '5432'),
+      port: parseInt(process.env.TEST_DB_PORT || '55432'),
       database: process.env.DB_NAME || 'st44',
       user: process.env.DB_USER || 'postgres',
       password: process.env.DB_PASSWORD || 'postgres',

@@ -10,7 +10,7 @@ import pg from 'pg';
 // Test database configuration
 const TEST_DB_CONFIG = {
   host: process.env.TEST_DB_HOST || process.env.DB_HOST || 'localhost',
-  port: parseInt(process.env.TEST_DB_PORT || process.env.DB_PORT || '5432'),
+  port: parseInt(process.env.TEST_DB_PORT || '55432'), // Test DB runs on port 55432
   database: process.env.TEST_DB_NAME || 'st44_test',
   user: process.env.TEST_DB_USER || process.env.DB_USER || 'postgres',
   password: process.env.TEST_DB_PASSWORD || process.env.DB_PASSWORD || 'postgres',
