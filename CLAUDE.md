@@ -82,6 +82,52 @@ npm run db:test:up               # Start test database
 npm run db:test:down             # Stop test database
 ```
 
+### Storybook (Component Development)
+
+**IMPORTANT: All new components MUST have corresponding Storybook stories.**
+
+```bash
+# Start Storybook dev server
+cd apps/frontend
+npm run storybook                # Opens at localhost:6006
+
+# Build static Storybook (for deployment)
+npm run build-storybook          # Output: storybook-static/
+
+# Generate Compodoc docs (before running Storybook)
+npm run storybook:docs
+
+# Full workflow
+npm run storybook:docs && npm run storybook
+```
+
+**Storybook Workflow:**
+
+1. Create component: `ng generate component components/button --standalone`
+2. Create story file: `button.stories.ts` (next to component)
+3. Run Storybook: `npm run storybook`
+4. Develop component in isolation with hot reload
+5. Test all states/variants in stories
+6. Check accessibility with a11y addon
+7. Test responsive behavior (viewports)
+8. Integrate component into app
+
+**Story Requirements:**
+
+- One `.stories.ts` file per component
+- Multiple story variants (Default, Disabled, Loading, etc.)
+- Accessibility testing enabled (a11y addon)
+- All @Input() properties in argTypes
+- tags: ['autodocs'] for automatic documentation
+
+**Naming Convention:**
+
+- Components: `Components/Button`, `Components/Cards/TaskCard`
+- Pages: `Pages/Home`, `Pages/Auth/Login`
+- Design System: `Design System/Colors`, `Design System/Typography`
+
+See `.claude/skills/storybook/SKILL.md` for complete guidance.
+
 ## Architecture
 
 ```
@@ -213,6 +259,13 @@ Spawn Task agent with prompt:
 ```
 Spawn Task agent with prompt:
 "Read .github/agents/frontend-agent.md for context. Implement GitHub issue #XXX"
+```
+
+**Storybook Agent** - Component stories, visual testing, design system docs
+
+```
+Spawn Task agent with prompt:
+"Read .claude/agents/storybook-agent.md and .claude/skills/storybook/SKILL.md for context. Create Storybook story for ComponentName (#XXX) with all variants"
 ```
 
 **Backend Agent** - Fastify routes, business logic, middleware

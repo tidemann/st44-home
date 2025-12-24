@@ -66,11 +66,21 @@
       "WebFetch(domain:www.anthropic.com)",
       "WebFetch(domain:www.pubnub.com)",
       "WebFetch(domain:mikhail.io)",
-      "Bash(Get-ChildItem -Path \"C:\\\\code\\\\st44-home\\\\.claude\\\\skills\\\\*\\\\SKILL.md\")",
-      "Bash(Get-ChildItem -Path \"C:\\\\code\\\\st44-home\\\\.claude\\\\agents\\\\*.md\")",
+      "Bash(Get-ChildItem:*)",
       "Bash(find:*)",
       "Bash(gh pr edit:*)",
-      "Bash(grep:*)"
+      "Bash(grep:*)",
+      "Bash(gh pr checks:*)",
+      "Bash(git fetch:*)",
+      "Bash(gh pr diff:*)",
+      "Bash(docker ps:*)",
+      "Bash(npx eslint:*)",
+      "Skill(github-issues)",
+      "Bash(git stash:*)",
+      "WebFetch(domain:claude-plugins.dev)",
+      "WebFetch(domain:www.buildwithclaude.com)",
+      "WebFetch(domain:mcpmarket.com)",
+      "Bash(node -e:*)"
     ]
   }
 }

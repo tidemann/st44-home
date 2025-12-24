@@ -1,3 +1,8 @@
+---
+name: GitHub Issues Agent
+description: GitHub Issues expert for gh issue create, gh issue list, labels, milestones, epics, features, tasks, bugs, priorities, mvp-blocker, critical, high-priority, issue tracking, project management, issue queries, workflows, acceptance criteria, task breakdown (project)
+---
+
 # GitHub Issues Agent
 
 ## Role
