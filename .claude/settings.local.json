@@ -80,7 +80,11 @@
       "WebFetch(domain:claude-plugins.dev)",
       "WebFetch(domain:www.buildwithclaude.com)",
       "WebFetch(domain:mcpmarket.com)",
-      "Bash(node -e:*)"
+      "Bash(node -e:*)",
+      "Bash(timeout 120 npm run build-storybook:*)",
+      "Bash(npm ls:*)",
+      "WebFetch(domain:www.npmpeer.dev)",
+      "Bash(npm view:*)"
     ]
   }
 }

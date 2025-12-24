@@ -1,7 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/angular';
-import { fn } from '@storybook/test';
 import { TaskCardComponent } from './task-card.component';
-import type { Assignment } from '@st44/types';
+import type { AssignmentWithPoints } from '@st44/types';
 
 /**
  * TaskCard Component
@@ -36,54 +35,53 @@ const meta: Meta<TaskCardComponent> = {
       action: 'complete',
     },
   },
-  args: {
-    // Setup action spy for all stories
-    complete: fn(),
-  },
 };
 
 export default meta;
 type Story = StoryObj<TaskCardComponent>;
 
 // Sample task data
-const pendingTask: Assignment = {
+const pendingTask: AssignmentWithPoints = {
   id: '1',
   taskId: 'task-1',
-  userId: 'child-1',
+  childId: 'child-1',
+  childName: 'Alex',
   title: 'Clean bathroom',
   description: 'Clean the bathroom including toilet, sink, and shower',
+  ruleType: 'daily',
   points: 10,
-  date: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(), // Tomorrow
+  date: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString().split('T')[0], // Tomorrow (date only)
   status: 'pending',
+  completedAt: null,
   createdAt: new Date().toISOString(),
-  updatedAt: new Date().toISOString(),
 };
 
-const completedTask: Assignment = {
+const completedTask: AssignmentWithPoints = {
   ...pendingTask,
   id: '2',
   title: 'Take out trash',
   description: 'Take all trash bins to the curb',
   status: 'completed',
+  completedAt: new Date().toISOString(),
 };
 
-const overdueTask: Assignment = {
+const overdueTask: AssignmentWithPoints = {
   ...pendingTask,
   id: '3',
   title: 'Do homework',
   description: 'Complete math homework pages 12-15',
-  date: new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString(), // Yesterday
+  date: new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString().split('T')[0], // Yesterday (date only)
   status: 'pending',
 };
 
-const taskWithoutDescription: Assignment = {
+const taskWithoutDescription: AssignmentWithPoints = {
   ...pendingTask,
   id: '4',
   title: 'Make bed',
-  description: '',
+  description: null,
 };
 
-const longTextTask: Assignment = {
+const longTextTask: AssignmentWithPoints = {
   ...pendingTask,
   id: '5',
   title: 'Clean the entire garage including organizing tools and equipment',
@@ -169,21 +167,16 @@ export const Mobile: Story = {
  * Shows all task states side by side for comparison.
  */
 export const AllStates: Story = {
-  render: (args) => ({
-    props: args,
+  render: () => ({
+    props: { pendingTask, completedTask, overdueTask },
     template: `
       <div style="display: grid; gap: 1rem; max-width: 800px;">
-        <app-task-card [task]="pendingTask" (complete)="complete($event)"></app-task-card>
-        <app-task-card [task]="completedTask" (complete)="complete($event)"></app-task-card>
-        <app-task-card [task]="overdueTask" (complete)="complete($event)"></app-task-card>
+        <app-task-card [task]="pendingTask"></app-task-card>
+        <app-task-card [task]="completedTask"></app-task-card>
+        <app-task-card [task]="overdueTask"></app-task-card>
       </div>
     `,
   }),
-  args: {
-    pendingTask,
-    completedTask,
-    overdueTask,
-  },
 };
 
 /**
@@ -243,22 +236,21 @@ export const Accessibility: Story = {
  * Shows how multiple TaskCards look together in a list.
  */
 export const TaskList: Story = {
-  render: (args) => ({
-    props: args,
+  render: () => ({
+    props: {
+      task1: pendingTask,
+      task2: overdueTask,
+      task3: completedTask,
+      task4: taskWithoutDescription,
+    },
     template: `
       <div style="max-width: 800px; background: #F8F9FF; padding: 1.5rem; border-radius: 8px;">
         <h2 style="margin-top: 0; margin-bottom: 1rem; font-size: 1.5rem; font-weight: 600;">My Tasks</h2>
-        <app-task-card [task]="task1" (complete)="complete($event)"></app-task-card>
-        <app-task-card [task]="task2" (complete)="complete($event)"></app-task-card>
-        <app-task-card [task]="task3" (complete)="complete($event)"></app-task-card>
-        <app-task-card [task]="task4" (complete)="complete($event)"></app-task-card>
+        <app-task-card [task]="task1"></app-task-card>
+        <app-task-card [task]="task2"></app-task-card>
+        <app-task-card [task]="task3"></app-task-card>
+        <app-task-card [task]="task4"></app-task-card>
       </div>
     `,
   }),
-  args: {
-    task1: pendingTask,
-    task2: overdueTask,
-    task3: completedTask,
-    task4: taskWithoutDescription,
-  },
 };
