@@ -7,6 +7,7 @@ import {
   getChildTasksSchema,
   getHouseholdAssignmentsSchema,
   completeAssignmentSchema,
+  postCompleteAssignmentSchema,
   reassignTaskSchema,
   generateAssignmentsSchema,
 } from '../schemas/assignments.js';
@@ -539,6 +540,192 @@ export default async function assignmentRoutes(fastify: FastifyInstance) {
           child_id: completedAssignment.child_id,
           task_id: completedAssignment.task_id,
         });
+      } catch (error) {
+        fastify.log.error(error, 'Failed to complete assignment');
+        return reply.code(500).send({
+          error: 'Failed to complete assignment',
+        });
+      }
+    },
+  );
+
+  /**
+   * POST /api/assignments/:assignmentId/complete
+   * Complete a task assignment (creates task_completion record with points)
+   */
+  fastify.post<{
+    Params: { assignmentId: string };
+  }>(
+    '/api/assignments/:assignmentId/complete',
+    {
+      schema: postCompleteAssignmentSchema,
+      preHandler: [authenticateUser],
+    },
+    async (request, reply) => {
+      const { assignmentId } = request.params;
+
+      // Validate assignmentId format
+      if (!isValidUuid(assignmentId)) {
+        return reply.code(400).send({
+          error: 'Invalid assignmentId format (must be UUID)',
+        });
+      }
+
+      try {
+        // Fetch assignment with task details for points and authorization
+        const assignmentResult = await pool.query(
+          `SELECT ta.id, ta.household_id, ta.child_id, ta.status, ta.task_id, t.points
+           FROM task_assignments ta
+           JOIN tasks t ON ta.task_id = t.id
+           WHERE ta.id = $1`,
+          [assignmentId],
+        );
+
+        if (assignmentResult.rows.length === 0) {
+          return reply.code(404).send({
+            error: 'Assignment not found',
+          });
+        }
+
+        const assignment = assignmentResult.rows[0];
+
+        // Check if already completed (idempotent - return existing completion)
+        if (assignment.status === 'completed') {
+          const existingCompletion = await pool.query(
+            `SELECT id, points_earned, completed_at
+             FROM task_completions
+             WHERE task_assignment_id = $1`,
+            [assignmentId],
+          );
+
+          if (existingCompletion.rows.length > 0) {
+            const completion = existingCompletion.rows[0];
+            return reply.code(200).send({
+              taskAssignment: {
+                id: assignment.id,
+                status: 'completed',
+                completedAt: completion.completed_at,
+              },
+              completion: {
+                id: completion.id,
+                pointsEarned: completion.points_earned,
+                completedAt: completion.completed_at,
+              },
+            });
+          }
+        }
+
+        // Check if status is pending
+        if (assignment.status !== 'pending') {
+          return reply.code(400).send({
+            error: 'Only pending assignments can be completed',
+          });
+        }
+
+        // Authorization: Check if user is member of household
+        const membershipResult = await pool.query(
+          'SELECT role FROM household_members WHERE household_id = $1 AND user_id = $2',
+          [assignment.household_id, request.user?.userId],
+        );
+
+        if (membershipResult.rows.length === 0) {
+          return reply.code(403).send({
+            error: 'You are not authorized to complete this assignment',
+          });
+        }
+
+        const userRole = membershipResult.rows[0].role;
+
+        // If user is a child, verify they own this assignment
+        if (userRole === 'child') {
+          if (!assignment.child_id) {
+            return reply.code(403).send({
+              error: 'Only parents can complete household-wide tasks',
+            });
+          }
+
+          // Verify the assignment belongs to the child linked to this user
+          const childResult = await pool.query(
+            'SELECT id FROM children WHERE user_id = $1 AND household_id = $2',
+            [request.user?.userId, assignment.household_id],
+          );
+
+          if (childResult.rows.length === 0) {
+            return reply.code(403).send({
+              error: 'Child profile not found for this user',
+            });
+          }
+
+          const childId = childResult.rows[0].id;
+
+          // SECURITY: Verify assignment is for this child
+          if (assignment.child_id !== childId) {
+            return reply.code(403).send({
+              error: 'You can only complete tasks assigned to you',
+            });
+          }
+        }
+
+        // Use transaction to ensure atomicity
+        const client = await pool.connect();
+        try {
+          await client.query('BEGIN');
+
+          // Update assignment status
+          const updateResult = await client.query(
+            `UPDATE task_assignments
+             SET status = 'completed'
+             WHERE id = $1 AND status = 'pending'
+             RETURNING id, status, child_id, task_id`,
+            [assignmentId],
+          );
+
+          if (updateResult.rows.length === 0) {
+            await client.query('ROLLBACK');
+            return reply.code(400).send({
+              error: 'Failed to complete assignment - status may have changed',
+            });
+          }
+
+          const completedAssignment = updateResult.rows[0];
+          const completedAt = new Date();
+
+          // Insert task completion record with points
+          const completionResult = await client.query(
+            `INSERT INTO task_completions (household_id, task_assignment_id, child_id, completed_at, points_earned)
+             VALUES ($1, $2, $3, $4, $5)
+             RETURNING id, points_earned, completed_at`,
+            [
+              assignment.household_id,
+              assignmentId,
+              completedAssignment.child_id,
+              completedAt,
+              assignment.points,
+            ],
+          );
+
+          await client.query('COMMIT');
+
+          const completion = completionResult.rows[0];
+
+          return reply.code(200).send({
+            taskAssignment: {
+              id: completedAssignment.id,
+              status: 'completed',
+              completedAt: completion.completed_at,
+            },
+            completion: {
+              id: completion.id,
+              pointsEarned: completion.points_earned,
+              completedAt: completion.completed_at,
+            },
+          });
+        } catch (error) {
+          await client.query('ROLLBACK');
+          throw error;
+        } finally {
+          client.release();
+        }
       } catch (error) {
         fastify.log.error(error, 'Failed to complete assignment');
         return reply.code(500).send({

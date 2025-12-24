@@ -156,7 +156,7 @@ const getHouseholdAssignmentsSchemaBase = {
   },
 } as const;
 
-// PUT /api/assignments/:assignmentId/complete
+// PUT /api/assignments/:assignmentId/complete (legacy)
 const completeAssignmentSchemaBase = {
   summary: 'Mark task assignment as complete',
   description: 'Complete a pending task assignment',
@@ -181,6 +181,53 @@ const completeAssignmentSchemaBase = {
         task_id: uuidSchema,
       },
       required: ['id', 'status', 'completed_at', 'task_id'],
+    },
+    400: errorResponseSchema,
+    401: errorResponseSchema,
+    403: errorResponseSchema,
+    404: errorResponseSchema,
+    500: errorResponseSchema,
+  },
+} as const;
+
+// POST /api/assignments/:assignmentId/complete
+const postCompleteAssignmentSchemaBase = {
+  summary: 'Complete task assignment with points',
+  description: 'Complete a pending task assignment and create completion record with points earned',
+  tags: ['assignments'],
+  security: [{ bearerAuth: [] }],
+  params: {
+    type: 'object',
+    properties: {
+      assignmentId: uuidSchema,
+    },
+    required: ['assignmentId'],
+  },
+  response: {
+    200: {
+      description: 'Assignment completed successfully with completion record',
+      type: 'object',
+      properties: {
+        taskAssignment: {
+          type: 'object',
+          properties: {
+            id: uuidSchema,
+            status: { type: 'string', enum: ['completed'] },
+            completedAt: timestampSchema,
+          },
+          required: ['id', 'status', 'completedAt'],
+        },
+        completion: {
+          type: 'object',
+          properties: {
+            id: uuidSchema,
+            pointsEarned: { type: 'number' },
+            completedAt: timestampSchema,
+          },
+          required: ['id', 'pointsEarned', 'completedAt'],
+        },
+      },
+      required: ['taskAssignment', 'completion'],
     },
     400: errorResponseSchema,
     401: errorResponseSchema,
@@ -283,5 +330,8 @@ export const getHouseholdAssignmentsSchema = stripResponseValidation(
   getHouseholdAssignmentsSchemaBase,
 );
 export const completeAssignmentSchema = stripResponseValidation(completeAssignmentSchemaBase);
+export const postCompleteAssignmentSchema = stripResponseValidation(
+  postCompleteAssignmentSchemaBase,
+);
 export const reassignTaskSchema = stripResponseValidation(reassignTaskSchemaBase);
 export const generateAssignmentsSchema = stripResponseValidation(generateAssignmentsSchemaBase);
