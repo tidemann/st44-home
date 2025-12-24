@@ -11,13 +11,19 @@ import childrenRoutes from './routes/children.js';
 import taskRoutes from './routes/tasks.js';
 import { invitationRoutes } from './routes/invitations.js';
 import assignmentRoutes from './routes/assignments.js';
+import analyticsRoutes from './routes/analytics.js';
+import rewardRoutes from './routes/rewards.js';
 import {
   registerSchema,
   loginSchema,
   refreshTokenSchema,
   googleAuthSchema,
   healthCheckSchema,
+  forgotPasswordSchema,
+  resetPasswordSchema,
 } from './schemas/auth.js';
+import { getEmailService } from './services/email.service.js';
+import crypto from 'crypto';
 
 // JWT Configuration
 const JWT_SECRET = process.env.JWT_SECRET || 'dev-secret-change-in-production';
@@ -109,6 +115,7 @@ async function buildApp() {
           { name: 'children', description: 'Child profile management' },
           { name: 'tasks', description: 'Task template management' },
           { name: 'assignments', description: 'Task assignment management' },
+          { name: 'rewards', description: 'Rewards and points redemption system' },
           { name: 'invitations', description: 'Household invitation system' },
         ],
       },
@@ -563,6 +570,203 @@ async function buildApp() {
       },
     );
 
+    // Password reset endpoints
+    interface ForgotPasswordRequest {
+      Body: {
+        email: string;
+      };
+    }
+
+    interface ForgotPasswordResponse {
+      message: string;
+    }
+
+    interface ResetPasswordRequest {
+      Body: {
+        token: string;
+        newPassword: string;
+      };
+    }
+
+    interface ResetPasswordResponse {
+      message: string;
+    }
+
+    // Rate limiting map: email -> [timestamps]
+    const forgotPasswordRateLimit = new Map<string, number[]>();
+
+    // Forgot password endpoint
+    fastify.post<ForgotPasswordRequest, { Reply: ForgotPasswordResponse | ErrorResponse }>(
+      '/api/auth/forgot-password',
+      {
+        schema: forgotPasswordSchema,
+      },
+      async (request, reply) => {
+        const { email } = request.body;
+        const emailLower = email.toLowerCase();
+
+        // Rate limiting: max 3 requests per email per hour
+        const now = Date.now();
+        const oneHourAgo = now - 60 * 60 * 1000;
+        const attempts = forgotPasswordRateLimit.get(emailLower) || [];
+        const recentAttempts = attempts.filter((timestamp) => timestamp > oneHourAgo);
+
+        if (recentAttempts.length >= 3) {
+          fastify.log.warn({ email: emailLower }, 'Password reset rate limit exceeded');
+          reply.code(429);
+          return { error: 'Too many password reset requests. Please try again later.' };
+        }
+
+        // Update rate limit
+        recentAttempts.push(now);
+        forgotPasswordRateLimit.set(emailLower, recentAttempts);
+
+        try {
+          // Check if user exists
+          const userResult = await pool.query('SELECT id, email FROM users WHERE email = $1', [
+            emailLower,
+          ]);
+
+          // Always return same message to prevent email enumeration
+          const standardMessage =
+            'If an account exists with that email, a reset link has been sent.';
+
+          if (userResult.rows.length === 0) {
+            fastify.log.info(
+              { email: emailLower },
+              'Password reset requested for non-existent user',
+            );
+            reply.code(200);
+            return { message: standardMessage };
+          }
+
+          const user = userResult.rows[0];
+
+          // Generate secure random token
+          const resetToken = crypto.randomBytes(32).toString('hex');
+
+          // Token expires in 1 hour
+          const expiresAt = new Date(Date.now() + 60 * 60 * 1000);
+
+          // Store token in database
+          await pool.query(
+            `INSERT INTO password_reset_tokens (user_id, token, expires_at, used)
+             VALUES ($1, $2, $3, FALSE)`,
+            [user.id, resetToken, expiresAt],
+          );
+
+          // Send password reset email
+          const emailService = getEmailService(fastify.log);
+          await emailService.sendPasswordResetEmail(user.email, {
+            token: resetToken,
+            expiresAt,
+          });
+
+          fastify.log.info({ userId: user.id }, 'Password reset email sent');
+
+          reply.code(200);
+          return { message: standardMessage };
+        } catch (error) {
+          fastify.log.error(error, 'Error processing password reset request');
+          reply.code(500);
+          return { error: 'Failed to process password reset request' };
+        }
+      },
+    );
+
+    // Reset password endpoint
+    fastify.post<ResetPasswordRequest, { Reply: ResetPasswordResponse | ErrorResponse }>(
+      '/api/auth/reset-password',
+      {
+        schema: resetPasswordSchema,
+      },
+      async (request, reply) => {
+        const { token, newPassword } = request.body;
+
+        // Validate password strength
+        if (!validatePasswordStrength(newPassword)) {
+          reply.code(400);
+          return {
+            error:
+              'Password must be at least 8 characters and include uppercase, lowercase, and number',
+          };
+        }
+
+        try {
+          // Find token and check if valid
+          const tokenResult = await pool.query(
+            `SELECT prt.id, prt.user_id, prt.expires_at, prt.used, u.email
+             FROM password_reset_tokens prt
+             JOIN users u ON prt.user_id = u.id
+             WHERE prt.token = $1`,
+            [token],
+          );
+
+          if (tokenResult.rows.length === 0) {
+            fastify.log.warn('Invalid password reset token attempted');
+            reply.code(401);
+            return { error: 'Invalid or expired reset token' };
+          }
+
+          const resetData = tokenResult.rows[0];
+
+          // Check if token has been used
+          if (resetData.used) {
+            fastify.log.warn(
+              { userId: resetData.user_id },
+              'Attempted to reuse password reset token',
+            );
+            reply.code(401);
+            return { error: 'Reset token has already been used' };
+          }
+
+          // Check if token has expired
+          if (new Date(resetData.expires_at) < new Date()) {
+            fastify.log.warn(
+              { userId: resetData.user_id },
+              'Expired password reset token attempted',
+            );
+            reply.code(401);
+            return { error: 'Reset token has expired' };
+          }
+
+          // Hash new password
+          const passwordHash = await bcrypt.hash(newPassword, 10);
+
+          // Update user password and mark token as used (transaction)
+          const client = await pool.connect();
+          try {
+            await client.query('BEGIN');
+
+            await client.query(
+              'UPDATE users SET password_hash = $1, updated_at = NOW() WHERE id = $2',
+              [passwordHash, resetData.user_id],
+            );
+
+            await client.query('UPDATE password_reset_tokens SET used = TRUE WHERE id = $1', [
+              resetData.id,
+            ]);
+
+            await client.query('COMMIT');
+
+            fastify.log.info({ userId: resetData.user_id }, 'Password reset successful');
+
+            reply.code(200);
+            return { message: 'Password reset successful. You can now log in.' };
+          } catch (error) {
+            await client.query('ROLLBACK');
+            throw error;
+          } finally {
+            client.release();
+          }
+        } catch (error) {
+          fastify.log.error(error, 'Error resetting password');
+          reply.code(500);
+          return { error: 'Failed to reset password' };
+        }
+      },
+    );
+
     // Protected test endpoint (requires authentication)
     fastify.get(
       '/api/protected',
@@ -582,12 +786,14 @@ async function buildApp() {
     );
   });
 
-  // Register household, children, invitation, task, and assignment routes
+  // Register household, children, invitation, task, assignment, rewards, and analytics routes
   await fastify.register(householdRoutes);
   await fastify.register(childrenRoutes);
   await fastify.register(taskRoutes);
   await fastify.register(invitationRoutes);
   await fastify.register(assignmentRoutes);
+  await fastify.register(rewardRoutes);
+  await fastify.register(analyticsRoutes);
 
   // Example items endpoint
   interface Item {

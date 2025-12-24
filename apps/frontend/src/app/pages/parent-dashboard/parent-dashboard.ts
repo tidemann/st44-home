@@ -11,9 +11,12 @@ import { HouseholdService } from '../../services/household.service';
 import { DashboardService, DashboardSummary, WeekSummary } from '../../services/dashboard.service';
 import { ChildrenService } from '../../services/children.service';
 import { AssignmentService } from '../../services/assignment.service';
+import { AnalyticsService } from '../../services/analytics.service';
 import { HouseholdSwitcherComponent } from '../../components/household-switcher/household-switcher';
 import { CreateChildAccountComponent } from '../../components/create-child-account/create-child-account.component';
-import type { Child } from '@st44/types';
+import { ManualAssignmentModalComponent } from '../../components/manual-assignment-modal/manual-assignment-modal.component';
+import type { Child, Task, HouseholdAnalytics } from '@st44/types';
+import { TaskService } from '../../services/task.service';
 
 /**
  * Parent Dashboard Component
@@ -26,7 +29,12 @@ import type { Child } from '@st44/types';
  */
 @Component({
   selector: 'app-parent-dashboard',
-  imports: [RouterLink, HouseholdSwitcherComponent, CreateChildAccountComponent],
+  imports: [
+    RouterLink,
+    HouseholdSwitcherComponent,
+    CreateChildAccountComponent,
+    ManualAssignmentModalComponent,
+  ],
   templateUrl: './parent-dashboard.html',
   styleUrl: './parent-dashboard.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -37,13 +45,18 @@ export class ParentDashboardComponent implements OnInit {
   private dashboardService = inject(DashboardService);
   private childrenService = inject(ChildrenService);
   private assignmentService = inject(AssignmentService);
+  private analyticsService = inject(AnalyticsService);
+  private taskService = inject(TaskService);
 
   // State
   dashboard = signal<DashboardSummary | null>(null);
   childrenList = signal<Child[]>([]);
+  tasksList = signal<Task[]>([]);
+  analytics = signal<HouseholdAnalytics | null>(null);
   isLoading = signal(true);
   errorMessage = signal('');
   selectedChildForAccount = signal<Child | null>(null);
+  showManualAssignmentModal = signal(false);
   isGenerating = signal(false);
   generationMessage = signal('');
 
@@ -71,14 +84,26 @@ export class ParentDashboardComponent implements OnInit {
         return;
       }
 
-      // Load both dashboard summary and full children list
-      const [data, children] = await Promise.all([
+      // Load dashboard summary, full children list, and analytics
+      const [data, children, analyticsData] = await Promise.all([
         this.dashboardService.getDashboard(householdId),
         this.childrenService.listChildren(householdId),
+        this.analyticsService.getHouseholdAnalytics(householdId, 'week'),
       ]);
 
       this.dashboard.set(data);
       this.childrenList.set(children);
+      this.analytics.set(analyticsData);
+
+      // Load tasks list (active only) for manual assignment
+      this.taskService.getTasks(householdId, true).subscribe({
+        next: (tasks) => {
+          this.tasksList.set(tasks);
+        },
+        error: (error) => {
+          console.error('Failed to load tasks for manual assignment:', error);
+        },
+      });
     } catch (error: unknown) {
       const httpError = error as { status?: number };
 
@@ -107,6 +132,18 @@ export class ParentDashboardComponent implements OnInit {
     if (rate >= 70) return 'completion-high';
     if (rate >= 40) return 'completion-medium';
     return 'completion-low';
+  }
+
+  getChangeIndicator(delta: number): string {
+    if (delta > 0) return '↑';
+    if (delta < 0) return '↓';
+    return '→';
+  }
+
+  getChangeClass(delta: number): string {
+    if (delta > 0) return 'trend-up';
+    if (delta < 0) return 'trend-down';
+    return 'trend-neutral';
   }
 
   private emptyWeekSummary(): WeekSummary {
@@ -147,6 +184,22 @@ export class ParentDashboardComponent implements OnInit {
   // Handle cancel
   onCreateAccountCancelled(): void {
     this.selectedChildForAccount.set(null);
+  }
+
+  // Show manual assignment modal
+  openManualAssignmentModal(): void {
+    this.showManualAssignmentModal.set(true);
+  }
+
+  // Close manual assignment modal
+  closeManualAssignmentModal(): void {
+    this.showManualAssignmentModal.set(false);
+  }
+
+  // Handle manual assignment created
+  async onManualAssignmentCreated(): Promise<void> {
+    // Reload dashboard to show new assignment
+    await this.loadDashboard();
   }
 
   // Generate today's assignments
