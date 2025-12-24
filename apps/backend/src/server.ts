@@ -6,6 +6,7 @@ import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import { OAuth2Client } from 'google-auth-library';
 import { pool } from './database.js';
+import { authenticateUser } from './middleware/auth.js';
 import householdRoutes from './routes/households.js';
 import childrenRoutes from './routes/children.js';
 import taskRoutes from './routes/tasks.js';
@@ -132,62 +133,6 @@ async function buildApp() {
       },
       staticCSP: true,
     });
-  }
-
-  // Authentication Middleware
-  async function authenticateUser(request: FastifyRequest, reply: FastifyReply) {
-    try {
-      // Extract token from Authorization header
-      const authHeader = request.headers.authorization;
-
-      if (!authHeader || !authHeader.startsWith('Bearer ')) {
-        return reply.code(401).send({
-          error: 'Missing or invalid authorization header',
-        });
-      }
-
-      const token = authHeader.substring(7); // Remove "Bearer " prefix
-
-      // Verify token with JWT_SECRET
-      const decoded = jwt.verify(token, JWT_SECRET) as AccessTokenPayload;
-
-      // Verify it's an access token (not refresh token)
-      if (decoded.type !== 'access') {
-        fastify.log.warn('Attempted to use non-access token for authentication');
-        return reply.code(401).send({
-          error: 'Invalid token type',
-        });
-      }
-
-      // Attach user info to request
-      request.user = {
-        userId: decoded.userId,
-        email: decoded.email,
-        role: decoded.role,
-      };
-
-      // Middleware successful - continue to route handler
-    } catch (error: unknown) {
-      // Handle JWT-specific errors
-      if (error instanceof jwt.TokenExpiredError) {
-        return reply.code(401).send({
-          error: 'Token expired',
-        });
-      }
-
-      if (error instanceof jwt.JsonWebTokenError) {
-        fastify.log.warn({ error: (error as Error).message }, 'Invalid token');
-        return reply.code(401).send({
-          error: 'Invalid token',
-        });
-      }
-
-      // Log error but don't expose internal details
-      fastify.log.error(error, 'Authentication error');
-      return reply.code(500).send({
-        error: 'Authentication failed',
-      });
-    }
   }
 
   // Register auth routes
