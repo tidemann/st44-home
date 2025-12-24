@@ -92,11 +92,11 @@ jobs:
         run: npm test
         working-directory: apps/backend
         env:
-          DB_HOST: localhost
-          DB_PORT: 5432
-          DB_NAME: st44_test
-          DB_USER: postgres
-          DB_PASSWORD: postgres
+          TEST_DB_HOST: localhost
+          TEST_DB_PORT: 5432
+          TEST_DB_NAME: st44_test
+          TEST_DB_USER: postgres
+          TEST_DB_PASSWORD: postgres
 
       - name: Build
         run: npm run build

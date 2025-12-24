@@ -17,11 +17,11 @@ describe('Assignment Generator Service', () => {
 
   before(async () => {
     pool = new pg.Pool({
-      host: process.env.DB_HOST || 'localhost',
-      port: parseInt(process.env.DB_PORT || '5432'),
-      database: process.env.DB_NAME || 'st44',
-      user: process.env.DB_USER || 'postgres',
-      password: process.env.DB_PASSWORD || 'postgres',
+      host: process.env.TEST_DB_HOST || process.env.DB_HOST || 'localhost',
+      port: parseInt(process.env.TEST_DB_PORT || '55432'),
+      database: process.env.TEST_DB_NAME || 'st44_test',
+      user: process.env.TEST_DB_USER || process.env.DB_USER || 'postgres',
+      password: process.env.TEST_DB_PASSWORD || process.env.DB_PASSWORD || 'postgres',
     });
   });
 
