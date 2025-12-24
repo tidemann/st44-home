@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { RewardService } from '../../services/reward.service';
-import { AuthService } from '../../services/auth.service';
+import { HouseholdService } from '../../services/household.service';
 import type { Reward, CreateRewardRequest } from '@st44/types';
 
 /**
@@ -25,7 +25,7 @@ import type { Reward, CreateRewardRequest } from '@st44/types';
 })
 export class RewardsManagementComponent implements OnInit {
   private rewardService = inject(RewardService);
-  private authService = inject(AuthService);
+  private householdService = inject(HouseholdService);
   private router = inject(Router);
 
   // Component state signals
@@ -50,9 +50,9 @@ export class RewardsManagementComponent implements OnInit {
   pendingRedemptions = this.rewardService.pendingRedemptions;
 
   ngOnInit(): void {
-    const householdId = this.authService.householdId();
+    const householdId = this.householdService.getActiveHouseholdId();
     if (!householdId) {
-      this.router.navigate(['/login']);
+      this.router.navigate(['/household/create']);
       return;
     }
 
@@ -75,7 +75,7 @@ export class RewardsManagementComponent implements OnInit {
    * Create a new reward
    */
   createReward(): void {
-    const householdId = this.authService.householdId();
+    const householdId = this.householdService.getActiveHouseholdId();
     if (!householdId) return;
 
     const form = this.rewardForm();
@@ -112,7 +112,7 @@ export class RewardsManagementComponent implements OnInit {
    * Save edited reward
    */
   saveEdit(): void {
-    const householdId = this.authService.householdId();
+    const householdId = this.householdService.getActiveHouseholdId();
     const editing = this.editingReward();
     if (!householdId || !editing) return;
 
@@ -141,7 +141,7 @@ export class RewardsManagementComponent implements OnInit {
   deleteReward(reward: Reward): void {
     if (!confirm(`Are you sure you want to delete "${reward.name}"?`)) return;
 
-    const householdId = this.authService.householdId();
+    const householdId = this.householdService.getActiveHouseholdId();
     if (!householdId) return;
 
     this.rewardService.deleteReward(householdId, reward.id).subscribe({
@@ -155,7 +155,7 @@ export class RewardsManagementComponent implements OnInit {
    * Toggle reward active status
    */
   toggleActive(reward: Reward): void {
-    const householdId = this.authService.householdId();
+    const householdId = this.householdService.getActiveHouseholdId();
     if (!householdId) return;
 
     this.rewardService.updateReward(householdId, reward.id, { active: !reward.active }).subscribe({
@@ -169,7 +169,7 @@ export class RewardsManagementComponent implements OnInit {
    * Approve a redemption
    */
   approveRedemption(redemptionId: string): void {
-    const householdId = this.authService.householdId();
+    const householdId = this.householdService.getActiveHouseholdId();
     if (!householdId) return;
 
     this.rewardService.approveRedemption(householdId, redemptionId).subscribe({
@@ -183,7 +183,7 @@ export class RewardsManagementComponent implements OnInit {
    * Fulfill a redemption
    */
   fulfillRedemption(redemptionId: string): void {
-    const householdId = this.authService.householdId();
+    const householdId = this.householdService.getActiveHouseholdId();
     if (!householdId) return;
 
     this.rewardService.fulfillRedemption(householdId, redemptionId).subscribe({
@@ -199,7 +199,7 @@ export class RewardsManagementComponent implements OnInit {
   rejectRedemption(redemptionId: string): void {
     if (!confirm('Are you sure you want to reject this redemption?')) return;
 
-    const householdId = this.authService.householdId();
+    const householdId = this.householdService.getActiveHouseholdId();
     if (!householdId) return;
 
     this.rewardService.rejectRedemption(householdId, redemptionId).subscribe({

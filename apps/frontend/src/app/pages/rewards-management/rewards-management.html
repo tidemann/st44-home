@@ -1,0 +1,179 @@
+<div class="rewards-management-container">
+  <h1>Rewards Management</h1>
+
+  <!-- Tab Navigation -->
+  <div class="tabs">
+    <button [class.active]="selectedTab() === 'rewards'" (click)="switchTab('rewards')">
+      Rewards
+    </button>
+    <button [class.active]="selectedTab() === 'redemptions'" (click)="switchTab('redemptions')">
+      Redemptions
+      @if (pendingRedemptions().length > 0) {
+        <span class="badge">{{ pendingRedemptions().length }}</span>
+      }
+    </button>
+  </div>
+
+  <!-- Rewards Tab -->
+  @if (selectedTab() === 'rewards') {
+    <div class="rewards-tab">
+      <div class="header-actions">
+        <button class="btn-primary" (click)="toggleCreateForm()">
+          @if (showCreateForm()) {
+            Cancel
+          } @else {
+            Create Reward
+          }
+        </button>
+      </div>
+
+      <!-- Create/Edit Form -->
+      @if (showCreateForm() || editingReward()) {
+        <div class="reward-form">
+          <h2>
+            @if (editingReward()) {
+              Edit
+            } @else {
+              Create
+            }
+            Reward
+          </h2>
+          <div class="form-group">
+            <label for="name">Name *</label>
+            <input
+              id="name"
+              type="text"
+              [(ngModel)]="rewardForm().name"
+              placeholder="e.g., Extra Screen Time"
+              required
+            />
+          </div>
+          <div class="form-group">
+            <label for="description">Description</label>
+            <textarea
+              id="description"
+              [(ngModel)]="rewardForm().description"
+              placeholder="Optional description"
+              rows="3"
+            >
+            </textarea>
+          </div>
+          <div class="form-group">
+            <label for="points">Points Cost *</label>
+            <input
+              id="points"
+              type="number"
+              [(ngModel)]="rewardForm().pointsCost"
+              min="1"
+              required
+            />
+          </div>
+          <div class="form-group">
+            <label for="quantity">Quantity (optional)</label>
+            <input
+              id="quantity"
+              type="number"
+              [(ngModel)]="rewardForm().quantity"
+              min="0"
+              placeholder="Leave empty for unlimited"
+            />
+          </div>
+          <div class="form-actions">
+            @if (editingReward()) {
+              <button class="btn-primary" (click)="saveEdit()">Save Changes</button>
+              <button class="btn-secondary" (click)="cancelEdit()">Cancel</button>
+            } @else {
+              <button class="btn-primary" (click)="createReward()">Create</button>
+            }
+          </div>
+        </div>
+      }
+
+      <!-- Rewards List -->
+      @if (loading()) {
+        <div class="loading">Loading rewards...</div>
+      } @else if (error()) {
+        <div class="error">{{ error() }}</div>
+      } @else if (rewards().length === 0) {
+        <div class="empty-state">
+          <p>No rewards yet. Create one to get started!</p>
+        </div>
+      } @else {
+        <div class="rewards-list">
+          @for (reward of rewards(); track reward.id) {
+            <div class="reward-card" [class.inactive]="!reward.active">
+              <div class="reward-header">
+                <h3>{{ reward.name }}</h3>
+                <span class="points-badge">{{ reward.pointsCost }} pts</span>
+              </div>
+              @if (reward.description) {
+                <p class="description">{{ reward.description }}</p>
+              }
+              @if (reward.quantity !== null) {
+                <p class="quantity">Available: {{ reward.quantity }}</p>
+              }
+              <div class="reward-actions">
+                <button (click)="startEdit(reward)" title="Edit">✏️</button>
+                <button
+                  (click)="toggleActive(reward)"
+                  [title]="reward.active ? 'Deactivate' : 'Activate'"
+                >
+                  @if (reward.active) {
+                    🟢
+                  } @else {
+                    ⚫
+                  }
+                </button>
+                <button (click)="deleteReward(reward)" title="Delete">🗑️</button>
+              </div>
+            </div>
+          }
+        </div>
+      }
+    </div>
+  }
+
+  <!-- Redemptions Tab -->
+  @if (selectedTab() === 'redemptions') {
+    <div class="redemptions-tab">
+      @if (redemptionsLoading()) {
+        <div class="loading">Loading redemptions...</div>
+      } @else if (redemptions().length === 0) {
+        <div class="empty-state">
+          <p>No redemption requests yet.</p>
+        </div>
+      } @else {
+        <div class="redemptions-list">
+          @for (redemption of redemptions(); track redemption.id) {
+            <div class="redemption-card" [class]="'status-' + redemption.status">
+              <div class="redemption-header">
+                <h3>{{ redemption.rewardName }}</h3>
+                <span class="status-badge">{{ redemption.status }}</span>
+              </div>
+              <p class="child-name">Requested by: {{ redemption.childName }}</p>
+              <p class="points">Points: {{ redemption.pointsCost }}</p>
+              <p class="date">{{ redemption.requestedAt | date: 'short' }}</p>
+
+              @if (redemption.status === 'pending') {
+                <div class="redemption-actions">
+                  <button class="btn-success" (click)="approveRedemption(redemption.id)">
+                    Approve
+                  </button>
+                  <button class="btn-danger" (click)="rejectRedemption(redemption.id)">
+                    Reject
+                  </button>
+                </div>
+              } @else if (redemption.status === 'approved') {
+                <div class="redemption-actions">
+                  <button class="btn-primary" (click)="fulfillRedemption(redemption.id)">
+                    Mark as Fulfilled
+                  </button>
+                </div>
+              }
+            </div>
+          }
+        </div>
+      }
+    </div>
+  }
+</div>
