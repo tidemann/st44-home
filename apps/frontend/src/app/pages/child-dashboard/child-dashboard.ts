@@ -8,7 +8,9 @@ import {
 } from '@angular/core';
 import { Router } from '@angular/router';
 import { DashboardService, MyTasksResponse, ChildTask } from '../../services/dashboard.service';
+import { AnalyticsService } from '../../services/analytics.service';
 import { TaskService } from '../../services/task.service';
+import type { ChildAnalytics } from '@st44/types';
 
 /**
  * Child Dashboard Component
@@ -31,10 +33,12 @@ import { TaskService } from '../../services/task.service';
 export class ChildDashboardComponent implements OnInit {
   private router = inject(Router);
   private dashboardService = inject(DashboardService);
+  private analyticsService = inject(AnalyticsService);
   private taskService = inject(TaskService);
 
   // State
   childDashboard = signal<MyTasksResponse | null>(null);
+  analytics = signal<ChildAnalytics | null>(null);
   isLoading = signal(true);
   errorMessage = signal('');
   completingTasks = signal<Set<string>>(new Set());
@@ -69,8 +73,14 @@ export class ChildDashboardComponent implements OnInit {
       // Get today's date in YYYY-MM-DD format
       const today = new Date().toISOString().split('T')[0];
 
-      const data = await this.dashboardService.getMyTasks(today);
+      // Load both tasks and analytics
+      const [data, analyticsData] = await Promise.all([
+        this.dashboardService.getMyTasks(today),
+        this.analyticsService.getChildAnalytics('week'),
+      ]);
+
       this.childDashboard.set(data);
+      this.analytics.set(analyticsData);
     } catch (error: unknown) {
       const httpError = error as { status?: number };
 

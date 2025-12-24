@@ -2,9 +2,8 @@ import { Component, signal, inject, ChangeDetectionStrategy } from '@angular/cor
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormGroup, FormControl, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
-import { HttpClient } from '@angular/common/http';
 import { lastValueFrom } from 'rxjs';
-import { environment } from '../../environments/environment.development';
+import { AuthService } from '../services/auth.service';
 
 @Component({
   selector: 'app-forgot-password',
@@ -14,7 +13,7 @@ import { environment } from '../../environments/environment.development';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ForgotPasswordComponent {
-  private readonly http = inject(HttpClient);
+  private readonly authService = inject(AuthService);
   private readonly router = inject(Router);
 
   protected isLoading = signal(false);
@@ -38,7 +37,7 @@ export class ForgotPasswordComponent {
 
     try {
       const { email } = this.forgotPasswordForm.value;
-      await lastValueFrom(this.http.post(`${environment.apiUrl}/auth/forgot-password`, { email }));
+      await lastValueFrom(this.authService.forgotPassword(email!));
 
       this.successMessage.set(
         'If an account exists with that email, a reset link has been sent. Please check your inbox.',

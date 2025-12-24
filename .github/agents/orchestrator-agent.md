@@ -655,7 +655,19 @@ When work is complete, follow this workflow WITHOUT stopping for user confirmati
 
 **Step 1: Local Checks (MANDATORY - NEVER SKIP)**
 
-**⚠️ CRITICAL LESSON FROM PRODUCTION**:
+**⚠️ CRITICAL - PRODUCTION LESSON**:
+
+**ALWAYS test locally BEFORE pushing to GitHub. The CI feedback loop is too slow for debugging.**
+
+**Why This Is Non-Negotiable**:
+
+- **CI feedback loop**: 3-5 minutes per iteration
+- **Local testing**: <1 minute total
+- **Debugging efficiency**: 10x faster locally than via CI logs
+- **Time savings**: Catch issues in seconds, not minutes
+- **Professional workflow**: Test before commit, not after push
+
+**The Rule**: If you haven't run ALL these checks locally and seen them ALL pass, **DO NOT PUSH**.
 
 **NEVER push to GitHub without running ALL checks locally first.** The CI feedback loop is too slow for debugging. Catch all issues locally to avoid wasting time.
 

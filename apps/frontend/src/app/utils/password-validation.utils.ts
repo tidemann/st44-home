@@ -23,9 +23,10 @@ export function passwordStrengthValidator(control: AbstractControl): ValidationE
 
 /**
  * Form-level validator to ensure password and confirm password match
+ * Works with both 'password' and 'newPassword' field names
  */
 export function passwordMatchValidator(group: AbstractControl): ValidationErrors | null {
-  const password = group.get('password')?.value;
+  const password = group.get('password')?.value || group.get('newPassword')?.value;
   const confirmPassword = group.get('confirmPassword')?.value;
 
   if (password && confirmPassword && password !== confirmPassword) {

@@ -39,7 +39,7 @@ export class RewardService {
   private redemptionsErrorSignal = signal<string | null>(null);
 
   // Child rewards state signals (private writable)
-  private childRewardsSignal = signal<any[]>([]);
+  private childRewardsSignal = signal<Reward[]>([]);
   private pointsBalanceSignal = signal<number>(0);
   private childRewardsLoadingSignal = signal<boolean>(false);
   private childRewardsErrorSignal = signal<string | null>(null);
