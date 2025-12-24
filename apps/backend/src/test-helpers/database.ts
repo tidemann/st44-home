@@ -56,6 +56,7 @@ const CLEANUP_TABLES = [
   'task_assignments',
   'tasks',
   'invitations',
+  'password_reset_tokens',
   'children',
   'household_members',
   'households',

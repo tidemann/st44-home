@@ -2,9 +2,12 @@ import { Component, signal, inject, ChangeDetectionStrategy, OnInit } from '@ang
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormGroup, FormControl, Validators } from '@angular/forms';
 import { Router, ActivatedRoute, RouterLink } from '@angular/router';
-import { HttpClient } from '@angular/common/http';
 import { lastValueFrom } from 'rxjs';
-import { environment } from '../../environments/environment.development';
+import { AuthService } from '../services/auth.service';
+import {
+  passwordStrengthValidator,
+  passwordMatchValidator,
+} from '../utils/password-validation.utils';
 
 @Component({
   selector: 'app-reset-password',
@@ -14,7 +17,7 @@ import { environment } from '../../environments/environment.development';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ResetPasswordComponent implements OnInit {
-  private readonly http = inject(HttpClient);
+  private readonly authService = inject(AuthService);
   private readonly router = inject(Router);
   private readonly route = inject(ActivatedRoute);
 
@@ -27,10 +30,14 @@ export class ResetPasswordComponent implements OnInit {
 
   protected resetPasswordForm = new FormGroup(
     {
-      newPassword: new FormControl('', [Validators.required, Validators.minLength(8)]),
+      newPassword: new FormControl('', [
+        Validators.required,
+        Validators.minLength(8),
+        passwordStrengthValidator,
+      ]),
       confirmPassword: new FormControl('', [Validators.required]),
     },
-    { validators: this.passwordMatchValidator },
+    { validators: passwordMatchValidator },
   );
 
   protected get newPasswordControl() {
@@ -51,16 +58,6 @@ export class ResetPasswordComponent implements OnInit {
     } else {
       this.resetToken.set(token);
     }
-  }
-
-  protected passwordMatchValidator(group: FormGroup): { [key: string]: boolean } | null {
-    const password = group.get('newPassword')?.value;
-    const confirmPassword = group.get('confirmPassword')?.value;
-
-    if (password && confirmPassword && password !== confirmPassword) {
-      return { passwordMismatch: true };
-    }
-    return null;
   }
 
   protected togglePasswordVisibility(): void {
@@ -101,12 +98,7 @@ export class ResetPasswordComponent implements OnInit {
 
     try {
       const { newPassword } = this.resetPasswordForm.value;
-      await lastValueFrom(
-        this.http.post(`${environment.apiUrl}/auth/reset-password`, {
-          token: this.resetToken(),
-          newPassword,
-        }),
-      );
+      await lastValueFrom(this.authService.resetPassword(this.resetToken()!, newPassword!));
 
       this.passwordResetSuccess.set(true);
 

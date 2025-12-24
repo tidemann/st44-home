@@ -216,4 +216,23 @@ export class AuthService {
     const userRole = this.currentUser()?.role;
     return userRole !== undefined && roles.includes(userRole);
   }
+
+  /**
+   * Request a password reset email
+   * @param email - The email address to send reset link to
+   * @returns Observable that completes when email is sent
+   */
+  forgotPassword(email: string): Observable<void> {
+    return this.http.post<void>(`${this.apiUrl}/forgot-password`, { email });
+  }
+
+  /**
+   * Reset password with token
+   * @param token - The reset token from email
+   * @param newPassword - The new password
+   * @returns Observable that completes when password is reset
+   */
+  resetPassword(token: string, newPassword: string): Observable<void> {
+    return this.http.post<void>(`${this.apiUrl}/reset-password`, { token, newPassword });
+  }
 }
