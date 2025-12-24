@@ -2,3 +2,7 @@
 playwright-report/
 playwright/.cache/
 test-results/
+
+# Storybook
+storybook-static/
+documentation.json
