@@ -11,6 +11,7 @@ import {
   reassignTaskSchema,
   generateAssignmentsSchema,
   generateHouseholdAssignmentsSchema,
+  createManualAssignmentSchema,
 } from '../schemas/assignments.js';
 
 const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
@@ -265,6 +266,157 @@ export default async function assignmentRoutes(fastify: FastifyInstance) {
         fastify.log.error(error, 'Failed to generate assignments');
         return reply.code(500).send({
           error: 'Failed to generate assignments',
+        });
+      }
+    },
+  );
+
+  /**
+   * POST /api/assignments/manual
+   * Manually create a task assignment for a specific task, child, and date
+   */
+  fastify.post<{
+    Body: { taskId: string; childId?: string | null; date: string };
+  }>(
+    '/api/assignments/manual',
+    {
+      schema: createManualAssignmentSchema,
+      preHandler: [authenticateUser],
+    },
+    async (request, reply) => {
+      const { taskId, childId, date } = request.body;
+
+      // Validate taskId format
+      if (!taskId || typeof taskId !== 'string' || !isValidUuid(taskId)) {
+        return reply.code(400).send({
+          error: 'Invalid taskId format (must be UUID)',
+        });
+      }
+
+      // Validate childId format if provided (can be null for household-wide tasks)
+      if (childId !== null && childId !== undefined && !isValidUuid(childId)) {
+        return reply.code(400).send({
+          error: 'Invalid childId format (must be UUID or null)',
+        });
+      }
+
+      // Validate date format
+      if (!date || typeof date !== 'string' || !isValidDate(date)) {
+        return reply.code(400).send({
+          error: 'Invalid date format (must be YYYY-MM-DD)',
+        });
+      }
+
+      try {
+        // Fetch task to verify it exists and get household_id
+        const taskResult = await pool.query(
+          'SELECT id, household_id, name, active FROM tasks WHERE id = $1',
+          [taskId],
+        );
+
+        if (taskResult.rows.length === 0) {
+          return reply.code(404).send({
+            error: 'Task not found',
+          });
+        }
+
+        const task = taskResult.rows[0];
+
+        // Check if task is active
+        if (!task.active) {
+          return reply.code(400).send({
+            error: 'Cannot assign inactive task',
+          });
+        }
+
+        // Authorization: Check if user is member of task's household with parent/admin role
+        const membershipResult = await pool.query(
+          'SELECT role FROM household_members WHERE household_id = $1 AND user_id = $2',
+          [task.household_id, request.user?.userId],
+        );
+
+        if (membershipResult.rows.length === 0) {
+          return reply.code(403).send({
+            error: 'You are not a member of this household',
+          });
+        }
+
+        const role = membershipResult.rows[0].role;
+
+        // Must be admin or parent role
+        if (role !== 'admin' && role !== 'parent') {
+          return reply.code(403).send({
+            error: 'Admin or parent role required for manual assignment',
+          });
+        }
+
+        // If childId is provided, verify child exists and belongs to same household
+        if (childId) {
+          const childResult = await pool.query(
+            'SELECT id FROM children WHERE id = $1 AND household_id = $2',
+            [childId, task.household_id],
+          );
+
+          if (childResult.rows.length === 0) {
+            return reply.code(404).send({
+              error: 'Child not found in this household',
+            });
+          }
+        }
+
+        // Create the assignment (ON CONFLICT handles idempotency)
+        const insertResult = await pool.query<{
+          id: string;
+          task_id: string;
+          child_id: string | null;
+          date: string;
+          status: string;
+          created_at: string;
+        }>(
+          `INSERT INTO task_assignments (household_id, task_id, child_id, date, status)
+           VALUES ($1, $2, $3, $4, 'pending')
+           ON CONFLICT (task_id, child_id, date) WHERE child_id IS NOT NULL DO NOTHING
+           RETURNING id, task_id, child_id, date::text as date, status, created_at::text as created_at`,
+          [task.household_id, taskId, childId || null, date],
+        );
+
+        // Handle duplicate (conflict)
+        if (insertResult.rows.length === 0) {
+          // Check for household-wide conflict if childId is null
+          if (!childId) {
+            const conflictCheck = await pool.query(
+              'SELECT id FROM task_assignments WHERE task_id = $1 AND date = $2 AND child_id IS NULL',
+              [taskId, date],
+            );
+
+            if (conflictCheck.rows.length > 0) {
+              return reply.code(409).send({
+                error: 'Assignment already exists for this task and date',
+              });
+            }
+          }
+
+          return reply.code(409).send({
+            error: 'Assignment already exists for this task, child, and date',
+          });
+        }
+
+        const assignment = insertResult.rows[0];
+
+        return reply.code(201).send({
+          assignment: {
+            id: assignment.id,
+            taskId: assignment.task_id,
+            childId: assignment.child_id,
+            date: assignment.date,
+            status: assignment.status,
+            createdAt: assignment.created_at,
+          },
+        });
+      } catch (error) {
+        fastify.log.error(error, 'Failed to create manual assignment');
+        return reply.code(500).send({
+          error: 'Failed to create assignment',
         });
       }
     },

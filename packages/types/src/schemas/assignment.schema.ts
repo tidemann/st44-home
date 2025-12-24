@@ -73,6 +73,18 @@ export const ReassignTaskRequestSchema = z.object({
 export type ReassignTaskRequest = z.infer<typeof ReassignTaskRequestSchema>;
 
 /**
+ * Create Manual Assignment Request
+ * Used when manually assigning a task to a child for a specific date
+ */
+export const CreateManualAssignmentRequestSchema = z.object({
+  taskId: z.string().uuid(),
+  childId: z.string().uuid().nullable(),
+  date: z.string().date(),
+});
+
+export type CreateManualAssignmentRequest = z.infer<typeof CreateManualAssignmentRequestSchema>;
+
+/**
  * Assignment with Points Response
  * Extended assignment info including points earned
  */

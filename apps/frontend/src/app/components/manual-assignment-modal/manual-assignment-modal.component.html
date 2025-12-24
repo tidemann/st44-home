@@ -1,0 +1,99 @@
+<div
+  class="modal-backdrop"
+  (click)="onBackdropClick($event)"
+  (keydown.escape)="onCancel()"
+  role="dialog"
+  aria-modal="true"
+  aria-labelledby="modal-title"
+  tabindex="0"
+>
+  <div class="modal-content">
+    <div class="modal-header">
+      <h3 id="modal-title">Assign Task</h3>
+      <button class="close-button" (click)="onCancel()" type="button" aria-label="Close modal">
+        ×
+      </button>
+    </div>
+
+    <div class="modal-body">
+      @if (errorMessage()) {
+        <div class="error-message" role="alert">
+          {{ errorMessage() }}
+        </div>
+      }
+
+      @if (successMessage()) {
+        <div class="success-message" role="status">
+          {{ successMessage() }}
+        </div>
+      }
+
+      <form (submit)="onSubmit(); $event.preventDefault()">
+        <div class="form-group">
+          <label for="task-select">Task:</label>
+          <select
+            id="task-select"
+            [(ngModel)]="selectedTaskId"
+            name="taskId"
+            class="task-select"
+            [disabled]="isSubmitting()"
+            required
+          >
+            <option [ngValue]="null">Select a task...</option>
+            @for (task of tasks(); track task.id) {
+              <option [ngValue]="task.id">{{ task.name }}</option>
+            }
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="child-select">Assign to:</label>
+          <select
+            id="child-select"
+            [(ngModel)]="selectedChildId"
+            name="childId"
+            class="child-select"
+            [disabled]="isSubmitting()"
+            required
+          >
+            <option [ngValue]="null">Select a child...</option>
+            @for (child of children(); track child.id) {
+              <option [ngValue]="child.id">{{ child.name }}</option>
+            }
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="date-input">Date:</label>
+          <input
+            id="date-input"
+            type="date"
+            [(ngModel)]="selectedDate"
+            name="date"
+            class="date-input"
+            [disabled]="isSubmitting()"
+            required
+          />
+        </div>
+
+        <div class="modal-actions">
+          <button
+            type="button"
+            class="cancel-button"
+            (click)="onCancel()"
+            [disabled]="isSubmitting()"
+          >
+            Cancel
+          </button>
+          <button type="submit" class="submit-button" [disabled]="!canSubmit()">
+            @if (isSubmitting()) {
+              <span>Assigning...</span>
+            } @else {
+              <span>Assign Task</span>
+            }
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
