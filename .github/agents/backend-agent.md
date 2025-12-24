@@ -321,6 +321,107 @@ fastify.get('/api/households', async (request, reply) => {
 - Handle sensitive data properly
 - Follow OWASP best practices
 
+### Middleware Architecture (CRITICAL - PREVENT AUTH BUGS)
+
+**⚠️ NEVER duplicate middleware functions - Always import from `middleware/` directory**
+
+**Root Cause of Authentication Bugs**: Duplicate `authenticateUser` middleware was defined locally in `server.ts`, causing scope/import conflicts with routes that imported from `middleware/auth.ts`. This led to 401 errors in production (#179, #180).
+
+**The Rule**: Middleware must be centralized and imported, never redefined.
+
+**✅ CORRECT Pattern:**
+
+```typescript
+// apps/backend/src/middleware/auth.ts
+export async function authenticateUser(request: FastifyRequest, reply: FastifyReply) {
+  // ... middleware logic
+}
+
+// apps/backend/src/server.ts
+import { authenticateUser } from './middleware/auth.js';
+
+// Use imported middleware in ALL routes
+await fastify.register(async (fastify) => {
+  fastify.post(
+    '/api/auth/logout',
+    {
+      preHandler: [authenticateUser], // ← Use imported version
+    },
+    async (request, reply) => {
+      // ...
+    },
+  );
+});
+
+// apps/backend/src/routes/assignments.ts
+import { authenticateUser } from '../middleware/auth.js';
+
+export async function assignmentRoutes(fastify: FastifyInstance) {
+  fastify.post(
+    '/api/assignments/manual',
+    {
+      preHandler: [authenticateUser], // ← Same imported version
+    },
+    async (request, reply) => {
+      // ...
+    },
+  );
+}
+```
+
+**❌ WRONG Pattern - DO NOT DO THIS:**
+
+```typescript
+// ❌ server.ts - Local function shadowing imports
+async function buildApp() {
+  // ❌ NEVER define middleware locally
+  async function authenticateUser(request, reply) {
+    // ... logic
+  }
+
+  // ❌ This middleware only works in this scope!
+  await fastify.register(async (fastify) => {
+    fastify.post('/api/auth/logout', {
+      preHandler: [authenticateUser],  // ← Works (local scope)
+    }, ...);
+  });
+}
+
+// ❌ routes/assignments.ts - Different instance!
+import { authenticateUser } from '../middleware/auth.js';  // ← Different function!
+
+fastify.post('/api/assignments/manual', {
+  preHandler: [authenticateUser],  // ← Breaks (wrong instance)
+}, ...);
+```
+
+**Middleware Checklist** (EVERY TIME you modify auth):
+
+- [ ] **No duplicate middleware functions** - Search codebase for duplicate definitions
+- [ ] **Import from `middleware/` only** - Never define middleware in route files or server.ts
+- [ ] **Single source of truth** - Each middleware function exists in ONE place
+- [ ] **Verify imports** - All routes import from same canonical location
+- [ ] **No local shadowing** - No local functions with same name as imported middleware
+- [ ] **Test integration** - Verify ALL routes using middleware work, not just one
+
+**How to Detect Duplicates:**
+
+```bash
+# Search for duplicate function definitions
+cd apps/backend
+grep -r "async function authenticateUser" src/
+
+# Should only find ONE match in middleware/auth.ts
+# If you see matches in server.ts or route files → FIX IMMEDIATELY
+```
+
+**Why This Matters:**
+
+- Prevents 401 authentication errors in production
+- Ensures consistent auth behavior across all routes
+- Avoids scope/import conflicts that tests can't detect
+- Maintains single source of truth for middleware logic
+
 ### Error Handling
 
 - Use try-catch for async operations
@@ -698,11 +799,15 @@ Before marking task complete:
 - [ ] **Schema-query alignment verified** (SELECT columns match schema fields)
 - [ ] **Database schema checked** (confirmed which fields exist/are nullable)
 - [ ] **All required schema fields are in SELECT** or marked optional
+- [ ] **Middleware architecture verified** (no duplicates, all imports from middleware/)
+- [ ] **No duplicate middleware functions** (run: `grep -r "async function authenticateUser" src/`)
+- [ ] **All middleware imported from canonical location** (middleware/auth.ts, etc.)
 - [ ] **Type-check passes** (npm run type-check)
 - [ ] **Build succeeds** (npm run build)
 - [ ] **Tests pass** (npm run test)
 - [ ] **Endpoint tested locally** with real database data
 - [ ] **No serialization errors** when running endpoint
+- [ ] **All protected routes work** (not just tested endpoint)
 - [ ] All routes use async/await
 - [ ] Parameterized queries used (no SQL injection)
 - [ ] Proper error handling implemented
