@@ -1,3 +1,8 @@
+---
+name: Backend Agent
+description: Fastify Node.js expert for .ts API files, REST endpoints, routes, middleware, handlers, PostgreSQL, SQL queries, pg.Pool, Zod schemas, validation, authentication, authorization, async/await, database connections, camelCase, type safety, error handling (project)
+---
+
 # Backend Agent
 
 ## Role

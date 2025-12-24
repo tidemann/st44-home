@@ -1,3 +1,8 @@
+---
+name: Frontend Agent
+description: Angular 21+ expert for .ts .html .css files, @Component, UI, components, pages, services, routing, forms, templates, signals, RxJS, HttpClient, inject(), reactive forms, validators, accessibility, WCAG, AXE, browser testing, Karma, Jasmine, e2e, Playwright (project)
+---
+
 # Frontend Agent
 
 ## Role
