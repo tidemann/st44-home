@@ -149,7 +149,19 @@ const result = await pool.query(
 
 #### 2. Build-Time Validation (MANDATORY BEFORE EVERY PUSH)
 
-**⚠️ CRITICAL**: ALWAYS run ALL checks locally before pushing to GitHub. The CI feedback loop is too slow for debugging.
+**⚠️ CRITICAL - PRODUCTION LESSON**:
+
+**ALWAYS test locally BEFORE pushing to GitHub. The CI feedback loop is too slow for debugging.**
+
+**Why This Is Non-Negotiable**:
+
+- **CI feedback loop**: 3-5 minutes per iteration
+- **Local testing**: <1 minute total
+- **Debugging efficiency**: 10x faster locally than via CI logs
+- **Time savings**: Catch issues in seconds, not minutes
+- **Professional workflow**: Test before commit, not after push
+
+**The Rule**: If you haven't run ALL these checks locally and seen them ALL pass, **DO NOT PUSH**.
 
 **Complete Backend Check Sequence** (run from `apps/backend`):
 

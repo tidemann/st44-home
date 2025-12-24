@@ -178,3 +178,88 @@ const healthCheckSchemaBase = {
 } as const;
 
 export const healthCheckSchema = stripResponseValidation(healthCheckSchemaBase);
+
+// POST /api/auth/forgot-password
+const forgotPasswordSchemaBase = {
+  summary: 'Request password reset',
+  description: 'Send password reset email to user (if account exists)',
+  tags: ['auth'],
+  body: {
+    type: 'object',
+    properties: {
+      email: {
+        type: 'string',
+        format: 'email',
+        description: 'Email address to send reset link',
+      },
+    },
+    required: ['email'],
+  },
+  response: {
+    200: {
+      description: 'Request processed (always returns same message for security)',
+      type: 'object',
+      properties: {
+        message: {
+          type: 'string',
+          description: 'Generic success message',
+        },
+      },
+      required: ['message'],
+    },
+    400: errorResponseSchema,
+    429: {
+      description: 'Rate limit exceeded (max 3 requests per email per hour)',
+      ...errorResponseSchema,
+    },
+    500: errorResponseSchema,
+  },
+} as const;
+
+export const forgotPasswordSchema = stripResponseValidation(forgotPasswordSchemaBase);
+
+// POST /api/auth/reset-password
+const resetPasswordSchemaBase = {
+  summary: 'Reset password with token',
+  description: 'Complete password reset using valid token from email',
+  tags: ['auth'],
+  body: {
+    type: 'object',
+    properties: {
+      token: {
+        type: 'string',
+        description: 'Password reset token from email',
+      },
+      newPassword: {
+        type: 'string',
+        minLength: 8,
+        description: 'New password (min 8 chars, must include uppercase, lowercase, and number)',
+      },
+    },
+    required: ['token', 'newPassword'],
+  },
+  response: {
+    200: {
+      description: 'Password reset successful',
+      type: 'object',
+      properties: {
+        message: {
+          type: 'string',
+          description: 'Success message',
+        },
+      },
+      required: ['message'],
+    },
+    400: {
+      description: 'Invalid request (weak password, invalid token, etc.)',
+      ...errorResponseSchema,
+    },
+    401: {
+      description: 'Token expired or already used',
+      ...errorResponseSchema,
+    },
+    500: errorResponseSchema,
+  },
+} as const;
+
+export const resetPasswordSchema = stripResponseValidation(resetPasswordSchemaBase);

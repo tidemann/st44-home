@@ -4,7 +4,11 @@ import { ParentDashboardComponent } from './parent-dashboard';
 import { HouseholdService } from '../../services/household.service';
 import { DashboardService, DashboardSummary } from '../../services/dashboard.service';
 import { ChildrenService } from '../../services/children.service';
+import { AnalyticsService } from '../../services/analytics.service';
+import { TaskService } from '../../services/task.service';
+import { AssignmentService } from '../../services/assignment.service';
 import { Router, provideRouter } from '@angular/router';
+import { of } from 'rxjs';
 
 describe('ParentDashboardComponent', () => {
   let component: ParentDashboardComponent;
@@ -15,6 +19,9 @@ describe('ParentDashboardComponent', () => {
   };
   let mockDashboardService: { getDashboard: ReturnType<typeof vi.fn> };
   let mockChildrenService: { listChildren: ReturnType<typeof vi.fn> };
+  let mockAnalyticsService: { getHouseholdAnalytics: ReturnType<typeof vi.fn> };
+  let mockTaskService: { getTasks: ReturnType<typeof vi.fn> };
+  let mockAssignmentService: { generateAssignments: ReturnType<typeof vi.fn> };
   let router: Router;
 
   const mockDashboard: DashboardSummary = {
@@ -32,6 +39,15 @@ describe('ParentDashboardComponent', () => {
     ],
   };
 
+  const mockAnalytics = {
+    period: 'week' as const,
+    completionRate: 60,
+    completionRateDelta: 5,
+    totalCompleted: 6,
+    totalCompletedDelta: 2,
+    topPerformers: [],
+  };
+
   beforeEach(() => {
     mockHouseholdService = {
       getActiveHouseholdId: vi.fn().mockReturnValue('household-1'),
@@ -46,6 +62,18 @@ describe('ParentDashboardComponent', () => {
       listChildren: vi.fn().mockResolvedValue([]),
     };
 
+    mockAnalyticsService = {
+      getHouseholdAnalytics: vi.fn().mockResolvedValue(mockAnalytics),
+    };
+
+    mockTaskService = {
+      getTasks: vi.fn().mockReturnValue(of([])),
+    };
+
+    mockAssignmentService = {
+      generateAssignments: vi.fn().mockReturnValue(of({ created: 0, skipped: 0, errors: [] })),
+    };
+
     TestBed.configureTestingModule({
       imports: [ParentDashboardComponent],
       providers: [
@@ -53,6 +81,9 @@ describe('ParentDashboardComponent', () => {
         { provide: HouseholdService, useValue: mockHouseholdService },
         { provide: DashboardService, useValue: mockDashboardService },
         { provide: ChildrenService, useValue: mockChildrenService },
+        { provide: AnalyticsService, useValue: mockAnalyticsService },
+        { provide: TaskService, useValue: mockTaskService },
+        { provide: AssignmentService, useValue: mockAssignmentService },
       ],
     });
 

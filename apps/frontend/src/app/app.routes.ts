@@ -15,6 +15,16 @@ export const routes: Routes = [
     path: 'child-login',
     loadComponent: () => import('./auth/child-login.component').then((m) => m.ChildLoginComponent),
   },
+  {
+    path: 'forgot-password',
+    loadComponent: () =>
+      import('./auth/forgot-password.component').then((m) => m.ForgotPasswordComponent),
+  },
+  {
+    path: 'reset-password',
+    loadComponent: () =>
+      import('./auth/reset-password.component').then((m) => m.ResetPasswordComponent),
+  },
 
   // Protected routes - Parent and Admin only
   {

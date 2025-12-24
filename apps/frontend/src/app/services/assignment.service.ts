@@ -1,6 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { firstValueFrom } from 'rxjs';
+import type { CreateManualAssignmentRequest } from '@st44/types/schemas';
 
 export interface GenerateAssignmentsRequest {
   date?: string; // YYYY-MM-DD, defaults to today
@@ -18,6 +19,17 @@ export interface GeneratedAssignment {
 export interface GenerateAssignmentsResponse {
   generated: number;
   assignments: GeneratedAssignment[];
+}
+
+export interface ManualAssignmentResponse {
+  assignment: {
+    id: string;
+    taskId: string;
+    childId: string | null;
+    date: string;
+    status: string;
+    createdAt: string;
+  };
 }
 
 @Injectable({
@@ -41,6 +53,19 @@ export class AssignmentService {
         `/api/households/${householdId}/assignments/generate`,
         request || {},
       ),
+    );
+  }
+
+  /**
+   * Manually create a task assignment
+   * @param request - Manual assignment details (taskId, childId, date)
+   * @returns Promise with created assignment
+   */
+  async createManualAssignment(
+    request: CreateManualAssignmentRequest,
+  ): Promise<ManualAssignmentResponse> {
+    return firstValueFrom(
+      this.http.post<ManualAssignmentResponse>(`/api/assignments/manual`, request),
     );
   }
 }

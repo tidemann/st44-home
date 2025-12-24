@@ -34,7 +34,15 @@ npm run dev:stop                 # Stop all dev servers
 
 ### Testing
 
+**CRITICAL: ALWAYS test locally BEFORE pushing to avoid slow CI feedback loops!**
+
 ```bash
+# REQUIRED before every push - Test locally first!
+cd apps/frontend && npm run build    # Build frontend
+cd apps/frontend && npm test          # Run frontend tests
+cd apps/backend && npm test           # Run backend tests
+
+# Comprehensive testing
 npm test                         # All tests
 npm run test:types               # packages/types tests (vitest)
 npm run test:backend             # Backend tests (tsx --test)

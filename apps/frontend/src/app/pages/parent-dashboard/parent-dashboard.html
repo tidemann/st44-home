@@ -173,6 +173,21 @@
       <button
         type="button"
         class="btn btn-primary"
+        (click)="openManualAssignmentModal()"
+        [disabled]="!hasChildren() || tasksList().length === 0"
+        [title]="
+          !hasChildren()
+            ? 'Add children first'
+            : tasksList().length === 0
+              ? 'Create tasks first'
+              : 'Manually assign a task'
+        "
+      >
+        <span aria-hidden="true">✅</span> Assign Task
+      </button>
+      <button
+        type="button"
+        class="btn btn-secondary"
         (click)="generateTodaysTasks()"
         [disabled]="isGenerating()"
       >
@@ -216,5 +231,16 @@
         />
       </div>
     </div>
+  }
+
+  <!-- Manual Assignment Modal -->
+  @if (showManualAssignmentModal()) {
+    <app-manual-assignment-modal
+      [tasks]="tasksList()"
+      [children]="childrenList()"
+      [householdId]="household()!.id"
+      (closeModal)="closeManualAssignmentModal()"
+      (assignmentCreated)="onManualAssignmentCreated()"
+    />
   }
 </main>

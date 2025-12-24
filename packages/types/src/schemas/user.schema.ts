@@ -41,10 +41,12 @@ export type CreateUserRequest = z.infer<typeof CreateUserRequestSchema>;
  * Update User Request
  * Used for updating user profile (partial update)
  */
-export const UpdateUserRequestSchema = z.object({
-  email: z.string().email().optional(),
-  password: z.string().min(8).max(128).optional(),
-}).strict();
+export const UpdateUserRequestSchema = z
+  .object({
+    email: z.string().email().optional(),
+    password: z.string().min(8).max(128).optional(),
+  })
+  .strict();
 
 export type UpdateUserRequest = z.infer<typeof UpdateUserRequestSchema>;
 
@@ -78,3 +80,51 @@ export const UserResponseSchema = UserSchema.omit({
 });
 
 export type UserResponse = z.infer<typeof UserResponseSchema>;
+
+/**
+ * Forgot Password Request
+ * Used to request a password reset email
+ */
+export const ForgotPasswordRequestSchema = z.object({
+  email: z.string().email(),
+});
+
+export type ForgotPasswordRequest = z.infer<typeof ForgotPasswordRequestSchema>;
+
+/**
+ * Forgot Password Response
+ * Standard response for password reset requests (no user enumeration)
+ */
+export const ForgotPasswordResponseSchema = z.object({
+  message: z.string(),
+});
+
+export type ForgotPasswordResponse = z.infer<typeof ForgotPasswordResponseSchema>;
+
+/**
+ * Reset Password Request
+ * Used to reset password with a token
+ */
+export const ResetPasswordRequestSchema = z.object({
+  token: z.string().min(1),
+  newPassword: z
+    .string()
+    .min(8)
+    .max(128)
+    .regex(
+      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/,
+      'Password must contain at least one uppercase letter, one lowercase letter, and one number',
+    ),
+});
+
+export type ResetPasswordRequest = z.infer<typeof ResetPasswordRequestSchema>;
+
+/**
+ * Reset Password Response
+ * Standard response for password reset completion
+ */
+export const ResetPasswordResponseSchema = z.object({
+  message: z.string(),
+});
+
+export type ResetPasswordResponse = z.infer<typeof ResetPasswordResponseSchema>;
