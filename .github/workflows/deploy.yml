@@ -16,11 +16,14 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 2  # Need at least 2 commits to compare HEAD~1
 
       - name: Check for code changes
         uses: dorny/paths-filter@v3
         id: filter
         with:
+          base: HEAD~1  # Compare against previous commit on main (fixes squash merge detection)
           filters: |
             code:
               - 'apps/**'
