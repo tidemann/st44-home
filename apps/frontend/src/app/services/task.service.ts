@@ -267,9 +267,12 @@ export class TaskService {
    * Mark a task assignment as complete (with optimistic update)
    *
    * @param assignmentId - ID of the task assignment
-   * @returns Observable of the updated task assignment
+   * @returns Observable of the completion response (taskAssignment + completion)
    */
-  completeTask(assignmentId: string): Observable<Assignment> {
+  completeTask(assignmentId: string): Observable<{
+    taskAssignment: { id: string; status: string; completedAt: string };
+    completion: { id: string; pointsEarned: number; completedAt: string };
+  }> {
     // Optimistic update
     const previousAssignments = this.assignmentsSignal();
     const now = new Date().toISOString();
@@ -280,12 +283,25 @@ export class TaskService {
       ),
     );
 
-    // API call
-    return from(this.apiService.put<Assignment>(`/assignments/${assignmentId}/complete`, {})).pipe(
-      tap((updatedAssignment) => {
+    // API call using POST
+    return from(
+      this.apiService.post<{
+        taskAssignment: { id: string; status: string; completedAt: string };
+        completion: { id: string; pointsEarned: number; completedAt: string };
+      }>(`/assignments/${assignmentId}/complete`, {}),
+    ).pipe(
+      tap((response) => {
         // Update with server response
         this.assignmentsSignal.update((assignments) =>
-          assignments.map((a) => (a.id === assignmentId ? updatedAssignment : a)),
+          assignments.map((a) =>
+            a.id === assignmentId
+              ? {
+                  ...a,
+                  status: 'completed' as const,
+                  completedAt: response.taskAssignment.completedAt,
+                }
+              : a,
+          ),
         );
       }),
       catchError((err) => {

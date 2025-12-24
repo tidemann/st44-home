@@ -123,8 +123,9 @@ describe('Assignments API', () => {
   });
 
   afterEach(async () => {
-    // Clean up assignments between tests
+    // Clean up assignments and completions between tests
     if (householdId) {
+      await pool.query('DELETE FROM task_completions WHERE household_id = $1', [householdId]);
       await pool.query('DELETE FROM task_assignments WHERE household_id = $1', [householdId]);
     }
   });
@@ -1039,6 +1040,273 @@ describe('Assignments API', () => {
       assert.ok(body.completed_at);
       assert.ok(body.child_id);
       assert.ok(body.task_id);
+    });
+  });
+
+  // ==================== Test Suite: POST /api/assignments/:assignmentId/complete ====================
+
+  describe('POST /api/assignments/:assignmentId/complete', () => {
+    let assignmentId: string;
+    let childToken: string;
+    let childUserId: string;
+    let testDate: string;
+
+    beforeEach(async () => {
+      // Use a unique date for each test to avoid constraint violations
+      const timestamp = Date.now();
+      const dateObj = new Date(2025, 0, 1);
+      dateObj.setDate(dateObj.getDate() + (timestamp % 100));
+      testDate = dateObj.toISOString().split('T')[0];
+
+      // Create a pending assignment
+      const result = await pool.query(
+        `INSERT INTO task_assignments (household_id, task_id, child_id, date, status)
+         VALUES ($1, $2, $3, $4, 'pending')
+         RETURNING id`,
+        [householdId, taskId, childIds[0], testDate],
+      );
+      assignmentId = result.rows[0].id;
+
+      // Create a child user account linked to childIds[0]
+      const childEmail = `test-child-${timestamp}@example.com`;
+      const childPassword = 'ChildPass123!';
+      const childData = await registerAndLogin(app, childEmail, childPassword);
+      childToken = childData.accessToken;
+
+      const childUserResult = await pool.query('SELECT id FROM users WHERE email = $1', [
+        childEmail,
+      ]);
+      childUserId = childUserResult.rows[0].id;
+
+      // Link child profile to user
+      await pool.query('UPDATE children SET user_id = $1 WHERE id = $2', [
+        childUserId,
+        childIds[0],
+      ]);
+
+      // Add child to household_members
+      await pool.query(
+        `INSERT INTO household_members (household_id, user_id, role) VALUES ($1, $2, 'child')`,
+        [householdId, childUserId],
+      );
+    });
+
+    afterEach(async () => {
+      // Clean up child user
+      if (childUserId) {
+        await pool.query('DELETE FROM household_members WHERE user_id = $1', [childUserId]);
+        await pool.query('UPDATE children SET user_id = NULL WHERE user_id = $1', [childUserId]);
+        await pool.query('DELETE FROM users WHERE id = $1', [childUserId]);
+      }
+    });
+
+    test('successfully marks assignment as complete with points', async () => {
+      const response = await app.inject({
+        method: 'POST',
+        url: `/api/assignments/${assignmentId}/complete`,
+        headers: { Authorization: `Bearer ${adminToken}` },
+      });
+
+      assert.strictEqual(response.statusCode, 200);
+
+      const body = JSON.parse(response.body);
+      assert.ok(body.taskAssignment);
+      assert.strictEqual(body.taskAssignment.id, assignmentId);
+      assert.strictEqual(body.taskAssignment.status, 'completed');
+      assert.ok(body.taskAssignment.completedAt);
+
+      assert.ok(body.completion);
+      assert.ok(body.completion.id);
+      assert.strictEqual(body.completion.pointsEarned, 10); // Default points from task
+      assert.ok(body.completion.completedAt);
+
+      // Verify database state - assignment
+      const assignmentDbResult = await pool.query(
+        'SELECT status FROM task_assignments WHERE id = $1',
+        [assignmentId],
+      );
+      assert.strictEqual(assignmentDbResult.rows[0].status, 'completed');
+
+      // Verify database state - completion record
+      const completionDbResult = await pool.query(
+        'SELECT points_earned FROM task_completions WHERE task_assignment_id = $1',
+        [assignmentId],
+      );
+      assert.strictEqual(completionDbResult.rows.length, 1);
+      assert.strictEqual(completionDbResult.rows[0].points_earned, 10);
+    });
+
+    test('idempotent - returns existing completion if already completed', async () => {
+      // First completion
+      const response1 = await app.inject({
+        method: 'POST',
+        url: `/api/assignments/${assignmentId}/complete`,
+        headers: { Authorization: `Bearer ${adminToken}` },
+      });
+      assert.strictEqual(response1.statusCode, 200);
+      const body1 = JSON.parse(response1.body);
+
+      // Second completion attempt
+      const response2 = await app.inject({
+        method: 'POST',
+        url: `/api/assignments/${assignmentId}/complete`,
+        headers: { Authorization: `Bearer ${adminToken}` },
+      });
+
+      assert.strictEqual(response2.statusCode, 200);
+      const body2 = JSON.parse(response2.body);
+
+      // Should return same completion
+      assert.strictEqual(body2.completion.id, body1.completion.id);
+      assert.strictEqual(body2.taskAssignment.id, body1.taskAssignment.id);
+
+      // Verify only one completion record exists
+      const completionDbResult = await pool.query(
+        'SELECT COUNT(*) FROM task_completions WHERE task_assignment_id = $1',
+        [assignmentId],
+      );
+      assert.strictEqual(parseInt(completionDbResult.rows[0].count), 1);
+    });
+
+    test('child can complete their own assignment', async () => {
+      const response = await app.inject({
+        method: 'POST',
+        url: `/api/assignments/${assignmentId}/complete`,
+        headers: { Authorization: `Bearer ${childToken}` },
+      });
+
+      assert.strictEqual(response.statusCode, 200);
+
+      const body = JSON.parse(response.body);
+      assert.strictEqual(body.taskAssignment.status, 'completed');
+      assert.strictEqual(body.completion.pointsEarned, 10);
+    });
+
+    test('child cannot complete another childs assignment', async () => {
+      // Create assignment for childIds[1] with a different date
+      const otherDate = new Date(testDate);
+      otherDate.setDate(otherDate.getDate() + 1);
+      const otherDateStr = otherDate.toISOString().split('T')[0];
+
+      const otherAssignmentResult = await pool.query(
+        `INSERT INTO task_assignments (household_id, task_id, child_id, date, status)
+         VALUES ($1, $2, $3, $4, 'pending')
+         RETURNING id`,
+        [householdId, taskId, childIds[1], otherDateStr],
+      );
+      const otherAssignmentId = otherAssignmentResult.rows[0].id;
+
+      const response = await app.inject({
+        method: 'POST',
+        url: `/api/assignments/${otherAssignmentId}/complete`,
+        headers: { Authorization: `Bearer ${childToken}` },
+      });
+
+      assert.strictEqual(response.statusCode, 403);
+
+      const body = JSON.parse(response.body);
+      assert.ok(body.error.includes('only complete tasks assigned to you'));
+    });
+
+    test('parent can complete assignment', async () => {
+      const response = await app.inject({
+        method: 'POST',
+        url: `/api/assignments/${assignmentId}/complete`,
+        headers: { Authorization: `Bearer ${parentToken}` },
+      });
+
+      assert.strictEqual(response.statusCode, 200);
+
+      const body = JSON.parse(response.body);
+      assert.strictEqual(body.taskAssignment.status, 'completed');
+    });
+
+    test('returns 404 if assignment not found', async () => {
+      const fakeId = '00000000-0000-0000-0000-000000000000';
+
+      const response = await app.inject({
+        method: 'POST',
+        url: `/api/assignments/${fakeId}/complete`,
+        headers: { Authorization: `Bearer ${adminToken}` },
+      });
+
+      assert.strictEqual(response.statusCode, 404);
+
+      const body = JSON.parse(response.body);
+      assert.ok(body.error.includes('not found'));
+    });
+
+    test('returns 400 for invalid UUID format', async () => {
+      const response = await app.inject({
+        method: 'POST',
+        url: `/api/assignments/not-a-uuid/complete`,
+        headers: { Authorization: `Bearer ${adminToken}` },
+      });
+
+      assert.strictEqual(response.statusCode, 400);
+    });
+
+    test('requires authentication (401 without token)', async () => {
+      const response = await app.inject({
+        method: 'POST',
+        url: `/api/assignments/${assignmentId}/complete`,
+      });
+
+      assert.strictEqual(response.statusCode, 401);
+    });
+
+    test('returns 403 if not authorized (outsider)', async () => {
+      const response = await app.inject({
+        method: 'POST',
+        url: `/api/assignments/${assignmentId}/complete`,
+        headers: { Authorization: `Bearer ${outsiderToken}` },
+      });
+
+      assert.strictEqual(response.statusCode, 403);
+
+      const body = JSON.parse(response.body);
+      assert.ok(body.error.includes('not authorized'));
+    });
+
+    test('creates task_completion record with correct points', async () => {
+      // Update task points
+      await pool.query('UPDATE tasks SET points = $1 WHERE id = $2', [25, taskId]);
+
+      const response = await app.inject({
+        method: 'POST',
+        url: `/api/assignments/${assignmentId}/complete`,
+        headers: { Authorization: `Bearer ${adminToken}` },
+      });
+
+      assert.strictEqual(response.statusCode, 200);
+
+      const body = JSON.parse(response.body);
+      assert.strictEqual(body.completion.pointsEarned, 25);
+
+      // Reset points
+      await pool.query('UPDATE tasks SET points = $1 WHERE id = $2', [10, taskId]);
+    });
+
+    test('returns all required fields in response', async () => {
+      const response = await app.inject({
+        method: 'POST',
+        url: `/api/assignments/${assignmentId}/complete`,
+        headers: { Authorization: `Bearer ${adminToken}` },
+      });
+
+      assert.strictEqual(response.statusCode, 200);
+
+      const body = JSON.parse(response.body);
+
+      // taskAssignment fields
+      assert.ok(body.taskAssignment.id);
+      assert.ok(body.taskAssignment.status);
+      assert.ok(body.taskAssignment.completedAt);
+
+      // completion fields
+      assert.ok(body.completion.id);
+      assert.ok(typeof body.completion.pointsEarned === 'number');
+      assert.ok(body.completion.completedAt);
     });
   });
 

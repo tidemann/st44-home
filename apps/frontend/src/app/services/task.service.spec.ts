@@ -783,10 +783,17 @@ describe('TaskService', () => {
       createdAt: '2025-01-19T10:00:00Z',
     };
 
-    const completedAssignment: Assignment = {
-      ...mockAssignment,
-      status: 'completed',
-      completedAt: '2025-01-20T12:00:00Z',
+    const completedAssignmentResponse = {
+      taskAssignment: {
+        id: 'assignment-1',
+        status: 'completed',
+        completedAt: '2025-01-20T12:00:00Z',
+      },
+      completion: {
+        id: 'completion-1',
+        pointsEarned: 10,
+        completedAt: '2025-01-20T12:00:00Z',
+      },
     };
 
     beforeEach(async () => {
@@ -797,7 +804,7 @@ describe('TaskService', () => {
     });
 
     it('should perform optimistic update', () => {
-      mockApiService.put.mockResolvedValue(completedAssignment);
+      mockApiService.post.mockResolvedValue(completedAssignmentResponse);
 
       service.completeTask('assignment-1');
 
@@ -806,27 +813,28 @@ describe('TaskService', () => {
       expect(assignments[0].status).toBe('completed');
     });
 
-    it('should call ApiService.put with correct endpoint', async () => {
-      mockApiService.put.mockResolvedValue(completedAssignment);
+    it('should call ApiService.post with correct endpoint', async () => {
+      mockApiService.post.mockResolvedValue(completedAssignmentResponse);
 
       const result$ = service.completeTask('assignment-1');
       await firstValueFrom(result$);
 
-      expect(mockApiService.put).toHaveBeenCalledWith('/assignments/assignment-1/complete', {});
+      expect(mockApiService.post).toHaveBeenCalledWith('/assignments/assignment-1/complete', {});
     });
 
-    it('should return completed assignment', async () => {
-      mockApiService.put.mockResolvedValue(completedAssignment);
+    it('should return completed assignment response', async () => {
+      mockApiService.post.mockResolvedValue(completedAssignmentResponse);
 
       const result$ = service.completeTask('assignment-1');
       const result = await firstValueFrom(result$);
 
-      expect(result.status).toBe('completed');
-      expect(result.completedAt).toBe('2025-01-20T12:00:00Z');
+      expect(result.taskAssignment.status).toBe('completed');
+      expect(result.taskAssignment.completedAt).toBe('2025-01-20T12:00:00Z');
+      expect(result.completion.pointsEarned).toBe(10);
     });
 
     it('should rollback optimistic update on API error', async () => {
-      mockApiService.put.mockRejectedValue(new Error('Already completed'));
+      mockApiService.post.mockRejectedValue(new Error('Already completed'));
 
       const result$ = service.completeTask('assignment-1');
 
@@ -842,7 +850,7 @@ describe('TaskService', () => {
     });
 
     it('should set error message on failure', async () => {
-      mockApiService.put.mockRejectedValue(new Error('Server error'));
+      mockApiService.post.mockRejectedValue(new Error('Server error'));
 
       const result$ = service.completeTask('assignment-1');
 
@@ -860,7 +868,7 @@ describe('TaskService', () => {
       const getTasks$ = service.getChildTasks('child-1');
       await firstValueFrom(getTasks$);
 
-      mockApiService.put.mockResolvedValue(completedAssignment);
+      mockApiService.post.mockResolvedValue(completedAssignmentResponse);
 
       const result$ = service.completeTask('assignment-1');
       await firstValueFrom(result$);
@@ -1016,10 +1024,17 @@ describe('TaskService', () => {
     });
 
     it('should update computed signals after completion', async () => {
-      mockApiService.put.mockResolvedValue({
-        ...mockAssignments[0],
-        status: 'completed',
-        completedAt: '2025-01-20T11:00:00Z',
+      mockApiService.post.mockResolvedValue({
+        taskAssignment: {
+          id: 'assignment-1',
+          status: 'completed',
+          completedAt: '2025-01-20T11:00:00Z',
+        },
+        completion: {
+          id: 'completion-1',
+          pointsEarned: 10,
+          completedAt: '2025-01-20T11:00:00Z',
+        },
       });
 
       const result$ = service.completeTask('assignment-1');
