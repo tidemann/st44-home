@@ -147,12 +147,16 @@
           @for (redemption of redemptions(); track redemption.id) {
             <div class="redemption-card" [class]="'status-' + redemption.status">
               <div class="redemption-header">
-                <h3>{{ redemption.rewardName }}</h3>
+                <h3>Redemption Request</h3>
                 <span class="status-badge">{{ redemption.status }}</span>
               </div>
-              <p class="child-name">Requested by: {{ redemption.childName }}</p>
-              <p class="points">Points: {{ redemption.pointsCost }}</p>
-              <p class="date">{{ redemption.requestedAt | date: 'short' }}</p>
+              <p class="child-name">Child ID: {{ redemption.childId }}</p>
+              <p class="reward-id">Reward ID: {{ redemption.rewardId }}</p>
+              <p class="points">Points Spent: {{ redemption.pointsSpent }}</p>
+              <p class="date">Redeemed: {{ redemption.redeemedAt | date: 'short' }}</p>
+              @if (redemption.fulfilledAt) {
+                <p class="date">Fulfilled: {{ redemption.fulfilledAt | date: 'short' }}</p>
+              }
 
               @if (redemption.status === 'pending') {
                 <div class="redemption-actions">
