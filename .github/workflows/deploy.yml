@@ -17,7 +17,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
         with:
-          fetch-depth: 2  # Need at least 2 commits to compare HEAD~1
+          fetch-depth: 0  # Fetch full history for proper change detection
 
       - name: Check for code changes
         uses: dorny/paths-filter@v3
