@@ -10,6 +10,7 @@ import {
   postCompleteAssignmentSchema,
   reassignTaskSchema,
   generateAssignmentsSchema,
+  generateHouseholdAssignmentsSchema,
 } from '../schemas/assignments.js';
 
 const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
@@ -146,6 +147,119 @@ export default async function assignmentRoutes(fastify: FastifyInstance) {
             skipped: result.skipped,
             errors: result.errors,
           },
+        });
+      } catch (error) {
+        fastify.log.error(error, 'Failed to generate assignments');
+        return reply.code(500).send({
+          error: 'Failed to generate assignments',
+        });
+      }
+    },
+  );
+
+  /**
+   * POST /api/households/:householdId/assignments/generate
+   * Generate assignments for a household for a specific date (defaults to today)
+   */
+  fastify.post<{
+    Params: { householdId: string };
+    Body: { date?: string; taskId?: string };
+  }>(
+    '/api/households/:householdId/assignments/generate',
+    {
+      schema: generateHouseholdAssignmentsSchema,
+      preHandler: [authenticateUser, validateHouseholdMembership],
+    },
+    async (request, reply) => {
+      const { householdId } = request.params;
+      const { date, taskId } = request.body || {};
+
+      // Validate householdId format
+      if (!isValidUuid(householdId)) {
+        return reply.code(400).send({
+          error: 'Invalid householdId format (must be UUID)',
+        });
+      }
+
+      // Default date to today if not provided
+      const targetDate = date || new Date().toISOString().split('T')[0];
+
+      // Validate date format
+      if (!isValidDate(targetDate)) {
+        return reply.code(400).send({
+          error: 'Invalid date format (must be YYYY-MM-DD)',
+        });
+      }
+
+      // Validate taskId if provided
+      if (taskId && !isValidUuid(taskId)) {
+        return reply.code(400).send({
+          error: 'Invalid taskId format (must be UUID)',
+        });
+      }
+
+      // Authorization already handled by validateHouseholdMembership middleware
+      // Additional check: Must be admin or parent role
+      try {
+        const membershipResult = await pool.query(
+          'SELECT role FROM household_members WHERE household_id = $1 AND user_id = $2',
+          [householdId, request.user?.userId],
+        );
+
+        if (membershipResult.rows.length === 0) {
+          return reply.code(403).send({
+            error: 'You are not a member of this household',
+          });
+        }
+
+        const role = membershipResult.rows[0].role;
+
+        // Must be admin or parent role
+        if (role !== 'admin' && role !== 'parent') {
+          return reply.code(403).send({
+            error: 'Admin or parent role required for this action',
+          });
+        }
+      } catch (error) {
+        fastify.log.error(error, 'Failed to check household membership');
+        return reply.code(500).send({
+          error: 'Failed to validate household membership',
+        });
+      }
+
+      // Call assignment generator service
+      try {
+        const startDateObj = new Date(targetDate);
+        const result = await generateAssignments(householdId, startDateObj, 1);
+
+        // Fetch generated assignments to return in response
+        const assignmentsResult = await pool.query<{
+          id: string;
+          task_id: string;
+          child_id: string | null;
+          date: string;
+          status: string;
+        }>(
+          `SELECT id, task_id, child_id, date::text as date, status
+           FROM task_assignments
+           WHERE household_id = $1 AND date = $2
+           ${taskId ? 'AND task_id = $3' : ''}
+           ORDER BY created_at DESC`,
+          taskId ? [householdId, targetDate, taskId] : [householdId, targetDate],
+        );
+
+        // Transform to camelCase for response
+        const assignments = assignmentsResult.rows.map((row) => ({
+          id: row.id,
+          taskId: row.task_id,
+          childId: row.child_id,
+          date: row.date,
+          status: row.status,
+        }));
+
+        return reply.code(200).send({
+          generated: result.created,
+          assignments,
         });
       } catch (error) {
         fastify.log.error(error, 'Failed to generate assignments');

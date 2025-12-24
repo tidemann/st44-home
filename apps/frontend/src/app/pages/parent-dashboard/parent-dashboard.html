@@ -152,9 +152,37 @@
       }
     </section>
 
+    <!-- Generation Message -->
+    @if (generationMessage()) {
+      <div
+        class="alert"
+        [class.alert-success]="generationMessage().includes('Generated')"
+        [class.alert-info]="generationMessage().includes('No new')"
+        [class.alert-error]="
+          generationMessage().includes('Failed') || generationMessage().includes('permission')
+        "
+        role="status"
+        aria-live="polite"
+      >
+        {{ generationMessage() }}
+      </div>
+    }
+
     <!-- Quick Actions -->
     <footer class="quick-actions">
-      <a [routerLink]="['/households', household()!.id, 'tasks']" class="btn btn-primary">
+      <button
+        type="button"
+        class="btn btn-primary"
+        (click)="generateTodaysTasks()"
+        [disabled]="isGenerating()"
+      >
+        @if (isGenerating()) {
+          <span aria-hidden="true">⏳</span> Generating...
+        } @else {
+          <span aria-hidden="true">🔄</span> Generate Today's Tasks
+        }
+      </button>
+      <a [routerLink]="['/households', household()!.id, 'tasks']" class="btn btn-secondary">
         <span aria-hidden="true">+</span> Add Task
       </a>
       <a routerLink="/household/settings" class="btn btn-secondary">

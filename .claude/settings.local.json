@@ -68,7 +68,9 @@
       "WebFetch(domain:mikhail.io)",
       "Bash(Get-ChildItem -Path \"C:\\\\code\\\\st44-home\\\\.claude\\\\skills\\\\*\\\\SKILL.md\")",
       "Bash(Get-ChildItem -Path \"C:\\\\code\\\\st44-home\\\\.claude\\\\agents\\\\*.md\")",
-      "Bash(find:*)"
+      "Bash(find:*)",
+      "Bash(gh pr edit:*)",
+      "Bash(grep:*)"
     ]
   }
 }

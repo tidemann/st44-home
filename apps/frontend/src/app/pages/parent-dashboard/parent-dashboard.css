@@ -93,6 +93,18 @@
   color: #b91c1c;
 }
 
+.alert-success {
+  background: #d1fae5;
+  border: 1px solid #10b981;
+  color: #065f46;
+}
+
+.alert-info {
+  background: #dbeafe;
+  border: 1px solid #3b82f6;
+  color: #1e40af;
+}
+
 .alert p {
   margin: 0 0 0.75rem;
 }
