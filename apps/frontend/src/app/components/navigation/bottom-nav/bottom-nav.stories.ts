@@ -19,7 +19,7 @@ const meta: Meta<BottomNav> = {
     },
   },
   decorators: [
-    (_Story) => ({
+    () => ({
       template: `
         <div style="position: relative; height: 400px; background: #f9fafb; padding: 20px;">
           <div style="text-align: center; margin-bottom: 20px; color: #6b7280;">
