@@ -28,11 +28,55 @@ describe('AuthService', () => {
   let service: AuthService;
   let httpMock: HttpTestingController;
   let mockRouter: { navigate: ReturnType<typeof vi.fn> };
+  let localStorageStore: Record<string, string>;
+  let sessionStorageStore: Record<string, string>;
 
   beforeEach(() => {
-    // Clear storage FIRST before creating service
-    localStorage.clear();
-    sessionStorage.clear();
+    // Create in-memory storage for tests
+    localStorageStore = {};
+    sessionStorageStore = {};
+
+    // Mock localStorage
+    const localStorageMock = {
+      getItem: vi.fn((key: string) => localStorageStore[key] || null),
+      setItem: vi.fn((key: string, value: string) => {
+        localStorageStore[key] = value;
+      }),
+      removeItem: vi.fn((key: string) => {
+        delete localStorageStore[key];
+      }),
+      clear: vi.fn(() => {
+        localStorageStore = {};
+      }),
+      length: 0,
+      key: vi.fn(() => null),
+    };
+
+    // Mock sessionStorage
+    const sessionStorageMock = {
+      getItem: vi.fn((key: string) => sessionStorageStore[key] || null),
+      setItem: vi.fn((key: string, value: string) => {
+        sessionStorageStore[key] = value;
+      }),
+      removeItem: vi.fn((key: string) => {
+        delete sessionStorageStore[key];
+      }),
+      clear: vi.fn(() => {
+        sessionStorageStore = {};
+      }),
+      length: 0,
+      key: vi.fn(() => null),
+    };
+
+    Object.defineProperty(window, 'localStorage', {
+      value: localStorageMock,
+      writable: true,
+    });
+
+    Object.defineProperty(window, 'sessionStorage', {
+      value: sessionStorageMock,
+      writable: true,
+    });
 
     // Create router mock
     mockRouter = {
@@ -309,16 +353,54 @@ describe('AuthService', () => {
 
   describe('initialization', () => {
     it('should check for existing tokens on initialization', () => {
-      // Clear everything first
-      localStorage.clear();
-      sessionStorage.clear();
-
-      // Store a valid JWT token before creating service
+      // Store a valid JWT token before creating new service
       const mockToken = createMockJWT('user-123', 'test@example.com', 'parent');
-      localStorage.setItem('accessToken', mockToken);
+      localStorageStore['accessToken'] = mockToken;
 
       // Create new service instance (simulates app startup)
       TestBed.resetTestingModule();
+
+      // Re-create storage mocks for new test bed
+      const localStorageMock = {
+        getItem: vi.fn((key: string) => localStorageStore[key] || null),
+        setItem: vi.fn((key: string, value: string) => {
+          localStorageStore[key] = value;
+        }),
+        removeItem: vi.fn((key: string) => {
+          delete localStorageStore[key];
+        }),
+        clear: vi.fn(() => {
+          localStorageStore = {};
+        }),
+        length: 0,
+        key: vi.fn(() => null),
+      };
+
+      const sessionStorageMock = {
+        getItem: vi.fn((key: string) => sessionStorageStore[key] || null),
+        setItem: vi.fn((key: string, value: string) => {
+          sessionStorageStore[key] = value;
+        }),
+        removeItem: vi.fn((key: string) => {
+          delete sessionStorageStore[key];
+        }),
+        clear: vi.fn(() => {
+          sessionStorageStore = {};
+        }),
+        length: 0,
+        key: vi.fn(() => null),
+      };
+
+      Object.defineProperty(window, 'localStorage', {
+        value: localStorageMock,
+        writable: true,
+      });
+
+      Object.defineProperty(window, 'sessionStorage', {
+        value: sessionStorageMock,
+        writable: true,
+      });
+
       TestBed.configureTestingModule({
         providers: [
           AuthService,
