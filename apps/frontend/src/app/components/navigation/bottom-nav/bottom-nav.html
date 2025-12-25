@@ -1,0 +1,15 @@
+<nav class="bottom-nav" role="navigation" aria-label="Main navigation">
+  @for (item of navItems; track item.id) {
+    <button
+      type="button"
+      class="nav-btn"
+      [class.active]="isActive(item.id)"
+      (click)="handleNavClick(item.id)"
+      [attr.aria-label]="item.label"
+      [attr.aria-current]="isActive(item.id) ? 'page' : null"
+    >
+      <div class="nav-icon">{{ item.icon }}</div>
+      <div class="nav-label">{{ item.label }}</div>
+    </button>
+  }
+</nav>

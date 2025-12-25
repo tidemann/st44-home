@@ -1,0 +1,64 @@
+.bottom-nav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: var(--color-surface, #ffffff);
+  padding: var(--space-md, 16px);
+  box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.1);
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--space-sm, 8px);
+  z-index: 1000;
+}
+
+.nav-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-xs, 4px);
+  padding: var(--space-sm, 8px);
+  background: transparent;
+  border: none;
+  border-radius: var(--radius-sm, 8px);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  color: var(--color-text-tertiary, #9ca3af);
+  font-family: var(--font-body, 'Outfit', sans-serif);
+}
+
+.nav-btn:hover {
+  background: var(--color-background, #f9fafb);
+}
+
+.nav-btn.active {
+  background: linear-gradient(
+    135deg,
+    var(--color-primary, #6366f1) 0%,
+    var(--color-secondary, #ec4899) 100%
+  );
+  color: white;
+}
+
+.nav-btn:focus-visible {
+  outline: 2px solid var(--color-primary, #6366f1);
+  outline-offset: 2px;
+}
+
+.nav-icon {
+  font-size: 24px;
+  line-height: 1;
+}
+
+.nav-label {
+  font-size: 11px;
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+/* Hide bottom nav on desktop (>= 1024px) */
+@media (min-width: 1024px) {
+  .bottom-nav {
+    display: none;
+  }
+}
