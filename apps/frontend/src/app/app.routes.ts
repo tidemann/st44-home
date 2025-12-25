@@ -38,6 +38,11 @@ export const routes: Routes = [
     canActivate: [roleGuard(['admin', 'parent'])],
   },
   {
+    path: 'progress',
+    loadComponent: () => import('./pages/progress/progress').then((m) => m.Progress),
+    canActivate: [roleGuard(['admin', 'parent'])],
+  },
+  {
     path: 'household/create',
     loadComponent: () =>
       import('./components/household-create/household-create').then(

@@ -1,0 +1,122 @@
+<!-- Desktop Sidebar Navigation -->
+<app-sidebar-nav
+  class="desktop-nav"
+  [user]="sidebarUser()"
+  [activeScreen]="activeScreen()"
+  (navigate)="onNavigate($event)"
+/>
+
+<!-- Main Content Area -->
+<div class="main-content">
+  <!-- Loading State -->
+  @if (loading()) {
+    <div class="loading-container">
+      <div class="loading-spinner"></div>
+      <p>Loading progress...</p>
+    </div>
+  }
+
+  <!-- Error State -->
+  @if (error()) {
+    <div class="error-container">
+      <p class="error-message">{{ error() }}</p>
+      <button class="retry-button" (click)="loadData()">Try Again</button>
+    </div>
+  }
+
+  <!-- Main Content -->
+  @if (!loading() && !error()) {
+    <!-- Household Stats Section -->
+    <div class="stats-section">
+      <div class="stats-grid">
+        <div class="stat-box">
+          <div class="stat-value">{{ householdStats().totalPoints }}</div>
+          <div class="stat-label">Total Points</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-value">{{ householdStats().completionRate }}%</div>
+          <div class="stat-label">Completion Rate</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-value">{{ householdStats().tasksCompletedThisWeek }}</div>
+          <div class="stat-label">Tasks This Week</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Leaderboard Section -->
+    <div class="section">
+      <div class="section-header">
+        <h2>This Week's Leaders</h2>
+        <p class="section-subtitle">Great work, everyone!</p>
+      </div>
+
+      @if (hasLeaderboard()) {
+        <div class="leaderboard">
+          @for (entry of leaderboard(); track entry.userId) {
+            <div class="leaderboard-item" [class.current-user]="entry.isCurrentUser">
+              <div class="leaderboard-rank">{{ getMedalForRank(entry.rank) }}</div>
+              <div class="leaderboard-info">
+                <div class="leaderboard-name">{{ entry.name }}</div>
+                <div class="leaderboard-tasks">{{ entry.tasksCompleted }} tasks completed</div>
+              </div>
+              <div class="leaderboard-points">{{ entry.points }}</div>
+            </div>
+          }
+        </div>
+      } @else {
+        <div class="empty-state">
+          <p>No leaderboard data yet. Complete some tasks to get started!</p>
+        </div>
+      }
+    </div>
+
+    <!-- Achievements Section -->
+    <div class="section">
+      <div class="section-header">
+        <h2>Achievements</h2>
+        <p class="section-subtitle">Keep up the amazing progress!</p>
+      </div>
+
+      @if (hasAchievements()) {
+        <div class="achievements-grid">
+          @for (achievement of achievements(); track achievement.id) {
+            <div
+              class="achievement-card"
+              [class.unlocked]="achievement.unlocked"
+              [class.locked]="!achievement.unlocked"
+            >
+              <div class="achievement-icon">{{ achievement.icon }}</div>
+              <div class="achievement-info">
+                <h3>{{ achievement.name }}</h3>
+                <div class="achievement-desc">{{ achievement.description }}</div>
+                @if (!achievement.unlocked && achievement.progress !== undefined) {
+                  <div class="achievement-progress">
+                    <div class="progress-bar">
+                      <div class="progress-fill" [style.width.%]="achievement.progress"></div>
+                    </div>
+                    <div class="progress-text">{{ achievement.progress }}%</div>
+                  </div>
+                }
+                @if (achievement.unlocked) {
+                  <div class="achievement-unlocked">Unlocked!</div>
+                }
+              </div>
+            </div>
+          }
+        </div>
+      } @else {
+        <div class="empty-state">
+          <p>No achievements yet. Start completing tasks to unlock badges!</p>
+        </div>
+      }
+    </div>
+  }
+</div>
+
+<!-- Mobile Bottom Navigation -->
+<app-bottom-nav
+  class="mobile-nav"
+  [activeScreen]="activeScreen()"
+  (navigate)="onNavigate($event)"
+/>
