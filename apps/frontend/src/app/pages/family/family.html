@@ -1,0 +1,97 @@
+<!-- Loading State -->
+@if (loading()) {
+  <div class="loading-container">
+    <div class="spinner"></div>
+    <p>Loading family members...</p>
+  </div>
+}
+
+<!-- Error State -->
+@if (error() && !loading()) {
+  <div class="error-container">
+    <div class="error-icon">⚠️</div>
+    <h2>Oops!</h2>
+    <p>{{ error() }}</p>
+    <button class="btn-retry" (click)="loadData()">Try Again</button>
+  </div>
+}
+
+<!-- Main Content -->
+@if (!loading() && !error()) {
+  <div class="family-container">
+    <!-- Sidebar Navigation (Desktop) -->
+    <div class="sidebar-container">
+      <app-sidebar-nav
+        [activeScreen]="activeScreen()"
+        [user]="sidebarUser()"
+        (navigate)="onNavigate($event)"
+      />
+    </div>
+
+    <!-- Main Content Area -->
+    <div class="main-content">
+      <!-- Header with Gradient -->
+      <header class="header">
+        <div class="header-content">
+          <h1 class="logo">Diddit!</h1>
+        </div>
+      </header>
+
+      <!-- Content -->
+      <div class="content">
+        <!-- Household Info Section -->
+        <div class="household-info">
+          <div class="household-details">
+            <h2 class="household-name">{{ householdName() }}</h2>
+            <div class="household-count">{{ memberCount() }} members</div>
+          </div>
+        </div>
+
+        <!-- Action Buttons Section -->
+        <div class="action-buttons">
+          <button class="btn btn-primary" (click)="openInviteModal()">+ Invite Member</button>
+          <button class="btn btn-primary" (click)="openAddChildModal()">+ Add Child</button>
+        </div>
+
+        <!-- Family Members Section -->
+        <section class="members-section">
+          <div class="section-header">
+            <h2>Family Members</h2>
+          </div>
+
+          @if (members().length > 0) {
+            <div class="member-list">
+              @for (member of members(); track member.id) {
+                <app-member-card [member]="member" [showStats]="true" [clickable]="false" />
+              }
+            </div>
+          } @else {
+            <div class="empty-state">
+              <div class="empty-icon">👥</div>
+              <h3>No members yet</h3>
+              <p>Start inviting family members to your household.</p>
+            </div>
+          }
+        </section>
+      </div>
+
+      <!-- Bottom Navigation (Mobile) -->
+      <div class="bottom-nav-container">
+        <app-bottom-nav [activeScreen]="activeScreen()" (navigate)="onNavigate($event)" />
+      </div>
+    </div>
+
+    <!-- Modals -->
+    <app-invite-modal
+      [open]="inviteModalOpen()"
+      (closeRequested)="closeInviteModal()"
+      (inviteSent)="onInviteSent($event)"
+    />
+
+    <app-add-child-modal
+      [open]="addChildModalOpen()"
+      (closeRequested)="closeAddChildModal()"
+      (childAdded)="onChildAdded($event)"
+    />
+  </div>
+}
