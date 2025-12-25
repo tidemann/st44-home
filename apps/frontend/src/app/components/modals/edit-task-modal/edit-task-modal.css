@@ -1,0 +1,25 @@
+/* Edit Task Modal - Component-specific styles */
+
+.modal-actions-split {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--space-md);
+  margin-top: var(--space-lg);
+}
+
+.modal-actions-right {
+  display: flex;
+  gap: var(--space-md);
+}
+
+.delete-confirm {
+  padding: var(--space-md) 0;
+}
+
+.delete-confirm-text {
+  font-size: var(--font-size-base);
+  color: var(--color-text-primary);
+  margin-bottom: var(--space-lg);
+  line-height: var(--line-height-relaxed);
+}

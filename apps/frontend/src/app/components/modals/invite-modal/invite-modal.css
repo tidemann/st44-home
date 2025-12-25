@@ -1,0 +1,8 @@
+/* Invite Modal - Component-specific styles */
+
+.role-description {
+  margin-top: var(--space-xs);
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+  font-style: italic;
+}
