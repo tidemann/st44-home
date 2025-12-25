@@ -1,0 +1,639 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Proposal 1: Minimal & Refined - Household Task Manager</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Newsreader:wght@300;400;600&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            /* Refined color palette - sophisticated, not generic */
+            --color-primary: #2C3E50;      /* Deep slate */
+            --color-secondary: #8B7355;    /* Warm taupe */
+            --color-accent: #C9A076;       /* Soft gold */
+            --color-background: #FAFAF8;   /* Warm off-white */
+            --color-surface: #FFFFFF;
+            --color-text-primary: #1A1A1A;
+            --color-text-secondary: #5A5A5A;
+            --color-text-tertiary: #999999;
+            --color-border: #E5E5E3;
+            --color-success: #5A7D5F;
+            --color-danger: #9C4A47;
+
+            /* Typography */
+            --font-display: 'Newsreader', serif;
+            --font-body: 'Inter', sans-serif;
+
+            /* Spacing */
+            --space-xs: 0.5rem;
+            --space-sm: 1rem;
+            --space-md: 1.5rem;
+            --space-lg: 2rem;
+            --space-xl: 3rem;
+            --space-xxl: 4rem;
+
+            /* Transitions */
+            --transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        body {
+            font-family: var(--font-body);
+            background: var(--color-background);
+            color: var(--color-text-primary);
+            line-height: 1.6;
+            font-size: 15px;
+            font-weight: 300;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 220px 1fr;
+            min-height: 100vh;
+        }
+
+        /* Sidebar Navigation */
+        .sidebar {
+            background: var(--color-surface);
+            border-right: 1px solid var(--color-border);
+            padding: var(--space-xl) var(--space-md);
+        }
+
+        .logo {
+            font-family: var(--font-display);
+            font-size: 24px;
+            font-weight: 300;
+            color: var(--color-primary);
+            margin-bottom: var(--space-xxl);
+            letter-spacing: -0.02em;
+        }
+
+        .nav-menu {
+            list-style: none;
+        }
+
+        .nav-item {
+            margin-bottom: var(--space-xs);
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            padding: var(--space-sm) var(--space-md);
+            color: var(--color-text-secondary);
+            text-decoration: none;
+            border-radius: 8px;
+            transition: var(--transition);
+            font-weight: 400;
+        }
+
+        .nav-link:hover {
+            background: var(--color-background);
+            color: var(--color-primary);
+        }
+
+        .nav-link.active {
+            background: linear-gradient(135deg, var(--color-primary) 0%, #34495E 100%);
+            color: white;
+        }
+
+        .nav-icon {
+            width: 20px;
+            height: 20px;
+            margin-right: var(--space-sm);
+        }
+
+        /* Main Content */
+        .main-content {
+            padding: var(--space-xxl);
+        }
+
+        .header {
+            margin-bottom: var(--space-xxl);
+        }
+
+        .header-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: var(--space-lg);
+        }
+
+        h1 {
+            font-family: var(--font-display);
+            font-size: 42px;
+            font-weight: 300;
+            color: var(--color-primary);
+            letter-spacing: -0.03em;
+        }
+
+        .header-meta {
+            display: flex;
+            gap: var(--space-md);
+            align-items: center;
+        }
+
+        .household-name {
+            color: var(--color-text-tertiary);
+            font-size: 14px;
+            font-weight: 400;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--color-secondary) 0%, var(--color-accent) 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 500;
+            font-size: 14px;
+        }
+
+        /* Stats Overview */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: var(--space-md);
+            margin-bottom: var(--space-xxl);
+        }
+
+        .stat-card {
+            background: var(--color-surface);
+            padding: var(--space-lg);
+            border-radius: 12px;
+            border: 1px solid var(--color-border);
+        }
+
+        .stat-label {
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: var(--color-text-tertiary);
+            margin-bottom: var(--space-xs);
+            font-weight: 500;
+        }
+
+        .stat-value {
+            font-family: var(--font-display);
+            font-size: 36px;
+            font-weight: 300;
+            color: var(--color-primary);
+            letter-spacing: -0.02em;
+        }
+
+        .stat-subtitle {
+            font-size: 13px;
+            color: var(--color-text-secondary);
+            margin-top: var(--space-xs);
+        }
+
+        /* Task Sections */
+        .section {
+            margin-bottom: var(--space-xxl);
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: var(--space-lg);
+        }
+
+        h2 {
+            font-family: var(--font-display);
+            font-size: 28px;
+            font-weight: 400;
+            color: var(--color-primary);
+            letter-spacing: -0.02em;
+        }
+
+        .btn {
+            padding: var(--space-sm) var(--space-lg);
+            border-radius: 8px;
+            border: none;
+            font-family: var(--font-body);
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: var(--transition);
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: var(--space-xs);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--color-primary) 0%, #34495E 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(44, 62, 80, 0.2);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            border: 1px solid var(--color-border);
+            color: var(--color-text-primary);
+        }
+
+        .btn-secondary:hover {
+            background: var(--color-background);
+        }
+
+        /* Task List */
+        .task-list {
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-md);
+        }
+
+        .task-card {
+            background: var(--color-surface);
+            border: 1px solid var(--color-border);
+            border-radius: 12px;
+            padding: var(--space-lg);
+            display: grid;
+            grid-template-columns: auto 1fr auto auto;
+            gap: var(--space-md);
+            align-items: center;
+            transition: var(--transition);
+        }
+
+        .task-card:hover {
+            border-color: var(--color-secondary);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+        }
+
+        .task-checkbox {
+            width: 24px;
+            height: 24px;
+            border: 2px solid var(--color-border);
+            border-radius: 50%;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .task-checkbox:hover {
+            border-color: var(--color-secondary);
+        }
+
+        .task-info {
+            flex: 1;
+        }
+
+        .task-title {
+            font-size: 16px;
+            font-weight: 400;
+            color: var(--color-text-primary);
+            margin-bottom: var(--space-xs);
+        }
+
+        .task-meta {
+            display: flex;
+            gap: var(--space-md);
+            font-size: 13px;
+            color: var(--color-text-tertiary);
+        }
+
+        .task-assignee {
+            display: flex;
+            align-items: center;
+            gap: var(--space-xs);
+        }
+
+        .assignee-avatar {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: var(--color-accent);
+        }
+
+        .task-points {
+            display: flex;
+            align-items: center;
+            gap: var(--space-xs);
+            padding: var(--space-xs) var(--space-sm);
+            background: var(--color-background);
+            border-radius: 6px;
+            font-size: 13px;
+            color: var(--color-text-secondary);
+            font-weight: 500;
+        }
+
+        .points-value {
+            color: var(--color-accent);
+        }
+
+        .task-actions {
+            display: flex;
+            gap: var(--space-xs);
+        }
+
+        .icon-btn {
+            width: 32px;
+            height: 32px;
+            border: none;
+            background: transparent;
+            color: var(--color-text-tertiary);
+            border-radius: 6px;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .icon-btn:hover {
+            background: var(--color-background);
+            color: var(--color-text-primary);
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: var(--space-xxl) var(--space-lg);
+            background: var(--color-surface);
+            border-radius: 12px;
+            border: 1px dashed var(--color-border);
+        }
+
+        .empty-icon {
+            font-size: 48px;
+            color: var(--color-text-tertiary);
+            margin-bottom: var(--space-md);
+        }
+
+        .empty-title {
+            font-family: var(--font-display);
+            font-size: 20px;
+            font-weight: 400;
+            color: var(--color-text-secondary);
+            margin-bottom: var(--space-sm);
+        }
+
+        .empty-text {
+            color: var(--color-text-tertiary);
+            margin-bottom: var(--space-lg);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .container {
+                grid-template-columns: 1fr;
+            }
+
+            .sidebar {
+                display: none;
+            }
+
+            .main-content {
+                padding: var(--space-lg);
+            }
+
+            h1 {
+                font-size: 32px;
+            }
+
+            .task-card {
+                grid-template-columns: auto 1fr;
+            }
+
+            .task-points, .task-actions {
+                grid-column: 2;
+                justify-self: flex-end;
+            }
+        }
+
+        /* Animation */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .task-card {
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        .proposal-label {
+            position: fixed;
+            top: var(--space-md);
+            right: var(--space-md);
+            background: var(--color-primary);
+            color: white;
+            padding: var(--space-xs) var(--space-md);
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            z-index: 1000;
+        }
+    </style>
+</head>
+<body>
+    <div class="proposal-label">Proposal 1: Minimal & Refined</div>
+
+    <div class="container">
+        <!-- Sidebar Navigation -->
+        <nav class="sidebar">
+            <div class="logo">Household</div>
+            <ul class="nav-menu">
+                <li class="nav-item">
+                    <a href="#" class="nav-link active">
+                        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="3" y="3" width="7" height="7"></rect>
+                            <rect x="14" y="3" width="7" height="7"></rect>
+                            <rect x="14" y="14" width="7" height="7"></rect>
+                            <rect x="3" y="14" width="7" height="7"></rect>
+                        </svg>
+                        Dashboard
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link">
+                        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M9 11l3 3L22 4"></path>
+                            <path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"></path>
+                        </svg>
+                        Tasks
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link">
+                        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"></path>
+                            <circle cx="9" cy="7" r="4"></circle>
+                            <path d="M23 21v-2a4 4 0 00-3-3.87"></path>
+                            <path d="M16 3.13a4 4 0 010 7.75"></path>
+                        </svg>
+                        Household
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link">
+                        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M12 2L2 7l10 5 10-5-10-5z"></path>
+                            <path d="M2 17l10 5 10-5M2 12l10 5 10-5"></path>
+                        </svg>
+                        Progress
+                    </a>
+                </li>
+            </ul>
+        </nav>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Header -->
+            <header class="header">
+                <div class="header-top">
+                    <h1>Good morning, Sarah</h1>
+                    <div class="header-meta">
+                        <span class="household-name">The Smith Family</span>
+                        <div class="user-avatar">SM</div>
+                    </div>
+                </div>
+
+                <!-- Stats Overview -->
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-label">Today's Tasks</div>
+                        <div class="stat-value">4</div>
+                        <div class="stat-subtitle">2 remaining</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">This Week</div>
+                        <div class="stat-value">18</div>
+                        <div class="stat-subtitle">12 completed</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">Total Points</div>
+                        <div class="stat-value">340</div>
+                        <div class="stat-subtitle">+45 this week</div>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Today's Tasks -->
+            <section class="section">
+                <div class="section-header">
+                    <h2>Today's Tasks</h2>
+                    <button class="btn btn-primary">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <line x1="12" y1="5" x2="12" y2="19"></line>
+                            <line x1="5" y1="12" x2="19" y2="12"></line>
+                        </svg>
+                        Add Task
+                    </button>
+                </div>
+
+                <div class="task-list">
+                    <div class="task-card">
+                        <div class="task-checkbox"></div>
+                        <div class="task-info">
+                            <div class="task-title">Clean bathroom</div>
+                            <div class="task-meta">
+                                <span class="task-assignee">
+                                    <div class="assignee-avatar"></div>
+                                    Alex
+                                </span>
+                                <span>·</span>
+                                <span>Repeating</span>
+                            </div>
+                        </div>
+                        <div class="task-points">
+                            <span class="points-value">10</span> pts
+                        </div>
+                        <div class="task-actions">
+                            <button class="icon-btn" aria-label="Edit">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"></path>
+                                    <path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="task-card">
+                        <div class="task-checkbox"></div>
+                        <div class="task-info">
+                            <div class="task-title">Take out recycling</div>
+                            <div class="task-meta">
+                                <span class="task-assignee">
+                                    <div class="assignee-avatar"></div>
+                                    Jordan
+                                </span>
+                                <span>·</span>
+                                <span>Weekly</span>
+                            </div>
+                        </div>
+                        <div class="task-points">
+                            <span class="points-value">5</span> pts
+                        </div>
+                        <div class="task-actions">
+                            <button class="icon-btn" aria-label="Edit">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"></path>
+                                    <path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Upcoming Tasks -->
+            <section class="section">
+                <div class="section-header">
+                    <h2>Upcoming This Week</h2>
+                    <button class="btn btn-secondary">View All</button>
+                </div>
+
+                <div class="task-list">
+                    <div class="task-card">
+                        <div class="task-checkbox"></div>
+                        <div class="task-info">
+                            <div class="task-title">Vacuum living room</div>
+                            <div class="task-meta">
+                                <span class="task-assignee">
+                                    <div class="assignee-avatar"></div>
+                                    Sarah
+                                </span>
+                                <span>·</span>
+                                <span>Tomorrow</span>
+                            </div>
+                        </div>
+                        <div class="task-points">
+                            <span class="points-value">8</span> pts
+                        </div>
+                        <div class="task-actions">
+                            <button class="icon-btn" aria-label="Edit">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"></path>
+                                    <path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+</body>
+</html>

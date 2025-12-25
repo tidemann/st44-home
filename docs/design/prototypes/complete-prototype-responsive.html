@@ -1,0 +1,1778 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Diddit! - Complete Responsive Prototype</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --color-primary: #6366F1;
+            --color-secondary: #EC4899;
+            --color-accent: #FBBF24;
+            --color-success: #10B981;
+            --color-purple: #A855F7;
+            --color-orange: #F97316;
+            --color-background: #F8F9FF;
+            --color-surface: #FFFFFF;
+            --color-text-primary: #1E293B;
+            --color-text-secondary: #64748B;
+            --color-text-tertiary: #94A3B8;
+            --font-heading: 'Fredoka', sans-serif;
+            --font-body: 'Outfit', sans-serif;
+            --space-xs: 0.5rem;
+            --space-sm: 0.75rem;
+            --space-md: 1rem;
+            --space-lg: 1.5rem;
+            --space-xl: 2rem;
+            --space-xxl: 3rem;
+            --radius-sm: 16px;
+            --radius-md: 24px;
+            --radius-lg: 32px;
+            --radius-xl: 48px;
+        }
+
+        body {
+            font-family: var(--font-body);
+            background: var(--color-background);
+            color: var(--color-text-primary);
+            line-height: 1.6;
+            font-size: 15px;
+            overflow-x: hidden;
+        }
+
+        /* Responsive Container */
+        .app-container {
+            width: 100%;
+            background: var(--color-background);
+            min-height: 100vh;
+            display: grid;
+            grid-template-rows: auto 1fr;
+        }
+
+        /* Desktop Layout */
+        @media (min-width: 1024px) {
+            .app-container.authenticated {
+                grid-template-columns: 280px 1fr;
+                grid-template-rows: 1fr;
+            }
+
+            .sidebar-nav {
+                display: flex !important;
+            }
+
+            .bottom-nav {
+                display: none !important;
+            }
+
+            .main-content {
+                padding-bottom: var(--space-lg) !important;
+            }
+        }
+
+        /* Sidebar Navigation (Desktop) */
+        .sidebar-nav {
+            display: none;
+            background: var(--color-surface);
+            padding: var(--space-xl);
+            border-right: 1px solid rgba(0, 0, 0, 0.1);
+            flex-direction: column;
+        }
+
+        .sidebar-logo {
+            font-family: var(--font-heading);
+            font-size: 28px;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-secondary) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: var(--space-xxl);
+        }
+
+        .sidebar-menu {
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-sm);
+            flex: 1;
+        }
+
+        .sidebar-btn {
+            display: flex;
+            align-items: center;
+            gap: var(--space-md);
+            padding: var(--space-md) var(--space-lg);
+            background: transparent;
+            border: none;
+            border-radius: var(--radius-sm);
+            font-family: var(--font-body);
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--color-text-secondary);
+            cursor: pointer;
+            transition: all 0.2s;
+            text-align: left;
+        }
+
+        .sidebar-btn:hover {
+            background: var(--color-background);
+        }
+
+        .sidebar-btn.active {
+            background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-secondary) 100%);
+            color: white;
+        }
+
+        .sidebar-icon {
+            font-size: 24px;
+        }
+
+        .sidebar-add-btn {
+            margin-top: var(--space-lg);
+            margin-bottom: var(--space-lg);
+            padding: var(--space-md) var(--space-lg);
+            background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-secondary) 100%);
+            color: white;
+            border: none;
+            border-radius: var(--radius-sm);
+            font-family: var(--font-body);
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+        }
+
+        .sidebar-add-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(99, 102, 241, 0.4);
+        }
+
+        .sidebar-user {
+            margin-top: auto;
+            padding: var(--space-lg);
+            background: var(--color-background);
+            border-radius: var(--radius-md);
+            display: flex;
+            align-items: center;
+            gap: var(--space-md);
+        }
+
+        .sidebar-avatar {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-secondary) 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 700;
+        }
+
+        .sidebar-user-info h4 {
+            font-size: 16px;
+            font-weight: 700;
+            margin-bottom: var(--space-xs);
+        }
+
+        .sidebar-user-meta {
+            font-size: 13px;
+            color: var(--color-text-secondary);
+        }
+
+        /* Header */
+        .app-header {
+            background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-secondary) 100%);
+            padding: var(--space-xl) var(--space-lg);
+            color: white;
+            position: relative;
+            overflow: hidden;
+        }
+
+        @media (min-width: 768px) {
+            .app-header {
+                padding: var(--space-xxl) var(--space-xl);
+            }
+        }
+
+        @media (min-width: 1024px) {
+            .app-header {
+                border-radius: 0 0 var(--radius-xl) var(--radius-xl);
+                margin: var(--space-lg);
+                margin-bottom: 0;
+            }
+        }
+
+        .app-header::before {
+            content: "";
+            position: absolute;
+            width: 300px;
+            height: 300px;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.2) 0%, transparent 70%);
+            border-radius: 50%;
+            top: -100px;
+            right: -50px;
+        }
+
+        .header-content {
+            position: relative;
+            z-index: 1;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .logo {
+            font-family: var(--font-heading);
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: var(--space-sm);
+        }
+
+        .greeting {
+            font-family: var(--font-heading);
+            font-size: clamp(28px, 5vw, 42px);
+            font-weight: 700;
+            margin-bottom: var(--space-xs);
+            line-height: 1.2;
+        }
+
+        .subtitle {
+            font-size: 16px;
+            opacity: 0.95;
+        }
+
+        /* Main Content */
+        .main-content {
+            padding: var(--space-lg);
+            padding-bottom: 120px;
+            max-width: 1400px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        @media (min-width: 768px) {
+            .main-content {
+                padding: var(--space-xl);
+                padding-bottom: 120px;
+            }
+        }
+
+        @media (min-width: 1024px) {
+            .main-content {
+                padding: var(--space-xxl);
+                padding-bottom: var(--space-lg);
+            }
+        }
+
+        /* Screens */
+        .screen {
+            display: none;
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        .screen.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Stats Cards */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: var(--space-md);
+            margin-bottom: var(--space-xl);
+        }
+
+        @media (min-width: 768px) {
+            .stats-grid {
+                grid-template-columns: repeat(3, 1fr);
+                gap: var(--space-lg);
+            }
+        }
+
+        .stat-card {
+            background: var(--color-surface);
+            border-radius: var(--radius-md);
+            padding: var(--space-lg);
+            text-align: center;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            transition: transform 0.3s;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-4px);
+        }
+
+        .stat-emoji {
+            font-size: 36px;
+            margin-bottom: var(--space-sm);
+        }
+
+        .stat-number {
+            font-family: var(--font-heading);
+            font-size: 32px;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-secondary) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: var(--space-xs);
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: var(--color-text-secondary);
+            font-weight: 600;
+        }
+
+        /* Section Headers */
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: var(--space-lg);
+        }
+
+        h2 {
+            font-family: var(--font-heading);
+            font-size: clamp(20px, 4vw, 28px);
+            font-weight: 700;
+            color: var(--color-text-primary);
+        }
+
+        /* Filter Tabs */
+        .filter-tabs {
+            display: flex;
+            gap: var(--space-sm);
+            margin-bottom: var(--space-lg);
+            overflow-x: auto;
+            padding-bottom: var(--space-xs);
+        }
+
+        .filter-tab {
+            padding: var(--space-sm) var(--space-md);
+            background: var(--color-surface);
+            border-radius: var(--radius-lg);
+            font-weight: 600;
+            font-size: 14px;
+            white-space: nowrap;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: none;
+        }
+
+        .filter-tab.active {
+            background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-secondary) 100%);
+            color: white;
+        }
+
+        /* Task Cards */
+        .task-list {
+            display: grid;
+            gap: var(--space-md);
+        }
+
+        @media (min-width: 768px) {
+            .task-list {
+                grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+            }
+        }
+
+        @media (min-width: 1200px) {
+            .task-list {
+                grid-template-columns: repeat(auto-fill, minmax(450px, 1fr));
+            }
+        }
+
+        .task-card {
+            background: var(--color-surface);
+            border-radius: var(--radius-md);
+            padding: var(--space-lg);
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+            display: grid;
+            grid-template-columns: auto 1fr auto;
+            gap: var(--space-md);
+            align-items: center;
+            border-left: 6px solid var(--color-primary);
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+
+        .task-card:hover {
+            transform: translateX(8px);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
+        }
+
+        .task-complete-btn {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            border: none;
+            background: linear-gradient(135deg, var(--color-success) 0%, var(--color-accent) 100%);
+            color: white;
+            font-size: 20px;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .task-complete-btn:hover {
+            transform: scale(1.1);
+        }
+
+        .task-info {
+            flex: 1;
+            cursor: pointer;
+        }
+
+        .task-title {
+            font-family: var(--font-heading);
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--color-text-primary);
+            margin-bottom: var(--space-xs);
+        }
+
+        .task-meta {
+            display: flex;
+            align-items: center;
+            gap: var(--space-sm);
+            color: var(--color-text-secondary);
+            font-size: 14px;
+            flex-wrap: wrap;
+        }
+
+        .task-assignee {
+            display: flex;
+            align-items: center;
+            gap: var(--space-xs);
+        }
+
+        .mini-avatar {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--color-purple) 0%, var(--color-secondary) 100%);
+        }
+
+        .task-badge {
+            padding: var(--space-xs) var(--space-sm);
+            background: linear-gradient(135deg, var(--color-accent) 0%, var(--color-orange) 100%);
+            color: white;
+            border-radius: var(--radius-sm);
+            font-weight: 700;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: var(--space-xs);
+            box-shadow: 0 2px 8px rgba(251, 191, 36, 0.3);
+        }
+
+        /* Member & Leaderboard Cards */
+        .member-list, .leaderboard {
+            display: grid;
+            gap: var(--space-md);
+        }
+
+        @media (min-width: 768px) {
+            .member-list, .leaderboard {
+                grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            }
+        }
+
+        .member-card, .leaderboard-item {
+            background: var(--color-surface);
+            border-radius: var(--radius-md);
+            padding: var(--space-lg);
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+            display: flex;
+            align-items: center;
+            gap: var(--space-md);
+        }
+
+        .member-avatar, .leaderboard-rank {
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-secondary) 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 700;
+            font-size: 20px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            flex-shrink: 0;
+        }
+
+        .leaderboard-rank {
+            font-size: 32px;
+            background: transparent;
+            box-shadow: none;
+        }
+
+        .member-info, .leaderboard-info {
+            flex: 1;
+        }
+
+        .member-name, .leaderboard-name {
+            font-family: var(--font-heading);
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: var(--space-xs);
+        }
+
+        .member-role, .leaderboard-tasks {
+            color: var(--color-text-secondary);
+            font-size: 14px;
+        }
+
+        .member-stats {
+            text-align: right;
+        }
+
+        .member-points, .leaderboard-points {
+            font-family: var(--font-heading);
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--color-accent);
+        }
+
+        /* Buttons */
+        .btn {
+            padding: var(--space-md) var(--space-xl);
+            border-radius: var(--radius-lg);
+            border: none;
+            font-family: var(--font-body);
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: var(--space-sm);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-secondary) 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(99, 102, 241, 0.4);
+        }
+
+        .btn-secondary {
+            background: var(--color-surface);
+            color: var(--color-text-primary);
+        }
+
+        .btn-block {
+            width: 100%;
+        }
+
+        /* FAB */
+        .fab {
+            position: fixed;
+            bottom: 100px;
+            right: 20px;
+            width: 64px;
+            height: 64px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--color-accent) 0%, var(--color-orange) 100%);
+            color: white;
+            border: none;
+            font-size: 32px;
+            cursor: pointer;
+            box-shadow: 0 8px 24px rgba(251, 191, 36, 0.5);
+            transition: all 0.3s;
+            z-index: 100;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .fab:hover {
+            transform: scale(1.1) rotate(90deg);
+        }
+
+        /* Bottom Navigation */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: var(--color-surface);
+            padding: var(--space-md);
+            box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.1);
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: var(--space-sm);
+            z-index: 1000;
+        }
+
+        .nav-btn {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: var(--space-xs);
+            padding: var(--space-sm);
+            background: transparent;
+            border: none;
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            transition: all 0.2s;
+            color: var(--color-text-tertiary);
+        }
+
+        .nav-btn.active {
+            background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-secondary) 100%);
+            color: white;
+        }
+
+        .nav-icon {
+            font-size: 24px;
+        }
+
+        .nav-label {
+            font-size: 11px;
+            font-weight: 600;
+        }
+
+        /* Modal */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+            padding: var(--space-lg);
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .modal {
+            background: var(--color-surface);
+            border-radius: var(--radius-lg);
+            padding: var(--space-xl);
+            max-width: 500px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            font-family: var(--font-heading);
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: var(--space-lg);
+        }
+
+        .form-group {
+            margin-bottom: var(--space-lg);
+        }
+
+        .form-label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: var(--space-sm);
+            color: var(--color-text-secondary);
+        }
+
+        .form-input,
+        .form-select,
+        .form-textarea {
+            width: 100%;
+            padding: var(--space-md);
+            border: 2px solid var(--color-text-tertiary);
+            border-radius: var(--radius-sm);
+            font-family: var(--font-body);
+            font-size: 15px;
+            transition: border-color 0.2s;
+        }
+
+        .form-input:focus,
+        .form-select:focus,
+        .form-textarea:focus {
+            outline: none;
+            border-color: var(--color-primary);
+        }
+
+        .form-textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        .modal-actions {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: var(--space-md);
+            margin-top: var(--space-xl);
+        }
+
+        /* Auth Screens */
+        .auth-container {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: var(--space-lg);
+            background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-secondary) 100%);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .auth-container::before {
+            content: "";
+            position: absolute;
+            width: 800px;
+            height: 800px;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, transparent 70%);
+            border-radius: 50%;
+            top: -200px;
+            right: -200px;
+        }
+
+        .auth-card {
+            background: var(--color-surface);
+            border-radius: var(--radius-xl);
+            padding: var(--space-xxl);
+            max-width: 480px;
+            width: 100%;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            position: relative;
+            z-index: 1;
+        }
+
+        .auth-logo {
+            text-align: center;
+            margin-bottom: var(--space-xxl);
+        }
+
+        .auth-logo-icon {
+            font-size: 64px;
+            margin-bottom: var(--space-md);
+            display: none;
+        }
+
+        .auth-logo-text {
+            font-family: var(--font-heading);
+            font-size: 32px;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-secondary) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .auth-title {
+            font-family: var(--font-heading);
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: var(--space-sm);
+            text-align: center;
+        }
+
+        .auth-subtitle {
+            text-align: center;
+            color: var(--color-text-secondary);
+            margin-bottom: var(--space-xxl);
+        }
+
+        .auth-links {
+            text-align: center;
+            margin-top: var(--space-lg);
+        }
+
+        .auth-link {
+            color: var(--color-primary);
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .auth-link:hover {
+            text-decoration: underline;
+        }
+
+        .divider {
+            display: flex;
+            align-items: center;
+            gap: var(--space-md);
+            margin: var(--space-lg) 0;
+            color: var(--color-text-tertiary);
+        }
+
+        .divider::before,
+        .divider::after {
+            content: "";
+            flex: 1;
+            height: 1px;
+            background: var(--color-text-tertiary);
+        }
+
+        /* Success Animation */
+        .success-animation {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0);
+            background: linear-gradient(135deg, var(--color-success) 0%, var(--color-accent) 100%);
+            color: white;
+            padding: var(--space-xl);
+            border-radius: var(--radius-lg);
+            font-family: var(--font-heading);
+            font-size: 32px;
+            font-weight: 700;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            z-index: 3000;
+            pointer-events: none;
+        }
+
+        .success-animation.show {
+            animation: successPop 0.6s ease-out;
+        }
+
+        @keyframes successPop {
+            0% {
+                transform: translate(-50%, -50%) scale(0);
+                opacity: 0;
+            }
+            50% {
+                transform: translate(-50%, -50%) scale(1.1);
+                opacity: 1;
+            }
+            100% {
+                transform: translate(-50%, -50%) scale(0);
+                opacity: 0;
+            }
+        }
+
+        /* Utility Classes */
+        .household-header {
+            font-family: var(--font-heading);
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: var(--space-md);
+        }
+
+        .household-name {
+            display: flex;
+            align-items: center;
+            gap: var(--space-sm);
+            padding: var(--space-lg);
+            background: var(--color-surface);
+            border-radius: var(--radius-md);
+            margin-bottom: var(--space-xl);
+        }
+
+        .household-icon {
+            font-size: 32px;
+        }
+
+        .action-buttons {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: var(--space-md);
+            margin-bottom: var(--space-xl);
+        }
+
+        .achievements-grid {
+            display: grid;
+            gap: var(--space-md);
+        }
+
+        @media (min-width: 768px) {
+            .achievements-grid {
+                grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            }
+        }
+
+        .achievement-card {
+            background: var(--color-surface);
+            border-radius: var(--radius-md);
+            padding: var(--space-lg);
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+            display: flex;
+            align-items: center;
+            gap: var(--space-md);
+        }
+
+        .achievement-icon {
+            font-size: 48px;
+        }
+
+        .achievement-info h3 {
+            font-family: var(--font-heading);
+            font-size: 16px;
+            font-weight: 700;
+            margin-bottom: var(--space-xs);
+        }
+
+        .achievement-desc {
+            font-size: 13px;
+            color: var(--color-text-secondary);
+        }
+
+        .hidden {
+            display: none !important;
+        }
+    </style>
+</head>
+<body>
+    <!-- LOGIN SCREEN -->
+    <div id="screen-login" class="auth-container">
+        <div class="auth-card">
+            <div class="auth-logo">
+                <div class="auth-logo-icon">🏠</div>
+                <div class="auth-logo-text">Diddit!</div>
+            </div>
+            <h1 class="auth-title">Welcome Back!</h1>
+            <p class="auth-subtitle">Log in to manage your household tasks</p>
+            <form onsubmit="return login(event)">
+                <div class="form-group">
+                    <label class="form-label">Email</label>
+                    <input type="email" class="form-input" placeholder="you@example.com" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Password</label>
+                    <input type="password" class="form-input" placeholder="••••••••" required>
+                </div>
+                <div style="margin-bottom: var(--space-lg);">
+                    <label style="display: flex; align-items: center; gap: var(--space-sm); cursor: pointer;">
+                        <input type="checkbox">
+                        <span>Remember me</span>
+                    </label>
+                </div>
+                <button type="submit" class="btn btn-primary btn-block">Log In</button>
+            </form>
+            <div class="auth-links">
+                <a href="#" class="auth-link" onclick="showScreen('forgot-password'); return false;">Forgot password?</a>
+                <span> · </span>
+                <a href="#" class="auth-link" onclick="showScreen('register'); return false;">Create account</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- REGISTER SCREEN -->
+    <div id="screen-register" class="auth-container hidden">
+        <div class="auth-card">
+            <div class="auth-logo">
+                <div class="auth-logo-icon">🏠</div>
+                <div class="auth-logo-text">Diddit!</div>
+            </div>
+            <h1 class="auth-title">Create Account</h1>
+            <p class="auth-subtitle">Start managing your household today</p>
+            <form onsubmit="return register(event)">
+                <div class="form-group">
+                    <label class="form-label">Email</label>
+                    <input type="email" class="form-input" placeholder="you@example.com" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Password</label>
+                    <input type="password" class="form-input" placeholder="••••••••" minlength="8" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Confirm Password</label>
+                    <input type="password" class="form-input" placeholder="••••••••" minlength="8" required>
+                </div>
+                <button type="submit" class="btn btn-primary btn-block">Create Account</button>
+            </form>
+            <div class="auth-links">
+                Already have an account?
+                <a href="#" class="auth-link" onclick="showScreen('login'); return false;">Log in</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- FORGOT PASSWORD SCREEN -->
+    <div id="screen-forgot-password" class="auth-container hidden">
+        <div class="auth-card">
+            <div class="auth-logo">
+                <div class="auth-logo-icon">🔑</div>
+                <div class="auth-logo-text">Reset Password</div>
+            </div>
+            <h1 class="auth-title">Forgot Your Password?</h1>
+            <p class="auth-subtitle">Enter your email and we'll send you a link to reset your password</p>
+            <form onsubmit="return resetPassword(event)">
+                <div class="form-group">
+                    <label class="form-label">Email Address</label>
+                    <input type="email" class="form-input" placeholder="you@example.com" required>
+                </div>
+                <button type="submit" class="btn btn-primary btn-block">Send Reset Link</button>
+            </form>
+            <div class="auth-links">
+                <a href="#" class="auth-link" onclick="showScreen('login'); return false;">Back to login</a>
+                <span> · </span>
+                <a href="#" class="auth-link" onclick="showScreen('register'); return false;">Create account</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- HOUSEHOLD SETUP SCREEN -->
+    <div id="screen-setup-household" class="auth-container hidden">
+        <div class="auth-card">
+            <div class="auth-logo">
+                <div class="auth-logo-icon">🎉</div>
+                <div class="auth-logo-text">Welcome!</div>
+            </div>
+            <h1 class="auth-title">Let's Set Up Your Household</h1>
+            <p class="auth-subtitle">What should we call your household?</p>
+            <form onsubmit="return setupHousehold(event)">
+                <div class="form-group">
+                    <label class="form-label">Household Name</label>
+                    <input type="text" class="form-input" placeholder="e.g., The Smith Family" required>
+                </div>
+                <button type="submit" class="btn btn-primary btn-block">Create Household</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- MAIN APP -->
+    <div id="main-app" class="app-container authenticated hidden">
+        <!-- Sidebar Navigation (Desktop) -->
+        <nav class="sidebar-nav">
+            <div class="sidebar-logo">Diddit!</div>
+            <div class="sidebar-menu">
+                <button class="sidebar-btn active" onclick="switchScreen('home')">
+                    <span class="sidebar-icon">🏠</span>
+                    <span>Home</span>
+                </button>
+                <button class="sidebar-btn" onclick="switchScreen('tasks')">
+                    <span class="sidebar-icon">✓</span>
+                    <span>Tasks</span>
+                </button>
+                <button class="sidebar-btn" onclick="switchScreen('family')">
+                    <span class="sidebar-icon">👥</span>
+                    <span>Family</span>
+                </button>
+                <button class="sidebar-btn" onclick="switchScreen('progress')">
+                    <span class="sidebar-icon">🏆</span>
+                    <span>Progress</span>
+                </button>
+            </div>
+            <button class="sidebar-add-btn" onclick="showModal('quick-add')">+ Add Task</button>
+            <div class="sidebar-user">
+                <div class="sidebar-avatar">SM</div>
+                <div class="sidebar-user-info">
+                    <h4>Sarah</h4>
+                    <div class="sidebar-user-meta">The Smith Family</div>
+                </div>
+            </div>
+        </nav>
+
+        <div style="overflow-y: auto;">
+            <!-- Header -->
+            <div class="app-header">
+                <div class="header-content">
+                    <div class="logo">Diddit!</div>
+                    <div class="greeting">Hey Sarah!</div>
+                    <div class="subtitle">Let's get those tasks done today</div>
+                </div>
+            </div>
+
+            <div class="main-content">
+                <!-- HOME SCREEN -->
+                <div id="screen-home" class="screen active">
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-emoji">🎯</div>
+                            <div class="stat-number">4</div>
+                            <div class="stat-label">Active</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-emoji">🔥</div>
+                            <div class="stat-number">12</div>
+                            <div class="stat-label">Week</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-emoji">⭐</div>
+                            <div class="stat-number">340</div>
+                            <div class="stat-label">Points</div>
+                        </div>
+                    </div>
+
+                    <div class="section-header">
+                        <h2>Today's Tasks</h2>
+                    </div>
+
+                    <div class="task-list">
+                        <div class="task-card" data-task-id="1">
+                            <button class="task-complete-btn" onclick="completeTask(1)">✓</button>
+                            <div class="task-info" onclick="editTask('1', 'Clean bathroom', 'alex', 10, 'weekly')">
+                                <div class="task-title">Clean bathroom</div>
+                                <div class="task-meta">
+                                    <div class="task-assignee">
+                                        <div class="mini-avatar"></div>
+                                        Alex
+                                    </div>
+                                    <span>·</span>
+                                    <span>Repeating</span>
+                                </div>
+                            </div>
+                            <div class="task-badge">⭐ 10</div>
+                        </div>
+
+                        <div class="task-card" data-task-id="2">
+                            <button class="task-complete-btn" onclick="completeTask(2)">✓</button>
+                            <div class="task-info" onclick="editTask('2', 'Take out recycling', 'jordan', 5, 'weekly')">
+                                <div class="task-title">Take out recycling</div>
+                                <div class="task-meta">
+                                    <div class="task-assignee">
+                                        <div class="mini-avatar"></div>
+                                        Jordan
+                                    </div>
+                                    <span>·</span>
+                                    <span>Weekly</span>
+                                </div>
+                            </div>
+                            <div class="task-badge">⭐ 5</div>
+                        </div>
+
+                        <div class="task-card" data-task-id="3">
+                            <button class="task-complete-btn" onclick="completeTask(3)">✓</button>
+                            <div class="task-info" onclick="editTask('3', 'Water the plants', 'sarah', 3, 'daily')">
+                                <div class="task-title">Water the plants</div>
+                                <div class="task-meta">
+                                    <div class="task-assignee">
+                                        <div class="mini-avatar"></div>
+                                        Sarah
+                                    </div>
+                                    <span>·</span>
+                                    <span>Daily</span>
+                                </div>
+                            </div>
+                            <div class="task-badge">⭐ 3</div>
+                        </div>
+                    </div>
+
+                    <div style="margin-top: 2rem;">
+                        <div class="section-header">
+                            <h2>Coming Up</h2>
+                        </div>
+                        <div class="task-list">
+                            <div class="task-card">
+                                <div style="width: 48px; height: 48px; border-radius: 50%; background: linear-gradient(135deg, #F97316 0%, #EC4899 100%); display: flex; align-items: center; justify-content: center; font-size: 24px;">📆</div>
+                                <div class="task-info">
+                                    <div class="task-title">Vacuum living room</div>
+                                    <div class="task-meta">
+                                        <div class="task-assignee">
+                                            <div class="mini-avatar"></div>
+                                            Sarah
+                                        </div>
+                                        <span>·</span>
+                                        <span>Tomorrow</span>
+                                    </div>
+                                </div>
+                                <div class="task-badge">⭐ 8</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- TASKS SCREEN -->
+                <div id="screen-tasks" class="screen">
+                    <div class="section-header">
+                        <h2>All Tasks</h2>
+                    </div>
+
+                    <div class="filter-tabs">
+                        <button class="filter-tab active">All</button>
+                        <button class="filter-tab">My Tasks</button>
+                        <button class="filter-tab">By Person</button>
+                        <button class="filter-tab">Completed</button>
+                    </div>
+
+                    <div class="task-list">
+                        <div class="task-card" data-task-id="4">
+                            <button class="task-complete-btn">✓</button>
+                            <div class="task-info" onclick="editTask('4', 'Clean bathroom', 'alex', 10, 'weekly')">
+                                <div class="task-title">Clean bathroom</div>
+                                <div class="task-meta">
+                                    <div class="task-assignee">
+                                        <div class="mini-avatar"></div>
+                                        Alex
+                                    </div>
+                                    <span>·</span>
+                                    <span>Repeating</span>
+                                </div>
+                            </div>
+                            <div class="task-badge">⭐ 10</div>
+                        </div>
+
+                        <div class="task-card" data-task-id="5">
+                            <button class="task-complete-btn">✓</button>
+                            <div class="task-info" onclick="editTask('5', 'Take out recycling', 'jordan', 5, 'weekly')">
+                                <div class="task-title">Take out recycling</div>
+                                <div class="task-meta">
+                                    <div class="task-assignee">
+                                        <div class="mini-avatar"></div>
+                                        Jordan
+                                    </div>
+                                    <span>·</span>
+                                    <span>Weekly</span>
+                                </div>
+                            </div>
+                            <div class="task-badge">⭐ 5</div>
+                        </div>
+
+                        <div class="task-card" data-task-id="6">
+                            <button class="task-complete-btn">✓</button>
+                            <div class="task-info" onclick="editTask('6', 'Water the plants', 'sarah', 3, 'daily')">
+                                <div class="task-title">Water the plants</div>
+                                <div class="task-meta">
+                                    <div class="task-assignee">
+                                        <div class="mini-avatar"></div>
+                                        Sarah
+                                    </div>
+                                    <span>·</span>
+                                    <span>Daily</span>
+                                </div>
+                            </div>
+                            <div class="task-badge">⭐ 3</div>
+                        </div>
+
+                        <div class="task-card" data-task-id="7" style="opacity: 0.6;">
+                            <button class="task-complete-btn" style="background: #10B981;">✓</button>
+                            <div class="task-info" onclick="editTask('7', 'Make beds', 'alex', 3, 'daily')">
+                                <div class="task-title">Make beds</div>
+                                <div class="task-meta">
+                                    <div class="task-assignee">
+                                        <div class="mini-avatar"></div>
+                                        Alex
+                                    </div>
+                                    <span>·</span>
+                                    <span>Completed today</span>
+                                </div>
+                            </div>
+                            <div class="task-badge">⭐ 3</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- FAMILY SCREEN -->
+                <div id="screen-family" class="screen">
+                    <div class="household-name">
+                        <div style="flex: 1;">
+                            <h3 style="font-family: var(--font-heading); font-size: 20px; margin-bottom: 4px;">The Smith Family</h3>
+                            <div style="font-size: 14px; color: var(--color-text-secondary);">4 members</div>
+                        </div>
+                    </div>
+
+                    <div class="action-buttons">
+                        <button class="btn btn-primary" onclick="showModal('invite')">+ Invite Member</button>
+                        <button class="btn btn-primary" onclick="showModal('add-child')">+ Add Child</button>
+                    </div>
+
+                    <div class="household-header">Family Members</div>
+
+                    <div class="member-list">
+                        <div class="member-card">
+                            <div class="member-avatar">SM</div>
+                            <div class="member-info">
+                                <div class="member-name">Sarah (You)</div>
+                                <div class="member-role">Parent · 4 tasks this week</div>
+                            </div>
+                            <div class="member-stats">
+                                <div class="member-points">125</div>
+                                <div style="font-size: 12px; color: var(--color-text-tertiary);">pts/week</div>
+                            </div>
+                        </div>
+
+                        <div class="member-card">
+                            <div class="member-avatar">M</div>
+                            <div class="member-info">
+                                <div class="member-name">Marcus</div>
+                                <div class="member-role">Parent · 3 tasks this week</div>
+                            </div>
+                            <div class="member-stats">
+                                <div class="member-points">98</div>
+                                <div style="font-size: 12px; color: var(--color-text-tertiary);">pts/week</div>
+                            </div>
+                        </div>
+
+                        <div class="member-card">
+                            <div class="member-avatar">A</div>
+                            <div class="member-info">
+                                <div class="member-name">Alex (15)</div>
+                                <div class="member-role">Child · 5 tasks this week</div>
+                            </div>
+                            <div class="member-stats">
+                                <div class="member-points">87</div>
+                                <div style="font-size: 12px; color: var(--color-text-tertiary);">pts/week</div>
+                            </div>
+                        </div>
+
+                        <div class="member-card">
+                            <div class="member-avatar">J</div>
+                            <div class="member-info">
+                                <div class="member-name">Jordan (12)</div>
+                                <div class="member-role">Child · 3 tasks this week</div>
+                            </div>
+                            <div class="member-stats">
+                                <div class="member-points">56</div>
+                                <div style="font-size: 12px; color: var(--color-text-tertiary);">pts/week</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- PROGRESS SCREEN -->
+                <div id="screen-progress" class="screen">
+                    <div class="section-header">
+                        <h2>This Week's Leaders</h2>
+                    </div>
+
+                    <div class="leaderboard">
+                        <div class="leaderboard-item">
+                            <div class="leaderboard-rank">🥇</div>
+                            <div class="leaderboard-info">
+                                <div class="leaderboard-name">Sarah</div>
+                                <div class="leaderboard-tasks">12 tasks completed</div>
+                            </div>
+                            <div class="leaderboard-points">125</div>
+                        </div>
+
+                        <div class="leaderboard-item">
+                            <div class="leaderboard-rank">🥈</div>
+                            <div class="leaderboard-info">
+                                <div class="leaderboard-name">Marcus</div>
+                                <div class="leaderboard-tasks">9 tasks completed</div>
+                            </div>
+                            <div class="leaderboard-points">98</div>
+                        </div>
+
+                        <div class="leaderboard-item">
+                            <div class="leaderboard-rank">🥉</div>
+                            <div class="leaderboard-info">
+                                <div class="leaderboard-name">Alex</div>
+                                <div class="leaderboard-tasks">11 tasks completed</div>
+                            </div>
+                            <div class="leaderboard-points">87</div>
+                        </div>
+
+                        <div class="leaderboard-item">
+                            <div class="leaderboard-rank">4️⃣</div>
+                            <div class="leaderboard-info">
+                                <div class="leaderboard-name">Jordan</div>
+                                <div class="leaderboard-tasks">7 tasks completed</div>
+                            </div>
+                            <div class="leaderboard-points">56</div>
+                        </div>
+                    </div>
+
+                    <div style="margin-top: 2rem;">
+                        <div class="section-header">
+                            <h2>Achievements</h2>
+                        </div>
+
+                        <div class="achievements-grid">
+                            <div class="achievement-card">
+                                <div class="achievement-icon">⭐</div>
+                                <div class="achievement-info">
+                                    <h3>Early Bird</h3>
+                                    <div class="achievement-desc">Completed tasks 5 days in a row</div>
+                                </div>
+                            </div>
+
+                            <div class="achievement-card">
+                                <div class="achievement-icon">🔥</div>
+                                <div class="achievement-info">
+                                    <h3>Streak Master</h3>
+                                    <div class="achievement-desc">30 day completion streak</div>
+                                </div>
+                            </div>
+
+                            <div class="achievement-card">
+                                <div class="achievement-icon">🌟</div>
+                                <div class="achievement-info">
+                                    <h3>Century Club</h3>
+                                    <div class="achievement-desc">100 tasks completed</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- FAB -->
+        <button class="fab" onclick="showModal('quick-add')">+</button>
+
+        <!-- Bottom Navigation (Mobile) -->
+        <div class="bottom-nav">
+            <button class="nav-btn active" onclick="switchScreen('home')">
+                <div class="nav-icon">🏠</div>
+                <div class="nav-label">Home</div>
+            </button>
+            <button class="nav-btn" onclick="switchScreen('tasks')">
+                <div class="nav-icon">✓</div>
+                <div class="nav-label">Tasks</div>
+            </button>
+            <button class="nav-btn" onclick="switchScreen('family')">
+                <div class="nav-icon">👥</div>
+                <div class="nav-label">Family</div>
+            </button>
+            <button class="nav-btn" onclick="switchScreen('progress')">
+                <div class="nav-icon">🏆</div>
+                <div class="nav-label">Progress</div>
+            </button>
+        </div>
+    </div>
+
+    <!-- Modals -->
+    <div id="modal-quick-add" class="modal-overlay">
+        <div class="modal">
+            <div class="modal-header">Quick Add Task</div>
+            <form onsubmit="return createTask(event)">
+                <div class="form-group">
+                    <label class="form-label">Task Name *</label>
+                    <input type="text" class="form-input" placeholder="e.g., Take out trash" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Assign to *</label>
+                    <select class="form-select" required>
+                        <option value="">Choose person...</option>
+                        <option value="sarah">Sarah</option>
+                        <option value="marcus">Marcus</option>
+                        <option value="alex">Alex</option>
+                        <option value="jordan">Jordan</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Points</label>
+                    <input type="number" class="form-input" value="5" min="1" max="100">
+                </div>
+                <div class="modal-actions">
+                    <button type="button" class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Create</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div id="modal-invite" class="modal-overlay">
+        <div class="modal">
+            <div class="modal-header">Invite Family Member</div>
+            <form onsubmit="return sendInvite(event)">
+                <div class="form-group">
+                    <label class="form-label">Email Address *</label>
+                    <input type="email" class="form-input" placeholder="family@example.com" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Role *</label>
+                    <select class="form-select" required>
+                        <option value="parent">Parent (Admin)</option>
+                        <option value="adult">Adult Member</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Personal Message (Optional)</label>
+                    <textarea class="form-textarea" placeholder="Join our household to help manage tasks together!"></textarea>
+                </div>
+                <div class="modal-actions">
+                    <button type="button" class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Send Invite</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div id="modal-add-child" class="modal-overlay">
+        <div class="modal">
+            <div class="modal-header">Add Child</div>
+            <form onsubmit="return addChild(event)">
+                <div class="form-group">
+                    <label class="form-label">Child's Name *</label>
+                    <input type="text" class="form-input" placeholder="e.g., Emma" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Age *</label>
+                    <input type="number" class="form-input" placeholder="e.g., 10" min="1" max="18" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Avatar Emoji</label>
+                    <select class="form-select">
+                        <option value="😊">😊 Happy</option>
+                        <option value="🎮">🎮 Gamer</option>
+                        <option value="⚽">⚽ Sports</option>
+                        <option value="📚">📚 Bookworm</option>
+                        <option value="🎨">🎨 Artist</option>
+                    </select>
+                </div>
+                <div class="modal-actions">
+                    <button type="button" class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Add Child</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div id="modal-edit-task" class="modal-overlay">
+        <div class="modal">
+            <div class="modal-header">Edit Task</div>
+            <form onsubmit="return updateTask(event)">
+                <input type="hidden" id="edit-task-id">
+                <div class="form-group">
+                    <label class="form-label">Task Name *</label>
+                    <input type="text" id="edit-task-name" class="form-input" placeholder="e.g., Take out trash" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Assign to *</label>
+                    <select id="edit-task-assignee" class="form-select" required>
+                        <option value="sarah">Sarah (You)</option>
+                        <option value="alex">Alex</option>
+                        <option value="jordan">Jordan</option>
+                        <option value="marcus">Marcus</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Points *</label>
+                    <input type="number" id="edit-task-points" class="form-input" min="1" max="100" value="5" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Recurrence</label>
+                    <select id="edit-task-recurrence" class="form-select">
+                        <option value="once">One-time</option>
+                        <option value="daily">Daily</option>
+                        <option value="weekly">Weekly</option>
+                        <option value="monthly">Monthly</option>
+                    </select>
+                </div>
+                <div class="modal-actions">
+                    <button type="button" class="btn btn-secondary" onclick="deleteTask()">Delete</button>
+                    <button type="button" class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save Changes</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div id="success-animation" class="success-animation">+10 Points!</div>
+
+    <script>
+        // Screen Management
+        function showScreen(screenName) {
+            // Hide all auth screens
+            document.querySelectorAll('.auth-container').forEach(screen => {
+                screen.classList.add('hidden');
+            });
+
+            // Show selected screen
+            document.getElementById('screen-' + screenName).classList.remove('hidden');
+        }
+
+        function login(e) {
+            e.preventDefault();
+            // Simulate login - show household setup for new users or main app for existing
+            showScreen('setup-household');
+            return false;
+        }
+
+        function register(e) {
+            e.preventDefault();
+            showScreen('setup-household');
+            return false;
+        }
+
+        function resetPassword(e) {
+            e.preventDefault();
+            const animation = document.getElementById('success-animation');
+            animation.textContent = 'Reset link sent!';
+            animation.classList.add('show');
+            setTimeout(() => {
+                animation.classList.remove('show');
+                animation.textContent = '+10 Points!';
+                showScreen('login');
+            }, 2000);
+            return false;
+        }
+
+        function setupHousehold(e) {
+            e.preventDefault();
+            // Hide all auth screens
+            document.querySelectorAll('.auth-container').forEach(screen => {
+                screen.classList.add('hidden');
+            });
+            // Show main app
+            document.getElementById('main-app').classList.remove('hidden');
+            return false;
+        }
+
+        // Main App Navigation
+        function switchScreen(screenName) {
+            // Hide all screens
+            document.querySelectorAll('.main-content .screen').forEach(screen => {
+                screen.classList.remove('active');
+            });
+
+            // Show selected screen
+            document.getElementById('screen-' + screenName).classList.add('active');
+
+            // Update nav buttons (both mobile and desktop)
+            document.querySelectorAll('.nav-btn, .sidebar-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.closest('.nav-btn, .sidebar-btn').classList.add('active');
+        }
+
+        // Modal Management
+        function showModal(modalId) {
+            const modal = document.getElementById('modal-' + modalId);
+            if (modal) {
+                modal.classList.add('active');
+            }
+        }
+
+        function closeModal() {
+            document.querySelectorAll('.modal-overlay').forEach(modal => {
+                modal.classList.remove('active');
+            });
+        }
+
+        // Close modal on overlay click
+        document.querySelectorAll('.modal-overlay').forEach(overlay => {
+            overlay.addEventListener('click', function(e) {
+                if (e.target === overlay) {
+                    closeModal();
+                }
+            });
+        });
+
+        // Task Completion
+        function completeTask(taskId) {
+            const animation = document.getElementById('success-animation');
+            animation.classList.add('show');
+
+            const taskCard = document.querySelector(`[data-task-id="${taskId}"]`);
+            if (taskCard) {
+                taskCard.style.opacity = '0.6';
+                setTimeout(() => {
+                    taskCard.style.display = 'none';
+                }, 300);
+            }
+
+            setTimeout(() => {
+                animation.classList.remove('show');
+            }, 600);
+        }
+
+        // Form Submissions
+        function createTask(e) {
+            e.preventDefault();
+            closeModal();
+            const animation = document.getElementById('success-animation');
+            animation.textContent = 'Task Created!';
+            animation.classList.add('show');
+            setTimeout(() => {
+                animation.classList.remove('show');
+                animation.textContent = '+10 Points!';
+            }, 600);
+            return false;
+        }
+
+        function sendInvite(e) {
+            e.preventDefault();
+            closeModal();
+            const animation = document.getElementById('success-animation');
+            animation.textContent = 'Invitation Sent!';
+            animation.classList.add('show');
+            setTimeout(() => {
+                animation.classList.remove('show');
+                animation.textContent = '+10 Points!';
+            }, 600);
+            return false;
+        }
+
+        function addChild(e) {
+            e.preventDefault();
+            closeModal();
+            const animation = document.getElementById('success-animation');
+            animation.textContent = 'Child Added!';
+            animation.classList.add('show');
+            setTimeout(() => {
+                animation.classList.remove('show');
+                animation.textContent = '+10 Points!';
+            }, 600);
+            return false;
+        }
+
+        // Edit Task
+        let currentEditTaskId = null;
+
+        function editTask(taskId, taskName, assignee, points, recurrence) {
+            currentEditTaskId = taskId;
+            document.getElementById('edit-task-id').value = taskId;
+            document.getElementById('edit-task-name').value = taskName;
+            document.getElementById('edit-task-assignee').value = assignee;
+            document.getElementById('edit-task-points').value = points;
+            document.getElementById('edit-task-recurrence').value = recurrence || 'once';
+            showModal('edit-task');
+        }
+
+        function updateTask(e) {
+            e.preventDefault();
+            closeModal();
+            const animation = document.getElementById('success-animation');
+            animation.textContent = 'Task Updated!';
+            animation.classList.add('show');
+            setTimeout(() => {
+                animation.classList.remove('show');
+                animation.textContent = '+10 Points!';
+            }, 600);
+            return false;
+        }
+
+        function deleteTask() {
+            if (confirm('Are you sure you want to delete this task?')) {
+                const taskCard = document.querySelector(`[data-task-id="${currentEditTaskId}"]`);
+                if (taskCard) {
+                    taskCard.style.opacity = '0';
+                    setTimeout(() => {
+                        taskCard.style.display = 'none';
+                    }, 300);
+                }
+                closeModal();
+                const animation = document.getElementById('success-animation');
+                animation.textContent = 'Task Deleted!';
+                animation.classList.add('show');
+                setTimeout(() => {
+                    animation.classList.remove('show');
+                    animation.textContent = '+10 Points!';
+                }, 600);
+            }
+        }
+    </script>
+</body>
+</html>

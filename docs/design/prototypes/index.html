@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UI/UX Redesign - 5 Design Proposals</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 3rem 1.5rem;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            color: white;
+            margin-bottom: 3rem;
+        }
+
+        h1 {
+            font-size: 3rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+        }
+
+        .subtitle {
+            font-size: 1.25rem;
+            opacity: 0.95;
+        }
+
+        .proposals-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        .proposal-card {
+            background: white;
+            border-radius: 24px;
+            padding: 2rem;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+            transition: transform 0.3s, box-shadow 0.3s;
+            text-decoration: none;
+            color: inherit;
+            display: block;
+        }
+
+        .proposal-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 30px 80px rgba(0, 0, 0, 0.3);
+        }
+
+        .proposal-number {
+            font-size: 3rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 1rem;
+        }
+
+        .proposal-title {
+            font-size: 1.75rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            color: #1a1a1a;
+        }
+
+        .proposal-aesthetic {
+            font-size: 0.95rem;
+            color: #666;
+            margin-bottom: 1rem;
+            font-style: italic;
+        }
+
+        .proposal-description {
+            color: #555;
+            line-height: 1.6;
+            margin-bottom: 1.5rem;
+        }
+
+        .proposal-keywords {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .keyword {
+            padding: 0.5rem 1rem;
+            background: #f0f0f0;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+
+        .view-button {
+            display: inline-block;
+            padding: 1rem 2rem;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 12px;
+            font-weight: 600;
+            text-align: center;
+            transition: transform 0.2s;
+        }
+
+        .view-button:hover {
+            transform: scale(1.05);
+        }
+
+        .info-section {
+            background: white;
+            border-radius: 24px;
+            padding: 2.5rem;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+            margin-bottom: 2rem;
+        }
+
+        .info-section h2 {
+            font-size: 2rem;
+            margin-bottom: 1.5rem;
+            color: #1a1a1a;
+        }
+
+        .info-section p {
+            line-height: 1.7;
+            color: #555;
+            margin-bottom: 1rem;
+        }
+
+        .info-section ul {
+            list-style-position: inside;
+            color: #555;
+            line-height: 2;
+        }
+
+        .info-section ul li {
+            margin-bottom: 0.5rem;
+        }
+
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1.5rem;
+        }
+
+        .comparison-table th,
+        .comparison-table td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .comparison-table th {
+            background: #f8f8f8;
+            font-weight: 600;
+        }
+
+        footer {
+            text-align: center;
+            color: white;
+            margin-top: 3rem;
+            opacity: 0.9;
+        }
+
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2rem;
+            }
+
+            .proposals-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🎨 UI/UX Redesign Proposals</h1>
+            <p class="subtitle">Household Task Management Application - Issue #184</p>
+        </header>
+
+        <div class="info-section">
+            <h2>📋 How to Review</h2>
+            <p><strong>Click on each proposal below</strong> to open the full prototype in a new tab. Each design is a complete, functional demonstration of the proposed aesthetic.</p>
+            <ul>
+                <li>Resize your browser window to test responsive behavior</li>
+                <li>Consider which design feels most "you"</li>
+                <li>Think about your household members and their preferences</li>
+                <li>Imagine using this design daily for task management</li>
+            </ul>
+            <p style="margin-top: 1.5rem;"><strong>All proposals solve the same core UX problems:</strong> navigation structure, visual hierarchy, information architecture, empty states, and dashboard overview. The difference is the aesthetic direction and emotional tone.</p>
+        </div>
+
+        <div class="proposals-grid">
+            <!-- Proposal 1 -->
+            <a href="proposal-1-minimal-refined.html" target="_blank" class="proposal-card">
+                <div class="proposal-number">01</div>
+                <h3 class="proposal-title">Minimal & Refined</h3>
+                <p class="proposal-aesthetic">Sophisticated · Clean · Elegant</p>
+                <p class="proposal-description">
+                    A timeless design with refined color palette (slate, taupe, gold), elegant serif typography, and generous whitespace. Professional and organized.
+                </p>
+                <div class="proposal-keywords">
+                    <span class="keyword">Sophisticated</span>
+                    <span class="keyword">Timeless</span>
+                    <span class="keyword">Premium</span>
+                </div>
+                <div class="view-button">View Proposal →</div>
+            </a>
+
+            <!-- Proposal 2 -->
+            <a href="proposal-2-editorial-magazine.html" target="_blank" class="proposal-card">
+                <div class="proposal-number">02</div>
+                <h3 class="proposal-title">Editorial & Magazine</h3>
+                <p class="proposal-aesthetic">Bold · Dramatic · High-Contrast</p>
+                <p class="proposal-description">
+                    Striking magazine-style layout with bold typography, dramatic black backgrounds, and asymmetrical grids. Confident and memorable.
+                </p>
+                <div class="proposal-keywords">
+                    <span class="keyword">Bold</span>
+                    <span class="keyword">Dramatic</span>
+                    <span class="keyword">Striking</span>
+                </div>
+                <div class="view-button">View Proposal →</div>
+            </a>
+
+            <!-- Proposal 3 -->
+            <a href="proposal-3-soft-pastel.html" target="_blank" class="proposal-card">
+                <div class="proposal-number">03</div>
+                <h3 class="proposal-title">Soft & Pastel</h3>
+                <p class="proposal-aesthetic">Warm · Familial · Welcoming</p>
+                <p class="proposal-description">
+                    Gentle pastel colors (rose, sage, peach), rounded shapes, and encouraging language. Perfect for families with young children. Calm and stress-free.
+                </p>
+                <div class="proposal-keywords">
+                    <span class="keyword">Family-Friendly</span>
+                    <span class="keyword">Warm</span>
+                    <span class="keyword">Gentle</span>
+                </div>
+                <div class="view-button">View Proposal →</div>
+            </a>
+
+            <!-- Proposal 4 -->
+            <a href="proposal-4-industrial-utilitarian.html" target="_blank" class="proposal-card">
+                <div class="proposal-number">04</div>
+                <h3 class="proposal-title">Industrial & Utilitarian</h3>
+                <p class="proposal-aesthetic">Functional · Technical · Efficient</p>
+                <p class="proposal-description">
+                    Grid-based modular design with technical typography, table layouts, and data-driven approach. Efficient and precise for tech-savvy users.
+                </p>
+                <div class="proposal-keywords">
+                    <span class="keyword">Efficient</span>
+                    <span class="keyword">Technical</span>
+                    <span class="keyword">Data-Driven</span>
+                </div>
+                <div class="view-button">View Proposal →</div>
+            </a>
+
+            <!-- Proposal 5 -->
+            <a href="proposal-5-playful-modern.html" target="_blank" class="proposal-card">
+                <div class="proposal-number">05</div>
+                <h3 class="proposal-title">Playful & Modern</h3>
+                <p class="proposal-aesthetic">Vibrant · Gamified · Engaging</p>
+                <p class="proposal-description">
+                    Bright gradients, gamification language ("Quests", "Stars"), and playful animations. Makes household tasks feel like a fun game. Energetic and motivating.
+                </p>
+                <div class="proposal-keywords">
+                    <span class="keyword">Gamified</span>
+                    <span class="keyword">Fun</span>
+                    <span class="keyword">Energetic</span>
+                </div>
+                <div class="view-button">View Proposal →</div>
+            </a>
+        </div>
+
+        <div class="info-section">
+            <h2>📊 Quick Comparison</h2>
+            <table class="comparison-table">
+                <thead>
+                    <tr>
+                        <th>Aspect</th>
+                        <th>Proposal 1</th>
+                        <th>Proposal 2</th>
+                        <th>Proposal 3</th>
+                        <th>Proposal 4</th>
+                        <th>Proposal 5</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Formality</strong></td>
+                        <td>High</td>
+                        <td>Medium-High</td>
+                        <td>Low</td>
+                        <td>Very High</td>
+                        <td>Very Low</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Playfulness</strong></td>
+                        <td>Low</td>
+                        <td>Low</td>
+                        <td>Medium</td>
+                        <td>Very Low</td>
+                        <td>Very High</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Visual Impact</strong></td>
+                        <td>Medium</td>
+                        <td>Very High</td>
+                        <td>Medium</td>
+                        <td>Low</td>
+                        <td>Very High</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Family-Friendly</strong></td>
+                        <td>Medium</td>
+                        <td>Low</td>
+                        <td>Very High</td>
+                        <td>Low</td>
+                        <td>High</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Best For</strong></td>
+                        <td>Adults, Professional</td>
+                        <td>Bold Personalities</td>
+                        <td>Young Families</td>
+                        <td>Tech-Savvy</td>
+                        <td>Teens, Gamers</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="info-section">
+            <h2>✅ What's Next?</h2>
+            <p><strong>After reviewing all proposals, please select your favorite (1-5).</strong></p>
+            <p>Once you make your selection, I will:</p>
+            <ul>
+                <li>Create a detailed implementation plan</li>
+                <li>Break down the work into GitHub issues</li>
+                <li>Set up the design system (colors, typography, components)</li>
+                <li>Begin Angular 21+ implementation</li>
+                <li>Ensure WCAG 2.1 AA accessibility compliance</li>
+            </ul>
+            <p style="margin-top: 1.5rem;"><strong>For full details,</strong> read the <code>design-proposals-overview.md</code> file in this directory.</p>
+        </div>
+
+        <footer>
+            <p>Household Task Management Application · Issue #184 · December 24, 2025</p>
+            <p style="margin-top: 0.5rem;">Ready to transform your household management! 🚀</p>
+        </footer>
+    </div>
+</body>
+</html>

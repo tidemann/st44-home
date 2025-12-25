@@ -1,0 +1,629 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Proposal 5: Playful & Modern - Household Task Manager</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            /* Vibrant, playful palette */
+            --color-primary: #6366F1;        /* Vibrant indigo */
+            --color-secondary: #EC4899;      /* Hot pink */
+            --color-accent: #FBBF24;         /* Bright yellow */
+            --color-success: #10B981;        /* Green */
+            --color-purple: #A855F7;         /* Purple */
+            --color-orange: #F97316;         /* Orange */
+            --color-background: #F8F9FF;     /* Light blue tint */
+            --color-surface: #FFFFFF;
+            --color-text-primary: #1E293B;
+            --color-text-secondary: #64748B;
+            --color-text-tertiary: #94A3B8;
+
+            /* Typography - Friendly and rounded */
+            --font-heading: 'Fredoka', sans-serif;
+            --font-body: 'Outfit', sans-serif;
+
+            /* Spacing */
+            --space-xs: 0.5rem;
+            --space-sm: 0.75rem;
+            --space-md: 1rem;
+            --space-lg: 1.5rem;
+            --space-xl: 2rem;
+            --space-xxl: 3rem;
+
+            /* Playful curves */
+            --radius-sm: 16px;
+            --radius-md: 24px;
+            --radius-lg: 32px;
+            --radius-xl: 48px;
+        }
+
+        body {
+            font-family: var(--font-body);
+            background: var(--color-background);
+            color: var(--color-text-primary);
+            line-height: 1.6;
+            font-size: 15px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: var(--space-xl);
+        }
+
+        /* Floating Header */
+        .header {
+            background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-secondary) 100%);
+            border-radius: var(--radius-xl);
+            padding: var(--space-xl);
+            margin-bottom: var(--space-xl);
+            box-shadow: 0 20px 60px rgba(99, 102, 241, 0.3);
+            position: relative;
+            overflow: hidden;
+            color: white;
+        }
+
+        .header::before {
+            content: "";
+            position: absolute;
+            width: 300px;
+            height: 300px;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.2) 0%, transparent 70%);
+            border-radius: 50%;
+            top: -100px;
+            right: -50px;
+        }
+
+        .header::after {
+            content: "";
+            position: absolute;
+            width: 200px;
+            height: 200px;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.15) 0%, transparent 70%);
+            border-radius: 50%;
+            bottom: -50px;
+            left: 10%;
+        }
+
+        .header-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .header-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: var(--space-lg);
+        }
+
+        .logo {
+            font-family: var(--font-heading);
+            font-size: 32px;
+            font-weight: 700;
+        }
+
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: var(--space-md);
+            background: rgba(255, 255, 255, 0.2);
+            padding: var(--space-sm) var(--space-md);
+            border-radius: var(--radius-lg);
+            backdrop-filter: blur(10px);
+        }
+
+        .avatar {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--color-accent) 0%, var(--color-orange) 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 18px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        }
+
+        .user-info {
+            font-weight: 600;
+        }
+
+        .greeting {
+            font-family: var(--font-heading);
+            font-size: 56px;
+            font-weight: 700;
+            margin-bottom: var(--space-sm);
+            line-height: 1.1;
+        }
+
+        .greeting-emoji {
+            display: inline-block;
+            animation: wave 2s ease-in-out infinite;
+        }
+
+        @keyframes wave {
+            0%, 100% { transform: rotate(0deg); }
+            25% { transform: rotate(20deg); }
+            75% { transform: rotate(-10deg); }
+        }
+
+        .subtitle {
+            font-size: 20px;
+            opacity: 0.95;
+        }
+
+        /* Stats - Gamified Cards */
+        .stats-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: var(--space-lg);
+            margin-bottom: var(--space-xxl);
+        }
+
+        .stat-card {
+            background: var(--color-surface);
+            border-radius: var(--radius-md);
+            padding: var(--space-xl);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-8px) rotate(-1deg);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.12);
+        }
+
+        .stat-card::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 6px;
+            background: linear-gradient(90deg, var(--color-primary) 0%, var(--color-secondary) 100%);
+        }
+
+        .stat-card:nth-child(2)::before {
+            background: linear-gradient(90deg, var(--color-success) 0%, var(--color-accent) 100%);
+        }
+
+        .stat-card:nth-child(3)::before {
+            background: linear-gradient(90deg, var(--color-orange) 0%, var(--color-secondary) 100%);
+        }
+
+        .stat-emoji {
+            font-size: 64px;
+            margin-bottom: var(--space-md);
+            display: inline-block;
+            animation: bounce 2s ease-in-out infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .stat-number {
+            font-family: var(--font-heading);
+            font-size: 48px;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-secondary) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: var(--space-xs);
+        }
+
+        .stat-label {
+            font-weight: 600;
+            color: var(--color-text-secondary);
+            font-size: 16px;
+        }
+
+        /* Section Headers */
+        .section {
+            margin-bottom: var(--space-xxl);
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: var(--space-lg);
+        }
+
+        h2 {
+            font-family: var(--font-heading);
+            font-size: 36px;
+            font-weight: 700;
+            color: var(--color-text-primary);
+        }
+
+        /* Buttons - Vibrant */
+        .btn {
+            padding: var(--space-md) var(--space-xl);
+            border-radius: var(--radius-lg);
+            border: none;
+            font-family: var(--font-body);
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: var(--space-sm);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-secondary) 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px) scale(1.05);
+            box-shadow: 0 8px 24px rgba(99, 102, 241, 0.4);
+        }
+
+        /* Task Cards - Fun & Engaging */
+        .task-grid {
+            display: grid;
+            gap: var(--space-lg);
+        }
+
+        .task-card {
+            background: var(--color-surface);
+            border-radius: var(--radius-md);
+            padding: var(--space-lg);
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+            display: grid;
+            grid-template-columns: auto 1fr auto;
+            gap: var(--space-md);
+            align-items: center;
+            transition: all 0.3s;
+            border-left: 6px solid transparent;
+        }
+
+        .task-card:nth-child(1) {
+            border-left-color: var(--color-primary);
+        }
+
+        .task-card:nth-child(2) {
+            border-left-color: var(--color-secondary);
+        }
+
+        .task-card:nth-child(3) {
+            border-left-color: var(--color-success);
+        }
+
+        .task-card:hover {
+            transform: translateX(8px);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
+        }
+
+        .task-complete-btn {
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            border: none;
+            background: linear-gradient(135deg, var(--color-success) 0%, var(--color-accent) 100%);
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+        }
+
+        .task-complete-btn:hover {
+            transform: scale(1.1) rotate(15deg);
+            box-shadow: 0 8px 24px rgba(16, 185, 129, 0.5);
+        }
+
+        .task-info {
+            flex: 1;
+        }
+
+        .task-title {
+            font-family: var(--font-heading);
+            font-size: 22px;
+            font-weight: 700;
+            color: var(--color-text-primary);
+            margin-bottom: var(--space-xs);
+        }
+
+        .task-meta {
+            display: flex;
+            align-items: center;
+            gap: var(--space-md);
+            color: var(--color-text-secondary);
+            font-weight: 500;
+        }
+
+        .task-assignee {
+            display: flex;
+            align-items: center;
+            gap: var(--space-xs);
+        }
+
+        .mini-avatar {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--color-purple) 0%, var(--color-secondary) 100%);
+        }
+
+        .task-badge {
+            padding: var(--space-xs) var(--space-sm);
+            background: linear-gradient(135deg, var(--color-accent) 0%, var(--color-orange) 100%);
+            color: white;
+            border-radius: var(--radius-sm);
+            font-weight: 700;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: var(--space-xs);
+            box-shadow: 0 2px 8px rgba(251, 191, 36, 0.3);
+        }
+
+        /* Bottom Nav - Mobile First */
+        .bottom-nav {
+            position: fixed;
+            bottom: var(--space-lg);
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--color-surface);
+            padding: var(--space-md);
+            border-radius: var(--radius-xl);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+            display: flex;
+            gap: var(--space-md);
+        }
+
+        .nav-btn {
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            border: none;
+            background: var(--color-background);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+        }
+
+        .nav-btn.active {
+            background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-secondary) 100%);
+            color: white;
+            box-shadow: 0 4px 16px rgba(99, 102, 241, 0.4);
+        }
+
+        .nav-btn:hover {
+            transform: translateY(-4px);
+        }
+
+        .proposal-label {
+            position: fixed;
+            top: var(--space-lg);
+            right: var(--space-lg);
+            background: linear-gradient(135deg, var(--color-accent) 0%, var(--color-orange) 100%);
+            color: white;
+            padding: var(--space-md) var(--space-lg);
+            border-radius: var(--radius-lg);
+            font-family: var(--font-heading);
+            font-size: 14px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            z-index: 1000;
+            box-shadow: 0 4px 16px rgba(251, 191, 36, 0.4);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .container {
+                padding: var(--space-md);
+            }
+
+            .greeting {
+                font-size: 36px;
+            }
+
+            h2 {
+                font-size: 28px;
+            }
+
+            .task-card {
+                grid-template-columns: auto 1fr;
+            }
+
+            .task-badge {
+                grid-column: 2;
+                justify-self: flex-end;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="proposal-label">Proposal 5: Playful</div>
+
+    <div class="container">
+        <!-- Vibrant Header -->
+        <header class="header">
+            <div class="header-content">
+                <div class="header-top">
+                    <div class="logo">🏠 Household Hero</div>
+                    <div class="user-profile">
+                        <div class="avatar">SM</div>
+                        <div class="user-info">Sarah's Dashboard</div>
+                    </div>
+                </div>
+                <h1 class="greeting">
+                    Hey Sarah! <span class="greeting-emoji">👋</span>
+                </h1>
+                <p class="subtitle">Let's crush those tasks today! 💪</p>
+            </div>
+        </header>
+
+        <!-- Gamified Stats -->
+        <div class="stats-container">
+            <div class="stat-card">
+                <div class="stat-emoji">🎯</div>
+                <div class="stat-number">4</div>
+                <div class="stat-label">Active Missions</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-emoji">🔥</div>
+                <div class="stat-number">12</div>
+                <div class="stat-label">Week Streak</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-emoji">⭐</div>
+                <div class="stat-number">340</div>
+                <div class="stat-label">Total Stars</div>
+            </div>
+        </div>
+
+        <!-- Today's Tasks -->
+        <section class="section">
+            <div class="section-header">
+                <h2>🚀 Today's Quests</h2>
+                <button class="btn btn-primary">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <line x1="12" y1="8" x2="12" y2="16"></line>
+                        <line x1="8" y1="12" x2="16" y2="12"></line>
+                    </svg>
+                    New Quest
+                </button>
+            </div>
+
+            <div class="task-grid">
+                <div class="task-card">
+                    <button class="task-complete-btn">✓</button>
+                    <div class="task-info">
+                        <div class="task-title">Clean bathroom</div>
+                        <div class="task-meta">
+                            <div class="task-assignee">
+                                <div class="mini-avatar"></div>
+                                Alex
+                            </div>
+                            <span>·</span>
+                            <span>Repeating Quest</span>
+                        </div>
+                    </div>
+                    <div class="task-badge">
+                        ⭐ 10
+                    </div>
+                </div>
+
+                <div class="task-card">
+                    <button class="task-complete-btn">✓</button>
+                    <div class="task-info">
+                        <div class="task-title">Take out recycling</div>
+                        <div class="task-meta">
+                            <div class="task-assignee">
+                                <div class="mini-avatar"></div>
+                                Jordan
+                            </div>
+                            <span>·</span>
+                            <span>Weekly Mission</span>
+                        </div>
+                    </div>
+                    <div class="task-badge">
+                        ⭐ 5
+                    </div>
+                </div>
+
+                <div class="task-card">
+                    <button class="task-complete-btn">✓</button>
+                    <div class="task-info">
+                        <div class="task-title">Water the plants</div>
+                        <div class="task-meta">
+                            <div class="task-assignee">
+                                <div class="mini-avatar"></div>
+                                Sarah
+                            </div>
+                            <span>·</span>
+                            <span>Daily Challenge</span>
+                        </div>
+                    </div>
+                    <div class="task-badge">
+                        ⭐ 3
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Coming Up -->
+        <section class="section">
+            <div class="section-header">
+                <h2>📅 Upcoming Adventures</h2>
+            </div>
+
+            <div class="task-grid">
+                <div class="task-card">
+                    <div style="width: 56px; height: 56px; border-radius: 50%; background: linear-gradient(135deg, #F97316 0%, #EC4899 100%); display: flex; align-items: center; justify-content: center; font-size: 24px;">📆</div>
+                    <div class="task-info">
+                        <div class="task-title">Vacuum living room</div>
+                        <div class="task-meta">
+                            <div class="task-assignee">
+                                <div class="mini-avatar"></div>
+                                Sarah
+                            </div>
+                            <span>·</span>
+                            <span>Tomorrow</span>
+                        </div>
+                    </div>
+                    <div class="task-badge">
+                        ⭐ 8
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Bottom Navigation -->
+        <nav class="bottom-nav">
+            <button class="nav-btn active">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"></path>
+                </svg>
+            </button>
+            <button class="nav-btn">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M9 11l3 3L22 4"></path>
+                    <path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"></path>
+                </svg>
+            </button>
+            <button class="nav-btn">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"></path>
+                    <circle cx="9" cy="7" r="4"></circle>
+                    <path d="M23 21v-2a4 4 0 00-3-3.87"></path>
+                    <path d="M16 3.13a4 4 0 010 7.75"></path>
+                </svg>
+            </button>
+            <button class="nav-btn">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M12 2L2 7l10 5 10-5-10-5z"></path>
+                    <path d="M2 17l10 5 10-5M2 12l10 5 10-5"></path>
+                </svg>
+            </button>
+        </nav>
+    </div>
+</body>
+</html>

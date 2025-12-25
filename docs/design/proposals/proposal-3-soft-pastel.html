@@ -1,0 +1,644 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Proposal 3: Soft & Pastel - Household Task Manager</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Nunito:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            /* Soft, warm pastel palette - family-friendly */
+            --color-primary: #E8B4B8;        /* Soft rose */
+            --color-secondary: #A8D5BA;      /* Sage green */
+            --color-accent: #FFD5A0;         /* Warm peach */
+            --color-lavender: #C5B9D5;       /* Soft lavender */
+            --color-sky: #B8D4E8;            /* Gentle sky blue */
+            --color-background: #FFF9F5;     /* Warm cream */
+            --color-surface: #FFFFFF;
+            --color-text-primary: #4A4A4A;
+            --color-text-secondary: #7A7A7A;
+            --color-text-tertiary: #A0A0A0;
+            --color-border: #F0E8E0;
+
+            /* Typography - Friendly and warm */
+            --font-display: 'DM Serif Display', serif;
+            --font-body: 'Nunito', sans-serif;
+
+            /* Spacing */
+            --space-xs: 0.5rem;
+            --space-sm: 1rem;
+            --space-md: 1.5rem;
+            --space-lg: 2rem;
+            --space-xl: 3rem;
+            --space-xxl: 4rem;
+
+            /* Border radius - soft curves */
+            --radius-sm: 12px;
+            --radius-md: 20px;
+            --radius-lg: 32px;
+        }
+
+        body {
+            font-family: var(--font-body);
+            background: var(--color-background);
+            color: var(--color-text-primary);
+            line-height: 1.7;
+            font-size: 15px;
+        }
+
+        .container {
+            max-width: 1300px;
+            margin: 0 auto;
+            padding: var(--space-lg);
+        }
+
+        /* Header - Warm and Welcoming */
+        .header {
+            background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-lavender) 100%);
+            border-radius: var(--radius-lg);
+            padding: var(--space-xl);
+            margin-bottom: var(--space-xl);
+            position: relative;
+            overflow: hidden;
+            color: white;
+        }
+
+        .header::before {
+            content: "❤";
+            position: absolute;
+            font-size: 200px;
+            opacity: 0.1;
+            top: -50px;
+            right: -30px;
+            transform: rotate(15deg);
+        }
+
+        .header-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .header-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: var(--space-lg);
+        }
+
+        .logo {
+            font-family: var(--font-display);
+            font-size: 28px;
+            font-weight: 400;
+            font-style: italic;
+        }
+
+        .header-nav {
+            display: flex;
+            gap: var(--space-lg);
+            list-style: none;
+        }
+
+        .header-nav a {
+            color: rgba(255, 255, 255, 0.8);
+            text-decoration: none;
+            font-weight: 600;
+            padding: var(--space-xs) var(--space-md);
+            border-radius: var(--radius-sm);
+            transition: all 0.2s;
+        }
+
+        .header-nav a:hover,
+        .header-nav a.active {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+        }
+
+        .greeting {
+            font-family: var(--font-display);
+            font-size: 48px;
+            font-weight: 400;
+            margin-bottom: var(--space-sm);
+            line-height: 1.2;
+        }
+
+        .greeting-sub {
+            font-size: 18px;
+            opacity: 0.9;
+            font-weight: 400;
+        }
+
+        /* Quick Stats - Soft Cards */
+        .quick-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: var(--space-md);
+            margin-bottom: var(--space-xl);
+        }
+
+        .stat-bubble {
+            background: var(--color-surface);
+            border-radius: var(--radius-md);
+            padding: var(--space-lg);
+            text-align: center;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-bubble:nth-child(1) {
+            background: linear-gradient(135deg, var(--color-secondary) 0%, rgba(168, 213, 186, 0.3) 100%);
+        }
+
+        .stat-bubble:nth-child(2) {
+            background: linear-gradient(135deg, var(--color-sky) 0%, rgba(184, 212, 232, 0.3) 100%);
+        }
+
+        .stat-bubble:nth-child(3) {
+            background: linear-gradient(135deg, var(--color-accent) 0%, rgba(255, 213, 160, 0.3) 100%);
+        }
+
+        .stat-icon {
+            font-size: 48px;
+            margin-bottom: var(--space-sm);
+        }
+
+        .stat-number {
+            font-family: var(--font-display);
+            font-size: 42px;
+            font-weight: 400;
+            color: var(--color-text-primary);
+            margin-bottom: var(--space-xs);
+        }
+
+        .stat-text {
+            font-size: 14px;
+            color: var(--color-text-secondary);
+            font-weight: 600;
+        }
+
+        /* Section Titles */
+        .section {
+            margin-bottom: var(--space-xxl);
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: var(--space-lg);
+        }
+
+        h2 {
+            font-family: var(--font-display);
+            font-size: 36px;
+            font-weight: 400;
+            color: var(--color-text-primary);
+            font-style: italic;
+        }
+
+        .section-subtitle {
+            color: var(--color-text-tertiary);
+            font-size: 14px;
+        }
+
+        /* Buttons - Soft and Friendly */
+        .btn {
+            padding: var(--space-sm) var(--space-lg);
+            border-radius: var(--radius-lg);
+            border: none;
+            font-family: var(--font-body);
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: var(--space-xs);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-lavender) 100%);
+            color: white;
+            box-shadow: 0 4px 12px rgba(232, 180, 184, 0.3);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(232, 180, 184, 0.4);
+        }
+
+        /* Task Cards - Soft and Inviting */
+        .task-list {
+            display: grid;
+            gap: var(--space-md);
+        }
+
+        .task-card {
+            background: var(--color-surface);
+            border-radius: var(--radius-md);
+            padding: var(--space-lg);
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.05);
+            display: grid;
+            grid-template-columns: auto 1fr auto;
+            gap: var(--space-md);
+            align-items: center;
+            border-left: 5px solid transparent;
+            transition: all 0.3s;
+        }
+
+        .task-card:nth-child(odd) {
+            border-left-color: var(--color-secondary);
+        }
+
+        .task-card:nth-child(even) {
+            border-left-color: var(--color-accent);
+        }
+
+        .task-card:hover {
+            transform: translateX(8px);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+        }
+
+        .task-check {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--color-secondary) 0%, var(--color-sky) 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .task-check:hover {
+            transform: scale(1.1);
+        }
+
+        .task-check svg {
+            width: 20px;
+            height: 20px;
+            stroke: white;
+            stroke-width: 3;
+        }
+
+        .task-info {
+            flex: 1;
+        }
+
+        .task-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--color-text-primary);
+            margin-bottom: var(--space-xs);
+        }
+
+        .task-meta {
+            display: flex;
+            align-items: center;
+            gap: var(--space-md);
+            font-size: 14px;
+            color: var(--color-text-secondary);
+        }
+
+        .task-person {
+            display: flex;
+            align-items: center;
+            gap: var(--space-xs);
+        }
+
+        .person-avatar {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-accent) 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        .task-points-display {
+            background: linear-gradient(135deg, var(--color-accent) 0%, var(--color-primary) 100%);
+            color: white;
+            padding: var(--space-sm) var(--space-md);
+            border-radius: var(--radius-lg);
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: var(--space-xs);
+        }
+
+        .points-emoji {
+            font-size: 20px;
+        }
+
+        /* Empty State - Encouraging */
+        .empty-state {
+            text-align: center;
+            padding: var(--space-xxl);
+            background: var(--color-surface);
+            border-radius: var(--radius-lg);
+            border: 3px dashed var(--color-border);
+        }
+
+        .empty-illustration {
+            font-size: 120px;
+            margin-bottom: var(--space-md);
+            filter: grayscale(0);
+        }
+
+        .empty-title {
+            font-family: var(--font-display);
+            font-size: 32px;
+            font-weight: 400;
+            color: var(--color-text-primary);
+            margin-bottom: var(--space-sm);
+            font-style: italic;
+        }
+
+        .empty-text {
+            color: var(--color-text-secondary);
+            margin-bottom: var(--space-lg);
+            font-size: 16px;
+        }
+
+        /* Upcoming Section */
+        .upcoming-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: var(--space-md);
+        }
+
+        .upcoming-card {
+            background: var(--color-surface);
+            border-radius: var(--radius-md);
+            padding: var(--space-lg);
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s;
+        }
+
+        .upcoming-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+        }
+
+        .upcoming-day {
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--color-text-tertiary);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: var(--space-sm);
+        }
+
+        .upcoming-task {
+            font-family: var(--font-display);
+            font-size: 22px;
+            font-weight: 400;
+            margin-bottom: var(--space-md);
+            color: var(--color-text-primary);
+        }
+
+        .upcoming-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .proposal-label {
+            position: fixed;
+            top: var(--space-md);
+            right: var(--space-md);
+            background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-lavender) 100%);
+            color: white;
+            padding: var(--space-sm) var(--space-md);
+            border-radius: var(--radius-sm);
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            z-index: 1000;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .container {
+                padding: var(--space-md);
+            }
+
+            .header {
+                padding: var(--space-lg);
+            }
+
+            .greeting {
+                font-size: 36px;
+            }
+
+            h2 {
+                font-size: 28px;
+            }
+
+            .task-card {
+                grid-template-columns: auto 1fr;
+            }
+
+            .task-points-display {
+                grid-column: 2;
+                justify-self: flex-end;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="proposal-label">Proposal 3: Soft & Pastel</div>
+
+    <div class="container">
+        <!-- Warm Header -->
+        <header class="header">
+            <div class="header-content">
+                <div class="header-top">
+                    <div class="logo">Our Household</div>
+                    <nav>
+                        <ul class="header-nav">
+                            <li><a href="#" class="active">Home</a></li>
+                            <li><a href="#">Tasks</a></li>
+                            <li><a href="#">Family</a></li>
+                            <li><a href="#">Rewards</a></li>
+                        </ul>
+                    </nav>
+                </div>
+                <h1 class="greeting">Good morning,<br>Sarah! 🌸</h1>
+                <p class="greeting-sub">The Smith Family · A beautiful Tuesday ahead</p>
+            </div>
+        </header>
+
+        <!-- Quick Stats -->
+        <div class="quick-stats">
+            <div class="stat-bubble">
+                <div class="stat-icon">✨</div>
+                <div class="stat-number">4</div>
+                <div class="stat-text">Tasks Today</div>
+            </div>
+            <div class="stat-bubble">
+                <div class="stat-icon">💪</div>
+                <div class="stat-number">12</div>
+                <div class="stat-text">Completed This Week</div>
+            </div>
+            <div class="stat-bubble">
+                <div class="stat-icon">⭐</div>
+                <div class="stat-number">340</div>
+                <div class="stat-text">Total Points</div>
+            </div>
+        </div>
+
+        <!-- Today's Tasks -->
+        <section class="section">
+            <div class="section-header">
+                <div>
+                    <h2>Today's Tasks</h2>
+                    <p class="section-subtitle">Let's make today wonderful together</p>
+                </div>
+                <button class="btn btn-primary">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <line x1="12" y1="8" x2="12" y2="16"></line>
+                        <line x1="8" y1="12" x2="16" y2="12"></line>
+                    </svg>
+                    Add Task
+                </button>
+            </div>
+
+            <div class="task-list">
+                <div class="task-card">
+                    <div class="task-check">
+                        <svg viewBox="0 0 24 24" fill="none">
+                            <path d="M5 12l5 5L20 7" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </div>
+                    <div class="task-info">
+                        <div class="task-title">Clean bathroom</div>
+                        <div class="task-meta">
+                            <div class="task-person">
+                                <div class="person-avatar">A</div>
+                                Alex
+                            </div>
+                            <span>·</span>
+                            <span>Repeating</span>
+                        </div>
+                    </div>
+                    <div class="task-points-display">
+                        <span class="points-emoji">🌟</span>
+                        <span>10 pts</span>
+                    </div>
+                </div>
+
+                <div class="task-card">
+                    <div class="task-check">
+                        <svg viewBox="0 0 24 24" fill="none">
+                            <path d="M5 12l5 5L20 7" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </div>
+                    <div class="task-info">
+                        <div class="task-title">Take out recycling</div>
+                        <div class="task-meta">
+                            <div class="task-person">
+                                <div class="person-avatar">J</div>
+                                Jordan
+                            </div>
+                            <span>·</span>
+                            <span>Weekly</span>
+                        </div>
+                    </div>
+                    <div class="task-points-display">
+                        <span class="points-emoji">✨</span>
+                        <span>5 pts</span>
+                    </div>
+                </div>
+
+                <div class="task-card">
+                    <div class="task-check">
+                        <svg viewBox="0 0 24 24" fill="none">
+                            <path d="M5 12l5 5L20 7" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </div>
+                    <div class="task-info">
+                        <div class="task-title">Water the plants</div>
+                        <div class="task-meta">
+                            <div class="task-person">
+                                <div class="person-avatar">S</div>
+                                Sarah
+                            </div>
+                            <span>·</span>
+                            <span>Daily</span>
+                        </div>
+                    </div>
+                    <div class="task-points-display">
+                        <span class="points-emoji">💧</span>
+                        <span>3 pts</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Coming Up -->
+        <section class="section">
+            <div class="section-header">
+                <div>
+                    <h2>Coming Up</h2>
+                    <p class="section-subtitle">This week's schedule</p>
+                </div>
+            </div>
+
+            <div class="upcoming-grid">
+                <div class="upcoming-card">
+                    <div class="upcoming-day">Tomorrow</div>
+                    <h3 class="upcoming-task">Vacuum living room</h3>
+                    <div class="upcoming-footer">
+                        <div class="task-person">
+                            <div class="person-avatar">S</div>
+                            Sarah
+                        </div>
+                        <span style="color: var(--color-text-tertiary); font-weight: 700;">8 pts</span>
+                    </div>
+                </div>
+
+                <div class="upcoming-card">
+                    <div class="upcoming-day">Thursday</div>
+                    <h3 class="upcoming-task">Grocery shopping</h3>
+                    <div class="upcoming-footer">
+                        <div class="task-person">
+                            <div class="person-avatar">M</div>
+                            Marcus
+                        </div>
+                        <span style="color: var(--color-text-tertiary); font-weight: 700;">15 pts</span>
+                    </div>
+                </div>
+
+                <div class="upcoming-card">
+                    <div class="upcoming-day">Friday</div>
+                    <h3 class="upcoming-task">Laundry day</h3>
+                    <div class="upcoming-footer">
+                        <div class="task-person">
+                            <div class="person-avatar">A</div>
+                            Alex
+                        </div>
+                        <span style="color: var(--color-text-tertiary); font-weight: 700;">12 pts</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+</body>
+</html>

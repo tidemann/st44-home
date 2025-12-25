@@ -1,0 +1,618 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Proposal 2: Editorial & Magazine - Household Task Manager</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;800&family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            /* Bold editorial palette */
+            --color-primary: #0A0A0A;         /* Deep black */
+            --color-secondary: #FF4D4D;       /* Editorial red */
+            --color-accent: #FFD700;          /* Bold gold */
+            --color-background: #FFFFFF;
+            --color-surface: #F8F8F8;
+            --color-text-primary: #0A0A0A;
+            --color-text-secondary: #4A4A4A;
+            --color-text-tertiary: #8A8A8A;
+            --color-border: #E0E0E0;
+
+            /* Typography - Editorial */
+            --font-display: 'Playfair Display', serif;
+            --font-body: 'Space Grotesk', sans-serif;
+
+            /* Spacing */
+            --space-xs: 0.5rem;
+            --space-sm: 1rem;
+            --space-md: 1.5rem;
+            --space-lg: 2.5rem;
+            --space-xl: 4rem;
+            --space-xxl: 6rem;
+        }
+
+        body {
+            font-family: var(--font-body);
+            background: var(--color-background);
+            color: var(--color-text-primary);
+            line-height: 1.4;
+            font-size: 15px;
+        }
+
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+
+        /* Header - Bold Editorial Style */
+        .header {
+            background: var(--color-primary);
+            color: white;
+            padding: var(--space-lg) var(--space-xl);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 50%;
+            height: 100%;
+            background: linear-gradient(135deg, transparent 0%, rgba(255, 77, 77, 0.1) 100%);
+        }
+
+        .header-content {
+            position: relative;
+            z-index: 1;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .header-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: var(--space-lg);
+        }
+
+        .logo {
+            font-family: var(--font-display);
+            font-size: 32px;
+            font-weight: 800;
+            letter-spacing: -0.02em;
+        }
+
+        .header-nav {
+            display: flex;
+            gap: var(--space-lg);
+            list-style: none;
+        }
+
+        .header-nav a {
+            color: rgba(255, 255, 255, 0.7);
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.2s;
+        }
+
+        .header-nav a:hover,
+        .header-nav a.active {
+            color: white;
+        }
+
+        .hero-title {
+            font-family: var(--font-display);
+            font-size: clamp(48px, 8vw, 96px);
+            font-weight: 800;
+            line-height: 0.9;
+            margin-bottom: var(--space-md);
+            letter-spacing: -0.03em;
+        }
+
+        .hero-subtitle {
+            font-size: 18px;
+            opacity: 0.8;
+            font-weight: 400;
+        }
+
+        /* Main Content - Magazine Layout */
+        .main-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: var(--space-xl);
+        }
+
+        /* Stats - Editorial Cards */
+        .stats-section {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: var(--space-md);
+            margin-bottom: var(--space-xl);
+        }
+
+        .stat-card {
+            background: var(--color-primary);
+            color: white;
+            padding: var(--space-lg);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-card:nth-child(1) {
+            background: var(--color-secondary);
+        }
+
+        .stat-card:nth-child(2) {
+            background: var(--color-primary);
+        }
+
+        .stat-card:nth-child(3) {
+            background: linear-gradient(135deg, #1A1A1A 0%, #2A2A2A 100%);
+        }
+
+        .stat-number {
+            font-family: var(--font-display);
+            font-size: 72px;
+            font-weight: 800;
+            line-height: 1;
+            margin-bottom: var(--space-sm);
+        }
+
+        .stat-label {
+            text-transform: uppercase;
+            letter-spacing: 0.15em;
+            font-size: 11px;
+            font-weight: 700;
+            opacity: 0.9;
+        }
+
+        .stat-detail {
+            margin-top: var(--space-xs);
+            opacity: 0.7;
+            font-size: 14px;
+        }
+
+        /* Section Headers - Magazine Style */
+        .section {
+            margin-bottom: var(--space-xxl);
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            margin-bottom: var(--space-lg);
+            padding-bottom: var(--space-md);
+            border-bottom: 3px solid var(--color-primary);
+        }
+
+        h2 {
+            font-family: var(--font-display);
+            font-size: 48px;
+            font-weight: 800;
+            letter-spacing: -0.02em;
+        }
+
+        .section-meta {
+            font-size: 14px;
+            color: var(--color-text-tertiary);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+        }
+
+        /* Task Grid - Asymmetrical Magazine Layout */
+        .task-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: var(--space-md);
+        }
+
+        .task-featured {
+            grid-column: 1 / 2;
+            grid-row: 1 / 3;
+            background: var(--color-primary);
+            color: white;
+            padding: var(--space-xl);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .task-featured::before {
+            content: "";
+            position: absolute;
+            top: -50%;
+            right: -10%;
+            width: 400px;
+            height: 400px;
+            background: var(--color-secondary);
+            border-radius: 50%;
+            opacity: 0.1;
+        }
+
+        .task-featured-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .task-tag {
+            display: inline-block;
+            padding: var(--space-xs) var(--space-sm);
+            background: var(--color-secondary);
+            color: white;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            margin-bottom: var(--space-md);
+        }
+
+        .task-featured-title {
+            font-family: var(--font-display);
+            font-size: 42px;
+            font-weight: 800;
+            line-height: 1.1;
+            margin-bottom: var(--space-md);
+            letter-spacing: -0.02em;
+        }
+
+        .task-featured-meta {
+            display: flex;
+            align-items: center;
+            gap: var(--space-md);
+            margin-bottom: var(--space-lg);
+            opacity: 0.8;
+        }
+
+        .task-featured-meta span {
+            display: flex;
+            align-items: center;
+            gap: var(--space-xs);
+        }
+
+        .task-featured-description {
+            margin-bottom: var(--space-lg);
+            opacity: 0.9;
+            line-height: 1.6;
+        }
+
+        .btn {
+            padding: var(--space-md) var(--space-lg);
+            background: white;
+            color: var(--color-primary);
+            border: none;
+            font-family: var(--font-body);
+            font-size: 14px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn:hover {
+            background: var(--color-accent);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Regular Tasks - Stacked Cards */
+        .task-small {
+            background: var(--color-surface);
+            padding: var(--space-lg);
+            border-left: 4px solid var(--color-border);
+            transition: all 0.2s;
+        }
+
+        .task-small:hover {
+            border-left-color: var(--color-secondary);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        }
+
+        .task-small-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: var(--space-sm);
+        }
+
+        .task-small-title {
+            font-weight: 700;
+            font-size: 18px;
+            margin-bottom: var(--space-xs);
+        }
+
+        .task-points-badge {
+            background: var(--color-primary);
+            color: white;
+            padding: var(--space-xs) var(--space-sm);
+            font-size: 12px;
+            font-weight: 700;
+            min-width: 50px;
+            text-align: center;
+        }
+
+        .task-small-meta {
+            color: var(--color-text-tertiary);
+            font-size: 13px;
+        }
+
+        /* Upcoming Section */
+        .upcoming-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: var(--space-md);
+        }
+
+        .upcoming-card {
+            background: white;
+            border: 2px solid var(--color-border);
+            padding: var(--space-lg);
+            transition: all 0.3s;
+        }
+
+        .upcoming-card:hover {
+            border-color: var(--color-primary);
+            transform: translateY(-4px);
+        }
+
+        .upcoming-date {
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: var(--color-text-tertiary);
+            font-weight: 700;
+            margin-bottom: var(--space-sm);
+        }
+
+        .upcoming-title {
+            font-family: var(--font-display);
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: var(--space-sm);
+        }
+
+        .upcoming-assignee {
+            display: flex;
+            align-items: center;
+            gap: var(--space-sm);
+            margin-top: var(--space-md);
+        }
+
+        .assignee-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--color-secondary) 0%, #FF6B6B 100%);
+        }
+
+        .add-task-cta {
+            background: var(--color-accent);
+            padding: var(--space-xl);
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .add-task-cta::before {
+            content: "+";
+            position: absolute;
+            font-size: 300px;
+            font-weight: 800;
+            opacity: 0.05;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-family: var(--font-display);
+        }
+
+        .add-task-title {
+            font-family: var(--font-display);
+            font-size: 36px;
+            font-weight: 800;
+            margin-bottom: var(--space-md);
+            position: relative;
+            z-index: 1;
+        }
+
+        .btn-primary {
+            background: var(--color-primary);
+            color: white;
+            padding: var(--space-md) var(--space-xl);
+            border: none;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            cursor: pointer;
+            font-size: 16px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .btn-primary:hover {
+            background: var(--color-secondary);
+        }
+
+        .proposal-label {
+            position: fixed;
+            top: var(--space-md);
+            right: var(--space-md);
+            background: var(--color-secondary);
+            color: white;
+            padding: var(--space-sm) var(--space-md);
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            z-index: 1000;
+        }
+
+        /* Responsive */
+        @media (max-width: 968px) {
+            .task-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .task-featured {
+                grid-column: 1;
+                grid-row: auto;
+            }
+
+            .stats-section {
+                grid-template-columns: 1fr;
+            }
+
+            .hero-title {
+                font-size: 48px;
+            }
+
+            h2 {
+                font-size: 36px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="proposal-label">Proposal 2: Editorial</div>
+
+    <div class="container">
+        <!-- Bold Editorial Header -->
+        <header class="header">
+            <div class="header-content">
+                <div class="header-top">
+                    <div class="logo">HOUSEHOLD</div>
+                    <nav>
+                        <ul class="header-nav">
+                            <li><a href="#" class="active">Dashboard</a></li>
+                            <li><a href="#">Tasks</a></li>
+                            <li><a href="#">Family</a></li>
+                            <li><a href="#">Progress</a></li>
+                        </ul>
+                    </nav>
+                </div>
+                <h1 class="hero-title">Today's<br>Priorities</h1>
+                <p class="hero-subtitle">The Smith Family · Tuesday, December 24</p>
+            </div>
+        </header>
+
+        <main class="main-content">
+            <!-- Stats -->
+            <div class="stats-section">
+                <div class="stat-card">
+                    <div class="stat-number">4</div>
+                    <div class="stat-label">Today</div>
+                    <div class="stat-detail">2 completed, 2 pending</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">18</div>
+                    <div class="stat-label">This Week</div>
+                    <div class="stat-detail">67% completion rate</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">340</div>
+                    <div class="stat-label">Points</div>
+                    <div class="stat-detail">+45 this week</div>
+                </div>
+            </div>
+
+            <!-- Featured Tasks - Magazine Grid -->
+            <section class="section">
+                <div class="section-header">
+                    <h2>Active</h2>
+                    <span class="section-meta">4 Tasks</span>
+                </div>
+
+                <div class="task-grid">
+                    <!-- Featured Task -->
+                    <div class="task-featured">
+                        <div class="task-featured-content">
+                            <div class="task-tag">High Priority</div>
+                            <h3 class="task-featured-title">Clean bathroom thoroughly</h3>
+                            <div class="task-featured-meta">
+                                <span>
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <circle cx="12" cy="12" r="10"></circle>
+                                        <path d="M12 6v6l4 2"></path>
+                                    </svg>
+                                    Repeating
+                                </span>
+                                <span>·</span>
+                                <span>Alex</span>
+                                <span>·</span>
+                                <span>10 Points</span>
+                            </div>
+                            <p class="task-featured-description">
+                                Use a mop. Clean toilet and shower. Don't forget to wipe down the mirrors and refill soap dispensers.
+                            </p>
+                            <button class="btn">Complete Task</button>
+                        </div>
+                    </div>
+
+                    <!-- Small Tasks -->
+                    <div class="task-small">
+                        <div class="task-small-header">
+                            <div>
+                                <div class="task-small-title">Take out recycling</div>
+                                <div class="task-small-meta">Jordan · Weekly</div>
+                            </div>
+                            <div class="task-points-badge">5 pts</div>
+                        </div>
+                    </div>
+
+                    <div class="task-small">
+                        <div class="task-small-header">
+                            <div>
+                                <div class="task-small-title">Water plants</div>
+                                <div class="task-small-meta">Sarah · Daily</div>
+                            </div>
+                            <div class="task-points-badge">3 pts</div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Upcoming -->
+            <section class="section">
+                <div class="section-header">
+                    <h2>Coming Up</h2>
+                    <span class="section-meta">This Week</span>
+                </div>
+
+                <div class="upcoming-list">
+                    <div class="upcoming-card">
+                        <div class="upcoming-date">Tomorrow</div>
+                        <h3 class="upcoming-title">Vacuum living room</h3>
+                        <div class="upcoming-assignee">
+                            <div class="assignee-avatar"></div>
+                            <span>Sarah · 8 points</span>
+                        </div>
+                    </div>
+
+                    <div class="upcoming-card">
+                        <div class="upcoming-date">Thursday</div>
+                        <h3 class="upcoming-title">Grocery shopping</h3>
+                        <div class="upcoming-assignee">
+                            <div class="assignee-avatar"></div>
+                            <span>Marcus · 15 points</span>
+                        </div>
+                    </div>
+
+                    <div class="add-task-cta">
+                        <h3 class="add-task-title">Add New Task</h3>
+                        <button class="btn-primary">Create Task</button>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+</body>
+</html>

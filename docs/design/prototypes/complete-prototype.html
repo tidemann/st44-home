@@ -1,0 +1,1277 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Household Hero - Complete Prototype</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --color-primary: #6366F1;
+            --color-secondary: #EC4899;
+            --color-accent: #FBBF24;
+            --color-success: #10B981;
+            --color-purple: #A855F7;
+            --color-orange: #F97316;
+            --color-background: #F8F9FF;
+            --color-surface: #FFFFFF;
+            --color-text-primary: #1E293B;
+            --color-text-secondary: #64748B;
+            --color-text-tertiary: #94A3B8;
+            --font-heading: 'Fredoka', sans-serif;
+            --font-body: 'Outfit', sans-serif;
+            --space-xs: 0.5rem;
+            --space-sm: 0.75rem;
+            --space-md: 1rem;
+            --space-lg: 1.5rem;
+            --space-xl: 2rem;
+            --space-xxl: 3rem;
+            --radius-sm: 16px;
+            --radius-md: 24px;
+            --radius-lg: 32px;
+            --radius-xl: 48px;
+        }
+
+        body {
+            font-family: var(--font-body);
+            background: var(--color-background);
+            color: var(--color-text-primary);
+            line-height: 1.6;
+            font-size: 15px;
+            overflow-x: hidden;
+        }
+
+        .app-container {
+            max-width: 420px;
+            margin: 0 auto;
+            background: var(--color-background);
+            min-height: 100vh;
+            position: relative;
+            padding-bottom: 100px;
+        }
+
+        /* Header */
+        .app-header {
+            background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-secondary) 100%);
+            padding: var(--space-xl) var(--space-lg);
+            color: white;
+            border-radius: 0 0 var(--radius-xl) var(--radius-xl);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .app-header::before {
+            content: "";
+            position: absolute;
+            width: 300px;
+            height: 300px;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.2) 0%, transparent 70%);
+            border-radius: 50%;
+            top: -100px;
+            right: -50px;
+        }
+
+        .header-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .logo {
+            font-family: var(--font-heading);
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: var(--space-sm);
+        }
+
+        .greeting {
+            font-family: var(--font-heading);
+            font-size: 32px;
+            font-weight: 700;
+            margin-bottom: var(--space-xs);
+            line-height: 1.2;
+        }
+
+        .subtitle {
+            font-size: 16px;
+            opacity: 0.95;
+        }
+
+        /* Screens */
+        .screen {
+            display: none;
+            padding: var(--space-lg);
+        }
+
+        .screen.active {
+            display: block;
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Stats Cards */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: var(--space-md);
+            margin-bottom: var(--space-xl);
+        }
+
+        .stat-card {
+            background: var(--color-surface);
+            border-radius: var(--radius-md);
+            padding: var(--space-lg);
+            text-align: center;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+        }
+
+        .stat-emoji {
+            font-size: 36px;
+            margin-bottom: var(--space-sm);
+        }
+
+        .stat-number {
+            font-family: var(--font-heading);
+            font-size: 32px;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-secondary) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: var(--space-xs);
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: var(--color-text-secondary);
+            font-weight: 600;
+        }
+
+        /* Section Headers */
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: var(--space-lg);
+        }
+
+        h2 {
+            font-family: var(--font-heading);
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--color-text-primary);
+        }
+
+        .filter-tabs {
+            display: flex;
+            gap: var(--space-sm);
+            margin-bottom: var(--space-lg);
+            overflow-x: auto;
+            padding-bottom: var(--space-xs);
+        }
+
+        .filter-tab {
+            padding: var(--space-sm) var(--space-md);
+            background: var(--color-surface);
+            border-radius: var(--radius-lg);
+            font-weight: 600;
+            font-size: 14px;
+            white-space: nowrap;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .filter-tab.active {
+            background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-secondary) 100%);
+            color: white;
+        }
+
+        /* Task Cards */
+        .task-list {
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-md);
+        }
+
+        .task-card {
+            background: var(--color-surface);
+            border-radius: var(--radius-md);
+            padding: var(--space-lg);
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+            display: grid;
+            grid-template-columns: auto 1fr auto;
+            gap: var(--space-md);
+            align-items: center;
+            border-left: 6px solid var(--color-primary);
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+
+        .task-card:hover {
+            transform: translateX(8px);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
+        }
+
+        .task-card.completed {
+            opacity: 0.6;
+        }
+
+        .task-complete-btn {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            border: none;
+            background: linear-gradient(135deg, var(--color-success) 0%, var(--color-accent) 100%);
+            color: white;
+            font-size: 20px;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .task-complete-btn:hover {
+            transform: scale(1.1);
+        }
+
+        .task-info {
+            flex: 1;
+        }
+
+        .task-title {
+            font-family: var(--font-heading);
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--color-text-primary);
+            margin-bottom: var(--space-xs);
+        }
+
+        .task-meta {
+            display: flex;
+            align-items: center;
+            gap: var(--space-sm);
+            color: var(--color-text-secondary);
+            font-size: 14px;
+        }
+
+        .task-assignee {
+            display: flex;
+            align-items: center;
+            gap: var(--space-xs);
+        }
+
+        .mini-avatar {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--color-purple) 0%, var(--color-secondary) 100%);
+        }
+
+        .task-badge {
+            padding: var(--space-xs) var(--space-sm);
+            background: linear-gradient(135deg, var(--color-accent) 0%, var(--color-orange) 100%);
+            color: white;
+            border-radius: var(--radius-sm);
+            font-weight: 700;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: var(--space-xs);
+            box-shadow: 0 2px 8px rgba(251, 191, 36, 0.3);
+        }
+
+        /* Member Cards */
+        .member-list {
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-md);
+        }
+
+        .member-card {
+            background: var(--color-surface);
+            border-radius: var(--radius-md);
+            padding: var(--space-lg);
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+            display: flex;
+            align-items: center;
+            gap: var(--space-md);
+        }
+
+        .member-avatar {
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-secondary) 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 700;
+            font-size: 20px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        }
+
+        .member-info {
+            flex: 1;
+        }
+
+        .member-name {
+            font-family: var(--font-heading);
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: var(--space-xs);
+        }
+
+        .member-role {
+            color: var(--color-text-secondary);
+            font-size: 14px;
+        }
+
+        .member-stats {
+            text-align: right;
+        }
+
+        .member-points {
+            font-family: var(--font-heading);
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--color-accent);
+        }
+
+        .member-tasks {
+            font-size: 12px;
+            color: var(--color-text-tertiary);
+        }
+
+        /* Leaderboard */
+        .leaderboard {
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-md);
+        }
+
+        .leaderboard-item {
+            background: var(--color-surface);
+            border-radius: var(--radius-md);
+            padding: var(--space-lg);
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+            display: flex;
+            align-items: center;
+            gap: var(--space-md);
+        }
+
+        .leaderboard-rank {
+            font-size: 32px;
+            min-width: 48px;
+        }
+
+        .leaderboard-info {
+            flex: 1;
+        }
+
+        .leaderboard-name {
+            font-family: var(--font-heading);
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: var(--space-xs);
+        }
+
+        .leaderboard-tasks {
+            color: var(--color-text-secondary);
+            font-size: 14px;
+        }
+
+        .leaderboard-points {
+            font-family: var(--font-heading);
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--color-accent);
+        }
+
+        /* Buttons */
+        .btn {
+            padding: var(--space-md) var(--space-xl);
+            border-radius: var(--radius-lg);
+            border: none;
+            font-family: var(--font-body);
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: var(--space-sm);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            width: 100%;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-secondary) 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(99, 102, 241, 0.4);
+        }
+
+        .btn-secondary {
+            background: var(--color-surface);
+            color: var(--color-text-primary);
+        }
+
+        /* Floating Action Button */
+        .fab {
+            position: fixed;
+            bottom: 100px;
+            right: 20px;
+            width: 64px;
+            height: 64px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--color-accent) 0%, var(--color-orange) 100%);
+            color: white;
+            border: none;
+            font-size: 32px;
+            cursor: pointer;
+            box-shadow: 0 8px 24px rgba(251, 191, 36, 0.5);
+            transition: all 0.3s;
+            z-index: 100;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .fab:hover {
+            transform: scale(1.1) rotate(90deg);
+        }
+
+        /* Bottom Navigation */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: var(--color-surface);
+            padding: var(--space-md);
+            box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.1);
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: var(--space-sm);
+            z-index: 1000;
+        }
+
+        .nav-btn {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: var(--space-xs);
+            padding: var(--space-sm);
+            background: transparent;
+            border: none;
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            transition: all 0.2s;
+            color: var(--color-text-tertiary);
+        }
+
+        .nav-btn.active {
+            background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-secondary) 100%);
+            color: white;
+        }
+
+        .nav-icon {
+            font-size: 24px;
+        }
+
+        .nav-label {
+            font-size: 11px;
+            font-weight: 600;
+        }
+
+        /* Modal */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+            padding: var(--space-lg);
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .modal {
+            background: var(--color-surface);
+            border-radius: var(--radius-lg);
+            padding: var(--space-xl);
+            max-width: 400px;
+            width: 100%;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            font-family: var(--font-heading);
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: var(--space-lg);
+        }
+
+        .form-group {
+            margin-bottom: var(--space-lg);
+        }
+
+        .form-label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: var(--space-sm);
+            color: var(--color-text-secondary);
+        }
+
+        .form-input,
+        .form-select,
+        .form-textarea {
+            width: 100%;
+            padding: var(--space-md);
+            border: 2px solid var(--color-text-tertiary);
+            border-radius: var(--radius-sm);
+            font-family: var(--font-body);
+            font-size: 15px;
+            transition: border-color 0.2s;
+        }
+
+        .form-input:focus,
+        .form-select:focus,
+        .form-textarea:focus {
+            outline: none;
+            border-color: var(--color-primary);
+        }
+
+        .form-textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        .modal-actions {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: var(--space-md);
+            margin-top: var(--space-xl);
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: var(--space-xxl) var(--space-lg);
+        }
+
+        .empty-emoji {
+            font-size: 80px;
+            margin-bottom: var(--space-lg);
+        }
+
+        .empty-title {
+            font-family: var(--font-heading);
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: var(--space-sm);
+        }
+
+        .empty-text {
+            color: var(--color-text-secondary);
+            margin-bottom: var(--space-lg);
+        }
+
+        /* Success Animation */
+        .success-animation {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0);
+            background: linear-gradient(135deg, var(--color-success) 0%, var(--color-accent) 100%);
+            color: white;
+            padding: var(--space-xl);
+            border-radius: var(--radius-lg);
+            font-family: var(--font-heading);
+            font-size: 32px;
+            font-weight: 700;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            z-index: 3000;
+            pointer-events: none;
+        }
+
+        .success-animation.show {
+            animation: successPop 0.6s ease-out;
+        }
+
+        @keyframes successPop {
+            0% {
+                transform: translate(-50%, -50%) scale(0);
+                opacity: 0;
+            }
+            50% {
+                transform: translate(-50%, -50%) scale(1.1);
+                opacity: 1;
+            }
+            100% {
+                transform: translate(-50%, -50%) scale(0);
+                opacity: 0;
+            }
+        }
+
+        .household-header {
+            font-family: var(--font-heading);
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: var(--space-md);
+            color: var(--color-text-primary);
+        }
+
+        .household-name {
+            display: flex;
+            align-items: center;
+            gap: var(--space-sm);
+            padding: var(--space-lg);
+            background: var(--color-surface);
+            border-radius: var(--radius-md);
+            margin-bottom: var(--space-xl);
+        }
+
+        .household-icon {
+            font-size: 32px;
+        }
+
+        .household-info h3 {
+            font-family: var(--font-heading);
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: var(--space-xs);
+        }
+
+        .household-meta {
+            font-size: 14px;
+            color: var(--color-text-secondary);
+        }
+
+        .action-buttons {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: var(--space-md);
+            margin-bottom: var(--space-xl);
+        }
+
+        .achievements-grid {
+            display: grid;
+            gap: var(--space-md);
+        }
+
+        .achievement-card {
+            background: var(--color-surface);
+            border-radius: var(--radius-md);
+            padding: var(--space-lg);
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+            display: flex;
+            align-items: center;
+            gap: var(--space-md);
+        }
+
+        .achievement-icon {
+            font-size: 48px;
+        }
+
+        .achievement-info h3 {
+            font-family: var(--font-heading);
+            font-size: 16px;
+            font-weight: 700;
+            margin-bottom: var(--space-xs);
+        }
+
+        .achievement-desc {
+            font-size: 13px;
+            color: var(--color-text-secondary);
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Header -->
+        <div class="app-header">
+            <div class="header-content">
+                <div class="logo">🏠 Household Hero</div>
+                <div class="greeting">Hey Sarah! 👋</div>
+                <div class="subtitle">Let's crush those tasks today! 💪</div>
+            </div>
+        </div>
+
+        <!-- HOME SCREEN -->
+        <div id="screen-home" class="screen active">
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-emoji">🎯</div>
+                    <div class="stat-number">4</div>
+                    <div class="stat-label">Active</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-emoji">🔥</div>
+                    <div class="stat-number">12</div>
+                    <div class="stat-label">Week</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-emoji">⭐</div>
+                    <div class="stat-number">340</div>
+                    <div class="stat-label">Points</div>
+                </div>
+            </div>
+
+            <div class="section-header">
+                <h2>🚀 Today's Quests</h2>
+            </div>
+
+            <div class="task-list">
+                <div class="task-card" data-task-id="1">
+                    <button class="task-complete-btn" onclick="completeTask(1)">✓</button>
+                    <div class="task-info">
+                        <div class="task-title">Clean bathroom</div>
+                        <div class="task-meta">
+                            <div class="task-assignee">
+                                <div class="mini-avatar"></div>
+                                Alex
+                            </div>
+                            <span>·</span>
+                            <span>Repeating</span>
+                        </div>
+                    </div>
+                    <div class="task-badge">⭐ 10</div>
+                </div>
+
+                <div class="task-card" data-task-id="2">
+                    <button class="task-complete-btn" onclick="completeTask(2)">✓</button>
+                    <div class="task-info">
+                        <div class="task-title">Take out recycling</div>
+                        <div class="task-meta">
+                            <div class="task-assignee">
+                                <div class="mini-avatar"></div>
+                                Jordan
+                            </div>
+                            <span>·</span>
+                            <span>Weekly</span>
+                        </div>
+                    </div>
+                    <div class="task-badge">⭐ 5</div>
+                </div>
+
+                <div class="task-card" data-task-id="3">
+                    <button class="task-complete-btn" onclick="completeTask(3)">✓</button>
+                    <div class="task-info">
+                        <div class="task-title">Water the plants</div>
+                        <div class="task-meta">
+                            <div class="task-assignee">
+                                <div class="mini-avatar"></div>
+                                Sarah
+                            </div>
+                            <span>·</span>
+                            <span>Daily</span>
+                        </div>
+                    </div>
+                    <div class="task-badge">⭐ 3</div>
+                </div>
+            </div>
+
+            <div style="margin-top: 2rem;">
+                <div class="section-header">
+                    <h2>📅 Coming Up</h2>
+                </div>
+                <div class="task-card">
+                    <div style="width: 48px; height: 48px; border-radius: 50%; background: linear-gradient(135deg, #F97316 0%, #EC4899 100%); display: flex; align-items: center; justify-content: center; font-size: 24px;">📆</div>
+                    <div class="task-info">
+                        <div class="task-title">Vacuum living room</div>
+                        <div class="task-meta">
+                            <div class="task-assignee">
+                                <div class="mini-avatar"></div>
+                                Sarah
+                            </div>
+                            <span>·</span>
+                            <span>Tomorrow</span>
+                        </div>
+                    </div>
+                    <div class="task-badge">⭐ 8</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- TASKS SCREEN -->
+        <div id="screen-tasks" class="screen">
+            <div class="section-header">
+                <h2>✓ All Quests</h2>
+            </div>
+
+            <div class="filter-tabs">
+                <div class="filter-tab active">All</div>
+                <div class="filter-tab">My Tasks</div>
+                <div class="filter-tab">By Person</div>
+                <div class="filter-tab">Completed</div>
+            </div>
+
+            <div class="task-list">
+                <div class="task-card">
+                    <button class="task-complete-btn">✓</button>
+                    <div class="task-info">
+                        <div class="task-title">Clean bathroom</div>
+                        <div class="task-meta">
+                            <div class="task-assignee">
+                                <div class="mini-avatar"></div>
+                                Alex
+                            </div>
+                            <span>·</span>
+                            <span>Repeating</span>
+                        </div>
+                    </div>
+                    <div class="task-badge">⭐ 10</div>
+                </div>
+
+                <div class="task-card">
+                    <button class="task-complete-btn">✓</button>
+                    <div class="task-info">
+                        <div class="task-title">Take out recycling</div>
+                        <div class="task-meta">
+                            <div class="task-assignee">
+                                <div class="mini-avatar"></div>
+                                Jordan
+                            </div>
+                            <span>·</span>
+                            <span>Weekly</span>
+                        </div>
+                    </div>
+                    <div class="task-badge">⭐ 5</div>
+                </div>
+
+                <div class="task-card">
+                    <button class="task-complete-btn">✓</button>
+                    <div class="task-info">
+                        <div class="task-title">Water the plants</div>
+                        <div class="task-meta">
+                            <div class="task-assignee">
+                                <div class="mini-avatar"></div>
+                                Sarah
+                            </div>
+                            <span>·</span>
+                            <span>Daily</span>
+                        </div>
+                    </div>
+                    <div class="task-badge">⭐ 3</div>
+                </div>
+
+                <div class="task-card completed">
+                    <button class="task-complete-btn" style="background: #10B981;">✓</button>
+                    <div class="task-info">
+                        <div class="task-title">Make beds</div>
+                        <div class="task-meta">
+                            <div class="task-assignee">
+                                <div class="mini-avatar"></div>
+                                Alex
+                            </div>
+                            <span>·</span>
+                            <span>Completed today</span>
+                        </div>
+                    </div>
+                    <div class="task-badge">⭐ 3</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- FAMILY SCREEN -->
+        <div id="screen-family" class="screen">
+            <div class="household-name">
+                <div class="household-icon">🏠</div>
+                <div class="household-info">
+                    <h3>The Smith Family</h3>
+                    <div class="household-meta">4 members</div>
+                </div>
+            </div>
+
+            <div class="action-buttons">
+                <button class="btn btn-primary" onclick="showModal('invite')">+ Invite Member</button>
+                <button class="btn btn-primary" onclick="showModal('add-child')">+ Add Child</button>
+            </div>
+
+            <div class="household-header">Family Members</div>
+
+            <div class="member-list">
+                <div class="member-card">
+                    <div class="member-avatar">SM</div>
+                    <div class="member-info">
+                        <div class="member-name">Sarah (You)</div>
+                        <div class="member-role">Parent · 4 tasks this week</div>
+                    </div>
+                    <div class="member-stats">
+                        <div class="member-points">125</div>
+                        <div class="member-tasks">pts/week</div>
+                    </div>
+                </div>
+
+                <div class="member-card">
+                    <div class="member-avatar">M</div>
+                    <div class="member-info">
+                        <div class="member-name">Marcus</div>
+                        <div class="member-role">Parent · 3 tasks this week</div>
+                    </div>
+                    <div class="member-stats">
+                        <div class="member-points">98</div>
+                        <div class="member-tasks">pts/week</div>
+                    </div>
+                </div>
+
+                <div class="member-card">
+                    <div class="member-avatar">A</div>
+                    <div class="member-info">
+                        <div class="member-name">Alex (15)</div>
+                        <div class="member-role">Child · 5 tasks this week</div>
+                    </div>
+                    <div class="member-stats">
+                        <div class="member-points">87</div>
+                        <div class="member-tasks">pts/week</div>
+                    </div>
+                </div>
+
+                <div class="member-card">
+                    <div class="member-avatar">J</div>
+                    <div class="member-info">
+                        <div class="member-name">Jordan (12)</div>
+                        <div class="member-role">Child · 3 tasks this week</div>
+                    </div>
+                    <div class="member-stats">
+                        <div class="member-points">56</div>
+                        <div class="member-tasks">pts/week</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- PROGRESS SCREEN -->
+        <div id="screen-progress" class="screen">
+            <div class="section-header">
+                <h2>🏆 This Week's Champions</h2>
+            </div>
+
+            <div class="leaderboard">
+                <div class="leaderboard-item">
+                    <div class="leaderboard-rank">🥇</div>
+                    <div class="leaderboard-info">
+                        <div class="leaderboard-name">Sarah</div>
+                        <div class="leaderboard-tasks">12 tasks completed</div>
+                    </div>
+                    <div class="leaderboard-points">125</div>
+                </div>
+
+                <div class="leaderboard-item">
+                    <div class="leaderboard-rank">🥈</div>
+                    <div class="leaderboard-info">
+                        <div class="leaderboard-name">Marcus</div>
+                        <div class="leaderboard-tasks">9 tasks completed</div>
+                    </div>
+                    <div class="leaderboard-points">98</div>
+                </div>
+
+                <div class="leaderboard-item">
+                    <div class="leaderboard-rank">🥉</div>
+                    <div class="leaderboard-info">
+                        <div class="leaderboard-name">Alex</div>
+                        <div class="leaderboard-tasks">11 tasks completed</div>
+                    </div>
+                    <div class="leaderboard-points">87</div>
+                </div>
+
+                <div class="leaderboard-item">
+                    <div class="leaderboard-rank">4️⃣</div>
+                    <div class="leaderboard-info">
+                        <div class="leaderboard-name">Jordan</div>
+                        <div class="leaderboard-tasks">7 tasks completed</div>
+                    </div>
+                    <div class="leaderboard-points">56</div>
+                </div>
+            </div>
+
+            <div style="margin-top: 2rem;">
+                <div class="section-header">
+                    <h2>🎖️ Achievements</h2>
+                </div>
+
+                <div class="achievements-grid">
+                    <div class="achievement-card">
+                        <div class="achievement-icon">⭐</div>
+                        <div class="achievement-info">
+                            <h3>Early Bird</h3>
+                            <div class="achievement-desc">Completed tasks 5 days in a row</div>
+                        </div>
+                    </div>
+
+                    <div class="achievement-card">
+                        <div class="achievement-icon">🔥</div>
+                        <div class="achievement-info">
+                            <h3>Streak Master</h3>
+                            <div class="achievement-desc">30 day completion streak</div>
+                        </div>
+                    </div>
+
+                    <div class="achievement-card">
+                        <div class="achievement-icon">🌟</div>
+                        <div class="achievement-info">
+                            <h3>Century Club</h3>
+                            <div class="achievement-desc">100 tasks completed</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Floating Action Button -->
+        <button class="fab" onclick="showModal('quick-add')">+</button>
+
+        <!-- Bottom Navigation -->
+        <div class="bottom-nav">
+            <button class="nav-btn active" onclick="switchScreen('home')">
+                <div class="nav-icon">🏠</div>
+                <div class="nav-label">Home</div>
+            </button>
+            <button class="nav-btn" onclick="switchScreen('tasks')">
+                <div class="nav-icon">✓</div>
+                <div class="nav-label">Tasks</div>
+            </button>
+            <button class="nav-btn" onclick="switchScreen('family')">
+                <div class="nav-icon">👥</div>
+                <div class="nav-label">Family</div>
+            </button>
+            <button class="nav-btn" onclick="switchScreen('progress')">
+                <div class="nav-icon">🏆</div>
+                <div class="nav-label">Progress</div>
+            </button>
+        </div>
+
+        <!-- Quick Add Modal -->
+        <div id="modal-quick-add" class="modal-overlay">
+            <div class="modal">
+                <div class="modal-header">✨ Quick Add Task</div>
+                <form onsubmit="return createTask(event)">
+                    <div class="form-group">
+                        <label class="form-label">Task Name *</label>
+                        <input type="text" class="form-input" placeholder="e.g., Take out trash" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Assign to *</label>
+                        <select class="form-select" required>
+                            <option value="">Choose person...</option>
+                            <option value="sarah">Sarah</option>
+                            <option value="marcus">Marcus</option>
+                            <option value="alex">Alex</option>
+                            <option value="jordan">Jordan</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Points</label>
+                        <input type="number" class="form-input" value="5" min="1" max="100">
+                    </div>
+                    <div class="modal-actions">
+                        <button type="button" class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+                        <button type="submit" class="btn btn-primary">Create</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Invite Member Modal -->
+        <div id="modal-invite" class="modal-overlay">
+            <div class="modal">
+                <div class="modal-header">📧 Invite Family Member</div>
+                <form onsubmit="return sendInvite(event)">
+                    <div class="form-group">
+                        <label class="form-label">Email Address *</label>
+                        <input type="email" class="form-input" placeholder="family@example.com" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Role *</label>
+                        <select class="form-select" required>
+                            <option value="parent">Parent (Admin)</option>
+                            <option value="adult">Adult Member</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Personal Message (Optional)</label>
+                        <textarea class="form-textarea" placeholder="Join our household to help manage tasks together!"></textarea>
+                    </div>
+                    <div class="modal-actions">
+                        <button type="button" class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+                        <button type="submit" class="btn btn-primary">Send Invite</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Add Child Modal -->
+        <div id="modal-add-child" class="modal-overlay">
+            <div class="modal">
+                <div class="modal-header">👶 Add Child</div>
+                <form onsubmit="return addChild(event)">
+                    <div class="form-group">
+                        <label class="form-label">Child's Name *</label>
+                        <input type="text" class="form-input" placeholder="e.g., Emma" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Age *</label>
+                        <input type="number" class="form-input" placeholder="e.g., 10" min="1" max="18" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Avatar Emoji</label>
+                        <select class="form-select">
+                            <option value="😊">😊 Happy</option>
+                            <option value="🎮">🎮 Gamer</option>
+                            <option value="⚽">⚽ Sports</option>
+                            <option value="📚">📚 Bookworm</option>
+                            <option value="🎨">🎨 Artist</option>
+                        </select>
+                    </div>
+                    <div class="modal-actions">
+                        <button type="button" class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+                        <button type="submit" class="btn btn-primary">Add Child</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Success Animation -->
+        <div id="success-animation" class="success-animation">
+            +10 Points! 🎉
+        </div>
+    </div>
+
+    <script>
+        // Screen Navigation
+        function switchScreen(screenName) {
+            // Hide all screens
+            document.querySelectorAll('.screen').forEach(screen => {
+                screen.classList.remove('active');
+            });
+
+            // Show selected screen
+            document.getElementById('screen-' + screenName).classList.add('active');
+
+            // Update nav buttons
+            document.querySelectorAll('.nav-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.closest('.nav-btn').classList.add('active');
+        }
+
+        // Modal Management
+        function showModal(modalId) {
+            const modal = document.getElementById('modal-' + modalId);
+            if (modal) {
+                modal.classList.add('active');
+            }
+        }
+
+        function closeModal() {
+            document.querySelectorAll('.modal-overlay').forEach(modal => {
+                modal.classList.remove('active');
+            });
+        }
+
+        // Close modal on overlay click
+        document.querySelectorAll('.modal-overlay').forEach(overlay => {
+            overlay.addEventListener('click', function(e) {
+                if (e.target === overlay) {
+                    closeModal();
+                }
+            });
+        });
+
+        // Task Completion
+        function completeTask(taskId) {
+            // Show success animation
+            const animation = document.getElementById('success-animation');
+            animation.classList.add('show');
+
+            // Remove task card
+            const taskCard = document.querySelector(`[data-task-id="${taskId}"]`);
+            if (taskCard) {
+                taskCard.classList.add('completed');
+                setTimeout(() => {
+                    taskCard.style.display = 'none';
+                }, 300);
+            }
+
+            // Remove animation class after animation completes
+            setTimeout(() => {
+                animation.classList.remove('show');
+            }, 600);
+        }
+
+        // Form Submissions
+        function createTask(e) {
+            e.preventDefault();
+            closeModal();
+            // Show success feedback
+            const animation = document.getElementById('success-animation');
+            animation.textContent = 'Task Created! ✨';
+            animation.classList.add('show');
+            setTimeout(() => {
+                animation.classList.remove('show');
+                animation.textContent = '+10 Points! 🎉';
+            }, 600);
+            return false;
+        }
+
+        function sendInvite(e) {
+            e.preventDefault();
+            closeModal();
+            const animation = document.getElementById('success-animation');
+            animation.textContent = 'Invitation Sent! 📧';
+            animation.classList.add('show');
+            setTimeout(() => {
+                animation.classList.remove('show');
+                animation.textContent = '+10 Points! 🎉';
+            }, 600);
+            return false;
+        }
+
+        function addChild(e) {
+            e.preventDefault();
+            closeModal();
+            const animation = document.getElementById('success-animation');
+            animation.textContent = 'Child Added! 🎉';
+            animation.classList.add('show');
+            setTimeout(() => {
+                animation.classList.remove('show');
+                animation.textContent = '+10 Points! 🎉';
+            }, 600);
+            return false;
+        }
+    </script>
+</body>
+</html>
