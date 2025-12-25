@@ -4,10 +4,11 @@
   (click)="handleClick()"
   [attr.role]="clickable() ? 'button' : null"
   [attr.tabindex]="clickable() ? 0 : null"
+  [attr.aria-label]="clickable() ? 'View ' + member().name + ' details' : null"
   (keydown.enter)="handleClick()"
   (keydown.space)="handleClick()"
 >
-  <div class="member-avatar">{{ initials() }}</div>
+  <div class="member-avatar" aria-hidden="true">{{ initials() }}</div>
 
   <div class="member-info">
     <div class="member-name">{{ member().name }}</div>

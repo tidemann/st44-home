@@ -10,15 +10,15 @@
 <div class="main-content">
   <!-- Loading State -->
   @if (loading()) {
-    <div class="loading-container">
-      <div class="loading-spinner"></div>
+    <div class="loading-container" role="status" aria-live="polite">
+      <div class="loading-spinner" aria-hidden="true"></div>
       <p>Loading progress...</p>
     </div>
   }
 
   <!-- Error State -->
   @if (error()) {
-    <div class="error-container">
+    <div class="error-container" role="alert" aria-live="assertive">
       <p class="error-message">{{ error() }}</p>
       <button class="retry-button" (click)="loadData()">Try Again</button>
     </div>
@@ -27,90 +27,122 @@
   <!-- Main Content -->
   @if (!loading() && !error()) {
     <!-- Household Stats Section -->
-    <div class="stats-section">
-      <div class="stats-grid">
-        <div class="stat-box">
+    <section class="stats-section" aria-labelledby="stats-heading">
+      <h2 id="stats-heading" class="visually-hidden">Household Statistics</h2>
+      <div class="stats-grid" role="list">
+        <div
+          class="stat-box"
+          role="listitem"
+          aria-label="Total Points: {{ householdStats().totalPoints }}"
+        >
           <div class="stat-value">{{ householdStats().totalPoints }}</div>
           <div class="stat-label">Total Points</div>
         </div>
-        <div class="stat-box">
+        <div
+          class="stat-box"
+          role="listitem"
+          aria-label="Completion Rate: {{ householdStats().completionRate }} percent"
+        >
           <div class="stat-value">{{ householdStats().completionRate }}%</div>
           <div class="stat-label">Completion Rate</div>
         </div>
-        <div class="stat-box">
+        <div
+          class="stat-box"
+          role="listitem"
+          aria-label="Tasks This Week: {{ householdStats().tasksCompletedThisWeek }}"
+        >
           <div class="stat-value">{{ householdStats().tasksCompletedThisWeek }}</div>
           <div class="stat-label">Tasks This Week</div>
         </div>
       </div>
-    </div>
+    </section>
 
     <!-- Leaderboard Section -->
-    <div class="section">
+    <section class="section" aria-labelledby="leaderboard-heading">
       <div class="section-header">
-        <h2>This Week's Leaders</h2>
+        <h2 id="leaderboard-heading">This Week's Leaders</h2>
         <p class="section-subtitle">Great work, everyone!</p>
       </div>
 
       @if (hasLeaderboard()) {
-        <div class="leaderboard">
+        <ol class="leaderboard" aria-label="Weekly leaderboard rankings">
           @for (entry of leaderboard(); track entry.userId) {
-            <div class="leaderboard-item" [class.current-user]="entry.isCurrentUser">
-              <div class="leaderboard-rank">{{ getMedalForRank(entry.rank) }}</div>
+            <li
+              class="leaderboard-item"
+              [class.current-user]="entry.isCurrentUser"
+              [attr.aria-current]="entry.isCurrentUser ? 'true' : null"
+            >
+              <div class="leaderboard-rank" aria-hidden="true">
+                {{ getMedalForRank(entry.rank) }}
+              </div>
               <div class="leaderboard-info">
                 <div class="leaderboard-name">{{ entry.name }}</div>
                 <div class="leaderboard-tasks">{{ entry.tasksCompleted }} tasks completed</div>
               </div>
-              <div class="leaderboard-points">{{ entry.points }}</div>
-            </div>
+              <div class="leaderboard-points" aria-label="{{ entry.points }} points">
+                {{ entry.points }}
+              </div>
+            </li>
           }
-        </div>
+        </ol>
       } @else {
-        <div class="empty-state">
+        <div class="empty-state" role="status">
           <p>No leaderboard data yet. Complete some tasks to get started!</p>
         </div>
       }
-    </div>
+    </section>
 
     <!-- Achievements Section -->
-    <div class="section">
+    <section class="section" aria-labelledby="achievements-heading">
       <div class="section-header">
-        <h2>Achievements</h2>
+        <h2 id="achievements-heading">Achievements</h2>
         <p class="section-subtitle">Keep up the amazing progress!</p>
       </div>
 
       @if (hasAchievements()) {
-        <div class="achievements-grid">
+        <div class="achievements-grid" role="list" aria-label="Achievement badges">
           @for (achievement of achievements(); track achievement.id) {
-            <div
+            <article
               class="achievement-card"
               [class.unlocked]="achievement.unlocked"
               [class.locked]="!achievement.unlocked"
+              role="listitem"
+              [attr.aria-label]="
+                achievement.name + (achievement.unlocked ? ' - Unlocked' : ' - Locked')
+              "
             >
-              <div class="achievement-icon">{{ achievement.icon }}</div>
+              <div class="achievement-icon" aria-hidden="true">{{ achievement.icon }}</div>
               <div class="achievement-info">
                 <h3>{{ achievement.name }}</h3>
                 <div class="achievement-desc">{{ achievement.description }}</div>
                 @if (!achievement.unlocked && achievement.progress !== undefined) {
                   <div class="achievement-progress">
-                    <div class="progress-bar">
+                    <div
+                      class="progress-bar"
+                      role="progressbar"
+                      [attr.aria-valuenow]="achievement.progress"
+                      aria-valuemin="0"
+                      aria-valuemax="100"
+                      [attr.aria-label]="'Progress: ' + achievement.progress + ' percent'"
+                    >
                       <div class="progress-fill" [style.width.%]="achievement.progress"></div>
                     </div>
-                    <div class="progress-text">{{ achievement.progress }}%</div>
+                    <div class="progress-text" aria-hidden="true">{{ achievement.progress }}%</div>
                   </div>
                 }
                 @if (achievement.unlocked) {
                   <div class="achievement-unlocked">Unlocked!</div>
                 }
               </div>
-            </div>
+            </article>
           }
         </div>
       } @else {
-        <div class="empty-state">
+        <div class="empty-state" role="status">
           <p>No achievements yet. Start completing tasks to unlock badges!</p>
         </div>
       }
-    </div>
+    </section>
   }
 </div>
 

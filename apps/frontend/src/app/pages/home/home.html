@@ -1,15 +1,15 @@
 <!-- Loading State -->
 @if (loading()) {
-  <div class="loading-container">
-    <div class="spinner"></div>
+  <div class="loading-container" role="status" aria-live="polite">
+    <div class="spinner" aria-hidden="true"></div>
     <p>Loading your dashboard...</p>
   </div>
 }
 
 <!-- Error State -->
 @if (error() && !loading()) {
-  <div class="error-container">
-    <div class="error-icon">⚠️</div>
+  <div class="error-container" role="alert" aria-live="assertive">
+    <div class="error-icon" aria-hidden="true">⚠️</div>
     <h2>Oops!</h2>
     <p>{{ error() }}</p>
     <button class="btn-retry" (click)="loadData()">Try Again</button>
@@ -70,8 +70,8 @@
               }
             </div>
           } @else {
-            <div class="empty-state">
-              <div class="empty-icon">✨</div>
+            <div class="empty-state" role="status">
+              <div class="empty-icon" aria-hidden="true">✨</div>
               <h3>All done!</h3>
               <p>You've completed all your tasks for today.</p>
             </div>
