@@ -1,5 +1,10 @@
-<div class="stat-card" [class]="gradient()">
-  <div class="stat-icon">{{ icon() }}</div>
+<div
+  class="stat-card"
+  [class]="gradient()"
+  role="group"
+  [attr.aria-label]="label() + ': ' + value()"
+>
+  <div class="stat-icon" aria-hidden="true">{{ icon() }}</div>
   <div class="stat-value">{{ value() }}</div>
   <div class="stat-label">{{ label() }}</div>
 </div>

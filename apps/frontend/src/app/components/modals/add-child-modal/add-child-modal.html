@@ -9,9 +9,13 @@
         formControlName="name"
         placeholder="e.g., Emma"
         [class.error]="form.controls.name.invalid && form.controls.name.touched"
+        [attr.aria-invalid]="form.controls.name.invalid && form.controls.name.touched"
+        [attr.aria-describedby]="
+          form.controls.name.invalid && form.controls.name.touched ? 'child-name-error' : null
+        "
       />
       @if (form.controls.name.invalid && form.controls.name.touched) {
-        <div class="form-error">
+        <div id="child-name-error" class="form-error" role="alert">
           @if (form.controls.name.errors?.['required']) {
             Child's name is required
           }
@@ -33,9 +37,13 @@
         min="1"
         max="18"
         [class.error]="form.controls.age.invalid && form.controls.age.touched"
+        [attr.aria-invalid]="form.controls.age.invalid && form.controls.age.touched"
+        [attr.aria-describedby]="
+          form.controls.age.invalid && form.controls.age.touched ? 'child-age-error' : null
+        "
       />
       @if (form.controls.age.invalid && form.controls.age.touched) {
-        <div class="form-error">
+        <div id="child-age-error" class="form-error" role="alert">
           @if (form.controls.age.errors?.['required']) {
             Age is required
           }

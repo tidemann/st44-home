@@ -9,9 +9,13 @@
         formControlName="email"
         placeholder="family@example.com"
         [class.error]="form.controls.email.invalid && form.controls.email.touched"
+        [attr.aria-invalid]="form.controls.email.invalid && form.controls.email.touched"
+        [attr.aria-describedby]="
+          form.controls.email.invalid && form.controls.email.touched ? 'invite-email-error' : null
+        "
       />
       @if (form.controls.email.invalid && form.controls.email.touched) {
-        <div class="form-error">
+        <div id="invite-email-error" class="form-error" role="alert">
           @if (form.controls.email.errors?.['required']) {
             Email address is required
           }

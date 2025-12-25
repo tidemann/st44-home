@@ -10,9 +10,13 @@
           formControlName="name"
           placeholder="e.g., Take out trash"
           [class.error]="form.controls.name.invalid && form.controls.name.touched"
+          [attr.aria-invalid]="form.controls.name.invalid && form.controls.name.touched"
+          [attr.aria-describedby]="
+            form.controls.name.invalid && form.controls.name.touched ? 'edit-task-name-error' : null
+          "
         />
         @if (form.controls.name.invalid && form.controls.name.touched) {
-          <div class="form-error">
+          <div id="edit-task-name-error" class="form-error" role="alert">
             @if (form.controls.name.errors?.['required']) {
               Task name is required
             }
@@ -33,9 +37,15 @@
           min="1"
           max="1000"
           [class.error]="form.controls.points.invalid && form.controls.points.touched"
+          [attr.aria-invalid]="form.controls.points.invalid && form.controls.points.touched"
+          [attr.aria-describedby]="
+            form.controls.points.invalid && form.controls.points.touched
+              ? 'edit-points-error'
+              : null
+          "
         />
         @if (form.controls.points.invalid && form.controls.points.touched) {
-          <div class="form-error">
+          <div id="edit-points-error" class="form-error" role="alert">
             @if (form.controls.points.errors?.['min']) {
               Points must be at least 1
             }

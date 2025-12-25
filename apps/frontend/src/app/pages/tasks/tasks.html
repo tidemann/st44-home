@@ -40,16 +40,16 @@
 
   <!-- Loading State -->
   @if (loading()) {
-    <div class="loading-state">
-      <div class="loading-spinner"></div>
+    <div class="loading-state" role="status" aria-live="polite">
+      <div class="loading-spinner" aria-hidden="true"></div>
       <p class="loading-text">Loading tasks...</p>
     </div>
   }
 
   <!-- Error State -->
   @if (error() && !loading()) {
-    <div class="error-state">
-      <div class="error-icon">⚠️</div>
+    <div class="error-state" role="alert" aria-live="assertive">
+      <div class="error-icon" aria-hidden="true">⚠️</div>
       <p class="error-text">{{ error() }}</p>
       <button type="button" class="retry-button" (click)="loadTasks()">Retry</button>
     </div>
@@ -60,8 +60,8 @@
     <div class="task-list">
       @if (filteredTasks().length === 0) {
         <!-- Empty State -->
-        <div class="empty-state">
-          <div class="empty-icon">📋</div>
+        <div class="empty-state" role="status">
+          <div class="empty-icon" aria-hidden="true">📋</div>
           <p class="empty-text">{{ emptyMessage() }}</p>
         </div>
       } @else {
