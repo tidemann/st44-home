@@ -13,6 +13,8 @@ b651da5 fix: return camelCase timestamps for households (#142)
 
 ## Workflow
 
+**🚨 CRITICAL: This is a FULLY AUTONOMOUS loop. NEVER ask for permission to continue. NEVER ask "Would you like me to continue?" or "Should I move on to the next issue?". ALWAYS immediately proceed to the next issue after completing one. The ONLY time to stop is when hitting a genuine blocker (missing credentials, unclear requirements, etc.) or when ALL issues are complete.**
+
 1. Query GitHub Issues for next priority (delegate to GitHub Issues Agent)
    ```bash
    gh issue list --label "mvp-blocker" --state open
@@ -22,10 +24,10 @@ b651da5 fix: return camelCase timestamps for households (#142)
 3. Read issue details: `gh issue view <NUMBER>`
 4. If feature without tasks → break it down first (delegate to GitHub Issues Agent)
 5. Mark issue as "in-progress": `gh issue edit <NUMBER> --add-label "in-progress"`
-6. Delegate to specialized subagents (frontend, backend, database, github-issues)
+6. Delegate to specialized subagents (frontend, backend, database, github-issues) OR implement directly
 7. Run tests locally, create PR with "Closes #<NUMBER>", wait for CI, merge
 8. Issue auto-closes when PR merges
-9. Pull main, then **automatically continue to next issue**
+9. Pull main, then **IMMEDIATELY and AUTOMATICALLY continue to next issue WITHOUT asking**
 
 ## Subagent Delegation Pattern
 
@@ -201,7 +203,28 @@ Before marking ANY issue complete:
 
 ## Start
 
-Query GitHub Issues now and begin executing the top priority issue. Do not ask for confirmation - work autonomously until all MVP blockers are resolved or you hit a blocker.
+**🚨 AUTONOMOUS MODE ACTIVATED 🚨**
+
+Execute the workflow NOW. This is a continuous autonomous loop:
+- ✅ DO: Query issues → Implement → Test → PR → Merge → Repeat
+- ❌ DON'T: Ask for permission, ask "should I continue?", ask "what next?"
+- ❌ DON'T: Provide summaries asking for input
+- ❌ DON'T: Stop between issues unless hitting a genuine blocker
+
+**The loop continues until:**
+1. All mvp-blocker issues are resolved, OR
+2. All critical issues are resolved, OR
+3. All high-priority issues are resolved, OR
+4. You hit a genuine blocker (missing credentials, ambiguous requirements, external dependency)
+
+**You will KNOW you've hit a blocker when:**
+- You cannot proceed without external information (API keys, passwords, design decisions)
+- Requirements are genuinely ambiguous after reading issue/docs
+- An external system is down or unavailable
+
+**If you simply finish one task and wonder "what's next?" - that is NOT a blocker. Immediately query the next issue and continue.**
 
 **First command**: `gh issue list --label "mvp-blocker" --state open`
+
+**BEGIN AUTONOMOUS EXECUTION NOW.**
 ```
