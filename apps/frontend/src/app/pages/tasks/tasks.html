@@ -1,0 +1,105 @@
+<div class="tasks-page">
+  <!-- Header -->
+  <div class="tasks-header">
+    <h1 class="tasks-title">All Tasks</h1>
+  </div>
+
+  <!-- Filter Tabs -->
+  <div class="filter-tabs">
+    @for (tab of filterTabs; track tab.id) {
+      <button
+        type="button"
+        class="filter-tab"
+        [class.active]="isFilterActive(tab.id)"
+        (click)="onFilterClick(tab.id)"
+        [attr.aria-pressed]="isFilterActive(tab.id)"
+        [attr.aria-label]="'Filter by ' + tab.label"
+      >
+        {{ tab.label }}
+      </button>
+    }
+  </div>
+
+  <!-- Person Filter Dropdown (only shown when filter = 'person') -->
+  @if (activeFilter() === 'person') {
+    <div class="person-filter">
+      <label for="person-select" class="person-filter-label">Select Person:</label>
+      <select
+        id="person-select"
+        class="person-select"
+        [value]="selectedPersonId() || ''"
+        (change)="onPersonChange($event)"
+      >
+        <option value="">Choose a person...</option>
+        @for (member of members(); track member.id) {
+          <option [value]="member.id">{{ member.name }}</option>
+        }
+      </select>
+    </div>
+  }
+
+  <!-- Loading State -->
+  @if (loading()) {
+    <div class="loading-state">
+      <div class="loading-spinner"></div>
+      <p class="loading-text">Loading tasks...</p>
+    </div>
+  }
+
+  <!-- Error State -->
+  @if (error() && !loading()) {
+    <div class="error-state">
+      <div class="error-icon">⚠️</div>
+      <p class="error-text">{{ error() }}</p>
+      <button type="button" class="retry-button" (click)="loadTasks()">Retry</button>
+    </div>
+  }
+
+  <!-- Task List -->
+  @if (!loading() && !error()) {
+    <div class="task-list">
+      @if (filteredTasks().length === 0) {
+        <!-- Empty State -->
+        <div class="empty-state">
+          <div class="empty-icon">📋</div>
+          <p class="empty-text">{{ emptyMessage() }}</p>
+        </div>
+      } @else {
+        <!-- Task Cards -->
+        @for (task of filteredTasks(); track task.id) {
+          <app-task-card
+            [task]="task"
+            [showCompleteButton]="true"
+            [clickable]="true"
+            (complete)="onTaskComplete($event)"
+            (edit)="onTaskEdit($event)"
+          />
+        }
+      }
+    </div>
+  }
+
+  <!-- Edit Task Modal -->
+  <app-edit-task-modal
+    [open]="editModalOpen()"
+    [task]="editingTask()"
+    (closeRequested)="onModalClose()"
+    (taskUpdated)="onTaskUpdate($event)"
+    (taskDeleted)="onTaskDelete()"
+  />
+
+  <!-- Responsive Navigation -->
+  <!-- Bottom Nav (mobile) -->
+  <div class="bottom-nav-container">
+    <app-bottom-nav [activeScreen]="'tasks'" (navigate)="onNavigate($event)" />
+  </div>
+
+  <!-- Sidebar Nav (desktop) -->
+  <div class="sidebar-nav-container">
+    <app-sidebar-nav
+      [activeScreen]="'tasks'"
+      [user]="sidebarUser()"
+      (navigate)="onNavigate($event)"
+    />
+  </div>
+</div>

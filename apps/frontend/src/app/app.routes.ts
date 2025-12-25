@@ -75,6 +75,11 @@ export const routes: Routes = [
       ),
     canActivate: [roleGuard(['admin', 'parent'])],
   },
+  {
+    path: 'household/all-tasks',
+    loadComponent: () => import('./pages/tasks/tasks').then((m) => m.Tasks),
+    canActivate: [roleGuard(['admin', 'parent'])],
+  },
 
   // Protected routes - Child only
   {
