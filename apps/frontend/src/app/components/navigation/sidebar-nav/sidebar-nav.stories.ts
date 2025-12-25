@@ -41,7 +41,6 @@ const meta: Meta<SidebarNav> = {
 };
 
 export default meta;
-type Story = StoryObj<SidebarNav>;
 
 const defaultUser: SidebarUser = {
   name: 'Sarah Johnson',
@@ -52,7 +51,7 @@ const defaultUser: SidebarUser = {
 /**
  * Default state with Home active
  */
-export const Home: Story = {
+export const Home: StoryObj<SidebarNav> = {
   args: {
     activeScreen: 'home',
     user: defaultUser,
@@ -62,7 +61,7 @@ export const Home: Story = {
 /**
  * Tasks screen active
  */
-export const Tasks: Story = {
+export const Tasks: StoryObj<SidebarNav> = {
   args: {
     activeScreen: 'tasks',
     user: defaultUser,
@@ -72,7 +71,7 @@ export const Tasks: Story = {
 /**
  * Family screen active
  */
-export const Family: Story = {
+export const Family: StoryObj<SidebarNav> = {
   args: {
     activeScreen: 'family',
     user: defaultUser,
@@ -82,7 +81,7 @@ export const Family: Story = {
 /**
  * Progress screen active
  */
-export const Progress: Story = {
+export const Progress: StoryObj<SidebarNav> = {
   args: {
     activeScreen: 'progress',
     user: defaultUser,
@@ -92,7 +91,7 @@ export const Progress: Story = {
 /**
  * User with single name
  */
-export const SingleNameUser: Story = {
+export const SingleNameUser: StoryObj<SidebarNav> = {
   args: {
     activeScreen: 'home',
     user: {
@@ -106,7 +105,7 @@ export const SingleNameUser: Story = {
 /**
  * User with long household name
  */
-export const LongHouseholdName: Story = {
+export const LongHouseholdName: StoryObj<SidebarNav> = {
   args: {
     activeScreen: 'home',
     user: {
@@ -120,7 +119,7 @@ export const LongHouseholdName: Story = {
 /**
  * Interactive demo showing navigation and add task
  */
-export const Interactive: Story = {
+export const Interactive: StoryObj<SidebarNav> = {
   render: (args) => ({
     props: {
       ...args,

@@ -34,12 +34,11 @@ const meta: Meta<BottomNav> = {
 };
 
 export default meta;
-type Story = StoryObj<BottomNav>;
 
 /**
  * Default state with Home active
  */
-export const Home: Story = {
+export const Home: StoryObj<BottomNav> = {
   args: {
     activeScreen: 'home',
   },
@@ -48,7 +47,7 @@ export const Home: Story = {
 /**
  * Tasks screen active
  */
-export const Tasks: Story = {
+export const Tasks: StoryObj<BottomNav> = {
   args: {
     activeScreen: 'tasks',
   },
@@ -57,7 +56,7 @@ export const Tasks: Story = {
 /**
  * Family screen active
  */
-export const Family: Story = {
+export const Family: StoryObj<BottomNav> = {
   args: {
     activeScreen: 'family',
   },
@@ -66,7 +65,7 @@ export const Family: Story = {
 /**
  * Progress screen active
  */
-export const Progress: Story = {
+export const Progress: StoryObj<BottomNav> = {
   args: {
     activeScreen: 'progress',
   },
@@ -75,7 +74,7 @@ export const Progress: Story = {
 /**
  * Interactive demo showing navigation between screens
  */
-export const Interactive: Story = {
+export const Interactive: StoryObj<BottomNav> = {
   render: (args) => ({
     props: {
       ...args,

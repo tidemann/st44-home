@@ -84,7 +84,16 @@
       "Bash(timeout 120 npm run build-storybook:*)",
       "Bash(npm ls:*)",
       "WebFetch(domain:www.npmpeer.dev)",
-      "Bash(npm view:*)"
+      "Bash(npm view:*)",
+      "Skill(ux-design)",
+      "Bash(Colors\" to see all tokens visually.\n\n## Next Steps\n\nAfter merge:\n1. Components can start using design tokens \\(issue #186-#190\\)\n2. Gradient stories can be updated \\(optional enhancement\\)\n3. Typography and spacing stories can be enhanced with new tokens\n\n## Breaking Changes\n\nNone - all changes are additive. Existing styles remain functional.\n\nCloses #185\n\n🤖 Generated with [Claude Code]\\(https://claude.com/claude-code\\)\nEOF\n\\)\" --base main)",
+      "Bash(ConvertFrom-Json)",
+      "Bash(Where-Object { $_labels.name -contains \"critical\" -or $_labels.name -contains \"mvp-blocker\" })",
+      "Bash(ConvertTo-Json)",
+      "Skill(frontend-design)",
+      "Bash(npx ng:*)",
+      "Bash(npx node:*)",
+      "Bash(timeout:*)"
     ]
   }
 }

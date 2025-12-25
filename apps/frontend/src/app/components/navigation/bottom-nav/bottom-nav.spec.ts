@@ -1,5 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { BottomNav, type NavScreen } from './bottom-nav';
+import { BottomNav } from './bottom-nav';
 import { ComponentRef } from '@angular/core';
 
 describe('BottomNav', () => {

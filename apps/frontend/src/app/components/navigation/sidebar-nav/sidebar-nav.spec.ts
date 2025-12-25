@@ -1,6 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { SidebarNav, type SidebarUser } from './sidebar-nav';
-import type { NavScreen } from '../bottom-nav/bottom-nav';
 import { ComponentRef } from '@angular/core';
 
 describe('SidebarNav', () => {
