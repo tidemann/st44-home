@@ -1,0 +1,126 @@
+<!-- Loading State -->
+@if (loading()) {
+  <div class="loading-container">
+    <div class="spinner"></div>
+    <p>Loading your dashboard...</p>
+  </div>
+}
+
+<!-- Error State -->
+@if (error() && !loading()) {
+  <div class="error-container">
+    <div class="error-icon">⚠️</div>
+    <h2>Oops!</h2>
+    <p>{{ error() }}</p>
+    <button class="btn-retry" (click)="loadData()">Try Again</button>
+  </div>
+}
+
+<!-- Main Content -->
+@if (!loading() && !error()) {
+  <div class="home-container">
+    <!-- Sidebar Navigation (Desktop) -->
+    <div class="sidebar-container">
+      <app-sidebar-nav
+        [activeScreen]="activeScreen()"
+        [user]="sidebarUser()"
+        (navigate)="onNavigate($event)"
+        (addTask)="openQuickAdd()"
+      />
+    </div>
+
+    <!-- Main Content Area -->
+    <div class="main-content">
+      <!-- Header with Gradient -->
+      <header class="header">
+        <div class="header-content">
+          <h1 class="logo">Diddit!</h1>
+          <div class="greeting-section">
+            <h2 class="greeting">{{ greeting() }}, {{ userName() }}!</h2>
+            <p class="subtitle">Let's get those tasks done today</p>
+          </div>
+        </div>
+      </header>
+
+      <!-- Content -->
+      <div class="content">
+        <!-- Stats Grid -->
+        <div class="stats-grid">
+          <app-stat-card [icon]="'🎯'" [value]="stats().activeCount" [label]="'Active'" />
+          <app-stat-card [icon]="'📊'" [value]="stats().weekProgress + '%'" [label]="'Week'" />
+          <app-stat-card [icon]="'⭐'" [value]="stats().totalPoints" [label]="'Points'" />
+        </div>
+
+        <!-- Today's Tasks Section -->
+        <section class="tasks-section">
+          <div class="section-header">
+            <h2>Today's Tasks</h2>
+          </div>
+
+          @if (hasTodayTasks()) {
+            <div class="task-list">
+              @for (task of todayTasks(); track task.id) {
+                <app-task-card
+                  [task]="task"
+                  [showCompleteButton]="true"
+                  [clickable]="true"
+                  (complete)="onCompleteTask($event)"
+                  (edit)="onEditTask($event)"
+                />
+              }
+            </div>
+          } @else {
+            <div class="empty-state">
+              <div class="empty-icon">✨</div>
+              <h3>All done!</h3>
+              <p>You've completed all your tasks for today.</p>
+            </div>
+          }
+        </section>
+
+        <!-- Coming Up Section -->
+        @if (hasUpcomingTasks()) {
+          <section class="tasks-section">
+            <div class="section-header">
+              <h2>Coming Up</h2>
+            </div>
+            <div class="task-list">
+              @for (task of upcomingTasks(); track task.id) {
+                <app-task-card
+                  [task]="task"
+                  [showCompleteButton]="false"
+                  [clickable]="true"
+                  (edit)="onEditTask($event)"
+                />
+              }
+            </div>
+          </section>
+        }
+      </div>
+
+      <!-- Bottom Navigation (Mobile) -->
+      <div class="bottom-nav-container">
+        <app-bottom-nav [activeScreen]="activeScreen()" (navigate)="onNavigate($event)" />
+      </div>
+
+      <!-- FAB Button (Mobile only) -->
+      <button class="fab" (click)="openQuickAdd()" aria-label="Add new task">+</button>
+    </div>
+
+    <!-- Modals -->
+    <app-quick-add-modal
+      [open]="quickAddOpen()"
+      [children]="children()"
+      (closeRequested)="closeQuickAdd()"
+      (taskCreated)="onTaskCreated($event)"
+    />
+
+    <app-edit-task-modal
+      [open]="editTaskOpen()"
+      [task]="selectedTask()"
+      (closeRequested)="closeEditTask()"
+      (taskUpdated)="onTaskUpdated($event)"
+      (taskDeleted)="onTaskDeleted()"
+    />
+  </div>
+}

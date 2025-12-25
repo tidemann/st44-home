@@ -28,6 +28,11 @@ export const routes: Routes = [
 
   // Protected routes - Parent and Admin only
   {
+    path: 'home',
+    loadComponent: () => import('./pages/home/home').then((m) => m.Home),
+    canActivate: [roleGuard(['admin', 'parent'])],
+  },
+  {
     path: 'household/create',
     loadComponent: () =>
       import('./components/household-create/household-create').then(
@@ -90,7 +95,7 @@ export const routes: Routes = [
   // Default redirect
   {
     path: '',
-    redirectTo: '/dashboard',
+    redirectTo: '/home',
     pathMatch: 'full',
   },
 ];
