@@ -23,7 +23,7 @@ const meta: Meta<SidebarNav> = {
     },
   },
   decorators: [
-    (Story) => ({
+    (_Story) => ({
       template: `
         <div style="position: relative; height: 100vh; background: #f9fafb;">
           <div style="position: absolute; top: 20px; left: 300px; right: 20px; text-align: center; color: #6b7280;">
