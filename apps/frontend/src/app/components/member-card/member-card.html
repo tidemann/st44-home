@@ -1,0 +1,27 @@
+<div
+  class="member-card"
+  [class.clickable]="clickable()"
+  (click)="handleClick()"
+  [attr.role]="clickable() ? 'button' : null"
+  [attr.tabindex]="clickable() ? 0 : null"
+  (keydown.enter)="handleClick()"
+  (keydown.space)="handleClick()"
+>
+  <div class="member-avatar">{{ initials() }}</div>
+
+  <div class="member-info">
+    <div class="member-name">{{ member().name }}</div>
+    <div class="member-role" [class]="roleClass()">
+      {{ member().role === 'parent' ? 'Parent' : 'Child' }}
+    </div>
+  </div>
+
+  @if (showStats()) {
+    <div class="member-stats">
+      <div class="member-points">{{ member().points || 0 }} pts</div>
+      <div class="member-tasks">
+        {{ member().tasksCompleted || 0 }}/{{ member().totalTasks || 0 }} tasks
+      </div>
+    </div>
+  }
+</div>
