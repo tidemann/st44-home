@@ -14,6 +14,7 @@ import { invitationRoutes } from './routes/invitations.js';
 import assignmentRoutes from './routes/assignments.js';
 import analyticsRoutes from './routes/analytics.js';
 import rewardRoutes from './routes/rewards.js';
+import statsRoutes from './routes/stats.js';
 import {
   registerSchema,
   loginSchema,
@@ -739,6 +740,7 @@ async function buildApp() {
   await fastify.register(assignmentRoutes);
   await fastify.register(rewardRoutes);
   await fastify.register(analyticsRoutes);
+  await fastify.register(statsRoutes);
 
   // Example items endpoint
   interface Item {
