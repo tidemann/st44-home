@@ -6,6 +6,7 @@ import {
   inject,
   OnInit,
 } from '@angular/core';
+import { Router } from '@angular/router';
 import { BottomNav } from '../../components/navigation/bottom-nav/bottom-nav';
 import { SidebarNav } from '../../components/navigation/sidebar-nav/sidebar-nav';
 import { AuthService } from '../../services/auth.service';
@@ -69,6 +70,7 @@ interface HouseholdStats {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class Progress implements OnInit {
+  private readonly router = inject(Router);
   private readonly authService = inject(AuthService);
   private readonly householdService = inject(HouseholdService);
   private readonly analyticsService = inject(AnalyticsService);
@@ -277,7 +279,16 @@ export class Progress implements OnInit {
    * Handle navigation between screens
    */
   protected onNavigate(screen: 'home' | 'tasks' | 'family' | 'progress'): void {
-    this.activeScreen.set(screen);
-    // TODO: Implement routing to different screens
+    const routes: Record<string, string> = {
+      home: '/home',
+      tasks: '/household/all-tasks',
+      family: '/family',
+      progress: '/progress',
+    };
+
+    const route = routes[screen];
+    if (route) {
+      this.router.navigate([route]);
+    }
   }
 }

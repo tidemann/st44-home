@@ -1,5 +1,6 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { Router } from '@angular/router';
 import { Progress } from './progress';
 import { AuthService } from '../../services/auth.service';
 import { HouseholdService } from '../../services/household.service';
@@ -9,6 +10,7 @@ import type { HouseholdAnalytics } from '@st44/types';
 describe('Progress', () => {
   let component: Progress;
   let fixture: ComponentFixture<Progress>;
+  let mockRouter: { navigate: ReturnType<typeof vi.fn> };
   let mockAuthService: { currentUser: ReturnType<typeof vi.fn> };
   let mockHouseholdService: { listHouseholds: ReturnType<typeof vi.fn> };
   let mockAnalyticsService: { getHouseholdAnalytics: ReturnType<typeof vi.fn> };
@@ -111,6 +113,7 @@ describe('Progress', () => {
   };
 
   beforeEach(async () => {
+    mockRouter = { navigate: vi.fn() };
     mockAuthService = {
       currentUser: vi.fn().mockReturnValue(mockUser),
     };
@@ -126,6 +129,7 @@ describe('Progress', () => {
     await TestBed.configureTestingModule({
       imports: [Progress],
       providers: [
+        { provide: Router, useValue: mockRouter },
         { provide: AuthService, useValue: mockAuthService },
         { provide: HouseholdService, useValue: mockHouseholdService },
         { provide: AnalyticsService, useValue: mockAnalyticsService },
@@ -306,18 +310,24 @@ describe('Progress', () => {
   });
 
   describe('navigation', () => {
-    it('should update active screen on navigate', () => {
+    it('should navigate to home route', () => {
       component['onNavigate']('home');
-      expect(component['activeScreen']()).toBe('home');
+      expect(mockRouter.navigate).toHaveBeenCalledWith(['/home']);
+    });
 
+    it('should navigate to tasks route', () => {
       component['onNavigate']('tasks');
-      expect(component['activeScreen']()).toBe('tasks');
+      expect(mockRouter.navigate).toHaveBeenCalledWith(['/household/all-tasks']);
+    });
 
+    it('should navigate to family route', () => {
       component['onNavigate']('family');
-      expect(component['activeScreen']()).toBe('family');
+      expect(mockRouter.navigate).toHaveBeenCalledWith(['/family']);
+    });
 
+    it('should navigate to progress route', () => {
       component['onNavigate']('progress');
-      expect(component['activeScreen']()).toBe('progress');
+      expect(mockRouter.navigate).toHaveBeenCalledWith(['/progress']);
     });
   });
 

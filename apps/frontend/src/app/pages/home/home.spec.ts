@@ -1,5 +1,6 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { Router } from '@angular/router';
 import { of, throwError } from 'rxjs';
 import { Home } from './home';
 import { TaskService } from '../../services/task.service';
@@ -11,6 +12,7 @@ import type { Assignment, Task } from '@st44/types';
 describe('Home', () => {
   let component: Home;
   let fixture: ComponentFixture<Home>;
+  let mockRouter: { navigate: ReturnType<typeof vi.fn> };
   let mockTaskService: {
     getHouseholdAssignments: ReturnType<typeof vi.fn>;
     completeTask: ReturnType<typeof vi.fn>;
@@ -25,6 +27,7 @@ describe('Home', () => {
 
   beforeEach(async () => {
     // Create mock services
+    mockRouter = { navigate: vi.fn() };
     mockTaskService = {
       getHouseholdAssignments: vi.fn(),
       completeTask: vi.fn(),
@@ -49,6 +52,7 @@ describe('Home', () => {
     await TestBed.configureTestingModule({
       imports: [Home],
       providers: [
+        { provide: Router, useValue: mockRouter },
         { provide: TaskService, useValue: mockTaskService },
         { provide: ChildrenService, useValue: mockChildrenService },
         { provide: AuthService, useValue: mockAuthService },
@@ -177,9 +181,24 @@ describe('Home', () => {
   });
 
   describe('navigation', () => {
-    it('should update active screen on navigate', () => {
+    it('should navigate to tasks route', () => {
       component['onNavigate']('tasks');
-      expect(component['activeScreen']()).toBe('tasks');
+      expect(mockRouter.navigate).toHaveBeenCalledWith(['/household/all-tasks']);
+    });
+
+    it('should navigate to family route', () => {
+      component['onNavigate']('family');
+      expect(mockRouter.navigate).toHaveBeenCalledWith(['/family']);
+    });
+
+    it('should navigate to progress route', () => {
+      component['onNavigate']('progress');
+      expect(mockRouter.navigate).toHaveBeenCalledWith(['/progress']);
+    });
+
+    it('should navigate to home route', () => {
+      component['onNavigate']('home');
+      expect(mockRouter.navigate).toHaveBeenCalledWith(['/home']);
     });
   });
 
