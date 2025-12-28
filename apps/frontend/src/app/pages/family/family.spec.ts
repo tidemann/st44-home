@@ -201,8 +201,7 @@ describe('Family', () => {
       expect(component['inviteModalOpen']()).toBe(false);
     });
 
-    it('should handle invite error', async () => {
-      const consoleSpy = vi.spyOn(console, 'log');
+    it('should close modal after invite sent', async () => {
       const inviteData: InviteMemberData = {
         email: 'new@example.com',
         role: 'adult',
@@ -210,8 +209,8 @@ describe('Family', () => {
 
       await component['onInviteSent'](inviteData);
 
-      expect(consoleSpy).toHaveBeenCalledWith('Sending invite:', inviteData);
-      expect(consoleSpy).toHaveBeenCalledWith('Invitation sent to new@example.com as adult');
+      // Modal should be closed after invite
+      expect(component['inviteModalOpen']()).toBe(false);
     });
   });
 
@@ -230,8 +229,7 @@ describe('Family', () => {
       expect(mockHouseholdService.getHouseholdMembers).toHaveBeenCalled();
     });
 
-    it('should handle add child error', async () => {
-      const consoleSpy = vi.spyOn(console, 'log');
+    it('should close modal after child added', async () => {
       const childData: AddChildData = {
         name: 'New Child',
         age: 8,
@@ -240,8 +238,10 @@ describe('Family', () => {
 
       await component['onChildAdded'](childData);
 
-      expect(consoleSpy).toHaveBeenCalledWith('Adding child:', childData);
-      expect(consoleSpy).toHaveBeenCalledWith('Child New Child added successfully');
+      // Modal should be closed after adding child
+      expect(component['addChildModalOpen']()).toBe(false);
+      // Data should be reloaded
+      expect(mockHouseholdService.getHouseholdMembers).toHaveBeenCalled();
     });
   });
 

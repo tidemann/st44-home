@@ -138,18 +138,13 @@ export class Family implements OnInit {
   protected async onInviteSent(data: InviteMemberData): Promise<void> {
     try {
       // TODO: Implement invite API call when backend endpoint is ready (#197)
-      console.log('Sending invite:', data);
-
-      // Mock success for now
+      // For now, close modal and show mock success
+      void data; // Placeholder until API integration
       this.inviteModalOpen.set(false);
-
-      // Show success message (TODO: Add toast notification system)
-      console.log(`Invitation sent to ${data.email} as ${data.role}`);
 
       // Reload members to show pending invite (when backend supports it)
       // await this.loadData();
-    } catch (err) {
-      console.error('Failed to send invite:', err);
+    } catch {
       this.error.set('Failed to send invitation. Please try again.');
     }
   }
@@ -160,18 +155,13 @@ export class Family implements OnInit {
   protected async onChildAdded(data: AddChildData): Promise<void> {
     try {
       // TODO: Implement add child API call when backend endpoint is ready (#197)
-      console.log('Adding child:', data);
-
-      // Mock success for now
+      // For now, close modal and reload data
+      void data; // Placeholder until API integration
       this.addChildModalOpen.set(false);
-
-      // Show success message (TODO: Add toast notification system)
-      console.log(`Child ${data.name} added successfully`);
 
       // Reload members to show new child
       await this.loadData();
-    } catch (err) {
-      console.error('Failed to add child:', err);
+    } catch {
       this.error.set('Failed to add child. Please try again.');
     }
   }
