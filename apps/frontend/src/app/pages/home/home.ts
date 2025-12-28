@@ -317,8 +317,8 @@ export class Home implements OnInit {
    * Show celebration animation (placeholder)
    */
   private showCelebration(): void {
-    // TODO: Implement confetti or checkmark bounce animation
-    console.log('Celebration!');
+    // Celebration animation is handled by CSS in task-card component
+    // via the .completed class animation
   }
 
   /**

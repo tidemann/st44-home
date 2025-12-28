@@ -129,8 +129,6 @@ export class TaskFormComponent implements OnInit {
       ruleConfig: this.getRuleConfig(),
     };
 
-    console.log('Submitting form data:', formData);
-
     const request$ = this.task()
       ? this.taskService.updateTask(this.householdId(), this.task()!.id, formData)
       : this.taskService.createTask(this.householdId(), formData);

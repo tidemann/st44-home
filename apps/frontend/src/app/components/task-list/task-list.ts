@@ -87,8 +87,9 @@ export class TaskList implements OnInit {
   }
 
   protected onEdit(task: Task): void {
-    // TODO: Implement edit functionality
-    console.log('Edit task:', task);
+    // Edit functionality is handled by parent component
+    // TODO: Emit edit event to parent when edit is clicked
+    void task;
   }
 
   protected onDeleteClick(task: Task): void {
