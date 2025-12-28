@@ -12,6 +12,12 @@ import type {
   RedeemRewardResponse,
 } from '@st44/types';
 
+// Extended reward type with availability info for child view
+export interface ChildReward extends Reward {
+  available: boolean;
+  canAfford: boolean;
+}
+
 /**
  * Service for managing rewards and redemptions with signals-based state management
  *
@@ -39,7 +45,7 @@ export class RewardService {
   private redemptionsErrorSignal = signal<string | null>(null);
 
   // Child rewards state signals (private writable)
-  private childRewardsSignal = signal<Reward[]>([]);
+  private childRewardsSignal = signal<ChildReward[]>([]);
   private pointsBalanceSignal = signal<number>(0);
   private childRewardsLoadingSignal = signal<boolean>(false);
   private childRewardsErrorSignal = signal<string | null>(null);
