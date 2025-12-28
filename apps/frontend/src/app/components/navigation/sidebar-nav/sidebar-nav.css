@@ -151,6 +151,39 @@
   text-overflow: ellipsis;
 }
 
+/* Household switcher overrides for sidebar context */
+:host ::ng-deep .sidebar-user-info .household-switcher {
+  margin-top: var(--space-xs, 4px);
+}
+
+:host ::ng-deep .sidebar-user-info .switcher-toggle {
+  min-width: unset;
+  width: 100%;
+  padding: var(--space-xs, 4px) var(--space-sm, 8px);
+  background: transparent;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  font-size: 13px;
+}
+
+:host ::ng-deep .sidebar-user-info .switcher-toggle:hover {
+  background: rgba(255, 255, 255, 0.5);
+}
+
+:host ::ng-deep .sidebar-user-info .switcher-toggle__name {
+  font-size: 13px;
+  color: var(--color-text-secondary, #6b7280);
+}
+
+:host ::ng-deep .sidebar-user-info .switcher-toggle__role {
+  font-size: 10px;
+}
+
+:host ::ng-deep .sidebar-user-info .switcher-dropdown {
+  min-width: 200px;
+  left: auto;
+  right: 0;
+}
+
 /* Show sidebar on desktop (>= 1024px) */
 @media (min-width: 1024px) {
   .sidebar-nav {

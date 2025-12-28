@@ -6,6 +6,7 @@ import {
   inject,
   OnInit,
 } from '@angular/core';
+import { Router } from '@angular/router';
 import { MemberCard, type MemberCardData } from '../../components/member-card/member-card';
 import { BottomNav } from '../../components/navigation/bottom-nav/bottom-nav';
 import { SidebarNav } from '../../components/navigation/sidebar-nav/sidebar-nav';
@@ -40,6 +41,7 @@ import type { SidebarUser } from '../../components/navigation/sidebar-nav/sideba
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class Family implements OnInit {
+  private readonly router = inject(Router);
   private readonly householdService = inject(HouseholdService);
   private readonly authService = inject(AuthService);
 
@@ -170,8 +172,17 @@ export class Family implements OnInit {
    * Handle navigation between screens
    */
   protected onNavigate(screen: 'home' | 'tasks' | 'family' | 'progress'): void {
-    this.activeScreen.set(screen);
-    // TODO: Implement routing to different screens
+    const routes: Record<string, string> = {
+      home: '/home',
+      tasks: '/household/all-tasks',
+      family: '/family',
+      progress: '/progress',
+    };
+
+    const route = routes[screen];
+    if (route) {
+      this.router.navigate([route]);
+    }
   }
 
   /**

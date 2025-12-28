@@ -403,8 +403,18 @@ export class Tasks {
   /**
    * Handle navigation
    */
-  protected onNavigate(screen: string): void {
-    this.router.navigate([`/${screen}`]);
+  protected onNavigate(screen: 'home' | 'tasks' | 'family' | 'progress'): void {
+    const routes: Record<string, string> = {
+      home: '/home',
+      tasks: '/household/all-tasks',
+      family: '/family',
+      progress: '/progress',
+    };
+
+    const route = routes[screen];
+    if (route) {
+      this.router.navigate([route]);
+    }
   }
 
   /**

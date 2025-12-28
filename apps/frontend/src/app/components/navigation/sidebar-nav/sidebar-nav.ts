@@ -1,5 +1,6 @@
 import { Component, ChangeDetectionStrategy, input, output, computed } from '@angular/core';
 import type { NavScreen, NavItem } from '../bottom-nav/bottom-nav';
+import { HouseholdSwitcherComponent } from '../../household-switcher/household-switcher';
 
 /**
  * User information for sidebar display
@@ -12,7 +13,7 @@ export interface SidebarUser {
 
 @Component({
   selector: 'app-sidebar-nav',
-  imports: [],
+  imports: [HouseholdSwitcherComponent],
   templateUrl: './sidebar-nav.html',
   styleUrl: './sidebar-nav.css',
   changeDetection: ChangeDetectionStrategy.OnPush,

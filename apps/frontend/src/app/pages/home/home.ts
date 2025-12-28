@@ -6,6 +6,7 @@ import {
   inject,
   OnInit,
 } from '@angular/core';
+import { Router } from '@angular/router';
 import { TaskCardComponent } from '../../components/task-card/task-card.component';
 import { StatCard } from '../../components/stat-card/stat-card';
 import { BottomNav } from '../../components/navigation/bottom-nav/bottom-nav';
@@ -53,6 +54,7 @@ interface DashboardStats {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class Home implements OnInit {
+  private readonly router = inject(Router);
   private readonly taskService = inject(TaskService);
   private readonly childrenService = inject(ChildrenService);
   private readonly authService = inject(AuthService);
@@ -325,8 +327,17 @@ export class Home implements OnInit {
    * Handle navigation between screens
    */
   protected onNavigate(screen: 'home' | 'tasks' | 'family' | 'progress'): void {
-    this.activeScreen.set(screen);
-    // TODO: Implement routing to different screens
+    const routes: Record<string, string> = {
+      home: '/home',
+      tasks: '/household/all-tasks',
+      family: '/family',
+      progress: '/progress',
+    };
+
+    const route = routes[screen];
+    if (route) {
+      this.router.navigate([route]);
+    }
   }
 
   /**
