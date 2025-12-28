@@ -34,12 +34,21 @@ jobs:
           node-version: '22'
           cache: 'npm'
           cache-dependency-path: |
+            packages/types/package-lock.json
             apps/frontend/package-lock.json
             apps/backend/package-lock.json
 
       - name: Install Playwright Browsers
         working-directory: apps/frontend
         run: npx playwright install --with-deps chromium
+
+      - name: Install types package dependencies
+        working-directory: packages/types
+        run: npm ci
+
+      - name: Build types package
+        working-directory: packages/types
+        run: npm run build
 
       - name: Install frontend dependencies
         working-directory: apps/frontend
