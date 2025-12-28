@@ -10,7 +10,9 @@ import { BottomNav } from '../../components/navigation/bottom-nav/bottom-nav';
 import { SidebarNav } from '../../components/navigation/sidebar-nav/sidebar-nav';
 import { AuthService } from '../../services/auth.service';
 import { HouseholdService } from '../../services/household.service';
+import { AnalyticsService } from '../../services/analytics.service';
 import type { SidebarUser } from '../../components/navigation/sidebar-nav/sidebar-nav';
+import type { HouseholdAnalytics, ChildStreak } from '@st44/types';
 
 /**
  * Leaderboard entry for weekly rankings
@@ -69,6 +71,7 @@ interface HouseholdStats {
 export class Progress implements OnInit {
   private readonly authService = inject(AuthService);
   private readonly householdService = inject(HouseholdService);
+  private readonly analyticsService = inject(AnalyticsService);
 
   // State signals
   protected readonly loading = signal(true);
@@ -105,7 +108,7 @@ export class Progress implements OnInit {
   }
 
   /**
-   * Load all progress data
+   * Load all progress data from analytics API
    */
   protected async loadData(): Promise<void> {
     try {
@@ -130,12 +133,13 @@ export class Progress implements OnInit {
       const household = households[0];
       this.householdName.set(household.name);
 
-      // Load progress data in parallel
-      await Promise.all([
-        this.loadLeaderboard(household.id, user.id),
-        this.loadAchievements(user.id),
-        this.loadHouseholdStats(household.id),
-      ]);
+      // Fetch analytics data from API
+      const analytics = await this.analyticsService.getHouseholdAnalytics(household.id, 'week');
+
+      // Transform analytics data into UI-ready formats
+      this.loadLeaderboardFromAnalytics(analytics, user.id);
+      this.loadAchievementsFromStreaks(analytics.streaks, user.id);
+      this.loadHouseholdStatsFromAnalytics(analytics, analytics.childrenProgress.length);
     } catch (err) {
       console.error('Failed to load progress data:', err);
       this.error.set('Failed to load progress. Please try again.');
@@ -145,151 +149,112 @@ export class Progress implements OnInit {
   }
 
   /**
-   * Load weekly leaderboard
-   * TODO: Replace mock data with API call when backend endpoint is ready (#197)
+   * Load weekly leaderboard from analytics API
+   * Transforms streaks data into leaderboard format
    */
-  private async loadLeaderboard(householdId: string, currentUserId: string): Promise<void> {
-    // Mock data for now
-    const mockLeaderboard: LeaderboardEntry[] = [
-      {
-        userId: '1',
-        name: 'Sarah',
-        points: 125,
-        tasksCompleted: 12,
-        rank: 1,
-        isCurrentUser: false,
-      },
-      {
-        userId: '2',
-        name: 'Marcus',
-        points: 98,
-        tasksCompleted: 9,
-        rank: 2,
-        isCurrentUser: false,
-      },
-      {
-        userId: currentUserId,
-        name: 'You',
-        points: 87,
-        tasksCompleted: 11,
-        rank: 3,
-        isCurrentUser: true,
-      },
-      {
-        userId: '3',
-        name: 'Jordan',
-        points: 56,
-        tasksCompleted: 7,
-        rank: 4,
-        isCurrentUser: false,
-      },
-    ];
+  private loadLeaderboardFromAnalytics(analytics: HouseholdAnalytics, currentUserId: string): void {
+    // Create leaderboard from children progress data
+    const entries: LeaderboardEntry[] = analytics.childrenProgress
+      .map((child) => ({
+        userId: child.childId,
+        name: child.childName,
+        points: child.totalPointsEarned,
+        tasksCompleted: child.dailyData.reduce((sum, day) => sum + day.completedTasks, 0),
+        rank: 0, // Will be set after sorting
+        isCurrentUser: child.childId === currentUserId,
+      }))
+      .sort((a, b) => b.points - a.points)
+      .map((entry, index) => ({ ...entry, rank: index + 1 }));
 
-    this.leaderboard.set(mockLeaderboard);
-
-    // TODO: Actual API call
-    // const response = await fetch(`/api/stats/leaderboard?period=week&householdId=${householdId}`);
-    // const data = await response.json();
-    // this.leaderboard.set(data.leaderboard.map(entry => ({
-    //   ...entry,
-    //   isCurrentUser: entry.userId === currentUserId
-    // })));
+    this.leaderboard.set(entries);
   }
 
   /**
-   * Load user achievements
-   * TODO: Replace mock data with API call when backend endpoint is ready (#197)
-   * @param _userId - User ID for achievement lookup (unused in mock, will be used in API call)
+   * Load achievements from analytics streaks data
+   * Creates achievement badges based on streak milestones
    */
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  private async loadAchievements(_userId: string): Promise<void> {
-    // Mock data for now
-    const mockAchievements: Achievement[] = [
+  private loadAchievementsFromStreaks(streaks: ChildStreak[], currentUserId: string): void {
+    // Find current user's streak data
+    const userStreak = streaks.find((s) => s.childId === currentUserId);
+    const currentStreak = userStreak?.currentStreak ?? 0;
+    const longestStreak = userStreak?.longestStreak ?? 0;
+
+    // Generate achievements based on streak milestones
+    const achievements: Achievement[] = [
       {
         id: '1',
-        name: 'Early Bird',
-        description: 'Complete tasks 5 days in a row',
+        name: 'Getting Started',
+        description: 'Complete all tasks for 1 day',
         icon: '⭐',
-        unlocked: true,
-        progress: 100,
-        criteria: '5 day streak',
+        unlocked: currentStreak >= 1 || longestStreak >= 1,
+        progress: Math.min(100, (Math.max(currentStreak, longestStreak) / 1) * 100),
+        criteria: '1 day streak',
       },
       {
         id: '2',
-        name: 'Streak Master',
-        description: '30 day completion streak',
-        icon: '🔥',
-        unlocked: false,
-        progress: 40,
-        criteria: '30 day streak',
+        name: 'Early Bird',
+        description: 'Complete all tasks 5 days in a row',
+        icon: '🐦',
+        unlocked: longestStreak >= 5,
+        progress: Math.min(100, (longestStreak / 5) * 100),
+        criteria: '5 day streak',
       },
       {
         id: '3',
-        name: 'Century Club',
-        description: '100 tasks completed',
-        icon: '🌟',
-        unlocked: false,
-        progress: 67,
-        criteria: '100 tasks',
+        name: 'Week Warrior',
+        description: '7 day completion streak',
+        icon: '🔥',
+        unlocked: longestStreak >= 7,
+        progress: Math.min(100, (longestStreak / 7) * 100),
+        criteria: '7 day streak',
       },
       {
         id: '4',
-        name: 'Team Player',
-        description: "Helped with others' tasks 10 times",
-        icon: '🤝',
-        unlocked: true,
-        progress: 100,
-        criteria: '10 assists',
+        name: 'Consistent Champion',
+        description: '14 day completion streak',
+        icon: '🏆',
+        unlocked: longestStreak >= 14,
+        progress: Math.min(100, (longestStreak / 14) * 100),
+        criteria: '14 day streak',
       },
       {
         id: '5',
-        name: 'Perfect Week',
-        description: 'Complete all assigned tasks in a week',
+        name: 'Streak Master',
+        description: '30 day completion streak',
         icon: '💯',
-        unlocked: false,
-        progress: 20,
-        criteria: 'All tasks this week',
+        unlocked: longestStreak >= 30,
+        progress: Math.min(100, (longestStreak / 30) * 100),
+        criteria: '30 day streak',
       },
       {
         id: '6',
-        name: 'Morning Champion',
-        description: 'Complete 20 morning tasks before 9 AM',
-        icon: '☀️',
-        unlocked: false,
-        progress: 0,
-        criteria: '20 morning tasks',
+        name: 'Legend',
+        description: '60 day completion streak',
+        icon: '🌟',
+        unlocked: longestStreak >= 60,
+        progress: Math.min(100, (longestStreak / 60) * 100),
+        criteria: '60 day streak',
       },
     ];
 
-    this.achievements.set(mockAchievements);
-
-    // TODO: Actual API call
-    // const response = await fetch(`/api/stats/achievements?userId=${userId}`);
-    // const data = await response.json();
-    // this.achievements.set(data.achievements);
+    this.achievements.set(achievements);
   }
 
   /**
-   * Load household statistics
-   * TODO: Replace mock data with API call when backend endpoint is ready (#197)
-   * @param _householdId - Household ID for stats lookup (unused in mock, will be used in API call)
+   * Load household statistics from analytics API response
    */
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  private async loadHouseholdStats(_householdId: string): Promise<void> {
-    // Mock data for now
-    const mockStats: HouseholdStats = {
-      totalPoints: 366,
-      completionRate: 78,
-      tasksCompletedThisWeek: 39,
-      totalMembers: 4,
+  private loadHouseholdStatsFromAnalytics(
+    analytics: HouseholdAnalytics,
+    memberCount: number,
+  ): void {
+    const stats: HouseholdStats = {
+      totalPoints: analytics.periodComparison.current.totalPoints,
+      completionRate: analytics.periodComparison.current.completionRate,
+      tasksCompletedThisWeek: analytics.periodComparison.current.completedTasks,
+      totalMembers: memberCount,
     };
 
-    this.householdStats.set(mockStats);
-
-    // TODO: Actual API call
-    // const response = await fetch(`/api/stats/household?householdId=${householdId}`);
-    // const data = await response.json();
-    // this.householdStats.set(data.stats);
+    this.householdStats.set(stats);
   }
 
   /**

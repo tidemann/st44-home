@@ -3,12 +3,15 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { Progress } from './progress';
 import { AuthService } from '../../services/auth.service';
 import { HouseholdService } from '../../services/household.service';
+import { AnalyticsService } from '../../services/analytics.service';
+import type { HouseholdAnalytics } from '@st44/types';
 
 describe('Progress', () => {
   let component: Progress;
   let fixture: ComponentFixture<Progress>;
   let mockAuthService: { currentUser: ReturnType<typeof vi.fn> };
   let mockHouseholdService: { listHouseholds: ReturnType<typeof vi.fn> };
+  let mockAnalyticsService: { getHouseholdAnalytics: ReturnType<typeof vi.fn> };
 
   const mockUser = {
     id: 'test-user-id',
@@ -24,6 +27,89 @@ describe('Progress', () => {
     createdAt: new Date().toISOString(),
   };
 
+  const mockAnalytics: HouseholdAnalytics = {
+    householdId: 'test-household-id',
+    period: 'week',
+    periodComparison: {
+      current: {
+        totalTasks: 20,
+        completedTasks: 15,
+        completionRate: 75,
+        totalPoints: 150,
+      },
+      previous: {
+        totalTasks: 18,
+        completedTasks: 12,
+        completionRate: 67,
+        totalPoints: 120,
+      },
+      change: {
+        completionRateDelta: 8,
+        pointsDelta: 30,
+        tasksDelta: 2,
+      },
+    },
+    childrenProgress: [
+      {
+        childId: 'child-1',
+        childName: 'Sarah',
+        dailyData: [
+          {
+            date: new Date().toISOString().split('T')[0],
+            totalTasks: 5,
+            completedTasks: 4,
+            completionRate: 80,
+            pointsEarned: 40,
+          },
+        ],
+        totalPointsEarned: 100,
+        averageCompletionRate: 80,
+      },
+      {
+        childId: 'test-user-id',
+        childName: 'You',
+        dailyData: [
+          {
+            date: new Date().toISOString().split('T')[0],
+            totalTasks: 5,
+            completedTasks: 3,
+            completionRate: 60,
+            pointsEarned: 30,
+          },
+        ],
+        totalPointsEarned: 50,
+        averageCompletionRate: 60,
+      },
+    ],
+    streaks: [
+      {
+        childId: 'child-1',
+        childName: 'Sarah',
+        currentStreak: 7,
+        longestStreak: 14,
+        lastCompletionDate: new Date().toISOString().split('T')[0],
+      },
+      {
+        childId: 'test-user-id',
+        childName: 'You',
+        currentStreak: 3,
+        longestStreak: 5,
+        lastCompletionDate: new Date().toISOString().split('T')[0],
+      },
+    ],
+    taskPopularity: [
+      {
+        taskId: 'task-1',
+        taskName: 'Clean Room',
+        totalAssignments: 10,
+        completedCount: 8,
+        completionRate: 80,
+        averagePoints: 10,
+      },
+    ],
+    generatedAt: new Date().toISOString(),
+  };
+
   beforeEach(async () => {
     mockAuthService = {
       currentUser: vi.fn().mockReturnValue(mockUser),
@@ -33,11 +119,16 @@ describe('Progress', () => {
       listHouseholds: vi.fn().mockResolvedValue([mockHousehold]),
     };
 
+    mockAnalyticsService = {
+      getHouseholdAnalytics: vi.fn().mockResolvedValue(mockAnalytics),
+    };
+
     await TestBed.configureTestingModule({
       imports: [Progress],
       providers: [
         { provide: AuthService, useValue: mockAuthService },
         { provide: HouseholdService, useValue: mockHouseholdService },
+        { provide: AnalyticsService, useValue: mockAnalyticsService },
       ],
     }).compileComponents();
 
@@ -74,6 +165,10 @@ describe('Progress', () => {
       await component['loadData']();
 
       expect(mockHouseholdService.listHouseholds).toHaveBeenCalled();
+      expect(mockAnalyticsService.getHouseholdAnalytics).toHaveBeenCalledWith(
+        'test-household-id',
+        'week',
+      );
       expect(component['householdName']()).toBe('Test Family');
       expect(component['currentUserId']()).toBe('test-user-id');
       expect(component['loading']()).toBe(false);
@@ -98,7 +193,7 @@ describe('Progress', () => {
     });
 
     it('should handle load errors gracefully', async () => {
-      mockHouseholdService.listHouseholds.mockRejectedValue(new Error('Network error'));
+      mockAnalyticsService.getHouseholdAnalytics.mockRejectedValue(new Error('Network error'));
 
       await component['loadData']();
 
@@ -130,9 +225,12 @@ describe('Progress', () => {
 
     it('should rank entries correctly', () => {
       const leaderboard = component['leaderboard']();
+      // Mock data has 2 children: Sarah (100 points, rank 1) and You (50 points, rank 2)
+      expect(leaderboard.length).toBe(2);
       expect(leaderboard[0].rank).toBe(1);
+      expect(leaderboard[0].name).toBe('Sarah');
       expect(leaderboard[1].rank).toBe(2);
-      expect(leaderboard[2].rank).toBe(3);
+      expect(leaderboard[1].name).toBe('You');
     });
   });
 
@@ -144,26 +242,28 @@ describe('Progress', () => {
     it('should load achievements data', () => {
       const achievements = component['achievements']();
       expect(achievements.length).toBeGreaterThan(0);
+      expect(achievements.length).toBe(6); // 6 streak-based achievements
     });
 
     it('should compute hasAchievements correctly', () => {
       expect(component['hasAchievements']()).toBe(true);
     });
 
-    it('should include both unlocked and locked achievements', () => {
+    it('should include both unlocked and locked achievements based on streaks', () => {
       const achievements = component['achievements']();
       const unlocked = achievements.filter((a) => a.unlocked);
       const locked = achievements.filter((a) => !a.unlocked);
 
-      expect(unlocked.length).toBeGreaterThan(0);
-      expect(locked.length).toBeGreaterThan(0);
+      // Based on mock data: user has longestStreak of 5
+      // Should unlock: Getting Started (1), Early Bird (5)
+      expect(unlocked.length).toBe(2);
+      expect(locked.length).toBe(4);
     });
 
-    it('should have progress values for locked achievements', () => {
+    it('should have progress values for all achievements', () => {
       const achievements = component['achievements']();
-      const locked = achievements.filter((a) => !a.unlocked);
 
-      locked.forEach((achievement) => {
+      achievements.forEach((achievement) => {
         expect(achievement.progress).toBeDefined();
         expect(achievement.progress).toBeGreaterThanOrEqual(0);
         expect(achievement.progress).toBeLessThanOrEqual(100);
@@ -176,13 +276,13 @@ describe('Progress', () => {
       await component['loadData']();
     });
 
-    it('should load household stats', () => {
+    it('should load household stats from analytics API', () => {
       const stats = component['householdStats']();
-      expect(stats.totalPoints).toBeGreaterThan(0);
-      expect(stats.completionRate).toBeGreaterThanOrEqual(0);
-      expect(stats.completionRate).toBeLessThanOrEqual(100);
-      expect(stats.tasksCompletedThisWeek).toBeGreaterThanOrEqual(0);
-      expect(stats.totalMembers).toBeGreaterThan(0);
+      // Values from mockAnalytics.periodComparison.current
+      expect(stats.totalPoints).toBe(150);
+      expect(stats.completionRate).toBe(75);
+      expect(stats.tasksCompletedThisWeek).toBe(15);
+      expect(stats.totalMembers).toBe(2); // 2 children in mockAnalytics.childrenProgress
     });
   });
 
