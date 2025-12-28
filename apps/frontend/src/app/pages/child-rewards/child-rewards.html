@@ -1,0 +1,92 @@
+<div class="child-rewards-container">
+  <!-- Header with balance -->
+  <header class="rewards-header">
+    <button class="back-button" (click)="goBack()" aria-label="Go back">
+      <span aria-hidden="true">&larr;</span> Back
+    </button>
+    <h1>Rewards Store</h1>
+    <div class="points-balance" aria-live="polite">
+      <span class="balance-label">Your Points</span>
+      <span class="balance-value">{{ pointsBalance() }}</span>
+    </div>
+  </header>
+
+  <!-- Success Message -->
+  @if (successMessage()) {
+    <div class="success-message" role="status" aria-live="polite">
+      {{ successMessage() }}
+    </div>
+  }
+
+  <!-- Loading State -->
+  @if (loading()) {
+    <div class="loading" role="status" aria-live="polite">
+      <span class="spinner" aria-hidden="true"></span>
+      Loading rewards...
+    </div>
+  }
+
+  <!-- Error State -->
+  @if (error()) {
+    <div class="error" role="alert">
+      {{ error() }}
+    </div>
+  }
+
+  <!-- Rewards Grid -->
+  @if (!loading() && !error()) {
+    @if (childRewards().length === 0) {
+      <div class="empty-state">
+        <div class="empty-icon" aria-hidden="true"></div>
+        <p>No rewards available yet!</p>
+        <p class="empty-hint">Ask your parents to set up some rewards for you.</p>
+      </div>
+    } @else {
+      <div class="rewards-grid">
+        @for (reward of childRewards(); track reward.id) {
+          <article
+            class="reward-card"
+            [class.cannot-afford]="!reward.canAfford"
+            [class.unavailable]="!reward.available"
+            [class.redeeming]="redeemingRewardId() === reward.id"
+          >
+            <div class="reward-content">
+              <h2 class="reward-name">{{ reward.name }}</h2>
+              @if (reward.description) {
+                <p class="reward-description">{{ reward.description }}</p>
+              }
+              <div class="reward-cost">
+                <span class="cost-value">{{ reward.pointsCost }}</span>
+                <span class="cost-label">points</span>
+              </div>
+            </div>
+            <div class="reward-actions">
+              @if (!reward.available) {
+                <span class="status-badge out-of-stock">Out of Stock</span>
+              } @else if (!reward.canAfford) {
+                <span class="status-badge need-more"
+                  >Need {{ reward.pointsCost - pointsBalance() }} more</span
+                >
+              } @else if (redeemingRewardId() === reward.id) {
+                <button class="redeem-button" disabled>
+                  <span class="spinner-small" aria-hidden="true"></span>
+                  Redeeming...
+                </button>
+              } @else {
+                <button
+                  class="redeem-button"
+                  (click)="redeemReward(reward)"
+                  [attr.aria-label]="
+                    'Redeem ' + reward.name + ' for ' + reward.pointsCost + ' points'
+                  "
+                >
+                  Redeem
+                </button>
+              }
+            </div>
+          </article>
+        }
+      </div>
+    }
+  }
+</div>

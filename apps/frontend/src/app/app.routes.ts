@@ -90,6 +90,14 @@ export const routes: Routes = [
     loadComponent: () => import('./pages/tasks/tasks').then((m) => m.Tasks),
     canActivate: [roleGuard(['admin', 'parent'])],
   },
+  {
+    path: 'household/rewards',
+    loadComponent: () =>
+      import('./pages/rewards-management/rewards-management').then(
+        (m) => m.RewardsManagementComponent,
+      ),
+    canActivate: [roleGuard(['admin', 'parent'])],
+  },
 
   // Protected routes - Child only
   {
@@ -104,6 +112,11 @@ export const routes: Routes = [
       import('./components/child-task-list/child-task-list.component').then(
         (m) => m.ChildTaskListComponent,
       ),
+    canActivate: [roleGuard(['child'])],
+  },
+  {
+    path: 'my-rewards',
+    loadComponent: () => import('./pages/child-rewards/child-rewards').then((m) => m.ChildRewards),
     canActivate: [roleGuard(['child'])],
   },
 
