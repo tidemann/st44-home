@@ -1,6 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { SidebarNav, type SidebarUser } from './sidebar-nav';
 import { ComponentRef } from '@angular/core';
+import { HouseholdService } from '../../../services/household.service';
 
 describe('SidebarNav', () => {
   let component: SidebarNav;
@@ -13,9 +14,18 @@ describe('SidebarNav', () => {
     household: 'The Johnson Family',
   };
 
+  const mockHouseholdService = {
+    listHouseholds: vi
+      .fn()
+      .mockResolvedValue([{ id: '1', name: 'The Johnson Family', role: 'parent' }]),
+    getActiveHouseholdId: vi.fn().mockReturnValue('1'),
+    setActiveHousehold: vi.fn(),
+  };
+
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [SidebarNav],
+      providers: [{ provide: HouseholdService, useValue: mockHouseholdService }],
     }).compileComponents();
 
     fixture = TestBed.createComponent(SidebarNav);
@@ -117,10 +127,10 @@ describe('SidebarNav', () => {
     fixture.detectChanges();
 
     const userName = fixture.nativeElement.querySelector('.sidebar-user-info h4');
-    const userMeta = fixture.nativeElement.querySelector('.sidebar-user-meta');
+    const householdSwitcher = fixture.nativeElement.querySelector('app-household-switcher');
 
     expect(userName?.textContent).toContain('Sarah Johnson');
-    expect(userMeta?.textContent).toContain('The Johnson Family');
+    expect(householdSwitcher).toBeTruthy();
   });
 
   it('should display user initials in avatar', () => {
@@ -227,9 +237,7 @@ describe('SidebarNav', () => {
     fixture.detectChanges();
 
     userName = fixture.nativeElement.querySelector('.sidebar-user-info h4');
-    const userMeta = fixture.nativeElement.querySelector('.sidebar-user-meta');
 
     expect(userName?.textContent).toContain('Mike Smith');
-    expect(userMeta?.textContent).toContain('The Smith Family');
   });
 });
