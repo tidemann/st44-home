@@ -17,9 +17,9 @@ import { Pool } from 'pg';
 
 // Database connection for verification queries
 const pool = new Pool({
-  host: process.env.DB_HOST || 'localhost',
-  port: parseInt(process.env.DB_PORT || '5433'),
-  database: process.env.DB_NAME || 'st44_test_local',
+  host: process.env.DB_HOST || 'host.docker.internal',
+  port: parseInt(process.env.DB_PORT || '55432'),
+  database: process.env.DB_NAME || 'st44_test',
   user: process.env.DB_USER || 'postgres',
   password: process.env.DB_PASSWORD || 'postgres',
 });
