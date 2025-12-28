@@ -38,10 +38,6 @@ jobs:
             apps/frontend/package-lock.json
             apps/backend/package-lock.json
 
-      - name: Install Playwright Browsers
-        working-directory: apps/frontend
-        run: npx playwright install --with-deps chromium
-
       - name: Install types package dependencies
         working-directory: packages/types
         run: npm ci
@@ -53,6 +49,10 @@ jobs:
       - name: Install frontend dependencies
         working-directory: apps/frontend
         run: npm ci
+
+      - name: Install Playwright Browsers
+        working-directory: apps/frontend
+        run: npx playwright install --with-deps chromium
 
       - name: Build frontend
         working-directory: apps/frontend
