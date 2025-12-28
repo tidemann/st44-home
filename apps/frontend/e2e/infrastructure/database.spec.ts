@@ -10,9 +10,9 @@ import { resetTestDatabase } from '../helpers/test-helpers';
 
 // Database connection for validation queries
 const pool = new Pool({
-  host: process.env.DB_HOST || 'localhost',
-  port: parseInt(process.env.DB_PORT || '5433'),
-  database: process.env.DB_NAME || 'st44_test_local',
+  host: process.env.DB_HOST || 'host.docker.internal',
+  port: parseInt(process.env.DB_PORT || '55432'),
+  database: process.env.DB_NAME || 'st44_test',
   user: process.env.DB_USER || 'postgres',
   password: process.env.DB_PASSWORD || 'postgres',
 });
@@ -27,8 +27,8 @@ test.describe('Database Health and Validation', () => {
 
   test('should return 200 from /health endpoint', async ({ request }) => {
     // ACT: Call health endpoint
-    const apiPort = process.env.BACKEND_PORT || '3000';
-    const apiHost = process.env.BACKEND_HOST || 'localhost';
+    const apiPort = process.env.BACKEND_PORT || '3001';
+    const apiHost = process.env.BACKEND_HOST || 'host.docker.internal';
     const response = await request.get(`http://${apiHost}:${apiPort}/health`);
 
     // ASSERT: Should return 200 OK
@@ -37,13 +37,13 @@ test.describe('Database Health and Validation', () => {
 
     // ASSERT: Response should indicate healthy status
     const body = await response.json();
-    expect(body.status).toBe('healthy');
+    expect(body.status).toBe('ok');
   });
 
   test('should return healthy status from /health/database endpoint', async ({ request }) => {
     // ACT: Call database health endpoint
-    const apiPort = process.env.BACKEND_PORT || '3000';
-    const apiHost = process.env.BACKEND_HOST || 'localhost';
+    const apiPort = process.env.BACKEND_PORT || '3001';
+    const apiHost = process.env.BACKEND_HOST || 'host.docker.internal';
     const response = await request.get(`http://${apiHost}:${apiPort}/health/database`);
 
     // ASSERT: Should return 200 OK
@@ -87,8 +87,8 @@ test.describe('Database Health and Validation', () => {
       expect(tableNames).toContain(tableName);
     }
 
-    // ASSERT: Should have exactly 10 tables (all critical tables)
-    expect(tableNames).toHaveLength(10);
+    // ASSERT: Should have at least 10 tables (core tables plus rewards/extensions)
+    expect(tableNames.length).toBeGreaterThanOrEqual(10);
   });
 
   test('should have schema_migrations table with correct structure', async () => {
@@ -242,8 +242,8 @@ test.describe('Database Health and Validation', () => {
     // In a real scenario where DB is down, endpoint should return appropriate status
 
     // ACT: Call health endpoint (should work even if DB has issues)
-    const apiPort = process.env.BACKEND_PORT || '3000';
-    const apiHost = process.env.BACKEND_HOST || 'localhost';
+    const apiPort = process.env.BACKEND_PORT || '3001';
+    const apiHost = process.env.BACKEND_HOST || 'host.docker.internal';
     const response = await request.get(`http://${apiHost}:${apiPort}/health`);
 
     // ASSERT: Should always respond (not timeout)

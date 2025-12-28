@@ -7,11 +7,11 @@ import bcrypt from 'bcrypt';
  */
 function createPool(): Pool {
   return new Pool({
-    host: process.env.E2E_DB_HOST || 'localhost',
-    port: parseInt(process.env.E2E_DB_PORT || '55432', 10),
-    database: process.env.E2E_DB_NAME || 'st44_test',
-    user: process.env.E2E_DB_USER || 'postgres',
-    password: process.env.E2E_DB_PASSWORD || 'postgres',
+    host: process.env.DB_HOST || 'host.docker.internal',
+    port: parseInt(process.env.DB_PORT || '55432', 10),
+    database: process.env.DB_NAME || 'st44_test',
+    user: process.env.DB_USER || 'postgres',
+    password: process.env.DB_PASSWORD || 'postgres',
   });
 }
 
@@ -40,15 +40,14 @@ async function withTransaction<T>(fn: (client: PoolClient) => Promise<T>): Promi
 /**
  * Create a test user with hashed password
  *
- * @param data User data (email, password, name optional)
+ * @param data User data (email, password)
  * @returns Created user ID and email
  *
  * @example
  * ```typescript
  * const user = await seedTestUser({
  *   email: 'test@example.com',
- *   password: 'SecurePass123!',
- *   name: 'Test User'
+ *   password: 'SecurePass123!'
  * });
  * console.log(user.userId); // Use in tests
  * ```
@@ -56,17 +55,16 @@ async function withTransaction<T>(fn: (client: PoolClient) => Promise<T>): Promi
 export async function seedTestUser(data: {
   email: string;
   password: string;
-  name?: string;
 }): Promise<{ userId: string; email: string }> {
   return withTransaction(async (client) => {
     // Hash password with bcrypt (same as production)
     const passwordHash = await bcrypt.hash(data.password, 10);
 
     const result = await client.query(
-      `INSERT INTO users (email, password_hash, name, provider, created_at, updated_at)
-       VALUES ($1, $2, $3, 'email', NOW(), NOW())
+      `INSERT INTO users (email, password_hash, created_at, updated_at)
+       VALUES ($1, $2, NOW(), NOW())
        RETURNING id, email`,
-      [data.email, passwordHash, data.name || null],
+      [data.email, passwordHash],
     );
 
     return {
@@ -157,7 +155,7 @@ export async function addHouseholdMember(data: {
 /**
  * Create a child in a household
  *
- * @param data Child data (householdId, name, age)
+ * @param data Child data (householdId, name, birthYear)
  * @returns Created child ID and name
  *
  * @example
@@ -165,21 +163,21 @@ export async function addHouseholdMember(data: {
  * const child = await seedTestChild({
  *   householdId: household.householdId,
  *   name: 'Emma',
- *   age: 8
+ *   birthYear: 2016
  * });
  * ```
  */
 export async function seedTestChild(data: {
   householdId: string;
   name: string;
-  age: number;
+  birthYear: number;
 }): Promise<{ childId: string; name: string }> {
   return withTransaction(async (client) => {
     const result = await client.query(
-      `INSERT INTO children (household_id, name, age, created_at, updated_at)
+      `INSERT INTO children (household_id, name, birth_year, created_at, updated_at)
        VALUES ($1, $2, $3, NOW(), NOW())
        RETURNING id, name`,
-      [data.householdId, data.name, data.age],
+      [data.householdId, data.name, data.birthYear],
     );
 
     return {
@@ -211,7 +209,7 @@ export async function seedTestTasks(data: {
   tasks: Array<{
     name: string;
     description?: string;
-    assignmentRule?: string;
+    ruleType?: 'weekly_rotation' | 'repeating' | 'daily';
   }>;
 }): Promise<{ taskIds: string[] }> {
   return withTransaction(async (client) => {
@@ -219,10 +217,10 @@ export async function seedTestTasks(data: {
 
     for (const task of data.tasks) {
       const result = await client.query(
-        `INSERT INTO tasks (household_id, name, description, assignment_rule, created_at, updated_at)
+        `INSERT INTO tasks (household_id, name, description, rule_type, created_at, updated_at)
          VALUES ($1, $2, $3, $4, NOW(), NOW())
          RETURNING id`,
-        [data.householdId, task.name, task.description || null, task.assignmentRule || 'manual'],
+        [data.householdId, task.name, task.description || null, task.ruleType || 'daily'],
       );
 
       taskIds.push(result.rows[0].id);
@@ -247,15 +245,18 @@ export async function resetDatabase(): Promise<void> {
 
   try {
     // Truncate all tables with CASCADE to handle foreign keys
-    // Order doesn't matter with CASCADE, but listed in logical order
     await pool.query(`
-      TRUNCATE TABLE 
+      TRUNCATE TABLE
+        reward_redemptions,
+        rewards,
         task_completions,
         task_assignments,
         tasks,
         children,
+        invitations,
         household_members,
         households,
+        password_reset_tokens,
         users
       RESTART IDENTITY CASCADE
     `);
@@ -295,7 +296,6 @@ export async function seedFullScenario(config?: {
   const user = await seedTestUser({
     email: config?.userEmail || `test-${Date.now()}@example.com`,
     password: config?.userPassword || 'SecureTestPass123!',
-    name: 'Test User',
   });
 
   // Create household
@@ -309,11 +309,12 @@ export async function seedFullScenario(config?: {
   const children: Array<{ childId: string; name: string }> = [];
 
   const childNames = ['Emma', 'Noah', 'Olivia', 'Liam', 'Ava'];
+  const currentYear = new Date().getFullYear();
   for (let i = 0; i < childrenCount; i++) {
     const child = await seedTestChild({
       householdId: household.householdId,
       name: childNames[i] || `Child ${i + 1}`,
-      age: 8 + i,
+      birthYear: currentYear - (8 + i), // Convert age to birth year
     });
     children.push(child);
   }
@@ -365,4 +366,141 @@ export async function seedMinimalScenario(): Promise<{
   });
 
   return { user, household };
+}
+
+/**
+ * Create task assignments for a household
+ *
+ * @param data Assignment data (householdId, taskId, childId, date)
+ * @returns Created assignment ID
+ */
+export async function seedTaskAssignment(data: {
+  householdId: string;
+  taskId: string;
+  childId: string;
+  date: Date;
+}): Promise<{ assignmentId: string }> {
+  return withTransaction(async (client) => {
+    const dateStr = data.date.toISOString().split('T')[0];
+    const result = await client.query(
+      `INSERT INTO task_assignments (household_id, task_id, child_id, date, status, created_at)
+       VALUES ($1, $2, $3, $4, 'pending', NOW())
+       RETURNING id`,
+      [data.householdId, data.taskId, data.childId, dateStr],
+    );
+
+    return {
+      assignmentId: result.rows[0].id,
+    };
+  });
+}
+
+/**
+ * Seed complete test data for feature tests
+ * Creates parent, household, children, tasks, and today's assignments
+ *
+ * @param config Test data configuration
+ * @returns All created entity IDs for use in tests
+ *
+ * @example
+ * ```typescript
+ * const testData = await seedTestData({
+ *   parent: { email: 'parent@test.com', password: 'Test1234!' },
+ *   children: [{ name: 'Emma', age: 10 }],
+ *   tasks: [{ title: 'Clean room', description: 'Tidy up', rule_type: 'daily' }]
+ * });
+ * ```
+ */
+export async function seedTestData(config: {
+  parent: { email: string; password: string; name?: string };
+  children: Array<{ name: string; age: number }>;
+  tasks: Array<{
+    title: string;
+    description?: string;
+    rule_type?: 'weekly_rotation' | 'repeating' | 'daily';
+    days_of_week?: number[];
+  }>;
+}): Promise<{
+  householdId: string;
+  parentId: string;
+  children: Array<{ id: string; name: string }>;
+  tasks: Array<{ id: string; name: string }>;
+  assignments: Array<{ id: string; taskId: string; childId: string }>;
+}> {
+  // Create parent user
+  const user = await seedTestUser({
+    email: config.parent.email,
+    password: config.parent.password,
+  });
+
+  // Create household
+  const household = await seedTestHousehold({
+    name: 'Test Family',
+    ownerId: user.userId,
+  });
+
+  // Create children
+  const currentYear = new Date().getFullYear();
+  const children: Array<{ id: string; name: string }> = [];
+
+  for (const childConfig of config.children) {
+    const child = await seedTestChild({
+      householdId: household.householdId,
+      name: childConfig.name,
+      birthYear: currentYear - childConfig.age,
+    });
+    children.push({ id: child.childId, name: child.name });
+  }
+
+  // Create tasks
+  const tasks: Array<{ id: string; name: string }> = [];
+
+  for (const taskConfig of config.tasks) {
+    const pool = createPool();
+    try {
+      const result = await pool.query(
+        `INSERT INTO tasks (household_id, name, description, rule_type, rule_config, created_at, updated_at)
+         VALUES ($1, $2, $3, $4, $5, NOW(), NOW())
+         RETURNING id, name`,
+        [
+          household.householdId,
+          taskConfig.title,
+          taskConfig.description || null,
+          taskConfig.rule_type || 'daily',
+          taskConfig.days_of_week ? JSON.stringify({ daysOfWeek: taskConfig.days_of_week }) : null,
+        ],
+      );
+      tasks.push({ id: result.rows[0].id, name: result.rows[0].name });
+    } finally {
+      await pool.end();
+    }
+  }
+
+  // Create today's assignments for first child with daily tasks
+  const assignments: Array<{ id: string; taskId: string; childId: string }> = [];
+  const today = new Date();
+
+  if (children.length > 0) {
+    for (const task of tasks) {
+      const assignment = await seedTaskAssignment({
+        householdId: household.householdId,
+        taskId: task.id,
+        childId: children[0].id,
+        date: today,
+      });
+      assignments.push({
+        id: assignment.assignmentId,
+        taskId: task.id,
+        childId: children[0].id,
+      });
+    }
+  }
+
+  return {
+    householdId: household.householdId,
+    parentId: user.userId,
+    children,
+    tasks,
+    assignments,
+  };
 }

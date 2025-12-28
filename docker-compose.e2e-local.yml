@@ -20,7 +20,8 @@ services:
     ports:
       - "5433:5432"
     volumes:
-      - ./docker/postgres/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+      # Mount the entire directory to avoid Docker Desktop WSL2 single-file mount issues
+      - ./docker/postgres:/docker-entrypoint-initdb.d:ro
       - postgres_test_data:/var/lib/postgresql/data
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U postgres -d st44_test_local"]

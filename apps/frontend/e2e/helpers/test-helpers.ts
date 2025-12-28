@@ -6,9 +6,9 @@ import { Pool } from 'pg';
  */
 export async function resetTestDatabase(): Promise<void> {
   const pool = new Pool({
-    host: process.env.DB_HOST || 'localhost',
-    port: parseInt(process.env.DB_PORT || '5433'), // Local E2E: 5433, GitHub Actions: 55432
-    database: process.env.DB_NAME || 'st44_test_local', // Local E2E: st44_test_local, GitHub Actions: st44_test
+    host: process.env.DB_HOST || 'host.docker.internal',
+    port: parseInt(process.env.DB_PORT || '55432'), // Local E2E: 55432 (st44-db-test), GitHub Actions: 55432
+    database: process.env.DB_NAME || 'st44_test', // Local E2E: st44_test (st44-db-test), GitHub Actions: st44_test
     user: process.env.DB_USER || 'postgres',
     password: process.env.DB_PASSWORD || 'postgres',
   });
@@ -17,13 +17,17 @@ export async function resetTestDatabase(): Promise<void> {
     // Truncate all tables with CASCADE to handle foreign keys
     await pool.query(`
       TRUNCATE TABLE
-        users,
-        households,
-        household_members,
-        children,
-        tasks,
+        reward_redemptions,
+        rewards,
+        task_completions,
         task_assignments,
-        task_completions
+        tasks,
+        children,
+        invitations,
+        household_members,
+        households,
+        password_reset_tokens,
+        users
       RESTART IDENTITY CASCADE
     `);
   } finally {
