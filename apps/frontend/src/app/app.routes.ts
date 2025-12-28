@@ -67,25 +67,6 @@ export const routes: Routes = [
     canActivate: [roleGuard(['admin', 'parent'])],
   },
   {
-    path: 'dashboard',
-    loadComponent: () =>
-      import('./pages/parent-dashboard/parent-dashboard').then((m) => m.ParentDashboardComponent),
-    canActivate: [roleGuard(['admin', 'parent'])],
-  },
-  {
-    path: 'households/:householdId/tasks',
-    loadComponent: () => import('./pages/task-list/task-list').then((m) => m.TaskListComponent),
-    canActivate: [roleGuard(['admin', 'parent'])],
-  },
-  {
-    path: 'household/tasks',
-    loadComponent: () =>
-      import('./features/tasks/parent-task-dashboard.component').then(
-        (m) => m.ParentTaskDashboardComponent,
-      ),
-    canActivate: [roleGuard(['admin', 'parent'])],
-  },
-  {
     path: 'household/all-tasks',
     loadComponent: () => import('./pages/tasks/tasks').then((m) => m.Tasks),
     canActivate: [roleGuard(['admin', 'parent'])],
