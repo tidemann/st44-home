@@ -33,22 +33,12 @@ jobs:
         with:
           node-version: '22'
           cache: 'npm'
-          cache-dependency-path: |
-            packages/types/package-lock.json
-            apps/frontend/package-lock.json
-            apps/backend/package-lock.json
 
-      - name: Install types package dependencies
-        working-directory: packages/types
+      - name: Install all dependencies
         run: npm ci
 
       - name: Build types package
-        working-directory: packages/types
-        run: npm run build
-
-      - name: Install frontend dependencies
-        working-directory: apps/frontend
-        run: npm ci
+        run: npm run build:types
 
       - name: Install Playwright Browsers
         working-directory: apps/frontend
@@ -58,13 +48,8 @@ jobs:
         working-directory: apps/frontend
         run: npx ng build
 
-      - name: Install backend dependencies
-        working-directory: apps/backend
-        run: npm ci
-
       - name: Build backend
-        working-directory: apps/backend
-        run: npm run build
+        run: npm run build:backend
 
       - name: Initialize database
         env:
