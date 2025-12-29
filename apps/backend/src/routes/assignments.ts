@@ -1,9 +1,10 @@
 import { FastifyInstance } from 'fastify';
+import { z } from 'zod';
 import { authenticateUser } from '../middleware/auth.js';
 import { validateHouseholdMembership } from '../middleware/household-membership.js';
 import { pool } from '../database.js';
 import { generateAssignments } from '../services/assignment-generator.js';
-import { withTransaction } from '../utils/index.js';
+import { withTransaction, validateBody, validateParams, validateQuery } from '../utils/index.js';
 import {
   getChildTasksSchema,
   getHouseholdAssignmentsSchema,
@@ -14,6 +15,15 @@ import {
   generateHouseholdAssignmentsSchema,
   createManualAssignmentSchema,
 } from '../schemas/assignments.js';
+import {
+  uuidSchema,
+  dateSchema,
+  generateAssignmentsBodySchema,
+  viewAssignmentsQuerySchema,
+  createManualAssignmentBodySchema,
+  reassignAssignmentBodySchema,
+  householdIdParamSchema,
+} from '../schemas/validation.js';
 
 /**
  * Custom error for transaction validation failures
@@ -29,6 +39,37 @@ class TransactionValidationError extends Error {
   }
 }
 
+// Schema for assignment ID param
+const assignmentIdParamSchema = z.object({
+  assignmentId: uuidSchema,
+});
+
+// Schema for child ID param
+const childIdParamSchema = z.object({
+  childId: uuidSchema,
+});
+
+// Schema for child tasks query
+const childTasksQuerySchema = z.object({
+  date: dateSchema.optional(),
+  status: z.enum(['pending', 'completed', 'overdue']).optional(),
+});
+
+// Schema for household assignments query
+const householdAssignmentsQuerySchema = z.object({
+  date: dateSchema.optional(),
+  days: z.coerce.number().int().positive().max(30).optional(),
+  childId: uuidSchema.optional(),
+  status: z.enum(['pending', 'completed', 'overdue']).optional(),
+});
+
+// Schema for generate household assignments body
+const generateHouseholdAssignmentsBodySchema = z.object({
+  date: dateSchema.optional(),
+  taskId: uuidSchema.optional(),
+});
+
+// Keep these for backward compatibility but prefer Zod validation
 const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 const DATE_REGEX = /^\d{4}-\d{2}-\d{2}$/;
 

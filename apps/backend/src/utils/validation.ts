@@ -2,7 +2,7 @@
  * Validation utilities for Zod schemas
  */
 import { z, type ZodIssue } from 'zod';
-import { FastifyReply } from 'fastify';
+import { FastifyReply, FastifyRequest } from 'fastify';
 
 /**
  * Error shape for validation failures
@@ -28,6 +28,53 @@ export function formatZodErrors(error: z.ZodError): ValidationError[] {
  */
 export function validateRequest<T>(schema: z.ZodType<T>, data: unknown): T {
   return schema.parse(data);
+}
+
+/**
+ * Validate request body
+ * Throws ZodError if validation fails (caught by global error handler)
+ */
+export function validateBody<T>(schema: z.ZodType<T>, request: FastifyRequest): T {
+  return schema.parse(request.body);
+}
+
+/**
+ * Validate request params
+ * Throws ZodError if validation fails (caught by global error handler)
+ */
+export function validateParams<T>(schema: z.ZodType<T>, request: FastifyRequest): T {
+  return schema.parse(request.params);
+}
+
+/**
+ * Validate request query string
+ * Throws ZodError if validation fails (caught by global error handler)
+ */
+export function validateQuery<T>(schema: z.ZodType<T>, request: FastifyRequest): T {
+  return schema.parse(request.query);
+}
+
+/**
+ * Validate all request parts at once
+ * Returns typed object with body, params, and query
+ */
+export function validateAll<TBody, TParams, TQuery>(
+  schemas: {
+    body?: z.ZodType<TBody>;
+    params?: z.ZodType<TParams>;
+    query?: z.ZodType<TQuery>;
+  },
+  request: FastifyRequest,
+): {
+  body: TBody;
+  params: TParams;
+  query: TQuery;
+} {
+  return {
+    body: schemas.body ? schemas.body.parse(request.body) : (undefined as TBody),
+    params: schemas.params ? schemas.params.parse(request.params) : (undefined as TParams),
+    query: schemas.query ? schemas.query.parse(request.query) : (undefined as TQuery),
+  };
 }
 
 /**
