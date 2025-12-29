@@ -60,8 +60,8 @@ export class LoginComponent implements OnInit {
     try {
       await lastValueFrom(this.authService.loginWithGoogle(response.credential));
 
-      // Success - navigate to return URL or dashboard
-      const returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/dashboard';
+      // Success - navigate to return URL or home
+      const returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/home';
       this.router.navigateByUrl(returnUrl);
     } catch (error: unknown) {
       const err = error as { error?: { error?: string; message?: string } };
@@ -86,8 +86,8 @@ export class LoginComponent implements OnInit {
       const { email, password, rememberMe } = this.loginForm.value;
       await lastValueFrom(this.authService.login(email!, password!, rememberMe || false));
 
-      // Success - navigate to return URL or dashboard
-      const returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/dashboard';
+      // Success - navigate to return URL or home
+      const returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/home';
       this.router.navigateByUrl(returnUrl);
     } catch (error: unknown) {
       const err = error as {

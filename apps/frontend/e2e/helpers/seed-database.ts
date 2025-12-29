@@ -6,10 +6,15 @@ import bcrypt from 'bcrypt';
  * Uses environment variables with fallbacks for local E2E testing
  */
 function createPool(): Pool {
+  // Detect if running inside Docker (claude-code-sandbox) vs host machine
+  const isInsideDocker =
+    process.env.RUNNING_IN_DOCKER === 'true' || require('fs').existsSync('/.dockerenv');
+  const dockerHost = isInsideDocker ? 'host.docker.internal' : 'localhost';
+
   return new Pool({
-    host: process.env.DB_HOST || 'host.docker.internal',
-    port: parseInt(process.env.DB_PORT || '55432', 10),
-    database: process.env.DB_NAME || 'st44_test',
+    host: process.env.DB_HOST || dockerHost,
+    port: parseInt(process.env.DB_PORT || '5433', 10), // Local E2E docker uses 5433
+    database: process.env.DB_NAME || 'st44_test_local', // Local E2E docker uses st44_test_local
     user: process.env.DB_USER || 'postgres',
     password: process.env.DB_PASSWORD || 'postgres',
   });

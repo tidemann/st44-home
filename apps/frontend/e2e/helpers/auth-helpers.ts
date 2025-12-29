@@ -8,6 +8,9 @@ export async function loginAsUser(page: Page, email: string, password: string): 
   // Navigate to login page
   await page.goto('/login');
 
+  // Wait for form to be fully loaded
+  await page.waitForLoadState('networkidle');
+
   // Fill in credentials
   await page.getByLabel(/email/i).fill(email);
   await page.locator('#password').fill(password);
@@ -15,11 +18,19 @@ export async function loginAsUser(page: Page, email: string, password: string): 
   // Check "Remember me" to store in localStorage (required for E2E tests)
   await page.getByLabel(/remember me/i).check();
 
+  // Wait for login API response after clicking
+  const responsePromise = page.waitForResponse(
+    (resp) => resp.url().includes('/api/auth/login') && resp.status() === 200,
+  );
+
   // Submit form
   await page.getByRole('button', { name: /log in/i }).click();
 
-  // Wait for successful redirect (away from login page)
-  await page.waitForURL((url) => !url.pathname.includes('/login'), { timeout: 10000 });
+  // Wait for API response
+  await responsePromise;
+
+  // Wait for redirect to complete (may need time for Angular to process)
+  await page.waitForURL((url) => !url.pathname.includes('/login'), { timeout: 15000 });
 }
 
 /**

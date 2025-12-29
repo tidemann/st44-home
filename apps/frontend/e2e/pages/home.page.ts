@@ -123,20 +123,17 @@ export class HomePage extends BasePage {
     );
 
     // Navigation - bottom nav (mobile)
-    this.bottomNav = page.locator('app-bottom-nav, nav.bottom-nav');
-    this.navHomeButton = page.locator('nav button:has-text("Home"), a[href="/home"]');
-    this.navTasksButton = page.locator(
-      'nav button:has-text("Tasks"), a[href*="tasks"], nav a:has-text("Tasks")',
-    );
-    this.navFamilyButton = page.locator(
-      'nav button:has-text("Family"), a[href="/family"], nav a:has-text("Family")',
-    );
-    this.navProgressButton = page.locator(
-      'nav button:has-text("Progress"), a[href="/progress"], nav a:has-text("Progress")',
-    );
+    // Use nav.bottom-nav for visibility checks (inner nav element has CSS visibility rules)
+    this.bottomNav = page.locator('nav.bottom-nav');
+    // Use getByRole for accessible button selection - works with both navs since we click visible ones
+    this.navHomeButton = page.getByRole('button', { name: 'Home' });
+    this.navTasksButton = page.getByRole('button', { name: 'Tasks' });
+    this.navFamilyButton = page.getByRole('button', { name: 'Family' });
+    this.navProgressButton = page.getByRole('button', { name: 'Progress' });
 
     // Sidebar nav (desktop)
-    this.sidebarNav = page.locator('app-sidebar-nav, aside.sidebar');
+    // Use nav.sidebar-nav for visibility checks (inner nav element has CSS visibility rules)
+    this.sidebarNav = page.locator('nav.sidebar-nav');
 
     // Loading and error
     this.loadingIndicator = page.locator('[aria-busy="true"], .loading, [data-testid="loading"]');
@@ -264,10 +261,31 @@ export class HomePage extends BasePage {
   }
 
   /**
+   * Click the first visible navigation button matching the role
+   * Handles both mobile (bottom-nav) and desktop (sidebar-nav) layouts
+   */
+  private async clickVisibleNavButton(button: Locator): Promise<void> {
+    // Get count of matching buttons
+    const count = await button.count();
+
+    // Find and click the first visible one
+    for (let i = 0; i < count; i++) {
+      const btn = button.nth(i);
+      if (await btn.isVisible()) {
+        await btn.click();
+        return;
+      }
+    }
+
+    // If none visible, click the first one (fallback)
+    await button.first().click();
+  }
+
+  /**
    * Navigate to Tasks screen
    */
   async goToTasks(): Promise<void> {
-    await this.navTasksButton.click();
+    await this.clickVisibleNavButton(this.navTasksButton);
     await this.page.waitForURL(/\/(tasks|household\/all-tasks)/);
   }
 
@@ -275,7 +293,7 @@ export class HomePage extends BasePage {
    * Navigate to Family screen
    */
   async goToFamily(): Promise<void> {
-    await this.navFamilyButton.click();
+    await this.clickVisibleNavButton(this.navFamilyButton);
     await this.page.waitForURL(/\/family/);
   }
 
@@ -283,7 +301,7 @@ export class HomePage extends BasePage {
    * Navigate to Progress screen
    */
   async goToProgress(): Promise<void> {
-    await this.navProgressButton.click();
+    await this.clickVisibleNavButton(this.navProgressButton);
     await this.page.waitForURL(/\/progress/);
   }
 

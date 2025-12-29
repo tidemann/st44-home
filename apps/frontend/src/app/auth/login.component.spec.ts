@@ -173,7 +173,7 @@ describe('LoginComponent', () => {
       expect(mockAuthService.login).toHaveBeenCalledWith('test@example.com', 'Test1234', true);
     });
 
-    it('should navigate to dashboard on successful login without returnUrl', async () => {
+    it('should navigate to home on successful login without returnUrl', async () => {
       component['loginForm'].patchValue({
         email: 'test@example.com',
         password: 'Test1234',
@@ -184,7 +184,7 @@ describe('LoginComponent', () => {
 
       await component['onSubmit']();
 
-      expect(router.navigateByUrl).toHaveBeenCalledWith('/dashboard');
+      expect(router.navigateByUrl).toHaveBeenCalledWith('/home');
     });
 
     it('should navigate to returnUrl on successful login when provided', async () => {

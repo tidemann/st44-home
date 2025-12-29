@@ -54,8 +54,8 @@ export function roleGuard(allowedRoles: ('admin' | 'parent' | 'child')[]): CanAc
       // Child trying to access parent route -> redirect to child dashboard
       return router.createUrlTree(['/my-tasks']);
     } else {
-      // Parent/admin trying to access child route -> redirect to parent dashboard
-      return router.createUrlTree(['/dashboard']);
+      // Parent/admin trying to access child route -> redirect to home
+      return router.createUrlTree(['/home']);
     }
   };
 }

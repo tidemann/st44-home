@@ -34,8 +34,8 @@ services:
   # Backend API (Test Environment)
   backend-test:
     build:
-      context: ./apps/backend
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: apps/backend/Dockerfile
     container_name: st44-backend-test-local
     environment:
       PORT: 3000
