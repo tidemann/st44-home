@@ -20,13 +20,23 @@
   width: 100%;
 }
 
+/* Bottom Navigation (Mobile) */
+.bottom-nav-container {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
+  display: block;
+}
+
 /* Desktop Layout */
-@media (min-width: 768px) {
+@media (min-width: 1024px) {
   .desktop-nav {
     display: block;
   }
 
-  .mobile-nav {
+  .bottom-nav-container {
     display: none;
   }
 
