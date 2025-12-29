@@ -100,6 +100,15 @@
       [activeScreen]="'tasks'"
       [user]="sidebarUser()"
       (navigate)="onNavigate($event)"
+      (addTask)="openQuickAdd()"
     />
   </div>
+
+  <!-- Quick-Add Task Modal -->
+  <app-quick-add-modal
+    [open]="quickAddOpen()"
+    [children]="members()"
+    (closeRequested)="closeQuickAdd()"
+    (taskCreated)="onTaskCreated($event)"
+  />
 </div>

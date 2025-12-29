@@ -4,6 +4,7 @@
   [user]="sidebarUser()"
   [activeScreen]="activeScreen()"
   (navigate)="onNavigate($event)"
+  (addTask)="openQuickAdd()"
 />
 
 <!-- Main Content Area -->
@@ -151,4 +152,12 @@
   class="mobile-nav"
   [activeScreen]="activeScreen()"
   (navigate)="onNavigate($event)"
+/>
+
+<!-- Quick-Add Task Modal -->
+<app-quick-add-modal
+  [open]="quickAddOpen()"
+  [children]="children()"
+  (closeRequested)="closeQuickAdd()"
+  (taskCreated)="onTaskCreated($event)"
 />

@@ -18,9 +18,16 @@ import {
   AddChildModal,
   type AddChildData,
 } from '../../components/modals/add-child-modal/add-child-modal';
+import {
+  QuickAddModal,
+  type QuickAddTaskData,
+} from '../../components/modals/quick-add-modal/quick-add-modal';
 import { HouseholdService } from '../../services/household.service';
 import { AuthService } from '../../services/auth.service';
+import { TaskService } from '../../services/task.service';
+import { ChildrenService } from '../../services/children.service';
 import type { SidebarUser } from '../../components/navigation/sidebar-nav/sidebar-nav';
+import type { Child } from '@st44/types';
 
 /**
  * Family Screen
@@ -35,7 +42,7 @@ import type { SidebarUser } from '../../components/navigation/sidebar-nav/sideba
  */
 @Component({
   selector: 'app-family',
-  imports: [MemberCard, BottomNav, SidebarNav, InviteModal, AddChildModal],
+  imports: [MemberCard, BottomNav, SidebarNav, InviteModal, AddChildModal, QuickAddModal],
   templateUrl: './family.html',
   styleUrl: './family.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -44,6 +51,8 @@ export class Family implements OnInit {
   private readonly router = inject(Router);
   private readonly householdService = inject(HouseholdService);
   private readonly authService = inject(AuthService);
+  private readonly taskService = inject(TaskService);
+  private readonly childrenService = inject(ChildrenService);
 
   // State signals
   protected readonly loading = signal(true);
@@ -53,9 +62,13 @@ export class Family implements OnInit {
   protected readonly householdId = signal<string | null>(null);
   protected readonly currentUserId = signal<string | null>(null);
 
+  // Children for quick-add modal
+  protected readonly children = signal<Child[]>([]);
+
   // Modal state
   protected readonly inviteModalOpen = signal(false);
   protected readonly addChildModalOpen = signal(false);
+  protected readonly quickAddOpen = signal(false);
 
   // Navigation state
   protected readonly activeScreen = signal<'home' | 'tasks' | 'family' | 'progress'>('family');
@@ -211,5 +224,62 @@ export class Family implements OnInit {
    */
   protected closeAddChildModal(): void {
     this.addChildModalOpen.set(false);
+  }
+
+  /**
+   * Load children for quick-add modal
+   */
+  private async loadChildren(): Promise<void> {
+    const household = this.householdId();
+    if (!household) return;
+
+    try {
+      const childrenData = await this.childrenService.listChildren(household);
+      this.children.set(childrenData);
+    } catch (err) {
+      console.error('Failed to load children:', err);
+    }
+  }
+
+  /**
+   * Open quick-add modal
+   */
+  protected openQuickAdd(): void {
+    // Load children if not already loaded
+    if (this.children().length === 0) {
+      this.loadChildren();
+    }
+    this.quickAddOpen.set(true);
+  }
+
+  /**
+   * Close quick-add modal
+   */
+  protected closeQuickAdd(): void {
+    this.quickAddOpen.set(false);
+  }
+
+  /**
+   * Handle quick-add task creation
+   */
+  protected onTaskCreated(data: QuickAddTaskData): void {
+    const household = this.householdId();
+    if (!household) return;
+
+    this.taskService
+      .createTask(household, {
+        name: data.name,
+        points: data.points,
+        ruleType: 'daily', // Default to daily for quick-add
+      })
+      .subscribe({
+        next: () => {
+          this.quickAddOpen.set(false);
+        },
+        error: (err) => {
+          this.error.set('Failed to create task. Please try again.');
+          console.error('Create task error:', err);
+        },
+      });
   }
 }
