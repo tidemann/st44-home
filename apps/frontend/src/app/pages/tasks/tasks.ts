@@ -228,14 +228,26 @@ export class Tasks {
     this.loading.set(true);
     this.error.set(null);
 
+    // Track pending requests to avoid race conditions
+    let tasksCompleted = false;
+    let assignmentsCompleted = filter === 'all'; // No assignments needed for 'all' filter
+
+    const checkLoadingComplete = (): void => {
+      if (tasksCompleted && assignmentsCompleted) {
+        this.loading.set(false);
+      }
+    };
+
     // Load task templates
     this.taskService.getTasks(household, true).subscribe({
       next: () => {
-        this.loading.set(false);
+        tasksCompleted = true;
+        checkLoadingComplete();
       },
       error: (err) => {
         this.error.set('Failed to load tasks');
-        this.loading.set(false);
+        tasksCompleted = true;
+        checkLoadingComplete();
         console.error('Load tasks error:', err);
       },
     });
@@ -261,11 +273,13 @@ export class Tasks {
 
       this.taskService.getHouseholdAssignments(household, assignmentFilters).subscribe({
         next: () => {
-          this.loading.set(false);
+          assignmentsCompleted = true;
+          checkLoadingComplete();
         },
         error: (err) => {
           this.error.set('Failed to load assignments');
-          this.loading.set(false);
+          assignmentsCompleted = true;
+          checkLoadingComplete();
           console.error('Load assignments error:', err);
         },
       });
