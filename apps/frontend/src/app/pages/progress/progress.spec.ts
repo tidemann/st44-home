@@ -283,21 +283,21 @@ describe('Progress', () => {
   });
 
   describe('getMedalForRank', () => {
-    it('should return 1st for rank 1', () => {
-      expect(component['getMedalForRank'](1)).toBe('1st');
+    it('should return gold medal for rank 1', () => {
+      expect(component['getMedalForRank'](1)).toBe('🥇');
     });
 
-    it('should return 2nd for rank 2', () => {
-      expect(component['getMedalForRank'](2)).toBe('2nd');
+    it('should return silver medal for rank 2', () => {
+      expect(component['getMedalForRank'](2)).toBe('🥈');
     });
 
-    it('should return 3rd for rank 3', () => {
-      expect(component['getMedalForRank'](3)).toBe('3rd');
+    it('should return bronze medal for rank 3', () => {
+      expect(component['getMedalForRank'](3)).toBe('🥉');
     });
 
-    it('should return number with th suffix for rank 4+', () => {
-      expect(component['getMedalForRank'](4)).toBe('4th');
-      expect(component['getMedalForRank'](5)).toBe('5th');
+    it('should return hash with number for rank 4+', () => {
+      expect(component['getMedalForRank'](4)).toBe('#4');
+      expect(component['getMedalForRank'](5)).toBe('#5');
     });
   });
 

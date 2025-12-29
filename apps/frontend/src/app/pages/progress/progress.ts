@@ -173,7 +173,7 @@ export class Progress implements OnInit {
         id: '1',
         name: 'Getting Started',
         description: 'Complete all tasks for 1 day',
-        icon: 'star',
+        icon: '⭐',
         unlocked: currentStreak >= 1 || longestStreak >= 1,
         progress: Math.min(100, (Math.max(currentStreak, longestStreak) / 1) * 100),
         criteria: '1 day streak',
@@ -182,7 +182,7 @@ export class Progress implements OnInit {
         id: '2',
         name: 'Early Bird',
         description: 'Complete all tasks 5 days in a row',
-        icon: 'bird',
+        icon: '🐦',
         unlocked: longestStreak >= 5,
         progress: Math.min(100, (longestStreak / 5) * 100),
         criteria: '5 day streak',
@@ -191,7 +191,7 @@ export class Progress implements OnInit {
         id: '3',
         name: 'Week Warrior',
         description: '7 day completion streak',
-        icon: 'fire',
+        icon: '🔥',
         unlocked: longestStreak >= 7,
         progress: Math.min(100, (longestStreak / 7) * 100),
         criteria: '7 day streak',
@@ -200,7 +200,7 @@ export class Progress implements OnInit {
         id: '4',
         name: 'Consistent Champion',
         description: '14 day completion streak',
-        icon: 'trophy',
+        icon: '🏆',
         unlocked: longestStreak >= 14,
         progress: Math.min(100, (longestStreak / 14) * 100),
         criteria: '14 day streak',
@@ -209,7 +209,7 @@ export class Progress implements OnInit {
         id: '5',
         name: 'Streak Master',
         description: '30 day completion streak',
-        icon: 'hundred',
+        icon: '💯',
         unlocked: longestStreak >= 30,
         progress: Math.min(100, (longestStreak / 30) * 100),
         criteria: '30 day streak',
@@ -218,7 +218,7 @@ export class Progress implements OnInit {
         id: '6',
         name: 'Legend',
         description: '60 day completion streak',
-        icon: 'sparkle',
+        icon: '✨',
         unlocked: longestStreak >= 60,
         progress: Math.min(100, (longestStreak / 60) * 100),
         criteria: '60 day streak',
@@ -251,13 +251,13 @@ export class Progress implements OnInit {
   protected getMedalForRank(rank: number): string {
     switch (rank) {
       case 1:
-        return '1st';
+        return '🥇';
       case 2:
-        return '2nd';
+        return '🥈';
       case 3:
-        return '3rd';
+        return '🥉';
       default:
-        return `${rank}th`;
+        return `#${rank}`;
     }
   }
 }
