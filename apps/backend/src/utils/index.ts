@@ -31,3 +31,5 @@ export {
   validateRequestSafe,
   handleZodError,
 } from './validation.js';
+
+export { withTransaction, type TransactionHandler } from './transaction.js';

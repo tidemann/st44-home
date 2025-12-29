@@ -6,13 +6,13 @@ import {
   type Household,
 } from '@st44/types';
 import { z, zodToOpenAPI, CommonErrors } from '@st44/types/generators';
-import { db } from '../database.js';
+import { db, pool } from '../database.js';
 import { authenticateUser } from '../middleware/auth.js';
 import {
   validateHouseholdMembership,
   requireHouseholdAdmin,
 } from '../middleware/household-membership.js';
-import { validateRequest, handleZodError } from '../utils/validation.js';
+import { validateRequest, handleZodError, withTransaction } from '../utils/index.js';
 import { stripResponseValidation } from '../schemas/common.js';
 
 function toDateTimeString(value: unknown): string {
@@ -65,24 +65,23 @@ async function createHousehold(
     const validatedData = validateRequest(CreateHouseholdRequestSchema, request.body);
     const { name } = validatedData;
 
-    // Begin transaction
-    await db.query('BEGIN');
+    const household = await withTransaction(pool, async (client) => {
+      // Insert household
+      const householdResult = await client.query(
+        'INSERT INTO households (name) VALUES ($1) RETURNING id, name, created_at, updated_at',
+        [name.trim()],
+      );
 
-    // Insert household
-    const householdResult = await db.query(
-      'INSERT INTO households (name) VALUES ($1) RETURNING id, name, created_at, updated_at',
-      [name.trim()],
-    );
+      const newHousehold = householdResult.rows[0];
 
-    const household = householdResult.rows[0];
+      // Insert household_members (creator as admin)
+      await client.query(
+        'INSERT INTO household_members (household_id, user_id, role, joined_at) VALUES ($1, $2, $3, NOW())',
+        [newHousehold.id, userId, 'admin'],
+      );
 
-    // Insert household_members (creator as admin)
-    await db.query(
-      'INSERT INTO household_members (household_id, user_id, role, joined_at) VALUES ($1, $2, $3, NOW())',
-      [household.id, userId, 'admin'],
-    );
-
-    await db.query('COMMIT');
+      return newHousehold;
+    });
 
     return reply.status(201).send({
       id: household.id,
@@ -96,7 +95,6 @@ async function createHousehold(
     if (error instanceof z.ZodError) {
       return handleZodError(error, reply);
     }
-    await db.query('ROLLBACK');
     request.log.error(error, 'Failed to create household');
     return reply.status(500).send({
       statusCode: 500,

@@ -1,5 +1,5 @@
 import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
-import { db } from '../database.js';
+import { db, pool } from '../database.js';
 import { authenticateUser } from '../middleware/auth.js';
 import {
   validateHouseholdMembership,
@@ -13,9 +13,24 @@ import {
   CreateChildUserAccountRequestSchema,
 } from '@st44/types';
 import { z, zodToOpenAPI, CommonErrors } from '@st44/types/generators';
-import { validateRequest, handleZodError } from '../utils/validation.js';
+import { handleZodError, validateRequest, withTransaction } from '../utils/index.js';
 import { stripResponseValidation } from '../schemas/common.js';
 import bcrypt from 'bcrypt';
+
+/**
+ * Custom error for transaction validation failures
+ * Used to trigger rollback and return specific HTTP responses
+ */
+class TransactionValidationError extends Error {
+  constructor(
+    public statusCode: number,
+    public error: string,
+    message: string,
+  ) {
+    super(message);
+    this.name = 'TransactionValidationError';
+  }
+}
 
 interface HouseholdParams {
   householdId: string;
@@ -295,77 +310,63 @@ async function createChildUserAccount(
     }
   }
 
-  // Start transaction
-  const client = await db.connect();
   try {
-    await client.query('BEGIN');
+    const userId = await withTransaction(pool, async (client) => {
+      // 1. Check child exists and doesn't already have a user account
+      const childResult = await client.query(
+        `SELECT id, user_id, household_id, name
+         FROM children
+         WHERE id = $1 AND household_id = $2`,
+        [childId, householdId],
+      );
 
-    // 1. Check child exists and doesn't already have a user account
-    const childResult = await client.query(
-      `SELECT id, user_id, household_id, name
-       FROM children
-       WHERE id = $1 AND household_id = $2`,
-      [childId, householdId],
-    );
+      if (childResult.rows.length === 0) {
+        throw new TransactionValidationError(404, 'Not Found', 'Child not found in this household');
+      }
 
-    if (childResult.rows.length === 0) {
-      await client.query('ROLLBACK');
-      return reply.status(404).send({
-        statusCode: 404,
-        error: 'Not Found',
-        message: 'Child not found in this household',
-      });
-    }
+      const child = childResult.rows[0];
 
-    const child = childResult.rows[0];
+      if (child.user_id) {
+        throw new TransactionValidationError(
+          400,
+          'Bad Request',
+          'Child already has a user account',
+        );
+      }
 
-    if (child.user_id) {
-      await client.query('ROLLBACK');
-      return reply.status(400).send({
-        statusCode: 400,
-        error: 'Bad Request',
-        message: 'Child already has a user account',
-      });
-    }
+      // 2. Check email isn't already in use
+      const emailCheckResult = await client.query('SELECT id FROM users WHERE email = $1', [email]);
 
-    // 2. Check email isn't already in use
-    const emailCheckResult = await client.query('SELECT id FROM users WHERE email = $1', [email]);
+      if (emailCheckResult.rows.length > 0) {
+        throw new TransactionValidationError(400, 'Bad Request', 'Email already in use');
+      }
 
-    if (emailCheckResult.rows.length > 0) {
-      await client.query('ROLLBACK');
-      return reply.status(400).send({
-        statusCode: 400,
-        error: 'Bad Request',
-        message: 'Email already in use',
-      });
-    }
+      // 3. Hash password with bcrypt (10 rounds)
+      const passwordHash = await bcrypt.hash(password, 10);
 
-    // 3. Hash password with bcrypt (10 rounds)
-    const passwordHash = await bcrypt.hash(password, 10);
+      // 4. Create user in users table
+      const userResult = await client.query(
+        'INSERT INTO users (email, password_hash) VALUES ($1, $2) RETURNING id',
+        [email, passwordHash],
+      );
 
-    // 4. Create user in users table
-    const userResult = await client.query(
-      'INSERT INTO users (email, password_hash) VALUES ($1, $2) RETURNING id',
-      [email, passwordHash],
-    );
+      const newUserId = userResult.rows[0].id;
 
-    const userId = userResult.rows[0].id;
+      // 5. Link child to user by setting children.user_id
+      await client.query('UPDATE children SET user_id = $1, updated_at = NOW() WHERE id = $2', [
+        newUserId,
+        childId,
+      ]);
 
-    // 5. Link child to user by setting children.user_id
-    await client.query('UPDATE children SET user_id = $1, updated_at = NOW() WHERE id = $2', [
-      userId,
-      childId,
-    ]);
+      // 6. Add household_members entry with role='child'
+      await client.query(
+        `INSERT INTO household_members (household_id, user_id, role)
+         VALUES ($1, $2, 'child')`,
+        [householdId, newUserId],
+      );
 
-    // 6. Add household_members entry with role='child'
-    await client.query(
-      `INSERT INTO household_members (household_id, user_id, role)
-       VALUES ($1, $2, 'child')`,
-      [householdId, userId],
-    );
-
-    // Commit transaction
-    await client.query('COMMIT');
+      return newUserId;
+    });
 
     request.log.info({ childId, userId, email }, 'Child user account created successfully');
 
@@ -375,15 +376,19 @@ async function createChildUserAccount(
       message: 'User account created successfully',
     });
   } catch (error) {
-    await client.query('ROLLBACK');
+    if (error instanceof TransactionValidationError) {
+      return reply.status(error.statusCode).send({
+        statusCode: error.statusCode,
+        error: error.error,
+        message: error.message,
+      });
+    }
     request.log.error(error, 'Failed to create child user account');
     return reply.status(500).send({
       statusCode: 500,
       error: 'Internal Server Error',
       message: 'Failed to create user account',
     });
-  } finally {
-    client.release();
   }
 }
 

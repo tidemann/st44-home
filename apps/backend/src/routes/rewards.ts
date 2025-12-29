@@ -14,19 +14,35 @@ import {
   type UpdateRewardRequest,
 } from '@st44/types';
 import { z, zodToOpenAPI, CommonErrors } from '@st44/types/generators';
-import { db } from '../database.js';
+import { db, pool } from '../database.js';
 import { authenticateUser } from '../middleware/auth.js';
 import {
   validateHouseholdMembership,
   requireHouseholdParent,
 } from '../middleware/household-membership.js';
-import { validateRequest, handleZodError } from '../utils/validation.js';
+import { validateRequest, handleZodError, withTransaction } from '../utils/index.js';
 import { stripResponseValidation } from '../schemas/common.js';
 import type {
   RewardRow,
   RewardRedemptionRow,
   RewardRedemptionWithDetailsRow,
 } from '../types/database.js';
+
+/**
+ * Custom error for transaction validation failures
+ * Used to trigger rollback and return specific HTTP responses
+ */
+class TransactionValidationError extends Error {
+  constructor(
+    public statusCode: number,
+    public error: string,
+    message: string,
+    public details?: unknown,
+  ) {
+    super(message);
+    this.name = 'TransactionValidationError';
+  }
+}
 
 interface HouseholdParams {
   householdId: string;
@@ -445,39 +461,27 @@ async function redeemReward(
     const childId = child.id;
     const householdId = child.household_id;
 
-    // Start transaction
-    await db.query('BEGIN');
-
-    try {
+    // Use transaction for atomic redemption
+    const redemptionData = await withTransaction(pool, async (client) => {
       // Get reward with row lock
-      const rewardResult = await db.query(
+      const rewardResult = await client.query(
         'SELECT * FROM rewards WHERE id = $1 AND household_id = $2 AND active = true FOR UPDATE',
         [rewardId, householdId],
       );
 
       if (rewardResult.rows.length === 0) {
-        await db.query('ROLLBACK');
-        return reply.status(404).send({
-          statusCode: 404,
-          error: 'Not Found',
-          message: 'Reward not found or not active',
-        });
+        throw new TransactionValidationError(404, 'Not Found', 'Reward not found or not active');
       }
 
       const reward = rewardResult.rows[0];
 
       // Check quantity
       if (reward.quantity !== null && reward.quantity <= 0) {
-        await db.query('ROLLBACK');
-        return reply.status(400).send({
-          statusCode: 400,
-          error: 'Bad Request',
-          message: 'Reward is out of stock',
-        });
+        throw new TransactionValidationError(400, 'Bad Request', 'Reward is out of stock');
       }
 
       // Get points balance
-      const balanceResult = await db.query(
+      const balanceResult = await client.query(
         'SELECT points_balance FROM child_points_balance WHERE child_id = $1',
         [childId],
       );
@@ -486,20 +490,14 @@ async function redeemReward(
 
       // Check if child can afford
       if (pointsBalance < reward.points_cost) {
-        await db.query('ROLLBACK');
-        return reply.status(400).send({
-          statusCode: 400,
-          error: 'Bad Request',
-          message: 'Insufficient points',
-          details: {
-            required: reward.points_cost,
-            available: pointsBalance,
-          },
+        throw new TransactionValidationError(400, 'Bad Request', 'Insufficient points', {
+          required: reward.points_cost,
+          available: pointsBalance,
         });
       }
 
       // Create redemption
-      const redemptionResult = await db.query(
+      const redemptionResult = await client.query(
         `INSERT INTO reward_redemptions (household_id, reward_id, child_id, points_spent, status)
          VALUES ($1, $2, $3, $4, 'pending')
          RETURNING *`,
@@ -508,28 +506,36 @@ async function redeemReward(
 
       // Decrease quantity if not unlimited
       if (reward.quantity !== null) {
-        await db.query('UPDATE rewards SET quantity = quantity - 1 WHERE id = $1', [rewardId]);
+        await client.query('UPDATE rewards SET quantity = quantity - 1 WHERE id = $1', [rewardId]);
       }
 
-      await db.query('COMMIT');
+      return redemptionResult.rows[0];
+    });
 
-      // Get new balance
-      const newBalanceResult = await db.query(
-        'SELECT points_balance FROM child_points_balance WHERE child_id = $1',
-        [childId],
-      );
+    // Get new balance (outside transaction, read-only)
+    const newBalanceResult = await db.query(
+      'SELECT points_balance FROM child_points_balance WHERE child_id = $1',
+      [childId],
+    );
 
-      const newBalance = newBalanceResult.rows[0]?.points_balance || 0;
+    const newBalance = newBalanceResult.rows[0]?.points_balance || 0;
 
-      return reply.status(201).send({
-        redemption: mapRedemptionRowToRedemption(redemptionResult.rows[0]),
-        newBalance,
-      });
-    } catch (txError) {
-      await db.query('ROLLBACK');
-      throw txError;
-    }
+    return reply.status(201).send({
+      redemption: mapRedemptionRowToRedemption(redemptionData),
+      newBalance,
+    });
   } catch (error) {
+    if (error instanceof TransactionValidationError) {
+      const response: Record<string, unknown> = {
+        statusCode: error.statusCode,
+        error: error.error,
+        message: error.message,
+      };
+      if (error.details) {
+        response.details = error.details;
+      }
+      return reply.status(error.statusCode).send(response);
+    }
     request.log.error(error, 'Failed to redeem reward');
     return reply.status(500).send({
       statusCode: 500,
@@ -639,22 +645,15 @@ async function updateRedemptionStatus(
   }
 
   try {
-    await db.query('BEGIN');
-
-    try {
+    const updatedRedemption = await withTransaction(pool, async (client) => {
       // Get current redemption
-      const currentResult = await db.query(
+      const currentResult = await client.query(
         'SELECT * FROM reward_redemptions WHERE id = $1 AND household_id = $2 FOR UPDATE',
         [redemptionId, householdId],
       );
 
       if (currentResult.rows.length === 0) {
-        await db.query('ROLLBACK');
-        return reply.status(404).send({
-          statusCode: 404,
-          error: 'Not Found',
-          message: 'Redemption not found',
-        });
+        throw new TransactionValidationError(404, 'Not Found', 'Redemption not found');
       }
 
       const current = currentResult.rows[0];
@@ -662,7 +661,7 @@ async function updateRedemptionStatus(
       // If rejecting, restore quantity and refund points
       if (status === 'rejected' && current.status !== 'rejected') {
         // Restore reward quantity
-        await db.query(
+        await client.query(
           'UPDATE rewards SET quantity = COALESCE(quantity, 0) + 1 WHERE id = $1 AND quantity IS NOT NULL',
           [current.reward_id],
         );
@@ -674,16 +673,20 @@ async function updateRedemptionStatus(
           ? 'UPDATE reward_redemptions SET status = $1, fulfilled_at = NOW() WHERE id = $2 AND household_id = $3 RETURNING *'
           : 'UPDATE reward_redemptions SET status = $1 WHERE id = $2 AND household_id = $3 RETURNING *';
 
-      const result = await db.query(updateQuery, [status, redemptionId, householdId]);
+      const result = await client.query(updateQuery, [status, redemptionId, householdId]);
 
-      await db.query('COMMIT');
+      return result.rows[0];
+    });
 
-      return reply.send(mapRedemptionRowToRedemption(result.rows[0]));
-    } catch (txError) {
-      await db.query('ROLLBACK');
-      throw txError;
-    }
+    return reply.send(mapRedemptionRowToRedemption(updatedRedemption));
   } catch (error) {
+    if (error instanceof TransactionValidationError) {
+      return reply.status(error.statusCode).send({
+        statusCode: error.statusCode,
+        error: error.error,
+        message: error.message,
+      });
+    }
     request.log.error(error, 'Failed to update redemption status');
     return reply.status(500).send({
       statusCode: 500,

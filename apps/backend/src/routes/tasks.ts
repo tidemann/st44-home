@@ -417,18 +417,6 @@ async function updateTask(request: FastifyRequest<UpdateTaskRequest>, reply: Fas
     const { name, description, points, ruleType, ruleConfig, active } = validatedData;
     const normalizedRuleConfig = normalizeRuleConfig(ruleConfig);
 
-    // Ensure active column exists if we're about to update it
-    if (active !== undefined) {
-      try {
-        await db.query(`
-          ALTER TABLE tasks 
-          ADD COLUMN IF NOT EXISTS active BOOLEAN NOT NULL DEFAULT true
-        `);
-      } catch {
-        // If this fails, we'll still try to update; DB will error clearly if column truly missing.
-      }
-    }
-
     // Validate update data if rule_type is being changed
     if (ruleType) {
       const validationErrors = validateTaskData(
@@ -568,18 +556,6 @@ async function deleteTask(request: FastifyRequest<{ Params: TaskParams }>, reply
   }
 
   try {
-    // First check if active column exists, if not add it
-    // This handles the case where migration hasn't been run yet
-    try {
-      await db.query(`
-        ALTER TABLE tasks 
-        ADD COLUMN IF NOT EXISTS active BOOLEAN NOT NULL DEFAULT true
-      `);
-    } catch (alterError) {
-      // Column might already exist, continue
-      request.log.debug('Active column already exists or could not be added');
-    }
-
     const result = await db.query(
       `UPDATE tasks 
        SET active = false, updated_at = NOW()

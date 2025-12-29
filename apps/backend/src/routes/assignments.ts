@@ -3,6 +3,7 @@ import { authenticateUser } from '../middleware/auth.js';
 import { validateHouseholdMembership } from '../middleware/household-membership.js';
 import { pool } from '../database.js';
 import { generateAssignments } from '../services/assignment-generator.js';
+import { withTransaction } from '../utils/index.js';
 import {
   getChildTasksSchema,
   getHouseholdAssignmentsSchema,
@@ -13,6 +14,20 @@ import {
   generateHouseholdAssignmentsSchema,
   createManualAssignmentSchema,
 } from '../schemas/assignments.js';
+
+/**
+ * Custom error for transaction validation failures
+ * Used to trigger rollback and return specific HTTP responses
+ */
+class TransactionValidationError extends Error {
+  constructor(
+    public statusCode: number,
+    message: string,
+  ) {
+    super(message);
+    this.name = 'TransactionValidationError';
+  }
+}
 
 const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 const DATE_REGEX = /^\d{4}-\d{2}-\d{2}$/;
@@ -933,10 +948,7 @@ export default async function assignmentRoutes(fastify: FastifyInstance) {
         }
 
         // Use transaction to ensure atomicity
-        const client = await pool.connect();
-        try {
-          await client.query('BEGIN');
-
+        const result = await withTransaction(pool, async (client) => {
           // Update assignment status
           const updateResult = await client.query(
             `UPDATE task_assignments
@@ -947,10 +959,10 @@ export default async function assignmentRoutes(fastify: FastifyInstance) {
           );
 
           if (updateResult.rows.length === 0) {
-            await client.query('ROLLBACK');
-            return reply.code(400).send({
-              error: 'Failed to complete assignment - status may have changed',
-            });
+            throw new TransactionValidationError(
+              400,
+              'Failed to complete assignment - status may have changed',
+            );
           }
 
           const completedAssignment = updateResult.rows[0];
@@ -970,14 +982,12 @@ export default async function assignmentRoutes(fastify: FastifyInstance) {
             ],
           );
 
-          await client.query('COMMIT');
-
           const completion = completionResult.rows[0];
 
-          return reply.code(200).send({
+          return {
             taskAssignment: {
               id: completedAssignment.id,
-              status: 'completed',
+              status: 'completed' as const,
               completedAt: completion.completed_at,
             },
             completion: {
@@ -985,14 +995,16 @@ export default async function assignmentRoutes(fastify: FastifyInstance) {
               pointsEarned: completion.points_earned,
               completedAt: completion.completed_at,
             },
-          });
-        } catch (error) {
-          await client.query('ROLLBACK');
-          throw error;
-        } finally {
-          client.release();
-        }
+          };
+        });
+
+        return reply.code(200).send(result);
       } catch (error) {
+        if (error instanceof TransactionValidationError) {
+          return reply.code(error.statusCode).send({
+            error: error.message,
+          });
+        }
         fastify.log.error(error, 'Failed to complete assignment');
         return reply.code(500).send({
           error: 'Failed to complete assignment',

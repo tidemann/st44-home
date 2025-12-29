@@ -1,10 +1,26 @@
 import { FastifyInstance, FastifyRequest, FastifyReply, preHandlerHookHandler } from 'fastify';
 import crypto from 'crypto';
-import { db } from '../database.js';
+import { db, pool } from '../database.js';
 import { authenticateUser } from '../middleware/auth.js';
 import { validateHouseholdMembership } from '../middleware/household-membership.js';
 import { validateCanInvite } from '../middleware/invitation-auth.js';
 import { getEmailService } from '../services/email.service.js';
+import { withTransaction } from '../utils/index.js';
+
+/**
+ * Custom error for transaction validation failures
+ * Used to trigger rollback and return specific HTTP responses
+ */
+class TransactionValidationError extends Error {
+  constructor(
+    public statusCode: number,
+    public error: string,
+    message: string,
+  ) {
+    super(message);
+    this.name = 'TransactionValidationError';
+  }
+}
 
 interface CreateInvitationRequest {
   Params: {
@@ -383,97 +399,93 @@ async function acceptInvitation(
   }
 
   try {
-    // Begin transaction
-    await db.query('BEGIN');
+    const result = await withTransaction(pool, async (client) => {
+      // Find invitation by token
+      const invitationResult = await client.query(
+        `SELECT i.id, i.household_id, i.invited_email, i.role, i.status, i.expires_at,
+                h.name as household_name
+         FROM invitations i
+         JOIN households h ON i.household_id = h.id
+         WHERE i.token = $1`,
+        [token],
+      );
 
-    // Find invitation by token
-    const invitationResult = await db.query(
-      `SELECT i.id, i.household_id, i.invited_email, i.role, i.status, i.expires_at,
-              h.name as household_name
-       FROM invitations i
-       JOIN households h ON i.household_id = h.id
-       WHERE i.token = $1`,
-      [token],
-    );
+      if (invitationResult.rows.length === 0) {
+        throw new TransactionValidationError(404, 'Not Found', 'Invitation not found');
+      }
 
-    if (invitationResult.rows.length === 0) {
-      await db.query('ROLLBACK');
-      return reply.status(404).send({
-        error: 'Not Found',
-        message: 'Invitation not found',
-      });
-    }
+      const invitation = invitationResult.rows[0];
 
-    const invitation = invitationResult.rows[0];
+      // Validate invitation email matches user
+      if (invitation.invited_email !== userEmail.toLowerCase()) {
+        throw new TransactionValidationError(
+          403,
+          'Forbidden',
+          'This invitation is not for your email address',
+        );
+      }
 
-    // Validate invitation email matches user
-    if (invitation.invited_email !== userEmail.toLowerCase()) {
-      await db.query('ROLLBACK');
-      return reply.status(403).send({
-        error: 'Forbidden',
-        message: 'This invitation is not for your email address',
-      });
-    }
+      // Check if expired
+      if (new Date(invitation.expires_at) < new Date()) {
+        throw new TransactionValidationError(400, 'Bad Request', 'Invitation has expired');
+      }
 
-    // Check if expired
-    if (new Date(invitation.expires_at) < new Date()) {
-      await db.query('ROLLBACK');
-      return reply.status(400).send({
-        error: 'Bad Request',
-        message: 'Invitation has expired',
-      });
-    }
+      // Check if already accepted
+      if (invitation.status !== 'pending') {
+        throw new TransactionValidationError(
+          400,
+          'Bad Request',
+          `Invitation has already been ${invitation.status}`,
+        );
+      }
 
-    // Check if already accepted
-    if (invitation.status !== 'pending') {
-      await db.query('ROLLBACK');
-      return reply.status(400).send({
-        error: 'Bad Request',
-        message: `Invitation has already been ${invitation.status}`,
-      });
-    }
+      // Check if user is already a member
+      const memberCheck = await client.query(
+        `SELECT id FROM household_members
+         WHERE household_id = $1 AND user_id = $2`,
+        [invitation.household_id, userId],
+      );
 
-    // Check if user is already a member
-    const memberCheck = await db.query(
-      `SELECT id FROM household_members
-       WHERE household_id = $1 AND user_id = $2`,
-      [invitation.household_id, userId],
-    );
+      if (memberCheck.rows.length > 0) {
+        throw new TransactionValidationError(
+          409,
+          'Conflict',
+          'You are already a member of this household',
+        );
+      }
 
-    if (memberCheck.rows.length > 0) {
-      await db.query('ROLLBACK');
-      return reply.status(409).send({
-        error: 'Conflict',
-        message: 'You are already a member of this household',
-      });
-    }
+      // Insert household member
+      await client.query(
+        `INSERT INTO household_members (household_id, user_id, role, joined_at)
+         VALUES ($1, $2, $3, NOW())`,
+        [invitation.household_id, userId, invitation.role],
+      );
 
-    // Insert household member
-    await db.query(
-      `INSERT INTO household_members (household_id, user_id, role, joined_at)
-       VALUES ($1, $2, $3, NOW())`,
-      [invitation.household_id, userId, invitation.role],
-    );
+      // Update invitation status
+      await client.query(
+        `UPDATE invitations
+         SET status = 'accepted', accepted_at = NOW(), updated_at = NOW()
+         WHERE id = $1`,
+        [invitation.id],
+      );
 
-    // Update invitation status
-    await db.query(
-      `UPDATE invitations
-       SET status = 'accepted', accepted_at = NOW(), updated_at = NOW()
-       WHERE id = $1`,
-      [invitation.id],
-    );
-
-    await db.query('COMMIT');
-
-    return reply.status(200).send({
-      household: {
+      return {
         id: invitation.household_id,
         name: invitation.household_name,
         role: invitation.role,
-      },
+      };
+    });
+
+    return reply.status(200).send({
+      household: result,
     });
   } catch (error) {
-    await db.query('ROLLBACK');
+    if (error instanceof TransactionValidationError) {
+      return reply.status(error.statusCode).send({
+        error: error.error,
+        message: error.message,
+      });
+    }
     request.log.error(error, 'Failed to accept invitation');
     return reply.status(500).send({
       error: 'Internal Server Error',
