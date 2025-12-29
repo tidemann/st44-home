@@ -1,6 +1,5 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { Router } from '@angular/router';
 import { Family } from './family';
 import { HouseholdService, type HouseholdMember } from '../../services/household.service';
 import { AuthService } from '../../services/auth.service';
@@ -10,7 +9,6 @@ import type { AddChildData } from '../../components/modals/add-child-modal/add-c
 describe('Family', () => {
   let component: Family;
   let fixture: ComponentFixture<Family>;
-  let mockRouter: { navigate: ReturnType<typeof vi.fn> };
   let mockHouseholdService: {
     listHouseholds: ReturnType<typeof vi.fn>;
     getHouseholdMembers: ReturnType<typeof vi.fn>;
@@ -38,7 +36,6 @@ describe('Family', () => {
 
   beforeEach(async () => {
     // Create mock services
-    mockRouter = { navigate: vi.fn() };
     mockHouseholdService = {
       listHouseholds: vi.fn(),
       getHouseholdMembers: vi.fn(),
@@ -54,7 +51,6 @@ describe('Family', () => {
     await TestBed.configureTestingModule({
       imports: [Family],
       providers: [
-        { provide: Router, useValue: mockRouter },
         { provide: HouseholdService, useValue: mockHouseholdService },
         { provide: AuthService, useValue: mockAuthService },
       ],
@@ -160,14 +156,6 @@ describe('Family', () => {
 
       expect(component['memberCount']()).toBe(2);
     });
-
-    it('should compute sidebar user data', async () => {
-      await component.ngOnInit();
-
-      const sidebarUser = component['sidebarUser']();
-      expect(sidebarUser.name).toBe('test');
-      expect(sidebarUser.household).toBe('Test Family');
-    });
   });
 
   describe('modal interactions', () => {
@@ -223,7 +211,7 @@ describe('Family', () => {
       const childData: AddChildData = {
         name: 'New Child',
         age: 10,
-        avatar: '😊',
+        avatar: 'smile',
       };
 
       await component['onChildAdded'](childData);
@@ -237,7 +225,7 @@ describe('Family', () => {
       const childData: AddChildData = {
         name: 'New Child',
         age: 8,
-        avatar: '🎮',
+        avatar: 'game',
       };
 
       await component['onChildAdded'](childData);
@@ -246,28 +234,6 @@ describe('Family', () => {
       expect(component['addChildModalOpen']()).toBe(false);
       // Data should be reloaded
       expect(mockHouseholdService.getHouseholdMembers).toHaveBeenCalled();
-    });
-  });
-
-  describe('navigation', () => {
-    it('should navigate to home route', () => {
-      component['onNavigate']('home');
-      expect(mockRouter.navigate).toHaveBeenCalledWith(['/home']);
-    });
-
-    it('should navigate to tasks route', () => {
-      component['onNavigate']('tasks');
-      expect(mockRouter.navigate).toHaveBeenCalledWith(['/household/all-tasks']);
-    });
-
-    it('should navigate to progress route', () => {
-      component['onNavigate']('progress');
-      expect(mockRouter.navigate).toHaveBeenCalledWith(['/progress']);
-    });
-
-    it('should navigate to family route', () => {
-      component['onNavigate']('family');
-      expect(mockRouter.navigate).toHaveBeenCalledWith(['/family']);
     });
   });
 

@@ -6,20 +6,10 @@ import {
   inject,
   OnInit,
 } from '@angular/core';
-import { Router } from '@angular/router';
-import { BottomNav } from '../../components/navigation/bottom-nav/bottom-nav';
-import { SidebarNav } from '../../components/navigation/sidebar-nav/sidebar-nav';
-import {
-  QuickAddModal,
-  type QuickAddTaskData,
-} from '../../components/modals/quick-add-modal/quick-add-modal';
 import { AuthService } from '../../services/auth.service';
 import { HouseholdService } from '../../services/household.service';
 import { AnalyticsService } from '../../services/analytics.service';
-import { TaskService } from '../../services/task.service';
-import { ChildrenService } from '../../services/children.service';
-import type { SidebarUser } from '../../components/navigation/sidebar-nav/sidebar-nav';
-import type { HouseholdAnalytics, ChildStreak, Child } from '@st44/types';
+import type { HouseholdAnalytics, ChildStreak } from '@st44/types';
 
 /**
  * Leaderboard entry for weekly rankings
@@ -60,28 +50,26 @@ interface HouseholdStats {
  * Progress Screen (Leaderboard & Achievements)
  *
  * Displays gamification features:
- * - Weekly leaderboard with rankings and medals (🥇🥈🥉)
+ * - Weekly leaderboard with rankings and medals
  * - Current user highlighted in leaderboard
  * - Achievement badges (unlocked/locked states with progress)
  * - Household-level statistics
  *
  * Design matches the "Diddit!" playful aesthetic from UX redesign.
  * Friendly, non-competitive design that celebrates everyone's progress.
+ * Navigation is handled by the parent MainLayout component.
  */
 @Component({
   selector: 'app-progress',
-  imports: [BottomNav, SidebarNav, QuickAddModal],
+  imports: [],
   templateUrl: './progress.html',
   styleUrl: './progress.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class Progress implements OnInit {
-  private readonly router = inject(Router);
   private readonly authService = inject(AuthService);
   private readonly householdService = inject(HouseholdService);
   private readonly analyticsService = inject(AnalyticsService);
-  private readonly taskService = inject(TaskService);
-  private readonly childrenService = inject(ChildrenService);
 
   // State signals
   protected readonly loading = signal(false);
@@ -98,25 +86,7 @@ export class Progress implements OnInit {
   protected readonly householdId = signal<string | null>(null);
   protected readonly currentUserId = signal<string | null>(null);
 
-  // Children for quick-add modal
-  protected readonly children = signal<Child[]>([]);
-
-  // Modal state
-  protected readonly quickAddOpen = signal(false);
-
-  // Navigation state
-  protected readonly activeScreen = signal<'home' | 'tasks' | 'family' | 'progress'>('progress');
-
   // Computed values
-  protected readonly sidebarUser = computed<SidebarUser>(() => {
-    const user = this.authService.currentUser();
-    return {
-      name: user?.email.split('@')[0] || 'User',
-      avatar: '',
-      household: this.householdName(),
-    };
-  });
-
   protected readonly hasLeaderboard = computed(() => this.leaderboard().length > 0);
   protected readonly hasAchievements = computed(() => this.achievements().length > 0);
 
@@ -203,7 +173,7 @@ export class Progress implements OnInit {
         id: '1',
         name: 'Getting Started',
         description: 'Complete all tasks for 1 day',
-        icon: '⭐',
+        icon: 'star',
         unlocked: currentStreak >= 1 || longestStreak >= 1,
         progress: Math.min(100, (Math.max(currentStreak, longestStreak) / 1) * 100),
         criteria: '1 day streak',
@@ -212,7 +182,7 @@ export class Progress implements OnInit {
         id: '2',
         name: 'Early Bird',
         description: 'Complete all tasks 5 days in a row',
-        icon: '🐦',
+        icon: 'bird',
         unlocked: longestStreak >= 5,
         progress: Math.min(100, (longestStreak / 5) * 100),
         criteria: '5 day streak',
@@ -221,7 +191,7 @@ export class Progress implements OnInit {
         id: '3',
         name: 'Week Warrior',
         description: '7 day completion streak',
-        icon: '🔥',
+        icon: 'fire',
         unlocked: longestStreak >= 7,
         progress: Math.min(100, (longestStreak / 7) * 100),
         criteria: '7 day streak',
@@ -230,7 +200,7 @@ export class Progress implements OnInit {
         id: '4',
         name: 'Consistent Champion',
         description: '14 day completion streak',
-        icon: '🏆',
+        icon: 'trophy',
         unlocked: longestStreak >= 14,
         progress: Math.min(100, (longestStreak / 14) * 100),
         criteria: '14 day streak',
@@ -239,7 +209,7 @@ export class Progress implements OnInit {
         id: '5',
         name: 'Streak Master',
         description: '30 day completion streak',
-        icon: '💯',
+        icon: 'hundred',
         unlocked: longestStreak >= 30,
         progress: Math.min(100, (longestStreak / 30) * 100),
         criteria: '30 day streak',
@@ -248,7 +218,7 @@ export class Progress implements OnInit {
         id: '6',
         name: 'Legend',
         description: '60 day completion streak',
-        icon: '🌟',
+        icon: 'sparkle',
         unlocked: longestStreak >= 60,
         progress: Math.min(100, (longestStreak / 60) * 100),
         criteria: '60 day streak',
@@ -281,87 +251,13 @@ export class Progress implements OnInit {
   protected getMedalForRank(rank: number): string {
     switch (rank) {
       case 1:
-        return '🥇';
+        return '1st';
       case 2:
-        return '🥈';
+        return '2nd';
       case 3:
-        return '🥉';
+        return '3rd';
       default:
-        return `${rank}️⃣`;
+        return `${rank}th`;
     }
-  }
-
-  /**
-   * Handle navigation between screens
-   */
-  protected onNavigate(screen: 'home' | 'tasks' | 'family' | 'progress'): void {
-    const routes: Record<string, string> = {
-      home: '/home',
-      tasks: '/household/all-tasks',
-      family: '/family',
-      progress: '/progress',
-    };
-
-    const route = routes[screen];
-    if (route) {
-      this.router.navigate([route]);
-    }
-  }
-
-  /**
-   * Load children for quick-add modal
-   */
-  private async loadChildren(): Promise<void> {
-    const household = this.householdId();
-    if (!household) return;
-
-    try {
-      const childrenData = await this.childrenService.listChildren(household);
-      this.children.set(childrenData);
-    } catch (err) {
-      console.error('Failed to load children:', err);
-    }
-  }
-
-  /**
-   * Open quick-add modal
-   */
-  protected openQuickAdd(): void {
-    // Load children if not already loaded
-    if (this.children().length === 0) {
-      this.loadChildren();
-    }
-    this.quickAddOpen.set(true);
-  }
-
-  /**
-   * Close quick-add modal
-   */
-  protected closeQuickAdd(): void {
-    this.quickAddOpen.set(false);
-  }
-
-  /**
-   * Handle quick-add task creation
-   */
-  protected onTaskCreated(data: QuickAddTaskData): void {
-    const household = this.householdId();
-    if (!household) return;
-
-    this.taskService
-      .createTask(household, {
-        name: data.name,
-        points: data.points,
-        ruleType: 'daily', // Default to daily for quick-add
-      })
-      .subscribe({
-        next: () => {
-          this.quickAddOpen.set(false);
-        },
-        error: (err) => {
-          this.error.set('Failed to create task. Please try again.');
-          console.error('Create task error:', err);
-        },
-      });
   }
 }

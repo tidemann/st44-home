@@ -13,7 +13,6 @@ import { RewardService, ChildReward } from '../../services/reward.service';
  */
 @Component({
   selector: 'app-child-rewards',
-  standalone: true,
   imports: [CommonModule],
   templateUrl: './child-rewards.html',
   styleUrls: ['./child-rewards.css'],

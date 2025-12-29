@@ -6,10 +6,7 @@ import {
   inject,
   OnInit,
 } from '@angular/core';
-import { Router } from '@angular/router';
 import { MemberCard, type MemberCardData } from '../../components/member-card/member-card';
-import { BottomNav } from '../../components/navigation/bottom-nav/bottom-nav';
-import { SidebarNav } from '../../components/navigation/sidebar-nav/sidebar-nav';
 import {
   InviteModal,
   type InviteMemberData,
@@ -18,16 +15,8 @@ import {
   AddChildModal,
   type AddChildData,
 } from '../../components/modals/add-child-modal/add-child-modal';
-import {
-  QuickAddModal,
-  type QuickAddTaskData,
-} from '../../components/modals/quick-add-modal/quick-add-modal';
 import { HouseholdService } from '../../services/household.service';
 import { AuthService } from '../../services/auth.service';
-import { TaskService } from '../../services/task.service';
-import { ChildrenService } from '../../services/children.service';
-import type { SidebarUser } from '../../components/navigation/sidebar-nav/sidebar-nav';
-import type { Child } from '@st44/types';
 
 /**
  * Family Screen
@@ -39,20 +28,18 @@ import type { Child } from '@st44/types';
  * - Integration with invite-modal and add-child-modal for member management
  *
  * Design matches the "Diddit!" playful aesthetic from UX redesign.
+ * Navigation is handled by the parent MainLayout component.
  */
 @Component({
   selector: 'app-family',
-  imports: [MemberCard, BottomNav, SidebarNav, InviteModal, AddChildModal, QuickAddModal],
+  imports: [MemberCard, InviteModal, AddChildModal],
   templateUrl: './family.html',
   styleUrl: './family.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class Family implements OnInit {
-  private readonly router = inject(Router);
   private readonly householdService = inject(HouseholdService);
   private readonly authService = inject(AuthService);
-  private readonly taskService = inject(TaskService);
-  private readonly childrenService = inject(ChildrenService);
 
   // State signals
   protected readonly loading = signal(false);
@@ -62,28 +49,12 @@ export class Family implements OnInit {
   protected readonly householdId = signal<string | null>(null);
   protected readonly currentUserId = signal<string | null>(null);
 
-  // Children for quick-add modal
-  protected readonly children = signal<Child[]>([]);
-
   // Modal state
   protected readonly inviteModalOpen = signal(false);
   protected readonly addChildModalOpen = signal(false);
-  protected readonly quickAddOpen = signal(false);
-
-  // Navigation state
-  protected readonly activeScreen = signal<'home' | 'tasks' | 'family' | 'progress'>('family');
 
   // Computed values
   protected readonly memberCount = computed(() => this.members().length);
-
-  protected readonly sidebarUser = computed<SidebarUser>(() => {
-    const user = this.authService.currentUser();
-    return {
-      name: user?.email.split('@')[0] || 'User',
-      avatar: '', // Will use initials
-      household: this.householdName(),
-    };
-  });
 
   async ngOnInit(): Promise<void> {
     await this.loadData();
@@ -182,23 +153,6 @@ export class Family implements OnInit {
   }
 
   /**
-   * Handle navigation between screens
-   */
-  protected onNavigate(screen: 'home' | 'tasks' | 'family' | 'progress'): void {
-    const routes: Record<string, string> = {
-      home: '/home',
-      tasks: '/household/all-tasks',
-      family: '/family',
-      progress: '/progress',
-    };
-
-    const route = routes[screen];
-    if (route) {
-      this.router.navigate([route]);
-    }
-  }
-
-  /**
    * Open invite member modal
    */
   protected openInviteModal(): void {
@@ -224,62 +178,5 @@ export class Family implements OnInit {
    */
   protected closeAddChildModal(): void {
     this.addChildModalOpen.set(false);
-  }
-
-  /**
-   * Load children for quick-add modal
-   */
-  private async loadChildren(): Promise<void> {
-    const household = this.householdId();
-    if (!household) return;
-
-    try {
-      const childrenData = await this.childrenService.listChildren(household);
-      this.children.set(childrenData);
-    } catch (err) {
-      console.error('Failed to load children:', err);
-    }
-  }
-
-  /**
-   * Open quick-add modal
-   */
-  protected openQuickAdd(): void {
-    // Load children if not already loaded
-    if (this.children().length === 0) {
-      this.loadChildren();
-    }
-    this.quickAddOpen.set(true);
-  }
-
-  /**
-   * Close quick-add modal
-   */
-  protected closeQuickAdd(): void {
-    this.quickAddOpen.set(false);
-  }
-
-  /**
-   * Handle quick-add task creation
-   */
-  protected onTaskCreated(data: QuickAddTaskData): void {
-    const household = this.householdId();
-    if (!household) return;
-
-    this.taskService
-      .createTask(household, {
-        name: data.name,
-        points: data.points,
-        ruleType: 'daily', // Default to daily for quick-add
-      })
-      .subscribe({
-        next: () => {
-          this.quickAddOpen.set(false);
-        },
-        error: (err) => {
-          this.error.set('Failed to create task. Please try again.');
-          console.error('Create task error:', err);
-        },
-      });
   }
 }

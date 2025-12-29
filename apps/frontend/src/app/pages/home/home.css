@@ -1,7 +1,18 @@
 /**
  * Home/Dashboard Screen Styles
  * Diddit! Design System - Playful & Modern
+ *
+ * Note: Layout chrome (sidebar, bottom nav, FAB) is handled by MainLayout.
+ * This file only contains page-specific content styles.
  */
+
+/* ===== PAGE CONTAINER ===== */
+
+.home-page {
+  min-height: 100%;
+  background: var(--color-background);
+  animation: fadeIn 0.2s ease-out;
+}
 
 /* ===== LOADING & ERROR STATES ===== */
 
@@ -68,43 +79,6 @@
 .btn-retry:hover {
   transform: translateY(-2px);
   box-shadow: var(--shadow-md);
-}
-
-/* ===== MAIN LAYOUT ===== */
-
-.home-container {
-  display: flex;
-  min-height: 100vh;
-  background: var(--color-background);
-  animation: fadeIn 0.2s ease-out;
-}
-
-/* Sidebar (Desktop only) */
-.sidebar-container {
-  display: none;
-}
-
-@media (min-width: 1024px) {
-  .sidebar-container {
-    display: block;
-    width: 280px;
-    flex-shrink: 0;
-  }
-}
-
-/* Main Content Area */
-.main-content {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  overflow-y: auto;
-  padding-bottom: 80px; /* Space for bottom nav on mobile */
-}
-
-@media (min-width: 1024px) {
-  .main-content {
-    padding-bottom: 0;
-  }
 }
 
 /* ===== HEADER ===== */
@@ -248,64 +222,6 @@
   font-size: var(--font-size-base);
   color: var(--color-text-secondary);
   margin: 0;
-}
-
-/* ===== NAVIGATION ===== */
-
-.bottom-nav-container {
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  z-index: var(--z-navigation, 100);
-  display: block;
-}
-
-@media (min-width: 1024px) {
-  .bottom-nav-container {
-    display: none;
-  }
-}
-
-/* ===== FAB BUTTON ===== */
-
-.fab {
-  position: fixed;
-  bottom: 96px; /* Above bottom nav */
-  right: var(--space-md);
-  width: 56px;
-  height: 56px;
-  border-radius: var(--radius-full);
-  background: var(--gradient-primary);
-  color: white;
-  border: none;
-  font-size: 2rem;
-  font-weight: var(--font-weight-bold);
-  cursor: pointer;
-  box-shadow: var(--shadow-lg);
-  transition:
-    transform 0.2s,
-    box-shadow 0.2s;
-  z-index: var(--z-fab, 90);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  line-height: 1;
-}
-
-@media (min-width: 1024px) {
-  .fab {
-    display: none; /* Hide on desktop */
-  }
-}
-
-.fab:hover {
-  transform: scale(1.1);
-  box-shadow: var(--shadow-xl);
-}
-
-.fab:active {
-  transform: scale(0.95);
 }
 
 /* ===== ANIMATIONS ===== */

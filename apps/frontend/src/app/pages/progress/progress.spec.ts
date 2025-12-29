@@ -1,6 +1,5 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { Router } from '@angular/router';
 import { Progress } from './progress';
 import { AuthService } from '../../services/auth.service';
 import { HouseholdService } from '../../services/household.service';
@@ -10,7 +9,6 @@ import type { HouseholdAnalytics } from '@st44/types';
 describe('Progress', () => {
   let component: Progress;
   let fixture: ComponentFixture<Progress>;
-  let mockRouter: { navigate: ReturnType<typeof vi.fn> };
   let mockAuthService: { currentUser: ReturnType<typeof vi.fn> };
   let mockHouseholdService: { listHouseholds: ReturnType<typeof vi.fn> };
   let mockAnalyticsService: { getHouseholdAnalytics: ReturnType<typeof vi.fn> };
@@ -113,7 +111,6 @@ describe('Progress', () => {
   };
 
   beforeEach(async () => {
-    mockRouter = { navigate: vi.fn() };
     mockAuthService = {
       currentUser: vi.fn().mockReturnValue(mockUser),
     };
@@ -129,7 +126,6 @@ describe('Progress', () => {
     await TestBed.configureTestingModule({
       imports: [Progress],
       providers: [
-        { provide: Router, useValue: mockRouter },
         { provide: AuthService, useValue: mockAuthService },
         { provide: HouseholdService, useValue: mockHouseholdService },
         { provide: AnalyticsService, useValue: mockAnalyticsService },
@@ -157,10 +153,6 @@ describe('Progress', () => {
 
     it('should start with loading false to prevent flicker', () => {
       expect(component['loading']()).toBe(false);
-    });
-
-    it('should set active screen to progress', () => {
-      expect(component['activeScreen']()).toBe('progress');
     });
   });
 
@@ -291,58 +283,21 @@ describe('Progress', () => {
   });
 
   describe('getMedalForRank', () => {
-    it('should return gold medal for rank 1', () => {
-      expect(component['getMedalForRank'](1)).toBe('🥇');
+    it('should return 1st for rank 1', () => {
+      expect(component['getMedalForRank'](1)).toBe('1st');
     });
 
-    it('should return silver medal for rank 2', () => {
-      expect(component['getMedalForRank'](2)).toBe('🥈');
+    it('should return 2nd for rank 2', () => {
+      expect(component['getMedalForRank'](2)).toBe('2nd');
     });
 
-    it('should return bronze medal for rank 3', () => {
-      expect(component['getMedalForRank'](3)).toBe('🥉');
+    it('should return 3rd for rank 3', () => {
+      expect(component['getMedalForRank'](3)).toBe('3rd');
     });
 
-    it('should return number emoji for rank 4+', () => {
-      expect(component['getMedalForRank'](4)).toBe('4️⃣');
-      expect(component['getMedalForRank'](5)).toBe('5️⃣');
-    });
-  });
-
-  describe('navigation', () => {
-    it('should navigate to home route', () => {
-      component['onNavigate']('home');
-      expect(mockRouter.navigate).toHaveBeenCalledWith(['/home']);
-    });
-
-    it('should navigate to tasks route', () => {
-      component['onNavigate']('tasks');
-      expect(mockRouter.navigate).toHaveBeenCalledWith(['/household/all-tasks']);
-    });
-
-    it('should navigate to family route', () => {
-      component['onNavigate']('family');
-      expect(mockRouter.navigate).toHaveBeenCalledWith(['/family']);
-    });
-
-    it('should navigate to progress route', () => {
-      component['onNavigate']('progress');
-      expect(mockRouter.navigate).toHaveBeenCalledWith(['/progress']);
-    });
-  });
-
-  describe('sidebarUser computed', () => {
-    it('should compute sidebar user from current user', () => {
-      const sidebarUser = component['sidebarUser']();
-      expect(sidebarUser.name).toBe('test');
-      expect(sidebarUser.avatar).toBe('');
-      expect(sidebarUser.household).toBe('My Family');
-    });
-
-    it('should update when household name changes', async () => {
-      await component['loadData']();
-      const sidebarUser = component['sidebarUser']();
-      expect(sidebarUser.household).toBe('Test Family');
+    it('should return number with th suffix for rank 4+', () => {
+      expect(component['getMedalForRank'](4)).toBe('4th');
+      expect(component['getMedalForRank'](5)).toBe('5th');
     });
   });
 
