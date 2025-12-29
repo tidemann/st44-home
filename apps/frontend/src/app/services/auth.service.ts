@@ -3,6 +3,8 @@ import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { Observable, tap } from 'rxjs';
 import { environment } from '../../environments/environment.development';
+import { StorageService } from './storage.service';
+import { STORAGE_KEYS } from './storage-keys';
 
 export interface RegisterRequest {
   email: string;
@@ -45,6 +47,7 @@ interface DecodedToken {
 export class AuthService {
   private readonly http = inject(HttpClient);
   private readonly router = inject(Router);
+  private readonly storage = inject(StorageService);
   private readonly apiUrl = `${environment.apiUrl}/api/auth`;
 
   // Signals for reactive state
@@ -58,7 +61,8 @@ export class AuthService {
 
   private checkAuthStatus(): void {
     const accessToken =
-      localStorage.getItem('accessToken') || sessionStorage.getItem('accessToken');
+      this.storage.getString(STORAGE_KEYS.ACCESS_TOKEN) ||
+      sessionStorage.getItem(STORAGE_KEYS.ACCESS_TOKEN);
     if (accessToken) {
       // Decode JWT to get user info including role
       const user = this.decodeToken(accessToken);
@@ -120,14 +124,17 @@ export class AuthService {
       .pipe(
         tap((response) => {
           // Store tokens based on rememberMe preference
-          const storage = rememberMe ? localStorage : sessionStorage;
-          storage.setItem('accessToken', response.accessToken);
-          storage.setItem('refreshToken', response.refreshToken);
-
-          // Clear tokens from other storage
-          const otherStorage = rememberMe ? sessionStorage : localStorage;
-          otherStorage.removeItem('accessToken');
-          otherStorage.removeItem('refreshToken');
+          if (rememberMe) {
+            this.storage.set(STORAGE_KEYS.ACCESS_TOKEN, response.accessToken);
+            this.storage.set(STORAGE_KEYS.REFRESH_TOKEN, response.refreshToken);
+            sessionStorage.removeItem(STORAGE_KEYS.ACCESS_TOKEN);
+            sessionStorage.removeItem(STORAGE_KEYS.REFRESH_TOKEN);
+          } else {
+            sessionStorage.setItem(STORAGE_KEYS.ACCESS_TOKEN, response.accessToken);
+            sessionStorage.setItem(STORAGE_KEYS.REFRESH_TOKEN, response.refreshToken);
+            this.storage.remove(STORAGE_KEYS.ACCESS_TOKEN);
+            this.storage.remove(STORAGE_KEYS.REFRESH_TOKEN);
+          }
 
           // Decode token to get user info with role
           const user = this.decodeToken(response.accessToken);
@@ -147,12 +154,12 @@ export class AuthService {
       .pipe(
         tap((response) => {
           // Always use localStorage for OAuth (remember user)
-          localStorage.setItem('accessToken', response.accessToken);
-          localStorage.setItem('refreshToken', response.refreshToken);
+          this.storage.set(STORAGE_KEYS.ACCESS_TOKEN, response.accessToken);
+          this.storage.set(STORAGE_KEYS.REFRESH_TOKEN, response.refreshToken);
 
           // Clear session storage
-          sessionStorage.removeItem('accessToken');
-          sessionStorage.removeItem('refreshToken');
+          sessionStorage.removeItem(STORAGE_KEYS.ACCESS_TOKEN);
+          sessionStorage.removeItem(STORAGE_KEYS.REFRESH_TOKEN);
 
           // Decode token to get user info with role
           const user = this.decodeToken(response.accessToken);
@@ -166,13 +173,13 @@ export class AuthService {
 
   logout(): void {
     // Clear tokens from both storages
-    localStorage.removeItem('accessToken');
-    localStorage.removeItem('refreshToken');
-    sessionStorage.removeItem('accessToken');
-    sessionStorage.removeItem('refreshToken');
+    this.storage.remove(STORAGE_KEYS.ACCESS_TOKEN);
+    this.storage.remove(STORAGE_KEYS.REFRESH_TOKEN);
+    sessionStorage.removeItem(STORAGE_KEYS.ACCESS_TOKEN);
+    sessionStorage.removeItem(STORAGE_KEYS.REFRESH_TOKEN);
 
     // Clear household context
-    localStorage.removeItem('activeHouseholdId');
+    this.storage.remove(STORAGE_KEYS.ACTIVE_HOUSEHOLD_ID);
 
     // Clear state
     this.currentUser.set(null);
@@ -183,11 +190,17 @@ export class AuthService {
   }
 
   getAccessToken(): string | null {
-    return localStorage.getItem('accessToken') || sessionStorage.getItem('accessToken');
+    return (
+      this.storage.getString(STORAGE_KEYS.ACCESS_TOKEN) ||
+      sessionStorage.getItem(STORAGE_KEYS.ACCESS_TOKEN)
+    );
   }
 
   getRefreshToken(): string | null {
-    return localStorage.getItem('refreshToken') || sessionStorage.getItem('refreshToken');
+    return (
+      this.storage.getString(STORAGE_KEYS.REFRESH_TOKEN) ||
+      sessionStorage.getItem(STORAGE_KEYS.REFRESH_TOKEN)
+    );
   }
 
   /**

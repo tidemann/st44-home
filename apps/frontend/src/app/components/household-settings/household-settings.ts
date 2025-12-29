@@ -17,6 +17,8 @@ import {
 import { ChildrenManagementComponent } from '../children-management/children-management';
 import { InviteUserComponent } from '../invite-user/invite-user';
 import { InvitationsSentListComponent } from '../invitations-sent-list/invitations-sent-list';
+import { StorageService } from '../../services/storage.service';
+import { STORAGE_KEYS } from '../../services/storage-keys';
 
 @Component({
   selector: 'app-household-settings',
@@ -32,9 +34,10 @@ import { InvitationsSentListComponent } from '../invitations-sent-list/invitatio
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class HouseholdSettingsComponent implements OnInit {
-  private fb = inject(FormBuilder);
-  private router = inject(Router);
-  private householdService = inject(HouseholdService);
+  private readonly fb = inject(FormBuilder);
+  private readonly router = inject(Router);
+  private readonly householdService = inject(HouseholdService);
+  private readonly storage = inject(StorageService);
 
   household = signal<HouseholdListItem | null>(null);
   members = signal<HouseholdMember[]>([]);
@@ -145,7 +148,9 @@ export class HouseholdSettingsComponent implements OnInit {
   private getCurrentUserId(): string {
     // TODO: Get from auth service when available
     // For now, decode from JWT
-    const token = localStorage.getItem('accessToken') || sessionStorage.getItem('accessToken');
+    const token =
+      this.storage.getString(STORAGE_KEYS.ACCESS_TOKEN) ||
+      sessionStorage.getItem(STORAGE_KEYS.ACCESS_TOKEN);
     if (!token) return '';
 
     try {
