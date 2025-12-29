@@ -1,5 +1,6 @@
 import { getISOWeek } from 'date-fns';
 import { db } from '../database.js';
+import type { PoolClient } from '../types/database.js';
 
 export interface AssignmentGenerationResult {
   created: number;
@@ -214,7 +215,7 @@ async function generateAssignmentsForTask(
   task: Task,
   dates: Date[],
   householdId: string,
-  client: any,
+  client: PoolClient,
 ): Promise<PendingAssignment[]> {
   const assignments: PendingAssignment[] = [];
 
@@ -324,7 +325,7 @@ async function generateWeeklyRotationAssignments(
   task: Task,
   dates: Date[],
   householdId: string,
-  client: any,
+  client: PoolClient,
 ): Promise<PendingAssignment[]> {
   const assignments: PendingAssignment[] = [];
   const rotationType = task.rule_config.rotation_type;

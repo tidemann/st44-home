@@ -10,6 +10,8 @@ import {
   type Reward,
   type RewardRedemption,
   type ChildPointsBalance,
+  type CreateRewardRequest,
+  type UpdateRewardRequest,
 } from '@st44/types';
 import { z, zodToOpenAPI, CommonErrors } from '@st44/types/generators';
 import { db } from '../database.js';
@@ -20,6 +22,11 @@ import {
 } from '../middleware/household-membership.js';
 import { validateRequest, handleZodError } from '../utils/validation.js';
 import { stripResponseValidation } from '../schemas/common.js';
+import type {
+  RewardRow,
+  RewardRedemptionRow,
+  RewardRedemptionWithDetailsRow,
+} from '../types/database.js';
 
 interface HouseholdParams {
   householdId: string;
@@ -46,7 +53,7 @@ function toDateTimeString(value: unknown): string {
   return new Date(String(value)).toISOString();
 }
 
-function mapRewardRowToReward(row: any): Reward {
+function mapRewardRowToReward(row: RewardRow): Reward {
   return {
     id: row.id,
     householdId: row.household_id,
@@ -60,7 +67,7 @@ function mapRewardRowToReward(row: any): Reward {
   };
 }
 
-function mapRedemptionRowToRedemption(row: any): RewardRedemption {
+function mapRedemptionRowToRedemption(row: RewardRedemptionRow): RewardRedemption {
   return {
     id: row.id,
     householdId: row.household_id,
@@ -78,7 +85,7 @@ function mapRedemptionRowToRedemption(row: any): RewardRedemption {
  * Requires parent or admin role
  */
 async function createReward(
-  request: FastifyRequest<{ Params: HouseholdParams; Body: any }>,
+  request: FastifyRequest<{ Params: HouseholdParams; Body: CreateRewardRequest }>,
   reply: FastifyReply,
 ) {
   const { householdId } = request.params;
@@ -187,7 +194,7 @@ async function getReward(request: FastifyRequest<{ Params: RewardParams }>, repl
  * Requires parent or admin role
  */
 async function updateReward(
-  request: FastifyRequest<{ Params: RewardParams; Body: any }>,
+  request: FastifyRequest<{ Params: RewardParams; Body: UpdateRewardRequest }>,
   reply: FastifyReply,
 ) {
   const { householdId, rewardId } = request.params;

@@ -4,10 +4,17 @@
  */
 
 /**
+ * Schema with optional response property (used by Fastify route schemas)
+ */
+interface SchemaWithResponse {
+  response?: Record<string | number, unknown>;
+}
+
+/**
  * Remove response validation from schemas in test environment
  * This allows tests to pass while keeping documentation schemas intact for production
  */
-export function stripResponseValidation<T extends { response?: any }>(schema: T): T {
+export function stripResponseValidation<T extends SchemaWithResponse>(schema: T): T {
   if (process.env.NODE_ENV === 'test' && schema.response) {
     const { response, ...rest } = schema;
     return rest as T;

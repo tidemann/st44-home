@@ -19,6 +19,7 @@ import {
 } from '../middleware/household-membership.js';
 import { validateRequest, handleZodError } from '../utils/validation.js';
 import { stripResponseValidation } from '../schemas/common.js';
+import type { TaskRow } from '../types/database.js';
 
 interface HouseholdParams {
   householdId: string;
@@ -121,7 +122,7 @@ function toDateTimeString(value: unknown): string {
   return new Date(String(value)).toISOString();
 }
 
-function mapTaskRowToTask(row: any): Task {
+function mapTaskRowToTask(row: TaskRow): Task {
   const normalizedRuleConfig = normalizeRuleConfig(row.rule_config);
 
   return {
