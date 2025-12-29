@@ -1,7 +1,8 @@
-import Fastify, { FastifyRequest, FastifyReply } from 'fastify';
+import Fastify, { FastifyRequest, FastifyReply, FastifyError } from 'fastify';
 import cors from '@fastify/cors';
 import swagger from '@fastify/swagger';
 import swaggerUi from '@fastify/swagger-ui';
+import { z } from 'zod';
 import { pool } from './database.js';
 import authRoutes from './routes/auth.js';
 import householdRoutes from './routes/households.js';
@@ -14,6 +15,8 @@ import rewardRoutes from './routes/rewards.js';
 import statsRoutes from './routes/stats.js';
 import userRoutes from './routes/user.js';
 import { healthCheckSchema } from './schemas/auth.js';
+import { isBaseError, InternalError } from './errors/index.js';
+import type { ErrorResponse } from './types/error-response.js';
 
 // Extend FastifyRequest type to include user info
 declare module 'fastify' {
@@ -36,6 +39,98 @@ async function buildApp() {
   await fastify.register(cors, {
     origin: process.env.CORS_ORIGIN || '*',
   });
+
+  // Global error handler - centralized error handling for all routes
+  fastify.setErrorHandler(
+    (error: FastifyError | Error, request: FastifyRequest, reply: FastifyReply) => {
+      const isProduction = process.env.NODE_ENV === 'production';
+
+      // Handle custom BaseError instances (our error classes)
+      if (isBaseError(error)) {
+        // Log error with request context
+        request.log.error(
+          {
+            err: error,
+            errorType: error.errorType,
+            statusCode: error.statusCode,
+            requestId: request.id,
+            method: request.method,
+            url: request.url,
+          },
+          error.message,
+        );
+
+        const response: ErrorResponse = error.toJSON();
+        return reply.code(error.statusCode).send(response);
+      }
+
+      // Handle Zod validation errors
+      if (error instanceof z.ZodError) {
+        request.log.warn(
+          {
+            err: error,
+            requestId: request.id,
+            method: request.method,
+            url: request.url,
+          },
+          'Validation error',
+        );
+
+        const response: ErrorResponse = {
+          error: 'VALIDATION_ERROR',
+          message: 'Validation failed',
+          statusCode: 400,
+          details: {
+            validationErrors: error.issues.map((issue) => ({
+              path: issue.path.join('.'),
+              message: issue.message,
+            })),
+          },
+        };
+        return reply.code(400).send(response);
+      }
+
+      // Handle Fastify-specific errors (e.g., schema validation)
+      if ('statusCode' in error && typeof error.statusCode === 'number') {
+        request.log.error(
+          {
+            err: error,
+            statusCode: error.statusCode,
+            requestId: request.id,
+            method: request.method,
+            url: request.url,
+          },
+          error.message,
+        );
+
+        const response: ErrorResponse = {
+          error: error.code || 'REQUEST_ERROR',
+          message: isProduction ? 'Request failed' : error.message,
+          statusCode: error.statusCode,
+        };
+        return reply.code(error.statusCode).send(response);
+      }
+
+      // Handle unexpected errors (500)
+      request.log.error(
+        {
+          err: error,
+          requestId: request.id,
+          method: request.method,
+          url: request.url,
+          stack: error.stack,
+        },
+        'Unhandled error',
+      );
+
+      const response: ErrorResponse = {
+        error: 'INTERNAL_ERROR',
+        message: isProduction ? 'Internal server error' : error.message,
+        statusCode: 500,
+      };
+      return reply.code(500).send(response);
+    },
+  );
 
   // Register Swagger for API documentation (skip in test environment)
   if (process.env.NODE_ENV !== 'test') {
@@ -101,28 +196,30 @@ async function buildApp() {
   await fastify.register(statsRoutes);
   await fastify.register(userRoutes);
 
-  // Example items endpoint
+  // Example items endpoint - demonstrates new error handling pattern
   interface Item {
     id: number;
     title: string;
     description: string | null;
-    created_at: Date;
-    updated_at: Date;
+    createdAt: Date;
+    updatedAt: Date;
   }
 
-  fastify.get<{ Reply: { items: Item[] } | { error: string } }>(
-    '/api/items',
-    async (request, reply) => {
-      try {
-        const result = await pool.query<Item>('SELECT * FROM items ORDER BY created_at DESC');
-        return { items: result.rows };
-      } catch (error) {
-        fastify.log.error(error);
-        reply.code(500);
-        return { error: 'Failed to fetch items' };
-      }
-    },
-  );
+  fastify.get<{ Reply: { items: Item[] } }>('/api/items', async () => {
+    // With global error handler, we can throw errors directly
+    // No try-catch needed - errors bubble up to the global handler
+    try {
+      const result = await pool.query<Item>(
+        `SELECT id, title, description,
+           created_at as "createdAt", updated_at as "updatedAt"
+           FROM items ORDER BY created_at DESC`,
+      );
+      return { items: result.rows };
+    } catch (error) {
+      // Wrap unexpected errors with context
+      throw InternalError.wrap(error, 'Failed to fetch items');
+    }
+  });
 
   // Health Check Endpoints
 
