@@ -1,6 +1,8 @@
 import { Injectable, signal, computed, inject } from '@angular/core';
 import type { Household, CreateHouseholdRequest, UpdateHouseholdRequest } from '@st44/types';
 import { ApiService } from './api.service';
+import { StorageService } from './storage.service';
+import { STORAGE_KEYS } from './storage-keys';
 
 /**
  * Enriched Household response from list/get endpoints
@@ -41,7 +43,8 @@ export interface HouseholdMember {
   providedIn: 'root',
 })
 export class HouseholdService {
-  private apiService = inject(ApiService);
+  private readonly apiService = inject(ApiService);
+  private readonly storage = inject(StorageService);
 
   // Active household ID stored in localStorage
   private activeHouseholdId = signal<string | null>(this.getStoredHouseholdId());
@@ -58,11 +61,11 @@ export class HouseholdService {
 
   setActiveHousehold(householdId: string): void {
     this.activeHouseholdId.set(householdId);
-    localStorage.setItem('activeHouseholdId', householdId);
+    this.storage.set(STORAGE_KEYS.ACTIVE_HOUSEHOLD_ID, householdId);
   }
 
   private getStoredHouseholdId(): string | null {
-    return localStorage.getItem('activeHouseholdId');
+    return this.storage.getString(STORAGE_KEYS.ACTIVE_HOUSEHOLD_ID);
   }
 
   async createHousehold(name: string): Promise<Household> {

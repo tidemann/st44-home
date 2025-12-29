@@ -16,6 +16,8 @@ import {
 } from '../../components/modals/edit-task-modal/edit-task-modal';
 import type { Task, Child } from '@st44/types';
 import { ApiService } from '../../services/api.service';
+import { StorageService } from '../../services/storage.service';
+import { STORAGE_KEYS } from '../../services/storage-keys';
 
 /**
  * Filter types for task display
@@ -50,6 +52,7 @@ export class Tasks {
   private readonly taskService = inject(TaskService);
   private readonly authService = inject(AuthService);
   private readonly apiService = inject(ApiService);
+  private readonly storage = inject(StorageService);
   private readonly router = inject(Router);
   private readonly route = inject(ActivatedRoute);
 
@@ -107,7 +110,7 @@ export class Tasks {
    * Active household ID from localStorage
    */
   protected readonly householdId = computed(() => {
-    return localStorage.getItem('activeHouseholdId') || '';
+    return this.storage.getString(STORAGE_KEYS.ACTIVE_HOUSEHOLD_ID) || '';
   });
 
   /**
@@ -180,7 +183,9 @@ export class Tasks {
     effect(
       () => {
         const queryFilter = this.route.snapshot.queryParams['filter'] as TaskFilter | undefined;
-        const savedFilter = localStorage.getItem('tasksFilter') as TaskFilter | undefined;
+        const savedFilter = this.storage.getString(STORAGE_KEYS.TASKS_FILTER) as
+          | TaskFilter
+          | undefined;
         const initialFilter = queryFilter || savedFilter || 'all';
 
         if (initialFilter && ['all', 'mine', 'person', 'completed'].includes(initialFilter)) {
@@ -196,7 +201,7 @@ export class Tasks {
     // Persist filter changes to localStorage and URL
     effect(() => {
       const filter = this.activeFilter();
-      localStorage.setItem('tasksFilter', filter);
+      this.storage.set(STORAGE_KEYS.TASKS_FILTER, filter);
 
       // Update URL query params
       this.router.navigate([], {

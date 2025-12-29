@@ -2,16 +2,21 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { firstValueFrom } from 'rxjs';
 import { environment } from '../../environments/environment.development';
+import { StorageService } from './storage.service';
+import { STORAGE_KEYS } from './storage-keys';
 
 @Injectable({
   providedIn: 'root',
 })
 export class ApiService {
   private readonly http = inject(HttpClient);
+  private readonly storage = inject(StorageService);
   private readonly baseUrl = `${environment.apiUrl}/api`;
 
   private getHeaders(includeContentType = true): HttpHeaders {
-    const token = localStorage.getItem('accessToken') || sessionStorage.getItem('accessToken');
+    const token =
+      this.storage.getString(STORAGE_KEYS.ACCESS_TOKEN) ||
+      sessionStorage.getItem(STORAGE_KEYS.ACCESS_TOKEN);
 
     let headers = new HttpHeaders();
 
