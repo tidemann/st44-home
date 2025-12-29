@@ -1,12 +1,12 @@
 ---
 name: testing-infrastructure
-description: Angular testing infrastructure - fixtures, mocks, component harness, and test utilities to eliminate duplication
+description: Angular 21+ testing infrastructure with fixtures, ng-mocks, component harness, AAA pattern, and Jest best practices for eliminating duplication
 allowed-tools: Read, Write, Edit, Glob, Grep
 ---
 
 # Testing Infrastructure Skill
 
-Expert in creating shared testing infrastructure for Angular applications.
+Expert in creating shared testing infrastructure for Angular 21+ applications with modern best practices.
 
 ## When to Use This Skill
 
@@ -14,9 +14,78 @@ Use this skill when:
 
 - Setting up shared test fixtures and factories
 - Creating component test harness
-- Building mock services and utilities
+- Building mock services with ng-mocks
 - Eliminating duplicate test setup code
 - Standardizing test patterns across the codebase
+- Implementing AAA (Arrange-Act-Assert) pattern
+- Migrating from Jasmine to Jest
+
+## Angular Testing Best Practices (2025)
+
+### AAA Pattern (Arrange-Act-Assert)
+
+The **recommended default pattern** for Angular component tests:
+
+```typescript
+it('should update task status', () => {
+  // Arrange - Set up test data and initial state
+  const task = createMockTask({ status: 'pending' });
+  component.task = task;
+  fixture.detectChanges();
+
+  // Act - Perform the action being tested
+  component.completeTask();
+
+  // Assert - Verify the expected outcome
+  expect(component.task().status).toBe('completed');
+});
+```
+
+**Benefits**: Clear structure, reduces false positives, easier to maintain.
+
+### Testing Framework: Jest vs Jasmine
+
+**Jest Recommended** for complex asynchronous flows:
+
+- **Parallel test execution** - Faster feedback loops
+- **Built-in mocks** - No need for spy libraries
+- **Snapshot testing** - UI regression detection
+- **Better developer experience** - Watch mode, clear output
+
+**Migration**: Use `jest-preset-angular` for legacy Jasmine projects.
+
+### ng-mocks Library (Essential for 2025)
+
+**Why ng-mocks?** Drastically simplifies mocking Angular modules, components, and services.
+
+**Benefits**:
+
+- Eliminates boilerplate in TestBed setup
+- Auto-mocks dependencies
+- MockBuilder for easy configuration
+- MockInstance for runtime customization
+- MockRender for realistic component testing
+
+**Installation**:
+
+```bash
+npm install ng-mocks --save-dev
+```
+
+### Global Configuration (src/test.ts)
+
+```typescript
+import { ngMocks } from 'ng-mocks';
+
+// Auto-spy setup
+ngMocks.autoSpy('jasmine'); // or 'jest'
+
+// Default mock customization
+ngMocks.defaultMock(HttpClient, () => ({
+  get: () => of([]),
+  post: () => of({}),
+}));
+```
 
 ## Problem Statement
 
@@ -28,7 +97,7 @@ Use this skill when:
 - Repetitive TestBed configuration
 - Inconsistent test patterns
 
-**Solution**: Centralized testing infrastructure
+**Solution**: Centralized testing infrastructure + ng-mocks
 
 ## Folder Structure
 
@@ -444,6 +513,127 @@ export const getAllByTestId = (container: HTMLElement, testId: string): HTMLElem
 };
 ```
 
+## ng-mocks Patterns (2025)
+
+### MockBuilder (Easiest Way to Mock)
+
+Replace repetitive TestBed configuration with MockBuilder:
+
+```typescript
+import { MockBuilder, MockRender } from 'ng-mocks';
+import { TaskListComponent } from './task-list.component';
+import { TaskService } from '../services/task.service';
+
+describe('TaskListComponent with MockBuilder', () => {
+  beforeEach(() => {
+    // Mock everything except the component being tested
+    return MockBuilder(TaskListComponent).mock(TaskService, {
+      getTasks: () => of([createMockTask()]),
+    });
+  });
+
+  it('should display tasks', () => {
+    const fixture = MockRender(TaskListComponent);
+    expect(fixture.nativeElement.textContent).toContain('Test Task');
+  });
+});
+```
+
+### MockInstance (Runtime Configuration)
+
+Configure mocks before initialization:
+
+```typescript
+import { MockBuilder, MockInstance, MockRender } from 'ng-mocks';
+
+describe('TaskComponent with MockInstance', () => {
+  beforeEach(() => MockBuilder(TaskComponent));
+
+  beforeAll(() => {
+    // Global mock configuration
+    MockInstance(TaskService, () => ({
+      getTasks: () => of([]),
+      createTask: jasmine.createSpy(),
+    }));
+  });
+
+  afterAll(MockInstance.restore); // Clean up
+
+  it('should use mocked service', () => {
+    const fixture = MockRender(TaskComponent);
+    const service = fixture.point.injector.get(TaskService);
+    expect(service.getTasks).toBeDefined();
+  });
+});
+```
+
+### MockRender (Advanced Component Testing)
+
+Respects all lifecycle hooks and OnPush change detection:
+
+```typescript
+import { MockBuilder, MockRender } from 'ng-mocks';
+
+describe('TaskCardComponent', () => {
+  beforeEach(() => MockBuilder(TaskCardComponent));
+
+  it('should display task with input', () => {
+    const task = createMockTask({ name: 'My Task' });
+
+    // MockRender creates wrapper component and respects all hooks
+    const fixture = MockRender(TaskCardComponent, {
+      task, // Pass input
+    });
+
+    expect(fixture.nativeElement.textContent).toContain('My Task');
+  });
+
+  it('should emit output event', () => {
+    const onComplete = jasmine.createSpy();
+    const fixture = MockRender(
+      `<app-task-card [task]="task" (complete)="onComplete($event)"></app-task-card>`,
+      {
+        task: createMockTask(),
+        onComplete,
+      },
+    );
+
+    // Trigger complete
+    fixture.point.componentInstance.complete.emit('task-1');
+    expect(onComplete).toHaveBeenCalledWith('task-1');
+  });
+});
+```
+
+### Mock Components and Directives
+
+```typescript
+import { MockBuilder, MockComponents } from 'ng-mocks';
+
+describe('ParentComponent', () => {
+  beforeEach(
+    () =>
+      MockBuilder(ParentComponent)
+        .mock(ChildComponent) // Auto-mock child
+        .mock(SomeDirective), // Auto-mock directive
+  );
+
+  it('should render with mocked children', () => {
+    const fixture = MockRender(ParentComponent);
+    // Child components are mocked, no need to set up their dependencies
+    expect(fixture.nativeElement).toBeTruthy();
+  });
+});
+```
+
+### ng-mocks Best Practices
+
+1. **Use MockBuilder** instead of TestBed.configureTestingModule
+2. **Use MockRender** instead of TestBed.createComponent
+3. **Configure globally** with MockInstance for repeated mocks
+4. **Clean up** with MockInstance.restore() in afterAll
+5. **Mock components** to avoid dependency chains
+
 ## Usage Examples
 
 ### Using Fixtures
@@ -722,7 +912,45 @@ Before marking testing infrastructure complete:
 - [ ] No duplicated TestBed setup
 - [ ] All tests pass with new infrastructure
 
-## Reference
+## References
+
+### Project-Specific
 
 - GitHub Issue #261: Testing Infrastructure
 - `.github/agents/frontend-agent.md`: Complete frontend patterns
+- `.claude/skills/state-management/SKILL.md`: State patterns for testing
+- `.claude/skills/http-interceptors/SKILL.md`: HTTP mocking patterns
+
+### Angular Testing (2025)
+
+**Official Documentation:**
+
+- [Angular Testing Guide](https://angular.dev/guide/testing) - Official testing documentation
+- [Angular Testing Components](https://angular.dev/guide/testing/components) - Component testing guide
+- [Angular Testing Services](https://angular.dev/guide/testing/services) - Service testing patterns
+
+**ng-mocks Library:**
+
+- [ng-mocks Documentation](https://ng-mocks.sudo.eu/) - Official ng-mocks docs
+- [ng-mocks GitHub](https://github.com/help-me-mom/ng-mocks) - Source code and examples
+- [MockBuilder API](https://ng-mocks.sudo.eu/api/MockBuilder) - Simplified test configuration
+- [MockRender API](https://ng-mocks.sudo.eu/api/MockRender) - Advanced component rendering
+- [MockInstance API](https://ng-mocks.sudo.eu/api/MockInstance) - Runtime mock configuration
+
+**Jest Migration:**
+
+- [Jest Official Docs](https://jestjs.io/docs/getting-started) - Jest documentation
+- [Angular Jest Setup](https://thymikee.github.io/jest-preset-angular/) - jest-preset-angular
+- [Jest vs Jasmine](https://blog.angular.dev/moving-angular-cli-to-jest-and-web-test-runner-ef85ef69ceca) - Angular team on Jest adoption
+
+**Testing Best Practices:**
+
+- [AAA Pattern in Testing](https://automationpanda.com/2020/07/07/arrange-act-assert-a-pattern-for-writing-good-tests/) - Arrange-Act-Assert explained
+- [Component Harness Pattern](https://material.angular.io/cdk/test-harnesses/overview) - Angular CDK Test Harnesses
+- [Testing Asynchronous Code](https://angular.dev/guide/testing/async) - Async testing patterns
+
+**Advanced Topics:**
+
+- [Test Doubles](https://martinfowler.com/bliki/TestDouble.html) - Martin Fowler on mocks, stubs, fakes
+- [Testing Best Practices](https://testingjavascript.com/) - Testing JavaScript applications
+- [Component Testing Strategies](https://angular.dev/guide/testing/components-scenarios) - Common testing scenarios
