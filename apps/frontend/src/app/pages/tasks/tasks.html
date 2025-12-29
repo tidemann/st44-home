@@ -71,8 +71,10 @@
             [task]="task"
             [showCompleteButton]="true"
             [clickable]="true"
+            [showReassignButton]="activeFilter() !== 'all'"
             (complete)="onTaskComplete($event)"
             (edit)="onTaskEdit($event)"
+            (reassign)="onTaskReassign($event)"
           />
         }
       }
@@ -86,5 +88,15 @@
     (closeRequested)="onModalClose()"
     (taskUpdated)="onTaskUpdate($event)"
     (taskDeleted)="onTaskDelete()"
+  />
+
+  <!-- Reassign Task Modal -->
+  <app-reassign-task-modal
+    [open]="reassignModalOpen()"
+    [taskName]="reassigningAssignment()?.title ?? ''"
+    [currentChildId]="reassigningAssignment()?.childId ?? null"
+    [children]="members()"
+    (closeRequested)="onReassignModalClose()"
+    (reassigned)="onReassignConfirm($event)"
   />
 </div>

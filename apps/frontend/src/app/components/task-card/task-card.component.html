@@ -47,4 +47,17 @@
       <span class="points">{{ taskPoints() }}</span>
     </div>
   }
+
+  <!-- Reassign Button (for assignments only) -->
+  @if (showReassignButton() && isAssignment() && !completed()) {
+    <button
+      class="task-reassign-btn"
+      (click)="onReassignClick($event)"
+      [attr.aria-label]="'Reassign ' + taskName()"
+      type="button"
+      title="Reassign to another child"
+    >
+      <span class="reassign-icon">🔄</span>
+    </button>
+  }
 </div>

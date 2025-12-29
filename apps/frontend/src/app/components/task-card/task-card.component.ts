@@ -103,6 +103,11 @@ export class TaskCardComponent {
   });
 
   /**
+   * Whether to show the reassign button (for assignments only)
+   */
+  showReassignButton = input<boolean>(false);
+
+  /**
    * Event emitted when user clicks the complete button
    */
   complete = output<string>();
@@ -111,6 +116,11 @@ export class TaskCardComponent {
    * Event emitted when user clicks the task card to edit
    */
   edit = output<string>();
+
+  /**
+   * Event emitted when user clicks the reassign button
+   */
+  reassign = output<string>();
 
   /**
    * Handle completion button click
@@ -137,5 +147,13 @@ export class TaskCardComponent {
       event.preventDefault();
       this.edit.emit(this.task().id);
     }
+  }
+
+  /**
+   * Handle reassign button click
+   */
+  onReassignClick(event: Event): void {
+    event.stopPropagation();
+    this.reassign.emit(this.task().id);
   }
 }

@@ -1,0 +1,43 @@
+<app-modal [open]="open()" (closeRequested)="onCancel()" title="Reassign Task">
+  <div class="reassign-form">
+    <p class="reassign-description">
+      Reassign <strong>{{ taskName() }}</strong> to a different child.
+    </p>
+
+    @if (error()) {
+      <div class="error-message" role="alert">
+        {{ error() }}
+      </div>
+    }
+
+    <div class="form-group">
+      <label for="child-select">Select Child</label>
+      <select
+        id="child-select"
+        name="childId"
+        [ngModel]="selectedChildId()"
+        (ngModelChange)="onChildChange($event)"
+        required
+      >
+        <option value="" disabled selected>Choose a child...</option>
+        @for (child of children(); track child.id) {
+          @if (child.id !== currentChildId()) {
+            <option [value]="child.id">{{ child.name }}</option>
+          }
+        }
+      </select>
+    </div>
+
+    <div class="form-actions">
+      <button type="button" class="btn btn-secondary" (click)="onCancel()">Cancel</button>
+      <button
+        type="button"
+        class="btn btn-primary"
+        (click)="onSubmit()"
+        [disabled]="!selectedChildId()"
+      >
+        Reassign
+      </button>
+    </div>
+  </div>
+</app-modal>

@@ -14,7 +14,8 @@ import {
   EditTaskModal,
   type EditTaskData,
 } from '../../components/modals/edit-task-modal/edit-task-modal';
-import type { Task, Child } from '@st44/types';
+import { ReassignTaskModal } from '../../components/modals/reassign-task-modal/reassign-task-modal';
+import type { Task, Child, Assignment } from '@st44/types';
 import { ApiService } from '../../services/api.service';
 import { StorageService } from '../../services/storage.service';
 import { STORAGE_KEYS } from '../../services/storage-keys';
@@ -43,7 +44,7 @@ export type TaskFilter = 'all' | 'mine' | 'person' | 'completed';
  */
 @Component({
   selector: 'app-tasks',
-  imports: [TaskCardComponent, EditTaskModal],
+  imports: [TaskCardComponent, EditTaskModal, ReassignTaskModal],
   templateUrl: './tasks.html',
   styleUrl: './tasks.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -100,6 +101,16 @@ export class Tasks {
    * Task being edited
    */
   protected readonly editingTask = signal<Task | null>(null);
+
+  /**
+   * Reassign task modal state
+   */
+  protected readonly reassignModalOpen = signal(false);
+
+  /**
+   * Assignment being reassigned
+   */
+  protected readonly reassigningAssignment = signal<Assignment | null>(null);
 
   /**
    * Current user ID
@@ -404,6 +415,49 @@ export class Tasks {
   protected onModalClose(): void {
     this.editModalOpen.set(false);
     this.editingTask.set(null);
+  }
+
+  /**
+   * Handle task reassign click
+   */
+  protected onTaskReassign(assignmentId: string): void {
+    const assignment = this.assignments().find((a) => a.id === assignmentId);
+    if (assignment) {
+      // Load members if not already loaded
+      if (this.members().length === 0) {
+        this.loadMembers();
+      }
+      this.reassigningAssignment.set(assignment);
+      this.reassignModalOpen.set(true);
+    }
+  }
+
+  /**
+   * Handle reassignment confirmation
+   */
+  protected onReassignConfirm(newChildId: string): void {
+    const assignment = this.reassigningAssignment();
+    if (!assignment) return;
+
+    this.taskService.reassignTask(assignment.id, newChildId).subscribe({
+      next: () => {
+        this.reassignModalOpen.set(false);
+        this.reassigningAssignment.set(null);
+        this.loadTasks();
+      },
+      error: (err) => {
+        this.error.set('Failed to reassign task');
+        console.error('Reassign task error:', err);
+      },
+    });
+  }
+
+  /**
+   * Handle reassign modal close
+   */
+  protected onReassignModalClose(): void {
+    this.reassignModalOpen.set(false);
+    this.reassigningAssignment.set(null);
   }
 
   /**

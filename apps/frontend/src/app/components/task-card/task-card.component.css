@@ -194,12 +194,52 @@
   }
 }
 
+/* Reassign Button */
+.task-reassign-btn {
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius-full);
+  border: 1px solid var(--color-border, #d1d5db);
+  background: var(--color-surface, white);
+  color: var(--color-text-secondary, #6b7280);
+  font-size: 16px;
+  cursor: pointer;
+  transition: all var(--transition-base);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  margin-left: var(--space-sm);
+}
+
+.task-reassign-btn:hover {
+  background: var(--color-background, #f9fafb);
+  border-color: var(--color-primary, #6366f1);
+  color: var(--color-primary, #6366f1);
+  transform: scale(1.05);
+}
+
+.task-reassign-btn:active {
+  transform: scale(1);
+}
+
+.task-reassign-btn:focus {
+  outline: 2px solid var(--color-primary, #6366f1);
+  outline-offset: 2px;
+}
+
+.task-reassign-btn .reassign-icon {
+  line-height: 1;
+}
+
 /* Accessibility: Reduced motion support */
 @media (prefers-reduced-motion: reduce) {
   .task-card,
   .task-complete-btn,
+  .task-reassign-btn,
   .task-card.clickable:hover,
-  .task-complete-btn:hover {
+  .task-complete-btn:hover,
+  .task-reassign-btn:hover {
     transition: none;
     transform: none;
   }
