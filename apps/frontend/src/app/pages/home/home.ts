@@ -61,7 +61,7 @@ export class Home implements OnInit {
   private readonly householdService = inject(HouseholdService);
 
   // State signals
-  protected readonly loading = signal(true);
+  protected readonly loading = signal(false);
   protected readonly error = signal<string | null>(null);
   protected readonly todayTasks = signal<Assignment[]>([]);
   protected readonly upcomingTasks = signal<Assignment[]>([]);

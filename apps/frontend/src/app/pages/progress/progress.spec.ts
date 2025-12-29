@@ -155,8 +155,8 @@ describe('Progress', () => {
       expect(loadDataSpy).toHaveBeenCalled();
     });
 
-    it('should set loading to true initially', () => {
-      expect(component['loading']()).toBe(true);
+    it('should start with loading false to prevent flicker', () => {
+      expect(component['loading']()).toBe(false);
     });
 
     it('should set active screen to progress', () => {

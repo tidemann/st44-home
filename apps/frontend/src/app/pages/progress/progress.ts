@@ -84,7 +84,7 @@ export class Progress implements OnInit {
   private readonly childrenService = inject(ChildrenService);
 
   // State signals
-  protected readonly loading = signal(true);
+  protected readonly loading = signal(false);
   protected readonly error = signal<string | null>(null);
   protected readonly leaderboard = signal<LeaderboardEntry[]>([]);
   protected readonly achievements = signal<Achievement[]>([]);

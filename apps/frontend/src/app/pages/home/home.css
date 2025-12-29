@@ -76,6 +76,7 @@
   display: flex;
   min-height: 100vh;
   background: var(--color-background);
+  animation: fadeIn 0.2s ease-out;
 }
 
 /* Sidebar (Desktop only) */
