@@ -3,7 +3,12 @@ import {
   TaskSchema,
   CreateTaskRequestSchema,
   UpdateTaskRequestSchema,
+  PaginationQuerySchema,
+  PaginationMetaSchema,
+  calculatePaginationMeta,
+  calculateOffset,
   type Task,
+  type PaginationQuery,
 } from '@st44/types';
 import { z, zodToOpenAPI, generateAPISchemas, CommonErrors } from '@st44/types/generators';
 import { db } from '../database.js';
@@ -58,6 +63,10 @@ interface ListTasksRequest {
   Params: HouseholdParams;
   Querystring: {
     active?: string;
+    page?: string;
+    pageSize?: string;
+    sortBy?: string;
+    sortOrder?: 'asc' | 'desc';
   };
 }
 
@@ -277,28 +286,60 @@ async function createTask(request: FastifyRequest<CreateTaskRequest>, reply: Fas
 
 /**
  * GET /api/households/:householdId/tasks - List all household tasks
- * Supports ?active=true/false filter
+ * Supports ?active=true/false filter and pagination
  */
 async function listTasks(request: FastifyRequest<ListTasksRequest>, reply: FastifyReply) {
   const { householdId } = request.params;
-  const { active } = request.query;
+  const { active, page: pageStr, pageSize: pageSizeStr, sortBy, sortOrder } = request.query;
+
+  // Parse pagination with defaults
+  const page = pageStr ? parseInt(pageStr, 10) : 1;
+  const pageSize = pageSizeStr ? Math.min(parseInt(pageSizeStr, 10), 100) : 20;
+  const validPage = Math.max(1, page);
+  const validPageSize = Math.max(1, pageSize);
+
+  // Validate sort field to prevent SQL injection
+  const allowedSortFields = ['name', 'points', 'createdAt', 'updatedAt'];
+  const sortField =
+    sortBy && allowedSortFields.includes(sortBy)
+      ? sortBy === 'createdAt'
+        ? 'created_at'
+        : sortBy === 'updatedAt'
+          ? 'updated_at'
+          : sortBy
+      : 'created_at';
+  const order = sortOrder === 'asc' ? 'ASC' : 'DESC';
 
   try {
-    let query = 'SELECT * FROM tasks WHERE household_id = $1';
+    let countQuery = 'SELECT COUNT(*) FROM tasks WHERE household_id = $1';
+    let dataQuery = 'SELECT * FROM tasks WHERE household_id = $1';
     const params: (string | boolean)[] = [householdId];
 
     // Add active filter if provided
     if (active !== undefined) {
       const activeBoolean = active === 'true';
-      query += ' AND active = $2';
+      countQuery += ' AND active = $2';
+      dataQuery += ' AND active = $2';
       params.push(activeBoolean);
     }
 
-    query += ' ORDER BY created_at DESC';
+    // Get total count for pagination
+    const countResult = await db.query(countQuery, params);
+    const total = parseInt(countResult.rows[0].count, 10);
 
-    const result = await db.query(query, params);
+    // Add sorting and pagination
+    dataQuery += ` ORDER BY ${sortField} ${order}`;
+    dataQuery += ` LIMIT $${params.length + 1} OFFSET $${params.length + 2}`;
 
-    return reply.send({ tasks: result.rows.map(mapTaskRowToTask) });
+    const offset = calculateOffset(validPage, validPageSize);
+    const dataResult = await db.query(dataQuery, [...params, validPageSize, offset]);
+
+    const pagination = calculatePaginationMeta(validPage, validPageSize, total);
+
+    return reply.send({
+      tasks: dataResult.rows.map(mapTaskRowToTask),
+      pagination,
+    });
   } catch (error) {
     request.log.error(error, 'Failed to list tasks');
     return reply.status(500).send({
@@ -578,21 +619,36 @@ export default async function taskRoutes(server: FastifyInstance) {
     householdId: z.string().uuid(),
     taskId: z.string().uuid(),
   });
-  const QuerySchema = z.object({ active: z.enum(['true', 'false']).optional() });
+  const QuerySchema = z.object({
+    active: z.enum(['true', 'false']).optional(),
+    page: z.string().optional().describe('Page number (1-indexed, default: 1)'),
+    pageSize: z.string().optional().describe('Items per page (max 100, default: 20)'),
+    sortBy: z
+      .enum(['name', 'points', 'createdAt', 'updatedAt'])
+      .optional()
+      .describe('Field to sort by'),
+    sortOrder: z.enum(['asc', 'desc']).optional().describe('Sort direction (default: desc)'),
+  });
 
   // List tasks (member access)
   server.get('/api/households/:householdId/tasks', {
     schema: stripResponseValidation({
       summary: 'List all task templates for household',
-      description: 'Get all task templates, optionally filtered by active status',
+      description: 'Get all task templates with pagination, optionally filtered by active status',
       tags: ['tasks'],
       security: [{ bearerAuth: [] }],
       params: zodToOpenAPI(ParamsSchema),
       querystring: zodToOpenAPI(QuerySchema),
       response: {
-        200: zodToOpenAPI(z.object({ tasks: z.array(TaskSchema) }), {
-          description: 'List of task templates',
-        }),
+        200: zodToOpenAPI(
+          z.object({
+            tasks: z.array(TaskSchema),
+            pagination: PaginationMetaSchema,
+          }),
+          {
+            description: 'Paginated list of task templates',
+          },
+        ),
         ...CommonErrors.Unauthorized,
         ...CommonErrors.Forbidden,
         ...CommonErrors.InternalServerError,

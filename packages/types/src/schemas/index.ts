@@ -27,3 +27,6 @@ export * from './reward.schema.js';
 
 // Analytics schemas
 export * from './analytics.schema.js';
+
+// Pagination schemas
+export * from './pagination.schema.js';

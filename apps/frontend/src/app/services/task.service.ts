@@ -9,7 +9,26 @@ import type {
   UpdateTaskRequest,
   Assignment,
   AssignmentFilters,
+  PaginationMeta,
 } from '@st44/types';
+
+/**
+ * Pagination options for list queries
+ */
+export interface PaginationOptions {
+  page?: number;
+  pageSize?: number;
+  sortBy?: string;
+  sortOrder?: 'asc' | 'desc';
+}
+
+/**
+ * Paginated response with items and pagination metadata
+ */
+export interface PaginatedTasksResponse {
+  tasks: Task[];
+  pagination: PaginationMeta;
+}
 
 /**
  * Service for managing task templates with signals-based state management
@@ -30,6 +49,7 @@ export class TaskService {
   private tasksSignal = signal<Task[]>([]);
   private loadingSignal = signal<boolean>(false);
   private errorSignal = signal<string | null>(null);
+  private paginationSignal = signal<PaginationMeta | null>(null);
 
   // Task assignments state signals (private writable)
   private assignmentsSignal = signal<Assignment[]>([]);
@@ -40,6 +60,7 @@ export class TaskService {
   public readonly tasks = this.tasksSignal.asReadonly();
   public readonly loading = this.loadingSignal.asReadonly();
   public readonly error = this.errorSignal.asReadonly();
+  public readonly pagination = this.paginationSignal.asReadonly();
 
   // Public readonly signals for assignments
   public readonly assignments = this.assignmentsSignal.asReadonly();
@@ -92,24 +113,37 @@ export class TaskService {
   }
 
   /**
-   * Get all task templates for a household
+   * Get all task templates for a household with pagination
    *
    * @param householdId - ID of the household
    * @param activeOnly - Filter for active tasks only (default: true)
-   * @returns Observable of task template array
+   * @param options - Pagination options (page, pageSize, sortBy, sortOrder)
+   * @returns Observable of paginated tasks response
    */
-  getTasks(householdId: string, activeOnly = true): Observable<Task[]> {
+  getTasks(
+    householdId: string,
+    activeOnly = true,
+    options?: PaginationOptions,
+  ): Observable<PaginatedTasksResponse> {
     this.loadingSignal.set(true);
     this.errorSignal.set(null);
 
-    const endpoint = activeOnly
-      ? `/households/${householdId}/tasks?active=true`
-      : `/households/${householdId}/tasks`;
+    const params: string[] = [];
+    if (activeOnly) params.push('active=true');
+    if (options?.page) params.push(`page=${options.page}`);
+    if (options?.pageSize) params.push(`pageSize=${options.pageSize}`);
+    if (options?.sortBy) params.push(`sortBy=${options.sortBy}`);
+    if (options?.sortOrder) params.push(`sortOrder=${options.sortOrder}`);
 
-    return from(this.apiService.get<{ tasks: Task[] }>(endpoint)).pipe(
-      map((response) => response.tasks),
-      tap((tasks) => {
-        this.tasksSignal.set(tasks);
+    const endpoint =
+      params.length > 0
+        ? `/households/${householdId}/tasks?${params.join('&')}`
+        : `/households/${householdId}/tasks`;
+
+    return from(this.apiService.get<PaginatedTasksResponse>(endpoint)).pipe(
+      tap((response) => {
+        this.tasksSignal.set(response.tasks);
+        this.paginationSignal.set(response.pagination);
         this.loadingSignal.set(false);
       }),
       catchError((err) => {
