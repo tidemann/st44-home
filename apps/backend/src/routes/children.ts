@@ -549,6 +549,24 @@ export default async function childrenRoutes(server: FastifyInstance) {
     status: z.enum(['pending', 'completed']).optional(),
   });
 
+  // Schema for child's task assignment response
+  const ChildTaskAssignmentSchema = z.object({
+    id: z.string().uuid(),
+    taskName: z.string(),
+    taskDescription: z.string().nullable(),
+    points: z.number(),
+    date: z.string(),
+    status: z.enum(['pending', 'completed', 'overdue']),
+    completedAt: z.string().nullable(),
+  });
+
+  const MyTasksResponseSchema = z.object({
+    tasks: z.array(ChildTaskAssignmentSchema),
+    totalPointsToday: z.number(),
+    completedPoints: z.number(),
+    childName: z.string(),
+  });
+
   // Get my tasks (for logged-in children)
   server.get('/api/children/my-tasks', {
     schema: stripResponseValidation({
@@ -558,11 +576,7 @@ export default async function childrenRoutes(server: FastifyInstance) {
       security: [{ bearerAuth: [] }],
       querystring: zodToOpenAPI(TaskQuerySchema),
       response: {
-        200: zodToOpenAPI(
-          z.object({
-            tasks: z.array(z.any()), // TaskAssignment type not in shared schemas yet
-          }),
-        ),
+        200: zodToOpenAPI(MyTasksResponseSchema),
         ...CommonErrors.Unauthorized,
         ...CommonErrors.InternalServerError,
       },

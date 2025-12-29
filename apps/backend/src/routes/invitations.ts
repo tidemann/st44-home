@@ -1,4 +1,4 @@
-import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
+import { FastifyInstance, FastifyRequest, FastifyReply, preHandlerHookHandler } from 'fastify';
 import crypto from 'crypto';
 import { db } from '../database.js';
 import { authenticateUser } from '../middleware/auth.js';
@@ -215,7 +215,7 @@ async function listSentInvitations(
       JOIN users u ON i.invited_by = u.id
       WHERE i.household_id = $1
     `;
-    const params: any[] = [householdId];
+    const params: string[] = [householdId];
 
     if (status) {
       query += ` AND i.status = $2`;
@@ -531,28 +531,33 @@ async function declineInvitation(
  */
 export async function invitationRoutes(fastify: FastifyInstance) {
   // Send invitation (requires household membership)
-  fastify.post(
+  // Cast validateHouseholdMembership to preHandlerHookHandler since route params are compatible
+  fastify.post<CreateInvitationRequest>(
     '/api/households/:householdId/invitations',
     {
-      preHandler: [authenticateUser, validateHouseholdMembership as any, validateCanInvite],
+      preHandler: [
+        authenticateUser,
+        validateHouseholdMembership as preHandlerHookHandler,
+        validateCanInvite,
+      ],
     },
     createInvitation,
   );
 
   // List sent invitations (requires household membership)
-  fastify.get(
+  fastify.get<ListSentInvitationsRequest>(
     '/api/households/:householdId/invitations',
     {
-      preHandler: [authenticateUser, validateHouseholdMembership as any],
+      preHandler: [authenticateUser, validateHouseholdMembership as preHandlerHookHandler],
     },
     listSentInvitations,
   );
 
   // Cancel invitation (requires household membership)
-  fastify.delete(
+  fastify.delete<CancelInvitationRequest>(
     '/api/households/:householdId/invitations/:id',
     {
-      preHandler: [authenticateUser, validateHouseholdMembership as any],
+      preHandler: [authenticateUser, validateHouseholdMembership as preHandlerHookHandler],
     },
     cancelInvitation,
   );
@@ -567,20 +572,20 @@ export async function invitationRoutes(fastify: FastifyInstance) {
   );
 
   // Accept invitation (requires authentication, no household membership check)
-  fastify.post(
+  fastify.post<{ Params: AcceptInvitationRequest['Params'] }>(
     '/api/invitations/:token/accept',
     {
       preHandler: [authenticateUser],
     },
-    acceptInvitation as any,
+    acceptInvitation,
   );
 
   // Decline invitation (requires authentication, no household membership check)
-  fastify.post(
+  fastify.post<{ Params: DeclineInvitationRequest['Params'] }>(
     '/api/invitations/:token/decline',
     {
       preHandler: [authenticateUser],
     },
-    declineInvitation as any,
+    declineInvitation,
   );
 }
