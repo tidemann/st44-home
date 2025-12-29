@@ -23,5 +23,8 @@ export { NotFoundError } from './not-found-error.js';
 // HTTP 409 - Conflict
 export { ConflictError } from './conflict-error.js';
 
+// HTTP 429 - Too Many Requests
+export { TooManyRequestsError } from './rate-limit-error.js';
+
 // HTTP 500 - Internal Server Error
 export { InternalError } from './internal-error.js';

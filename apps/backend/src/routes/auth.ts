@@ -12,6 +12,7 @@ import crypto from 'crypto';
 import { OAuth2Client } from 'google-auth-library';
 import { pool } from '../database.js';
 import { authenticateUser } from '../middleware/auth.js';
+import { rateLimiters } from '../middleware/rate-limit.js';
 import {
   registerSchema,
   loginSchema,
@@ -126,9 +127,6 @@ interface ResetPasswordResponse {
   message: string;
 }
 
-// Rate limiting map: email -> [timestamps]
-const forgotPasswordRateLimit = new Map<string, number[]>();
-
 /**
  * Register authentication routes
  */
@@ -138,6 +136,7 @@ export default async function authRoutes(fastify: FastifyInstance) {
     '/register',
     {
       schema: registerSchema,
+      preHandler: rateLimiters.register,
     },
     async (request, reply) => {
       const { email, password } = request.body;
@@ -186,6 +185,7 @@ export default async function authRoutes(fastify: FastifyInstance) {
     '/login',
     {
       schema: loginSchema,
+      preHandler: rateLimiters.login,
     },
     async (request, reply) => {
       const { email, password } = request.body;
@@ -460,26 +460,11 @@ export default async function authRoutes(fastify: FastifyInstance) {
     '/forgot-password',
     {
       schema: forgotPasswordSchema,
+      preHandler: rateLimiters.forgotPassword,
     },
     async (request, reply) => {
       const { email } = request.body;
       const emailLower = email.toLowerCase();
-
-      // Rate limiting: max 3 requests per email per hour
-      const now = Date.now();
-      const oneHourAgo = now - 60 * 60 * 1000;
-      const attempts = forgotPasswordRateLimit.get(emailLower) || [];
-      const recentAttempts = attempts.filter((timestamp) => timestamp > oneHourAgo);
-
-      if (recentAttempts.length >= 3) {
-        fastify.log.warn({ email: emailLower }, 'Password reset rate limit exceeded');
-        reply.code(429);
-        return { error: 'Too many password reset requests. Please try again later.' };
-      }
-
-      // Update rate limit
-      recentAttempts.push(now);
-      forgotPasswordRateLimit.set(emailLower, recentAttempts);
 
       try {
         // Check if user exists
