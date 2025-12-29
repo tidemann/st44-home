@@ -15,6 +15,7 @@ import assignmentRoutes from './routes/assignments.js';
 import analyticsRoutes from './routes/analytics.js';
 import rewardRoutes from './routes/rewards.js';
 import statsRoutes from './routes/stats.js';
+import userRoutes from './routes/user.js';
 import {
   registerSchema,
   loginSchema,
@@ -113,6 +114,7 @@ async function buildApp() {
         },
         tags: [
           { name: 'auth', description: 'Authentication endpoints' },
+          { name: 'user', description: 'User profile management' },
           { name: 'households', description: 'Household management' },
           { name: 'children', description: 'Child profile management' },
           { name: 'tasks', description: 'Task template management' },
@@ -741,6 +743,7 @@ async function buildApp() {
   await fastify.register(rewardRoutes);
   await fastify.register(analyticsRoutes);
   await fastify.register(statsRoutes);
+  await fastify.register(userRoutes);
 
   // Example items endpoint
   interface Item {

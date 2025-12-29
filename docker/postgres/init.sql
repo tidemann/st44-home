@@ -29,20 +29,22 @@ VALUES
   ('021', 'rename_due_date_to_date', NOW()),
   ('022', 'add_user_id_to_children', NOW()),
   ('023', 'add_rewards_system', NOW()),
-  ('038', 'create_password_reset_tokens_table', NOW())
+  ('038', 'create_password_reset_tokens_table', NOW()),
+  ('039', 'add_name_to_users', NOW())
 ON CONFLICT (version) DO NOTHING;
 
 -- Users table for authentication (supports email/password and OAuth)
 CREATE TABLE IF NOT EXISTS users (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   email VARCHAR(255) UNIQUE NOT NULL,
+  name VARCHAR(255), -- User display name (nullable for backwards compatibility)
   password_hash VARCHAR(255), -- Nullable for OAuth users
   oauth_provider VARCHAR(50), -- 'google', 'microsoft', etc.
   oauth_provider_id VARCHAR(255), -- User ID from OAuth provider
   created_at TIMESTAMP NOT NULL DEFAULT NOW(),
   updated_at TIMESTAMP NOT NULL DEFAULT NOW(),
   CONSTRAINT check_auth_method CHECK (
-    (password_hash IS NOT NULL) OR 
+    (password_hash IS NOT NULL) OR
     (oauth_provider IS NOT NULL AND oauth_provider_id IS NOT NULL)
   )
 );

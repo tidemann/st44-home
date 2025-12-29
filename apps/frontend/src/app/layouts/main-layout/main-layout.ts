@@ -188,4 +188,11 @@ export class MainLayout implements OnInit, OnDestroy {
         },
       });
   }
+
+  /**
+   * Navigate to settings page
+   */
+  protected onSettings(): void {
+    void this.router.navigate(['/settings']);
+  }
 }

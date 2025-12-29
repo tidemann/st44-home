@@ -40,6 +40,11 @@ export class SidebarNav {
   addTask = output<void>();
 
   /**
+   * Emitted when user clicks the settings/profile area
+   */
+  settings = output<void>();
+
+  /**
    * Navigation items configuration
    */
   readonly navItems: NavItem[] = [
@@ -73,6 +78,13 @@ export class SidebarNav {
    */
   handleAddTask() {
     this.addTask.emit();
+  }
+
+  /**
+   * Handle settings/profile click
+   */
+  handleSettingsClick() {
+    this.settings.emit();
   }
 
   /**

@@ -21,7 +21,12 @@
     + Add Task
   </button>
 
-  <div class="sidebar-user">
+  <button
+    type="button"
+    class="sidebar-user"
+    (click)="handleSettingsClick()"
+    aria-label="Open settings"
+  >
     <div class="sidebar-avatar" [attr.aria-label]="'Avatar for ' + user().name">
       {{ userInitials() }}
     </div>
@@ -29,5 +34,6 @@
       <h4>{{ user().name }}</h4>
       <app-household-switcher></app-household-switcher>
     </div>
-  </div>
+    <span class="settings-icon" aria-hidden="true">gear</span>
+  </button>
 </nav>
