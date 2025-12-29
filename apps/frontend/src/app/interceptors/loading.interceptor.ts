@@ -16,7 +16,6 @@ import {
   HttpRequest,
   HttpHandlerFn,
   HttpEvent,
-  HttpContext,
   HttpContextToken,
 } from '@angular/common/http';
 import { inject, Injectable, signal, computed } from '@angular/core';
