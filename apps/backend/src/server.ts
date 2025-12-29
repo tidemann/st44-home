@@ -17,6 +17,8 @@ import userRoutes from './routes/user.js';
 import { healthCheckSchema } from './schemas/auth.js';
 import { isBaseError, InternalError } from './errors/index.js';
 import type { ErrorResponse } from './types/error-response.js';
+import { requestIdPlugin } from './middleware/request-id.js';
+import { requestLoggerPlugin, getRequestContext } from './middleware/request-logger.js';
 
 // Extend FastifyRequest type to include user info
 declare module 'fastify' {
@@ -40,10 +42,19 @@ async function buildApp() {
     origin: process.env.CORS_ORIGIN || '*',
   });
 
+  // Register request ID middleware (must be first for tracing)
+  await fastify.register(requestIdPlugin);
+
+  // Register request logging middleware
+  await fastify.register(requestLoggerPlugin);
+
   // Global error handler - centralized error handling for all routes
   fastify.setErrorHandler(
     (error: FastifyError | Error, request: FastifyRequest, reply: FastifyReply) => {
       const isProduction = process.env.NODE_ENV === 'production';
+
+      // Get request context for logging
+      const requestContext = getRequestContext(request);
 
       // Handle custom BaseError instances (our error classes)
       if (isBaseError(error)) {
@@ -53,9 +64,7 @@ async function buildApp() {
             err: error,
             errorType: error.errorType,
             statusCode: error.statusCode,
-            requestId: request.id,
-            method: request.method,
-            url: request.url,
+            ...requestContext,
           },
           error.message,
         );
@@ -69,9 +78,7 @@ async function buildApp() {
         request.log.warn(
           {
             err: error,
-            requestId: request.id,
-            method: request.method,
-            url: request.url,
+            ...requestContext,
           },
           'Validation error',
         );
@@ -96,9 +103,7 @@ async function buildApp() {
           {
             err: error,
             statusCode: error.statusCode,
-            requestId: request.id,
-            method: request.method,
-            url: request.url,
+            ...requestContext,
           },
           error.message,
         );
@@ -115,9 +120,7 @@ async function buildApp() {
       request.log.error(
         {
           err: error,
-          requestId: request.id,
-          method: request.method,
-          url: request.url,
+          ...requestContext,
           stack: error.stack,
         },
         'Unhandled error',
