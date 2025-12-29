@@ -1,9 +1,11 @@
 name: E2E Tests
 
+# DISABLED: E2E tests timing out after 30 minutes (see issue #274)
+# Re-enable schedule once underlying issues are fixed
 on:
-  workflow_dispatch: # Manual trigger
-  schedule:
-    - cron: '0 2 * * *' # Run daily at 2 AM UTC
+  workflow_dispatch: # Manual trigger only for now
+  # schedule:
+  #   - cron: '0 2 * * *' # Run daily at 2 AM UTC
 
 jobs:
   e2e:
