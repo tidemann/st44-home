@@ -3,9 +3,16 @@ import { db } from '../database.js';
 import { authenticateUser } from '../middleware/auth.js';
 import { UpdateUserRequestSchema, UserProfileResponseSchema } from '@st44/types';
 import { z, zodToOpenAPI, CommonErrors } from '@st44/types/generators';
-import { validateRequest, handleZodError } from '../utils/validation.js';
+import { validateRequest } from '../utils/validation.js';
 import { stripResponseValidation } from '../schemas/common.js';
 import bcrypt from 'bcrypt';
+import {
+  AuthenticationError,
+  NotFoundError,
+  ConflictError,
+  ValidationError,
+  InternalError,
+} from '../errors/index.js';
 
 interface UpdateProfileRequest {
   Body: {
@@ -18,16 +25,17 @@ interface UpdateProfileRequest {
 /**
  * GET /api/user/profile - Get current user's profile
  * Returns the authenticated user's profile data
+ *
+ * This route demonstrates the new error handling pattern:
+ * - Throw custom errors instead of manually setting status codes
+ * - Let the global error handler format and send responses
+ * - Cleaner code with less boilerplate
  */
 async function getProfile(request: FastifyRequest, reply: FastifyReply) {
   const userId = request.user?.userId;
 
   if (!userId) {
-    return reply.status(401).send({
-      statusCode: 401,
-      error: 'Unauthorized',
-      message: 'Authentication required',
-    });
+    throw new AuthenticationError('Authentication required');
   }
 
   try {
@@ -39,11 +47,7 @@ async function getProfile(request: FastifyRequest, reply: FastifyReply) {
     );
 
     if (result.rows.length === 0) {
-      return reply.status(404).send({
-        statusCode: 404,
-        error: 'Not Found',
-        message: 'User not found',
-      });
+      throw NotFoundError.forResource('User', userId);
     }
 
     const user = result.rows[0];
@@ -56,42 +60,46 @@ async function getProfile(request: FastifyRequest, reply: FastifyReply) {
       updatedAt: user.updated_at?.toISOString?.() ?? user.updated_at,
     });
   } catch (error) {
-    request.log.error(error, 'Failed to get user profile');
-    return reply.status(500).send({
-      statusCode: 500,
-      error: 'Internal Server Error',
-      message: 'Failed to retrieve user profile',
-    });
+    // Re-throw our custom errors (they'll be handled by global handler)
+    if (
+      error instanceof AuthenticationError ||
+      error instanceof NotFoundError ||
+      error instanceof ConflictError ||
+      error instanceof ValidationError
+    ) {
+      throw error;
+    }
+    // Wrap unexpected errors
+    throw InternalError.wrap(error, 'Failed to retrieve user profile');
   }
 }
 
 /**
  * PUT /api/user/profile - Update current user's profile
  * Updates the authenticated user's profile data
+ *
+ * This route demonstrates:
+ * - Custom error classes for different scenarios
+ * - Zod validation errors are also handled by global handler
  */
 async function updateProfile(request: FastifyRequest<UpdateProfileRequest>, reply: FastifyReply) {
   const userId = request.user?.userId;
 
   if (!userId) {
-    return reply.status(401).send({
-      statusCode: 401,
-      error: 'Unauthorized',
-      message: 'Authentication required',
-    });
+    throw new AuthenticationError('Authentication required');
+  }
+
+  // Zod validation - errors bubble up to global handler
+  const validatedData = validateRequest(UpdateUserRequestSchema, request.body);
+
+  // Check if there's anything to update
+  if (Object.keys(validatedData).length === 0) {
+    throw new ValidationError('No fields to update', [
+      { path: 'body', message: 'At least one field must be provided' },
+    ]);
   }
 
   try {
-    const validatedData = validateRequest(UpdateUserRequestSchema, request.body);
-
-    // Check if there's anything to update
-    if (Object.keys(validatedData).length === 0) {
-      return reply.status(400).send({
-        statusCode: 400,
-        error: 'Bad Request',
-        message: 'No fields to update',
-      });
-    }
-
     // Build update query dynamically
     const updates: string[] = [];
     const values: unknown[] = [];
@@ -109,11 +117,7 @@ async function updateProfile(request: FastifyRequest<UpdateProfileRequest>, repl
         userId,
       ]);
       if (emailCheck.rows.length > 0) {
-        return reply.status(409).send({
-          statusCode: 409,
-          error: 'Conflict',
-          message: 'Email is already in use',
-        });
+        throw new ConflictError('Email is already in use', 'email');
       }
       updates.push(`email = $${paramIndex++}`);
       values.push(validatedData.email);
@@ -125,12 +129,15 @@ async function updateProfile(request: FastifyRequest<UpdateProfileRequest>, repl
       const hasLowerCase = /[a-z]/.test(validatedData.password);
       const hasNumber = /\d/.test(validatedData.password);
       if (validatedData.password.length < 8 || !hasUpperCase || !hasLowerCase || !hasNumber) {
-        return reply.status(400).send({
-          statusCode: 400,
-          error: 'Bad Request',
-          message:
-            'Password must be at least 8 characters and contain uppercase, lowercase, and number',
-        });
+        throw new ValidationError(
+          'Password must be at least 8 characters and contain uppercase, lowercase, and number',
+          [
+            {
+              path: 'password',
+              message: 'Must be at least 8 characters with uppercase, lowercase, and number',
+            },
+          ],
+        );
       }
       const passwordHash = await bcrypt.hash(validatedData.password, 12);
       updates.push(`password_hash = $${paramIndex++}`);
@@ -153,11 +160,7 @@ async function updateProfile(request: FastifyRequest<UpdateProfileRequest>, repl
     const result = await db.query(query, values);
 
     if (result.rows.length === 0) {
-      return reply.status(404).send({
-        statusCode: 404,
-        error: 'Not Found',
-        message: 'User not found',
-      });
+      throw NotFoundError.forResource('User', userId);
     }
 
     const user = result.rows[0];
@@ -170,15 +173,18 @@ async function updateProfile(request: FastifyRequest<UpdateProfileRequest>, repl
       updatedAt: user.updated_at?.toISOString?.() ?? user.updated_at,
     });
   } catch (error) {
-    if (error instanceof z.ZodError) {
-      return handleZodError(error, reply);
+    // Re-throw our custom errors
+    if (
+      error instanceof AuthenticationError ||
+      error instanceof NotFoundError ||
+      error instanceof ConflictError ||
+      error instanceof ValidationError ||
+      error instanceof z.ZodError
+    ) {
+      throw error;
     }
-    request.log.error(error, 'Failed to update user profile');
-    return reply.status(500).send({
-      statusCode: 500,
-      error: 'Internal Server Error',
-      message: 'Failed to update user profile',
-    });
+    // Wrap unexpected errors
+    throw InternalError.wrap(error, 'Failed to update user profile');
   }
 }
 
