@@ -110,8 +110,20 @@ npm run build
 
 ## State Management
 
+**⚠️ CRITICAL - Read Before Implementing**:
+
+### Shared State (Multi-Component)
+
+If data is needed across multiple pages/components:
+
+- **MUST use centralized store** (NgRx SignalStore or custom signal-based store)
+- **NEVER duplicate API calls** across components
+- Examples: household, user, tasks, assignments
+
+### Local Component State
+
 ```typescript
-// Component state with signals
+// Simple local state with signals
 export class MyComponent {
   // Local state
   private count = signal(0);
@@ -126,6 +138,40 @@ export class MyComponent {
   }
 }
 ```
+
+### Async Data Loading
+
+**Use AsyncState utility instead of manual loading/error/data signals**:
+
+```typescript
+import { AsyncState } from '../utils/async-state';
+
+export class MyComponent {
+  protected readonly dataState = new AsyncState<Data[]>();
+
+  async loadData(): Promise<void> {
+    await this.dataState.execute(async () => {
+      return this.dataService.getData();
+    });
+  }
+}
+```
+
+**Benefits**: Eliminates 15+ lines of boilerplate, type-safe, consistent
+
+### localStorage
+
+**NEVER use localStorage directly** - use StorageService:
+
+```typescript
+// ❌ WRONG
+localStorage.setItem('key', JSON.stringify(value));
+
+// ✅ CORRECT
+this.storageService.set('key', value);
+```
+
+**See**: GitHub Issues #255 (State), #258 (AsyncState), #259 (Storage)
 
 ## Services
 
@@ -201,9 +247,27 @@ export class FormComponent {
 
 For detailed patterns and examples:
 
-- `.claude/agents/frontend.md` - Complete agent specification
-- `apps/frontend/AGENTS.md` - Project-specific patterns
+- `.github/agents/frontend-agent.md` - Complete agent specification with architectural improvements
 - `CLAUDE.md` - Project-wide conventions
+
+**Specialized Skills** (use these for specific patterns):
+
+- `.claude/skills/state-management/` - Centralized stores, AsyncState, localStorage abstraction
+- `.claude/skills/http-interceptors/` - Auth, error handling, retry logic, caching
+- `.claude/skills/testing-infrastructure/` - Fixtures, mocks, component harness
+- `.claude/skills/storybook/` - Component development and visual testing
+
+**Architecture Improvement Issues** (reference these for best practices):
+
+- #253: Routing Architecture (layout components)
+- #254: Performance Optimizations (pagination, virtual scrolling, caching)
+- #255: State Management (centralized store)
+- #256: Service Layer Boundaries (single responsibility)
+- #257: HTTP Layer Improvements (interceptors)
+- #258: Eliminate Code Duplication (AsyncState utility)
+- #259: Abstract localStorage (StorageService)
+- #260: Component Organization (presentational vs container)
+- #261: Testing Infrastructure (shared utilities)
 
 ## Success Criteria
 

@@ -48,10 +48,30 @@ You are the Frontend Agent, an expert in Angular 21+, TypeScript, RxJS, and mode
 
 ### State Management
 
-- Use signals for local component state
+**⚠️ CRITICAL ARCHITECTURAL DECISION**:
+
+**For Shared State** (data used across multiple pages/components):
+
+- **MUST use centralized store** (NgRx SignalStore or custom signal-based store)
+- **NEVER duplicate API calls** for the same data across components
+- **NEVER use localStorage as primary state** - only for persistence
+- Examples of shared state: household, user, tasks, assignments
+
+**For Local Component State**:
+
+- Use signals for component-specific state
 - Use `computed()` for derived state
 - Never use `mutate()` - use `set()` or `update()` instead
 - Keep state transformations pure and predictable
+
+**State Management Checklist**:
+
+- [ ] If data is needed by multiple components → use centralized store
+- [ ] If component-specific only → use local signals
+- [ ] If persisting to localStorage → abstract through StorageService (never direct access)
+- [ ] If loading data → use AsyncState utility pattern
+
+**See**: GitHub Issues #255 (State Management), #259 (localStorage abstraction)
 
 ### Templates
 
@@ -77,19 +97,87 @@ You are the Frontend Agent, an expert in Angular 21+, TypeScript, RxJS, and mode
 
 ### Services
 
+**⚠️ SERVICE LAYER ARCHITECTURE**:
+
+**Single Responsibility Principle** (MANDATORY):
+
+- Each service must have ONE clear domain responsibility
+- **NEVER combine multiple concerns** (e.g., TaskService should NOT handle both templates AND assignments)
+- Split large services (>300 lines) into focused services
+
+**Service Boundaries**:
+
+```
+✅ GOOD:
+- TaskTemplateService → Task templates only
+- AssignmentService → Assignment management only
+- TokenService → JWT storage/validation only
+- AuthStateService → Login state only
+
+❌ BAD:
+- TaskService → Both templates AND assignments
+- AuthService → Token + state + routing
+```
+
+**Required Services**:
+
+- [ ] NotificationService → Replace all console.log with proper notifications
+- [ ] ErrorHandlerService → Centralized error handling
+- [ ] StorageService → Type-safe localStorage abstraction (NEVER use localStorage directly)
+
+**Service Standards**:
+
 - Use `inject()` function instead of constructor injection
 - Design services with single responsibility
 - Use `providedIn: 'root'` for singleton services
 - Implement proper error handling
 - Use RxJS operators for async operations
 
+**See**: GitHub Issues #256 (Service Layer Boundaries), #259 (StorageService)
+
 ### API Integration
+
+**⚠️ HTTP LAYER ARCHITECTURE**:
+
+**MANDATORY Pattern**:
+
+- **Use HTTP Interceptors** for cross-cutting concerns (auth, errors, loading)
+- **Return Observables** from services (NOT Promises)
+- **NEVER manually add auth tokens** to requests (use interceptor)
+- **NEVER manually handle HTTP errors** in every service (use interceptor)
+
+**Required Interceptors**:
+
+```typescript
+// Auth interceptor (automatic token injection)
+export const authInterceptor: HttpInterceptorFn = (req, next) => {
+  const token = inject(TokenService).getToken();
+  const authReq = token ? req.clone({ setHeaders: { Authorization: `Bearer ${token}` } }) : req;
+  return next(authReq);
+};
+
+// Error interceptor (global error handling)
+export const errorInterceptor: HttpInterceptorFn = (req, next) => {
+  const errorHandler = inject(ErrorHandlerService);
+  return next(req).pipe(
+    catchError((error) => {
+      errorHandler.handle(error);
+      return throwError(() => error);
+    }),
+  );
+};
+```
+
+**API Standards**:
 
 - Use relative URLs for API calls (proxy handles routing)
 - Import environment configuration from `environments/`
-- Implement proper error handling and loading states
 - Type all API responses
 - Use HttpClient with proper type parameters
+- Add retry logic with exponential backoff for transient failures
+- Configure timeouts to prevent hanging requests
+
+**See**: GitHub Issue #257 (HTTP Layer Improvements)
 
 ### Accessibility
 
@@ -117,19 +205,57 @@ You are the Frontend Agent, an expert in Angular 21+, TypeScript, RxJS, and mode
 
 ## Project Structure
 
+**⚠️ UPDATED ARCHITECTURE** (as of architectural improvements):
+
 ```
 apps/frontend/
 ├── src/
 │   ├── app/
-│   │   ├── components/     # Reusable components
-│   │   ├── pages/          # Route components
-│   │   ├── services/       # Injectable services
-│   │   ├── models/         # TypeScript interfaces/types
-│   │   ├── guards/         # Route guards
-│   │   └── interceptors/   # HTTP interceptors
-│   ├── environments/       # Environment config
-│   └── assets/            # Static assets
+│   │   ├── components/
+│   │   │   ├── presentational/  # Pure components (input/output only)
+│   │   │   │   ├── task-card/
+│   │   │   │   ├── stat-card/
+│   │   │   │   └── modals/
+│   │   │   ├── containers/      # Smart components (use services)
+│   │   │   │   ├── household-settings/
+│   │   │   │   └── invitation-inbox/
+│   │   │   └── navigation/      # Navigation components
+│   │   │       ├── bottom-nav/
+│   │   │       └── sidebar-nav/
+│   │   ├── layouts/            # Layout components with router-outlet
+│   │   │   └── main-layout/    # Contains nav, wraps pages
+│   │   ├── pages/              # Route components only
+│   │   ├── services/           # Injectable services (single responsibility)
+│   │   ├── store/              # Centralized state management
+│   │   ├── utils/              # Shared utilities
+│   │   │   ├── async-state.ts
+│   │   │   ├── validators.ts
+│   │   │   ├── type-guards.ts
+│   │   │   └── format.ts
+│   │   ├── models/             # TypeScript interfaces/types
+│   │   ├── guards/             # Route guards
+│   │   ├── interceptors/       # HTTP interceptors (auth, error, loading)
+│   │   └── testing/            # Shared test infrastructure
+│   │       ├── fixtures.ts
+│   │       ├── component-harness.ts
+│   │       └── mocks/
+│   ├── environments/           # Environment config
+│   └── assets/                 # Static assets
 ```
+
+**Component Organization Rules**:
+
+- Presentational components: NO service injection, pure input/output
+- Container components: Can inject services, manage state
+- Pages: Route components, orchestrate containers and presentational components
+- Layouts: Wrap pages with navigation/structure
+
+**Naming Convention** (standardize across codebase):
+
+- Decision needed: Use `.component.ts` suffix OR remove everywhere
+- Must be consistent throughout the project
+
+**See**: GitHub Issues #260 (Component Organization), #253 (Routing/Layouts)
 
 ## Workflow
 
@@ -342,27 +468,74 @@ export class ProductPriceComponent {
 
 ### Loading State Pattern
 
+**⚠️ DEPRECATED - Use AsyncState Utility Instead**:
+
+**OLD Pattern** (DON'T USE - causes duplication):
+
 ```typescript
 protected readonly loading = signal(false);
 protected readonly data = signal<Data | null>(null);
 protected readonly error = signal<string | null>(null);
+// ... repetitive loadData() implementation
+```
 
-loadData(): void {
-  this.loading.set(true);
-  this.error.set(null);
+**NEW Pattern** (REQUIRED for all async operations):
 
-  this.dataService.getData().subscribe({
-    next: (data) => {
-      this.data.set(data);
-      this.loading.set(false);
-    },
-    error: (err) => {
-      this.error.set('Failed to load data');
-      this.loading.set(false);
-    },
-  });
+```typescript
+import { AsyncState } from '../utils/async-state';
+
+export class MyComponent {
+  protected readonly dataState = new AsyncState<Data[]>();
+
+  // Computed helpers
+  protected readonly isLoading = this.dataState.isLoading;
+  protected readonly error = this.dataState.error;
+  protected readonly data = this.dataState.data;
+
+  async loadData(): Promise<void> {
+    await this.dataState.execute(async () => {
+      return this.dataService.getData();
+    });
+  }
 }
 ```
+
+**Benefits**:
+
+- Eliminates 15+ lines of boilerplate per component
+- Consistent error handling
+- Type-safe discriminated unions
+- Better state management
+
+**AsyncState Implementation**:
+
+```typescript
+// utils/async-state.ts
+export class AsyncState<T> {
+  state = signal<
+    | { status: 'idle' }
+    | { status: 'loading' }
+    | { status: 'error'; error: string }
+    | { status: 'success'; data: T }
+  >({ status: 'idle' });
+
+  readonly isLoading = computed(() => this.state().status === 'loading');
+  readonly error = computed(() => (this.state().status === 'error' ? this.state().error : null));
+  readonly data = computed(() => (this.state().status === 'success' ? this.state().data : null));
+
+  async execute(fn: () => Promise<T>): Promise<void> {
+    this.state.set({ status: 'loading' });
+    try {
+      const data = await fn();
+      this.state.set({ status: 'success', data });
+    } catch (error) {
+      this.state.set({ status: 'error', error: String(error) });
+    }
+  }
+}
+```
+
+**See**: GitHub Issue #258 (Eliminate Code Duplication)
 
 ### Form Pattern
 
@@ -429,6 +602,59 @@ If blocked, document in task file:
 - Waiting for backend API endpoint: POST /api/items
 - Need clarification on [specific requirement]
 ```
+
+## Architecture Compliance Checklist
+
+**⚠️ MANDATORY - Check Before Implementation**:
+
+### State Management
+
+- [ ] Shared state uses centralized store (NOT component-level)
+- [ ] No duplicate API calls for same data
+- [ ] NO direct localStorage access (use StorageService)
+- [ ] Local state uses AsyncState utility for async operations
+
+### Service Layer
+
+- [ ] Each service has single, clear responsibility
+- [ ] Services are under 300 lines (split if larger)
+- [ ] NotificationService used (NO console.log)
+- [ ] ErrorHandlerService handles all errors centrally
+
+### HTTP Layer
+
+- [ ] Auth interceptor configured (NO manual token injection)
+- [ ] Error interceptor configured (NO per-service error handling)
+- [ ] Services return Observables (NOT Promises)
+- [ ] Retry logic configured for transient failures
+
+### Component Organization
+
+- [ ] Presentational vs container separation clear
+- [ ] Consistent naming convention followed
+- [ ] No duplicate/overlapping components
+- [ ] Components use AsyncState for data loading
+
+### Routing
+
+- [ ] Layout components wrap pages (nav not in every page)
+- [ ] Route paths follow consistent hierarchy
+- [ ] Route metadata configured (titles, etc.)
+
+### Performance
+
+- [ ] Pagination implemented for lists
+- [ ] Request caching/deduplication in place
+- [ ] Virtual scrolling for long lists
+- [ ] TrackBy functions in @for loops
+
+### Testing
+
+- [ ] Shared fixtures/mocks used (NOT recreated per test)
+- [ ] Component harness used for component tests
+- [ ] Integration tests for critical flows
+
+**See Architecture Improvement Issues**: #253-#261
 
 ## Quality Checklist
 
