@@ -16,6 +16,7 @@ describe('UserSchema', () => {
     const validUser = {
       id: '123e4567-e89b-12d3-a456-426614174000',
       email: 'test@example.com',
+      name: 'Test User',
       googleId: null,
       passwordHash: '$2b$10$abcdefg...',
       createdAt: '2025-12-22T10:00:00Z',
@@ -25,12 +26,30 @@ describe('UserSchema', () => {
     expect(() => UserSchema.parse(validUser)).not.toThrow();
     const parsed = UserSchema.parse(validUser);
     expect(parsed.email).toBe('test@example.com');
+    expect(parsed.name).toBe('Test User');
+  });
+
+  it('validates user with null name', () => {
+    const validUser = {
+      id: '123e4567-e89b-12d3-a456-426614174000',
+      email: 'test@example.com',
+      name: null,
+      googleId: null,
+      passwordHash: '$2b$10$abcdefg...',
+      createdAt: '2025-12-22T10:00:00Z',
+      updatedAt: '2025-12-22T10:00:00Z',
+    };
+
+    expect(() => UserSchema.parse(validUser)).not.toThrow();
+    const parsed = UserSchema.parse(validUser);
+    expect(parsed.name).toBeNull();
   });
 
   it('rejects invalid email', () => {
     const invalidUser = {
       id: '123e4567-e89b-12d3-a456-426614174000',
       email: 'invalid-email',
+      name: null,
       googleId: null,
       passwordHash: null,
       createdAt: '2025-12-22T10:00:00Z',
@@ -44,6 +63,7 @@ describe('UserSchema', () => {
     const invalidUser = {
       id: 'not-a-uuid',
       email: 'test@example.com',
+      name: null,
       googleId: null,
       passwordHash: null,
       createdAt: '2025-12-22T10:00:00Z',
@@ -117,6 +137,7 @@ describe('UserResponseSchema', () => {
     const user = {
       id: '123e4567-e89b-12d3-a456-426614174000',
       email: 'test@example.com',
+      name: 'Test User',
       googleId: null,
       createdAt: '2025-12-22T10:00:00Z',
       updatedAt: '2025-12-22T10:00:00Z',
@@ -124,5 +145,6 @@ describe('UserResponseSchema', () => {
 
     const parsed = UserResponseSchema.parse(user);
     expect(parsed).not.toHaveProperty('passwordHash');
+    expect(parsed.name).toBe('Test User');
   });
 });
