@@ -76,7 +76,7 @@ export class Progress implements OnInit {
   private readonly analyticsService = inject(AnalyticsService);
 
   // State signals
-  protected readonly loading = signal(true);
+  protected readonly loading = signal(false);
   protected readonly error = signal<string | null>(null);
   protected readonly leaderboard = signal<LeaderboardEntry[]>([]);
   protected readonly achievements = signal<Achievement[]>([]);

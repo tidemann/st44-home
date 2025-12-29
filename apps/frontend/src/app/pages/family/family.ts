@@ -46,7 +46,7 @@ export class Family implements OnInit {
   private readonly authService = inject(AuthService);
 
   // State signals
-  protected readonly loading = signal(true);
+  protected readonly loading = signal(false);
   protected readonly error = signal<string | null>(null);
   protected readonly members = signal<MemberCardData[]>([]);
   protected readonly householdName = signal<string>('My Family');
