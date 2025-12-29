@@ -43,7 +43,7 @@ async function proxyRequest(req, res) {
     if (['POST', 'PUT', 'PATCH'].includes(req.method)) {
       body = await new Promise((resolve, reject) => {
         const chunks = [];
-        req.on('data', chunk => chunks.push(chunk));
+        req.on('data', (chunk) => chunks.push(chunk));
         req.on('end', () => {
           const data = Buffer.concat(chunks);
           resolve(data.length > 0 ? data : undefined);
@@ -55,9 +55,9 @@ async function proxyRequest(req, res) {
     const fetchOptions = {
       method: req.method,
       headers: Object.fromEntries(
-        Object.entries(req.headers).filter(([key]) =>
-          !['host', 'connection', 'content-length'].includes(key.toLowerCase())
-        )
+        Object.entries(req.headers).filter(
+          ([key]) => !['host', 'connection', 'content-length'].includes(key.toLowerCase()),
+        ),
       ),
     };
 
