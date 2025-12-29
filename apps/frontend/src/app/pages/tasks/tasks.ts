@@ -14,6 +14,10 @@ import {
   EditTaskModal,
   type EditTaskData,
 } from '../../components/modals/edit-task-modal/edit-task-modal';
+import {
+  QuickAddModal,
+  type QuickAddTaskData,
+} from '../../components/modals/quick-add-modal/quick-add-modal';
 import { BottomNav } from '../../components/navigation/bottom-nav/bottom-nav';
 import { SidebarNav } from '../../components/navigation/sidebar-nav/sidebar-nav';
 import type { Task, Child } from '@st44/types';
@@ -42,7 +46,7 @@ export type TaskFilter = 'all' | 'mine' | 'person' | 'completed';
  */
 @Component({
   selector: 'app-tasks',
-  imports: [TaskCardComponent, EditTaskModal, BottomNav, SidebarNav],
+  imports: [TaskCardComponent, EditTaskModal, QuickAddModal, BottomNav, SidebarNav],
   templateUrl: './tasks.html',
   styleUrl: './tasks.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -93,6 +97,11 @@ export class Tasks {
    * Edit task modal state
    */
   protected readonly editModalOpen = signal(false);
+
+  /**
+   * Quick-add modal state
+   */
+  protected readonly quickAddOpen = signal(false);
 
   /**
    * Task being edited
@@ -422,5 +431,49 @@ export class Tasks {
    */
   protected isFilterActive(filter: TaskFilter): boolean {
     return this.activeFilter() === filter;
+  }
+
+  /**
+   * Open quick-add modal
+   */
+  protected openQuickAdd(): void {
+    // Load members if not already loaded
+    if (this.members().length === 0) {
+      this.loadMembers();
+    }
+    this.quickAddOpen.set(true);
+  }
+
+  /**
+   * Close quick-add modal
+   */
+  protected closeQuickAdd(): void {
+    this.quickAddOpen.set(false);
+  }
+
+  /**
+   * Handle quick-add task creation
+   */
+  protected onTaskCreated(data: QuickAddTaskData): void {
+    const household = this.householdId();
+    if (!household) return;
+
+    this.taskService
+      .createTask(household, {
+        name: data.name,
+        points: data.points,
+        ruleType: 'daily', // Default to daily for quick-add
+      })
+      .subscribe({
+        next: () => {
+          this.quickAddOpen.set(false);
+          // Reload tasks to show new task
+          this.loadTasks();
+        },
+        error: (err) => {
+          this.error.set('Failed to create task. Please try again.');
+          console.error('Create task error:', err);
+        },
+      });
   }
 }

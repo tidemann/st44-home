@@ -25,6 +25,7 @@
         [activeScreen]="activeScreen()"
         [user]="sidebarUser()"
         (navigate)="onNavigate($event)"
+        (addTask)="openQuickAdd()"
       />
     </div>
 
@@ -92,6 +93,14 @@
       [open]="addChildModalOpen()"
       (closeRequested)="closeAddChildModal()"
       (childAdded)="onChildAdded($event)"
+    />
+
+    <!-- Quick-Add Task Modal -->
+    <app-quick-add-modal
+      [open]="quickAddOpen()"
+      [children]="children()"
+      (closeRequested)="closeQuickAdd()"
+      (taskCreated)="onTaskCreated($event)"
     />
   </div>
 }

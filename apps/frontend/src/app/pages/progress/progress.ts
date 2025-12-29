@@ -9,11 +9,17 @@ import {
 import { Router } from '@angular/router';
 import { BottomNav } from '../../components/navigation/bottom-nav/bottom-nav';
 import { SidebarNav } from '../../components/navigation/sidebar-nav/sidebar-nav';
+import {
+  QuickAddModal,
+  type QuickAddTaskData,
+} from '../../components/modals/quick-add-modal/quick-add-modal';
 import { AuthService } from '../../services/auth.service';
 import { HouseholdService } from '../../services/household.service';
 import { AnalyticsService } from '../../services/analytics.service';
+import { TaskService } from '../../services/task.service';
+import { ChildrenService } from '../../services/children.service';
 import type { SidebarUser } from '../../components/navigation/sidebar-nav/sidebar-nav';
-import type { HouseholdAnalytics, ChildStreak } from '@st44/types';
+import type { HouseholdAnalytics, ChildStreak, Child } from '@st44/types';
 
 /**
  * Leaderboard entry for weekly rankings
@@ -64,7 +70,7 @@ interface HouseholdStats {
  */
 @Component({
   selector: 'app-progress',
-  imports: [BottomNav, SidebarNav],
+  imports: [BottomNav, SidebarNav, QuickAddModal],
   templateUrl: './progress.html',
   styleUrl: './progress.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -74,6 +80,8 @@ export class Progress implements OnInit {
   private readonly authService = inject(AuthService);
   private readonly householdService = inject(HouseholdService);
   private readonly analyticsService = inject(AnalyticsService);
+  private readonly taskService = inject(TaskService);
+  private readonly childrenService = inject(ChildrenService);
 
   // State signals
   protected readonly loading = signal(true);
@@ -87,7 +95,14 @@ export class Progress implements OnInit {
     totalMembers: 0,
   });
   protected readonly householdName = signal<string>('My Family');
+  protected readonly householdId = signal<string | null>(null);
   protected readonly currentUserId = signal<string | null>(null);
+
+  // Children for quick-add modal
+  protected readonly children = signal<Child[]>([]);
+
+  // Modal state
+  protected readonly quickAddOpen = signal(false);
 
   // Navigation state
   protected readonly activeScreen = signal<'home' | 'tasks' | 'family' | 'progress'>('progress');
@@ -133,6 +148,7 @@ export class Progress implements OnInit {
       }
 
       const household = households[0];
+      this.householdId.set(household.id);
       this.householdName.set(household.name);
 
       // Fetch analytics data from API
@@ -290,5 +306,62 @@ export class Progress implements OnInit {
     if (route) {
       this.router.navigate([route]);
     }
+  }
+
+  /**
+   * Load children for quick-add modal
+   */
+  private async loadChildren(): Promise<void> {
+    const household = this.householdId();
+    if (!household) return;
+
+    try {
+      const childrenData = await this.childrenService.listChildren(household);
+      this.children.set(childrenData);
+    } catch (err) {
+      console.error('Failed to load children:', err);
+    }
+  }
+
+  /**
+   * Open quick-add modal
+   */
+  protected openQuickAdd(): void {
+    // Load children if not already loaded
+    if (this.children().length === 0) {
+      this.loadChildren();
+    }
+    this.quickAddOpen.set(true);
+  }
+
+  /**
+   * Close quick-add modal
+   */
+  protected closeQuickAdd(): void {
+    this.quickAddOpen.set(false);
+  }
+
+  /**
+   * Handle quick-add task creation
+   */
+  protected onTaskCreated(data: QuickAddTaskData): void {
+    const household = this.householdId();
+    if (!household) return;
+
+    this.taskService
+      .createTask(household, {
+        name: data.name,
+        points: data.points,
+        ruleType: 'daily', // Default to daily for quick-add
+      })
+      .subscribe({
+        next: () => {
+          this.quickAddOpen.set(false);
+        },
+        error: (err) => {
+          this.error.set('Failed to create task. Please try again.');
+          console.error('Create task error:', err);
+        },
+      });
   }
 }
