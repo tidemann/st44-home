@@ -1,23 +1,72 @@
 ---
 name: state-management
-description: Angular state management patterns - centralized stores, signals, AsyncState utility, and localStorage abstraction
+description: Angular 21+ state management with signals, NgRx SignalStore, resource APIs, AsyncState patterns, and localStorage abstraction for modern reactive applications
 allowed-tools: Read, Write, Edit, Glob, Grep
 ---
 
 # State Management Skill
 
-Expert in Angular state management using signals, centralized stores, and architectural best practices.
+Expert in Angular 21+ state management using signals, NgRx SignalStore, resource APIs, and modern reactive patterns.
 
 ## When to Use This Skill
 
 Use this skill when:
 
 - Implementing shared state across multiple components
-- Setting up centralized state store
+- Setting up centralized state store (service-based or NgRx SignalStore)
 - Migrating from component-level to centralized state
-- Implementing AsyncState pattern for data loading
+- Implementing AsyncState pattern or resource APIs for data loading
+- Choosing between signals, RxJS, or combined approaches
 - Abstracting localStorage access
 - Debugging state synchronization issues
+
+## Angular 21 State Management for 2025
+
+### Modern Context
+
+**Zoneless by Default**: Angular v21 uses signals for change detection with zone.js no longer included by default. Zoneless change detection reached stability in v20.2.
+
+**Signals-First Development**: Signals are now the driving force for modern state management in Angular, providing synchronous reactive state and UI reactivity.
+
+### Choose the Right Tool for Your Scope
+
+**Small to Medium Apps** (1-5 developers):
+
+- Use Angular Signals for local component state
+- Use service-based stores for shared feature state
+- Consider signal state or pure signals
+
+**Large Enterprise Apps**:
+
+- Use NgRx SignalStore for structured approach
+- Break state into logical, feature-based stores (avoid monolithic store)
+- Use composition with feature-specific stores
+
+### Signals vs RxJS: When to Use Each
+
+**Use Signals for**:
+
+- Synchronous internal state
+- UI reactivity and derived state
+- Component-local state management
+- When you need fine-grained reactivity
+
+**Use RxJS Observables for**:
+
+- Asynchronous data streams (HTTP, WebSockets)
+- Complex operator-based data manipulation
+- Event handling and timing operations
+- When you need operators like debounce, throttle, retry
+
+**Best Practice**: Use both together - Observables for async operations, convert to signals at UI boundary using `toSignal()`.
+
+### Key Design Principles (2025)
+
+1. **Immutability**: Always treat state as immutable. Use `patchState()` for updates in SignalStore.
+2. **Feature-Based Stores**: Break down state into logical domains (tasks, users, settings), not one monolithic store.
+3. **Separation of Concerns**: Store holds state and computed values. Service handles data operations (API calls).
+4. **Type Safety**: Use `signalState()` for enhanced type safety over plain signals.
+5. **Performance**: Computed signals prevent unnecessary recalculations - use them for derived state.
 
 ## Critical Decision: Shared vs Local State
 
@@ -132,6 +181,156 @@ export class MyComponent {
   }
 }
 ```
+
+## NgRx SignalStore (Enterprise Pattern)
+
+NgRx SignalStore is recommended for larger applications (5+ developers) needing structured state management.
+
+### Core Building Blocks
+
+```typescript
+import { signalStore, withState, withMethods, withComputed } from '@ngrx/signals';
+import { inject } from '@angular/core';
+
+export const TaskStore = signalStore(
+  { providedIn: 'root' },
+
+  // State
+  withState({
+    tasks: [] as Task[],
+    loading: false,
+    filter: 'all' as 'all' | 'active' | 'completed',
+  }),
+
+  // Computed
+  withComputed(({ tasks, filter }) => ({
+    filteredTasks: computed(() => {
+      const allTasks = tasks();
+      const currentFilter = filter();
+
+      if (currentFilter === 'all') return allTasks;
+      return allTasks.filter((t) => (currentFilter === 'active' ? t.active : !t.active));
+    }),
+  })),
+
+  // Methods
+  withMethods((store, taskService = inject(TaskService)) => ({
+    async loadTasks() {
+      patchState(store, { loading: true });
+      try {
+        const tasks = await taskService.getTasks();
+        patchState(store, { tasks, loading: false });
+      } catch (error) {
+        patchState(store, { loading: false });
+      }
+    },
+
+    // Optimistic update
+    async updateTask(taskId: string, updates: Partial<Task>) {
+      const previousTasks = store.tasks();
+
+      // Optimistic update
+      patchState(store, {
+        tasks: previousTasks.map((t) => (t.id === taskId ? { ...t, ...updates } : t)),
+      });
+
+      try {
+        await taskService.updateTask(taskId, updates);
+      } catch (error) {
+        // Rollback on error
+        patchState(store, { tasks: previousTasks });
+        throw error;
+      }
+    },
+  })),
+);
+```
+
+### When to Use SignalStore vs Service Store
+
+**Use Service-Based Store when**:
+
+- Simple to mid-size project (1-5 developers)
+- Straightforward state needs
+- Prefer lighter weight solution
+
+**Use NgRx SignalStore when**:
+
+- Large enterprise app (5+ developers)
+- Need structured patterns and composition
+- Want feature extraction and reusability
+- Team familiar with NgRx patterns
+
+### SignalStore Best Practices
+
+1. **Separation of Concerns**: Store holds reactive state, Service handles data operations
+2. **Feature Composition**: Extract reusable features that can be composed
+3. **Optimistic Updates**: Update UI immediately, rollback on error
+4. **Type Safety**: Let TypeScript inference handle types (minimal explicit typing needed)
+
+## Angular Resource APIs (Modern Data Fetching)
+
+Angular 19.2+ provides specialized APIs for declarative async data loading.
+
+### httpResource (Recommended for HTTP)
+
+```typescript
+import { httpResource } from '@angular/core';
+import { inject } from '@angular/core';
+
+export class TaskListComponent {
+  private http = inject(HttpClient);
+
+  // Reactive data fetching with signals
+  protected tasksResource = httpResource({
+    url: () => `/api/tasks`,
+    loader: ({ abortSignal }) =>
+      this.http.get<Task[]>('/api/tasks', {
+        context: new HttpContext().set(ABORT_SIGNAL, abortSignal),
+      }),
+  });
+
+  // Access as signals
+  protected tasks = this.tasksResource.value;
+  protected isLoading = this.tasksResource.isLoading;
+  protected error = this.tasksResource.error;
+
+  // Reload data
+  protected reload() {
+    this.tasksResource.reload();
+  }
+}
+```
+
+### rxResource (For RxJS Integration)
+
+```typescript
+import { rxResource } from '@angular/core/rxjs-interop';
+import { inject, signal } from '@angular/core';
+
+export class TaskListComponent {
+  private taskService = inject(TaskService);
+  private filter = signal<'all' | 'active'>('all');
+
+  // rxResource for observable-based data
+  protected tasksResource = rxResource({
+    request: () => ({ filter: this.filter() }),
+    loader: ({ request }) => this.taskService.getTasks(request.filter),
+  });
+
+  // Previous data remains visible while loading
+  protected tasks = this.tasksResource.value;
+  protected isLoading = this.tasksResource.isLoading;
+}
+```
+
+### Best Practices for Resource APIs
+
+1. **Use httpResource first** for HTTP requests - simpler than resource/rxResource
+2. **Keep previous data visible**: Don't collapse UI while loading new data
+3. **Handle experimental status**: APIs are experimental in v20, may change
+4. **Combine with signals**: Use computed() for derived state from resource values
+5. **AbortSignal support**: Always pass abortSignal to prevent memory leaks
 
 ## AsyncState Utility Pattern
 
@@ -634,9 +833,33 @@ Before implementing state management:
 - [ ] Tests for store logic
 - [ ] Optimistic updates where appropriate
 
-## Reference
+## References
+
+### Project-Specific
 
 - GitHub Issue #255: State Management
 - GitHub Issue #258: Eliminate Code Duplication (AsyncState)
 - GitHub Issue #259: Abstract localStorage
 - `.github/agents/frontend-agent.md`: Complete frontend patterns
+
+### Angular 21 State Management (2025)
+
+- [Angular State Management for 2025 | Nx Blog](https://nx.dev/blog/angular-state-management-2025)
+- [Signals Overview • Angular](https://angular.dev/guide/signals)
+- [Best Practices for Using Angular Signals in 2025 | Medium](https://medium.com/@AmnaJavaid/best-practices-for-using-angular-signals-in-2025-2f4d4088a1d2)
+- [Application State Management with Angular Signals | Medium](https://medium.com/@eugeniyoz/application-state-management-with-angular-signals-b9c8b3a3afd7)
+- [Practical Guide: State Management Angular Services + Signals | Telerik](https://www.telerik.com/blogs/practical-guide-state-management-using-angular-services-signals)
+
+### NgRx SignalStore
+
+- [NgRx SignalStore Official Docs](https://ngrx.io/guide/signals/signal-store)
+- [NgRx Signal Store vs Signal State vs Simple Signal | Medium](https://medium.com/multitude-it-labs/ngrx-signal-store-vs-signal-state-vs-simple-signal-33ceb2f5ee1d)
+- [Using NgRx Signal Store for State Management | DEV Community](https://dev.to/dimeloper/using-ngrx-signal-store-for-scalable-state-management-in-angular-2ne5)
+- [Modern Angular State Management with NgRx Signals | Medium](https://medium.com/@mlglobtech/modern-angular-state-management-with-ngrx-signals-complete-crud-store-guide-a20ad4afa20e)
+
+### Resource APIs
+
+- [Angular Resource and rxResource | Telerik](https://www.telerik.com/blogs/angular-resource-rxresource)
+- [Reactive data fetching with httpResource • Angular](https://angular.dev/guide/http/http-resource)
+- [Angular's Resource APIs - Let's Fix Them! | Angular.Schule](https://angular.schule/blog/2025-10-rx-resource-is-broken/)
+- [Improve UX with (rx)resource | Tim Deschryver](https://timdeschryver.dev/blog/improve-the-user-experience-of-your-application-using-rxresource)
