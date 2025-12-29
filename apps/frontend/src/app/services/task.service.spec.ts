@@ -1,8 +1,14 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { TestBed } from '@angular/core/testing';
 import { firstValueFrom } from 'rxjs';
-import type { Task, CreateTaskRequest, UpdateTaskRequest, Assignment } from '@st44/types';
-import { TaskService } from './task.service';
+import type {
+  Task,
+  CreateTaskRequest,
+  UpdateTaskRequest,
+  Assignment,
+  PaginationMeta,
+} from '@st44/types';
+import { TaskService, PaginatedTasksResponse } from './task.service';
 import { ApiService } from './api.service';
 
 describe('TaskService', () => {
@@ -202,7 +208,18 @@ describe('TaskService', () => {
   });
 
   describe('getTasks', () => {
-    const mockResponse = { tasks: [mockTask, mockTask2] };
+    const mockPagination: PaginationMeta = {
+      page: 1,
+      pageSize: 20,
+      total: 2,
+      totalPages: 1,
+      hasNextPage: false,
+      hasPreviousPage: false,
+    };
+    const mockResponse: PaginatedTasksResponse = {
+      tasks: [mockTask, mockTask2],
+      pagination: mockPagination,
+    };
 
     it('should call ApiService.get with correct endpoint for active tasks', async () => {
       mockApiService.get.mockResolvedValue(mockResponse);
@@ -231,13 +248,14 @@ describe('TaskService', () => {
       expect(mockApiService.get).toHaveBeenCalledWith('/households/household-1/tasks?active=true');
     });
 
-    it('should return tasks array', async () => {
+    it('should return paginated response with tasks', async () => {
       mockApiService.get.mockResolvedValue(mockResponse);
 
       const result$ = service.getTasks('household-1');
       const result = await firstValueFrom(result$);
 
-      expect(result).toEqual([mockTask, mockTask2]);
+      expect(result.tasks).toEqual([mockTask, mockTask2]);
+      expect(result.pagination).toEqual(mockPagination);
     });
 
     it('should update state with fetched tasks', async () => {
@@ -247,6 +265,7 @@ describe('TaskService', () => {
       await firstValueFrom(result$);
 
       expect(service.tasks()).toEqual([mockTask, mockTask2]);
+      expect(service.pagination()).toEqual(mockPagination);
     });
 
     it('should set loading states correctly', async () => {
@@ -269,13 +288,33 @@ describe('TaskService', () => {
     });
 
     it('should handle empty tasks array', async () => {
-      mockApiService.get.mockResolvedValue({ tasks: [] });
+      const emptyResponse: PaginatedTasksResponse = {
+        tasks: [],
+        pagination: { ...mockPagination, total: 0, totalPages: 0 },
+      };
+      mockApiService.get.mockResolvedValue(emptyResponse);
 
       const result$ = service.getTasks('household-1');
       const result = await firstValueFrom(result$);
 
-      expect(result).toEqual([]);
+      expect(result.tasks).toEqual([]);
       expect(service.tasks()).toEqual([]);
+    });
+
+    it('should include pagination params when provided', async () => {
+      mockApiService.get.mockResolvedValue(mockResponse);
+
+      const result$ = service.getTasks('household-1', true, {
+        page: 2,
+        pageSize: 10,
+        sortBy: 'name',
+        sortOrder: 'asc',
+      });
+      await firstValueFrom(result$);
+
+      expect(mockApiService.get).toHaveBeenCalledWith(
+        '/households/household-1/tasks?active=true&page=2&pageSize=10&sortBy=name&sortOrder=asc',
+      );
     });
   });
 
@@ -332,7 +371,17 @@ describe('TaskService', () => {
 
     beforeEach(async () => {
       // Set up initial state with a task
-      mockApiService.get.mockResolvedValue({ tasks: [mockTask] });
+      mockApiService.get.mockResolvedValue({
+        tasks: [mockTask],
+        pagination: {
+          page: 1,
+          pageSize: 20,
+          total: 1,
+          totalPages: 1,
+          hasNextPage: false,
+          hasPreviousPage: false,
+        },
+      });
       const result$ = service.getTasks('household-1');
       await firstValueFrom(result$);
     });
@@ -371,7 +420,17 @@ describe('TaskService', () => {
 
     it('should not affect other tasks in state', async () => {
       // Add second task to state
-      mockApiService.get.mockResolvedValue({ tasks: [mockTask, mockTask2] });
+      mockApiService.get.mockResolvedValue({
+        tasks: [mockTask, mockTask2],
+        pagination: {
+          page: 1,
+          pageSize: 20,
+          total: 2,
+          totalPages: 1,
+          hasNextPage: false,
+          hasPreviousPage: false,
+        },
+      });
       const getTasks$ = service.getTasks('household-1');
       await firstValueFrom(getTasks$);
 
@@ -473,6 +532,14 @@ describe('TaskService', () => {
       // Set up state with mix of active and inactive tasks
       mockApiService.get.mockResolvedValue({
         tasks: [mockTask, mockTask2, mockInactiveTask],
+        pagination: {
+          page: 1,
+          pageSize: 20,
+          total: 3,
+          totalPages: 1,
+          hasNextPage: false,
+          hasPreviousPage: false,
+        },
       });
       const result$ = service.getTasks('household-1', false);
       await firstValueFrom(result$);
@@ -508,6 +575,14 @@ describe('TaskService', () => {
     it('should handle all active tasks', async () => {
       mockApiService.get.mockResolvedValue({
         tasks: [mockTask, mockTask2],
+        pagination: {
+          page: 1,
+          pageSize: 20,
+          total: 2,
+          totalPages: 1,
+          hasNextPage: false,
+          hasPreviousPage: false,
+        },
       });
       const result$ = service.getTasks('household-1', true);
       await firstValueFrom(result$);
@@ -519,6 +594,14 @@ describe('TaskService', () => {
     it('should handle all inactive tasks', async () => {
       mockApiService.get.mockResolvedValue({
         tasks: [mockInactiveTask],
+        pagination: {
+          page: 1,
+          pageSize: 20,
+          total: 1,
+          totalPages: 1,
+          hasNextPage: false,
+          hasPreviousPage: false,
+        },
       });
       const result$ = service.getTasks('household-1', false);
       await firstValueFrom(result$);
@@ -546,7 +629,17 @@ describe('TaskService', () => {
     });
 
     it('should not affect loading or tasks state', async () => {
-      mockApiService.get.mockResolvedValue({ tasks: [mockTask] });
+      mockApiService.get.mockResolvedValue({
+        tasks: [mockTask],
+        pagination: {
+          page: 1,
+          pageSize: 20,
+          total: 1,
+          totalPages: 1,
+          hasNextPage: false,
+          hasPreviousPage: false,
+        },
+      });
       const result$ = service.getTasks('household-1');
       await firstValueFrom(result$);
 
@@ -575,7 +668,17 @@ describe('TaskService', () => {
     });
 
     it('should not allow external modification of tasks array', async () => {
-      mockApiService.get.mockResolvedValue({ tasks: [mockTask] });
+      mockApiService.get.mockResolvedValue({
+        tasks: [mockTask],
+        pagination: {
+          page: 1,
+          pageSize: 20,
+          total: 1,
+          totalPages: 1,
+          hasNextPage: false,
+          hasPreviousPage: false,
+        },
+      });
       const result$ = service.getTasks('household-1');
       await firstValueFrom(result$);
 
