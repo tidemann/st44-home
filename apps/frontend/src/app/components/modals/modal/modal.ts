@@ -156,11 +156,15 @@ export class Modal {
   }
 
   /**
-   * Handle overlay keydown events
+   * Handle overlay Enter/Space key for accessibility
+   * Only closes modal when the overlay itself is focused (not bubbled from children)
    */
-  onOverlayKeydown(event: KeyboardEvent): void {
-    // Tab key is handled by @HostListener
-    event.preventDefault();
+  onOverlayKeydown(event: Event): void {
+    // Only handle if the overlay element itself is focused (not bubbled events from inputs)
+    if (this.closeOnBackdropClick() && event.target === event.currentTarget) {
+      event.preventDefault();
+      this.closeModal.emit();
+    }
   }
 
   /**
