@@ -241,7 +241,7 @@
     max-width: 800px;
     margin: 0 auto;
     padding: var(--space-xl);
-    padding-bottom: var(--space-xl);
+    padding-bottom: 100px; /* Keep space for bottom nav on tablet */
   }
 
   .tasks-title {
@@ -251,7 +251,10 @@
   .filter-tabs {
     gap: var(--space-md);
   }
+}
 
+/* Desktop Layout - Hide bottom nav, show sidebar */
+@media (min-width: 1024px) {
   .bottom-nav-container {
     display: none;
   }
@@ -266,13 +269,9 @@
   }
 
   .tasks-page {
-    margin-left: 250px; /* Adjust based on sidebar width */
-  }
-}
-
-@media (min-width: 1024px) {
-  .tasks-page {
     max-width: 1000px;
+    margin-left: 280px; /* Match sidebar width from home.css */
+    padding-bottom: var(--space-xl);
   }
 
   .tasks-title {

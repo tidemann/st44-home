@@ -20,8 +20,16 @@
   width: 100%;
 }
 
-/* Desktop Layout */
+/* Tablet Layout */
 @media (min-width: 768px) {
+  .main-content {
+    padding: var(--space-xl);
+    padding-bottom: calc(var(--space-xl) + 80px); /* Keep space for bottom nav on tablet */
+  }
+}
+
+/* Desktop Layout - Hide bottom nav, show sidebar */
+@media (min-width: 1024px) {
   .desktop-nav {
     display: block;
   }
@@ -31,7 +39,6 @@
   }
 
   .main-content {
-    padding: var(--space-xl);
     padding-bottom: var(--space-xl);
   }
 }
