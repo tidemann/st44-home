@@ -10,6 +10,7 @@ import { z } from '../generators/openapi.generator.js';
 export const UserSchema = z.object({
   id: z.string().uuid(),
   email: z.string().email(),
+  name: z.string().max(255).nullable(),
   googleId: z.string().nullable(),
   passwordHash: z.string().nullable(),
   createdAt: z.string().datetime(),
@@ -43,12 +44,27 @@ export type CreateUserRequest = z.infer<typeof CreateUserRequestSchema>;
  */
 export const UpdateUserRequestSchema = z
   .object({
+    name: z.string().max(255).optional(),
     email: z.string().email().optional(),
     password: z.string().min(8).max(128).optional(),
   })
   .strict();
 
 export type UpdateUserRequest = z.infer<typeof UpdateUserRequestSchema>;
+
+/**
+ * User Profile Response Schema
+ * Returns user profile data (safe for API response)
+ */
+export const UserProfileResponseSchema = z.object({
+  id: z.string().uuid(),
+  email: z.string().email(),
+  name: z.string().nullable(),
+  createdAt: z.string().datetime(),
+  updatedAt: z.string().datetime(),
+});
+
+export type UserProfileResponse = z.infer<typeof UserProfileResponseSchema>;
 
 /**
  * Login Request

@@ -111,6 +111,31 @@
   display: flex;
   align-items: center;
   gap: var(--space-md, 16px);
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  width: 100%;
+  text-align: left;
+}
+
+.sidebar-user:hover {
+  background: var(--color-surface-hover, #f3f4f6);
+}
+
+.sidebar-user:focus-visible {
+  outline: 2px solid var(--color-primary, #6366f1);
+  outline-offset: 2px;
+}
+
+.settings-icon {
+  margin-left: auto;
+  font-size: 20px;
+  color: var(--color-text-secondary, #6b7280);
+  transition: color 0.2s ease;
+}
+
+.sidebar-user:hover .settings-icon {
+  color: var(--color-text-primary, #1f2937);
 }
 
 .sidebar-avatar {

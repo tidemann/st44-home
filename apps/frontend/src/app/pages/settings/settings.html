@@ -1,0 +1,143 @@
+<!-- Loading State -->
+@if (loading()) {
+  <div class="loading-container" role="status" aria-live="polite">
+    <div class="spinner" aria-hidden="true"></div>
+    <p>Loading your profile...</p>
+  </div>
+}
+
+<!-- Error State (full page) -->
+@if (error() && !loading() && !profile()) {
+  <div class="error-container" role="alert" aria-live="assertive">
+    <div class="error-icon" aria-hidden="true">!</div>
+    <h2>Oops!</h2>
+    <p>{{ error() }}</p>
+    <button class="btn-retry" (click)="loadProfile()">Try Again</button>
+  </div>
+}
+
+<!-- Main Content -->
+@if (!loading() && profile()) {
+  <div class="settings-page">
+    <!-- Header with Gradient -->
+    <header class="header">
+      <div class="header-content">
+        <h1 class="page-title">Settings</h1>
+      </div>
+    </header>
+
+    <!-- Content -->
+    <div class="content">
+      <!-- Success Message -->
+      @if (successMessage()) {
+        <div class="alert alert-success" role="status" aria-live="polite">
+          <span>{{ successMessage() }}</span>
+          <button class="alert-dismiss" (click)="dismissSuccess()" aria-label="Dismiss">x</button>
+        </div>
+      }
+
+      <!-- Error Message (inline) -->
+      @if (error() && profile()) {
+        <div class="alert alert-error" role="alert" aria-live="assertive">
+          <span>{{ error() }}</span>
+          <button class="alert-dismiss" (click)="dismissError()" aria-label="Dismiss">x</button>
+        </div>
+      }
+
+      <!-- Profile Section -->
+      <section class="settings-section">
+        <h2>Profile</h2>
+
+        <form class="settings-form" (submit)="saveProfile(); $event.preventDefault()">
+          <!-- Name Field -->
+          <div class="form-group">
+            <label for="name">Display Name</label>
+            <input
+              type="text"
+              id="name"
+              name="name"
+              [(ngModel)]="name"
+              placeholder="Enter your name"
+              maxlength="255"
+            />
+            <small class="form-hint">This is how you'll appear to other family members</small>
+          </div>
+
+          <!-- Email Field -->
+          <div class="form-group">
+            <label for="email">Email Address</label>
+            <input
+              type="email"
+              id="email"
+              name="email"
+              [(ngModel)]="email"
+              placeholder="Enter your email"
+              required
+            />
+          </div>
+
+          <!-- Password Section Toggle -->
+          <button type="button" class="btn-link" (click)="togglePasswordSection()">
+            {{ showPasswordSection() ? '- Hide password section' : '+ Change password' }}
+          </button>
+
+          <!-- Password Fields (conditionally shown) -->
+          @if (showPasswordSection()) {
+            <div class="password-section">
+              <div class="form-group">
+                <label for="newPassword">New Password</label>
+                <input
+                  type="password"
+                  id="newPassword"
+                  name="newPassword"
+                  [(ngModel)]="newPassword"
+                  placeholder="Enter new password"
+                  minlength="8"
+                  autocomplete="new-password"
+                />
+                <small class="form-hint">
+                  Minimum 8 characters, must include uppercase, lowercase, and number
+                </small>
+              </div>
+
+              <div class="form-group">
+                <label for="confirmPassword">Confirm New Password</label>
+                <input
+                  type="password"
+                  id="confirmPassword"
+                  name="confirmPassword"
+                  [(ngModel)]="confirmPassword"
+                  placeholder="Confirm new password"
+                  autocomplete="new-password"
+                />
+              </div>
+            </div>
+          }
+
+          <!-- Save Button -->
+          <div class="form-actions">
+            <button type="submit" class="btn btn-primary" [disabled]="saving()">
+              {{ saving() ? 'Saving...' : 'Save Changes' }}
+            </button>
+          </div>
+        </form>
+      </section>
+
+      <!-- Account Section -->
+      <section class="settings-section">
+        <h2>Account</h2>
+
+        <div class="account-info">
+          <div class="info-row">
+            <span class="info-label">Member since</span>
+            <span class="info-value">{{ profile()?.createdAt | date: 'mediumDate' }}</span>
+          </div>
+        </div>
+
+        <div class="danger-zone">
+          <button type="button" class="btn btn-danger" (click)="logout()">Log Out</button>
+        </div>
+      </section>
+    </div>
+  </div>
+}

@@ -89,6 +89,11 @@ export const routes: Routes = [
             (m) => m.InvitationInboxComponent,
           ),
       },
+      {
+        path: 'settings',
+        title: 'Settings - Diddit!',
+        loadComponent: () => import('./pages/settings/settings').then((m) => m.Settings),
+      },
       // Default redirect for authenticated parent/admin users
       {
         path: '',
