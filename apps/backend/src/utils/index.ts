@@ -29,6 +29,10 @@ export {
   formatZodErrors,
   validateRequest,
   validateRequestSafe,
+  validateBody,
+  validateParams,
+  validateQuery,
+  validateAll,
   handleZodError,
 } from './validation.js';
 
