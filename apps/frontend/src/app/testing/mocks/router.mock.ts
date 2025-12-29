@@ -16,7 +16,7 @@
  */
 
 import { vi } from 'vitest';
-import { BehaviorSubject, of } from 'rxjs';
+import { BehaviorSubject } from 'rxjs';
 import type { Params, ParamMap } from '@angular/router';
 
 export interface MockRouter {

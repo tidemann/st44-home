@@ -21,7 +21,7 @@
  */
 
 import { ComponentFixture, TestBed, type TestBedStatic } from '@angular/core/testing';
-import { Type, DebugElement, signal, Signal } from '@angular/core';
+import { Type, DebugElement, Signal } from '@angular/core';
 import { By } from '@angular/platform-browser';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 

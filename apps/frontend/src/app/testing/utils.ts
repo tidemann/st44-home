@@ -8,7 +8,7 @@
  * import { waitForAsync, expectAsync, fakeDelay } from '../../testing/utils';
  */
 
-import { fakeAsync, tick, flush } from '@angular/core/testing';
+import { tick, flush } from '@angular/core/testing';
 import { Observable, of, throwError, delay } from 'rxjs';
 
 // =============================================================================
@@ -224,8 +224,8 @@ export function wait(ms: number): Promise<void> {
  */
 export function waitForDomStable(element: HTMLElement, timeout = 1000): Promise<void> {
   return new Promise((resolve, reject) => {
-    let timeoutId: ReturnType<typeof setTimeout>;
     let lastMutation = Date.now();
+    let isResolved = false;
 
     const observer = new MutationObserver(() => {
       lastMutation = Date.now();
@@ -238,18 +238,22 @@ export function waitForDomStable(element: HTMLElement, timeout = 1000): Promise<
     });
 
     const checkStable = (): void => {
+      if (isResolved) return;
       if (Date.now() - lastMutation > 50) {
+        isResolved = true;
         observer.disconnect();
-        clearTimeout(timeoutId);
         resolve();
       } else {
         setTimeout(checkStable, 10);
       }
     };
 
-    timeoutId = setTimeout(() => {
-      observer.disconnect();
-      reject(new Error('Timeout waiting for DOM to stabilize'));
+    setTimeout(() => {
+      if (!isResolved) {
+        isResolved = true;
+        observer.disconnect();
+        reject(new Error('Timeout waiting for DOM to stabilize'));
+      }
     }, timeout);
 
     checkStable();
