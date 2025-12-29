@@ -62,7 +62,6 @@ function shouldRedirectOnUnauthorized(url: string): boolean {
 function clearAuthTokens(storage: StorageService): void {
   storage.remove(STORAGE_KEYS.ACCESS_TOKEN);
   storage.remove(STORAGE_KEYS.REFRESH_TOKEN);
-  storage.remove(STORAGE_KEYS.USER);
   sessionStorage.removeItem(STORAGE_KEYS.ACCESS_TOKEN);
   sessionStorage.removeItem(STORAGE_KEYS.REFRESH_TOKEN);
 }
