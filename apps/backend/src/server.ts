@@ -19,6 +19,7 @@ import { isBaseError, InternalError } from './errors/index.js';
 import type { ErrorResponse } from './types/error-response.js';
 import { requestIdPlugin } from './middleware/request-id.js';
 import { requestLoggerPlugin, getRequestContext } from './middleware/request-logger.js';
+import { connectRedis, isRedisReady, disconnectRedis } from './core/redis.js';
 
 // Extend FastifyRequest type to include user info
 declare module 'fastify' {
@@ -226,7 +227,7 @@ async function buildApp() {
 
   // Health Check Endpoints
 
-  // Basic health check with database connectivity
+  // Basic health check with database and Redis connectivity
   fastify.get(
     '/health',
     {
@@ -242,10 +243,16 @@ async function buildApp() {
         fastify.log.error({ err: error }, 'Health check: database connection failed');
       }
 
+      // Check Redis connectivity
+      const redisStatus: 'connected' | 'disconnected' = isRedisReady()
+        ? 'connected'
+        : 'disconnected';
+
       return {
         status: 'ok',
         timestamp: new Date().toISOString(),
         database: dbStatus,
+        redis: redisStatus,
       };
     },
   );
@@ -366,11 +373,32 @@ export async function build() {
 // Start server only if this module is run directly (not imported for tests)
 const start = async () => {
   try {
+    // Connect to Redis (for rate limiting)
+    try {
+      await connectRedis();
+      console.log('Redis: Connection established');
+    } catch (err) {
+      // Redis is optional - server can still function without it
+      console.warn('Redis: Failed to connect, rate limiting will be disabled');
+      fastify.log.warn({ err }, 'Redis connection failed');
+    }
+
     const port = parseInt(process.env.PORT || '3000', 10);
     const host = process.env.HOST || '0.0.0.0';
 
     await fastify.listen({ port, host });
     console.log(`Server listening on ${host}:${port}`);
+
+    // Graceful shutdown
+    const shutdown = async (signal: string) => {
+      console.log(`${signal} received, shutting down gracefully...`);
+      await fastify.close();
+      await disconnectRedis();
+      process.exit(0);
+    };
+
+    process.on('SIGTERM', () => shutdown('SIGTERM'));
+    process.on('SIGINT', () => shutdown('SIGINT'));
   } catch (err) {
     fastify.log.error(err);
     process.exit(1);
