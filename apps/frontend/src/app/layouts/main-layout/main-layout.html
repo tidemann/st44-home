@@ -1,0 +1,33 @@
+<div class="layout-container">
+  <!-- Sidebar Navigation (Desktop) -->
+  <div class="sidebar-container">
+    <app-sidebar-nav
+      [activeScreen]="activeScreen()"
+      [user]="sidebarUser()"
+      (navigate)="onNavigate($event)"
+      (addTask)="openQuickAdd()"
+    />
+  </div>
+
+  <!-- Main Content Area -->
+  <div class="main-content">
+    <!-- Router Outlet for Page Content -->
+    <router-outlet />
+
+    <!-- Bottom Navigation (Mobile) -->
+    <div class="bottom-nav-container">
+      <app-bottom-nav [activeScreen]="activeScreen()" (navigate)="onNavigate($event)" />
+    </div>
+
+    <!-- FAB Button (Mobile only) -->
+    <button class="fab" (click)="openQuickAdd()" aria-label="Add new task">+</button>
+  </div>
+
+  <!-- Quick-Add Task Modal -->
+  <app-quick-add-modal
+    [open]="quickAddOpen()"
+    [children]="children()"
+    (closeRequested)="closeQuickAdd()"
+    (taskCreated)="onTaskCreated($event)"
+  />
+</div>

@@ -349,14 +349,6 @@ describe('Tasks Component', () => {
     });
   });
 
-  describe('Navigation', () => {
-    it('should navigate to different screen', () => {
-      fixture.detectChanges();
-      component['onNavigate']('home');
-      expect(mockRouter.navigate).toHaveBeenCalledWith(['/home']);
-    });
-  });
-
   describe('Empty State Messages', () => {
     it('should show correct message for "all" filter with no tasks', () => {
       const mockServiceWithWritableSignals = mockTaskService as Partial<TaskService> & {

@@ -1,6 +1,5 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { Router } from '@angular/router';
 import { of, throwError } from 'rxjs';
 import { Home } from './home';
 import { TaskService } from '../../services/task.service';
@@ -12,7 +11,6 @@ import type { Assignment, Task } from '@st44/types';
 describe('Home', () => {
   let component: Home;
   let fixture: ComponentFixture<Home>;
-  let mockRouter: { navigate: ReturnType<typeof vi.fn> };
   let mockTaskService: {
     getHouseholdAssignments: ReturnType<typeof vi.fn>;
     completeTask: ReturnType<typeof vi.fn>;
@@ -27,7 +25,6 @@ describe('Home', () => {
 
   beforeEach(async () => {
     // Create mock services
-    mockRouter = { navigate: vi.fn() };
     mockTaskService = {
       getHouseholdAssignments: vi.fn(),
       completeTask: vi.fn(),
@@ -52,7 +49,6 @@ describe('Home', () => {
     await TestBed.configureTestingModule({
       imports: [Home],
       providers: [
-        { provide: Router, useValue: mockRouter },
         { provide: TaskService, useValue: mockTaskService },
         { provide: ChildrenService, useValue: mockChildrenService },
         { provide: AuthService, useValue: mockAuthService },
@@ -147,17 +143,6 @@ describe('Home', () => {
   });
 
   describe('modal management', () => {
-    it('should open quick-add modal', () => {
-      component['openQuickAdd']();
-      expect(component['quickAddOpen']()).toBe(true);
-    });
-
-    it('should close quick-add modal', () => {
-      component['quickAddOpen'].set(true);
-      component['closeQuickAdd']();
-      expect(component['quickAddOpen']()).toBe(false);
-    });
-
     it('should open edit task modal with task data', () => {
       const mockTask: Partial<Task> = { id: 'task-1', name: 'Test' };
       component['householdId'].set('household-1');
@@ -177,28 +162,6 @@ describe('Home', () => {
 
       expect(component['editTaskOpen']()).toBe(false);
       expect(component['selectedTask']()).toBeNull();
-    });
-  });
-
-  describe('navigation', () => {
-    it('should navigate to tasks route', () => {
-      component['onNavigate']('tasks');
-      expect(mockRouter.navigate).toHaveBeenCalledWith(['/household/all-tasks']);
-    });
-
-    it('should navigate to family route', () => {
-      component['onNavigate']('family');
-      expect(mockRouter.navigate).toHaveBeenCalledWith(['/family']);
-    });
-
-    it('should navigate to progress route', () => {
-      component['onNavigate']('progress');
-      expect(mockRouter.navigate).toHaveBeenCalledWith(['/progress']);
-    });
-
-    it('should navigate to home route', () => {
-      component['onNavigate']('home');
-      expect(mockRouter.navigate).toHaveBeenCalledWith(['/home']);
     });
   });
 

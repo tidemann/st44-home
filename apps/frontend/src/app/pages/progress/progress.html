@@ -1,14 +1,4 @@
-<!-- Desktop Sidebar Navigation -->
-<app-sidebar-nav
-  class="desktop-nav"
-  [user]="sidebarUser()"
-  [activeScreen]="activeScreen()"
-  (navigate)="onNavigate($event)"
-  (addTask)="openQuickAdd()"
-/>
-
-<!-- Main Content Area -->
-<div class="main-content">
+<div class="progress-page">
   <!-- Loading State -->
   @if (loading()) {
     <div class="loading-container" role="status" aria-live="polite">
@@ -146,18 +136,3 @@
     </section>
   }
 </div>
-
-<!-- Mobile Bottom Navigation -->
-<app-bottom-nav
-  class="mobile-nav"
-  [activeScreen]="activeScreen()"
-  (navigate)="onNavigate($event)"
-/>
-
-<!-- Quick-Add Task Modal -->
-<app-quick-add-modal
-  [open]="quickAddOpen()"
-  [children]="children()"
-  (closeRequested)="closeQuickAdd()"
-  (taskCreated)="onTaskCreated($event)"
-/>

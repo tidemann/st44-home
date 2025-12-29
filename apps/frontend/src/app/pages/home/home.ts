@@ -6,15 +6,8 @@ import {
   inject,
   OnInit,
 } from '@angular/core';
-import { Router } from '@angular/router';
 import { TaskCardComponent } from '../../components/task-card/task-card.component';
 import { StatCard } from '../../components/stat-card/stat-card';
-import { BottomNav } from '../../components/navigation/bottom-nav/bottom-nav';
-import { SidebarNav } from '../../components/navigation/sidebar-nav/sidebar-nav';
-import {
-  QuickAddModal,
-  type QuickAddTaskData,
-} from '../../components/modals/quick-add-modal/quick-add-modal';
 import {
   EditTaskModal,
   type EditTaskData,
@@ -24,7 +17,6 @@ import { ChildrenService } from '../../services/children.service';
 import { AuthService } from '../../services/auth.service';
 import { HouseholdService } from '../../services/household.service';
 import type { Task, Assignment, Child } from '@st44/types';
-import type { SidebarUser } from '../../components/navigation/sidebar-nav/sidebar-nav';
 
 /**
  * Dashboard stats for home screen
@@ -43,18 +35,17 @@ interface DashboardStats {
  * - Quick stats (active tasks, week progress, points)
  * - Today's tasks filtered from assignments
  * - Coming up tasks (next 3 days)
- * - FAB button for quick-add (mobile only)
- * - Responsive navigation (BottomNav mobile, SidebarNav desktop)
+ *
+ * Navigation is handled by the parent MainLayout component.
  */
 @Component({
   selector: 'app-home',
-  imports: [TaskCardComponent, StatCard, BottomNav, SidebarNav, QuickAddModal, EditTaskModal],
+  imports: [TaskCardComponent, StatCard, EditTaskModal],
   templateUrl: './home.html',
   styleUrl: './home.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class Home implements OnInit {
-  private readonly router = inject(Router);
   private readonly taskService = inject(TaskService);
   private readonly childrenService = inject(ChildrenService);
   private readonly authService = inject(AuthService);
@@ -76,12 +67,8 @@ export class Home implements OnInit {
   protected readonly householdName = signal<string>('My Family');
 
   // Modal state
-  protected readonly quickAddOpen = signal(false);
   protected readonly editTaskOpen = signal(false);
   protected readonly selectedTask = signal<Task | null>(null);
-
-  // Navigation state
-  protected readonly activeScreen = signal<'home' | 'tasks' | 'family' | 'progress'>('home');
 
   // Computed values
   protected readonly greeting = computed(() => {
@@ -93,12 +80,6 @@ export class Home implements OnInit {
 
   protected readonly hasTodayTasks = computed(() => this.todayTasks().length > 0);
   protected readonly hasUpcomingTasks = computed(() => this.upcomingTasks().length > 0);
-
-  protected readonly sidebarUser = computed<SidebarUser>(() => ({
-    name: this.userName(),
-    avatar: '', // Will use initials
-    household: this.householdName(),
-  }));
 
   async ngOnInit(): Promise<void> {
     await this.loadData();
@@ -290,68 +271,11 @@ export class Home implements OnInit {
   }
 
   /**
-   * Handle quick-add task creation
-   */
-  protected onTaskCreated(data: QuickAddTaskData): void {
-    const householdIdValue = this.householdId();
-    if (!householdIdValue) return;
-
-    this.taskService
-      .createTask(householdIdValue, {
-        name: data.name,
-        points: data.points,
-        ruleType: 'daily', // Default to daily for quick-add
-      })
-      .subscribe({
-        next: () => {
-          this.quickAddOpen.set(false);
-          // Reload data to show new task
-          this.loadData();
-        },
-        error: (err) => {
-          console.error('Failed to create task:', err);
-          this.error.set('Failed to create task. Please try again.');
-        },
-      });
-  }
-
-  /**
    * Show celebration animation (placeholder)
    */
   private showCelebration(): void {
     // Celebration animation is handled by CSS in task-card component
     // via the .completed class animation
-  }
-
-  /**
-   * Handle navigation between screens
-   */
-  protected onNavigate(screen: 'home' | 'tasks' | 'family' | 'progress'): void {
-    const routes: Record<string, string> = {
-      home: '/home',
-      tasks: '/household/all-tasks',
-      family: '/family',
-      progress: '/progress',
-    };
-
-    const route = routes[screen];
-    if (route) {
-      this.router.navigate([route]);
-    }
-  }
-
-  /**
-   * Open quick-add modal
-   */
-  protected openQuickAdd(): void {
-    this.quickAddOpen.set(true);
-  }
-
-  /**
-   * Close quick-add modal
-   */
-  protected closeQuickAdd(): void {
-    this.quickAddOpen.set(false);
   }
 
   /**

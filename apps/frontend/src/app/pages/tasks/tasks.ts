@@ -14,12 +14,6 @@ import {
   EditTaskModal,
   type EditTaskData,
 } from '../../components/modals/edit-task-modal/edit-task-modal';
-import {
-  QuickAddModal,
-  type QuickAddTaskData,
-} from '../../components/modals/quick-add-modal/quick-add-modal';
-import { BottomNav } from '../../components/navigation/bottom-nav/bottom-nav';
-import { SidebarNav } from '../../components/navigation/sidebar-nav/sidebar-nav';
 import type { Task, Child } from '@st44/types';
 import { ApiService } from '../../services/api.service';
 
@@ -42,11 +36,12 @@ export type TaskFilter = 'all' | 'mine' | 'person' | 'completed';
  * - URL query params for shareability
  * - Task completion inline
  * - Task editing via EditTaskModal
- * - Responsive navigation (BottomNav/SidebarNav)
+ *
+ * Navigation is handled by the parent MainLayout component.
  */
 @Component({
   selector: 'app-tasks',
-  imports: [TaskCardComponent, EditTaskModal, QuickAddModal, BottomNav, SidebarNav],
+  imports: [TaskCardComponent, EditTaskModal],
   templateUrl: './tasks.html',
   styleUrl: './tasks.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -99,11 +94,6 @@ export class Tasks {
   protected readonly editModalOpen = signal(false);
 
   /**
-   * Quick-add modal state
-   */
-  protected readonly quickAddOpen = signal(false);
-
-  /**
    * Task being edited
    */
   protected readonly editingTask = signal<Task | null>(null);
@@ -112,18 +102,6 @@ export class Tasks {
    * Current user ID
    */
   protected readonly currentUserId = computed(() => this.authService.currentUser()?.id);
-
-  /**
-   * User info for sidebar (computed from auth service)
-   */
-  protected readonly sidebarUser = computed(() => {
-    const user = this.authService.currentUser();
-    return {
-      name: user?.email?.split('@')[0] || 'User',
-      avatar: '👤',
-      household: localStorage.getItem('activeHouseholdName') || 'My Household',
-    };
-  });
 
   /**
    * Active household ID from localStorage
@@ -410,70 +388,9 @@ export class Tasks {
   }
 
   /**
-   * Handle navigation
-   */
-  protected onNavigate(screen: 'home' | 'tasks' | 'family' | 'progress'): void {
-    const routes: Record<string, string> = {
-      home: '/home',
-      tasks: '/household/all-tasks',
-      family: '/family',
-      progress: '/progress',
-    };
-
-    const route = routes[screen];
-    if (route) {
-      this.router.navigate([route]);
-    }
-  }
-
-  /**
    * Check if filter is active
    */
   protected isFilterActive(filter: TaskFilter): boolean {
     return this.activeFilter() === filter;
-  }
-
-  /**
-   * Open quick-add modal
-   */
-  protected openQuickAdd(): void {
-    // Load members if not already loaded
-    if (this.members().length === 0) {
-      this.loadMembers();
-    }
-    this.quickAddOpen.set(true);
-  }
-
-  /**
-   * Close quick-add modal
-   */
-  protected closeQuickAdd(): void {
-    this.quickAddOpen.set(false);
-  }
-
-  /**
-   * Handle quick-add task creation
-   */
-  protected onTaskCreated(data: QuickAddTaskData): void {
-    const household = this.householdId();
-    if (!household) return;
-
-    this.taskService
-      .createTask(household, {
-        name: data.name,
-        points: data.points,
-        ruleType: 'daily', // Default to daily for quick-add
-      })
-      .subscribe({
-        next: () => {
-          this.quickAddOpen.set(false);
-          // Reload tasks to show new task
-          this.loadTasks();
-        },
-        error: (err) => {
-          this.error.set('Failed to create task. Please try again.');
-          console.error('Create task error:', err);
-        },
-      });
   }
 }
