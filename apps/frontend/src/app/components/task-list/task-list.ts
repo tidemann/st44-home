@@ -4,6 +4,7 @@ import {
   inject,
   signal,
   computed,
+  output,
   OnInit,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
@@ -25,6 +26,9 @@ export class TaskList implements OnInit {
   protected taskService = inject(TaskService);
   private childrenService = inject(ChildrenService);
   private householdService = inject(HouseholdService);
+
+  // Outputs
+  protected edit = output<Task>();
 
   // Signals
   protected showActiveOnly = signal<boolean>(true);
@@ -87,9 +91,7 @@ export class TaskList implements OnInit {
   }
 
   protected onEdit(task: Task): void {
-    // Edit functionality is handled by parent component
-    // TODO: Emit edit event to parent when edit is clicked
-    void task;
+    this.edit.emit(task);
   }
 
   protected onDeleteClick(task: Task): void {

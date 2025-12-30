@@ -382,13 +382,17 @@ describe.skip('TaskList', () => {
   });
 
   describe('Edit Functionality', () => {
-    it('should log task when edit is clicked', () => {
-      const consoleSpy = vi.spyOn(console, 'log');
+    it('should emit edit event when edit is clicked', () => {
       const task = mockTasks[0];
+      let emittedTask: Task | undefined;
+
+      component['edit'].subscribe((t: Task) => {
+        emittedTask = t;
+      });
 
       component['onEdit'](task);
 
-      expect(consoleSpy).toHaveBeenCalledWith('Edit task:', task);
+      expect(emittedTask).toBe(task);
     });
   });
 });
