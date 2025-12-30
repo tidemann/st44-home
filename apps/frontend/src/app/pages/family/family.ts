@@ -97,14 +97,16 @@ export class Family implements OnInit {
       // Transform HouseholdMember[] to MemberCardData[]
       const memberCards: MemberCardData[] = householdMembers.map((member) => {
         const isCurrentUser = member.userId === user.id;
+        // Handle null email for unlinked children
+        const emailUsername = member.email ? member.email.split('@')[0] : null;
         const displayName = isCurrentUser
-          ? `${member.displayName || member.email.split('@')[0]} (You)`
-          : member.displayName || member.email.split('@')[0];
+          ? `${member.displayName || emailUsername || 'Unknown'} (You)`
+          : member.displayName || emailUsername || 'Child';
 
         return {
           id: member.userId,
           name: displayName,
-          email: member.email,
+          email: member.email ?? undefined, // Convert null to undefined for optional field
           role: member.role === 'child' ? 'child' : 'parent',
           // Use real stats from backend
           tasksCompleted: member.tasksCompleted,
