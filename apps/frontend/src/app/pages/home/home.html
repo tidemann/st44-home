@@ -94,5 +94,8 @@
       (taskUpdated)="onTaskUpdated($event)"
       (taskDeleted)="onTaskDeleted()"
     />
+
+    <!-- Celebration Animation -->
+    <app-celebration [show]="showCelebrationAnimation()" (dismissed)="onCelebrationDismissed()" />
   </div>
 }

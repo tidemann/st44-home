@@ -1,0 +1,31 @@
+@if (visible()) {
+  <div
+    class="celebration-overlay"
+    [class.animating]="animating()"
+    (click)="dismiss()"
+    (keydown.enter)="dismiss()"
+    (keydown.escape)="dismiss()"
+    tabindex="0"
+    role="alert"
+    aria-live="polite"
+  >
+    <!-- Confetti particles -->
+    @for (particle of particles(); track particle.id) {
+      <div
+        class="confetti-particle"
+        [style.left.%]="particle.x"
+        [style.top.%]="particle.y"
+        [style.background]="particle.color"
+        [style.animation-delay.s]="particle.delay"
+      ></div>
+    }
+
+    <!-- Central celebration content -->
+    <div class="celebration-content">
+      <div class="celebration-icon">
+        <span class="checkmark">&#10003;</span>
+      </div>
+      <div class="celebration-message">{{ message() }}</div>
+    </div>
+  </div>
+}
