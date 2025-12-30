@@ -169,7 +169,7 @@ jobs:
         run: |
           ssh -i ~/.ssh/id_deploy -o StrictHostKeyChecking=yes \
             ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} \
-            "cd /srv/st44-home/infra && docker compose up -d backend frontend"
+            "cd /srv/st44-home/infra && docker compose up -d --pull always backend frontend"
 
       - name: Verify Deployment Health
         run: |
