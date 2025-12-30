@@ -56,8 +56,8 @@
   line-height: 1.2;
 }
 
-/* Hide bottom nav on desktop (>= 1024px) */
-@media (min-width: 1024px) {
+/* Hide bottom nav on tablet and desktop (>= 768px) */
+@media (min-width: 768px) {
   .bottom-nav {
     display: none;
   }

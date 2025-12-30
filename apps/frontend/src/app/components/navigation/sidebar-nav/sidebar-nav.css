@@ -209,8 +209,8 @@
   right: 0;
 }
 
-/* Show sidebar on desktop (>= 1024px) */
-@media (min-width: 1024px) {
+/* Show sidebar on tablet and desktop (>= 768px) */
+@media (min-width: 768px) {
   .sidebar-nav {
     display: flex;
   }
