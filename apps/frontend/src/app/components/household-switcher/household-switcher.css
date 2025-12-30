@@ -201,8 +201,21 @@
     padding: 0.0625rem 0.375rem;
   }
 
+  /* On mobile, dropdown opens downward (below the toggle) since switcher is in header */
   .switcher-dropdown {
     min-width: 200px;
+    bottom: auto;
+    top: calc(100% + 0.5rem);
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+  }
+
+  /* Flip the chevron icon direction for mobile (points down when closed) */
+  .switcher-toggle__icon {
+    transform: rotate(0deg);
+  }
+
+  .switcher-toggle__icon--open {
+    transform: rotate(180deg);
   }
 }
 
