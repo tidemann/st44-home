@@ -51,7 +51,12 @@
         @if (members().length > 0) {
           <div class="member-list">
             @for (member of members(); track member.id) {
-              <app-member-card [member]="member" [showStats]="true" [clickable]="false" />
+              <app-member-card
+                [member]="member"
+                [showStats]="true"
+                [clickable]="isChildMember(member)"
+                (cardClick)="onMemberClick($event)"
+              />
             }
           </div>
         } @else {
@@ -76,5 +81,16 @@
       (closeRequested)="closeAddChildModal()"
       (childAdded)="onChildAdded($event)"
     />
+
+    @if (householdId()) {
+      <app-child-details-modal
+        [open]="childDetailsModalOpen()"
+        [child]="selectedChild()"
+        [childEmail]="selectedChildEmail()"
+        [householdId]="householdId()!"
+        (closeRequested)="closeChildDetailsModal()"
+        (accountCreated)="onChildAccountCreated()"
+      />
+    }
   </div>
 }

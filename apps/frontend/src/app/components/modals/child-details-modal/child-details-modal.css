@@ -1,0 +1,202 @@
+/* Child Details Modal Styles */
+
+.child-details {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-lg);
+}
+
+/* Info Section */
+.info-section {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+  padding: var(--space-md);
+  background: var(--color-background);
+  border-radius: var(--radius-md);
+}
+
+.child-avatar {
+  width: 64px;
+  height: 64px;
+  border-radius: var(--radius-full);
+  background: var(--gradient-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.avatar-emoji {
+  font-size: 32px;
+}
+
+.child-info {
+  flex: 1;
+}
+
+.child-name {
+  font-family: var(--font-heading);
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text-primary);
+  margin: 0 0 var(--space-xs) 0;
+}
+
+.child-age {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+  margin: 0;
+}
+
+/* Section Title */
+.section-title {
+  font-family: var(--font-heading);
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-primary);
+  margin: 0 0 var(--space-sm) 0;
+  padding-bottom: var(--space-xs);
+  border-bottom: 1px solid var(--color-border, #e5e7eb);
+}
+
+/* Account Section */
+.account-section {
+  padding: var(--space-md);
+  background: var(--color-surface);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-border, #e5e7eb);
+}
+
+.account-status {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-sm);
+  padding: var(--space-sm);
+  border-radius: var(--radius-sm);
+  margin-bottom: var(--space-md);
+}
+
+.account-status.has-account {
+  background: var(--color-success-light, #dcfce7);
+}
+
+.account-status.no-account {
+  background: var(--color-warning-light, #fef3c7);
+}
+
+.status-icon {
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-bold);
+  flex-shrink: 0;
+}
+
+.has-account .status-icon {
+  color: var(--color-success, #22c55e);
+}
+
+.no-account .status-icon {
+  color: var(--color-warning, #f59e0b);
+}
+
+.status-info {
+  flex: 1;
+}
+
+.status-label {
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-primary);
+  margin: 0 0 var(--space-xs) 0;
+}
+
+.status-detail {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+  margin: 0;
+}
+
+.create-btn {
+  width: 100%;
+}
+
+/* QR Section */
+.qr-section {
+  padding: var(--space-md);
+  background: var(--color-surface);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-border, #e5e7eb);
+  opacity: 0.7;
+}
+
+.qr-placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-lg);
+  background: var(--color-background);
+  border-radius: var(--radius-sm);
+  border: 2px dashed var(--color-border, #d1d5db);
+}
+
+.qr-icon {
+  font-size: 48px;
+  margin-bottom: var(--space-sm);
+}
+
+.qr-label {
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-primary);
+  margin: 0 0 var(--space-xs) 0;
+}
+
+.qr-description {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+  margin: 0;
+  text-align: center;
+}
+
+/* Modal Actions */
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--space-sm);
+  padding-top: var(--space-md);
+  margin-top: var(--space-md);
+  border-top: 1px solid var(--color-border, #e5e7eb);
+}
+
+/* Button styles */
+.btn {
+  padding: var(--space-sm) var(--space-md);
+  border-radius: var(--radius-sm);
+  font-family: var(--font-body);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  cursor: pointer;
+  transition:
+    transform 0.2s,
+    box-shadow 0.2s;
+  border: none;
+}
+
+.btn-primary {
+  background: var(--gradient-primary);
+  color: white;
+}
+
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+
+.btn-secondary {
+  background: var(--color-surface);
+  color: var(--color-text-primary);
+  border: 1px solid var(--color-border, #d1d5db);
+}
+
+.btn-secondary:hover {
+  background: var(--color-background);
+}
