@@ -12,6 +12,7 @@ import {
   EditTaskModal,
   type EditTaskData,
 } from '../../components/modals/edit-task-modal/edit-task-modal';
+import { CelebrationComponent } from '../../components/celebration/celebration';
 import { TaskService } from '../../services/task.service';
 import { ChildrenService } from '../../services/children.service';
 import { AuthService } from '../../services/auth.service';
@@ -41,7 +42,7 @@ interface DashboardStats {
  */
 @Component({
   selector: 'app-home',
-  imports: [TaskCardComponent, StatCard, EditTaskModal],
+  imports: [TaskCardComponent, StatCard, EditTaskModal, CelebrationComponent],
   templateUrl: './home.html',
   styleUrl: './home.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -71,6 +72,9 @@ export class Home implements OnInit {
   // Modal state
   protected readonly editTaskOpen = signal(false);
   protected readonly selectedTask = signal<Task | null>(null);
+
+  // Celebration state
+  protected readonly showCelebrationAnimation = signal(false);
 
   // Computed values
   protected readonly greeting = computed(() => {
@@ -267,11 +271,17 @@ export class Home implements OnInit {
   }
 
   /**
-   * Show celebration animation (placeholder)
+   * Show celebration animation when task is completed
    */
   private showCelebration(): void {
-    // Celebration animation is handled by CSS in task-card component
-    // via the .completed class animation
+    this.showCelebrationAnimation.set(true);
+  }
+
+  /**
+   * Handle celebration animation completion
+   */
+  protected onCelebrationDismissed(): void {
+    this.showCelebrationAnimation.set(false);
   }
 
   /**

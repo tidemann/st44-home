@@ -1,0 +1,184 @@
+/**
+ * Celebration Component Styles
+ * Confetti-like animation for task completion
+ */
+
+.celebration-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.3);
+  opacity: 0;
+  transition: opacity 0.3s ease-out;
+  cursor: pointer;
+  overflow: hidden;
+}
+
+.celebration-overlay.animating {
+  opacity: 1;
+}
+
+/* Central content */
+.celebration-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-md);
+  z-index: 1;
+  animation: scaleIn 0.4s ease-out;
+}
+
+.celebration-icon {
+  width: 96px;
+  height: 96px;
+  border-radius: 50%;
+  background: var(--gradient-success);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow:
+    0 8px 32px rgba(16, 185, 129, 0.4),
+    0 0 0 8px rgba(16, 185, 129, 0.2);
+  animation: bounce 0.6s ease-out 0.2s;
+}
+
+.celebration-icon .checkmark {
+  font-size: 48px;
+  color: white;
+  font-weight: bold;
+  animation: checkmarkDraw 0.3s ease-out 0.3s both;
+}
+
+.celebration-message {
+  font-family: var(--font-heading);
+  font-size: var(--font-size-2xl);
+  font-weight: var(--font-weight-bold);
+  color: white;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  animation: fadeInUp 0.4s ease-out 0.3s both;
+}
+
+/* Confetti particles */
+.confetti-particle {
+  position: absolute;
+  width: 12px;
+  height: 12px;
+  border-radius: 2px;
+  animation: confettiFall 2s ease-out forwards;
+  transform-origin: center;
+}
+
+/* Keyframe animations */
+@keyframes scaleIn {
+  from {
+    transform: scale(0.5);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes bounce {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.1);
+  }
+}
+
+@keyframes checkmarkDraw {
+  from {
+    opacity: 0;
+    transform: scale(0);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes confettiFall {
+  0% {
+    transform: translateY(-100vh) rotate(0deg) scale(1);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(100vh) rotate(720deg) scale(0.5);
+    opacity: 0;
+  }
+}
+
+/* Vary particle shapes */
+.confetti-particle:nth-child(odd) {
+  border-radius: 50%;
+}
+
+.confetti-particle:nth-child(3n) {
+  width: 8px;
+  height: 16px;
+  border-radius: 4px;
+}
+
+.confetti-particle:nth-child(5n) {
+  width: 16px;
+  height: 8px;
+}
+
+/* Mobile optimization */
+@media (max-width: 640px) {
+  .celebration-icon {
+    width: 72px;
+    height: 72px;
+  }
+
+  .celebration-icon .checkmark {
+    font-size: 36px;
+  }
+
+  .celebration-message {
+    font-size: var(--font-size-xl);
+  }
+
+  .confetti-particle {
+    width: 8px;
+    height: 8px;
+  }
+}
+
+/* Accessibility: Respect reduced motion preference */
+@media (prefers-reduced-motion: reduce) {
+  .celebration-overlay {
+    transition: none;
+  }
+
+  .celebration-content,
+  .celebration-icon,
+  .celebration-icon .checkmark,
+  .celebration-message {
+    animation: none;
+  }
+
+  .confetti-particle {
+    animation: none;
+    opacity: 0.7;
+    /* Just show static particles without motion */
+  }
+}
