@@ -38,7 +38,8 @@ export class Settings implements OnInit {
   protected readonly profile = signal<UserProfile | null>(null);
 
   // Form fields
-  protected name = '';
+  protected firstName = '';
+  protected lastName = '';
   protected email = '';
   protected currentPassword = '';
   protected newPassword = '';
@@ -63,7 +64,8 @@ export class Settings implements OnInit {
       this.profile.set(profile);
 
       // Initialize form fields
-      this.name = profile.name ?? '';
+      this.firstName = profile.firstName ?? '';
+      this.lastName = profile.lastName ?? '';
       this.email = profile.email;
     } catch (err) {
       console.error('Failed to load profile:', err);
@@ -86,10 +88,15 @@ export class Settings implements OnInit {
       this.successMessage.set(null);
 
       // Build update request with only changed fields
-      const updates: { name?: string; email?: string; password?: string } = {};
+      const updates: { firstName?: string; lastName?: string; email?: string; password?: string } =
+        {};
 
-      if (this.name !== (currentProfile.name ?? '')) {
-        updates.name = this.name;
+      if (this.firstName !== (currentProfile.firstName ?? '')) {
+        updates.firstName = this.firstName;
+      }
+
+      if (this.lastName !== (currentProfile.lastName ?? '')) {
+        updates.lastName = this.lastName;
       }
 
       if (this.email !== currentProfile.email) {
@@ -134,7 +141,8 @@ export class Settings implements OnInit {
 
       const updatedProfile = await this.userService.updateProfile(updates);
       this.profile.set(updatedProfile);
-      this.name = updatedProfile.name ?? '';
+      this.firstName = updatedProfile.firstName ?? '';
+      this.lastName = updatedProfile.lastName ?? '';
       this.email = updatedProfile.email;
 
       // Clear password fields

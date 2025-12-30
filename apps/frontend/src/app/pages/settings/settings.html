@@ -49,16 +49,29 @@
         <h2>Profile</h2>
 
         <form class="settings-form" (submit)="saveProfile(); $event.preventDefault()">
-          <!-- Name Field -->
+          <!-- First Name Field -->
           <div class="form-group">
-            <label for="name">Display Name</label>
+            <label for="firstName">First Name</label>
             <input
               type="text"
-              id="name"
-              name="name"
-              [(ngModel)]="name"
-              placeholder="Enter your name"
-              maxlength="255"
+              id="firstName"
+              name="firstName"
+              [(ngModel)]="firstName"
+              placeholder="Enter your first name"
+              maxlength="100"
+            />
+          </div>
+
+          <!-- Last Name Field -->
+          <div class="form-group">
+            <label for="lastName">Last Name</label>
+            <input
+              type="text"
+              id="lastName"
+              name="lastName"
+              [(ngModel)]="lastName"
+              placeholder="Enter your last name"
+              maxlength="100"
             />
             <small class="form-hint">This is how you'll appear to other family members</small>
           </div>
