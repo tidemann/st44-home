@@ -6,13 +6,15 @@ import { environment } from '../../environments/environment.development';
 export interface UserProfile {
   id: string;
   email: string;
-  name: string | null;
+  firstName: string | null;
+  lastName: string | null;
   createdAt: string;
   updatedAt: string;
 }
 
 export interface UpdateProfileRequest {
-  name?: string;
+  firstName?: string;
+  lastName?: string;
   email?: string;
   password?: string;
 }
