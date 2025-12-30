@@ -147,7 +147,11 @@ jobs:
         run: |
           ssh -i ~/.ssh/id_deploy -o StrictHostKeyChecking=yes \
             ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} \
-            "cd /srv/st44-home && git fetch origin main && git reset --hard origin/main"
+            'if [ -d /srv/st44-home/.git ]; then
+              cd /srv/st44-home && git fetch origin main && git reset --hard origin/main
+            else
+              rm -rf /srv/st44-home && git clone --depth 1 https://github.com/${{ github.repository }}.git /srv/st44-home
+            fi'
 
       - name: Deploy via SSH
         run: |
