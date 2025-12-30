@@ -17,6 +17,8 @@ import {
 } from '../../components/modals/add-child-modal/add-child-modal';
 import { HouseholdService } from '../../services/household.service';
 import { AuthService } from '../../services/auth.service';
+import { InvitationService } from '../../services/invitation.service';
+import { ChildrenService } from '../../services/children.service';
 
 /**
  * Family Screen
@@ -40,6 +42,8 @@ import { AuthService } from '../../services/auth.service';
 export class Family implements OnInit {
   private readonly householdService = inject(HouseholdService);
   private readonly authService = inject(AuthService);
+  private readonly invitationService = inject(InvitationService);
+  private readonly childrenService = inject(ChildrenService);
 
   // State signals
   protected readonly loading = signal(false);
@@ -122,15 +126,22 @@ export class Family implements OnInit {
    * Handle invite member submission
    */
   protected async onInviteSent(data: InviteMemberData): Promise<void> {
+    const householdId = this.householdId();
+    if (!householdId) {
+      this.error.set('No household selected');
+      return;
+    }
+
     try {
-      // TODO: Implement invite API call when backend endpoint is ready (#197)
-      // For now, close modal and show mock success
-      void data; // Placeholder until API integration
+      // Map frontend role to backend role
+      const apiRole = data.role === 'parent' ? 'parent' : 'parent';
+      await this.invitationService.sendInvitation(householdId, data.email, apiRole);
       this.inviteModalOpen.set(false);
 
-      // Reload members to show pending invite (when backend supports it)
-      // await this.loadData();
-    } catch {
+      // Reload members to show updated state
+      await this.loadData();
+    } catch (err) {
+      console.error('Failed to send invitation:', err);
       this.error.set('Failed to send invitation. Please try again.');
     }
   }
@@ -139,15 +150,27 @@ export class Family implements OnInit {
    * Handle add child submission
    */
   protected async onChildAdded(data: AddChildData): Promise<void> {
+    const householdId = this.householdId();
+    if (!householdId) {
+      this.error.set('No household selected');
+      return;
+    }
+
     try {
-      // TODO: Implement add child API call when backend endpoint is ready (#197)
-      // For now, close modal and reload data
-      void data; // Placeholder until API integration
+      // Convert age to birth year
+      const currentYear = new Date().getFullYear();
+      const birthYear = currentYear - data.age;
+
+      await this.childrenService.createChild(householdId, {
+        name: data.name,
+        birthYear,
+      });
       this.addChildModalOpen.set(false);
 
       // Reload members to show new child
       await this.loadData();
-    } catch {
+    } catch (err) {
+      console.error('Failed to add child:', err);
       this.error.set('Failed to add child. Please try again.');
     }
   }

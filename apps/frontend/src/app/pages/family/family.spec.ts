@@ -3,6 +3,8 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { Family } from './family';
 import { HouseholdService, type HouseholdMember } from '../../services/household.service';
 import { AuthService } from '../../services/auth.service';
+import { InvitationService } from '../../services/invitation.service';
+import { ChildrenService } from '../../services/children.service';
 import type { InviteMemberData } from '../../components/modals/invite-modal/invite-modal';
 import type { AddChildData } from '../../components/modals/add-child-modal/add-child-modal';
 
@@ -14,6 +16,8 @@ describe('Family', () => {
     getHouseholdMembers: ReturnType<typeof vi.fn>;
   };
   let mockAuthService: { currentUser: ReturnType<typeof vi.fn> };
+  let mockInvitationService: { sendInvitation: ReturnType<typeof vi.fn> };
+  let mockChildrenService: { createChild: ReturnType<typeof vi.fn> };
 
   const mockUser = { id: 'user-1', email: 'test@example.com' };
   const mockHousehold = { id: 'household-1', name: 'Test Family' };
@@ -43,6 +47,12 @@ describe('Family', () => {
     mockAuthService = {
       currentUser: vi.fn().mockReturnValue(mockUser),
     };
+    mockInvitationService = {
+      sendInvitation: vi.fn().mockResolvedValue({ id: 'invite-1' }),
+    };
+    mockChildrenService = {
+      createChild: vi.fn().mockResolvedValue({ id: 'child-1', name: 'New Child' }),
+    };
 
     // Default mock returns
     mockHouseholdService.listHouseholds.mockResolvedValue([mockHousehold]);
@@ -53,6 +63,8 @@ describe('Family', () => {
       providers: [
         { provide: HouseholdService, useValue: mockHouseholdService },
         { provide: AuthService, useValue: mockAuthService },
+        { provide: InvitationService, useValue: mockInvitationService },
+        { provide: ChildrenService, useValue: mockChildrenService },
       ],
     }).compileComponents();
 
@@ -182,6 +194,9 @@ describe('Family', () => {
 
   describe('onInviteSent', () => {
     it('should handle invite sent event', async () => {
+      // First load data to set householdId
+      await component.ngOnInit();
+
       const inviteData: InviteMemberData = {
         email: 'new@example.com',
         role: 'parent',
@@ -191,9 +206,17 @@ describe('Family', () => {
       await component['onInviteSent'](inviteData);
 
       expect(component['inviteModalOpen']()).toBe(false);
+      expect(mockInvitationService.sendInvitation).toHaveBeenCalledWith(
+        'household-1',
+        'new@example.com',
+        'parent',
+      );
     });
 
     it('should close modal after invite sent', async () => {
+      // First load data to set householdId
+      await component.ngOnInit();
+
       const inviteData: InviteMemberData = {
         email: 'new@example.com',
         role: 'adult',
@@ -204,10 +227,28 @@ describe('Family', () => {
       // Modal should be closed after invite
       expect(component['inviteModalOpen']()).toBe(false);
     });
+
+    it('should set error when no household is selected', async () => {
+      // Don't call ngOnInit - householdId will be null
+      const inviteData: InviteMemberData = {
+        email: 'new@example.com',
+        role: 'parent',
+      };
+
+      await component['onInviteSent'](inviteData);
+
+      expect(component['error']()).toBe('No household selected');
+      expect(mockInvitationService.sendInvitation).not.toHaveBeenCalled();
+    });
   });
 
   describe('onChildAdded', () => {
     it('should handle add child event', async () => {
+      // First load data to set householdId
+      await component.ngOnInit();
+      // Reset call count after ngOnInit
+      mockHouseholdService.getHouseholdMembers.mockClear();
+
       const childData: AddChildData = {
         name: 'New Child',
         age: 10,
@@ -217,11 +258,21 @@ describe('Family', () => {
       await component['onChildAdded'](childData);
 
       expect(component['addChildModalOpen']()).toBe(false);
+      // Should call createChild API
+      expect(mockChildrenService.createChild).toHaveBeenCalledWith('household-1', {
+        name: 'New Child',
+        birthYear: new Date().getFullYear() - 10,
+      });
       // Should reload data
       expect(mockHouseholdService.getHouseholdMembers).toHaveBeenCalled();
     });
 
     it('should close modal after child added', async () => {
+      // First load data to set householdId
+      await component.ngOnInit();
+      // Reset call count after ngOnInit
+      mockHouseholdService.getHouseholdMembers.mockClear();
+
       const childData: AddChildData = {
         name: 'New Child',
         age: 8,
@@ -234,6 +285,20 @@ describe('Family', () => {
       expect(component['addChildModalOpen']()).toBe(false);
       // Data should be reloaded
       expect(mockHouseholdService.getHouseholdMembers).toHaveBeenCalled();
+    });
+
+    it('should set error when no household is selected', async () => {
+      // Don't call ngOnInit - householdId will be null
+      const childData: AddChildData = {
+        name: 'New Child',
+        age: 10,
+        avatar: 'smile',
+      };
+
+      await component['onChildAdded'](childData);
+
+      expect(component['error']()).toBe('No household selected');
+      expect(mockChildrenService.createChild).not.toHaveBeenCalled();
     });
   });
 
