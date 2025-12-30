@@ -133,6 +133,8 @@ export class MainLayout implements OnInit, OnDestroy {
       this.activeScreen.set('family');
     } else if (url.includes('/progress')) {
       this.activeScreen.set('progress');
+    } else if (url.includes('/rewards')) {
+      this.activeScreen.set('rewards');
     } else {
       // Settings, household-settings, or other pages - no main nav item active
       this.activeScreen.set('none');
@@ -151,6 +153,7 @@ export class MainLayout implements OnInit, OnDestroy {
       tasks: '/tasks',
       family: '/family',
       progress: '/progress',
+      rewards: '/rewards',
     };
 
     const route = routes[screen];

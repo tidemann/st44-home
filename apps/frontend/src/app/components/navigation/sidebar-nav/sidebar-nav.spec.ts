@@ -46,13 +46,13 @@ describe('SidebarNav', () => {
     expect(logo?.textContent).toContain('Diddit!');
   });
 
-  it('should display all 4 navigation items', () => {
+  it('should display all 5 navigation items', () => {
     componentRef.setInput('activeScreen', 'home');
     componentRef.setInput('user', mockUser);
     fixture.detectChanges();
 
     const navButtons = fixture.nativeElement.querySelectorAll('.sidebar-btn');
-    expect(navButtons.length).toBe(4);
+    expect(navButtons.length).toBe(5);
   });
 
   it('should display correct icons and labels', () => {
@@ -68,8 +68,8 @@ describe('SidebarNav', () => {
       (btn as HTMLElement).textContent?.replace(/[^\w\s]/g, '').trim(),
     );
 
-    expect(icons).toEqual(['🏠', '✓', '👥', '🏆']);
-    expect(labels).toEqual(['Home', 'Tasks', 'Family', 'Progress']);
+    expect(icons).toEqual(['🏠', '✓', '👥', '🏆', '🎁']);
+    expect(labels).toEqual(['Home', 'Tasks', 'Family', 'Progress', 'Rewards']);
   });
 
   it('should apply active class to current screen', () => {

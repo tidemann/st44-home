@@ -4,7 +4,7 @@ import { Component, ChangeDetectionStrategy, input, output } from '@angular/core
  * Screen identifier type for navigation
  * 'none' is used when no main nav item should be active (e.g., Settings page)
  */
-export type NavScreen = 'home' | 'tasks' | 'family' | 'progress' | 'none';
+export type NavScreen = 'home' | 'tasks' | 'family' | 'progress' | 'rewards' | 'none';
 
 /**
  * Navigation item configuration
@@ -41,6 +41,7 @@ export class BottomNav {
     { id: 'tasks', icon: '✓', label: 'Tasks' },
     { id: 'family', icon: '👥', label: 'Family' },
     { id: 'progress', icon: '🏆', label: 'Progress' },
+    { id: 'rewards', icon: '🎁', label: 'Rewards' },
   ];
 
   /**

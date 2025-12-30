@@ -52,6 +52,7 @@ export class SidebarNav {
     { id: 'tasks', icon: '✓', label: 'Tasks' },
     { id: 'family', icon: '👥', label: 'Family' },
     { id: 'progress', icon: '🏆', label: 'Progress' },
+    { id: 'rewards', icon: '🎁', label: 'Rewards' },
   ];
 
   /**
