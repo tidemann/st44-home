@@ -136,6 +136,37 @@
         </form>
       </section>
 
+      <!-- Household Section -->
+      @if (activeHousehold()) {
+        <section class="settings-section">
+          <h2>Household</h2>
+
+          <div class="household-info">
+            <div class="info-row">
+              <span class="info-label">Current Household</span>
+              <span class="info-value">{{ activeHousehold()?.name }}</span>
+            </div>
+          </div>
+
+          <div class="household-links">
+            <a routerLink="/household/settings" class="settings-link">
+              <span class="link-icon">⚙️</span>
+              <span class="link-text">Household Settings</span>
+              <span class="link-arrow">→</span>
+            </a>
+
+            <a routerLink="/invitations" class="settings-link">
+              <span class="link-icon">✉️</span>
+              <span class="link-text">Invitations</span>
+              @if (pendingInvitationsCount() > 0) {
+                <span class="badge">{{ pendingInvitationsCount() }}</span>
+              }
+              <span class="link-arrow">→</span>
+            </a>
+          </div>
+        </section>
+      }
+
       <!-- Account Section -->
       <section class="settings-section">
         <h2>Account</h2>
