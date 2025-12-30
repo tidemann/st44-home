@@ -11,7 +11,7 @@ import { format, startOfWeek, endOfWeek, isWithinInterval, parseISO } from 'date
 import type { Assignment } from '@st44/types';
 import { TaskService } from '../../services/task.service';
 import { AuthService } from '../../services/auth.service';
-import { TaskCardComponent } from '../task-card/task-card.component';
+import { TaskCardComponent } from '../task-card/task-card';
 
 /**
  * Child-facing task list component
@@ -23,8 +23,8 @@ import { TaskCardComponent } from '../task-card/task-card.component';
 @Component({
   selector: 'app-child-task-list',
   imports: [CommonModule, TaskCardComponent],
-  templateUrl: './child-task-list.component.html',
-  styleUrl: './child-task-list.component.css',
+  templateUrl: './child-task-list.html',
+  styleUrl: './child-task-list.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ChildTaskListComponent implements OnInit {

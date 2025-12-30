@@ -6,7 +6,7 @@ import {
   inject,
   OnInit,
 } from '@angular/core';
-import { TaskCardComponent } from '../../components/task-card/task-card.component';
+import { TaskCardComponent } from '../../components/task-card/task-card';
 import { StatCard } from '../../components/stat-card/stat-card';
 import {
   EditTaskModal,

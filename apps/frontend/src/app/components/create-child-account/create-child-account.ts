@@ -20,8 +20,8 @@ import {
 @Component({
   selector: 'app-create-child-account',
   imports: [CommonModule, ReactiveFormsModule],
-  templateUrl: './create-child-account.component.html',
-  styleUrl: './create-child-account.component.css',
+  templateUrl: './create-child-account.html',
+  styleUrl: './create-child-account.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class CreateChildAccountComponent {

@@ -7,8 +7,8 @@ import { AuthService } from '../services/auth.service';
 
 @Component({
   selector: 'app-forgot-password',
-  templateUrl: './forgot-password.component.html',
-  styleUrl: './forgot-password.component.css',
+  templateUrl: './forgot-password.html',
+  styleUrl: './forgot-password.css',
   imports: [CommonModule, ReactiveFormsModule, RouterLink],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })

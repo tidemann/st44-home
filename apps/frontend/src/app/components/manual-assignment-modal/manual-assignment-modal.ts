@@ -16,8 +16,8 @@ import { AssignmentService } from '../../services/assignment.service';
 @Component({
   selector: 'app-manual-assignment-modal',
   imports: [CommonModule, FormsModule],
-  templateUrl: './manual-assignment-modal.component.html',
-  styleUrls: ['./manual-assignment-modal.component.css'],
+  templateUrl: './manual-assignment-modal.html',
+  styleUrls: ['./manual-assignment-modal.css'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ManualAssignmentModalComponent implements OnInit {

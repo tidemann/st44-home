@@ -9,7 +9,7 @@ import {
 import { Router, ActivatedRoute } from '@angular/router';
 import { TaskService } from '../../services/task.service';
 import { AuthService } from '../../services/auth.service';
-import { TaskCardComponent } from '../../components/task-card/task-card.component';
+import { TaskCardComponent } from '../../components/task-card/task-card';
 import {
   EditTaskModal,
   type EditTaskData,

@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/angular';
-import { TaskCardComponent } from './task-card.component';
+import { TaskCardComponent } from './task-card';
 import type { AssignmentWithPoints, Task } from '@st44/types';
 
 /**

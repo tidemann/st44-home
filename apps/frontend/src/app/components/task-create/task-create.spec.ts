@@ -1,5 +1,5 @@
 import { TestBed, ComponentFixture } from '@angular/core/testing';
-import { TaskCreateComponent } from './task-create.component';
+import { TaskCreateComponent } from './task-create';
 import { TaskService } from '../../services/task.service';
 import { ChildrenService } from '../../services/children.service';
 import { HouseholdService } from '../../services/household.service';

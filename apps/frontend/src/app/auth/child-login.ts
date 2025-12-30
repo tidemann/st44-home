@@ -7,8 +7,8 @@ import { lastValueFrom } from 'rxjs';
 
 @Component({
   selector: 'app-child-login',
-  templateUrl: './child-login.component.html',
-  styleUrl: './child-login.component.css',
+  templateUrl: './child-login.html',
+  styleUrl: './child-login.css',
   imports: [CommonModule, ReactiveFormsModule, RouterLink],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })

@@ -17,8 +17,8 @@ import { TaskService } from '../../services/task.service';
 @Component({
   selector: 'app-reassign-modal',
   imports: [CommonModule, FormsModule],
-  templateUrl: './reassign-modal.component.html',
-  styleUrls: ['./reassign-modal.component.css'],
+  templateUrl: './reassign-modal.html',
+  styleUrls: ['./reassign-modal.css'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ReassignModalComponent {

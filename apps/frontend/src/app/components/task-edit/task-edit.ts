@@ -25,8 +25,8 @@ import { HouseholdService } from '../../services/household.service';
 @Component({
   selector: 'app-task-edit',
   imports: [CommonModule, ReactiveFormsModule],
-  templateUrl: './task-edit.component.html',
-  styleUrl: './task-edit.component.css',
+  templateUrl: './task-edit.html',
+  styleUrl: './task-edit.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TaskEditComponent {
