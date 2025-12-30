@@ -91,11 +91,10 @@ export class Family implements OnInit {
       this.householdId.set(household.id);
       this.householdName.set(household.name);
 
-      // Load household members
+      // Load household members with stats
       const householdMembers = await this.householdService.getHouseholdMembers(household.id);
 
       // Transform HouseholdMember[] to MemberCardData[]
-      // TODO: Get actual task/points data from backend
       const memberCards: MemberCardData[] = householdMembers.map((member) => {
         const isCurrentUser = member.userId === user.id;
         const displayName = isCurrentUser
@@ -107,9 +106,10 @@ export class Family implements OnInit {
           name: displayName,
           email: member.email,
           role: member.role === 'child' ? 'child' : 'parent',
-          tasksCompleted: 0, // TODO: Get from backend
-          totalTasks: 0, // TODO: Get from backend
-          points: 0, // TODO: Get from backend
+          // Use real stats from backend
+          tasksCompleted: member.tasksCompleted,
+          totalTasks: member.totalTasks,
+          points: member.points,
         };
       });
 

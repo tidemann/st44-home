@@ -28,6 +28,9 @@ describe('Family', () => {
       displayName: 'Test User',
       role: 'parent',
       joinedAt: new Date().toISOString(),
+      tasksCompleted: 0,
+      totalTasks: 0,
+      points: 0,
     },
     {
       userId: 'user-2',
@@ -35,6 +38,9 @@ describe('Family', () => {
       displayName: 'Test Child',
       role: 'child',
       joinedAt: new Date().toISOString(),
+      tasksCompleted: 3,
+      totalTasks: 5,
+      points: 150,
     },
   ];
 
@@ -137,7 +143,7 @@ describe('Family', () => {
     });
 
     it('should use email username when displayName is null', async () => {
-      const membersWithoutDisplayName = [
+      const membersWithoutDisplayName: HouseholdMember[] = [
         {
           ...mockMembers[0],
           displayName: null,
@@ -159,6 +165,20 @@ describe('Family', () => {
 
       const otherMember = component['members']().find((m) => m.id === 'user-2');
       expect(otherMember?.name).not.toContain('(You)');
+    });
+
+    it('should pass through task stats and points from backend', async () => {
+      await component.ngOnInit();
+
+      const childMember = component['members']().find((m) => m.id === 'user-2');
+      expect(childMember?.tasksCompleted).toBe(3);
+      expect(childMember?.totalTasks).toBe(5);
+      expect(childMember?.points).toBe(150);
+
+      const parentMember = component['members']().find((m) => m.id === 'user-1');
+      expect(parentMember?.tasksCompleted).toBe(0);
+      expect(parentMember?.totalTasks).toBe(0);
+      expect(parentMember?.points).toBe(0);
     });
   });
 
