@@ -96,6 +96,9 @@ export class MainLayout implements OnInit, OnDestroy {
         const household = households[0];
         this.householdId.set(household.id);
         this.householdName.set(household.name);
+
+        // Pre-load children for quick-add modal
+        await this.loadChildren();
       }
     } catch (err) {
       console.error('Failed to load household data:', err);
@@ -152,9 +155,10 @@ export class MainLayout implements OnInit, OnDestroy {
   /**
    * Open quick-add modal
    */
-  protected openQuickAdd(): void {
+  protected async openQuickAdd(): Promise<void> {
+    // Ensure children are loaded before opening modal
     if (this.children().length === 0) {
-      this.loadChildren();
+      await this.loadChildren();
     }
     this.quickAddOpen.set(true);
   }
