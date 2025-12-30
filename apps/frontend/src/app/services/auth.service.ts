@@ -204,6 +204,14 @@ export class AuthService {
   }
 
   /**
+   * Get the current user's ID
+   * @returns The user ID or null if not authenticated
+   */
+  getCurrentUserId(): string | null {
+    return this.currentUser()?.id ?? null;
+  }
+
+  /**
    * Get the current user's role
    * @returns The role or undefined if not authenticated
    */
