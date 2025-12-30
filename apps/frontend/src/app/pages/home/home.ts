@@ -16,6 +16,7 @@ import { TaskService } from '../../services/task.service';
 import { ChildrenService } from '../../services/children.service';
 import { AuthService } from '../../services/auth.service';
 import { HouseholdService } from '../../services/household.service';
+import { DashboardService } from '../../services/dashboard.service';
 import type { Task, Assignment, Child } from '@st44/types';
 
 /**
@@ -50,6 +51,7 @@ export class Home implements OnInit {
   private readonly childrenService = inject(ChildrenService);
   private readonly authService = inject(AuthService);
   private readonly householdService = inject(HouseholdService);
+  private readonly dashboardService = inject(DashboardService);
 
   // State signals
   protected readonly loading = signal(false);
@@ -158,26 +160,19 @@ export class Home implements OnInit {
   }
 
   /**
-   * Load dashboard statistics
+   * Load dashboard statistics from dedicated endpoint
    */
   private async loadStats(householdId: string): Promise<void> {
-    // For now, calculate stats from assignments
-    // TODO: Create a dedicated stats endpoint
-    this.taskService.getHouseholdAssignments(householdId).subscribe({
-      next: (assignments) => {
-        const pending = assignments.filter((a) => a.status === 'pending').length;
-        const completed = assignments.filter((a) => a.status === 'completed').length;
-        const total = assignments.length;
-        const weekProgress = total > 0 ? Math.round((completed / total) * 100) : 0;
-
-        this.stats.set({
-          activeCount: pending,
-          weekProgress,
-          totalPoints: completed * 10, // Placeholder calculation
-        });
-      },
-      error: (err) => console.error('Failed to load stats:', err),
-    });
+    try {
+      const dashboard = await this.dashboardService.getDashboard(householdId);
+      this.stats.set({
+        activeCount: dashboard.weekSummary.pending,
+        weekProgress: dashboard.weekSummary.completionRate,
+        totalPoints: dashboard.children.reduce((sum, c) => sum + c.tasksCompleted * 10, 0),
+      });
+    } catch (err) {
+      console.error('Failed to load stats:', err);
+    }
   }
 
   /**
