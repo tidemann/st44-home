@@ -133,6 +133,9 @@ export class MainLayout implements OnInit, OnDestroy {
       this.activeScreen.set('family');
     } else if (url.includes('/progress')) {
       this.activeScreen.set('progress');
+    } else {
+      // Settings, household-settings, or other pages - no main nav item active
+      this.activeScreen.set('none');
     }
   }
 
@@ -140,7 +143,10 @@ export class MainLayout implements OnInit, OnDestroy {
    * Handle navigation between screens
    */
   protected onNavigate(screen: NavScreen): void {
-    const routes: Record<NavScreen, string> = {
+    // 'none' is not a navigable screen, it just means no nav item is active
+    if (screen === 'none') return;
+
+    const routes: Record<Exclude<NavScreen, 'none'>, string> = {
       home: '/home',
       tasks: '/tasks',
       family: '/family',
