@@ -454,14 +454,28 @@ async function getHouseholdMembers(
         // Child without user account - add to unlinked list
         unlinkedChildren.push({
           childId: row.child_id,
-          childName: row.child_name,
-          ...childData,
+          tasksCompleted: childData.tasksCompleted,
+          totalTasks: childData.totalTasks,
+          points: childData.points,
+          childName: childData.childName,
         });
       }
     }
 
+    // Define the member response type to allow nullable email/joinedAt
+    interface MemberResponse {
+      userId: string;
+      email: string | null;
+      displayName: string | null;
+      role: string;
+      joinedAt: string | null;
+      tasksCompleted: number;
+      totalTasks: number;
+      points: number;
+    }
+
     // Build member list from household_members table (registered users)
-    const members = membersResult.rows.map((row: unknown) => {
+    const members: MemberResponse[] = membersResult.rows.map((row: unknown) => {
       const userId = (row as { user_id: string }).user_id;
       const role = (row as { role: string }).role;
       const displayName = (row as { display_name: string | null }).display_name;
