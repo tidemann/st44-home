@@ -13,7 +13,13 @@ import {
   CreateChildUserAccountRequestSchema,
 } from '@st44/types';
 import { z, zodToOpenAPI, CommonErrors } from '@st44/types/generators';
-import { handleZodError, validateRequest, withTransaction } from '../utils/index.js';
+import {
+  handleZodError,
+  validateRequest,
+  validateParams,
+  withTransaction,
+} from '../utils/index.js';
+import { householdChildParamsSchema } from '../schemas/validation.js';
 import { stripResponseValidation } from '../schemas/common.js';
 import bcrypt from 'bcrypt';
 
@@ -241,23 +247,15 @@ async function getChild(request: FastifyRequest<{ Params: ChildParams }>, reply:
  * Requires admin role
  */
 async function deleteChild(request: FastifyRequest<DeleteChildRequest>, reply: FastifyReply) {
-  const { householdId, childId: id } = request.params;
-
-  // Validate child ID format (UUID)
-  const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
-  if (!uuidRegex.test(id)) {
-    return reply.status(400).send({
-      error: 'Bad Request',
-      message: 'Invalid child ID format',
-    });
-  }
-
   try {
+    // Validate params with Zod schema
+    const { householdId, childId } = validateParams(householdChildParamsSchema, request);
+
     const result = await db.query(
       `DELETE FROM children
        WHERE id = $1 AND household_id = $2
        RETURNING id`,
-      [id, householdId],
+      [childId, householdId],
     );
 
     if (result.rows.length === 0) {
@@ -272,6 +270,9 @@ async function deleteChild(request: FastifyRequest<DeleteChildRequest>, reply: F
       message: 'Child removed successfully',
     });
   } catch (error) {
+    if (error instanceof z.ZodError) {
+      return handleZodError(error, reply);
+    }
     request.log.error(error, 'Failed to delete child');
     return reply.status(500).send({
       statusCode: 500,

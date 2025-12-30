@@ -20,7 +20,13 @@ import {
   validateHouseholdMembership,
   requireHouseholdParent,
 } from '../middleware/household-membership.js';
-import { validateRequest, handleZodError, withTransaction } from '../utils/index.js';
+import {
+  validateRequest,
+  validateParams,
+  handleZodError,
+  withTransaction,
+} from '../utils/index.js';
+import { householdRewardParamsSchema, uuidSchema } from '../schemas/validation.js';
 import { stripResponseValidation } from '../schemas/common.js';
 import type {
   RewardRow,
@@ -169,18 +175,10 @@ async function listRewards(request: FastifyRequest<ListRewardsRequest>, reply: F
  * GET /api/households/:householdId/rewards/:rewardId - Get reward details
  */
 async function getReward(request: FastifyRequest<{ Params: RewardParams }>, reply: FastifyReply) {
-  const { householdId, rewardId } = request.params;
-
-  const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
-  if (!uuidRegex.test(rewardId)) {
-    return reply.status(400).send({
-      statusCode: 400,
-      error: 'Bad Request',
-      message: 'Invalid reward ID format',
-    });
-  }
-
   try {
+    // Validate params with Zod schema
+    const { householdId, rewardId } = validateParams(householdRewardParamsSchema, request);
+
     const result = await db.query('SELECT * FROM rewards WHERE id = $1 AND household_id = $2', [
       rewardId,
       householdId,
@@ -196,6 +194,9 @@ async function getReward(request: FastifyRequest<{ Params: RewardParams }>, repl
 
     return reply.send(mapRewardRowToReward(result.rows[0]));
   } catch (error) {
+    if (error instanceof z.ZodError) {
+      return handleZodError(error, reply);
+    }
     request.log.error(error, 'Failed to get reward');
     return reply.status(500).send({
       statusCode: 500,
@@ -213,18 +214,9 @@ async function updateReward(
   request: FastifyRequest<{ Params: RewardParams; Body: UpdateRewardRequest }>,
   reply: FastifyReply,
 ) {
-  const { householdId, rewardId } = request.params;
-
-  const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
-  if (!uuidRegex.test(rewardId)) {
-    return reply.status(400).send({
-      statusCode: 400,
-      error: 'Bad Request',
-      message: 'Invalid reward ID format',
-    });
-  }
-
   try {
+    // Validate params with Zod schema
+    const { householdId, rewardId } = validateParams(householdRewardParamsSchema, request);
     const validatedData = validateRequest(UpdateRewardRequestSchema, request.body);
     const { name, description, pointsCost, quantity, active } = validatedData;
 
@@ -305,18 +297,10 @@ async function deleteReward(
   request: FastifyRequest<{ Params: RewardParams }>,
   reply: FastifyReply,
 ) {
-  const { householdId, rewardId } = request.params;
-
-  const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
-  if (!uuidRegex.test(rewardId)) {
-    return reply.status(400).send({
-      statusCode: 400,
-      error: 'Bad Request',
-      message: 'Invalid reward ID format',
-    });
-  }
-
   try {
+    // Validate params with Zod schema
+    const { householdId, rewardId } = validateParams(householdRewardParamsSchema, request);
+
     const result = await db.query(
       `UPDATE rewards
        SET active = false, updated_at = NOW()
@@ -338,6 +322,9 @@ async function deleteReward(
       message: 'Reward deleted successfully',
     });
   } catch (error) {
+    if (error instanceof z.ZodError) {
+      return handleZodError(error, reply);
+    }
     request.log.error(error, 'Failed to delete reward');
     return reply.status(500).send({
       statusCode: 500,
@@ -416,6 +403,17 @@ async function getChildRewards(request: FastifyRequest, reply: FastifyReply) {
   }
 }
 
+// Schema for rewardId only param
+const rewardIdParamSchema = z.object({
+  rewardId: uuidSchema,
+});
+
+// Schema for household + redemption ID params
+const householdRedemptionParamsSchema = z.object({
+  householdId: uuidSchema,
+  redemptionId: uuidSchema,
+});
+
 /**
  * POST /api/children/me/rewards/:rewardId/redeem - Redeem a reward
  */
@@ -423,18 +421,9 @@ async function redeemReward(
   request: FastifyRequest<{ Params: { rewardId: string } }>,
   reply: FastifyReply,
 ) {
-  const { rewardId } = request.params;
-
-  const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
-  if (!uuidRegex.test(rewardId)) {
-    return reply.status(400).send({
-      statusCode: 400,
-      error: 'Bad Request',
-      message: 'Invalid reward ID format',
-    });
-  }
-
   try {
+    // Validate params with Zod schema
+    const { rewardId } = validateParams(rewardIdParamSchema, request);
     const userId = request.user?.userId;
     if (!userId) {
       return reply.status(401).send({
@@ -536,6 +525,9 @@ async function redeemReward(
       }
       return reply.status(error.statusCode).send(response);
     }
+    if (error instanceof z.ZodError) {
+      return handleZodError(error, reply);
+    }
     request.log.error(error, 'Failed to redeem reward');
     return reply.status(500).send({
       statusCode: 500,
@@ -633,18 +625,9 @@ async function updateRedemptionStatus(
   reply: FastifyReply,
   status: 'approved' | 'fulfilled' | 'rejected',
 ) {
-  const { householdId, redemptionId } = request.params;
-
-  const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
-  if (!uuidRegex.test(redemptionId)) {
-    return reply.status(400).send({
-      statusCode: 400,
-      error: 'Bad Request',
-      message: 'Invalid redemption ID format',
-    });
-  }
-
   try {
+    // Validate params with Zod schema
+    const { householdId, redemptionId } = validateParams(householdRedemptionParamsSchema, request);
     const updatedRedemption = await withTransaction(pool, async (client) => {
       // Get current redemption
       const currentResult = await client.query(
@@ -680,6 +663,9 @@ async function updateRedemptionStatus(
 
     return reply.send(mapRedemptionRowToRedemption(updatedRedemption));
   } catch (error) {
+    if (error instanceof z.ZodError) {
+      return handleZodError(error, reply);
+    }
     if (error instanceof TransactionValidationError) {
       return reply.status(error.statusCode).send({
         statusCode: error.statusCode,
