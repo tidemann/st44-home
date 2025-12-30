@@ -30,14 +30,17 @@ VALUES
   ('022', 'add_user_id_to_children', NOW()),
   ('023', 'add_rewards_system', NOW()),
   ('038', 'create_password_reset_tokens_table', NOW()),
-  ('039', 'add_name_to_users', NOW())
+  ('039', 'add_name_to_users', NOW()),
+  ('040', 'add_user_name_fields', NOW())
 ON CONFLICT (version) DO NOTHING;
 
 -- Users table for authentication (supports email/password and OAuth)
 CREATE TABLE IF NOT EXISTS users (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   email VARCHAR(255) UNIQUE NOT NULL,
-  name VARCHAR(255), -- User display name (nullable for backwards compatibility)
+  name VARCHAR(255), -- Legacy display name (kept for backwards compatibility)
+  first_name VARCHAR(100), -- User's first name
+  last_name VARCHAR(100), -- User's last name
   password_hash VARCHAR(255), -- Nullable for OAuth users
   oauth_provider VARCHAR(50), -- 'google', 'microsoft', etc.
   oauth_provider_id VARCHAR(255), -- User ID from OAuth provider

@@ -1,0 +1,19 @@
+<div
+  class="avatar"
+  [class]="sizeClass()"
+  [style.background-color]="imageUrl() ? 'transparent' : backgroundColor()"
+  [attr.aria-label]="
+    firstName() && lastName() ? firstName() + ' ' + lastName() : name() || email() || 'User'
+  "
+  role="img"
+>
+  @if (imageUrl()) {
+    <img
+      [src]="imageUrl()"
+      [alt]="firstName() && lastName() ? firstName() + ' ' + lastName() : name() || 'User avatar'"
+      class="avatar-image"
+    />
+  } @else {
+    <span class="avatar-initials">{{ initials() }}</span>
+  }
+</div>

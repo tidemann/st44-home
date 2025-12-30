@@ -37,6 +37,61 @@
     }
 
     <form [formGroup]="registerForm" (ngSubmit)="onSubmit()">
+      <!-- Name fields - side by side on larger screens -->
+      <div class="name-fields">
+        <!-- First Name -->
+        <div class="form-group">
+          <label for="firstName" class="form-label">First Name</label>
+          <input
+            id="firstName"
+            type="text"
+            class="form-input"
+            formControlName="firstName"
+            placeholder="First name"
+            [attr.aria-invalid]="firstNameControl.invalid && firstNameControl.touched"
+            [attr.aria-describedby]="
+              firstNameControl.invalid && firstNameControl.touched ? 'firstName-error' : null
+            "
+          />
+          @if (firstNameControl.invalid && firstNameControl.touched) {
+            <div id="firstName-error" class="error" role="alert">
+              @if (firstNameControl.errors?.['required']) {
+                <span>First name is required</span>
+              }
+              @if (firstNameControl.errors?.['maxlength']) {
+                <span>First name is too long</span>
+              }
+            </div>
+          }
+        </div>
+
+        <!-- Last Name -->
+        <div class="form-group">
+          <label for="lastName" class="form-label">Last Name</label>
+          <input
+            id="lastName"
+            type="text"
+            class="form-input"
+            formControlName="lastName"
+            placeholder="Last name"
+            [attr.aria-invalid]="lastNameControl.invalid && lastNameControl.touched"
+            [attr.aria-describedby]="
+              lastNameControl.invalid && lastNameControl.touched ? 'lastName-error' : null
+            "
+          />
+          @if (lastNameControl.invalid && lastNameControl.touched) {
+            <div id="lastName-error" class="error" role="alert">
+              @if (lastNameControl.errors?.['required']) {
+                <span>Last name is required</span>
+              }
+              @if (lastNameControl.errors?.['maxlength']) {
+                <span>Last name is too long</span>
+              }
+            </div>
+          }
+        </div>
+      </div>
+
       <!-- Email -->
       <div class="form-group">
         <label for="email" class="form-label">Email</label>

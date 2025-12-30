@@ -17,6 +17,8 @@ const JWT_REFRESH_EXPIRY = '7d';
 export interface AccessTokenPayload {
   userId: string;
   email: string;
+  firstName?: string | null;
+  lastName?: string | null;
   type: 'access';
   iat?: number;
   exp?: number;
@@ -42,21 +44,30 @@ export interface TokenVerificationResult<T> {
 }
 
 /**
+ * Options for generating an access token
+ */
+export interface GenerateAccessTokenOptions {
+  firstName?: string | null;
+  lastName?: string | null;
+  secret?: string;
+  expiresIn?: string;
+}
+
+/**
  * Generate an access token
  *
  * @param userId - User ID to encode in token
  * @param email - User email to encode in token
- * @param secret - Optional secret (defaults to JWT_SECRET)
- * @param expiresIn - Optional expiry (defaults to 1h)
+ * @param options - Optional configuration including firstName, lastName, secret, expiresIn
  * @returns JWT access token string
  */
 export function generateAccessToken(
   userId: string,
   email: string,
-  secret: string = JWT_SECRET,
-  expiresIn: string = JWT_ACCESS_EXPIRY,
+  options: GenerateAccessTokenOptions = {},
 ): string {
-  return jwt.sign({ userId, email, type: 'access' }, secret, {
+  const { firstName, lastName, secret = JWT_SECRET, expiresIn = JWT_ACCESS_EXPIRY } = options;
+  return jwt.sign({ userId, email, firstName, lastName, type: 'access' }, secret, {
     expiresIn: expiresIn as jwt.SignOptions['expiresIn'],
   });
 }

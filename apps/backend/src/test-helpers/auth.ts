@@ -8,12 +8,14 @@ export async function registerAndLogin(
   app: FastifyInstance,
   email: string,
   password: string,
+  firstName = 'Test',
+  lastName = 'User',
 ): Promise<{ accessToken: string; refreshToken: string; userId: string }> {
   // Register
   await app.inject({
     method: 'POST',
     url: '/api/auth/register',
-    payload: { email, password },
+    payload: { email, password, firstName, lastName },
   });
 
   // Login to get tokens

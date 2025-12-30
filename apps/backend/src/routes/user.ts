@@ -16,7 +16,8 @@ import {
 
 interface UpdateProfileRequest {
   Body: {
-    name?: string;
+    firstName?: string;
+    lastName?: string;
     email?: string;
     password?: string;
   };
@@ -40,7 +41,7 @@ async function getProfile(request: FastifyRequest, reply: FastifyReply) {
 
   try {
     const result = await db.query(
-      `SELECT id, email, name, created_at, updated_at
+      `SELECT id, email, first_name, last_name, created_at, updated_at
        FROM users
        WHERE id = $1`,
       [userId],
@@ -55,7 +56,8 @@ async function getProfile(request: FastifyRequest, reply: FastifyReply) {
     return reply.send({
       id: user.id,
       email: user.email,
-      name: user.name,
+      firstName: user.first_name,
+      lastName: user.last_name,
       createdAt: user.created_at?.toISOString?.() ?? user.created_at,
       updatedAt: user.updated_at?.toISOString?.() ?? user.updated_at,
     });
@@ -105,9 +107,14 @@ async function updateProfile(request: FastifyRequest<UpdateProfileRequest>, repl
     const values: unknown[] = [];
     let paramIndex = 1;
 
-    if (validatedData.name !== undefined) {
-      updates.push(`name = $${paramIndex++}`);
-      values.push(validatedData.name);
+    if (validatedData.firstName !== undefined) {
+      updates.push(`first_name = $${paramIndex++}`);
+      values.push(validatedData.firstName);
+    }
+
+    if (validatedData.lastName !== undefined) {
+      updates.push(`last_name = $${paramIndex++}`);
+      values.push(validatedData.lastName);
     }
 
     if (validatedData.email !== undefined) {
@@ -154,7 +161,7 @@ async function updateProfile(request: FastifyRequest<UpdateProfileRequest>, repl
       UPDATE users
       SET ${updates.join(', ')}
       WHERE id = $${paramIndex}
-      RETURNING id, email, name, created_at, updated_at
+      RETURNING id, email, first_name, last_name, created_at, updated_at
     `;
 
     const result = await db.query(query, values);
@@ -168,7 +175,8 @@ async function updateProfile(request: FastifyRequest<UpdateProfileRequest>, repl
     return reply.send({
       id: user.id,
       email: user.email,
-      name: user.name,
+      firstName: user.first_name,
+      lastName: user.last_name,
       createdAt: user.created_at?.toISOString?.() ?? user.created_at,
       updatedAt: user.updated_at?.toISOString?.() ?? user.updated_at,
     });

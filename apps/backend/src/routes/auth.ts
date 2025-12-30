@@ -41,9 +41,15 @@ function validatePasswordStrength(password: string): boolean {
   return password.length >= 8 && hasUpperCase && hasLowerCase && hasNumber;
 }
 
-// Local JWT token generation functions that include role (not in utils/jwt.ts)
-function generateAccessToken(userId: string, email: string, role?: string): string {
-  return jwt.sign({ userId, email, role, type: 'access' }, JWT_SECRET, {
+// Local JWT token generation functions that include role and name (not in utils/jwt.ts)
+function generateAccessToken(
+  userId: string,
+  email: string,
+  role?: string,
+  firstName?: string | null,
+  lastName?: string | null,
+): string {
+  return jwt.sign({ userId, email, role, firstName, lastName, type: 'access' }, JWT_SECRET, {
     expiresIn: '1h',
   });
 }
@@ -57,12 +63,16 @@ interface RegisterRequest {
   Body: {
     email: string;
     password: string;
+    firstName: string;
+    lastName: string;
   };
 }
 
 interface RegisterResponse {
   userId: string;
   email: string;
+  firstName: string;
+  lastName: string;
 }
 
 interface ErrorResponse {
@@ -83,6 +93,8 @@ interface LoginResponse {
   email: string;
   role?: string;
   householdId?: string;
+  firstName?: string | null;
+  lastName?: string | null;
 }
 
 interface RefreshRequest {
@@ -139,7 +151,7 @@ export default async function authRoutes(fastify: FastifyInstance) {
       preHandler: rateLimiters.register,
     },
     async (request, reply) => {
-      const { email, password } = request.body;
+      const { email, password, firstName, lastName } = request.body;
 
       // Validate password strength
       if (!validatePasswordStrength(password)) {
@@ -154,16 +166,20 @@ export default async function authRoutes(fastify: FastifyInstance) {
         // Hash password with bcrypt (cost factor 12)
         const passwordHash = await bcrypt.hash(password, 12);
 
-        // Insert user into database
+        // Insert user into database with name fields
         const result = await pool.query(
-          'INSERT INTO users (email, password_hash) VALUES ($1, $2) RETURNING id, email',
-          [email, passwordHash],
+          `INSERT INTO users (email, password_hash, first_name, last_name)
+           VALUES ($1, $2, $3, $4)
+           RETURNING id, email, first_name, last_name`,
+          [email, passwordHash, firstName, lastName],
         );
 
         reply.code(201);
         return {
           userId: result.rows[0].id,
           email: result.rows[0].email,
+          firstName: result.rows[0].first_name,
+          lastName: result.rows[0].last_name,
         };
       } catch (error: unknown) {
         // Handle duplicate email (PostgreSQL unique violation)
@@ -191,9 +207,9 @@ export default async function authRoutes(fastify: FastifyInstance) {
       const { email, password } = request.body;
 
       try {
-        // Query user by email
+        // Query user by email, including name fields
         const result = await pool.query(
-          'SELECT id, email, password_hash FROM users WHERE email = $1',
+          'SELECT id, email, password_hash, first_name, last_name FROM users WHERE email = $1',
           [email],
         );
 
@@ -229,8 +245,14 @@ export default async function authRoutes(fastify: FastifyInstance) {
           householdId = householdResult.rows[0].household_id;
         }
 
-        // Generate tokens with role
-        const accessToken = generateAccessToken(user.id, user.email, role);
+        // Generate tokens with role and name
+        const accessToken = generateAccessToken(
+          user.id,
+          user.email,
+          role,
+          user.first_name,
+          user.last_name,
+        );
         const refreshToken = generateRefreshToken(user.id);
 
         fastify.log.info({ userId: user.id, email, role, householdId }, 'Successful login');
@@ -243,6 +265,8 @@ export default async function authRoutes(fastify: FastifyInstance) {
           email: user.email,
           role,
           householdId,
+          firstName: user.first_name,
+          lastName: user.last_name,
         };
       } catch (error: unknown) {
         // Log error but don't expose internal details
@@ -273,14 +297,19 @@ export default async function authRoutes(fastify: FastifyInstance) {
           return { error: 'Invalid or expired refresh token' };
         }
 
-        // Get user email from database
-        const result = await pool.query('SELECT email FROM users WHERE id = $1', [decoded.userId]);
+        // Get user data from database
+        const result = await pool.query(
+          'SELECT email, first_name, last_name FROM users WHERE id = $1',
+          [decoded.userId],
+        );
 
         if (result.rows.length === 0) {
           fastify.log.warn({ userId: decoded.userId }, 'User not found for refresh token');
           reply.code(401);
           return { error: 'Invalid or expired refresh token' };
         }
+
+        const user = result.rows[0];
 
         // Query household_members to get user's role
         const householdResult = await pool.query(
@@ -290,8 +319,14 @@ export default async function authRoutes(fastify: FastifyInstance) {
 
         const role = householdResult.rows.length > 0 ? householdResult.rows[0].role : undefined;
 
-        // Generate new access token with role
-        const accessToken = generateAccessToken(decoded.userId, result.rows[0].email, role);
+        // Generate new access token with role and name
+        const accessToken = generateAccessToken(
+          decoded.userId,
+          user.email,
+          role,
+          user.first_name,
+          user.last_name,
+        );
 
         fastify.log.info({ userId: decoded.userId }, 'Token refreshed successfully');
 
@@ -367,7 +402,12 @@ export default async function authRoutes(fastify: FastifyInstance) {
           return { error: 'Invalid Google token' };
         }
 
-        const { sub: googleId, email, name } = payload;
+        const {
+          sub: googleId,
+          email,
+          given_name: googleFirstName,
+          family_name: googleLastName,
+        } = payload;
 
         if (!email) {
           fastify.log.warn('Google token missing email');
@@ -377,39 +417,67 @@ export default async function authRoutes(fastify: FastifyInstance) {
 
         // Check if user exists (by email or OAuth ID)
         const existingUserResult = await pool.query(
-          'SELECT id, email FROM users WHERE email = $1 OR (oauth_provider = $2 AND oauth_provider_id = $3)',
+          'SELECT id, email, first_name, last_name FROM users WHERE email = $1 OR (oauth_provider = $2 AND oauth_provider_id = $3)',
           [email, 'google', googleId],
         );
 
         let userId: string;
         let userEmail: string;
+        let firstName: string | null = null;
+        let lastName: string | null = null;
 
         if (existingUserResult.rows.length === 0) {
-          // Create new user with Google OAuth
+          // Create new user with Google OAuth including name from Google
           const insertResult = await pool.query(
-            `INSERT INTO users (email, oauth_provider, oauth_provider_id)
-             VALUES ($1, $2, $3)
-             RETURNING id, email`,
-            [email, 'google', googleId],
+            `INSERT INTO users (email, oauth_provider, oauth_provider_id, first_name, last_name)
+             VALUES ($1, $2, $3, $4, $5)
+             RETURNING id, email, first_name, last_name`,
+            [email, 'google', googleId, googleFirstName || null, googleLastName || null],
           );
           userId = insertResult.rows[0].id;
           userEmail = insertResult.rows[0].email;
+          firstName = insertResult.rows[0].first_name;
+          lastName = insertResult.rows[0].last_name;
           fastify.log.info({ userId, email: userEmail }, 'New user created via Google OAuth');
         } else {
           userId = existingUserResult.rows[0].id;
           userEmail = existingUserResult.rows[0].email;
+          firstName = existingUserResult.rows[0].first_name;
+          lastName = existingUserResult.rows[0].last_name;
 
-          // Update OAuth info if user exists but doesn't have it yet
-          const user = existingUserResult.rows[0];
+          // Update OAuth info and name if user exists but doesn't have it yet
           const needsOAuthUpdate = await pool.query(
-            'SELECT oauth_provider FROM users WHERE id = $1',
+            'SELECT oauth_provider, first_name, last_name FROM users WHERE id = $1',
             [userId],
           );
 
+          const updateFields: string[] = [];
+          const updateValues: (string | null)[] = [];
+          let paramIndex = 1;
+
           if (needsOAuthUpdate.rows[0]?.oauth_provider !== 'google') {
+            updateFields.push(`oauth_provider = $${paramIndex++}`);
+            updateValues.push('google');
+            updateFields.push(`oauth_provider_id = $${paramIndex++}`);
+            updateValues.push(googleId);
+          }
+
+          // Update name from Google if not set locally
+          if (!firstName && googleFirstName) {
+            updateFields.push(`first_name = $${paramIndex++}`);
+            updateValues.push(googleFirstName);
+            firstName = googleFirstName;
+          }
+          if (!lastName && googleLastName) {
+            updateFields.push(`last_name = $${paramIndex++}`);
+            updateValues.push(googleLastName);
+            lastName = googleLastName;
+          }
+
+          if (updateFields.length > 0) {
             await pool.query(
-              'UPDATE users SET oauth_provider = $1, oauth_provider_id = $2 WHERE id = $3',
-              ['google', googleId, userId],
+              `UPDATE users SET ${updateFields.join(', ')} WHERE id = $${paramIndex}`,
+              [...updateValues, userId],
             );
             fastify.log.info({ userId }, 'Updated existing user with Google OAuth info');
           }
@@ -434,8 +502,8 @@ export default async function authRoutes(fastify: FastifyInstance) {
           householdId = householdResult.rows[0].household_id;
         }
 
-        // Generate JWT tokens with role
-        const accessToken = generateAccessToken(userId, userEmail, role);
+        // Generate JWT tokens with role and name
+        const accessToken = generateAccessToken(userId, userEmail, role, firstName, lastName);
         const refreshToken = generateRefreshToken(userId);
 
         reply.code(200);
@@ -446,6 +514,8 @@ export default async function authRoutes(fastify: FastifyInstance) {
           email: userEmail,
           role,
           householdId,
+          firstName,
+          lastName,
         };
       } catch (error) {
         fastify.log.error(error, 'Google OAuth error');
