@@ -12,6 +12,24 @@
 
   <!-- Main Content Area -->
   <div class="main-content">
+    <!-- Mobile Header (Mobile only) -->
+    <header class="mobile-header">
+      <div class="mobile-header-content">
+        <div class="mobile-logo">Diddit!</div>
+        <div class="mobile-header-actions">
+          <app-household-switcher />
+          <button
+            type="button"
+            class="settings-btn"
+            (click)="onSettings()"
+            aria-label="Open settings"
+          >
+            ⚙️
+          </button>
+        </div>
+      </div>
+    </header>
+
     <!-- Router Outlet for Page Content -->
     <router-outlet />
 
