@@ -373,19 +373,22 @@ async function getHouseholdDashboard(
 
 /**
  * GET /api/households/:id/members - Get household members
- * Returns list of all members in the household
+ * Returns list of all members in the household with their stats
  */
 async function getHouseholdMembers(
   request: FastifyRequest<GetHouseholdRequest>,
   reply: FastifyReply,
 ) {
   const { householdId: id } = request.params;
+  const today = new Date().toISOString().split('T')[0];
 
   try {
-    const result = await db.query(
+    // Get all household members with their user info
+    const membersResult = await db.query(
       `SELECT
         u.id as user_id,
         u.email,
+        u.name as display_name,
         hm.role,
         hm.joined_at
       FROM household_members hm
@@ -395,14 +398,68 @@ async function getHouseholdMembers(
       [id],
     );
 
+    // Get children stats: tasks for today and points balance
+    // This links household members (via user_id) to children profiles
+    const childrenStatsResult = await db.query(
+      `SELECT
+        c.user_id,
+        c.id as child_id,
+        c.name as child_name,
+        COALESCE(cpb.points_balance, 0) as points,
+        COALESCE(today_stats.tasks_completed, 0) as tasks_completed,
+        COALESCE(today_stats.total_tasks, 0) as total_tasks
+      FROM children c
+      LEFT JOIN child_points_balance cpb ON c.id = cpb.child_id
+      LEFT JOIN (
+        SELECT
+          child_id,
+          COUNT(*) as total_tasks,
+          SUM(CASE WHEN status = 'completed' THEN 1 ELSE 0 END) as tasks_completed
+        FROM task_assignments
+        WHERE household_id = $1 AND date = $2
+        GROUP BY child_id
+      ) today_stats ON c.id = today_stats.child_id
+      WHERE c.household_id = $1`,
+      [id, today],
+    );
+
+    // Create a map of user_id to child stats for quick lookup
+    const childStatsMap = new Map<
+      string,
+      { tasksCompleted: number; totalTasks: number; points: number; childName: string }
+    >();
+    for (const row of childrenStatsResult.rows) {
+      if (row.user_id) {
+        childStatsMap.set(row.user_id, {
+          tasksCompleted: parseInt(row.tasks_completed || '0', 10),
+          totalTasks: parseInt(row.total_tasks || '0', 10),
+          points: parseInt(row.points || '0', 10),
+          childName: row.child_name,
+        });
+      }
+    }
+
     return reply.send(
-      result.rows.map((row: unknown) => ({
-        userId: (row as { user_id: string }).user_id,
-        email: (row as { email: string }).email,
-        displayName: null, // TODO: Add display_name column to users table
-        role: (row as { role: string }).role,
-        joinedAt: toDateTimeString((row as { joined_at: Date }).joined_at),
-      })),
+      membersResult.rows.map((row: unknown) => {
+        const userId = (row as { user_id: string }).user_id;
+        const role = (row as { role: string }).role;
+        const displayName = (row as { display_name: string | null }).display_name;
+
+        // Get child stats if this member is a child with linked account
+        const childStats = childStatsMap.get(userId);
+
+        return {
+          userId,
+          email: (row as { email: string }).email,
+          displayName: childStats?.childName || displayName,
+          role,
+          joinedAt: toDateTimeString((row as { joined_at: Date }).joined_at),
+          // Stats: only applicable for children, parents get 0s
+          tasksCompleted: childStats?.tasksCompleted ?? 0,
+          totalTasks: childStats?.totalTasks ?? 0,
+          points: childStats?.points ?? 0,
+        };
+      }),
     );
   } catch (error) {
     request.log.error(error, 'Failed to get household members');
@@ -506,8 +563,9 @@ export default async function householdRoutes(server: FastifyInstance) {
   // Get household members (member access)
   server.get('/api/households/:householdId/members', {
     schema: stripResponseValidation({
-      summary: 'List household members',
-      description: 'Get all members of a household',
+      summary: 'List household members with stats',
+      description:
+        'Get all members of a household with their task completion stats and points balance',
       tags: ['households'],
       security: [{ bearerAuth: [] }],
       params: zodToOpenAPI(HouseholdParamsSchema),
@@ -522,6 +580,9 @@ export default async function householdRoutes(server: FastifyInstance) {
               displayName: { type: ['string', 'null'] },
               role: { type: 'string', enum: ['admin', 'parent', 'child'] },
               joinedAt: { type: 'string', format: 'date-time' },
+              tasksCompleted: { type: 'integer', description: 'Tasks completed today' },
+              totalTasks: { type: 'integer', description: 'Total tasks assigned today' },
+              points: { type: 'integer', description: 'Current points balance' },
             },
           },
         },

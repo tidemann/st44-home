@@ -28,6 +28,10 @@ export interface HouseholdMember {
   displayName: string | null;
   role: 'admin' | 'parent' | 'child';
   joinedAt: string;
+  // Stats fields - added for Family page member cards
+  tasksCompleted: number; // Tasks completed today
+  totalTasks: number; // Total tasks assigned today
+  points: number; // Current points balance
 }
 
 /**
