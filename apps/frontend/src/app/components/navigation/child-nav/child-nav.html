@@ -1,0 +1,15 @@
+<nav class="child-nav" role="navigation" aria-label="Child navigation">
+  @for (item of navItems; track item.id) {
+    <button
+      type="button"
+      class="child-nav-btn"
+      [class.active]="isActive(item.id)"
+      (click)="handleNavClick(item.id)"
+      [attr.aria-label]="item.label"
+      [attr.aria-current]="isActive(item.id) ? 'page' : null"
+    >
+      <div class="child-nav-icon">{{ item.icon }}</div>
+      <div class="child-nav-label">{{ item.label }}</div>
+    </button>
+  }
+</nav>

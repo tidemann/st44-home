@@ -1,4 +1,106 @@
 .child-layout {
   min-height: 100vh;
   background: linear-gradient(180deg, #f0f9ff 0%, #e0f2fe 100%);
+  display: flex;
+  flex-direction: column;
+}
+
+/* Header */
+.child-header {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: linear-gradient(
+    135deg,
+    var(--color-primary, #6366f1) 0%,
+    var(--color-secondary, #ec4899) 100%
+  );
+  padding: var(--space-md, 16px);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+}
+
+.child-header-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.child-logo {
+  font-family: var(--font-display, 'Outfit', sans-serif);
+  font-size: 28px;
+  font-weight: 800;
+  color: white;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.logout-btn {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs, 4px);
+  padding: var(--space-sm, 8px) var(--space-md, 16px);
+  background: rgba(255, 255, 255, 0.2);
+  border: 2px solid rgba(255, 255, 255, 0.4);
+  border-radius: var(--radius-full, 9999px);
+  color: white;
+  font-family: var(--font-body, 'Outfit', sans-serif);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.logout-btn:hover {
+  background: rgba(255, 255, 255, 0.3);
+  transform: scale(1.05);
+}
+
+.logout-btn:focus-visible {
+  outline: 3px solid white;
+  outline-offset: 2px;
+}
+
+.logout-icon {
+  font-size: 18px;
+}
+
+.logout-text {
+  display: none;
+}
+
+@media (min-width: 400px) {
+  .logout-text {
+    display: inline;
+  }
+}
+
+/* Main Content */
+.child-content {
+  flex: 1;
+  padding-bottom: 120px; /* Space for bottom nav */
+}
+
+/* Tablet and desktop adjustments */
+@media (min-width: 768px) {
+  .child-header {
+    padding: var(--space-lg, 24px);
+  }
+
+  .child-logo {
+    font-size: 32px;
+  }
+
+  .logout-btn {
+    padding: var(--space-md, 16px) var(--space-lg, 24px);
+    font-size: 16px;
+  }
+
+  .logout-icon {
+    font-size: 20px;
+  }
+
+  .child-content {
+    padding-bottom: 140px;
+  }
 }
