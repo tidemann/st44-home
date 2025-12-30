@@ -12,7 +12,7 @@ import { DatePipe } from '@angular/common';
 import {
   HouseholdService,
   HouseholdListItem,
-  HouseholdMember,
+  HouseholdMemberResponse,
 } from '../../services/household.service';
 import { AuthService } from '../../services/auth.service';
 import { ChildrenManagementComponent } from '../children-management/children-management';
@@ -39,7 +39,7 @@ export class HouseholdSettingsComponent implements OnInit {
   private readonly authService = inject(AuthService);
 
   household = signal<HouseholdListItem | null>(null);
-  members = signal<HouseholdMember[]>([]);
+  members = signal<HouseholdMemberResponse[]>([]);
   currentUserRole = signal<'admin' | 'parent' | 'child' | null>(null);
   isLoading = signal(false);
   isSaving = signal(false);

@@ -1,5 +1,10 @@
 import { Injectable, signal, computed, inject } from '@angular/core';
-import type { Household, CreateHouseholdRequest, UpdateHouseholdRequest } from '@st44/types';
+import type {
+  Household,
+  CreateHouseholdRequest,
+  UpdateHouseholdRequest,
+  HouseholdMemberResponse,
+} from '@st44/types';
 import { ApiService } from './api.service';
 import { StorageService } from './storage.service';
 import { STORAGE_KEYS } from './storage-keys';
@@ -19,20 +24,10 @@ export interface HouseholdListItem {
 }
 
 /**
- * Household member interface matching backend response
- * TODO: Migrate to @st44/types when HouseholdMember response schema added
+ * Re-export HouseholdMemberResponse from @st44/types for consumers
+ * This type matches the GET /households/:id/members response
  */
-export interface HouseholdMember {
-  userId: string;
-  email: string;
-  displayName: string | null;
-  role: 'admin' | 'parent' | 'child';
-  joinedAt: string;
-  // Stats fields - added for Family page member cards
-  tasksCompleted: number; // Tasks completed today
-  totalTasks: number; // Total tasks assigned today
-  points: number; // Current points balance
-}
+export type { HouseholdMemberResponse };
 
 /**
  * Service for managing households and household state
@@ -92,8 +87,8 @@ export class HouseholdService {
     } satisfies UpdateHouseholdRequest);
   }
 
-  async getHouseholdMembers(householdId: string): Promise<HouseholdMember[]> {
-    return this.apiService.get<HouseholdMember[]>(`/households/${householdId}/members`);
+  async getHouseholdMembers(householdId: string): Promise<HouseholdMemberResponse[]> {
+    return this.apiService.get<HouseholdMemberResponse[]>(`/households/${householdId}/members`);
   }
 
   /**
