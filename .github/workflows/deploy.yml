@@ -145,6 +145,9 @@ jobs:
 
       - name: Sync docker-compose.yml to server
         run: |
+          ssh -i ~/.ssh/id_deploy -o StrictHostKeyChecking=yes \
+            ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} \
+            "mkdir -p /srv/st44-home/infra"
           scp -i ~/.ssh/id_deploy -o StrictHostKeyChecking=yes \
             infra/docker-compose.yml \
             ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }}:/srv/st44-home/infra/docker-compose.yml
