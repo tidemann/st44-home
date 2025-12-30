@@ -3,6 +3,9 @@
     class="celebration-overlay"
     [class.animating]="animating()"
     (click)="dismiss()"
+    (keydown.enter)="dismiss()"
+    (keydown.escape)="dismiss()"
+    tabindex="0"
     role="alert"
     aria-live="polite"
   >
