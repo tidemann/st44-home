@@ -22,7 +22,7 @@ import type {
   Child,
   User,
   Household,
-  HouseholdMember,
+  HouseholdMemberResponse,
   TaskRuleConfig,
   PaginationMeta,
 } from '@st44/types';
@@ -125,17 +125,20 @@ export function createMockHousehold(overrides: Partial<Household> = {}): Househo
 }
 
 /**
- * Create a mock HouseholdMember
+ * Create a mock HouseholdMemberResponse (API response with stats)
  */
 export function createMockHouseholdMember(
-  overrides: Partial<HouseholdMember> = {},
-): HouseholdMember {
+  overrides: Partial<HouseholdMemberResponse> = {},
+): HouseholdMemberResponse {
   return {
-    id: generateMockUuid(),
-    householdId: generateMockUuid(),
     userId: generateMockUuid(),
+    email: `test-${idCounter}@example.com`,
+    displayName: `Test User ${idCounter}`,
     role: 'parent',
     joinedAt: nowDatetime(),
+    tasksCompleted: 0,
+    totalTasks: 0,
+    points: 0,
     ...overrides,
   };
 }

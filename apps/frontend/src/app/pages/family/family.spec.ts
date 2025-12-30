@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { Family } from './family';
-import { HouseholdService, type HouseholdMember } from '../../services/household.service';
+import { HouseholdService, type HouseholdMemberResponse } from '../../services/household.service';
 import { AuthService } from '../../services/auth.service';
 import { InvitationService } from '../../services/invitation.service';
 import { ChildrenService } from '../../services/children.service';
@@ -21,7 +21,7 @@ describe('Family', () => {
 
   const mockUser = { id: 'user-1', email: 'test@example.com' };
   const mockHousehold = { id: 'household-1', name: 'Test Family' };
-  const mockMembers: HouseholdMember[] = [
+  const mockMembers: HouseholdMemberResponse[] = [
     {
       userId: 'user-1',
       email: 'test@example.com',
@@ -143,7 +143,7 @@ describe('Family', () => {
     });
 
     it('should use email username when displayName is null', async () => {
-      const membersWithoutDisplayName: HouseholdMember[] = [
+      const membersWithoutDisplayName: HouseholdMemberResponse[] = [
         {
           ...mockMembers[0],
           displayName: null,

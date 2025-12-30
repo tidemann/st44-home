@@ -60,7 +60,7 @@ export type UpdateHouseholdRequest = z.infer<typeof UpdateHouseholdRequestSchema
 
 /**
  * Household Member Schema
- * Represents a user's membership in a household
+ * Represents a user's membership in a household (database entity)
  */
 export const HouseholdMemberSchema = z.object({
   id: z.string().uuid(),
@@ -71,6 +71,24 @@ export const HouseholdMemberSchema = z.object({
 });
 
 export type HouseholdMember = z.infer<typeof HouseholdMemberSchema>;
+
+/**
+ * Household Member Response Schema
+ * API response for GET /households/:id/members
+ * Includes user info and task stats
+ */
+export const HouseholdMemberResponseSchema = z.object({
+  userId: z.string().uuid(),
+  email: z.string().email(),
+  displayName: z.string().nullable(),
+  role: z.enum(['admin', 'parent', 'child']),
+  joinedAt: z.string().datetime(),
+  tasksCompleted: z.number().int().nonnegative(),
+  totalTasks: z.number().int().nonnegative(),
+  points: z.number().int().nonnegative(),
+});
+
+export type HouseholdMemberResponse = z.infer<typeof HouseholdMemberResponseSchema>;
 
 /**
  * Household with Members Response
