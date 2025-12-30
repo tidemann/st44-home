@@ -70,6 +70,87 @@
         </select>
       </div>
 
+      <!-- Repeat Days (shown if repeating) -->
+      @if (ruleType === 'repeating') {
+        <div class="form-group">
+          <fieldset class="day-fieldset">
+            <legend class="form-label">Repeat On *</legend>
+            <div class="day-selector" role="group" aria-label="Select days">
+              @for (day of daysOfWeek; track day.value) {
+                <label class="day-checkbox">
+                  <input
+                    type="checkbox"
+                    [checked]="isDaySelected(day.value)"
+                    (change)="onDayChange(day.value, $any($event.target).checked)"
+                    [attr.aria-label]="'Repeat on ' + day.label"
+                  />
+                  {{ day.label }}
+                </label>
+              }
+            </div>
+            @if (form.controls.repeatDays.invalid && form.controls.repeatDays.touched) {
+              <div class="form-error" role="alert">Select at least one day</div>
+            }
+          </fieldset>
+        </div>
+      }
+
+      <!-- Rotation Type (shown if weekly_rotation) -->
+      @if (ruleType === 'weekly_rotation') {
+        <div class="form-group">
+          <label class="form-label" for="edit-rotation-type">Rotation Type *</label>
+          <select
+            id="edit-rotation-type"
+            class="form-select"
+            formControlName="rotationType"
+            [class.error]="form.controls.rotationType.invalid && form.controls.rotationType.touched"
+          >
+            @for (option of rotationOptions; track option.value) {
+              <option [value]="option.value">{{ option.label }}</option>
+            }
+          </select>
+        </div>
+      }
+
+      <!-- Assigned Children (shown for repeating and weekly_rotation) -->
+      @if (ruleType !== 'daily') {
+        <div class="form-group">
+          <fieldset class="child-fieldset">
+            <legend class="form-label">
+              Assign to Children *
+              @if (ruleType === 'weekly_rotation') {
+                <span class="help-text">(Select 2+ for rotation)</span>
+              }
+            </legend>
+            <div class="children-selector" role="group" aria-label="Assign children">
+              @for (child of children(); track child.id) {
+                <label class="child-checkbox">
+                  <input
+                    type="checkbox"
+                    [checked]="isChildSelected(child.id)"
+                    (change)="onChildChange(child.id, $any($event.target).checked)"
+                    [attr.aria-label]="'Assign to ' + child.name"
+                  />
+                  {{ child.name }}
+                </label>
+              }
+              @if (children().length === 0) {
+                <p class="no-children-message">No children in this household yet.</p>
+              }
+            </div>
+            @if (form.controls.assignedChildren.invalid && form.controls.assignedChildren.touched) {
+              <div class="form-error" role="alert">
+                @if (ruleType === 'weekly_rotation') {
+                  Select at least 2 children for rotation
+                } @else {
+                  Select at least 1 child
+                }
+              </div>
+            }
+          </fieldset>
+        </div>
+      }
+
       <div class="modal-actions-split" modal-actions>
         <button type="button" class="btn btn-danger" (click)="onDeleteClick()">Delete</button>
         <div class="modal-actions-right">
