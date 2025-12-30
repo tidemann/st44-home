@@ -415,10 +415,21 @@ async function updateTask(request: FastifyRequest<UpdateTaskRequest>, reply: Fas
     // Validate request body with Zod schema
     const validatedData = validateRequest(UpdateTaskRequestSchema, request.body);
     const { name, description, points, ruleType, ruleConfig, active } = validatedData;
-    const normalizedRuleConfig = normalizeRuleConfig(ruleConfig);
+    let normalizedRuleConfig = normalizeRuleConfig(ruleConfig);
 
     // Validate update data if rule_type is being changed
     if (ruleType) {
+      // If ruleType is provided but ruleConfig is not, fetch existing config from database
+      if (ruleConfig === undefined) {
+        const existingTask = await db.query(
+          'SELECT rule_config FROM tasks WHERE id = $1 AND household_id = $2',
+          [taskId, householdId],
+        );
+        if (existingTask.rows.length > 0) {
+          normalizedRuleConfig = normalizeRuleConfig(existingTask.rows[0].rule_config);
+        }
+      }
+
       const validationErrors = validateTaskData(
         {
           ...validatedData,
