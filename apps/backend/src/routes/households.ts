@@ -423,44 +423,94 @@ async function getHouseholdMembers(
       [id, today],
     );
 
-    // Create a map of user_id to child stats for quick lookup
+    // Create a map of user_id to child stats for quick lookup (for linked children)
     const childStatsMap = new Map<
       string,
       { tasksCompleted: number; totalTasks: number; points: number; childName: string }
     >();
+
+    // Also track children without user accounts (unlinked children)
+    interface UnlinkedChild {
+      childId: string;
+      childName: string;
+      tasksCompleted: number;
+      totalTasks: number;
+      points: number;
+    }
+    const unlinkedChildren: UnlinkedChild[] = [];
+
     for (const row of childrenStatsResult.rows) {
+      const childData = {
+        tasksCompleted: parseInt(row.tasks_completed || '0', 10),
+        totalTasks: parseInt(row.total_tasks || '0', 10),
+        points: parseInt(row.points || '0', 10),
+        childName: row.child_name,
+      };
+
       if (row.user_id) {
-        childStatsMap.set(row.user_id, {
-          tasksCompleted: parseInt(row.tasks_completed || '0', 10),
-          totalTasks: parseInt(row.total_tasks || '0', 10),
-          points: parseInt(row.points || '0', 10),
-          childName: row.child_name,
+        // Child has a linked user account
+        childStatsMap.set(row.user_id, childData);
+      } else {
+        // Child without user account - add to unlinked list
+        unlinkedChildren.push({
+          childId: row.child_id,
+          tasksCompleted: childData.tasksCompleted,
+          totalTasks: childData.totalTasks,
+          points: childData.points,
+          childName: childData.childName,
         });
       }
     }
 
-    return reply.send(
-      membersResult.rows.map((row: unknown) => {
-        const userId = (row as { user_id: string }).user_id;
-        const role = (row as { role: string }).role;
-        const displayName = (row as { display_name: string | null }).display_name;
+    // Define the member response type to allow nullable email/joinedAt
+    interface MemberResponse {
+      userId: string;
+      email: string | null;
+      displayName: string | null;
+      role: string;
+      joinedAt: string | null;
+      tasksCompleted: number;
+      totalTasks: number;
+      points: number;
+    }
 
-        // Get child stats if this member is a child with linked account
-        const childStats = childStatsMap.get(userId);
+    // Build member list from household_members table (registered users)
+    const members: MemberResponse[] = membersResult.rows.map((row: unknown) => {
+      const userId = (row as { user_id: string }).user_id;
+      const role = (row as { role: string }).role;
+      const displayName = (row as { display_name: string | null }).display_name;
 
-        return {
-          userId,
-          email: (row as { email: string }).email,
-          displayName: childStats?.childName || displayName,
-          role,
-          joinedAt: toDateTimeString((row as { joined_at: Date }).joined_at),
-          // Stats: only applicable for children, parents get 0s
-          tasksCompleted: childStats?.tasksCompleted ?? 0,
-          totalTasks: childStats?.totalTasks ?? 0,
-          points: childStats?.points ?? 0,
-        };
-      }),
-    );
+      // Get child stats if this member is a child with linked account
+      const childStats = childStatsMap.get(userId);
+
+      return {
+        userId,
+        email: (row as { email: string }).email,
+        displayName: childStats?.childName || displayName,
+        role,
+        joinedAt: toDateTimeString((row as { joined_at: Date }).joined_at),
+        // Stats: only applicable for children, parents get 0s
+        tasksCompleted: childStats?.tasksCompleted ?? 0,
+        totalTasks: childStats?.totalTasks ?? 0,
+        points: childStats?.points ?? 0,
+      };
+    });
+
+    // Add unlinked children (those without user accounts)
+    for (const child of unlinkedChildren) {
+      members.push({
+        userId: child.childId, // Use child ID as identifier
+        email: null, // No email for unlinked children
+        displayName: child.childName,
+        role: 'child',
+        joinedAt: null, // No join date for unlinked children
+        tasksCompleted: child.tasksCompleted,
+        totalTasks: child.totalTasks,
+        points: child.points,
+      });
+    }
+
+    return reply.send(members);
   } catch (error) {
     request.log.error(error, 'Failed to get household members');
     return reply.status(500).send({

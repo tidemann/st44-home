@@ -76,13 +76,16 @@ export type HouseholdMember = z.infer<typeof HouseholdMemberSchema>;
  * Household Member Response Schema
  * API response for GET /households/:id/members
  * Includes user info and task stats
+ *
+ * Note: email and joinedAt can be null for children without user accounts
+ * (children created via "Add Child" that don't have login credentials)
  */
 export const HouseholdMemberResponseSchema = z.object({
   userId: z.string().uuid(),
-  email: z.string().email(),
+  email: z.string().email().nullable(), // null for unlinked children
   displayName: z.string().nullable(),
   role: z.enum(['admin', 'parent', 'child']),
-  joinedAt: z.string().datetime(),
+  joinedAt: z.string().datetime().nullable(), // null for unlinked children
   tasksCompleted: z.number().int().nonnegative(),
   totalTasks: z.number().int().nonnegative(),
   points: z.number().int().nonnegative(),
