@@ -11,8 +11,8 @@ import type { Task, Assignment } from '@st44/types';
 @Component({
   selector: 'app-task-card',
   imports: [],
-  templateUrl: './task-card.component.html',
-  styleUrl: './task-card.component.css',
+  templateUrl: './task-card.html',
+  styleUrl: './task-card.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TaskCardComponent {

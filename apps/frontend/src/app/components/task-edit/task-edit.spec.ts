@@ -1,5 +1,5 @@
 import { TestBed, ComponentFixture } from '@angular/core/testing';
-import { TaskEditComponent } from './task-edit.component';
+import { TaskEditComponent } from './task-edit';
 import type { Task } from '@st44/types';
 import { TaskService } from '../../services/task.service';
 import { ChildrenService } from '../../services/children.service';

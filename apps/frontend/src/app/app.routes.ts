@@ -6,29 +6,27 @@ export const routes: Routes = [
   {
     path: 'login',
     title: 'Login - Diddit!',
-    loadComponent: () => import('./auth/login.component').then((m) => m.LoginComponent),
+    loadComponent: () => import('./auth/login').then((m) => m.LoginComponent),
   },
   {
     path: 'register',
     title: 'Register - Diddit!',
-    loadComponent: () => import('./auth/register.component').then((m) => m.RegisterComponent),
+    loadComponent: () => import('./auth/register').then((m) => m.RegisterComponent),
   },
   {
     path: 'child-login',
     title: 'Child Login - Diddit!',
-    loadComponent: () => import('./auth/child-login.component').then((m) => m.ChildLoginComponent),
+    loadComponent: () => import('./auth/child-login').then((m) => m.ChildLoginComponent),
   },
   {
     path: 'forgot-password',
     title: 'Forgot Password - Diddit!',
-    loadComponent: () =>
-      import('./auth/forgot-password.component').then((m) => m.ForgotPasswordComponent),
+    loadComponent: () => import('./auth/forgot-password').then((m) => m.ForgotPasswordComponent),
   },
   {
     path: 'reset-password',
     title: 'Reset Password - Diddit!',
-    loadComponent: () =>
-      import('./auth/reset-password.component').then((m) => m.ResetPasswordComponent),
+    loadComponent: () => import('./auth/reset-password').then((m) => m.ResetPasswordComponent),
   },
 
   // Parent/Admin routes - wrapped in MainLayout
