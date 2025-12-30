@@ -21,12 +21,12 @@ describe('BottomNav', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should display all 4 navigation items', () => {
+  it('should display all 5 navigation items', () => {
     componentRef.setInput('activeScreen', 'home');
     fixture.detectChanges();
 
     const navButtons = fixture.nativeElement.querySelectorAll('.nav-btn');
-    expect(navButtons.length).toBe(4);
+    expect(navButtons.length).toBe(5);
   });
 
   it('should display correct icons and labels', () => {
@@ -41,8 +41,8 @@ describe('BottomNav', () => {
       (btn as HTMLElement).querySelector('.nav-label')?.textContent?.trim(),
     );
 
-    expect(icons).toEqual(['🏠', '✓', '👥', '🏆']);
-    expect(labels).toEqual(['Home', 'Tasks', 'Family', 'Progress']);
+    expect(icons).toEqual(['🏠', '✓', '👥', '🏆', '🎁']);
+    expect(labels).toEqual(['Home', 'Tasks', 'Family', 'Progress', 'Rewards']);
   });
 
   it('should apply active class to current screen', () => {
@@ -138,7 +138,7 @@ describe('BottomNav', () => {
       (btn as HTMLElement).getAttribute('aria-label'),
     );
 
-    expect(labels).toEqual(['Home', 'Tasks', 'Family', 'Progress']);
+    expect(labels).toEqual(['Home', 'Tasks', 'Family', 'Progress', 'Rewards']);
   });
 
   it('should update active state when activeScreen changes', () => {
