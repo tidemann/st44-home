@@ -17,7 +17,10 @@ describe('Family', () => {
   };
   let mockAuthService: { currentUser: ReturnType<typeof vi.fn> };
   let mockInvitationService: { sendInvitation: ReturnType<typeof vi.fn> };
-  let mockChildrenService: { createChild: ReturnType<typeof vi.fn> };
+  let mockChildrenService: {
+    createChild: ReturnType<typeof vi.fn>;
+    listChildren: ReturnType<typeof vi.fn>;
+  };
 
   const mockUser = { id: 'user-1', email: 'test@example.com' };
   const mockHousehold = { id: 'household-1', name: 'Test Family' };
@@ -58,6 +61,18 @@ describe('Family', () => {
     };
     mockChildrenService = {
       createChild: vi.fn().mockResolvedValue({ id: 'child-1', name: 'New Child' }),
+      listChildren: vi.fn().mockResolvedValue([
+        {
+          id: 'child-1',
+          householdId: 'household-1',
+          userId: 'user-2',
+          name: 'Test Child',
+          birthYear: 2014,
+          avatarUrl: null,
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
+        },
+      ]),
     };
 
     // Default mock returns

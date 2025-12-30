@@ -1,0 +1,87 @@
+<app-modal [open]="open()" (closeModal)="onClose()" title="Child Details">
+  @if (child(); as child) {
+    <div class="child-details">
+      <!-- Child Info Section -->
+      <div class="info-section">
+        <div class="child-avatar">
+          <span class="avatar-emoji">
+            @if (child.avatarUrl) {
+              {{ child.avatarUrl }}
+            } @else {
+              👤
+            }
+          </span>
+        </div>
+
+        <div class="child-info">
+          <h3 class="child-name">{{ child.name }}</h3>
+          @if (childAge()) {
+            <p class="child-age">{{ childAge() }} years old</p>
+          }
+        </div>
+      </div>
+
+      <!-- Account Status Section -->
+      <div class="account-section">
+        <h4 class="section-title">Login Account</h4>
+
+        @if (hasAccount()) {
+          <!-- Child has account -->
+          <div class="account-status has-account">
+            <span class="status-icon">✓</span>
+            <div class="status-info">
+              <p class="status-label">Account Active</p>
+              @if (childEmail()) {
+                <p class="status-detail">{{ childEmail() }}</p>
+              }
+            </div>
+          </div>
+        } @else {
+          <!-- Child does not have account -->
+          @if (!showCreateAccount()) {
+            <div class="account-status no-account">
+              <span class="status-icon">✗</span>
+              <div class="status-info">
+                <p class="status-label">No Account</p>
+                <p class="status-detail">Create login credentials so this child can sign in</p>
+              </div>
+            </div>
+
+            <button
+              type="button"
+              class="btn btn-primary create-btn"
+              (click)="toggleCreateAccount()"
+            >
+              Create Login
+            </button>
+          } @else {
+            <!-- Create Account Form -->
+            <app-create-child-account
+              [child]="child"
+              [householdId]="householdId()"
+              (accountCreated)="onAccountCreated()"
+              (cancelled)="onCreateAccountCancelled()"
+            />
+          }
+        }
+      </div>
+
+      <!-- QR Code Section (Future Feature) -->
+      <div class="qr-section">
+        <h4 class="section-title">QR Code Login</h4>
+        <div class="qr-placeholder">
+          <div class="qr-icon">📱</div>
+          <p class="qr-label">Coming Soon</p>
+          <p class="qr-description">Quick login with QR code scan</p>
+        </div>
+      </div>
+    </div>
+  }
+
+  <!-- Modal Actions -->
+  @if (!showCreateAccount()) {
+    <div class="modal-actions" modal-actions>
+      <button type="button" class="btn btn-secondary" (click)="onClose()">Close</button>
+    </div>
+  }
+</app-modal>

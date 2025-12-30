@@ -6,6 +6,7 @@ import {
   inject,
   OnInit,
 } from '@angular/core';
+import type { Child } from '@st44/types';
 import { MemberCard, type MemberCardData } from '../../components/member-card/member-card';
 import {
   InviteModal,
@@ -15,7 +16,8 @@ import {
   AddChildModal,
   type AddChildData,
 } from '../../components/modals/add-child-modal/add-child-modal';
-import { HouseholdService } from '../../services/household.service';
+import { ChildDetailsModal } from '../../components/modals/child-details-modal/child-details-modal';
+import { HouseholdService, type HouseholdMemberResponse } from '../../services/household.service';
 import { AuthService } from '../../services/auth.service';
 import { InvitationService } from '../../services/invitation.service';
 import { ChildrenService } from '../../services/children.service';
@@ -34,7 +36,7 @@ import { ChildrenService } from '../../services/children.service';
  */
 @Component({
   selector: 'app-family',
-  imports: [MemberCard, InviteModal, AddChildModal],
+  imports: [MemberCard, InviteModal, AddChildModal, ChildDetailsModal],
   templateUrl: './family.html',
   styleUrl: './family.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -56,6 +58,15 @@ export class Family implements OnInit {
   // Modal state
   protected readonly inviteModalOpen = signal(false);
   protected readonly addChildModalOpen = signal(false);
+  protected readonly childDetailsModalOpen = signal(false);
+
+  // Child details modal data
+  protected readonly selectedChild = signal<Child | null>(null);
+  protected readonly selectedChildEmail = signal<string | null>(null);
+
+  // Children map for looking up child by userId
+  private readonly childrenByUserId = signal<Map<string, Child>>(new Map());
+  private readonly householdMembers = signal<HouseholdMemberResponse[]>([]);
 
   // Computed values
   protected readonly memberCount = computed(() => this.members().length);
@@ -91,12 +102,28 @@ export class Family implements OnInit {
       this.householdId.set(household.id);
       this.householdName.set(household.name);
 
-      // Load household members with stats
-      const householdMembers = await this.householdService.getHouseholdMembers(household.id);
+      // Load household members and children in parallel
+      const [householdMembers, children] = await Promise.all([
+        this.householdService.getHouseholdMembers(household.id),
+        this.childrenService.listChildren(household.id),
+      ]);
+
+      // Store household members for later lookup
+      this.householdMembers.set(householdMembers);
+
+      // Build a map of userId -> Child for quick lookup
+      const childMap = new Map<string, Child>();
+      for (const child of children) {
+        if (child.userId) {
+          childMap.set(child.userId, child);
+        }
+      }
+      this.childrenByUserId.set(childMap);
 
       // Transform HouseholdMember[] to MemberCardData[]
       const memberCards: MemberCardData[] = householdMembers.map((member) => {
         const isCurrentUser = member.userId === user.id;
+        const isChild = member.role === 'child';
         // Handle null email for unlinked children
         const emailUsername = member.email ? member.email.split('@')[0] : null;
         const displayName = isCurrentUser
@@ -107,7 +134,7 @@ export class Family implements OnInit {
           id: member.userId,
           name: displayName,
           email: member.email ?? undefined, // Convert null to undefined for optional field
-          role: member.role === 'child' ? 'child' : 'parent',
+          role: isChild ? 'child' : 'parent',
           // Use real stats from backend
           tasksCompleted: member.tasksCompleted,
           totalTasks: member.totalTasks,
@@ -203,5 +230,47 @@ export class Family implements OnInit {
    */
   protected closeAddChildModal(): void {
     this.addChildModalOpen.set(false);
+  }
+
+  /**
+   * Handle member card click - opens child details modal for children
+   */
+  protected onMemberClick(memberId: string): void {
+    // Find the child from the map
+    const child = this.childrenByUserId().get(memberId);
+    if (!child) {
+      return;
+    }
+
+    // Find the member to get email
+    const member = this.householdMembers().find((m) => m.userId === memberId);
+    this.selectedChildEmail.set(member?.email ?? null);
+
+    this.selectedChild.set(child);
+    this.childDetailsModalOpen.set(true);
+  }
+
+  /**
+   * Close child details modal
+   */
+  protected closeChildDetailsModal(): void {
+    this.childDetailsModalOpen.set(false);
+    this.selectedChild.set(null);
+    this.selectedChildEmail.set(null);
+  }
+
+  /**
+   * Handle account created event - reload data to reflect changes
+   */
+  protected async onChildAccountCreated(): Promise<void> {
+    this.closeChildDetailsModal();
+    await this.loadData();
+  }
+
+  /**
+   * Check if a member is a child (for clickable state)
+   */
+  protected isChildMember(member: MemberCardData): boolean {
+    return member.role === 'child';
   }
 }
