@@ -1,3 +1,20 @@
 <div class="child-layout">
-  <router-outlet />
+  <!-- Header -->
+  <header class="child-header">
+    <div class="child-header-content">
+      <div class="child-logo">Diddit!</div>
+      <button type="button" class="logout-btn" (click)="onLogout()" aria-label="Log out">
+        <span class="logout-icon">👋</span>
+        <span class="logout-text">Bye!</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="child-content">
+    <router-outlet />
+  </main>
+
+  <!-- Bottom Navigation -->
+  <app-child-nav [activeScreen]="activeScreen()" (navigate)="onNavigate($event)" />
 </div>
