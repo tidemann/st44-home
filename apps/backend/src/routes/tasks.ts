@@ -17,7 +17,8 @@ import {
   validateHouseholdMembership,
   requireHouseholdParent,
 } from '../middleware/household-membership.js';
-import { validateRequest, handleZodError } from '../utils/validation.js';
+import { validateRequest, validateParams, handleZodError } from '../utils/validation.js';
+import { householdTaskParamsSchema } from '../schemas/validation.js';
 import { stripResponseValidation } from '../schemas/common.js';
 import type { TaskRow } from '../types/database.js';
 
@@ -355,19 +356,10 @@ async function listTasks(request: FastifyRequest<ListTasksRequest>, reply: Fasti
  * GET /api/households/:householdId/tasks/:taskId - Get task details
  */
 async function getTask(request: FastifyRequest<{ Params: TaskParams }>, reply: FastifyReply) {
-  const { householdId, taskId } = request.params;
-
-  // Validate UUID format
-  const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
-  if (!uuidRegex.test(taskId)) {
-    return reply.status(400).send({
-      statusCode: 400,
-      error: 'Bad Request',
-      message: 'Invalid task ID format',
-    });
-  }
-
   try {
+    // Validate params with Zod schema
+    const { householdId, taskId } = validateParams(householdTaskParamsSchema, request);
+
     const result = await db.query('SELECT * FROM tasks WHERE id = $1 AND household_id = $2', [
       taskId,
       householdId,
@@ -385,6 +377,9 @@ async function getTask(request: FastifyRequest<{ Params: TaskParams }>, reply: F
 
     return reply.send(mapTaskRowToTask(task));
   } catch (error) {
+    if (error instanceof z.ZodError) {
+      return handleZodError(error, reply);
+    }
     request.log.error(error, 'Failed to get task');
     return reply.status(500).send({
       statusCode: 500,
@@ -399,19 +394,9 @@ async function getTask(request: FastifyRequest<{ Params: TaskParams }>, reply: F
  * Requires parent or admin role
  */
 async function updateTask(request: FastifyRequest<UpdateTaskRequest>, reply: FastifyReply) {
-  const { householdId, taskId } = request.params;
-
-  // Validate UUID format
-  const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
-  if (!uuidRegex.test(taskId)) {
-    return reply.status(400).send({
-      statusCode: 400,
-      error: 'Bad Request',
-      message: 'Invalid task ID format',
-    });
-  }
-
   try {
+    // Validate params with Zod schema
+    const { householdId, taskId } = validateParams(householdTaskParamsSchema, request);
     // Validate request body with Zod schema
     const validatedData = validateRequest(UpdateTaskRequestSchema, request.body);
     const { name, description, points, ruleType, ruleConfig, active } = validatedData;
@@ -554,21 +539,12 @@ async function updateTask(request: FastifyRequest<UpdateTaskRequest>, reply: Fas
  * Sets active=false instead of deleting record
  */
 async function deleteTask(request: FastifyRequest<{ Params: TaskParams }>, reply: FastifyReply) {
-  const { householdId, taskId } = request.params;
-
-  // Validate UUID format
-  const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
-  if (!uuidRegex.test(taskId)) {
-    return reply.status(400).send({
-      statusCode: 400,
-      error: 'Bad Request',
-      message: 'Invalid task ID format',
-    });
-  }
-
   try {
+    // Validate params with Zod schema
+    const { householdId, taskId } = validateParams(householdTaskParamsSchema, request);
+
     const result = await db.query(
-      `UPDATE tasks 
+      `UPDATE tasks
        SET active = false, updated_at = NOW()
        WHERE id = $1 AND household_id = $2
        RETURNING id`,
@@ -588,6 +564,9 @@ async function deleteTask(request: FastifyRequest<{ Params: TaskParams }>, reply
       message: 'Task deleted successfully',
     });
   } catch (error) {
+    if (error instanceof z.ZodError) {
+      return handleZodError(error, reply);
+    }
     request.log.error(error, 'Failed to delete task');
     return reply.status(500).send({
       statusCode: 500,

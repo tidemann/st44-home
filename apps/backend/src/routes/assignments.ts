@@ -69,35 +69,11 @@ const generateHouseholdAssignmentsBodySchema = z.object({
   taskId: uuidSchema.optional(),
 });
 
-// Keep these for backward compatibility but prefer Zod validation
-const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
-const DATE_REGEX = /^\d{4}-\d{2}-\d{2}$/;
-
-function isValidUuid(value: string): boolean {
-  return UUID_REGEX.test(value);
-}
-
-function isValidDate(value: string): boolean {
-  if (!DATE_REGEX.test(value)) {
-    return false;
-  }
-  const date = new Date(value);
-  return !isNaN(date.getTime());
-}
-
+// Type interfaces (validation is done via Zod schemas)
 interface GenerateAssignmentsBody {
   householdId: string;
   startDate: string;
   days: number;
-}
-
-interface ViewAssignmentsParams {
-  householdId: string;
-}
-
-interface ViewAssignmentsQuery {
-  date?: string;
-  days?: string;
 }
 
 interface Assignment {
@@ -123,49 +99,14 @@ export default async function assignmentRoutes(fastify: FastifyInstance) {
       preHandler: [authenticateUser],
     },
     async (request, reply) => {
-      const { householdId, startDate, days } = request.body;
-
-      // Validation: householdId (UUID)
-      if (!householdId || typeof householdId !== 'string') {
-        return reply.code(400).send({
-          error: 'householdId is required',
-        });
-      }
-
-      if (!isValidUuid(householdId)) {
-        return reply.code(400).send({
-          error: 'Invalid householdId format (must be UUID)',
-        });
-      }
-
-      // Validation: startDate (YYYY-MM-DD)
-      if (!startDate || typeof startDate !== 'string') {
-        return reply.code(400).send({
-          error: 'startDate is required',
-        });
-      }
-
-      if (!isValidDate(startDate)) {
-        return reply.code(400).send({
-          error: 'Invalid startDate format (must be YYYY-MM-DD)',
-        });
-      }
-
-      // Validation: days (1-30)
-      if (typeof days !== 'number') {
-        return reply.code(400).send({
-          error: 'days must be a number',
-        });
-      }
-
-      if (days < 1 || days > 30) {
-        return reply.code(400).send({
-          error: 'days must be between 1 and 30',
-        });
-      }
-
-      // Authorization: Check household membership
       try {
+        // Validate body with Zod schema
+        const { householdId, startDate, days } = validateBody(
+          generateAssignmentsBodySchema,
+          request,
+        );
+
+        // Authorization: Check household membership
         const membershipResult = await pool.query(
           'SELECT role FROM household_members WHERE household_id = $1 AND user_id = $2',
           [householdId, request.user?.userId],
@@ -185,15 +126,8 @@ export default async function assignmentRoutes(fastify: FastifyInstance) {
             error: 'Admin or parent role required for this action',
           });
         }
-      } catch (error) {
-        fastify.log.error(error, 'Failed to check household membership');
-        return reply.code(500).send({
-          error: 'Failed to validate household membership',
-        });
-      }
 
-      // Call assignment generator service
-      try {
+        // Call assignment generator service
         const startDateObj = new Date(startDate);
         const result = await generateAssignments(householdId, startDateObj, days);
 
@@ -206,6 +140,12 @@ export default async function assignmentRoutes(fastify: FastifyInstance) {
           },
         });
       } catch (error) {
+        if (error instanceof z.ZodError) {
+          return reply.code(400).send({
+            error: 'Validation failed',
+            details: error.issues.map((e) => ({ path: e.path.join('.'), message: e.message })),
+          });
+        }
         fastify.log.error(error, 'Failed to generate assignments');
         return reply.code(500).send({
           error: 'Failed to generate assignments',
@@ -228,36 +168,18 @@ export default async function assignmentRoutes(fastify: FastifyInstance) {
       preHandler: [authenticateUser, validateHouseholdMembership],
     },
     async (request, reply) => {
-      const { householdId } = request.params;
-      const { date, taskId } = request.body || {};
-
-      // Validate householdId format
-      if (!isValidUuid(householdId)) {
-        return reply.code(400).send({
-          error: 'Invalid householdId format (must be UUID)',
-        });
-      }
-
-      // Default date to today if not provided
-      const targetDate = date || new Date().toISOString().split('T')[0];
-
-      // Validate date format
-      if (!isValidDate(targetDate)) {
-        return reply.code(400).send({
-          error: 'Invalid date format (must be YYYY-MM-DD)',
-        });
-      }
-
-      // Validate taskId if provided
-      if (taskId && !isValidUuid(taskId)) {
-        return reply.code(400).send({
-          error: 'Invalid taskId format (must be UUID)',
-        });
-      }
-
-      // Authorization already handled by validateHouseholdMembership middleware
-      // Additional check: Must be admin or parent role
       try {
+        // Validate params with Zod schema
+        const { householdId } = validateParams(householdIdParamSchema, request);
+
+        // Validate body with Zod schema (optional fields)
+        const { date, taskId } = validateBody(generateHouseholdAssignmentsBodySchema, request);
+
+        // Default date to today if not provided
+        const targetDate = date || new Date().toISOString().split('T')[0];
+
+        // Authorization already handled by validateHouseholdMembership middleware
+        // Additional check: Must be admin or parent role
         const membershipResult = await pool.query(
           'SELECT role FROM household_members WHERE household_id = $1 AND user_id = $2',
           [householdId, request.user?.userId],
@@ -277,15 +199,8 @@ export default async function assignmentRoutes(fastify: FastifyInstance) {
             error: 'Admin or parent role required for this action',
           });
         }
-      } catch (error) {
-        fastify.log.error(error, 'Failed to check household membership');
-        return reply.code(500).send({
-          error: 'Failed to validate household membership',
-        });
-      }
 
-      // Call assignment generator service
-      try {
+        // Call assignment generator service
         const startDateObj = new Date(targetDate);
         const result = await generateAssignments(householdId, startDateObj, 1);
 
@@ -319,6 +234,12 @@ export default async function assignmentRoutes(fastify: FastifyInstance) {
           assignments,
         });
       } catch (error) {
+        if (error instanceof z.ZodError) {
+          return reply.code(400).send({
+            error: 'Validation failed',
+            details: error.issues.map((e) => ({ path: e.path.join('.'), message: e.message })),
+          });
+        }
         fastify.log.error(error, 'Failed to generate assignments');
         return reply.code(500).send({
           error: 'Failed to generate assignments',
@@ -340,30 +261,9 @@ export default async function assignmentRoutes(fastify: FastifyInstance) {
       preHandler: [authenticateUser],
     },
     async (request, reply) => {
-      const { taskId, childId, date } = request.body;
-
-      // Validate taskId format
-      if (!taskId || typeof taskId !== 'string' || !isValidUuid(taskId)) {
-        return reply.code(400).send({
-          error: 'Invalid taskId format (must be UUID)',
-        });
-      }
-
-      // Validate childId format if provided (can be null for household-wide tasks)
-      if (childId !== null && childId !== undefined && !isValidUuid(childId)) {
-        return reply.code(400).send({
-          error: 'Invalid childId format (must be UUID or null)',
-        });
-      }
-
-      // Validate date format
-      if (!date || typeof date !== 'string' || !isValidDate(date)) {
-        return reply.code(400).send({
-          error: 'Invalid date format (must be YYYY-MM-DD)',
-        });
-      }
-
       try {
+        // Validate body with Zod schema
+        const { taskId, childId, date } = validateBody(createManualAssignmentBodySchema, request);
         // Fetch task to verify it exists and get household_id
         const taskResult = await pool.query(
           'SELECT id, household_id, name, active FROM tasks WHERE id = $1',
@@ -470,6 +370,12 @@ export default async function assignmentRoutes(fastify: FastifyInstance) {
           },
         });
       } catch (error) {
+        if (error instanceof z.ZodError) {
+          return reply.code(400).send({
+            error: 'Validation failed',
+            details: error.issues.map((e) => ({ path: e.path.join('.'), message: e.message })),
+          });
+        }
         fastify.log.error(error, 'Failed to create manual assignment');
         return reply.code(500).send({
           error: 'Failed to create assignment',
@@ -492,18 +398,15 @@ export default async function assignmentRoutes(fastify: FastifyInstance) {
       preHandler: [authenticateUser],
     },
     async (request, reply) => {
-      const { childId } = request.params;
-      let { date, status } = request.query;
-
-      // Validate childId format
-      if (!isValidUuid(childId)) {
-        return reply.code(400).send({
-          error: 'Invalid childId format (must be UUID)',
-        });
-      }
-
-      // Check if child exists and get household_id
       try {
+        // Validate params with Zod schema
+        const { childId } = validateParams(childIdParamSchema, request);
+
+        // Validate query with Zod schema
+        const queryData = validateQuery(childTasksQuerySchema, request);
+        let { date, status } = queryData;
+
+        // Check if child exists and get household_id
         const childResult = await pool.query('SELECT household_id FROM children WHERE id = $1', [
           childId,
         ]);
@@ -534,23 +437,9 @@ export default async function assignmentRoutes(fastify: FastifyInstance) {
           date = today.toISOString().split('T')[0]; // YYYY-MM-DD
         }
 
-        // Validate date format
-        if (!isValidDate(date)) {
-          return reply.code(400).send({
-            error: 'Invalid date format (must be YYYY-MM-DD)',
-          });
-        }
-
-        // Validate status if provided
-        if (status && !['pending', 'completed', 'overdue'].includes(status)) {
-          return reply.code(400).send({
-            error: 'Invalid status value (must be pending, completed, or overdue)',
-          });
-        }
-
         // Build query with optional status filter
         let query = `
-          SELECT 
+          SELECT
             ta.id,
             ta.task_id,
             t.name as title,
@@ -594,6 +483,12 @@ export default async function assignmentRoutes(fastify: FastifyInstance) {
           total: assignments.length,
         });
       } catch (error) {
+        if (error instanceof z.ZodError) {
+          return reply.code(400).send({
+            error: 'Validation failed',
+            details: error.issues.map((e) => ({ path: e.path.join('.'), message: e.message })),
+          });
+        }
         fastify.log.error(error, 'Failed to fetch child tasks');
         return reply.code(500).send({
           error: 'Failed to fetch tasks',
@@ -616,60 +511,30 @@ export default async function assignmentRoutes(fastify: FastifyInstance) {
       preHandler: [authenticateUser, validateHouseholdMembership],
     },
     async (request, reply) => {
-      const { householdId } = request.params;
-      let { date, days, childId, status } = request.query;
-
-      // Validate childId if provided
-      if (childId && !isValidUuid(childId)) {
-        return reply.code(400).send({
-          error: 'Invalid childId format (must be UUID)',
-        });
-      }
-
-      // Validate status if provided
-      if (status && !['pending', 'completed', 'overdue'].includes(status)) {
-        return reply.code(400).send({
-          error: 'Invalid status value (must be pending, completed, or overdue)',
-        });
-      }
-
-      // Default date to today
-      if (!date) {
-        const today = new Date();
-        date = today.toISOString().split('T')[0]; // YYYY-MM-DD
-      }
-
-      // Validate date format
-      if (!isValidDate(date)) {
-        return reply.code(400).send({
-          error: 'Invalid date format (must be YYYY-MM-DD)',
-        });
-      }
-
-      // Handle days parameter (for backward compatibility with existing endpoint)
-      // Default to 7 days if not provided
-      let daysNum = 7;
-      if (days) {
-        daysNum = parseInt(days, 10);
-
-        if (isNaN(daysNum) || daysNum < 1 || daysNum > 30) {
-          return reply.code(400).send({
-            error: 'days must be between 1 and 30',
-          });
-        }
-      }
-
-      // Calculate end date
-      const startDate = new Date(date);
-      const endDate = new Date(startDate);
-      endDate.setDate(endDate.getDate() + daysNum - 1);
-      const endDateStr = endDate.toISOString().split('T')[0];
-
-      // Query assignments with joins and optional filters
       try {
+        // Validate params and query with Zod schemas
+        const { householdId } = validateParams(householdIdParamSchema, request);
+        const queryData = validateQuery(householdAssignmentsQuerySchema, request);
+        let { date, days, childId, status } = queryData;
+
+        // Default date to today
+        if (!date) {
+          const today = new Date();
+          date = today.toISOString().split('T')[0]; // YYYY-MM-DD
+        }
+
+        // Default to 7 days if not provided
+        const daysNum = days ?? 7;
+
+        // Calculate end date
+        const startDate = new Date(date);
+        const endDate = new Date(startDate);
+        endDate.setDate(endDate.getDate() + daysNum - 1);
+        const endDateStr = endDate.toISOString().split('T')[0];
+
         // Build dynamic query with optional filters
         let query = `
-          SELECT 
+          SELECT
             ta.id,
             ta.task_id,
             t.name as title,
@@ -729,6 +594,12 @@ export default async function assignmentRoutes(fastify: FastifyInstance) {
           total: assignments.length,
         });
       } catch (error) {
+        if (error instanceof z.ZodError) {
+          return reply.code(400).send({
+            error: 'Validation failed',
+            details: error.issues.map((e) => ({ path: e.path.join('.'), message: e.message })),
+          });
+        }
         fastify.log.error(error, 'Failed to fetch assignments');
         return reply.code(500).send({
           error: 'Failed to fetch assignments',
@@ -751,16 +622,9 @@ export default async function assignmentRoutes(fastify: FastifyInstance) {
       preHandler: [authenticateUser],
     },
     async (request, reply) => {
-      const { assignmentId } = request.params;
-
-      // Validate assignmentId format
-      if (!isValidUuid(assignmentId)) {
-        return reply.code(400).send({
-          error: 'Invalid assignmentId format (must be UUID)',
-        });
-      }
-
       try {
+        // Validate params with Zod schema
+        const { assignmentId } = validateParams(assignmentIdParamSchema, request);
         // Fetch assignment with household_id for authorization
         const assignmentResult = await pool.query(
           `SELECT ta.id, ta.household_id, ta.child_id, ta.status, ta.task_id
@@ -863,6 +727,12 @@ export default async function assignmentRoutes(fastify: FastifyInstance) {
           task_id: completedAssignment.task_id,
         });
       } catch (error) {
+        if (error instanceof z.ZodError) {
+          return reply.code(400).send({
+            error: 'Validation failed',
+            details: error.issues.map((e) => ({ path: e.path.join('.'), message: e.message })),
+          });
+        }
         fastify.log.error(error, 'Failed to complete assignment');
         return reply.code(500).send({
           error: 'Failed to complete assignment',
@@ -884,16 +754,9 @@ export default async function assignmentRoutes(fastify: FastifyInstance) {
       preHandler: [authenticateUser],
     },
     async (request, reply) => {
-      const { assignmentId } = request.params;
-
-      // Validate assignmentId format
-      if (!isValidUuid(assignmentId)) {
-        return reply.code(400).send({
-          error: 'Invalid assignmentId format (must be UUID)',
-        });
-      }
-
       try {
+        // Validate params with Zod schema
+        const { assignmentId } = validateParams(assignmentIdParamSchema, request);
         // Fetch assignment with task details for points and authorization
         const assignmentResult = await pool.query(
           `SELECT ta.id, ta.household_id, ta.child_id, ta.status, ta.task_id, t.points
@@ -1041,6 +904,12 @@ export default async function assignmentRoutes(fastify: FastifyInstance) {
 
         return reply.code(200).send(result);
       } catch (error) {
+        if (error instanceof z.ZodError) {
+          return reply.code(400).send({
+            error: 'Validation failed',
+            details: error.issues.map((e) => ({ path: e.path.join('.'), message: e.message })),
+          });
+        }
         if (error instanceof TransactionValidationError) {
           return reply.code(error.statusCode).send({
             error: error.message,
@@ -1068,30 +937,10 @@ export default async function assignmentRoutes(fastify: FastifyInstance) {
       preHandler: [authenticateUser],
     },
     async (request, reply) => {
-      const { assignmentId } = request.params;
-      const { childId } = request.body;
-
-      // Validate assignmentId format
-      if (!isValidUuid(assignmentId)) {
-        return reply.code(400).send({
-          error: 'Invalid assignmentId format (must be UUID)',
-        });
-      }
-
-      // Validate childId
-      if (!childId || typeof childId !== 'string') {
-        return reply.code(400).send({
-          error: 'childId is required',
-        });
-      }
-
-      if (!isValidUuid(childId)) {
-        return reply.code(400).send({
-          error: 'Invalid childId format (must be UUID)',
-        });
-      }
-
       try {
+        // Validate params and body with Zod schemas
+        const { assignmentId } = validateParams(assignmentIdParamSchema, request);
+        const { childId } = validateBody(reassignAssignmentBodySchema, request);
         // Fetch assignment with household_id
         const assignmentResult = await pool.query(
           `SELECT ta.id, ta.household_id, ta.child_id, ta.status
@@ -1178,6 +1027,12 @@ export default async function assignmentRoutes(fastify: FastifyInstance) {
           child_name: newChild.name,
         });
       } catch (error) {
+        if (error instanceof z.ZodError) {
+          return reply.code(400).send({
+            error: 'Validation failed',
+            details: error.issues.map((e) => ({ path: e.path.join('.'), message: e.message })),
+          });
+        }
         fastify.log.error(error, 'Failed to reassign assignment');
         return reply.code(500).send({
           error: 'Failed to reassign assignment',
