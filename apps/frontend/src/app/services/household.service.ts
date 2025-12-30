@@ -91,4 +91,39 @@ export class HouseholdService {
   async getHouseholdMembers(householdId: string): Promise<HouseholdMember[]> {
     return this.apiService.get<HouseholdMember[]>(`/households/${householdId}/members`);
   }
+
+  /**
+   * Auto-activate a household for the current user
+   * Logic:
+   * 1. If household is already active and exists, keep it
+   * 2. If user has one household, activate it
+   * 3. If user has multiple households, activate the first one
+   *
+   * Call this after login to ensure user always has an active household context.
+   */
+  async autoActivateHousehold(): Promise<void> {
+    const storedId = this.getStoredHouseholdId();
+    const households = await this.listHouseholds();
+
+    if (households.length === 0) {
+      // No households - clear any stale active household
+      this.activeHouseholdId.set(null);
+      this.storage.remove(STORAGE_KEYS.ACTIVE_HOUSEHOLD_ID);
+      return;
+    }
+
+    // Check if stored household is still valid
+    if (storedId) {
+      const isValid = households.some((h) => h.id === storedId);
+      if (isValid) {
+        // Stored household is valid, keep it
+        this.activeHouseholdId.set(storedId);
+        return;
+      }
+    }
+
+    // Set first household as active
+    const firstHousehold = households[0];
+    this.setActiveHousehold(firstHousehold.id);
+  }
 }

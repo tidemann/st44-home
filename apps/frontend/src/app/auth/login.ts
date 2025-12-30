@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormGroup, FormControl, Validators } from '@angular/forms';
 import { Router, RouterLink, ActivatedRoute } from '@angular/router';
 import { AuthService } from '../services/auth.service';
+import { HouseholdService } from '../services/household.service';
 import { lastValueFrom } from 'rxjs';
 import { environment } from '../../environments/environment.development';
 
@@ -19,6 +20,7 @@ interface GoogleSignInResponse {
 })
 export class LoginComponent implements OnInit {
   private readonly authService = inject(AuthService);
+  private readonly householdService = inject(HouseholdService);
   private readonly router = inject(Router);
   private readonly route = inject(ActivatedRoute);
 
@@ -60,6 +62,9 @@ export class LoginComponent implements OnInit {
     try {
       await lastValueFrom(this.authService.loginWithGoogle(response.credential));
 
+      // Auto-activate household after successful login
+      await this.householdService.autoActivateHousehold();
+
       // Success - navigate to return URL or home
       const returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/home';
       this.router.navigateByUrl(returnUrl);
@@ -85,6 +90,9 @@ export class LoginComponent implements OnInit {
     try {
       const { email, password, rememberMe } = this.loginForm.value;
       await lastValueFrom(this.authService.login(email!, password!, rememberMe || false));
+
+      // Auto-activate household after successful login
+      await this.householdService.autoActivateHousehold();
 
       // Success - navigate to return URL or home
       const returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/home';
