@@ -152,17 +152,11 @@ jobs:
             infra/docker-compose.yml \
             ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }}:/srv/st44-home/infra/docker-compose.yml
 
-      - name: Pull all Docker images
+      - name: Deploy via SSH
         run: |
           ssh -i ~/.ssh/id_deploy -o StrictHostKeyChecking=yes \
             ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} \
-            "cd /srv/st44-home/infra && docker compose pull"
-
-      - name: Start Database and Redis
-        run: |
-          ssh -i ~/.ssh/id_deploy -o StrictHostKeyChecking=yes \
-            ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} \
-            "cd /srv/st44-home/infra && docker compose up -d --no-build db redis"
+            "cd /srv/st44-home/infra && docker compose pull && docker compose up -d db redis"
 
       - name: Run Database Migrations
         run: |
@@ -175,7 +169,7 @@ jobs:
         run: |
           ssh -i ~/.ssh/id_deploy -o StrictHostKeyChecking=yes \
             ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} \
-            "cd /srv/st44-home/infra && docker compose up -d --no-build backend frontend"
+            "cd /srv/st44-home/infra && docker compose up -d backend frontend"
 
       - name: Verify Deployment Health
         run: |
