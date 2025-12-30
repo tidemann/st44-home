@@ -21,13 +21,13 @@ describe('JWT Utilities', () => {
 
   describe('generateAccessToken', () => {
     test('should generate a valid JWT string', () => {
-      const token = generateAccessToken(testUserId, testEmail, testSecret);
+      const token = generateAccessToken(testUserId, testEmail, { secret: testSecret });
       assert.ok(typeof token === 'string');
       assert.ok(token.split('.').length === 3); // JWT has 3 parts
     });
 
     test('should include user data in payload', () => {
-      const token = generateAccessToken(testUserId, testEmail, testSecret);
+      const token = generateAccessToken(testUserId, testEmail, { secret: testSecret });
       const decoded = decodeToken(token) as { userId: string; email: string; type: string };
 
       assert.strictEqual(decoded.userId, testUserId);
@@ -41,9 +41,26 @@ describe('JWT Utilities', () => {
     });
 
     test('should generate different tokens for different users', () => {
-      const token1 = generateAccessToken('user-1', 'user1@example.com', testSecret);
-      const token2 = generateAccessToken('user-2', 'user2@example.com', testSecret);
+      const token1 = generateAccessToken('user-1', 'user1@example.com', { secret: testSecret });
+      const token2 = generateAccessToken('user-2', 'user2@example.com', { secret: testSecret });
       assert.notStrictEqual(token1, token2);
+    });
+
+    test('should include firstName and lastName in payload', () => {
+      const token = generateAccessToken(testUserId, testEmail, {
+        secret: testSecret,
+        firstName: 'Test',
+        lastName: 'User',
+      });
+      const decoded = decodeToken(token) as {
+        userId: string;
+        email: string;
+        firstName: string;
+        lastName: string;
+      };
+
+      assert.strictEqual(decoded.firstName, 'Test');
+      assert.strictEqual(decoded.lastName, 'User');
     });
   });
 
@@ -71,7 +88,7 @@ describe('JWT Utilities', () => {
 
   describe('verifyAccessToken', () => {
     test('should verify valid access token', () => {
-      const token = generateAccessToken(testUserId, testEmail, testSecret);
+      const token = generateAccessToken(testUserId, testEmail, { secret: testSecret });
       const result = verifyAccessToken(token, testSecret);
 
       assert.strictEqual(result.valid, true);
@@ -88,7 +105,7 @@ describe('JWT Utilities', () => {
     });
 
     test('should reject token with wrong secret', () => {
-      const token = generateAccessToken(testUserId, testEmail, testSecret);
+      const token = generateAccessToken(testUserId, testEmail, { secret: testSecret });
       const result = verifyAccessToken(token, 'wrong-secret');
 
       assert.strictEqual(result.valid, false);
@@ -105,7 +122,10 @@ describe('JWT Utilities', () => {
 
     test('should reject expired token', async () => {
       // Generate token that expires immediately
-      const token = generateAccessToken(testUserId, testEmail, testSecret, '1ms');
+      const token = generateAccessToken(testUserId, testEmail, {
+        secret: testSecret,
+        expiresIn: '1ms',
+      });
 
       // Wait for it to expire
       await new Promise((resolve) => setTimeout(resolve, 10));
@@ -137,7 +157,7 @@ describe('JWT Utilities', () => {
     });
 
     test('should reject access token as refresh token', () => {
-      const accessToken = generateAccessToken(testUserId, testEmail, testSecret);
+      const accessToken = generateAccessToken(testUserId, testEmail, { secret: testSecret });
       const result = verifyRefreshToken(accessToken, testSecret);
 
       assert.strictEqual(result.valid, false);
@@ -159,7 +179,7 @@ describe('JWT Utilities', () => {
 
   describe('decodeToken', () => {
     test('should decode token without verification', () => {
-      const token = generateAccessToken(testUserId, testEmail, testSecret);
+      const token = generateAccessToken(testUserId, testEmail, { secret: testSecret });
       const decoded = decodeToken(token) as { userId: string; email: string };
 
       assert.strictEqual(decoded.userId, testUserId);
@@ -167,7 +187,7 @@ describe('JWT Utilities', () => {
     });
 
     test('should decode token even with wrong secret', () => {
-      const token = generateAccessToken(testUserId, testEmail, 'some-secret');
+      const token = generateAccessToken(testUserId, testEmail, { secret: 'some-secret' });
       const decoded = decodeToken(token) as { userId: string };
 
       assert.strictEqual(decoded.userId, testUserId);
@@ -181,12 +201,18 @@ describe('JWT Utilities', () => {
 
   describe('isTokenExpired', () => {
     test('should return false for valid non-expired token', () => {
-      const token = generateAccessToken(testUserId, testEmail, testSecret, '1h');
+      const token = generateAccessToken(testUserId, testEmail, {
+        secret: testSecret,
+        expiresIn: '1h',
+      });
       assert.strictEqual(isTokenExpired(token), false);
     });
 
     test('should return true for expired token', async () => {
-      const token = generateAccessToken(testUserId, testEmail, testSecret, '1ms');
+      const token = generateAccessToken(testUserId, testEmail, {
+        secret: testSecret,
+        expiresIn: '1ms',
+      });
       await new Promise((resolve) => setTimeout(resolve, 10));
       assert.strictEqual(isTokenExpired(token), true);
     });
