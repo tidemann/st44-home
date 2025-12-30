@@ -11,6 +11,7 @@ import { Router, RouterOutlet, NavigationEnd } from '@angular/router';
 import { filter, Subscription } from 'rxjs';
 import { BottomNav } from '../../components/navigation/bottom-nav/bottom-nav';
 import { SidebarNav } from '../../components/navigation/sidebar-nav/sidebar-nav';
+import { HouseholdSwitcherComponent } from '../../components/household-switcher/household-switcher';
 import {
   QuickAddModal,
   type QuickAddTaskData,
@@ -37,7 +38,7 @@ import type { Child } from '@st44/types';
  */
 @Component({
   selector: 'app-main-layout',
-  imports: [RouterOutlet, BottomNav, SidebarNav, QuickAddModal],
+  imports: [RouterOutlet, BottomNav, SidebarNav, HouseholdSwitcherComponent, QuickAddModal],
   templateUrl: './main-layout.html',
   styleUrl: './main-layout.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
