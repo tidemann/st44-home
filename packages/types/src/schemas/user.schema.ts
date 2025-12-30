@@ -10,7 +10,9 @@ import { z } from '../generators/openapi.generator.js';
 export const UserSchema = z.object({
   id: z.string().uuid(),
   email: z.string().email(),
-  name: z.string().max(255).nullable(),
+  name: z.string().max(255).nullable(), // Legacy field, kept for backwards compatibility
+  firstName: z.string().max(100).nullable(),
+  lastName: z.string().max(100).nullable(),
   googleId: z.string().nullable(),
   passwordHash: z.string().nullable(),
   createdAt: z.string().datetime(),
@@ -33,6 +35,8 @@ export type User = z.infer<typeof UserSchema>;
 export const CreateUserRequestSchema = z.object({
   email: z.string().email(),
   password: z.string().min(8).max(128).optional(),
+  firstName: z.string().min(1).max(100),
+  lastName: z.string().min(1).max(100),
   googleId: z.string().optional(),
 });
 
@@ -44,7 +48,8 @@ export type CreateUserRequest = z.infer<typeof CreateUserRequestSchema>;
  */
 export const UpdateUserRequestSchema = z
   .object({
-    name: z.string().max(255).optional(),
+    firstName: z.string().min(1).max(100).optional(),
+    lastName: z.string().min(1).max(100).optional(),
     email: z.string().email().optional(),
     password: z.string().min(8).max(128).optional(),
   })
@@ -59,7 +64,8 @@ export type UpdateUserRequest = z.infer<typeof UpdateUserRequestSchema>;
 export const UserProfileResponseSchema = z.object({
   id: z.string().uuid(),
   email: z.string().email(),
-  name: z.string().nullable(),
+  firstName: z.string().nullable(),
+  lastName: z.string().nullable(),
   createdAt: z.string().datetime(),
   updatedAt: z.string().datetime(),
 });

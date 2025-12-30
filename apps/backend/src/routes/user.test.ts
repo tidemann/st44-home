@@ -81,17 +81,18 @@ describe('User Profile API', () => {
   });
 
   describe('PUT /api/user/profile', () => {
-    test('should update user name', async () => {
+    test('should update user firstName and lastName', async () => {
       const response = await app.inject({
         method: 'PUT',
         url: '/api/user/profile',
         headers: { Authorization: `Bearer ${userToken}` },
-        payload: { name: 'John Doe' },
+        payload: { firstName: 'John', lastName: 'Doe' },
       });
 
       assert.strictEqual(response.statusCode, 200);
       const body = JSON.parse(response.body);
-      assert.strictEqual(body.name, 'John Doe');
+      assert.strictEqual(body.firstName, 'John');
+      assert.strictEqual(body.lastName, 'Doe');
       assert.strictEqual(body.email, userEmail);
     });
 
@@ -109,7 +110,7 @@ describe('User Profile API', () => {
       const response = await app.inject({
         method: 'PUT',
         url: '/api/user/profile',
-        payload: { name: 'Test Name' },
+        payload: { firstName: 'Test' },
       });
       assert.strictEqual(response.statusCode, 401);
     });
@@ -183,12 +184,12 @@ describe('User Profile API', () => {
       assert.strictEqual(response.statusCode, 400);
     });
 
-    test('should reject name too long', async () => {
+    test('should reject firstName too long', async () => {
       const response = await app.inject({
         method: 'PUT',
         url: '/api/user/profile',
         headers: { Authorization: `Bearer ${userToken}` },
-        payload: { name: 'a'.repeat(256) },
+        payload: { firstName: 'a'.repeat(101) },
       });
       assert.strictEqual(response.statusCode, 400);
     });

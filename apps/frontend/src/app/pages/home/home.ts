@@ -111,7 +111,8 @@ export class Home implements OnInit {
       const household = households[0];
       this.householdId.set(household.id);
       this.householdName.set(household.name);
-      this.userName.set(user.email.split('@')[0]); // Use email username for now
+      // Use firstName if available, fallback to email username
+      this.userName.set(user.firstName || user.email.split('@')[0]);
 
       // Load children, tasks, and stats in parallel
       const [childrenData] = await Promise.all([

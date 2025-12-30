@@ -85,6 +85,8 @@ export function createMockUser(overrides: Partial<User> = {}): User {
     id,
     email: `user-${id.slice(0, 8)}@test.com`,
     name: 'Test User',
+    firstName: 'Test',
+    lastName: 'User',
     googleId: null,
     passwordHash: null,
     createdAt: nowDatetime(),

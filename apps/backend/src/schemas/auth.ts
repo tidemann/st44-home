@@ -9,7 +9,7 @@ import { errorResponseSchema, stripResponseValidation } from './common.js';
 // POST /api/auth/register
 const registerSchemaBase = {
   summary: 'Register new user account',
-  description: 'Create a new user account with email and password',
+  description: 'Create a new user account with email, password, and name',
   tags: ['auth'],
   body: {
     type: 'object',
@@ -24,8 +24,20 @@ const registerSchemaBase = {
         minLength: 8,
         description: 'Password (min 8 chars, must include uppercase, lowercase, and number)',
       },
+      firstName: {
+        type: 'string',
+        minLength: 1,
+        maxLength: 100,
+        description: 'User first name',
+      },
+      lastName: {
+        type: 'string',
+        minLength: 1,
+        maxLength: 100,
+        description: 'User last name',
+      },
     },
-    required: ['email', 'password'],
+    required: ['email', 'password', 'firstName', 'lastName'],
   },
   response: {
     201: {
@@ -34,8 +46,10 @@ const registerSchemaBase = {
       properties: {
         userId: { type: 'string', format: 'uuid' },
         email: { type: 'string', format: 'email' },
+        firstName: { type: 'string' },
+        lastName: { type: 'string' },
       },
-      required: ['userId', 'email'],
+      required: ['userId', 'email', 'firstName', 'lastName'],
     },
     400: {
       description: 'Invalid request (weak password, invalid email, etc.)',

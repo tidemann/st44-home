@@ -40,6 +40,8 @@ export class RegisterComponent implements OnInit {
 
   protected registerForm = new FormGroup(
     {
+      firstName: new FormControl('', [Validators.required, Validators.maxLength(100)]),
+      lastName: new FormControl('', [Validators.required, Validators.maxLength(100)]),
       email: new FormControl('', [Validators.required, Validators.email]),
       password: new FormControl('', [
         Validators.required,
@@ -51,6 +53,12 @@ export class RegisterComponent implements OnInit {
     { validators: passwordMatchValidator },
   );
 
+  protected get firstNameControl() {
+    return this.registerForm.get('firstName')!;
+  }
+  protected get lastNameControl() {
+    return this.registerForm.get('lastName')!;
+  }
   protected get emailControl() {
     return this.registerForm.get('email')!;
   }
@@ -102,8 +110,8 @@ export class RegisterComponent implements OnInit {
     this.errorMessage.set(null);
 
     try {
-      const { email, password } = this.registerForm.value;
-      await this.authService.register(email!, password!).toPromise();
+      const { email, password, firstName, lastName } = this.registerForm.value;
+      await this.authService.register(email!, password!, firstName!, lastName!).toPromise();
 
       // Success - navigate to login
       this.router.navigate(['/login'], {

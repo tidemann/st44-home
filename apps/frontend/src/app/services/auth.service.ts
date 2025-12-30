@@ -30,12 +30,16 @@ export interface User {
   id: string;
   email: string;
   role?: 'admin' | 'parent' | 'child';
+  firstName?: string | null;
+  lastName?: string | null;
 }
 
 interface DecodedToken {
   userId: string;
   email: string;
   role?: 'admin' | 'parent' | 'child';
+  firstName?: string | null;
+  lastName?: string | null;
   type: string;
   iat: number;
   exp: number;
@@ -101,6 +105,8 @@ export class AuthService {
         id: decoded.userId,
         email: decoded.email,
         role: decoded.role,
+        firstName: decoded.firstName,
+        lastName: decoded.lastName,
       };
     } catch (error) {
       console.error('Failed to decode token:', error);
@@ -108,10 +114,17 @@ export class AuthService {
     }
   }
 
-  register(email: string, password: string): Observable<AuthResponse> {
+  register(
+    email: string,
+    password: string,
+    firstName: string,
+    lastName: string,
+  ): Observable<AuthResponse> {
     return this.http.post<AuthResponse>(`${this.apiUrl}/register`, {
       email,
       password,
+      firstName,
+      lastName,
     });
   }
 

@@ -112,7 +112,7 @@ describe('AuthService', () => {
         refreshToken: 'mock-refresh-token',
       };
 
-      service.register('test@example.com', 'Test1234').subscribe({
+      service.register('test@example.com', 'Test1234', 'Test', 'User').subscribe({
         next: (response) => {
           expect(response).toEqual(mockResponse);
         },
@@ -123,6 +123,8 @@ describe('AuthService', () => {
       expect(req.request.body).toEqual({
         email: 'test@example.com',
         password: 'Test1234',
+        firstName: 'Test',
+        lastName: 'User',
       });
 
       req.flush(mockResponse);
@@ -134,7 +136,7 @@ describe('AuthService', () => {
         error: 'Email already registered',
       };
 
-      service.register('duplicate@example.com', 'Test1234').subscribe({
+      service.register('duplicate@example.com', 'Test1234', 'Test', 'User').subscribe({
         next: () => {
           throw new Error('Should have failed');
         },

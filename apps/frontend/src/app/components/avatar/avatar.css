@@ -1,0 +1,54 @@
+/**
+ * Avatar Component Styles
+ * Diddit! Design System
+ */
+
+.avatar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  font-weight: var(--font-weight-semibold);
+  color: white;
+  overflow: hidden;
+  flex-shrink: 0;
+  user-select: none;
+}
+
+/* Size variants */
+.avatar-sm {
+  width: 32px;
+  height: 32px;
+  font-size: var(--font-size-xs);
+}
+
+.avatar-md {
+  width: 40px;
+  height: 40px;
+  font-size: var(--font-size-sm);
+}
+
+.avatar-lg {
+  width: 56px;
+  height: 56px;
+  font-size: var(--font-size-lg);
+}
+
+.avatar-xl {
+  width: 80px;
+  height: 80px;
+  font-size: var(--font-size-2xl);
+}
+
+/* Image styling */
+.avatar-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Initials styling */
+.avatar-initials {
+  line-height: 1;
+  letter-spacing: 0.05em;
+}

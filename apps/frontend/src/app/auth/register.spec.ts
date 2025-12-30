@@ -47,6 +47,8 @@ describe('RegisterComponent', () => {
 
     it('should initialize form with empty values', () => {
       expect(component['registerForm'].value).toEqual({
+        firstName: '',
+        lastName: '',
         email: '',
         password: '',
         confirmPassword: '',
@@ -155,6 +157,8 @@ describe('RegisterComponent', () => {
 
     it('should mark form as valid when passwords match', () => {
       component['registerForm'].patchValue({
+        firstName: 'Test',
+        lastName: 'User',
         email: 'test@example.com',
         password: 'Password123',
         confirmPassword: 'Password123',
@@ -215,6 +219,8 @@ describe('RegisterComponent', () => {
 
     it('should call authService.register with correct parameters', async () => {
       component['registerForm'].patchValue({
+        firstName: 'Test',
+        lastName: 'User',
         email: 'test@example.com',
         password: 'Test1234',
         confirmPassword: 'Test1234',
@@ -224,11 +230,18 @@ describe('RegisterComponent', () => {
 
       await component['onSubmit']();
 
-      expect(mockAuthService.register).toHaveBeenCalledWith('test@example.com', 'Test1234');
+      expect(mockAuthService.register).toHaveBeenCalledWith(
+        'test@example.com',
+        'Test1234',
+        'Test',
+        'User',
+      );
     });
 
     it('should navigate to login with registered=true on successful registration', async () => {
       component['registerForm'].patchValue({
+        firstName: 'Test',
+        lastName: 'User',
         email: 'test@example.com',
         password: 'Test1234',
         confirmPassword: 'Test1234',
@@ -245,6 +258,8 @@ describe('RegisterComponent', () => {
 
     it('should set isLoading to true during registration', async () => {
       component['registerForm'].patchValue({
+        firstName: 'Test',
+        lastName: 'User',
         email: 'test@example.com',
         password: 'Test1234',
         confirmPassword: 'Test1234',
@@ -275,6 +290,8 @@ describe('RegisterComponent', () => {
     it('should clear errorMessage on new submission', async () => {
       component['errorMessage'].set('Previous error');
       component['registerForm'].patchValue({
+        firstName: 'Test',
+        lastName: 'User',
         email: 'test@example.com',
         password: 'Test1234',
         confirmPassword: 'Test1234',
@@ -289,6 +306,8 @@ describe('RegisterComponent', () => {
 
     it('should handle registration error with error.error property', async () => {
       component['registerForm'].patchValue({
+        firstName: 'Test',
+        lastName: 'User',
         email: 'existing@example.com',
         password: 'Test1234',
         confirmPassword: 'Test1234',
@@ -309,6 +328,8 @@ describe('RegisterComponent', () => {
 
     it('should show default error message when no specific error is provided', async () => {
       component['registerForm'].patchValue({
+        firstName: 'Test',
+        lastName: 'User',
         email: 'test@example.com',
         password: 'Test1234',
         confirmPassword: 'Test1234',

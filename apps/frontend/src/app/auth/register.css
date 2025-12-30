@@ -99,6 +99,24 @@
 }
 
 /* ===== FORM STYLES ===== */
+/* Name fields side-by-side on larger screens */
+.name-fields {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0;
+}
+
+@media (min-width: 480px) {
+  .name-fields {
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-md);
+  }
+
+  .name-fields .form-group {
+    margin-bottom: var(--space-lg);
+  }
+}
+
 .form-group {
   margin-bottom: var(--space-lg);
 }
