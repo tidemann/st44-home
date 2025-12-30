@@ -2,6 +2,7 @@ import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { LoginComponent } from './login';
 import { AuthService } from '../services/auth.service';
+import { HouseholdService } from '../services/household.service';
 import { Router, ActivatedRoute, provideRouter } from '@angular/router';
 import { of, throwError } from 'rxjs';
 import { provideHttpClient } from '@angular/common/http';
@@ -11,6 +12,7 @@ describe('LoginComponent', () => {
   let component: LoginComponent;
   let fixture: ComponentFixture<LoginComponent>;
   let mockAuthService: { login: ReturnType<typeof vi.fn> };
+  let mockHouseholdService: { autoActivateHousehold: ReturnType<typeof vi.fn> };
   let router: Router;
   let mockActivatedRoute: {
     snapshot: {
@@ -28,6 +30,10 @@ describe('LoginComponent', () => {
       login: vi.fn(),
     };
 
+    mockHouseholdService = {
+      autoActivateHousehold: vi.fn().mockResolvedValue(undefined),
+    };
+
     mockActivatedRoute = {
       snapshot: {
         queryParams: {},
@@ -41,6 +47,7 @@ describe('LoginComponent', () => {
         provideHttpClientTesting(),
         provideRouter([]), // Provides a real Router for testing
         { provide: AuthService, useValue: mockAuthService },
+        { provide: HouseholdService, useValue: mockHouseholdService },
         { provide: ActivatedRoute, useValue: mockActivatedRoute },
       ],
     });
