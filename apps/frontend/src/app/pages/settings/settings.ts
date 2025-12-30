@@ -1,9 +1,11 @@
 import { Component, ChangeDetectionStrategy, signal, inject, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { DatePipe } from '@angular/common';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { UserService, type UserProfile } from '../../services/user.service';
 import { AuthService } from '../../services/auth.service';
+import { HouseholdService, type HouseholdListItem } from '../../services/household.service';
+import { InvitationService } from '../../services/invitation.service';
 
 /**
  * Settings Screen
@@ -18,7 +20,7 @@ import { AuthService } from '../../services/auth.service';
  */
 @Component({
   selector: 'app-settings',
-  imports: [FormsModule, DatePipe],
+  imports: [FormsModule, DatePipe, RouterLink],
   templateUrl: './settings.html',
   styleUrl: './settings.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -26,6 +28,8 @@ import { AuthService } from '../../services/auth.service';
 export class Settings implements OnInit {
   private readonly userService = inject(UserService);
   private readonly authService = inject(AuthService);
+  private readonly householdService = inject(HouseholdService);
+  private readonly invitationService = inject(InvitationService);
   private readonly router = inject(Router);
 
   // State signals
@@ -36,6 +40,10 @@ export class Settings implements OnInit {
 
   // Profile data
   protected readonly profile = signal<UserProfile | null>(null);
+
+  // Household data
+  protected readonly activeHousehold = signal<HouseholdListItem | null>(null);
+  protected readonly pendingInvitationsCount = signal(0);
 
   // Form fields
   protected firstName = '';
@@ -49,7 +57,7 @@ export class Settings implements OnInit {
   protected readonly showPasswordSection = signal(false);
 
   async ngOnInit(): Promise<void> {
-    await this.loadProfile();
+    await Promise.all([this.loadProfile(), this.loadHouseholdData()]);
   }
 
   /**
@@ -72,6 +80,27 @@ export class Settings implements OnInit {
       this.error.set('Failed to load profile. Please try again.');
     } finally {
       this.loading.set(false);
+    }
+  }
+
+  /**
+   * Load household data and pending invitations count
+   */
+  private async loadHouseholdData(): Promise<void> {
+    try {
+      const householdId = this.householdService.getActiveHouseholdId();
+      if (householdId) {
+        const household = await this.householdService.getHousehold(householdId);
+        this.activeHousehold.set(household);
+      }
+
+      // Load pending invitations count
+      const response = await this.invitationService.listReceivedInvitations();
+      const pendingCount = response.invitations.filter((inv) => inv.status === 'pending').length;
+      this.pendingInvitationsCount.set(pendingCount);
+    } catch (err) {
+      // Non-critical - don't show error to user, just log
+      console.error('Failed to load household data:', err);
     }
   }
 
