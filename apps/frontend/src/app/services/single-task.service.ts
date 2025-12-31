@@ -120,7 +120,7 @@ export class SingleTaskService {
    */
   acceptTask(householdId: string, taskId: string): Observable<AcceptTaskResponse> {
     return this.apiService
-      .post<AcceptTaskResponse>(`/households/${householdId}/tasks/${taskId}/accept`, {})
+      .post$<AcceptTaskResponse>(`/households/${householdId}/tasks/${taskId}/accept`, {})
       .pipe(
         tap(() => {
           // Remove from available tasks
@@ -142,7 +142,7 @@ export class SingleTaskService {
    */
   declineTask(householdId: string, taskId: string): Observable<{ success: boolean }> {
     return this.apiService
-      .post<{ success: boolean }>(`/households/${householdId}/tasks/${taskId}/decline`, {})
+      .post$<{ success: boolean }>(`/households/${householdId}/tasks/${taskId}/decline`, {})
       .pipe(
         tap(() => {
           // Remove from available tasks
@@ -169,7 +169,7 @@ export class SingleTaskService {
     childId: string,
   ): Observable<{ success: boolean }> {
     return this.apiService
-      .delete<{
+      .delete$<{
         success: boolean;
       }>(`/households/${householdId}/tasks/${taskId}/responses/${childId}`)
       .pipe(
@@ -193,7 +193,7 @@ export class SingleTaskService {
     this.availableLoadingSignal.set(true);
     this.availableErrorSignal.set(null);
 
-    return this.apiService.get<{ tasks: AvailableSingleTask[] }>('/children/available-tasks').pipe(
+    return this.apiService.get$<{ tasks: AvailableSingleTask[] }>('/children/available-tasks').pipe(
       tap((response) => {
         this.availableTasksSignal.set(response.tasks);
         this.availableLoadingSignal.set(false);
@@ -218,7 +218,7 @@ export class SingleTaskService {
     this.failedErrorSignal.set(null);
 
     return this.apiService
-      .get<{ tasks: FailedTask[] }>(`/households/${householdId}/single-tasks/failed`)
+      .get$<{ tasks: FailedTask[] }>(`/households/${householdId}/single-tasks/failed`)
       .pipe(
         tap((response) => {
           this.failedTasksSignal.set(response.tasks);
@@ -244,7 +244,7 @@ export class SingleTaskService {
     this.expiredErrorSignal.set(null);
 
     return this.apiService
-      .get<{ tasks: FailedTask[] }>(`/households/${householdId}/single-tasks/expired`)
+      .get$<{ tasks: FailedTask[] }>(`/households/${householdId}/single-tasks/expired`)
       .pipe(
         tap((response) => {
           this.expiredTasksSignal.set(response.tasks);
@@ -271,7 +271,7 @@ export class SingleTaskService {
     taskId: string,
   ): Observable<{ candidates: CandidateStatus[] }> {
     return this.apiService
-      .get<{
+      .get$<{
         candidates: CandidateStatus[];
       }>(`/households/${householdId}/tasks/${taskId}/candidates`)
       .pipe(
