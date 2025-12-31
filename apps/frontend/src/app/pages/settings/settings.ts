@@ -6,6 +6,7 @@ import { UserService, type UserProfile } from '../../services/user.service';
 import { AuthService } from '../../services/auth.service';
 import { HouseholdService, type HouseholdListItem } from '../../services/household.service';
 import { InvitationService } from '../../services/invitation.service';
+import { environment } from '../../../environments/environment';
 
 /**
  * Settings Screen
@@ -55,6 +56,10 @@ export class Settings implements OnInit {
 
   // Password section toggle
   protected readonly showPasswordSection = signal(false);
+
+  // App version info
+  protected readonly appVersion = environment.version;
+  protected readonly buildTime = environment.buildTime;
 
   async ngOnInit(): Promise<void> {
     await Promise.all([this.loadProfile(), this.loadHouseholdData()]);
