@@ -116,6 +116,7 @@ function mapRowToTask(row: Record<string, unknown>): Task {
     points: row.points as number,
     ruleType: row.rule_type as RuleType,
     ruleConfig: normalizedRuleConfig,
+    deadline: row.deadline ? toDateTimeString(row.deadline) : null,
     active: row.active !== false,
     createdAt: toDateTimeString(row.created_at),
     updatedAt: toDateTimeString(row.updated_at),
