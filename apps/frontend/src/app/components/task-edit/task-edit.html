@@ -168,43 +168,45 @@
         }
 
         <!-- Assigned Children -->
-        @if (ruleType !== 'daily') {
-          <div class="form-group">
-            <fieldset>
-              <legend>
-                Assign to Children <span class="required">*</span>
-                @if (ruleType === 'weekly_rotation') {
-                  <span class="help">(Select 2+ for rotation)</span>
-                }
-              </legend>
-              <div class="children-selector" role="group" aria-label="Assign children">
-                @for (child of children(); track child.id) {
-                  <label class="child-checkbox">
-                    <input
-                      type="checkbox"
-                      [checked]="isChildSelected(child.id)"
-                      (change)="onChildChange(child.id, $any($event.target).checked)"
-                      [attr.aria-label]="'Assign to ' + child.name"
-                    />
-                    {{ child.name }}
-                  </label>
-                }
-              </div>
-              @if (
-                taskForm.get('assignedChildren')?.invalid &&
-                taskForm.get('assignedChildren')?.touched
-              ) {
-                <p class="error" role="alert">
-                  @if (ruleType === 'weekly_rotation') {
-                    Select at least 2 children for rotation
-                  } @else {
-                    Select at least 1 child
-                  }
-                </p>
+        <div class="form-group">
+          <fieldset>
+            <legend>
+              Assign to Children
+              @if (ruleType !== 'daily') {
+                <span class="required">*</span>
               }
-            </fieldset>
-          </div>
-        }
+              @if (ruleType === 'weekly_rotation') {
+                <span class="help">(Select 2+ for rotation)</span>
+              } @else if (ruleType === 'daily') {
+                <span class="help">(Optional)</span>
+              }
+            </legend>
+            <div class="children-selector" role="group" aria-label="Assign children">
+              @for (child of children(); track child.id) {
+                <label class="child-checkbox">
+                  <input
+                    type="checkbox"
+                    [checked]="isChildSelected(child.id)"
+                    (change)="onChildChange(child.id, $any($event.target).checked)"
+                    [attr.aria-label]="'Assign to ' + child.name"
+                  />
+                  {{ child.name }}
+                </label>
+              }
+            </div>
+            @if (
+              taskForm.get('assignedChildren')?.invalid && taskForm.get('assignedChildren')?.touched
+            ) {
+              <p class="error" role="alert">
+                @if (ruleType === 'weekly_rotation') {
+                  Select at least 2 children for rotation
+                } @else {
+                  Select at least 1 child
+                }
+              </p>
+            }
+          </fieldset>
+        </div>
 
         <!-- Active Status -->
         <div class="form-group">
