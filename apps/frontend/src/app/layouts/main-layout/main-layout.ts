@@ -8,7 +8,7 @@ import {
   OnDestroy,
 } from '@angular/core';
 import { Router, RouterOutlet, NavigationEnd } from '@angular/router';
-import { filter, Subscription } from 'rxjs';
+import { filter, Subscription, switchMap } from 'rxjs';
 import { BottomNav } from '../../components/navigation/bottom-nav/bottom-nav';
 import { SidebarNav } from '../../components/navigation/sidebar-nav/sidebar-nav';
 import { HouseholdSwitcherComponent } from '../../components/household-switcher/household-switcher';
@@ -182,17 +182,30 @@ export class MainLayout implements OnInit, OnDestroy {
 
   /**
    * Handle quick-add task creation
+   *
+   * Creates a daily task with the assigned child, then creates
+   * a manual assignment for today so the task appears immediately.
    */
   protected onTaskCreated(data: QuickAddTaskData): void {
     const household = this.householdId();
     if (!household) return;
+
+    const today = new Date().toISOString().split('T')[0];
 
     this.taskService
       .createTask(household, {
         name: data.name,
         points: data.points,
         ruleType: 'daily',
+        ruleConfig: {
+          assignedChildren: [data.assignedChildId],
+        },
       })
+      .pipe(
+        switchMap((task) =>
+          this.taskService.createManualAssignment(task.id, data.assignedChildId, today),
+        ),
+      )
       .subscribe({
         next: () => {
           this.quickAddOpen.set(false);
