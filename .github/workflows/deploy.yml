@@ -145,18 +145,9 @@ jobs:
 
       - name: Sync docker-compose.yml to server
         run: |
-          ssh -i ~/.ssh/id_deploy -o StrictHostKeyChecking=yes \
-            ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} \
-            "mkdir -p /srv/st44-home/infra"
           scp -i ~/.ssh/id_deploy -o StrictHostKeyChecking=yes \
             infra/docker-compose.yml \
             ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }}:/srv/st44-home/infra/docker-compose.yml
-
-      - name: Write environment file
-        run: |
-          ssh -i ~/.ssh/id_deploy -o StrictHostKeyChecking=yes \
-            ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} \
-            "echo 'DB_PASSWORD=${{ secrets.DB_PASSWORD }}' > /srv/st44-home/infra/.env"
 
       - name: Deploy via SSH
         run: |
@@ -171,39 +162,27 @@ jobs:
             ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} \
             "docker exec st44-db /usr/local/bin/run-migrations.sh"
 
-      - name: Stop Application Containers
-        run: |
-          ssh -i ~/.ssh/id_deploy -o StrictHostKeyChecking=yes \
-            ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} \
-            "cd /srv/st44-home/infra && docker compose stop backend frontend 2>/dev/null || true && docker compose rm -f backend frontend 2>/dev/null || true"
-          ssh -i ~/.ssh/id_deploy -o StrictHostKeyChecking=yes \
-            ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} \
-            "docker stop st44-home st44-frontend st44-backend 2>/dev/null || true && docker rm st44-home st44-frontend st44-backend 2>/dev/null || true"
-          ssh -i ~/.ssh/id_deploy -o StrictHostKeyChecking=yes \
-            ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} \
-            "docker ps -a --filter 'publish=80' -q | xargs -r docker rm -f 2>/dev/null || true"
-
       - name: Start Application Services
         run: |
           ssh -i ~/.ssh/id_deploy -o StrictHostKeyChecking=yes \
             ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} \
-            "cd /srv/st44-home/infra && docker compose up -d --pull always --force-recreate backend frontend"
+            "cd /srv/st44-home/infra && docker compose up -d backend frontend"
 
       - name: Verify Deployment Health
         run: |
           echo "Waiting for services to start..."
           sleep 15
-          
+
           echo "Checking Docker containers status..."
           ssh -i ~/.ssh/id_deploy -o StrictHostKeyChecking=yes \
             ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} \
             'docker ps --filter "name=st44" --format "table {{.Names}}\t{{.Status}}\t{{.Ports}}"'
-          
+
           echo "Checking backend health endpoint (direct)..."
           ssh -i ~/.ssh/id_deploy -o StrictHostKeyChecking=yes \
             ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} \
             'curl -f http://localhost:3000/health || exit 1'
-          
+
           echo "Checking database health endpoint (via backend)..."
           ssh -i ~/.ssh/id_deploy -o StrictHostKeyChecking=yes \
             ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} \
