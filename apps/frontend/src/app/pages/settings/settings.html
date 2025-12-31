@@ -182,6 +182,22 @@
           <button type="button" class="btn btn-danger" (click)="logout()">Log Out</button>
         </div>
       </section>
+
+      <!-- About Section -->
+      <section class="settings-section">
+        <h2>About</h2>
+
+        <div class="account-info">
+          <div class="info-row">
+            <span class="info-label">Version</span>
+            <span class="info-value">{{ appVersion }}</span>
+          </div>
+          <div class="info-row">
+            <span class="info-label">Build</span>
+            <span class="info-value">{{ buildTime | date: 'medium' }}</span>
+          </div>
+        </div>
+      </section>
     </div>
   </div>
 }
