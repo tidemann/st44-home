@@ -526,7 +526,7 @@ async function updateTask(request: FastifyRequest<UpdateTaskRequest>, reply: Fas
         // Single child assignment - update or create today's pending assignment
         const updateResult = await db.query(
           `UPDATE task_assignments
-           SET child_id = $1, updated_at = NOW()
+           SET child_id = $1
            WHERE task_id = $2
              AND date = $3
              AND status = 'pending'
@@ -547,7 +547,7 @@ async function updateTask(request: FastifyRequest<UpdateTaskRequest>, reply: Fas
         // No children assigned - set child_id to null for today's pending assignment
         await db.query(
           `UPDATE task_assignments
-           SET child_id = NULL, updated_at = NOW()
+           SET child_id = NULL
            WHERE task_id = $1
              AND date = $2
              AND status = 'pending'`,
