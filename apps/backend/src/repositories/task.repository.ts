@@ -8,7 +8,7 @@ import type { TaskRow, TaskRuleConfig } from '../types/database.js';
  * Services should use this repository instead of direct database access.
  */
 
-export type TaskRuleType = 'weekly_rotation' | 'repeating' | 'daily';
+export type TaskRuleType = 'weekly_rotation' | 'repeating' | 'daily' | 'single';
 
 export interface Task {
   id: string;
@@ -18,6 +18,7 @@ export interface Task {
   points: number;
   ruleType: TaskRuleType;
   ruleConfig: TaskRuleConfig | null;
+  deadline: string | null;
   active: boolean;
   createdAt: string;
   updatedAt: string;
@@ -120,6 +121,7 @@ function mapRowToTask(row: TaskRow): Task {
     points: row.points,
     ruleType: row.rule_type,
     ruleConfig: parseRuleConfig(row.rule_config),
+    deadline: row.deadline ? toDateTimeString(row.deadline) : null,
     active: row.active,
     createdAt: toDateTimeString(row.created_at),
     updatedAt: toDateTimeString(row.updated_at),
@@ -141,7 +143,7 @@ export class TaskRepository {
    */
   async findById(taskId: string): Promise<Task | null> {
     const result = await this.db.query<TaskRow>(
-      `SELECT id, household_id, name, description, points, rule_type, rule_config, active, created_at, updated_at
+      `SELECT id, household_id, name, description, points, rule_type, rule_config, deadline, active, created_at, updated_at
        FROM tasks WHERE id = $1`,
       [taskId],
     );
@@ -155,7 +157,7 @@ export class TaskRepository {
    */
   async findByIdAndHousehold(taskId: string, householdId: string): Promise<Task | null> {
     const result = await this.db.query<TaskRow>(
-      `SELECT id, household_id, name, description, points, rule_type, rule_config, active, created_at, updated_at
+      `SELECT id, household_id, name, description, points, rule_type, rule_config, deadline, active, created_at, updated_at
        FROM tasks WHERE id = $1 AND household_id = $2`,
       [taskId, householdId],
     );
@@ -169,7 +171,7 @@ export class TaskRepository {
    */
   async findByHousehold(householdId: string): Promise<Task[]> {
     const result = await this.db.query<TaskRow>(
-      `SELECT id, household_id, name, description, points, rule_type, rule_config, active, created_at, updated_at
+      `SELECT id, household_id, name, description, points, rule_type, rule_config, deadline, active, created_at, updated_at
        FROM tasks WHERE household_id = $1
        ORDER BY created_at DESC`,
       [householdId],
@@ -183,7 +185,7 @@ export class TaskRepository {
    */
   async findActiveByHousehold(householdId: string): Promise<Task[]> {
     const result = await this.db.query<TaskRow>(
-      `SELECT id, household_id, name, description, points, rule_type, rule_config, active, created_at, updated_at
+      `SELECT id, household_id, name, description, points, rule_type, rule_config, deadline, active, created_at, updated_at
        FROM tasks WHERE household_id = $1 AND active = true
        ORDER BY created_at DESC`,
       [householdId],
@@ -325,7 +327,7 @@ export class TaskRepository {
     dataParams.push(pageSize, offset);
 
     const dataResult = await this.db.query<TaskRow>(
-      `SELECT id, household_id, name, description, points, rule_type, rule_config, active, created_at, updated_at
+      `SELECT id, household_id, name, description, points, rule_type, rule_config, deadline, active, created_at, updated_at
        FROM tasks WHERE ${whereClause}
        ORDER BY ${sortField} ${order}
        LIMIT $${limitParamIndex} OFFSET $${offsetParamIndex}`,

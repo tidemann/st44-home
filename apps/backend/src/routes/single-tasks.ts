@@ -46,7 +46,7 @@ export default async function singleTasksRoutes(fastify: FastifyInstance) {
     },
     async (request, reply) => {
       const { householdId, taskId } = request.params;
-      const userId = request.user!.id;
+      const userId = request.user!.userId;
 
       // Get child profile for current user
       const childResult = await db.query<{ id: string }>(
@@ -155,7 +155,7 @@ export default async function singleTasksRoutes(fastify: FastifyInstance) {
     },
     async (request, reply) => {
       const { householdId, taskId } = request.params;
-      const userId = request.user!.id;
+      const userId = request.user!.userId;
 
       // Get child profile for current user
       const childResult = await db.query<{ id: string }>(
@@ -209,7 +209,7 @@ export default async function singleTasksRoutes(fastify: FastifyInstance) {
     },
     async (request, reply) => {
       const { householdId, taskId, childId } = request.params;
-      const userId = request.user!.id;
+      const userId = request.user!.userId;
 
       // Verify user owns this child profile
       const childResult = await db.query<{ id: string }>(
@@ -246,7 +246,7 @@ export default async function singleTasksRoutes(fastify: FastifyInstance) {
       preHandler: [authenticateUser],
     },
     async (request, reply) => {
-      const userId = request.user!.id;
+      const userId = request.user!.userId;
 
       try {
         // Get child profile and household for current user
