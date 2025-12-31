@@ -64,7 +64,8 @@ export class Family implements OnInit {
   protected readonly selectedChild = signal<Child | null>(null);
   protected readonly selectedChildEmail = signal<string | null>(null);
 
-  // Children map for looking up child by userId
+  // Children map for looking up child by id or userId
+  private readonly childrenById = signal<Map<string, Child>>(new Map());
   private readonly childrenByUserId = signal<Map<string, Child>>(new Map());
   private readonly householdMembers = signal<HouseholdMemberResponse[]>([]);
 
@@ -111,14 +112,28 @@ export class Family implements OnInit {
       // Store household members for later lookup
       this.householdMembers.set(householdMembers);
 
-      // Build a map of userId -> Child for quick lookup
-      const childMap = new Map<string, Child>();
+      // Build maps for child lookup
+      const childByIdMap = new Map<string, Child>();
+      const childByUserIdMap = new Map<string, Child>();
       for (const child of children) {
+        childByIdMap.set(child.id, child);
         if (child.userId) {
-          childMap.set(child.userId, child);
+          childByUserIdMap.set(child.userId, child);
         }
       }
-      this.childrenByUserId.set(childMap);
+      this.childrenById.set(childByIdMap);
+      this.childrenByUserId.set(childByUserIdMap);
+
+      // Track which children already have accounts (appear in householdMembers)
+      const childrenWithAccounts = new Set<string>();
+      for (const member of householdMembers) {
+        if (member.role === 'child') {
+          const child = childByUserIdMap.get(member.userId);
+          if (child) {
+            childrenWithAccounts.add(child.id);
+          }
+        }
+      }
 
       // Transform HouseholdMember[] to MemberCardData[]
       const memberCards: MemberCardData[] = householdMembers.map((member) => {
@@ -141,6 +156,21 @@ export class Family implements OnInit {
           points: member.points,
         };
       });
+
+      // Add children WITHOUT accounts to the member list
+      for (const child of children) {
+        if (!childrenWithAccounts.has(child.id)) {
+          memberCards.push({
+            id: `child:${child.id}`, // Prefix to distinguish from userId
+            name: child.name,
+            email: undefined,
+            role: 'child',
+            tasksCompleted: 0,
+            totalTasks: 0,
+            points: 0,
+          });
+        }
+      }
 
       this.members.set(memberCards);
     } catch (err) {
@@ -236,16 +266,28 @@ export class Family implements OnInit {
    * Handle member card click - opens child details modal for children
    */
   protected onMemberClick(memberId: string): void {
-    // Find the child from the map
-    const child = this.childrenByUserId().get(memberId);
+    let child: Child | undefined;
+    let email: string | null = null;
+
+    // Check if this is a child without account (prefixed with "child:")
+    if (memberId.startsWith('child:')) {
+      const childId = memberId.substring(6); // Remove "child:" prefix
+      child = this.childrenById().get(childId);
+      // No email for children without accounts
+    } else {
+      // Child with account - lookup by userId
+      child = this.childrenByUserId().get(memberId);
+      if (child) {
+        const member = this.householdMembers().find((m) => m.userId === memberId);
+        email = member?.email ?? null;
+      }
+    }
+
     if (!child) {
       return;
     }
 
-    // Find the member to get email
-    const member = this.householdMembers().find((m) => m.userId === memberId);
-    this.selectedChildEmail.set(member?.email ?? null);
-
+    this.selectedChildEmail.set(email);
     this.selectedChild.set(child);
     this.childDetailsModalOpen.set(true);
   }
