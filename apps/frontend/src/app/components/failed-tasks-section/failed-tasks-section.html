@@ -14,15 +14,11 @@
   }
 
   @if (failedError()) {
-    <div class="error-message">
-      Failed to load declined tasks: {{ failedError() }}
-    </div>
+    <div class="error-message">Failed to load declined tasks: {{ failedError() }}</div>
   }
 
   @if (expiredError()) {
-    <div class="error-message">
-      Failed to load expired tasks: {{ expiredError() }}
-    </div>
+    <div class="error-message">Failed to load expired tasks: {{ expiredError() }}</div>
   }
 
   @if (!isLoading() && !hasProblemTasks()) {
@@ -57,9 +53,7 @@
                 </div>
 
                 <div class="task-meta">
-                  <span class="meta-item">
-                    {{ task.candidateCount }} children declined
-                  </span>
+                  <span class="meta-item"> {{ task.candidateCount }} children declined </span>
                   @if (task.deadline) {
                     <span class="meta-item deadline">
                       Deadline: {{ formatDeadline(task.deadline) }}
@@ -67,11 +61,7 @@
                   }
                 </div>
 
-                <button
-                  class="btn-assign"
-                  (click)="onAssignManually(task.id)"
-                  type="button"
-                >
+                <button class="btn-assign" (click)="onAssignManually(task.id)" type="button">
                   Assign Manually
                 </button>
               </div>
@@ -103,9 +93,7 @@
                 </div>
 
                 <div class="task-meta">
-                  <span class="meta-item overdue">
-                    {{ getDaysOverdue(task) }} days overdue
-                  </span>
+                  <span class="meta-item overdue"> {{ getDaysOverdue(task) }} days overdue </span>
                   @if (task.candidateCount > 0) {
                     <span class="meta-item">
                       {{ task.declineCount }} / {{ task.candidateCount }} declined
@@ -113,11 +101,7 @@
                   }
                 </div>
 
-                <button
-                  class="btn-assign"
-                  (click)="onAssignManually(task.id)"
-                  type="button"
-                >
+                <button class="btn-assign" (click)="onAssignManually(task.id)" type="button">
                   Assign Manually
                 </button>
               </div>
