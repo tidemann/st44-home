@@ -574,10 +574,29 @@ export default async function childrenRoutes(server: FastifyInstance) {
   });
 
   // Get my tasks (for logged-in children)
-  server.get('/api/children/my-tasks', {
+  // Primary endpoint: /api/children/me/tasks (used by frontend)
+  server.get('/api/children/me/tasks', {
     schema: stripResponseValidation({
       summary: 'Get tasks for logged-in child',
       description: 'Returns tasks assigned to the authenticated child user',
+      tags: ['children'],
+      security: [{ bearerAuth: [] }],
+      querystring: zodToOpenAPI(TaskQuerySchema),
+      response: {
+        200: zodToOpenAPI(MyTasksResponseSchema),
+        ...CommonErrors.Unauthorized,
+        ...CommonErrors.InternalServerError,
+      },
+    }),
+    preHandler: [authenticateUser],
+    handler: getMyTasks,
+  });
+
+  // Legacy alias: /api/children/my-tasks (for backward compatibility)
+  server.get('/api/children/my-tasks', {
+    schema: stripResponseValidation({
+      summary: 'Get tasks for logged-in child (legacy)',
+      description: 'Legacy endpoint - use /api/children/me/tasks instead',
       tags: ['children'],
       security: [{ bearerAuth: [] }],
       querystring: zodToOpenAPI(TaskQuerySchema),
