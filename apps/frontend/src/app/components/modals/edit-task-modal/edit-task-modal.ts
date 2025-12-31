@@ -128,6 +128,7 @@ export class EditTaskModal {
     { value: 'daily', label: 'Daily' },
     { value: 'repeating', label: 'Repeating (Custom Days)' },
     { value: 'weekly_rotation', label: 'Weekly Rotation' },
+    { value: 'single', label: 'Single (One-time)' },
   ];
 
   /**
