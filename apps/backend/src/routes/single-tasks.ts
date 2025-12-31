@@ -97,7 +97,9 @@ export default async function singleTasksRoutes(fastify: FastifyInstance) {
 
           if (assignmentCheck.rows.length > 0) {
             await client.query('ROLLBACK');
-            return reply.status(409).send({ error: 'Task has already been accepted by another child' });
+            return reply
+              .status(409)
+              .send({ error: 'Task has already been accepted by another child' });
           }
 
           // Create assignment

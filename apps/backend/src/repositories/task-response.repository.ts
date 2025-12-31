@@ -109,7 +109,11 @@ export class TaskResponseRepository {
   /**
    * Add candidate children to a single task
    */
-  async addCandidates(taskId: string, childIds: string[], householdId: string): Promise<TaskCandidate[]> {
+  async addCandidates(
+    taskId: string,
+    childIds: string[],
+    householdId: string,
+  ): Promise<TaskCandidate[]> {
     if (childIds.length === 0) return [];
 
     // Build VALUES clause for bulk insert

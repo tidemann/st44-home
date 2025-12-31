@@ -198,10 +198,7 @@ describe('TaskResponseRepository', () => {
         rowCount: 1,
       }));
 
-      const result = await repository.getAvailableTasksForChild(
-        sampleChildId,
-        sampleHouseholdId,
-      );
+      const result = await repository.getAvailableTasksForChild(sampleChildId, sampleHouseholdId);
 
       assert.equal(result.length, 1);
       assert.equal(result[0].name, 'Clean garage');
@@ -231,10 +228,7 @@ describe('TaskResponseRepository', () => {
         rowCount: 1,
       }));
 
-      const result = await repository.getAvailableTasksForChild(
-        sampleChildId,
-        sampleHouseholdId,
-      );
+      const result = await repository.getAvailableTasksForChild(sampleChildId, sampleHouseholdId);
 
       assert.ok(result[0].daysUntilDeadline !== null);
       assert.ok(result[0].daysUntilDeadline >= 0);
