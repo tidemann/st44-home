@@ -124,13 +124,21 @@ export class Family implements OnInit {
       this.childrenById.set(childByIdMap);
       this.childrenByUserId.set(childByUserIdMap);
 
+      // Build a map of userId -> childId for children with accounts
+      const userIdToChildId = new Map<string, string>();
+      for (const child of children) {
+        if (child.userId) {
+          userIdToChildId.set(child.userId, child.id);
+        }
+      }
+
       // Track which children already have accounts (appear in householdMembers)
       const childrenWithAccounts = new Set<string>();
       for (const member of householdMembers) {
         if (member.role === 'child') {
-          const child = childByUserIdMap.get(member.userId);
-          if (child) {
-            childrenWithAccounts.add(child.id);
+          const childId = userIdToChildId.get(member.userId);
+          if (childId) {
+            childrenWithAccounts.add(childId);
           }
         }
       }
@@ -145,8 +153,18 @@ export class Family implements OnInit {
           ? `${member.displayName || emailUsername || 'Unknown'} (You)`
           : member.displayName || emailUsername || 'Child';
 
+        // For children, use child:childId format for consistent lookup
+        // For non-children (parents), use userId
+        let memberId = member.userId;
+        if (isChild) {
+          const childId = userIdToChildId.get(member.userId);
+          if (childId) {
+            memberId = `child:${childId}`;
+          }
+        }
+
         return {
-          id: member.userId,
+          id: memberId,
           name: displayName,
           email: member.email ?? undefined, // Convert null to undefined for optional field
           role: isChild ? 'child' : 'parent',
@@ -264,27 +282,26 @@ export class Family implements OnInit {
 
   /**
    * Handle member card click - opens child details modal for children
+   * All children use "child:childId" format for consistent lookup
    */
   protected onMemberClick(memberId: string): void {
-    let child: Child | undefined;
-    let email: string | null = null;
-
-    // Check if this is a child without account (prefixed with "child:")
-    if (memberId.startsWith('child:')) {
-      const childId = memberId.substring(6); // Remove "child:" prefix
-      child = this.childrenById().get(childId);
-      // No email for children without accounts
-    } else {
-      // Child with account - lookup by userId
-      child = this.childrenByUserId().get(memberId);
-      if (child) {
-        const member = this.householdMembers().find((m) => m.userId === memberId);
-        email = member?.email ?? null;
-      }
+    // All children should use "child:" prefix
+    if (!memberId.startsWith('child:')) {
+      return; // Not a child, ignore
     }
+
+    const childId = memberId.substring(6); // Remove "child:" prefix
+    const child = this.childrenById().get(childId);
 
     if (!child) {
       return;
+    }
+
+    // Get email if child has an account (has userId)
+    let email: string | null = null;
+    if (child.userId) {
+      const member = this.householdMembers().find((m) => m.userId === child.userId);
+      email = member?.email ?? null;
     }
 
     this.selectedChildEmail.set(email);

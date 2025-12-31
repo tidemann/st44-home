@@ -149,8 +149,9 @@ describe('Family', () => {
         email: 'test@example.com',
         role: 'parent',
       });
+      // Children with accounts use child:childId format
       expect(members[1]).toMatchObject({
-        id: 'user-2',
+        id: 'child:child-1',
         name: 'Test Child',
         email: 'child@example.com',
         role: 'child',
@@ -178,14 +179,16 @@ describe('Family', () => {
       const currentUserMember = component['members']().find((m) => m.id === 'user-1');
       expect(currentUserMember?.name).toContain('(You)');
 
-      const otherMember = component['members']().find((m) => m.id === 'user-2');
+      // Children with accounts use child:childId format
+      const otherMember = component['members']().find((m) => m.id === 'child:child-1');
       expect(otherMember?.name).not.toContain('(You)');
     });
 
     it('should pass through task stats and points from backend', async () => {
       await component.ngOnInit();
 
-      const childMember = component['members']().find((m) => m.id === 'user-2');
+      // Children with accounts use child:childId format
+      const childMember = component['members']().find((m) => m.id === 'child:child-1');
       expect(childMember?.tasksCompleted).toBe(3);
       expect(childMember?.totalTasks).toBe(5);
       expect(childMember?.points).toBe(150);
