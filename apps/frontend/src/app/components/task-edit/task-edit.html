@@ -192,6 +192,10 @@
                   />
                   {{ child.name }}
                 </label>
+              } @empty {
+                <p class="empty-state">
+                  No children in this household. Add children from the Family page to assign tasks.
+                </p>
               }
             </div>
             @if (

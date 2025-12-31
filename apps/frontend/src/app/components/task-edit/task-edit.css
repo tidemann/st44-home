@@ -267,6 +267,17 @@ fieldset {
   color: #dc2626;
 }
 
+.empty-state {
+  margin: 0;
+  padding: 1rem;
+  font-size: 0.875rem;
+  color: #6b7280;
+  background-color: #f9fafb;
+  border: 1px dashed #d1d5db;
+  border-radius: 0.375rem;
+  text-align: center;
+}
+
 .error-message {
   padding: 1rem;
   margin-bottom: 1rem;
