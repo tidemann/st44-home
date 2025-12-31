@@ -17,6 +17,8 @@ describe('UserSchema', () => {
       id: '123e4567-e89b-12d3-a456-426614174000',
       email: 'test@example.com',
       name: 'Test User',
+      firstName: 'Test',
+      lastName: 'User',
       googleId: null,
       passwordHash: '$2b$10$abcdefg...',
       createdAt: '2025-12-22T10:00:00Z',
@@ -27,6 +29,8 @@ describe('UserSchema', () => {
     const parsed = UserSchema.parse(validUser);
     expect(parsed.email).toBe('test@example.com');
     expect(parsed.name).toBe('Test User');
+    expect(parsed.firstName).toBe('Test');
+    expect(parsed.lastName).toBe('User');
   });
 
   it('validates user with null name', () => {
@@ -34,6 +38,8 @@ describe('UserSchema', () => {
       id: '123e4567-e89b-12d3-a456-426614174000',
       email: 'test@example.com',
       name: null,
+      firstName: null,
+      lastName: null,
       googleId: null,
       passwordHash: '$2b$10$abcdefg...',
       createdAt: '2025-12-22T10:00:00Z',
@@ -50,6 +56,8 @@ describe('UserSchema', () => {
       id: '123e4567-e89b-12d3-a456-426614174000',
       email: 'invalid-email',
       name: null,
+      firstName: null,
+      lastName: null,
       googleId: null,
       passwordHash: null,
       createdAt: '2025-12-22T10:00:00Z',
@@ -64,6 +72,8 @@ describe('UserSchema', () => {
       id: 'not-a-uuid',
       email: 'test@example.com',
       name: null,
+      firstName: null,
+      lastName: null,
       googleId: null,
       passwordHash: null,
       createdAt: '2025-12-22T10:00:00Z',
@@ -79,6 +89,8 @@ describe('CreateUserRequestSchema', () => {
     const validRequest = {
       email: 'newuser@example.com',
       password: 'StrongPassword123',
+      firstName: 'John',
+      lastName: 'Doe',
     };
 
     expect(() => CreateUserRequestSchema.parse(validRequest)).not.toThrow();
@@ -88,6 +100,8 @@ describe('CreateUserRequestSchema', () => {
     const validRequest = {
       email: 'googleuser@example.com',
       googleId: 'google-oauth-id-123',
+      firstName: 'Google',
+      lastName: 'User',
     };
 
     expect(() => CreateUserRequestSchema.parse(validRequest)).not.toThrow();
@@ -97,6 +111,8 @@ describe('CreateUserRequestSchema', () => {
     const invalidRequest = {
       email: 'test@example.com',
       password: 'short',
+      firstName: 'Test',
+      lastName: 'User',
     };
 
     expect(() => CreateUserRequestSchema.parse(invalidRequest)).toThrow();
@@ -106,6 +122,8 @@ describe('CreateUserRequestSchema', () => {
     const invalidRequest = {
       email: 'not-an-email',
       password: 'ValidPassword123',
+      firstName: 'Test',
+      lastName: 'User',
     };
 
     expect(() => CreateUserRequestSchema.parse(invalidRequest)).toThrow();
@@ -138,6 +156,8 @@ describe('UserResponseSchema', () => {
       id: '123e4567-e89b-12d3-a456-426614174000',
       email: 'test@example.com',
       name: 'Test User',
+      firstName: 'Test',
+      lastName: 'User',
       googleId: null,
       createdAt: '2025-12-22T10:00:00Z',
       updatedAt: '2025-12-22T10:00:00Z',
@@ -146,5 +166,7 @@ describe('UserResponseSchema', () => {
     const parsed = UserResponseSchema.parse(user);
     expect(parsed).not.toHaveProperty('passwordHash');
     expect(parsed.name).toBe('Test User');
+    expect(parsed.firstName).toBe('Test');
+    expect(parsed.lastName).toBe('User');
   });
 });
