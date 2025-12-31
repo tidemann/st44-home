@@ -132,22 +132,30 @@ export class Family implements OnInit {
         }
       }
 
-      // Track which children already have accounts (appear in householdMembers)
-      // Use userIdToChildId lookup instead of role string to handle case mismatches
-      const childrenWithAccounts = new Set<string>();
+      // Track which children are already included in householdMembers response
+      // The backend includes BOTH linked children (with user accounts) AND unlinked children
+      // - Linked children: member.userId is the actual user ID, matches child.userId
+      // - Unlinked children: member.userId is the child ID itself (no user account)
+      const childrenInResponse = new Set<string>();
       for (const member of householdMembers) {
+        // Check if this is a linked child (member.userId matches a child.userId)
         const childId = userIdToChildId.get(member.userId);
         if (childId) {
-          childrenWithAccounts.add(childId);
+          childrenInResponse.add(childId);
+        }
+        // Check if this is an unlinked child (member.userId IS the child.id)
+        // The backend uses childId as userId for unlinked children
+        if (childByIdMap.has(member.userId)) {
+          childrenInResponse.add(member.userId);
         }
       }
 
       // Transform HouseholdMember[] to MemberCardData[]
+      // Trust the backend's role field - it correctly returns 'child' for all children
       const memberCards: MemberCardData[] = householdMembers.map((member) => {
         const isCurrentUser = member.userId === user.id;
-        // Determine if member is a child by checking if they have a child record
-        // This is more reliable than checking member.role which may have case mismatches
-        const isChild = childByUserIdMap.has(member.userId);
+        // Trust the backend's role - it correctly identifies children (linked and unlinked)
+        const isChild = member.role === 'child';
         // Handle null email for unlinked children
         const emailUsername = member.email ? member.email.split('@')[0] : null;
         const displayName = isCurrentUser
@@ -155,12 +163,17 @@ export class Family implements OnInit {
           : member.displayName || emailUsername || 'Child';
 
         // For children, use child:childId format for consistent lookup
-        // For non-children (parents), use userId
+        // For linked children: look up childId from userIdToChildId
+        // For unlinked children: member.userId IS the childId
         let memberId = member.userId;
         if (isChild) {
-          const childId = userIdToChildId.get(member.userId);
-          if (childId) {
-            memberId = `child:${childId}`;
+          const linkedChildId = userIdToChildId.get(member.userId);
+          if (linkedChildId) {
+            // Linked child - member.userId is user ID, look up child ID
+            memberId = `child:${linkedChildId}`;
+          } else if (childByIdMap.has(member.userId)) {
+            // Unlinked child - member.userId IS the child ID
+            memberId = `child:${member.userId}`;
           }
         }
 
@@ -176,9 +189,11 @@ export class Family implements OnInit {
         };
       });
 
-      // Add children WITHOUT accounts to the member list
+      // Add children that are NOT in the householdMembers response
+      // This should be rare - the backend normally includes all children
+      // But keep this as a safety net for edge cases
       for (const child of children) {
-        if (!childrenWithAccounts.has(child.id)) {
+        if (!childrenInResponse.has(child.id)) {
           memberCards.push({
             id: `child:${child.id}`, // Prefix to distinguish from userId
             name: child.name,
