@@ -82,6 +82,18 @@ npm run db:test:up               # Start test database
 npm run db:test:down             # Stop test database
 ```
 
+### Production Deployment
+
+**CRITICAL DEPLOYMENT RULES:**
+
+1. **NO .env FILES ON SERVER** - The production server does NOT use .env files. All secrets (DB_PASSWORD, etc.) are stored in GitHub Secrets and passed directly via the deployment workflow.
+
+2. **Server has NO git** - The deployment server does not have git installed. GitHub Actions has full control over deployment via SSH/SCP.
+
+3. **Server has NO source code** - The server only runs pre-built Docker images from GHCR. It cannot build images locally.
+
+4. **Docker Compose on server** - The server has its own docker-compose.yml at `/srv/st44-home/infra/`. Changes to infra/docker-compose.yml require manual sync or SCP.
+
 ### Storybook (Component Development)
 
 **IMPORTANT: All new components MUST have corresponding Storybook stories.**
