@@ -3,7 +3,6 @@ import { TaskEditComponent } from './task-edit';
 import type { Task } from '@st44/types';
 import { TaskService } from '../../services/task.service';
 import { ChildrenService } from '../../services/children.service';
-import { HouseholdService } from '../../services/household.service';
 import { of, throwError } from 'rxjs';
 import { signal } from '@angular/core';
 import { FormArray } from '@angular/forms';
@@ -24,9 +23,6 @@ describe('TaskEditComponent', () => {
   };
   let mockChildrenService: {
     listChildren: ReturnType<typeof vi.fn>;
-  };
-  let mockHouseholdService: {
-    getActiveHouseholdId: ReturnType<typeof vi.fn>;
   };
 
   const mockChildren = [
@@ -61,16 +57,11 @@ describe('TaskEditComponent', () => {
       listChildren: vi.fn().mockResolvedValue(mockChildren),
     };
 
-    mockHouseholdService = {
-      getActiveHouseholdId: vi.fn().mockReturnValue('household-1'),
-    };
-
     TestBed.configureTestingModule({
       imports: [TaskEditComponent],
       providers: [
         { provide: TaskService, useValue: mockTaskService },
         { provide: ChildrenService, useValue: mockChildrenService },
-        { provide: HouseholdService, useValue: mockHouseholdService },
       ],
     });
 
@@ -259,12 +250,6 @@ describe('TaskEditComponent', () => {
   describe('Save', () => {
     it('should not save if form is invalid', () => {
       component.taskForm.get('name')?.setValue('');
-      component.onSave();
-      expect(mockTaskService.updateTask).not.toHaveBeenCalled();
-    });
-
-    it('should not save if no household ID', () => {
-      mockHouseholdService.getActiveHouseholdId.mockReturnValue(null);
       component.onSave();
       expect(mockTaskService.updateTask).not.toHaveBeenCalled();
     });

@@ -16,11 +16,9 @@ import {
   FormArray,
   AbstractControl,
 } from '@angular/forms';
-import type { Task } from '@st44/types';
+import type { Task, Child } from '@st44/types';
 import { TaskService } from '../../services/task.service';
-import type { Child } from '@st44/types';
 import { ChildrenService } from '../../services/children.service';
-import { HouseholdService } from '../../services/household.service';
 
 @Component({
   selector: 'app-task-edit',
@@ -33,7 +31,6 @@ export class TaskEditComponent {
   private fb = inject(FormBuilder);
   private taskService = inject(TaskService);
   private childrenService = inject(ChildrenService);
-  private householdService = inject(HouseholdService);
 
   // Inputs/Outputs
   readonly task = input.required<Task>();
@@ -80,25 +77,27 @@ export class TaskEditComponent {
       this.updateValidators(ruleType);
     });
 
-    // Pre-fill form when task input changes
+    // Pre-fill form and load children when task input changes
     effect(() => {
       const task = this.task();
       this.prefillForm(task);
+      // Load children using task's householdId as the source of truth
+      this.loadChildrenForTask(task.householdId);
     });
-
-    // Load children for current household
-    this.loadChildren();
   }
 
-  private async loadChildren(): Promise<void> {
-    const householdId = this.householdService.getActiveHouseholdId();
-    if (householdId) {
-      try {
-        const childrenList = await this.childrenService.listChildren(householdId);
-        this.children.set(childrenList);
-      } catch (error) {
-        console.error('Failed to load children:', error);
-      }
+  /**
+   * Load children for the task's household
+   * Uses the task's householdId directly to ensure children are always loaded
+   */
+  private async loadChildrenForTask(householdId: string): Promise<void> {
+    if (!householdId) return;
+
+    try {
+      const childrenList = await this.childrenService.listChildren(householdId);
+      this.children.set(childrenList);
+    } catch (error) {
+      console.error('Failed to load children:', error);
     }
   }
 
@@ -218,10 +217,9 @@ export class TaskEditComponent {
   onSave(): void {
     if (this.taskForm.invalid) return;
 
-    const householdId = this.householdService.getActiveHouseholdId();
-    if (!householdId) return;
-
-    const taskId = this.task().id;
+    const task = this.task();
+    const householdId = task.householdId;
+    const taskId = task.id;
 
     // Build request payload matching UpdateTaskRequest interface
     const updateData = {
