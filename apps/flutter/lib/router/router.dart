@@ -3,7 +3,12 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../features/auth/auth.dart';
-import '../features/home/presentation/home_page.dart';
+import '../features/child/child.dart';
+import '../features/family/family.dart';
+import '../features/home/home.dart';
+import '../features/rewards/rewards.dart';
+import '../features/settings/settings.dart';
+import '../features/tasks/tasks.dart';
 import '../shared/widgets/shell_scaffold.dart';
 
 /// Route names for type-safe navigation.
@@ -44,6 +49,11 @@ final routerProvider = Provider<GoRouter>((ref) {
 
       // Redirect to home if authenticated and on auth route
       if (isAuthenticated && isAuthRoute) {
+        // Check if user is a child - redirect to child dashboard
+        final user = authState.user;
+        if (user?.role == 'child') {
+          return '/child';
+        }
         return '/';
       }
 
@@ -62,7 +72,14 @@ final routerProvider = Provider<GoRouter>((ref) {
         builder: (context, state) => const RegisterPage(),
       ),
 
-      // Main app shell with bottom navigation
+      // Child dashboard (separate from parent shell)
+      GoRoute(
+        path: '/child',
+        name: Routes.childDashboard,
+        builder: (context, state) => const ChildDashboardPage(),
+      ),
+
+      // Main app shell with bottom navigation (parent view)
       ShellRoute(
         builder: (context, state, child) => ShellScaffold(child: child),
         routes: [
@@ -74,41 +91,24 @@ final routerProvider = Provider<GoRouter>((ref) {
           GoRoute(
             path: '/tasks',
             name: Routes.tasks,
-            builder: (context, state) => const Scaffold(
-              body: Center(child: Text('Tasks - Coming Soon')),
-            ),
+            builder: (context, state) => const TasksPage(),
           ),
           GoRoute(
             path: '/family',
             name: Routes.family,
-            builder: (context, state) => const Scaffold(
-              body: Center(child: Text('Family - Coming Soon')),
-            ),
+            builder: (context, state) => const FamilyPage(),
           ),
           GoRoute(
             path: '/rewards',
             name: Routes.rewards,
-            builder: (context, state) => const Scaffold(
-              body: Center(child: Text('Rewards - Coming Soon')),
-            ),
+            builder: (context, state) => const RewardsPage(),
           ),
           GoRoute(
             path: '/settings',
             name: Routes.settings,
-            builder: (context, state) => const Scaffold(
-              body: Center(child: Text('Settings - Coming Soon')),
-            ),
+            builder: (context, state) => const SettingsPage(),
           ),
         ],
-      ),
-
-      // Child dashboard (separate from parent shell)
-      GoRoute(
-        path: '/child',
-        name: Routes.childDashboard,
-        builder: (context, state) => const Scaffold(
-          body: Center(child: Text('Child Dashboard - Coming Soon')),
-        ),
       ),
     ],
     errorBuilder: (context, state) => Scaffold(
