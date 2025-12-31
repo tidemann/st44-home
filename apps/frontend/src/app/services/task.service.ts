@@ -385,4 +385,35 @@ export class TaskService {
     this.errorSignal.set(null);
     this.assignmentsErrorSignal.set(null);
   }
+
+  /**
+   * Create a manual task assignment for a specific task, child, and date
+   *
+   * @param taskId - ID of the task template
+   * @param childId - ID of the child to assign to (optional)
+   * @param date - Date for the assignment (ISO format YYYY-MM-DD)
+   * @returns Observable of the created assignment
+   */
+  createManualAssignment(
+    taskId: string,
+    childId: string | null,
+    date: string,
+  ): Observable<{ assignment: Assignment }> {
+    return from(
+      this.apiService.post<{ assignment: Assignment }>(`/assignments/manual`, {
+        taskId,
+        childId,
+        date,
+      }),
+    ).pipe(
+      tap((response) => {
+        // Add to state
+        this.assignmentsSignal.update((assignments) => [...assignments, response.assignment]);
+      }),
+      catchError((err) => {
+        this.assignmentsErrorSignal.set('Failed to create assignment');
+        return throwError(() => err);
+      }),
+    );
+  }
 }
