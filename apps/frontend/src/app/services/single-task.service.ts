@@ -108,7 +108,7 @@ export class SingleTaskService {
   public readonly hasFailedTasks = computed(() => this.failedTasksSignal().length > 0);
   public readonly hasExpiredTasks = computed(() => this.expiredTasksSignal().length > 0);
   public readonly totalProblemTasks = computed(
-    () => this.failedTasksSignal().length + this.expiredTasksSignal().length,
+    () => this.failedTasksSignal().length + this.expiredTasksSignal().length
   );
 
   /**
@@ -169,9 +169,9 @@ export class SingleTaskService {
     childId: string,
   ): Observable<{ success: boolean }> {
     return this.apiService
-      .delete<{ success: boolean }>(
-        `/households/${householdId}/tasks/${taskId}/responses/${childId}`,
-      )
+      .delete<{
+        success: boolean;
+      }>(`/households/${householdId}/tasks/${taskId}/responses/${childId}`)
       .pipe(
         tap(() => {
           // Reload available tasks to show the task again
@@ -271,9 +271,9 @@ export class SingleTaskService {
     taskId: string,
   ): Observable<{ candidates: CandidateStatus[] }> {
     return this.apiService
-      .get<{ candidates: CandidateStatus[] }>(
-        `/households/${householdId}/tasks/${taskId}/candidates`,
-      )
+      .get<{
+        candidates: CandidateStatus[];
+      }>(`/households/${householdId}/tasks/${taskId}/candidates`)
       .pipe(
         catchError((error) => {
           console.error('Failed to load task candidates:', error);

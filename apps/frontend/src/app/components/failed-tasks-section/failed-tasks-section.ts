@@ -3,7 +3,6 @@ import {
   computed,
   inject,
   input,
-  signal,
   OnInit,
   ChangeDetectionStrategy,
 } from '@angular/core';
