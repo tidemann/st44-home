@@ -10,6 +10,7 @@ import { Router } from '@angular/router';
 import { DashboardService, MyTasksResponse, ChildTask } from '../../services/dashboard.service';
 import { AnalyticsService } from '../../services/analytics.service';
 import { TaskService } from '../../services/task.service';
+import { AvailableTasksSectionComponent } from '../../components/available-tasks-section/available-tasks-section';
 import type { ChildAnalytics } from '@st44/types';
 
 /**
@@ -25,7 +26,7 @@ import type { ChildAnalytics } from '@st44/types';
  */
 @Component({
   selector: 'app-child-dashboard',
-  imports: [],
+  imports: [AvailableTasksSectionComponent],
   templateUrl: './child-dashboard.html',
   styleUrl: './child-dashboard.css',
   changeDetection: ChangeDetectionStrategy.OnPush,

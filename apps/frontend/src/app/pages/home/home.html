@@ -31,6 +31,11 @@
 
     <!-- Content -->
     <div class="content">
+      <!-- Failed/Expired Tasks Alert -->
+      @if (householdId()) {
+        <app-failed-tasks-section [householdId]="householdId()!" />
+      }
+
       <!-- Stats Grid -->
       <div class="stats-grid">
         <app-stat-card [icon]="'🎯'" [value]="stats().activeCount" [label]="'Active'" />

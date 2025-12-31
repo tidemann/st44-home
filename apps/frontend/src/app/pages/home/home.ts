@@ -13,6 +13,7 @@ import {
   type EditTaskData,
 } from '../../components/modals/edit-task-modal/edit-task-modal';
 import { CelebrationComponent } from '../../components/celebration/celebration';
+import { FailedTasksSectionComponent } from '../../components/failed-tasks-section/failed-tasks-section';
 import { TaskService } from '../../services/task.service';
 import { ChildrenService } from '../../services/children.service';
 import { AuthService } from '../../services/auth.service';
@@ -42,7 +43,13 @@ interface DashboardStats {
  */
 @Component({
   selector: 'app-home',
-  imports: [TaskCardComponent, StatCard, EditTaskModal, CelebrationComponent],
+  imports: [
+    TaskCardComponent,
+    StatCard,
+    EditTaskModal,
+    CelebrationComponent,
+    FailedTasksSectionComponent,
+  ],
   templateUrl: './home.html',
   styleUrl: './home.css',
   changeDetection: ChangeDetectionStrategy.OnPush,

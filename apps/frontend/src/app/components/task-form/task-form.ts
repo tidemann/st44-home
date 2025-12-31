@@ -9,8 +9,9 @@ import {
   ChangeDetectionStrategy,
 } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
-import type { Task } from '@st44/types';
+import type { Task, Child } from '@st44/types';
 import { TaskService } from '../../services/task.service';
+import { ChildrenService } from '../../services/children.service';
 import { CommonModule } from '@angular/common';
 
 @Component({
@@ -24,6 +25,7 @@ import { CommonModule } from '@angular/common';
 export class TaskFormComponent implements OnInit {
   private fb = inject(FormBuilder);
   private taskService = inject(TaskService);
+  private childrenService = inject(ChildrenService);
 
   householdId = input.required<string>();
   task = input<Task | null>(null);
@@ -33,6 +35,8 @@ export class TaskFormComponent implements OnInit {
   isSubmitting = signal(false);
   errorMessage = signal('');
   selectedDays = signal<number[]>([]);
+  selectedCandidates = signal<string[]>([]);
+  children = signal<Child[]>([]);
   formReady = signal(false);
 
   // Computed signal for button text
@@ -43,6 +47,13 @@ export class TaskFormComponent implements OnInit {
     return this.task() ? 'Save' : 'Create';
   });
 
+  // Minimum deadline is current datetime
+  get minDeadline(): string {
+    const now = new Date();
+    now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
+    return now.toISOString().slice(0, 16);
+  }
+
   constructor() {
     // Initialize form in constructor to ensure it's always defined
     this.form = this.fb.group({
@@ -50,18 +61,28 @@ export class TaskFormComponent implements OnInit {
       description: [''],
       points: [10, [Validators.required, Validators.min(0)]],
       ruleType: ['daily', Validators.required],
+      deadline: [''], // For single tasks
     });
 
-    // Watch ruleType changes to clear day selection
+    // Watch ruleType changes to clear day selection and candidates
     this.form.get('ruleType')?.valueChanges.subscribe(() => {
       this.selectedDays.set([]);
+      this.selectedCandidates.set([]);
     });
 
     // Mark form as ready after initialization
     this.formReady.set(true);
   }
 
-  ngOnInit() {
+  async ngOnInit() {
+    // Load children for candidate selection
+    try {
+      const childrenList = await this.childrenService.listChildren(this.householdId());
+      this.children.set(childrenList);
+    } catch (error) {
+      console.error('Failed to load children:', error);
+    }
+
     // Populate form if editing existing task
     const currentTask = this.task();
     if (currentTask) {
@@ -104,6 +125,19 @@ export class TaskFormComponent implements OnInit {
     return this.selectedDays().includes(day);
   }
 
+  toggleCandidate(childId: string) {
+    const candidates = this.selectedCandidates();
+    if (candidates.includes(childId)) {
+      this.selectedCandidates.set(candidates.filter((id) => id !== childId));
+    } else {
+      this.selectedCandidates.set([...candidates, childId]);
+    }
+  }
+
+  isCandidateSelected(childId: string): boolean {
+    return this.selectedCandidates().includes(childId);
+  }
+
   onSubmit() {
     if (this.form.invalid) {
       this.errorMessage.set('Please fill all required fields');
@@ -115,6 +149,11 @@ export class TaskFormComponent implements OnInit {
 
     if (ruleType === 'repeating' && this.selectedDays().length === 0) {
       this.errorMessage.set('Please select at least one day');
+      return;
+    }
+
+    if (ruleType === 'single' && this.selectedCandidates().length === 0) {
+      this.errorMessage.set('Please select at least one candidate');
       return;
     }
 
@@ -162,6 +201,22 @@ export class TaskFormComponent implements OnInit {
         rotationType: 'alternating' as const,
         assignedChildren: [] as string[], // TODO: Implement proper child selection
       };
+    }
+    if (ruleType === 'single') {
+      // For single tasks, candidates are tracked separately via task_candidates table
+      // The assignedChildren here is used for initial candidate creation
+      return {
+        assignedChildren: this.selectedCandidates(),
+      };
+    }
+    return null;
+  }
+
+  getDeadline(): string | null {
+    const formValues = this.form.getRawValue();
+    if (formValues.ruleType === 'single' && formValues.deadline) {
+      // Convert date input value to ISO string
+      return new Date(formValues.deadline).toISOString();
     }
     return null;
   }

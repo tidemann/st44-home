@@ -36,6 +36,7 @@
             <option value="daily">Daily</option>
             <option value="repeating">Repeating</option>
             <option value="weekly_rotation">Weekly Rotation</option>
+            <option value="single">Single (One-time)</option>
           </select>
         </div>
 
@@ -106,6 +107,40 @@
                 />
                 Sunday
               </label>
+            </div>
+          </fieldset>
+        }
+
+        @if (form?.value?.ruleType === 'single') {
+          <div class="form-field">
+            <label for="deadline">Deadline (optional)</label>
+            <input
+              id="deadline"
+              type="datetime-local"
+              formControlName="deadline"
+              [min]="minDeadline"
+            />
+            <small class="help-text">When should this task be completed by?</small>
+          </div>
+
+          <fieldset class="form-field">
+            <legend>Select candidates *</legend>
+            <small class="help-text">Which children can accept this task?</small>
+            <div class="candidate-selection">
+              @for (child of children(); track child.id) {
+                <label class="candidate-label">
+                  <input
+                    type="checkbox"
+                    [checked]="isCandidateSelected(child.id)"
+                    (change)="toggleCandidate(child.id)"
+                    [attr.aria-label]="child.name"
+                  />
+                  {{ child.name }}
+                </label>
+              }
+              @if (children().length === 0) {
+                <p class="no-children">No children in this household yet.</p>
+              }
             </div>
           </fieldset>
         }
