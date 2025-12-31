@@ -1,11 +1,4 @@
-import {
-  Component,
-  computed,
-  inject,
-  input,
-  OnInit,
-  ChangeDetectionStrategy,
-} from '@angular/core';
+import { Component, computed, inject, input, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { SingleTaskService, type FailedTask } from '../../services/single-task.service';
@@ -42,9 +35,7 @@ export class FailedTasksSectionComponent implements OnInit {
   protected hasFailedTasks = computed(() => this.failedTasks().length > 0);
   protected hasExpiredTasks = computed(() => this.expiredTasks().length > 0);
   protected hasProblemTasks = computed(() => this.hasFailedTasks() || this.hasExpiredTasks());
-  protected totalCount = computed(
-    () => this.failedTasks().length + this.expiredTasks().length,
-  );
+  protected totalCount = computed(() => this.failedTasks().length + this.expiredTasks().length);
   protected isLoading = computed(() => this.failedLoading() || this.expiredLoading());
 
   ngOnInit(): void {

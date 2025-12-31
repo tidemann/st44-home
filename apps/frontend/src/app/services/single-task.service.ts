@@ -107,9 +107,7 @@ export class SingleTaskService {
   public readonly hasAvailableTasks = computed(() => this.availableTasksSignal().length > 0);
   public readonly hasFailedTasks = computed(() => this.failedTasksSignal().length > 0);
   public readonly hasExpiredTasks = computed(() => this.expiredTasksSignal().length > 0);
-  public readonly totalProblemTasks = computed(
-    () => this.failedTasksSignal().length + this.expiredTasksSignal().length
-  );
+  public readonly totalProblemTasks = computed(() => this.failedTasksSignal().length + this.expiredTasksSignal().length);
 
   /**
    * Accept a single task
