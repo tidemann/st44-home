@@ -149,6 +149,12 @@ jobs:
             infra/docker-compose.yml \
             ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }}:/srv/st44-home/infra/docker-compose.yml
 
+      - name: Create .env file on server
+        run: |
+          ssh -i ~/.ssh/id_deploy -o StrictHostKeyChecking=yes \
+            ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} \
+            "echo 'DB_PASSWORD=${{ secrets.DB_PASSWORD }}' > /srv/st44-home/infra/.env"
+
       - name: Deploy via SSH
         run: |
           ssh -i ~/.ssh/id_deploy -o StrictHostKeyChecking=yes \
