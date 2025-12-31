@@ -17,7 +17,6 @@ import {
 import { Modal } from '../modal/modal';
 import type { Task, TaskRuleType, TaskRuleConfig, Child } from '@st44/types';
 import { ChildrenService } from '../../../services/children.service';
-import { HouseholdService } from '../../../services/household.service';
 
 /**
  * Data structure for edit task submission
@@ -83,11 +82,6 @@ export class EditTaskModal {
   private readonly childrenService = inject(ChildrenService);
 
   /**
-   * Household service
-   */
-  private readonly householdService = inject(HouseholdService);
-
-  /**
    * Available children for assignment
    */
   protected readonly children = signal<Child[]>([]);
@@ -146,12 +140,14 @@ export class EditTaskModal {
     ];
 
   constructor() {
-    // Update form when task changes
+    // Update form and load children when task changes
     effect(() => {
       const currentTask = this.task();
       if (currentTask) {
         this.prefillForm(currentTask);
         this.showDeleteConfirm.set(false);
+        // Load children using task's householdId
+        this.loadChildren(currentTask.householdId);
       }
     });
 
@@ -159,23 +155,19 @@ export class EditTaskModal {
     this.form.get('ruleType')?.valueChanges.subscribe((ruleType) => {
       this.updateValidators(ruleType);
     });
-
-    // Load children on init
-    this.loadChildren();
   }
 
   /**
-   * Load children from current household
+   * Load children for the task's household
    */
-  private async loadChildren(): Promise<void> {
-    const householdId = this.householdService.getActiveHouseholdId();
-    if (householdId) {
-      try {
-        const childrenList = await this.childrenService.listChildren(householdId);
-        this.children.set(childrenList);
-      } catch (error) {
-        console.error('Failed to load children:', error);
-      }
+  private async loadChildren(householdId: string): Promise<void> {
+    if (!householdId) return;
+
+    try {
+      const childrenList = await this.childrenService.listChildren(householdId);
+      this.children.set(childrenList);
+    } catch (error) {
+      console.error('Failed to load children:', error);
     }
   }
 
@@ -340,18 +332,25 @@ export class EditTaskModal {
    * Build rule config based on current form state
    */
   private buildRuleConfig(ruleType: TaskRuleType): TaskRuleConfig {
+    const assignedChildren = (this.form.get('assignedChildren') as FormArray).value as string[];
+
     if (ruleType === 'repeating') {
       return {
         repeatDays: (this.form.get('repeatDays') as FormArray).value as number[],
-        assignedChildren: (this.form.get('assignedChildren') as FormArray).value as string[],
+        assignedChildren,
       };
     }
 
     if (ruleType === 'weekly_rotation') {
       return {
         rotationType: this.form.get('rotationType')?.value as 'odd_even_week' | 'alternating',
-        assignedChildren: (this.form.get('assignedChildren') as FormArray).value as string[],
+        assignedChildren,
       };
+    }
+
+    // For daily tasks, include assignedChildren if any are selected
+    if (assignedChildren.length > 0) {
+      return { assignedChildren };
     }
 
     return null;
