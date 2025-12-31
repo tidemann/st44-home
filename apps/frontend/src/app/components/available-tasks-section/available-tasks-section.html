@@ -1,0 +1,89 @@
+<div class="available-tasks-section">
+  <h2 class="section-title">Available Tasks</h2>
+
+  @if (loading()) {
+    <div class="loading">
+      <div class="spinner"></div>
+      <p>Loading available tasks...</p>
+    </div>
+  }
+
+  @if (error()) {
+    <div class="error-message">
+      {{ error() }}
+    </div>
+  }
+
+  @if (actionError()) {
+    <div class="action-error">
+      {{ actionError() }}
+    </div>
+  }
+
+  @if (!loading() && !hasTasks()) {
+    <div class="empty-state">
+      <p>No tasks available for you right now.</p>
+      <p class="empty-state-hint">Check back later or ask your parents!</p>
+    </div>
+  }
+
+  @if (hasTasks()) {
+    <div class="tasks-list">
+      @for (task of tasks(); track task.id) {
+        <div class="task-card" [class.processing]="isTaskProcessing(task.id)">
+          <div class="task-header">
+            <h3 class="task-name">{{ task.name }}</h3>
+            <span class="task-points">{{ task.points }} pts</span>
+          </div>
+
+          @if (task.description) {
+            <p class="task-description">{{ task.description }}</p>
+          }
+
+          <div class="task-meta">
+            @if (task.hasDeadline) {
+              <span class="deadline-badge" [class.urgent]="isDeadlineUrgent(task)">
+                {{ getDeadlineText(task) }}
+              </span>
+            }
+            @if (task.candidateCount > 1) {
+              <span class="candidates-badge">
+                {{ task.candidateCount }} candidates
+              </span>
+            }
+          </div>
+
+          <div class="task-actions">
+            <button
+              class="btn btn-accept"
+              (click)="onAccept(task)"
+              [disabled]="isProcessing()"
+              type="button"
+            >
+              @if (isTaskProcessing(task.id)) {
+                <span class="btn-spinner"></span>
+                Accepting...
+              } @else {
+                ✓ Accept
+              }
+            </button>
+
+            <button
+              class="btn btn-decline"
+              (click)="onDecline(task)"
+              [disabled]="isProcessing()"
+              type="button"
+            >
+              @if (isTaskProcessing(task.id)) {
+                <span class="btn-spinner"></span>
+                Declining...
+              } @else {
+                ✗ Decline
+              }
+            </button>
+          </div>
+        </div>
+      }
+    </div>
+  }
+</div>

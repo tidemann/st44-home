@@ -1,0 +1,130 @@
+<div class="failed-tasks-section">
+  <div class="section-header">
+    <h2 class="section-title">Tasks Needing Attention</h2>
+    @if (totalCount() > 0) {
+      <span class="count-badge">{{ totalCount() }}</span>
+    }
+  </div>
+
+  @if (isLoading()) {
+    <div class="loading">
+      <div class="spinner"></div>
+      <p>Loading tasks...</p>
+    </div>
+  }
+
+  @if (failedError()) {
+    <div class="error-message">
+      Failed to load declined tasks: {{ failedError() }}
+    </div>
+  }
+
+  @if (expiredError()) {
+    <div class="error-message">
+      Failed to load expired tasks: {{ expiredError() }}
+    </div>
+  }
+
+  @if (!isLoading() && !hasProblemTasks()) {
+    <div class="empty-state">
+      <p>✓ All tasks are on track!</p>
+      <p class="empty-state-hint">No tasks have been declined or expired.</p>
+    </div>
+  }
+
+  @if (hasProblemTasks()) {
+    <div class="tasks-container">
+      <!-- Failed (All Declined) Tasks -->
+      @if (hasFailedTasks()) {
+        <div class="task-category">
+          <h3 class="category-title">
+            <span class="icon">⚠️</span>
+            All Children Declined
+            <span class="category-count">{{ failedTasks().length }}</span>
+          </h3>
+
+          <div class="tasks-list">
+            @for (task of failedTasks(); track task.id) {
+              <div class="task-card failed">
+                <div class="task-header">
+                  <div class="task-info">
+                    <h4 class="task-name">{{ task.name }}</h4>
+                    @if (task.description) {
+                      <p class="task-description">{{ task.description }}</p>
+                    }
+                  </div>
+                  <span class="task-points">{{ task.points }} pts</span>
+                </div>
+
+                <div class="task-meta">
+                  <span class="meta-item">
+                    {{ task.candidateCount }} children declined
+                  </span>
+                  @if (task.deadline) {
+                    <span class="meta-item deadline">
+                      Deadline: {{ formatDeadline(task.deadline) }}
+                    </span>
+                  }
+                </div>
+
+                <button
+                  class="btn-assign"
+                  (click)="onAssignManually(task.id)"
+                  type="button"
+                >
+                  Assign Manually
+                </button>
+              </div>
+            }
+          </div>
+        </div>
+      }
+
+      <!-- Expired (Deadline Passed) Tasks -->
+      @if (hasExpiredTasks()) {
+        <div class="task-category">
+          <h3 class="category-title">
+            <span class="icon">⏰</span>
+            Deadline Expired
+            <span class="category-count">{{ expiredTasks().length }}</span>
+          </h3>
+
+          <div class="tasks-list">
+            @for (task of expiredTasks(); track task.id) {
+              <div class="task-card expired">
+                <div class="task-header">
+                  <div class="task-info">
+                    <h4 class="task-name">{{ task.name }}</h4>
+                    @if (task.description) {
+                      <p class="task-description">{{ task.description }}</p>
+                    }
+                  </div>
+                  <span class="task-points">{{ task.points }} pts</span>
+                </div>
+
+                <div class="task-meta">
+                  <span class="meta-item overdue">
+                    {{ getDaysOverdue(task) }} days overdue
+                  </span>
+                  @if (task.candidateCount > 0) {
+                    <span class="meta-item">
+                      {{ task.declineCount }} / {{ task.candidateCount }} declined
+                    </span>
+                  }
+                </div>
+
+                <button
+                  class="btn-assign"
+                  (click)="onAssignManually(task.id)"
+                  type="button"
+                >
+                  Assign Manually
+                </button>
+              </div>
+            }
+          </div>
+        </div>
+      }
+    </div>
+  }
+</div>

@@ -7,7 +7,7 @@ import { z } from '../generators/openapi.generator.js';
  * Task Rule Types
  * Defines how tasks are assigned to children
  */
-export const TaskRuleTypeSchema = z.enum(['daily', 'repeating', 'weekly_rotation']);
+export const TaskRuleTypeSchema = z.enum(['daily', 'repeating', 'weekly_rotation', 'single']);
 
 export type TaskRuleType = z.infer<typeof TaskRuleTypeSchema>;
 
@@ -42,6 +42,7 @@ export const TaskSchema = z.object({
   points: z.number().int().min(0).max(1000),
   ruleType: TaskRuleTypeSchema,
   ruleConfig: TaskRuleConfigSchema,
+  deadline: z.string().datetime().nullable().optional(),
   active: z.boolean(),
   createdAt: z.string().datetime(),
   updatedAt: z.string().datetime(),
@@ -95,3 +96,45 @@ export const GenerateAssignmentsRequestSchema = z.object({
 });
 
 export type GenerateAssignmentsRequest = z.infer<typeof GenerateAssignmentsRequestSchema>;
+
+/**
+ * Task Candidate Schema
+ * Represents a child who is eligible to accept a single task
+ */
+export const TaskCandidateSchema = z.object({
+  id: z.string().uuid(),
+  taskId: z.string().uuid(),
+  childId: z.string().uuid(),
+  householdId: z.string().uuid(),
+  createdAt: z.string().datetime(),
+});
+
+export type TaskCandidate = z.infer<typeof TaskCandidateSchema>;
+
+/**
+ * Task Response Schema
+ * Represents a child's response to a single task (accept/decline)
+ */
+export const TaskResponseSchema = z.object({
+  id: z.string().uuid(),
+  taskId: z.string().uuid(),
+  childId: z.string().uuid(),
+  householdId: z.string().uuid(),
+  response: z.enum(['accepted', 'declined']),
+  respondedAt: z.string().datetime(),
+});
+
+export type TaskResponse = z.infer<typeof TaskResponseSchema>;
+
+/**
+ * Available Single Task Schema
+ * Enriched task data showing availability status to a child
+ */
+export const AvailableSingleTaskSchema = TaskSchema.extend({
+  candidateCount: z.number().int().min(0),
+  declineCount: z.number().int().min(0),
+  hasDeadline: z.boolean(),
+  daysUntilDeadline: z.number().int().nullable(),
+});
+
+export type AvailableSingleTask = z.infer<typeof AvailableSingleTaskSchema>;

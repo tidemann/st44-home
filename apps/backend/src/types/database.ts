@@ -129,7 +129,7 @@ export interface ChildRow {
 // Tasks
 // ============================================================================
 
-export type TaskRuleType = 'weekly_rotation' | 'repeating' | 'daily';
+export type TaskRuleType = 'weekly_rotation' | 'repeating' | 'daily' | 'single';
 export type TaskRotationType = 'odd_even_week' | 'alternating';
 
 /**
@@ -152,6 +152,7 @@ export interface TaskRow {
   points: number;
   rule_type: TaskRuleType;
   rule_config: TaskRuleConfig | null;
+  deadline: Date | null;
   active: boolean;
   created_at: Date;
   updated_at: Date;
@@ -161,7 +162,7 @@ export interface TaskRow {
 // Task Assignments
 // ============================================================================
 
-export type TaskAssignmentStatus = 'pending' | 'completed' | 'overdue';
+export type TaskAssignmentStatus = 'pending' | 'completed' | 'overdue' | 'expired';
 
 /**
  * Raw database row for task_assignments table
@@ -203,6 +204,41 @@ export interface TaskCompletionRow {
   child_id: string;
   completed_at: Date;
   points_earned: number;
+}
+
+// ============================================================================
+// Task Candidates
+// ============================================================================
+
+/**
+ * Raw database row for task_candidates table
+ * Tracks which children are eligible to accept a single task
+ */
+export interface TaskCandidateRow {
+  id: string;
+  task_id: string;
+  child_id: string;
+  household_id: string;
+  created_at: Date;
+}
+
+// ============================================================================
+// Task Responses
+// ============================================================================
+
+export type TaskResponseType = 'accepted' | 'declined';
+
+/**
+ * Raw database row for task_responses table
+ * Tracks accept/decline actions for single tasks (reversible)
+ */
+export interface TaskResponseRow {
+  id: string;
+  task_id: string;
+  child_id: string;
+  household_id: string;
+  response: TaskResponseType;
+  responded_at: Date;
 }
 
 // ============================================================================

@@ -10,7 +10,7 @@ import { Pool, PoolClient } from 'pg';
  * - Child validation for task assignments
  */
 
-export type RuleType = 'weekly_rotation' | 'repeating' | 'daily';
+export type RuleType = 'weekly_rotation' | 'repeating' | 'daily' | 'single';
 
 export interface RuleConfig {
   rotationType?: 'odd_even_week' | 'alternating';
@@ -24,6 +24,7 @@ export interface TaskData {
   points?: number;
   ruleType: RuleType;
   ruleConfig?: RuleConfig | null;
+  deadline?: string | null;
 }
 
 export interface Task {
@@ -34,6 +35,7 @@ export interface Task {
   points: number;
   ruleType: RuleType;
   ruleConfig: RuleConfig | null;
+  deadline: string | null;
   active: boolean;
   createdAt: string;
   updatedAt: string;
@@ -45,6 +47,7 @@ export interface UpdateTaskData {
   points?: number;
   ruleType?: RuleType;
   ruleConfig?: RuleConfig | null;
+  deadline?: string | null;
   active?: boolean;
 }
 
@@ -173,6 +176,28 @@ export class TaskService {
     }
 
     // Daily tasks have no specific validation requirements
+
+    if (data.ruleType === 'single') {
+      // Assigned children required (at least one candidate)
+      if (!config.assignedChildren || config.assignedChildren.length < 1) {
+        errors.push({
+          field: 'ruleConfig.assignedChildren',
+          message: 'At least one candidate child is required for single tasks',
+        });
+      }
+
+      // Deadline must be in the future if provided
+      if (data.deadline) {
+        const deadlineDate = new Date(data.deadline);
+        const now = new Date();
+        if (deadlineDate <= now) {
+          errors.push({
+            field: 'deadline',
+            message: 'Deadline must be in the future',
+          });
+        }
+      }
+    }
 
     return errors;
   }
