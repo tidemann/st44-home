@@ -30,6 +30,10 @@ COPY apps/frontend/tsconfig*.json ./apps/frontend/
 COPY apps/frontend/.postcssrc.json ./apps/frontend/.postcssrc.json
 COPY apps/frontend/eslint.config.js ./apps/frontend/eslint.config.js
 
+# Inject build timestamp into environment.ts
+RUN BUILD_TIME=$(date -u +"%Y-%m-%dT%H:%M:%SZ") && \
+    sed -i "s/BUILD_TIME_PLACEHOLDER/$BUILD_TIME/g" apps/frontend/src/environments/environment.ts
+
 # Build frontend
 RUN npm run build --workspace=apps/frontend --omit=dev
 
