@@ -112,44 +112,47 @@
         </div>
       }
 
-      <!-- Assigned Children (shown for repeating and weekly_rotation) -->
-      @if (ruleType !== 'daily') {
-        <div class="form-group">
-          <fieldset class="child-fieldset">
-            <legend class="form-label">
-              Assign to Children *
+      <!-- Assigned Children (shown for all rule types) -->
+      <div class="form-group">
+        <fieldset class="child-fieldset">
+          <legend class="form-label">
+            Assign to Children
+            @if (ruleType !== 'daily') {
+              <span class="required">*</span>
+            }
+            @if (ruleType === 'weekly_rotation') {
+              <span class="help-text">(Select 2+ for rotation)</span>
+            } @else if (ruleType === 'daily') {
+              <span class="help-text">(Optional)</span>
+            }
+          </legend>
+          <div class="children-selector" role="group" aria-label="Assign children">
+            @for (child of children(); track child.id) {
+              <label class="child-checkbox">
+                <input
+                  type="checkbox"
+                  [checked]="isChildSelected(child.id)"
+                  (change)="onChildChange(child.id, $any($event.target).checked)"
+                  [attr.aria-label]="'Assign to ' + child.name"
+                />
+                {{ child.name }}
+              </label>
+            }
+            @if (children().length === 0) {
+              <p class="no-children-message">No children in this household yet.</p>
+            }
+          </div>
+          @if (form.controls.assignedChildren.invalid && form.controls.assignedChildren.touched) {
+            <div class="form-error" role="alert">
               @if (ruleType === 'weekly_rotation') {
-                <span class="help-text">(Select 2+ for rotation)</span>
-              }
-            </legend>
-            <div class="children-selector" role="group" aria-label="Assign children">
-              @for (child of children(); track child.id) {
-                <label class="child-checkbox">
-                  <input
-                    type="checkbox"
-                    [checked]="isChildSelected(child.id)"
-                    (change)="onChildChange(child.id, $any($event.target).checked)"
-                    [attr.aria-label]="'Assign to ' + child.name"
-                  />
-                  {{ child.name }}
-                </label>
-              }
-              @if (children().length === 0) {
-                <p class="no-children-message">No children in this household yet.</p>
+                Select at least 2 children for rotation
+              } @else {
+                Select at least 1 child
               }
             </div>
-            @if (form.controls.assignedChildren.invalid && form.controls.assignedChildren.touched) {
-              <div class="form-error" role="alert">
-                @if (ruleType === 'weekly_rotation') {
-                  Select at least 2 children for rotation
-                } @else {
-                  Select at least 1 child
-                }
-              </div>
-            }
-          </fieldset>
-        </div>
-      }
+          }
+        </fieldset>
+      </div>
 
       <div class="modal-actions-split" modal-actions>
         <button type="button" class="btn btn-danger" (click)="onDeleteClick()">Delete</button>
