@@ -357,4 +357,87 @@ describe('Family', () => {
       expect(component['members']().length).toBe(2);
     });
   });
+
+  describe('member sorting', () => {
+    it('should sort members by role (admin → parent → child) then by name', async () => {
+      // Create members in unsorted order
+      const unsortedMembers: HouseholdMemberResponse[] = [
+        {
+          userId: 'child-user-1',
+          email: 'zara@example.com',
+          displayName: 'Zara Child',
+          role: 'child',
+          joinedAt: new Date().toISOString(),
+          tasksCompleted: 0,
+          totalTasks: 0,
+          points: 0,
+        },
+        {
+          userId: 'parent-1',
+          email: 'bob@example.com',
+          displayName: 'Bob Parent',
+          role: 'parent',
+          joinedAt: new Date().toISOString(),
+          tasksCompleted: 0,
+          totalTasks: 0,
+          points: 0,
+        },
+        {
+          userId: 'admin-1',
+          email: 'alice@example.com',
+          displayName: 'Alice Admin',
+          role: 'admin',
+          joinedAt: new Date().toISOString(),
+          tasksCompleted: 0,
+          totalTasks: 0,
+          points: 0,
+        },
+        {
+          userId: 'child-user-2',
+          email: 'adam@example.com',
+          displayName: 'Adam Child',
+          role: 'child',
+          joinedAt: new Date().toISOString(),
+          tasksCompleted: 0,
+          totalTasks: 0,
+          points: 0,
+        },
+        {
+          userId: 'parent-2',
+          email: 'carol@example.com',
+          displayName: 'Carol Parent',
+          role: 'parent',
+          joinedAt: new Date().toISOString(),
+          tasksCompleted: 0,
+          totalTasks: 0,
+          points: 0,
+        },
+      ];
+
+      mockHouseholdService.getHouseholdMembers.mockResolvedValue(unsortedMembers);
+      // No children in children list for this test
+      mockChildrenService.listChildren.mockResolvedValue([]);
+
+      await component.ngOnInit();
+
+      const members = component['members']();
+      expect(members.length).toBe(5);
+
+      // First should be admin
+      expect(members[0].role).toBe('parent'); // admin gets mapped to parent in display
+      expect(members[0].name).toBe('Alice Admin');
+
+      // Then parents, alphabetically
+      expect(members[1].role).toBe('parent');
+      expect(members[1].name).toBe('Bob Parent');
+      expect(members[2].role).toBe('parent');
+      expect(members[2].name).toBe('Carol Parent');
+
+      // Then children, alphabetically
+      expect(members[3].role).toBe('child');
+      expect(members[3].name).toBe('Adam Child');
+      expect(members[4].role).toBe('child');
+      expect(members[4].name).toBe('Zara Child');
+    });
+  });
 });

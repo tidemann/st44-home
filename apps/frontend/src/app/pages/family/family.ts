@@ -206,6 +206,17 @@ export class Family implements OnInit {
         }
       }
 
+      // Sort members: admin → parent → child, then alphabetically by name within each role
+      memberCards.sort((a, b) => {
+        const roleOrder: Record<string, number> = { admin: 0, parent: 1, child: 2 };
+        const roleCompare = (roleOrder[a.role] ?? 99) - (roleOrder[b.role] ?? 99);
+        if (roleCompare !== 0) {
+          return roleCompare;
+        }
+        // Within same role, sort alphabetically by name (case-insensitive)
+        return a.name.toLowerCase().localeCompare(b.name.toLowerCase());
+      });
+
       this.members.set(memberCards);
     } catch (err) {
       console.error('Failed to load family members:', err);
