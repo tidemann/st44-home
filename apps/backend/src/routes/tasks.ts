@@ -517,6 +517,47 @@ async function updateTask(request: FastifyRequest<UpdateTaskRequest>, reply: Fas
 
     const task = result.rows[0];
 
+    // If assignedChildren was updated, update or create today's pending assignment
+    if (normalizedRuleConfig?.assignedChildren !== undefined) {
+      const today = new Date().toISOString().split('T')[0];
+      const newAssignedChildren = normalizedRuleConfig.assignedChildren || [];
+
+      if (newAssignedChildren.length === 1) {
+        // Single child assignment - update or create today's pending assignment
+        const updateResult = await db.query(
+          `UPDATE task_assignments
+           SET child_id = $1, updated_at = NOW()
+           WHERE task_id = $2
+             AND date = $3
+             AND status = 'pending'
+           RETURNING id`,
+          [newAssignedChildren[0], taskId, today],
+        );
+
+        // If no assignment exists for today, create one
+        if (updateResult.rowCount === 0) {
+          await db.query(
+            `INSERT INTO task_assignments (household_id, task_id, child_id, date, status)
+             VALUES ($1, $2, $3, $4, 'pending')
+             ON CONFLICT (task_id, child_id, date) WHERE child_id IS NOT NULL DO NOTHING`,
+            [householdId, taskId, newAssignedChildren[0], today],
+          );
+        }
+      } else if (newAssignedChildren.length === 0) {
+        // No children assigned - set child_id to null for today's pending assignment
+        await db.query(
+          `UPDATE task_assignments
+           SET child_id = NULL, updated_at = NOW()
+           WHERE task_id = $1
+             AND date = $2
+             AND status = 'pending'`,
+          [taskId, today],
+        );
+      }
+      // For multiple children (rotation), leave existing assignments unchanged
+      // as the rotation logic is handled by the assignment generator
+    }
+
     return reply.send(mapTaskRowToTask(task));
   } catch (error) {
     // Handle Zod validation errors
