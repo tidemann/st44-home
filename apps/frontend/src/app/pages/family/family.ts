@@ -133,20 +133,21 @@ export class Family implements OnInit {
       }
 
       // Track which children already have accounts (appear in householdMembers)
+      // Use userIdToChildId lookup instead of role string to handle case mismatches
       const childrenWithAccounts = new Set<string>();
       for (const member of householdMembers) {
-        if (member.role === 'child') {
-          const childId = userIdToChildId.get(member.userId);
-          if (childId) {
-            childrenWithAccounts.add(childId);
-          }
+        const childId = userIdToChildId.get(member.userId);
+        if (childId) {
+          childrenWithAccounts.add(childId);
         }
       }
 
       // Transform HouseholdMember[] to MemberCardData[]
       const memberCards: MemberCardData[] = householdMembers.map((member) => {
         const isCurrentUser = member.userId === user.id;
-        const isChild = member.role === 'child';
+        // Determine if member is a child by checking if they have a child record
+        // This is more reliable than checking member.role which may have case mismatches
+        const isChild = childByUserIdMap.has(member.userId);
         // Handle null email for unlinked children
         const emailUsername = member.email ? member.email.split('@')[0] : null;
         const displayName = isCurrentUser
