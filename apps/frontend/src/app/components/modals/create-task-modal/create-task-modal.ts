@@ -7,8 +7,11 @@ import {
   computed,
   OnInit,
   ChangeDetectionStrategy,
+  DestroyRef,
 } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { take } from 'rxjs';
 import { Modal } from '../modal/modal';
 import { TaskService } from '../../../services/task.service';
 import type { Child, CreateTaskRequest } from '@st44/types';
@@ -92,6 +95,11 @@ export class CreateTaskModal implements OnInit {
    * Task service
    */
   private readonly taskService = inject(TaskService);
+
+  /**
+   * DestroyRef for subscription cleanup
+   */
+  private readonly destroyRef = inject(DestroyRef);
 
   /**
    * Task types configuration
@@ -207,12 +215,16 @@ export class CreateTaskModal implements OnInit {
 
   ngOnInit(): void {
     // Watch ruleType changes to clear selections
-    this.form.get('ruleType')?.valueChanges.subscribe(() => {
-      this.selectedDays.set([]);
-      this.selectedChildren.set([]);
-      this.selectedCandidates.set([]);
-      this.errorMessage.set(null);
-    });
+    // Use takeUntilDestroyed for automatic cleanup on component destruction
+    this.form
+      .get('ruleType')
+      ?.valueChanges.pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(() => {
+        this.selectedDays.set([]);
+        this.selectedChildren.set([]);
+        this.selectedCandidates.set([]);
+        this.errorMessage.set(null);
+      });
   }
 
   /**
@@ -303,19 +315,23 @@ export class CreateTaskModal implements OnInit {
       ).toISOString();
     }
 
-    this.taskService.createTask(this.householdId(), taskData).subscribe({
-      next: () => {
-        this.submitting.set(false);
-        this.resetForm();
-        this.taskCreated.emit();
-        this.closeRequested.emit();
-      },
-      error: (error) => {
-        this.submitting.set(false);
-        this.errorMessage.set('Failed to create task. Please try again.');
-        console.error('Failed to create task:', error);
-      },
-    });
+    // Use take(1) for one-time operation - ensures subscription cleanup after first emission
+    this.taskService
+      .createTask(this.householdId(), taskData)
+      .pipe(take(1))
+      .subscribe({
+        next: () => {
+          this.submitting.set(false);
+          this.resetForm();
+          this.taskCreated.emit();
+          this.closeRequested.emit();
+        },
+        error: (error) => {
+          this.submitting.set(false);
+          this.errorMessage.set('Failed to create task. Please try again.');
+          console.error('Failed to create task:', error);
+        },
+      });
   }
 
   /**
