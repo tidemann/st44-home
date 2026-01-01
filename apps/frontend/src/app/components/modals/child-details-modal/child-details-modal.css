@@ -6,10 +6,19 @@
   gap: var(--space-lg);
 }
 
+/* Error Banner */
+.error-banner {
+  background: #fef2f2;
+  color: #dc2626;
+  padding: var(--space-md);
+  border-radius: var(--radius-sm);
+  font-size: var(--font-size-sm);
+}
+
 /* Info Section */
 .info-section {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   gap: var(--space-md);
   padding: var(--space-md);
   background: var(--color-background);
@@ -46,7 +55,79 @@
 .child-age {
   font-size: var(--font-size-sm);
   color: var(--color-text-secondary);
-  margin: 0;
+  margin: 0 0 var(--space-sm) 0;
+}
+
+/* Edit Button (inline) */
+.btn-edit {
+  background: none;
+  border: none;
+  color: var(--color-primary);
+  font-size: var(--font-size-sm);
+  cursor: pointer;
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-xs);
+}
+
+.btn-edit:hover {
+  text-decoration: underline;
+}
+
+/* Edit Form */
+.edit-form {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+}
+
+.form-label {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-secondary);
+}
+
+.form-input {
+  padding: var(--space-sm) var(--space-md);
+  border: 2px solid #e2e8f0;
+  border-radius: var(--radius-sm);
+  font-size: var(--font-size-base);
+  color: var(--color-text-primary);
+  background: var(--color-surface);
+  transition: border-color 0.2s ease;
+}
+
+.form-input:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+}
+
+.form-input.error {
+  border-color: #dc2626;
+}
+
+.form-error {
+  font-size: var(--font-size-xs);
+  color: #dc2626;
+}
+
+.birth-year-input {
+  max-width: 120px;
+}
+
+.edit-actions {
+  display: flex;
+  gap: var(--space-sm);
+  margin-top: var(--space-sm);
 }
 
 /* Section Title */
@@ -157,6 +238,56 @@
   text-align: center;
 }
 
+/* Danger Zone */
+.danger-zone {
+  padding: var(--space-md);
+  background: #fef2f2;
+  border-radius: var(--radius-md);
+  border: 1px solid #fecaca;
+}
+
+.danger-title {
+  color: #dc2626;
+  border-bottom-color: #fecaca;
+}
+
+.danger-description {
+  font-size: var(--font-size-sm);
+  color: #b91c1c;
+  margin: 0 0 var(--space-md) 0;
+}
+
+/* Delete Confirmation */
+.delete-confirmation {
+  text-align: center;
+  padding: var(--space-lg);
+}
+
+.confirm-icon {
+  font-size: 48px;
+  margin-bottom: var(--space-md);
+}
+
+.confirm-title {
+  font-family: var(--font-heading);
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text-primary);
+  margin: 0 0 var(--space-sm) 0;
+}
+
+.confirm-message {
+  font-size: var(--font-size-base);
+  color: var(--color-text-secondary);
+  margin: 0 0 var(--space-lg) 0;
+}
+
+.confirm-actions {
+  display: flex;
+  justify-content: center;
+  gap: var(--space-md);
+}
+
 /* Modal Actions */
 .modal-actions {
   display: flex;
@@ -181,12 +312,22 @@
   border: none;
 }
 
+.btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.btn-sm {
+  padding: var(--space-xs) var(--space-sm);
+  font-size: var(--font-size-xs);
+}
+
 .btn-primary {
   background: var(--gradient-primary);
   color: white;
 }
 
-.btn-primary:hover {
+.btn-primary:hover:not(:disabled) {
   transform: translateY(-2px);
   box-shadow: var(--shadow-md);
 }
@@ -197,6 +338,25 @@
   border: 1px solid var(--color-border, #d1d5db);
 }
 
-.btn-secondary:hover {
+.btn-secondary:hover:not(:disabled) {
   background: var(--color-background);
+}
+
+.btn-danger {
+  background: #dc2626;
+  color: white;
+}
+
+.btn-danger:hover:not(:disabled) {
+  background: #b91c1c;
+}
+
+.btn-danger-outline {
+  background: transparent;
+  color: #dc2626;
+  border: 1px solid #dc2626;
+}
+
+.btn-danger-outline:hover:not(:disabled) {
+  background: #fef2f2;
 }
