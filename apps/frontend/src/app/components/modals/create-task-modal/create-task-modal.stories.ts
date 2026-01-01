@@ -2,7 +2,6 @@ import type { Meta, StoryObj } from '@storybook/angular';
 import { moduleMetadata } from '@storybook/angular';
 import { CreateTaskModal } from './create-task-modal';
 import { ReactiveFormsModule } from '@angular/forms';
-import { of, throwError } from 'rxjs';
 import type { Child } from '@st44/types';
 
 /**
