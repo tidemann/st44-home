@@ -187,7 +187,7 @@ When creating new manual test scripts:
 ## Related Documentation
 
 - [Backend Testing Guide](../TESTING.md) - Automated unit and integration tests
-- [E2E Testing Guide](../../../docs/E2E_TESTING.md) - Playwright E2E tests
+- [E2E Testing Guide](../../../docs/E2E.md) - Playwright E2E tests
 - [API Documentation](../README.md) - API endpoint reference
 
 ---

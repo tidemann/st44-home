@@ -59,6 +59,9 @@ cd apps/frontend
 npm run test:e2e:full            # Start services, run tests, stop services
 npm run test:e2e:local           # Run tests against running services
 npm run test:e2e:ui              # Interactive UI mode
+
+# For comprehensive e2e testing guide, see: docs/E2E.md
+# Use /e2e skill for interactive test execution
 ```
 
 ### Type Checking & Formatting
@@ -278,6 +281,13 @@ Spawn Task agent with prompt:
 ```
 Spawn Task agent with prompt:
 "Read .claude/agents/storybook-agent.md and .claude/skills/storybook/SKILL.md for context. Create Storybook story for ComponentName (#XXX) with all variants"
+```
+
+**E2E Agent** - Playwright e2e testing, test debugging, page objects
+
+```
+Spawn Task agent with prompt:
+"Read .claude/agents/e2e-agent.md for context. Debug e2e test failures in GitHub issue #XXX"
 ```
 
 **Backend Agent** - Fastify routes, business logic, middleware

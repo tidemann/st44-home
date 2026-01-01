@@ -93,7 +93,8 @@
       "Skill(frontend-design)",
       "Bash(npx ng:*)",
       "Bash(npx node:*)",
-      "Bash(timeout:*)"
+      "Bash(timeout:*)",
+      "Bash(git rebase:*)"
     ]
   }
 }

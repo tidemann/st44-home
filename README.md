@@ -235,13 +235,15 @@ npm run format:check
 npm run format
 ```
 
-**E2E Testing**: See [docs/E2E_TESTING.md](docs/E2E_TESTING.md) for complete E2E testing guide including:
+**E2E Testing**: See [docs/E2E.md](docs/E2E.md) for complete E2E testing guide including:
 
 - Setup and installation
 - Running tests locally and in CI
 - Writing new tests with page objects
+- Use `/e2e` skill for interactive test execution
 
-**Local E2E Development**: For running and debugging E2E tests during development, see **[docs/LOCAL_E2E_TESTING.md](docs/LOCAL_E2E_TESTING.md)** for comprehensive guide including:
+**Local E2E Development**: For running and debugging E2E tests during development, see **[docs/E2E.md](docs/E2E.md)** for comprehensive guide including:
+
 
 - Quick start and prerequisites
 - Running tests (all npm scripts explained)
@@ -379,7 +381,7 @@ The project uses GitHub Actions for CI/CD:
   - Manual trigger via Actions tab
   - Scheduled daily at 2 AM UTC
   - Runs Playwright E2E tests with PostgreSQL service
-  - See [docs/E2E_TESTING.md](docs/E2E_TESTING.md) for details
+  - See [docs/E2E.md](docs/E2E.md) for details
 - **Deploy Workflow** (`.github/workflows/deploy.yml`): Runs on pushes to main
   - Builds Docker images for frontend and backend
   - Pushes images to GitHub Container Registry
