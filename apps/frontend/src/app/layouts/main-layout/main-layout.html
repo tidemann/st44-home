@@ -5,7 +5,7 @@
       [activeScreen]="activeScreen()"
       [user]="sidebarUser()"
       (navigate)="onNavigate($event)"
-      (addTask)="openQuickAdd()"
+      (addTask)="openCreateTask()"
       (settings)="onSettings()"
     />
   </div>
@@ -39,14 +39,17 @@
     </div>
 
     <!-- FAB Button (Mobile only) -->
-    <button class="fab" (click)="openQuickAdd()" aria-label="Add new task">+</button>
+    <button class="fab" (click)="openCreateTask()" aria-label="Add new task">+</button>
   </div>
 
-  <!-- Quick-Add Task Modal -->
-  <app-quick-add-modal
-    [open]="quickAddOpen()"
-    [children]="children()"
-    (closeRequested)="closeQuickAdd()"
-    (taskCreated)="onTaskCreated($event)"
-  />
+  <!-- Create Task Modal (Full-featured) -->
+  @if (householdId()) {
+    <app-create-task-modal
+      [open]="createTaskOpen()"
+      [householdId]="householdId()!"
+      [children]="children()"
+      (closeRequested)="closeCreateTask()"
+      (taskCreated)="onTaskCreated()"
+    />
+  }
 </div>
