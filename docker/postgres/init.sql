@@ -141,6 +141,7 @@ CREATE TABLE IF NOT EXISTS tasks (
   points INTEGER DEFAULT 10,
   rule_type VARCHAR(50) NOT NULL CHECK (rule_type IN ('weekly_rotation', 'repeating', 'daily', 'single')),
   rule_config JSONB,
+  deadline TIMESTAMP WITH TIME ZONE,
   active BOOLEAN NOT NULL DEFAULT true,
   created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
@@ -148,6 +149,35 @@ CREATE TABLE IF NOT EXISTS tasks (
 
 CREATE INDEX IF NOT EXISTS idx_tasks_household ON tasks(household_id);
 CREATE INDEX IF NOT EXISTS idx_tasks_active ON tasks(household_id, active);
+
+-- Task candidates table (children who can accept/decline single tasks)
+CREATE TABLE IF NOT EXISTS task_candidates (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  task_id UUID NOT NULL REFERENCES tasks(id) ON DELETE CASCADE,
+  child_id UUID NOT NULL REFERENCES children(id) ON DELETE CASCADE,
+  household_id UUID NOT NULL REFERENCES households(id) ON DELETE CASCADE,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+  UNIQUE(task_id, child_id)
+);
+
+CREATE INDEX IF NOT EXISTS idx_task_candidates_task ON task_candidates(task_id);
+CREATE INDEX IF NOT EXISTS idx_task_candidates_child ON task_candidates(child_id);
+CREATE INDEX IF NOT EXISTS idx_task_candidates_household ON task_candidates(household_id);
+
+-- Task responses table (accept/decline responses for single tasks)
+CREATE TABLE IF NOT EXISTS task_responses (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  task_id UUID NOT NULL REFERENCES tasks(id) ON DELETE CASCADE,
+  child_id UUID NOT NULL REFERENCES children(id) ON DELETE CASCADE,
+  household_id UUID NOT NULL REFERENCES households(id) ON DELETE CASCADE,
+  response VARCHAR(20) NOT NULL CHECK (response IN ('accepted', 'declined')),
+  responded_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+  UNIQUE(task_id, child_id)
+);
+
+CREATE INDEX IF NOT EXISTS idx_task_responses_task ON task_responses(task_id);
+CREATE INDEX IF NOT EXISTS idx_task_responses_child ON task_responses(child_id);
+CREATE INDEX IF NOT EXISTS idx_task_responses_household ON task_responses(household_id);
 
 -- Task assignments table (specific task instances assigned to children)
 CREATE TABLE IF NOT EXISTS task_assignments (
