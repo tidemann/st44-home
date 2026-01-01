@@ -685,6 +685,10 @@ export default async function childrenRoutes(server: FastifyInstance) {
   });
 
   // Update child (parent/admin access)
+  // Authorization Rationale: Parents can edit child profiles because:
+  // - Fixing typos in name/birthYear is a low-risk, reversible operation
+  // - Common operation in family apps (parent manages their children's profiles)
+  // - No destructive side effects (unlike deletion which cascades to tasks/rewards)
   server.put('/api/households/:householdId/children/:childId', {
     schema: stripResponseValidation({
       summary: 'Update child details',
@@ -740,6 +744,12 @@ export default async function childrenRoutes(server: FastifyInstance) {
   });
 
   // Delete child (admin only)
+  // Authorization Rationale: Only admins can delete children because:
+  // - Deletion is permanent and irreversible
+  // - Cascades to related data: task assignments, task completions, rewards, etc.
+  // - High-risk operation that could lose historical data
+  // - Protects against accidental deletions by non-admin parents
+  // Note: Parents can edit children (see updateChild) but not delete them
   server.delete('/api/households/:householdId/children/:childId', {
     schema: stripResponseValidation({
       summary: 'Delete child',
