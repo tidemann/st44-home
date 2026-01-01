@@ -18,24 +18,54 @@ Diddit reduces the need for manual reminders by automatically assigning responsi
 ### Core Concepts
 
 **Households (Tenants)**
+
 - Each household is a separate, isolated tenant
 - All data (children, tasks, assignments) belongs to one household
 - Users can belong to multiple households with different roles
 
 **Roles**
+
 - **Admin**: Manages household, invites users
 - **Parent**: Creates tasks, assigns responsibilities, approves completion
 - **Child**: Views and completes assigned tasks
 
 **Task Types**
-- Weekly rotation (odd/even weeks)
-- Repeating tasks (multiple times per week)
-- Daily tasks (optional)
+
+- **Daily tasks**: Automatically assigned every day
+- **Weekly rotation**: Alternates between children each week (odd/even weeks)
+- **Repeating tasks**: Assigned on specific days of the week
+- **Single tasks**: One-time tasks with accept/decline workflow (see below)
 
 **Motivation System**
+
 - Earn points by completing tasks
 - Bonus points for completing without reminders
 - Rewards tied to point thresholds
+
+### Single Task Feature
+
+Single tasks are one-time, assignment-based tasks where children can actively accept or decline. This is perfect for special projects, one-off chores, or tasks where the first available child should take responsibility.
+
+**How it works:**
+
+1. **Parent creates task**: Selects children as candidates, optionally sets a deadline
+2. **Children see task**: Available tasks appear in their dashboard
+3. **First to accept wins**: When one child accepts, the task is assigned to them
+4. **Decline option**: Children can decline tasks they don't want
+5. **Parent visibility**: Parents see failed tasks (all declined) and expired tasks (past deadline)
+
+**Features:**
+
+- **Race condition protection**: Database-level locking ensures only one child can accept
+- **Deadline support**: Optional deadline with urgency indicators in UI
+- **Candidate tracking**: Parents can see who has accepted/declined
+- **Failed task alerts**: Parents notified when all candidates decline
+
+**Use cases:**
+
+- "Clean the garage this weekend" - First volunteer gets it
+- "Help with party setup" - Assign to multiple candidates
+- "Special project" - One-time task with deadline
 
 ---
 
@@ -93,6 +123,7 @@ cp infra/.env.example infra/.env
 ### Development
 
 **Quick Start:**
+
 ```bash
 # Start both frontend and backend (opens separate windows)
 npm run dev:all
@@ -121,6 +152,7 @@ npm run docker:down
 ```
 
 Access the services:
+
 - Frontend: http://localhost
 - Backend API: http://localhost:3000
 - Database: localhost:5432
@@ -136,6 +168,7 @@ The project uses a monorepo build system where the shared types package must be 
 ```
 
 **Full Build** (builds everything in correct order):
+
 ```bash
 # Build all packages (types → backend → frontend)
 npm run build
@@ -147,10 +180,12 @@ npm run build:frontend   # Step 3: Build frontend (requires types)
 ```
 
 **Pre-build Hooks**:
+
 - Backend and frontend automatically build types package when you run `npm run dev` or `npm test`
 - This ensures types are always up-to-date before development starts
 
 **Type Checking**:
+
 ```bash
 # Check TypeScript types in all packages
 npm run type-check
@@ -172,6 +207,7 @@ If you see `Error: Cannot find module '@st44/types'`:
 ### Testing & Linting
 
 **Testing**:
+
 ```bash
 # Run all tests (types → backend → frontend)
 npm run test
@@ -187,6 +223,7 @@ npm run test:e2e
 ```
 
 **Linting & Formatting**:
+
 ```bash
 # Lint frontend
 cd apps/frontend && npm run lint
@@ -199,11 +236,13 @@ npm run format
 ```
 
 **E2E Testing**: See [docs/E2E_TESTING.md](docs/E2E_TESTING.md) for complete E2E testing guide including:
+
 - Setup and installation
 - Running tests locally and in CI
 - Writing new tests with page objects
 
 **Local E2E Development**: For running and debugging E2E tests during development, see **[docs/LOCAL_E2E_TESTING.md](docs/LOCAL_E2E_TESTING.md)** for comprehensive guide including:
+
 - Quick start and prerequisites
 - Running tests (all npm scripts explained)
 - Debugging with VS Code and Playwright Inspector
@@ -240,6 +279,7 @@ npm run test:e2e:local:watch    # Start services and open Playwright UI for inte
 ```
 
 **Test environment ports** (avoid conflicts with dev):
+
 - Frontend: http://localhost:4201
 - Backend: http://localhost:3001
 - Database: localhost:5433
@@ -251,26 +291,25 @@ See `.env.e2e-local` for configuration details.
 VS Code debug configurations are available for interactive debugging with breakpoints:
 
 **Debug Configurations:**
+
 1. **Debug E2E Tests** - Run all tests with debugger attached
    - Automatically starts services before debugging
    - Runs in headed mode with Playwright inspector
    - Set breakpoints in your test files
-   
 2. **Debug Current E2E Test** - Debug the currently open test file
    - Fastest option for debugging a specific test
    - Focus on one file at a time
    - Automatically starts services
-   
 3. **Debug E2E with Inspector** - Launch Playwright UI for interactive debugging
    - Best for exploring selectors and page interactions
    - Step through tests visually
    - Record new test actions
-   
 4. **Debug E2E (Services Already Running)** - Skip service startup
    - Use when services are already running
    - Faster debug cycle for repeated runs
 
 **Using the Debugger:**
+
 1. Set breakpoints in your test files by clicking the gutter
 2. Open the Run and Debug view (Ctrl+Shift+D / Cmd+Shift+D)
 3. Select a debug configuration from the dropdown
@@ -279,6 +318,7 @@ VS Code debug configurations are available for interactive debugging with breakp
 6. Use the Debug toolbar to step through code, inspect variables, and view call stacks
 
 **Keyboard Shortcuts:**
+
 - F5: Start debugging
 - F9: Toggle breakpoint
 - F10: Step over
@@ -287,6 +327,7 @@ VS Code debug configurations are available for interactive debugging with breakp
 - F5: Continue
 
 **Troubleshooting:**
+
 - If services fail to start, manually run `npm run test:e2e:start` first
 - If breakpoints aren't hit, ensure `PWDEBUG=1` environment variable is set
 - For selector issues, use "Debug E2E with Inspector" configuration
@@ -294,6 +335,7 @@ VS Code debug configurations are available for interactive debugging with breakp
 
 **VS Code Extensions:**
 Install the recommended Playwright extension for enhanced features:
+
 - Test discovery in sidebar
 - Run tests from editor gutters
 - View test reports inline
@@ -306,6 +348,7 @@ Press Ctrl+Shift+P (Cmd+Shift+P on Mac) and search for "Extensions: Show Recomme
 **Comprehensive schema documentation**: [docker/postgres/SCHEMA.md](docker/postgres/SCHEMA.md)
 
 The database implements a multi-tenant architecture with full data isolation between households. Key features:
+
 - **ERD Diagram**: Visual representation of all tables and relationships
 - **Tables Reference**: Detailed documentation for all 6 tenant-scoped tables
 - **Common Queries**: 10+ example queries with index usage
@@ -314,6 +357,7 @@ The database implements a multi-tenant architecture with full data isolation bet
 - **Data Dictionary**: Complete column reference
 
 **Quick links**:
+
 - [Entity Relationship Diagram](docker/postgres/SCHEMA.md#entity-relationship-diagram)
 - [Common Queries](docker/postgres/SCHEMA.md#common-queries)
 - [Security Model](docker/postgres/SCHEMA.md#security)
@@ -327,18 +371,15 @@ The project uses GitHub Actions for CI/CD:
 
 - **CI Workflow** (`.github/workflows/ci.yml`): Runs on PRs and pushes to main
   - Tests, lints, and builds both frontend and backend
-  
 - **Docker Build Test** (`.github/workflows/docker-build-test.yml`): Runs on PRs and pushes
   - Validates Docker builds for frontend and backend
   - Catches workspace dependency issues before deployment
   - See [docs/WORKSPACE_DEPENDENCIES.md](docs/WORKSPACE_DEPENDENCIES.md) for details
-  
 - **E2E Workflow** (`.github/workflows/e2e.yml`): Optional workflow for E2E testing
   - Manual trigger via Actions tab
   - Scheduled daily at 2 AM UTC
   - Runs Playwright E2E tests with PostgreSQL service
   - See [docs/E2E_TESTING.md](docs/E2E_TESTING.md) for details
-  
 - **Deploy Workflow** (`.github/workflows/deploy.yml`): Runs on pushes to main
   - Builds Docker images for frontend and backend
   - Pushes images to GitHub Container Registry
