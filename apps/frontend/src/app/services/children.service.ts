@@ -1,6 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import type { Child, CreateChildRequest, UpdateChildRequest } from '@st44/types';
 import { ApiService } from './api.service';
+import { HouseholdStore } from '../stores/household.store';
 
 /**
  * List children API response wrapper
@@ -21,17 +22,30 @@ export interface DeleteChildResponse {
 
 /**
  * Service for managing children in households
+ *
+ * This service now integrates with HouseholdStore for caching
+ * and centralized state management of children data.
+ *
+ * @see HouseholdStore for centralized state management
  */
 @Injectable({
   providedIn: 'root',
 })
 export class ChildrenService {
   private api = inject(ApiService);
+  private store = inject(HouseholdStore);
 
   /**
    * List all children in a household
+   * Uses cached data from HouseholdStore when available (for active household)
    */
   async listChildren(householdId: string): Promise<Child[]> {
+    // If requesting active household children, use store
+    if (householdId === this.store.activeHouseholdId()) {
+      return this.store.loadChildren();
+    }
+
+    // Otherwise, fallback to API
     const response = await this.api.get<ListChildrenResponse>(
       `/households/${householdId}/children`,
     );
@@ -42,7 +56,14 @@ export class ChildrenService {
    * Add a new child to a household
    */
   async createChild(householdId: string, data: CreateChildRequest): Promise<Child> {
-    return this.api.post<Child>(`/households/${householdId}/children`, data);
+    const child = await this.api.post<Child>(`/households/${householdId}/children`, data);
+
+    // Update store if this is the active household
+    if (householdId === this.store.activeHouseholdId()) {
+      this.store.addChild(child);
+    }
+
+    return child;
   }
 
   /**
@@ -53,14 +74,30 @@ export class ChildrenService {
     childId: string,
     data: UpdateChildRequest,
   ): Promise<Child> {
-    return this.api.put<Child>(`/households/${householdId}/children/${childId}`, data);
+    const child = await this.api.put<Child>(`/households/${householdId}/children/${childId}`, data);
+
+    // Update store if this is the active household
+    if (householdId === this.store.activeHouseholdId()) {
+      this.store.updateChild(childId, child);
+    }
+
+    return child;
   }
 
   /**
    * Delete a child from a household
    */
   async deleteChild(householdId: string, childId: string): Promise<DeleteChildResponse> {
-    return this.api.delete<DeleteChildResponse>(`/households/${householdId}/children/${childId}`);
+    const response = await this.api.delete<DeleteChildResponse>(
+      `/households/${householdId}/children/${childId}`,
+    );
+
+    // Update store if this is the active household
+    if (householdId === this.store.activeHouseholdId()) {
+      this.store.removeChild(childId);
+    }
+
+    return response;
   }
 
   /**
@@ -73,9 +110,19 @@ export class ChildrenService {
     email: string,
     password: string,
   ): Promise<Child> {
-    return this.api.post<Child>(`/households/${householdId}/children/${childId}/create-account`, {
-      email,
-      password,
-    });
+    const child = await this.api.post<Child>(
+      `/households/${householdId}/children/${childId}/create-account`,
+      {
+        email,
+        password,
+      },
+    );
+
+    // Update store if this is the active household
+    if (householdId === this.store.activeHouseholdId()) {
+      this.store.updateChild(childId, child);
+    }
+
+    return child;
   }
 }

@@ -3,9 +3,8 @@ import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { Observable, tap } from 'rxjs';
 import { environment } from '../../environments/environment.development';
-import { StorageService } from './storage.service';
 import { TokenService } from './token.service';
-import { STORAGE_KEYS } from './storage-keys';
+import { HouseholdStore } from '../stores/household.store';
 
 export interface RegisterRequest {
   email: string;
@@ -41,8 +40,8 @@ export interface User {
 export class AuthService {
   private readonly http = inject(HttpClient);
   private readonly router = inject(Router);
-  private readonly storage = inject(StorageService);
   private readonly tokenService = inject(TokenService);
+  private readonly householdStore = inject(HouseholdStore);
   private readonly apiUrl = `${environment.apiUrl}/api/auth`;
 
   // Signals for reactive state
@@ -147,8 +146,8 @@ export class AuthService {
     // Clear tokens using TokenService
     this.tokenService.clearTokens();
 
-    // Clear household context
-    this.storage.remove(STORAGE_KEYS.ACTIVE_HOUSEHOLD_ID);
+    // Reset household store (clears all cached data)
+    this.householdStore.reset();
 
     // Clear state
     this.currentUser.set(null);
