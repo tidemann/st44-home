@@ -139,7 +139,7 @@ CREATE TABLE IF NOT EXISTS tasks (
   name VARCHAR(255) NOT NULL,
   description TEXT,
   points INTEGER DEFAULT 10,
-  rule_type VARCHAR(50) NOT NULL CHECK (rule_type IN ('weekly_rotation', 'repeating', 'daily')),
+  rule_type VARCHAR(50) NOT NULL CHECK (rule_type IN ('weekly_rotation', 'repeating', 'daily', 'single')),
   rule_config JSONB,
   active BOOLEAN NOT NULL DEFAULT true,
   created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
