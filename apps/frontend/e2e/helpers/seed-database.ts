@@ -509,3 +509,173 @@ export async function seedTestData(config: {
     assignments,
   };
 }
+
+/**
+ * Create a single task with candidates
+ *
+ * @param data Single task data (householdId, name, description, points, deadline, candidates)
+ * @returns Created task ID
+ *
+ * @example
+ * ```typescript
+ * const task = await seedSingleTask({
+ *   householdId: household.householdId,
+ *   name: 'Clean the garage',
+ *   description: 'One-time deep cleaning',
+ *   points: 50,
+ *   deadline: new Date('2024-01-15T18:00:00Z'),
+ *   candidateIds: [child1.childId, child2.childId]
+ * });
+ * ```
+ */
+export async function seedSingleTask(data: {
+  householdId: string;
+  name: string;
+  description?: string;
+  points?: number;
+  deadline?: Date;
+  candidateIds: string[];
+}): Promise<{ taskId: string }> {
+  return withTransaction(async (client) => {
+    // Create the task
+    const taskResult = await client.query(
+      `INSERT INTO tasks (household_id, name, description, points, rule_type, deadline, rule_config, active, created_at, updated_at)
+       VALUES ($1, $2, $3, $4, 'single', $5, $6, true, NOW(), NOW())
+       RETURNING id`,
+      [
+        data.householdId,
+        data.name,
+        data.description || null,
+        data.points || 10,
+        data.deadline || null,
+        JSON.stringify({ assignedChildren: data.candidateIds }),
+      ],
+    );
+
+    const taskId = taskResult.rows[0].id;
+
+    // Add candidates
+    for (const childId of data.candidateIds) {
+      await client.query(
+        `INSERT INTO task_candidates (task_id, child_id, household_id, created_at)
+         VALUES ($1, $2, $3, NOW())`,
+        [taskId, childId, data.householdId],
+      );
+    }
+
+    return { taskId };
+  });
+}
+
+/**
+ * Add a task response (accept/decline) for a child
+ *
+ * @param data Response data (taskId, childId, householdId, response)
+ * @returns Created response ID
+ */
+export async function seedTaskResponse(data: {
+  taskId: string;
+  childId: string;
+  householdId: string;
+  response: 'accepted' | 'declined';
+}): Promise<{ responseId: string }> {
+  return withTransaction(async (client) => {
+    const result = await client.query(
+      `INSERT INTO task_responses (task_id, child_id, household_id, response, responded_at)
+       VALUES ($1, $2, $3, $4, NOW())
+       RETURNING id`,
+      [data.taskId, data.childId, data.householdId, data.response],
+    );
+
+    return { responseId: result.rows[0].id };
+  });
+}
+
+/**
+ * Seed a complete single task scenario with parent, children, and tasks
+ *
+ * @example
+ * ```typescript
+ * const scenario = await seedSingleTaskScenario({
+ *   parent: { email: 'parent@test.com', password: 'Test1234!' },
+ *   children: ['Emma', 'Noah'],
+ *   tasks: [
+ *     { name: 'Clean garage', candidates: ['Emma', 'Noah'] },
+ *     { name: 'Organize closet', candidates: ['Emma'] }
+ *   ]
+ * });
+ * ```
+ */
+export async function seedSingleTaskScenario(config: {
+  parent: { email: string; password: string };
+  children: string[];
+  tasks: Array<{
+    name: string;
+    description?: string;
+    points?: number;
+    deadline?: Date;
+    candidates: string[]; // Child names from the children array
+  }>;
+}): Promise<{
+  householdId: string;
+  parentId: string;
+  children: Array<{ id: string; name: string }>;
+  tasks: Array<{ id: string; name: string; candidateIds: string[] }>;
+}> {
+  // Create parent user
+  const user = await seedTestUser({
+    email: config.parent.email,
+    password: config.parent.password,
+  });
+
+  // Create household
+  const household = await seedTestHousehold({
+    name: 'Test Family',
+    ownerId: user.userId,
+  });
+
+  // Create children
+  const currentYear = new Date().getFullYear();
+  const children: Array<{ id: string; name: string }> = [];
+
+  for (let i = 0; i < config.children.length; i++) {
+    const child = await seedTestChild({
+      householdId: household.householdId,
+      name: config.children[i],
+      birthYear: currentYear - (10 + i),
+    });
+    children.push({ id: child.childId, name: child.name });
+  }
+
+  // Create single tasks with candidates
+  const tasks: Array<{ id: string; name: string; candidateIds: string[] }> = [];
+
+  for (const taskConfig of config.tasks) {
+    // Map child names to child IDs
+    const candidateIds = taskConfig.candidates
+      .map((name) => children.find((c) => c.name === name)?.id)
+      .filter((id): id is string => id !== undefined);
+
+    const task = await seedSingleTask({
+      householdId: household.householdId,
+      name: taskConfig.name,
+      description: taskConfig.description,
+      points: taskConfig.points,
+      deadline: taskConfig.deadline,
+      candidateIds,
+    });
+
+    tasks.push({
+      id: task.taskId,
+      name: taskConfig.name,
+      candidateIds,
+    });
+  }
+
+  return {
+    householdId: household.householdId,
+    parentId: user.userId,
+    children,
+    tasks,
+  };
+}
