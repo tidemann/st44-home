@@ -104,9 +104,10 @@ describe('Tasks Component', () => {
     mockAuthService = {
       currentUser: currentUserSignal.asReadonly(),
       isAuthenticated: isAuthenticatedSignal.asReadonly(),
+      hasRole: vi.fn((role: string) => currentUserSignal()?.role === role),
       // Store writable signal for test manipulation
       _currentUserSignal: currentUserSignal,
-    } as Partial<AuthService> & {
+    } as unknown as Partial<AuthService> & {
       _currentUserSignal: typeof currentUserSignal;
     };
 

@@ -1,10 +1,11 @@
 import {
   Component,
   ChangeDetectionStrategy,
+  ChangeDetectorRef,
   signal,
   computed,
   inject,
-  effect,
+  OnInit,
 } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { TaskService, type MyTaskAssignment } from '../../services/task.service';
@@ -49,13 +50,14 @@ export type TaskFilter = 'all' | 'mine' | 'person' | 'completed';
   styleUrl: './tasks.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class Tasks {
+export class Tasks implements OnInit {
   private readonly taskService = inject(TaskService);
   private readonly authService = inject(AuthService);
   private readonly apiService = inject(ApiService);
   private readonly storage = inject(StorageService);
   private readonly router = inject(Router);
   private readonly route = inject(ActivatedRoute);
+  private readonly cdr = inject(ChangeDetectorRef);
 
   /**
    * Active filter selection
@@ -130,14 +132,28 @@ export class Tasks {
   });
 
   /**
-   * Filter tabs configuration
+   * Check if current user is a parent
    */
-  protected readonly filterTabs: { id: TaskFilter; label: string }[] = [
-    { id: 'all', label: 'All' },
-    { id: 'mine', label: 'My Tasks' },
-    { id: 'person', label: 'By Person' },
-    { id: 'completed', label: 'Completed' },
-  ];
+  protected readonly isParent = computed(() => this.authService.hasRole('parent'));
+
+  /**
+   * Filter tabs configuration - excludes 'My Tasks' for parents
+   */
+  protected readonly filterTabs = computed(() => {
+    const allTabs: { id: TaskFilter; label: string }[] = [
+      { id: 'all', label: 'All' },
+      { id: 'mine', label: 'My Tasks' },
+      { id: 'person', label: 'By Person' },
+      { id: 'completed', label: 'Completed' },
+    ];
+
+    // Parents don't have tasks assigned to them, so hide "My Tasks"
+    if (this.isParent()) {
+      return allTabs.filter((tab) => tab.id !== 'mine');
+    }
+
+    return allTabs;
+  });
 
   /**
    * Filtered tasks based on active filter
@@ -195,39 +211,18 @@ export class Tasks {
     }
   });
 
-  constructor() {
+  ngOnInit(): void {
     // Load filter from URL query params or localStorage on init
-    effect(
-      () => {
-        const queryFilter = this.route.snapshot.queryParams['filter'] as TaskFilter | undefined;
-        const savedFilter = this.storage.getString(STORAGE_KEYS.TASKS_FILTER) as
-          | TaskFilter
-          | undefined;
-        const initialFilter = queryFilter || savedFilter || 'all';
+    const queryFilter = this.route.snapshot.queryParams['filter'] as TaskFilter | undefined;
+    const savedFilter = this.storage.getString(STORAGE_KEYS.TASKS_FILTER) as TaskFilter | undefined;
+    const initialFilter = queryFilter || savedFilter || 'all';
 
-        if (initialFilter && ['all', 'mine', 'person', 'completed'].includes(initialFilter)) {
-          this.activeFilter.set(initialFilter);
-        }
+    if (initialFilter && ['all', 'mine', 'person', 'completed'].includes(initialFilter)) {
+      this.activeFilter.set(initialFilter);
+    }
 
-        // Load initial data
-        this.loadTasks();
-      },
-      { allowSignalWrites: true },
-    );
-
-    // Persist filter changes to localStorage and URL
-    effect(() => {
-      const filter = this.activeFilter();
-      this.storage.set(STORAGE_KEYS.TASKS_FILTER, filter);
-
-      // Update URL query params
-      this.router.navigate([], {
-        relativeTo: this.route,
-        queryParams: { filter },
-        queryParamsHandling: 'merge',
-        replaceUrl: true,
-      });
-    });
+    // Load initial data
+    this.loadTasks();
   }
 
   /**
@@ -343,7 +338,25 @@ export class Tasks {
     if (this.activeFilter() === filter) {
       return;
     }
+
+    // Update filter state
     this.activeFilter.set(filter);
+
+    // Persist to localStorage
+    this.storage.set(STORAGE_KEYS.TASKS_FILTER, filter);
+
+    // Update URL query params
+    this.router.navigate([], {
+      relativeTo: this.route,
+      queryParams: { filter },
+      queryParamsHandling: 'merge',
+      replaceUrl: true,
+    });
+
+    // Trigger change detection for OnPush
+    this.cdr.markForCheck();
+
+    // Load tasks for the new filter
     this.loadTasks();
   }
 
