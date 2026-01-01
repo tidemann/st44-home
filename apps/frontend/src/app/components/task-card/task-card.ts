@@ -1,5 +1,6 @@
 import { Component, input, output, computed, ChangeDetectionStrategy } from '@angular/core';
 import type { Task, Assignment } from '@st44/types';
+import type { MyTaskAssignment } from '../../services/task.service';
 
 /**
  * Reusable task card component for displaying tasks and assignments
@@ -17,9 +18,9 @@ import type { Task, Assignment } from '@st44/types';
 })
 export class TaskCardComponent {
   /**
-   * Task or Assignment data to display
+   * Task, Assignment, or MyTaskAssignment data to display
    */
-  task = input.required<Task | Assignment>();
+  task = input.required<Task | Assignment | MyTaskAssignment>();
 
   /**
    * Whether to show the complete button
@@ -61,10 +62,14 @@ export class TaskCardComponent {
 
   /**
    * Computed: Task name or title
+   * Handles Task (name), Assignment (title), and MyTaskAssignment (taskName)
    */
   taskName = computed(() => {
     const t = this.task();
-    return 'name' in t ? t.name : t.title;
+    if ('name' in t) return t.name;
+    if ('title' in t) return t.title;
+    if ('taskName' in t) return t.taskName;
+    return 'Unknown Task';
   });
 
   /**

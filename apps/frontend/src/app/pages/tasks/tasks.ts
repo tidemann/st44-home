@@ -7,7 +7,7 @@ import {
   effect,
 } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
-import { TaskService } from '../../services/task.service';
+import { TaskService, type MyTaskAssignment } from '../../services/task.service';
 import { AuthService } from '../../services/auth.service';
 import { TaskCardComponent } from '../../components/task-card/task-card';
 import {
@@ -78,6 +78,11 @@ export class Tasks {
   protected readonly assignments = this.taskService.assignments;
 
   /**
+   * My tasks from service (for 'mine' filter)
+   */
+  protected readonly myTasks = this.taskService.myTasks;
+
+  /**
    * Loading state
    */
   protected readonly loading = signal<boolean>(false);
@@ -136,12 +141,13 @@ export class Tasks {
 
   /**
    * Filtered tasks based on active filter
+   * Returns Task[] for 'all', MyTaskAssignment[] for 'mine', Assignment[] for others
    */
-  protected readonly filteredTasks = computed(() => {
+  protected readonly filteredTasks = computed((): (Task | Assignment | MyTaskAssignment)[] => {
     const filter = this.activeFilter();
     const allTasks = this.tasks();
     const allAssignments = this.assignments();
-    const userId = this.currentUserId();
+    const myTasksList = this.myTasks();
     const personId = this.selectedPersonId();
 
     switch (filter) {
@@ -150,9 +156,9 @@ export class Tasks {
         return allTasks.filter((t) => t.active);
 
       case 'mine':
-        // Return assignments for current user that are pending
-        if (!userId) return [];
-        return allAssignments.filter((a) => a.childId === userId && a.status === 'pending');
+        // Return my tasks from /children/me/tasks endpoint
+        // Only show pending tasks for "My Tasks" filter
+        return myTasksList.filter((t) => t.status === 'pending');
 
       case 'person':
         // Return assignments for selected person
@@ -239,6 +245,21 @@ export class Tasks {
     this.loading.set(true);
     this.error.set(null);
 
+    // For 'mine' filter, use the /children/me/tasks endpoint
+    if (filter === 'mine') {
+      this.taskService.getMyTasks(household).subscribe({
+        next: () => {
+          this.loading.set(false);
+        },
+        error: (err) => {
+          this.error.set('Failed to load my tasks');
+          this.loading.set(false);
+          console.error('Load my tasks error:', err);
+        },
+      });
+      return;
+    }
+
     // Track pending requests to avoid race conditions
     let tasksCompleted = false;
     let assignmentsCompleted = filter === 'all'; // No assignments needed for 'all' filter
@@ -263,9 +284,8 @@ export class Tasks {
       },
     });
 
-    // Load assignments if needed
-    if (filter === 'mine' || filter === 'person' || filter === 'completed') {
-      const userId = this.currentUserId();
+    // Load assignments if needed for person or completed filters
+    if (filter === 'person' || filter === 'completed') {
       const personId = this.selectedPersonId();
 
       const assignmentFilters: {
@@ -273,10 +293,7 @@ export class Tasks {
         childId?: string;
       } = {};
 
-      if (filter === 'mine' && userId) {
-        assignmentFilters.childId = userId;
-        assignmentFilters.status = 'pending';
-      } else if (filter === 'person' && personId) {
+      if (filter === 'person' && personId) {
         assignmentFilters.childId = personId;
       } else if (filter === 'completed') {
         assignmentFilters.status = 'completed';
@@ -323,8 +340,9 @@ export class Tasks {
    * Handle filter tab click
    */
   protected onFilterClick(filter: TaskFilter): void {
-    if (this.activeFilter() === filter) return;
-
+    if (this.activeFilter() === filter) {
+      return;
+    }
     this.activeFilter.set(filter);
     this.loadTasks();
   }
@@ -458,12 +476,5 @@ export class Tasks {
   protected onReassignModalClose(): void {
     this.reassignModalOpen.set(false);
     this.reassigningAssignment.set(null);
-  }
-
-  /**
-   * Check if filter is active
-   */
-  protected isFilterActive(filter: TaskFilter): boolean {
-    return this.activeFilter() === filter;
   }
 }

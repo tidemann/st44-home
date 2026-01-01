@@ -10,9 +10,9 @@
       <button
         type="button"
         class="filter-tab"
-        [class.active]="isFilterActive(tab.id)"
+        [class.active]="activeFilter() === tab.id"
         (click)="onFilterClick(tab.id)"
-        [attr.aria-pressed]="isFilterActive(tab.id)"
+        [attr.aria-pressed]="activeFilter() === tab.id"
         [attr.aria-label]="'Filter by ' + tab.label"
       >
         {{ tab.label }}
