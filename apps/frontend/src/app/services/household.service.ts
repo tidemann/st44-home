@@ -1,13 +1,7 @@
-import { Injectable, signal, computed, inject } from '@angular/core';
-import type {
-  Household,
-  CreateHouseholdRequest,
-  UpdateHouseholdRequest,
-  HouseholdMemberResponse,
-} from '@st44/types';
+import { Injectable, computed, inject } from '@angular/core';
+import type { Household, CreateHouseholdRequest, UpdateHouseholdRequest } from '@st44/types';
 import { ApiService } from './api.service';
-import { StorageService } from './storage.service';
-import { STORAGE_KEYS } from './storage-keys';
+import { HouseholdStore } from '../stores/household.store';
 
 /**
  * Enriched Household response from list/get endpoints
@@ -25,104 +19,127 @@ export interface HouseholdListItem {
 
 /**
  * Re-export HouseholdMemberResponse from @st44/types for consumers
- * This type matches the GET /households/:id/members response
  */
-export type { HouseholdMemberResponse };
+export type { HouseholdMemberResponse } from '@st44/types';
 
 /**
- * Service for managing households and household state
+ * Service for managing households
  *
- * This service provides:
+ * This service now delegates state management to HouseholdStore
+ * while still providing:
  * - CRUD operations for households
- * - Active household state management with signals
- * - localStorage persistence for active household
- * - Reactive updates across components
+ * - Active household state management (via store)
+ * - Backwards-compatible API for existing consumers
+ *
+ * @see HouseholdStore for centralized state management
  */
 @Injectable({
   providedIn: 'root',
 })
 export class HouseholdService {
   private readonly apiService = inject(ApiService);
-  private readonly storage = inject(StorageService);
-
-  // Active household ID stored in localStorage
-  private activeHouseholdId = signal<string | null>(this.getStoredHouseholdId());
+  private readonly store = inject(HouseholdStore);
 
   /**
    * Computed signal exposing the active household ID (read-only)
    * Components can use this for reactive updates when household changes
+   * @deprecated Use HouseholdStore.activeHouseholdId instead
    */
-  activeHousehold$ = computed(() => this.activeHouseholdId());
+  activeHousehold$ = computed(() => this.store.activeHouseholdId());
 
-  getActiveHouseholdId() {
-    return this.activeHouseholdId();
+  /**
+   * Get the current active household ID
+   * @deprecated Use HouseholdStore.activeHouseholdId() instead
+   */
+  getActiveHouseholdId(): string | null {
+    return this.store.activeHouseholdId();
   }
 
+  /**
+   * Set the active household
+   * @deprecated Use HouseholdStore.setActiveHousehold() instead
+   */
   setActiveHousehold(householdId: string): void {
-    this.activeHouseholdId.set(householdId);
-    this.storage.set(STORAGE_KEYS.ACTIVE_HOUSEHOLD_ID, householdId);
+    this.store.setActiveHousehold(householdId);
   }
 
-  private getStoredHouseholdId(): string | null {
-    return this.storage.getString(STORAGE_KEYS.ACTIVE_HOUSEHOLD_ID);
-  }
-
+  /**
+   * Create a new household
+   */
   async createHousehold(name: string): Promise<Household> {
-    return this.apiService.post<Household>('/households', {
+    const household = await this.apiService.post<Household>('/households', {
       name,
     } satisfies CreateHouseholdRequest);
+
+    // Update store with new household
+    this.store.addHousehold({
+      ...household,
+      role: 'parent' as const, // Creator is always parent
+    });
+
+    return household;
   }
 
+  /**
+   * List all households the user has access to
+   * Uses cached data from HouseholdStore when available
+   */
   async listHouseholds(): Promise<HouseholdListItem[]> {
-    return this.apiService.get<HouseholdListItem[]>('/households');
+    return this.store.loadHouseholds();
   }
 
+  /**
+   * Get a specific household by ID
+   */
   async getHousehold(id: string): Promise<HouseholdListItem> {
+    // Check store cache first
+    const cachedHouseholds = this.store.households();
+    const cached = cachedHouseholds.find((h) => h.id === id);
+    if (cached) {
+      return cached;
+    }
+
+    // Fallback to API
     return this.apiService.get<HouseholdListItem>(`/households/${id}`);
   }
 
+  /**
+   * Update an existing household
+   */
   async updateHousehold(id: string, name: string): Promise<Household> {
-    return this.apiService.put<Household>(`/households/${id}`, {
+    const household = await this.apiService.put<Household>(`/households/${id}`, {
       name,
     } satisfies UpdateHouseholdRequest);
+
+    // Update store
+    this.store.updateHousehold(id, { name });
+
+    return household;
   }
 
-  async getHouseholdMembers(householdId: string): Promise<HouseholdMemberResponse[]> {
-    return this.apiService.get<HouseholdMemberResponse[]>(`/households/${householdId}/members`);
+  /**
+   * Get members of a household
+   * Uses cached data from HouseholdStore when available (for active household)
+   */
+  async getHouseholdMembers(
+    householdId: string,
+  ): Promise<import('@st44/types').HouseholdMemberResponse[]> {
+    // If requesting active household members, use store
+    if (householdId === this.store.activeHouseholdId()) {
+      return this.store.loadMembers();
+    }
+
+    // Otherwise, fallback to API
+    return this.apiService.get<import('@st44/types').HouseholdMemberResponse[]>(
+      `/households/${householdId}/members`,
+    );
   }
 
   /**
    * Auto-activate a household for the current user
-   * Logic:
-   * 1. If household is already active and exists, keep it
-   * 2. If user has one household, activate it
-   * 3. If user has multiple households, activate the first one
-   *
-   * Call this after login to ensure user always has an active household context.
+   * @deprecated Use HouseholdStore.autoActivateHousehold() instead
    */
   async autoActivateHousehold(): Promise<void> {
-    const storedId = this.getStoredHouseholdId();
-    const households = await this.listHouseholds();
-
-    if (households.length === 0) {
-      // No households - clear any stale active household
-      this.activeHouseholdId.set(null);
-      this.storage.remove(STORAGE_KEYS.ACTIVE_HOUSEHOLD_ID);
-      return;
-    }
-
-    // Check if stored household is still valid
-    if (storedId) {
-      const isValid = households.some((h) => h.id === storedId);
-      if (isValid) {
-        // Stored household is valid, keep it
-        this.activeHouseholdId.set(storedId);
-        return;
-      }
-    }
-
-    // Set first household as active
-    const firstHousehold = households[0];
-    this.setActiveHousehold(firstHousehold.id);
+    return this.store.autoActivateHousehold();
   }
 }
