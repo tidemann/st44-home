@@ -42,28 +42,37 @@ export async function loginAsParent(page: Page, email: string, password: string)
 }
 
 /**
- * Login as a child user
- * First logs in with parent credentials, then selects child profile
+ * Login as a child user with their own credentials
+ * Children with email/password can authenticate directly
  *
  * @param page - Playwright page
- * @param parentEmail - Parent's email
- * @param parentPassword - Parent's password
- * @param childId - The child's ID to switch to
+ * @param email - Child's email
+ * @param password - Child's password
  */
-export async function loginAsChild(
-  page: Page,
-  parentEmail: string,
-  parentPassword: string,
-  childId: string,
-): Promise<void> {
-  // First login as parent
-  await loginAsUser(page, parentEmail, parentPassword);
+export async function loginAsChild(page: Page, email: string, password: string): Promise<void> {
+  // Navigate to child login page
+  await page.goto('/child-login');
 
-  // Navigate to child login/switch page
-  await page.goto(`/child-login?childId=${childId}`);
+  // Wait for form to be fully loaded
+  await page.waitForLoadState('networkidle');
 
-  // Wait for child context to be set
-  await page.waitForURL((url) => !url.pathname.includes('/child-login'), { timeout: 10000 });
+  // Fill in credentials
+  await page.getByLabel(/email/i).fill(email);
+  await page.locator('#password').fill(password);
+
+  // Wait for login API response after clicking
+  const responsePromise = page.waitForResponse(
+    (resp) => resp.url().includes('/api/auth/login') && resp.status() === 200,
+  );
+
+  // Submit form
+  await page.getByRole('button', { name: /log in/i }).click();
+
+  // Wait for API response
+  await responsePromise;
+
+  // Wait for redirect to my-tasks (child dashboard)
+  await page.waitForURL((url) => !url.pathname.includes('/child-login'), { timeout: 15000 });
 }
 
 /**

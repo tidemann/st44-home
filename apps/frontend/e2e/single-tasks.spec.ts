@@ -1,6 +1,6 @@
 import { test, expect } from '@playwright/test';
 import { resetDatabase, seedSingleTaskScenario, seedTaskResponse } from './helpers/seed-database';
-import { loginAsParent } from './helpers/auth-helpers';
+import { loginAsParent, loginAsChild } from './helpers/auth-helpers';
 
 /**
  * Single Task Feature E2E Tests
@@ -20,10 +20,13 @@ test.describe('Single Task Feature', () => {
 
   test.describe('Accept/Decline Flow', () => {
     test('child can view available single tasks', async ({ page }) => {
-      // Seed test data
+      // Seed test data with child authentication credentials
+      const childEmail = `emma-${Date.now()}@example.com`;
+      const childPassword = 'ChildPass123!';
+
       const scenario = await seedSingleTaskScenario({
         parent: { email: testEmail, password: testPassword },
-        children: ['Emma', 'Noah'],
+        children: [{ name: 'Emma', email: childEmail, password: childPassword }, 'Noah'],
         tasks: [
           {
             name: 'Clean the garage',
@@ -34,12 +37,8 @@ test.describe('Single Task Feature', () => {
         ],
       });
 
-      // Login as parent
-      await loginAsParent(page, testEmail, testPassword);
-
-      // Navigate to child's dashboard (simulate child login)
-      // In real E2E, we'd use loginAsChild helper
-      await page.goto('/child-dashboard');
+      // Login as child (not parent!) to properly test child authentication
+      await loginAsChild(page, childEmail, childPassword);
 
       // Wait for available tasks section to load
       await page.waitForSelector('[data-testid="available-tasks-section"], .available-tasks', {
@@ -52,11 +51,14 @@ test.describe('Single Task Feature', () => {
     });
 
     test('child can accept a single task', async ({ page }) => {
-      // Seed fresh test data
+      // Seed fresh test data with child authentication credentials
       await resetDatabase();
+      const childEmail = `emma-accept-${Date.now()}@example.com`;
+      const childPassword = 'ChildPass123!';
+
       const scenario = await seedSingleTaskScenario({
         parent: { email: testEmail, password: testPassword },
-        children: ['Emma', 'Noah'],
+        children: [{ name: 'Emma', email: childEmail, password: childPassword }, 'Noah'],
         tasks: [
           {
             name: 'Organize the closet',
@@ -67,11 +69,8 @@ test.describe('Single Task Feature', () => {
         ],
       });
 
-      // Login as parent
-      await loginAsParent(page, testEmail, testPassword);
-
-      // Navigate to child's view
-      await page.goto('/child-dashboard');
+      // Login as child (not parent!) to properly test child authentication
+      await loginAsChild(page, childEmail, childPassword);
 
       // Wait for tasks to load
       await page.waitForSelector('[data-testid="available-tasks-section"], .available-tasks', {
@@ -97,11 +96,14 @@ test.describe('Single Task Feature', () => {
     });
 
     test('child can decline a single task', async ({ page }) => {
-      // Seed fresh test data
+      // Seed fresh test data with child authentication credentials
       await resetDatabase();
+      const childEmail = `emma-decline-${Date.now()}@example.com`;
+      const childPassword = 'ChildPass123!';
+
       const scenario = await seedSingleTaskScenario({
         parent: { email: testEmail, password: testPassword },
-        children: ['Emma', 'Noah'],
+        children: [{ name: 'Emma', email: childEmail, password: childPassword }, 'Noah'],
         tasks: [
           {
             name: 'Wash the car',
@@ -112,11 +114,8 @@ test.describe('Single Task Feature', () => {
         ],
       });
 
-      // Login as parent
-      await loginAsParent(page, testEmail, testPassword);
-
-      // Navigate to child's view
-      await page.goto('/child-dashboard');
+      // Login as child (not parent!) to properly test child authentication
+      await loginAsChild(page, childEmail, childPassword);
 
       // Wait for tasks to load
       await page.waitForSelector('[data-testid="available-tasks-section"], .available-tasks', {
@@ -275,9 +274,13 @@ test.describe('Single Task Feature', () => {
       // When one child accepts, others should get 409 Conflict
 
       await resetDatabase();
+      // Create Noah with auth credentials so we can login as him
+      const noahEmail = `noah-race-${Date.now()}@example.com`;
+      const noahPassword = 'ChildPass123!';
+
       const scenario = await seedSingleTaskScenario({
         parent: { email: testEmail, password: testPassword },
-        children: ['Emma', 'Noah'],
+        children: ['Emma', { name: 'Noah', email: noahEmail, password: noahPassword }],
         tasks: [
           {
             name: 'First come first serve',
@@ -288,7 +291,7 @@ test.describe('Single Task Feature', () => {
         ],
       });
 
-      // Simulate first child accepting
+      // Simulate first child (Emma) accepting via database
       await seedTaskResponse({
         taskId: scenario.tasks[0].id,
         childId: scenario.children[0].id,
@@ -296,11 +299,10 @@ test.describe('Single Task Feature', () => {
         response: 'accepted',
       });
 
-      // Login and try to accept as second child
-      await loginAsParent(page, testEmail, testPassword);
-      await page.goto('/child-dashboard');
+      // Login as second child (Noah) to verify task is no longer available
+      await loginAsChild(page, noahEmail, noahPassword);
 
-      // Task should no longer be available for the second child
+      // Task should no longer be available for Noah
       // (either not shown, or accept button disabled/hidden)
       await page.waitForLoadState('networkidle');
 

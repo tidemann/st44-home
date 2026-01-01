@@ -160,15 +160,25 @@ export async function addHouseholdMember(data: {
 /**
  * Create a child in a household
  *
- * @param data Child data (householdId, name, birthYear)
- * @returns Created child ID and name
+ * @param data Child data (householdId, name, birthYear, optionally email/password for authentication)
+ * @returns Created child ID, name, and optionally userId if credentials provided
  *
  * @example
  * ```typescript
+ * // Child without authentication (parent manages their profile)
  * const child = await seedTestChild({
  *   householdId: household.householdId,
  *   name: 'Emma',
  *   birthYear: 2016
+ * });
+ *
+ * // Child with authentication (can log in themselves)
+ * const authChild = await seedTestChild({
+ *   householdId: household.householdId,
+ *   name: 'Noah',
+ *   birthYear: 2014,
+ *   email: 'noah@example.com',
+ *   password: 'ChildPass123!'
  * });
  * ```
  */
@@ -176,18 +186,44 @@ export async function seedTestChild(data: {
   householdId: string;
   name: string;
   birthYear: number;
-}): Promise<{ childId: string; name: string }> {
+  email?: string;
+  password?: string;
+}): Promise<{ childId: string; name: string; userId?: string; email?: string }> {
   return withTransaction(async (client) => {
+    let userId: string | undefined;
+
+    // If email/password provided, create a user account for the child
+    if (data.email && data.password) {
+      const passwordHash = await bcrypt.hash(data.password, 10);
+      const userResult = await client.query(
+        `INSERT INTO users (email, password_hash, created_at, updated_at)
+         VALUES ($1, $2, NOW(), NOW())
+         RETURNING id`,
+        [data.email, passwordHash],
+      );
+      userId = userResult.rows[0].id;
+
+      // Add child as household member with 'child' role
+      await client.query(
+        `INSERT INTO household_members (household_id, user_id, role, joined_at)
+         VALUES ($1, $2, 'child', NOW())`,
+        [data.householdId, userId],
+      );
+    }
+
+    // Create the child record, linking to user if created
     const result = await client.query(
-      `INSERT INTO children (household_id, name, birth_year, created_at, updated_at)
-       VALUES ($1, $2, $3, NOW(), NOW())
+      `INSERT INTO children (household_id, user_id, name, birth_year, created_at, updated_at)
+       VALUES ($1, $2, $3, $4, NOW(), NOW())
        RETURNING id, name`,
-      [data.householdId, data.name, data.birthYear],
+      [data.householdId, userId || null, data.name, data.birthYear],
     );
 
     return {
       childId: result.rows[0].id,
       name: result.rows[0].name,
+      userId,
+      email: data.email,
     };
   });
 }
@@ -596,6 +632,7 @@ export async function seedTaskResponse(data: {
  *
  * @example
  * ```typescript
+ * // Simple form (children without login credentials)
  * const scenario = await seedSingleTaskScenario({
  *   parent: { email: 'parent@test.com', password: 'Test1234!' },
  *   children: ['Emma', 'Noah'],
@@ -604,11 +641,23 @@ export async function seedTaskResponse(data: {
  *     { name: 'Organize closet', candidates: ['Emma'] }
  *   ]
  * });
+ *
+ * // With child authentication (for proper E2E testing)
+ * const scenario = await seedSingleTaskScenario({
+ *   parent: { email: 'parent@test.com', password: 'Test1234!' },
+ *   children: [
+ *     { name: 'Emma', email: 'emma@test.com', password: 'ChildPass123!' },
+ *     { name: 'Noah', email: 'noah@test.com', password: 'ChildPass123!' }
+ *   ],
+ *   tasks: [
+ *     { name: 'Clean garage', candidates: ['Emma', 'Noah'] }
+ *   ]
+ * });
  * ```
  */
 export async function seedSingleTaskScenario(config: {
   parent: { email: string; password: string };
-  children: string[];
+  children: Array<string | { name: string; email: string; password: string }>;
   tasks: Array<{
     name: string;
     description?: string;
@@ -619,7 +668,7 @@ export async function seedSingleTaskScenario(config: {
 }): Promise<{
   householdId: string;
   parentId: string;
-  children: Array<{ id: string; name: string }>;
+  children: Array<{ id: string; name: string; email?: string; password?: string }>;
   tasks: Array<{ id: string; name: string; candidateIds: string[] }>;
 }> {
   // Create parent user
@@ -634,17 +683,31 @@ export async function seedSingleTaskScenario(config: {
     ownerId: user.userId,
   });
 
-  // Create children
+  // Create children (supports both simple string names and full objects with credentials)
   const currentYear = new Date().getFullYear();
-  const children: Array<{ id: string; name: string }> = [];
+  const children: Array<{ id: string; name: string; email?: string; password?: string }> = [];
 
   for (let i = 0; i < config.children.length; i++) {
+    const childConfig = config.children[i];
+    const isSimple = typeof childConfig === 'string';
+    const name = isSimple ? childConfig : childConfig.name;
+    const email = isSimple ? undefined : childConfig.email;
+    const password = isSimple ? undefined : childConfig.password;
+
     const child = await seedTestChild({
       householdId: household.householdId,
-      name: config.children[i],
+      name,
       birthYear: currentYear - (10 + i),
+      email,
+      password,
     });
-    children.push({ id: child.childId, name: child.name });
+
+    children.push({
+      id: child.childId,
+      name: child.name,
+      email: child.email,
+      password, // Store password for test usage
+    });
   }
 
   // Create single tasks with candidates
