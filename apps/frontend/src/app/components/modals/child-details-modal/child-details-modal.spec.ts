@@ -3,7 +3,6 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ChildDetailsModal } from './child-details-modal';
 import { ChildrenService } from '../../../services/children.service';
 import type { Child } from '@st44/types';
-import { signal } from '@angular/core';
 
 describe('ChildDetailsModal', () => {
   let component: ChildDetailsModal;
