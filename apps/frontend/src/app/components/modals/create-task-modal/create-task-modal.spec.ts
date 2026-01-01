@@ -2,7 +2,7 @@ import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { CreateTaskModal } from './create-task-modal';
 import { TaskService } from '../../../services/task.service';
-import { of, throwError } from 'rxjs';
+import { of } from 'rxjs';
 import type { Task, Child } from '@st44/types';
 import { signal } from '@angular/core';
 
