@@ -57,22 +57,39 @@ describe('Tasks Component', () => {
     // Create writable signals for mocking
     const tasksSignal = signal([mockTask]);
     const assignmentsSignal = signal([mockAssignment]);
+    const myTasksSignal = signal<
+      {
+        id: string;
+        taskName: string;
+        taskDescription: string | null;
+        points: number;
+        date: string;
+        status: 'pending' | 'completed' | 'overdue';
+        completedAt: string | null;
+      }[]
+    >([]);
 
     // Mock TaskService
     mockTaskService = {
       tasks: tasksSignal.asReadonly(),
       assignments: assignmentsSignal.asReadonly(),
+      myTasks: myTasksSignal.asReadonly(),
       getTasks: vi.fn().mockReturnValue(of({ tasks: [mockTask] })),
       getHouseholdAssignments: vi.fn().mockReturnValue(of({ assignments: [mockAssignment] })),
+      getMyTasks: vi
+        .fn()
+        .mockReturnValue(of({ tasks: [], totalPointsToday: 0, completedPoints: 0, childName: '' })),
       completeTask: vi.fn().mockReturnValue(of({ taskAssignment: {}, completion: {} })),
       updateTask: vi.fn().mockReturnValue(of(mockTask)),
       deleteTask: vi.fn().mockReturnValue(of(undefined)),
       // Store writable signals for test manipulation
       _tasksSignal: tasksSignal,
       _assignmentsSignal: assignmentsSignal,
+      _myTasksSignal: myTasksSignal,
     } as Partial<TaskService> & {
       _tasksSignal: typeof tasksSignal;
       _assignmentsSignal: typeof assignmentsSignal;
+      _myTasksSignal: typeof myTasksSignal;
     };
 
     // Create writable signals for AuthService
@@ -203,13 +220,10 @@ describe('Tasks Component', () => {
       expect(mockTaskService.getTasks).toHaveBeenCalledWith('household-1', true);
     });
 
-    it('should load assignments when filter is "mine"', () => {
+    it('should load my tasks when filter is "mine"', () => {
       fixture.detectChanges();
       component['onFilterClick']('mine');
-      expect(mockTaskService.getHouseholdAssignments).toHaveBeenCalledWith(
-        'household-1',
-        expect.objectContaining({ childId: 'user-1', status: 'pending' }),
-      );
+      expect(mockTaskService.getMyTasks).toHaveBeenCalledWith('household-1');
     });
 
     it('should load assignments when filter is "completed"', () => {
@@ -253,22 +267,38 @@ describe('Tasks Component', () => {
       expect(filtered[0].id).toBe('task-1');
     });
 
-    it('should filter pending assignments for "mine" filter', () => {
-      const mockAuthWithWritableSignal = mockAuthService as Partial<AuthService> & {
-        _currentUserSignal: ReturnType<
-          typeof signal<{ id: string; email: string; role: 'admin' | 'parent' | 'child' }>
+    it('should filter pending tasks for "mine" filter using myTasks', () => {
+      const mockServiceWithWritableSignals = mockTaskService as Partial<TaskService> & {
+        _myTasksSignal: ReturnType<
+          typeof signal<
+            {
+              id: string;
+              taskName: string;
+              taskDescription: string | null;
+              points: number;
+              date: string;
+              status: 'pending' | 'completed' | 'overdue';
+              completedAt: string | null;
+            }[]
+          >
         >;
       };
-      mockAuthWithWritableSignal._currentUserSignal.set({
-        id: 'child-1',
-        email: 'child@example.com',
-        role: 'child',
-      });
+      mockServiceWithWritableSignals._myTasksSignal.set([
+        {
+          id: 'my-task-1',
+          taskName: 'My Task',
+          taskDescription: null,
+          points: 5,
+          date: '2024-01-15',
+          status: 'pending',
+          completedAt: null,
+        },
+      ]);
       fixture.detectChanges();
       component['onFilterClick']('mine');
       const filtered = component['filteredTasks']();
       expect(filtered.length).toBe(1);
-      expect(filtered[0].id).toBe('assignment-1');
+      expect(filtered[0].id).toBe('my-task-1');
     });
 
     it('should filter by selected person for "person" filter', () => {
@@ -362,9 +392,21 @@ describe('Tasks Component', () => {
 
     it('should show correct message for "mine" filter with no tasks', () => {
       const mockServiceWithWritableSignals = mockTaskService as Partial<TaskService> & {
-        _assignmentsSignal: ReturnType<typeof signal<Assignment[]>>;
+        _myTasksSignal: ReturnType<
+          typeof signal<
+            {
+              id: string;
+              taskName: string;
+              taskDescription: string | null;
+              points: number;
+              date: string;
+              status: 'pending' | 'completed' | 'overdue';
+              completedAt: string | null;
+            }[]
+          >
+        >;
       };
-      mockServiceWithWritableSignals._assignmentsSignal.set([]);
+      mockServiceWithWritableSignals._myTasksSignal.set([]);
       fixture.detectChanges();
       component['onFilterClick']('mine');
       expect(component['emptyMessage']()).toContain('No tasks assigned to you');

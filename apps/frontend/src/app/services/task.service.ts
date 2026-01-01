@@ -31,6 +31,29 @@ export interface PaginatedTasksResponse {
 }
 
 /**
+ * My task assignment response from /children/me/tasks endpoint
+ */
+export interface MyTaskAssignment {
+  id: string;
+  taskName: string;
+  taskDescription: string | null;
+  points: number;
+  date: string;
+  status: 'pending' | 'completed' | 'overdue';
+  completedAt: string | null;
+}
+
+/**
+ * Response from /children/me/tasks endpoint
+ */
+export interface MyTasksResponse {
+  tasks: MyTaskAssignment[];
+  totalPointsToday: number;
+  completedPoints: number;
+  childName: string;
+}
+
+/**
  * Service for managing task templates with signals-based state management
  *
  * This service provides:
@@ -56,6 +79,11 @@ export class TaskService {
   private assignmentsLoadingSignal = signal<boolean>(false);
   private assignmentsErrorSignal = signal<string | null>(null);
 
+  // My tasks state signals (for /children/me/tasks endpoint)
+  private myTasksSignal = signal<MyTaskAssignment[]>([]);
+  private myTasksLoadingSignal = signal<boolean>(false);
+  private myTasksErrorSignal = signal<string | null>(null);
+
   // Public readonly signals for templates
   public readonly tasks = this.tasksSignal.asReadonly();
   public readonly loading = this.loadingSignal.asReadonly();
@@ -66,6 +94,11 @@ export class TaskService {
   public readonly assignments = this.assignmentsSignal.asReadonly();
   public readonly assignmentsLoading = this.assignmentsLoadingSignal.asReadonly();
   public readonly assignmentsError = this.assignmentsErrorSignal.asReadonly();
+
+  // Public readonly signals for my tasks
+  public readonly myTasks = this.myTasksSignal.asReadonly();
+  public readonly myTasksLoading = this.myTasksLoadingSignal.asReadonly();
+  public readonly myTasksError = this.myTasksErrorSignal.asReadonly();
 
   // Computed signals for filtered template lists
   public readonly activeTasks = computed(() => this.tasksSignal().filter((t) => t.active));
@@ -292,6 +325,39 @@ export class TaskService {
       catchError((err) => {
         this.assignmentsErrorSignal.set('Failed to load household assignments');
         this.assignmentsLoadingSignal.set(false);
+        return throwError(() => err);
+      }),
+    );
+  }
+
+  /**
+   * Get tasks for the currently authenticated child user
+   * Uses /children/me/tasks endpoint which resolves Child ID from User ID
+   *
+   * @param householdId - Optional household ID filter
+   * @param date - Optional date filter (ISO format YYYY-MM-DD)
+   * @param status - Optional status filter ('pending' | 'completed')
+   * @returns Observable of my tasks response
+   */
+  getMyTasks(householdId?: string, date?: string, status?: string): Observable<MyTasksResponse> {
+    this.myTasksLoadingSignal.set(true);
+    this.myTasksErrorSignal.set(null);
+
+    let endpoint = '/children/me/tasks';
+    const params: string[] = [];
+    if (householdId) params.push(`householdId=${householdId}`);
+    if (date) params.push(`date=${date}`);
+    if (status) params.push(`status=${status}`);
+    if (params.length > 0) endpoint += `?${params.join('&')}`;
+
+    return from(this.apiService.get<MyTasksResponse>(endpoint)).pipe(
+      tap((response) => {
+        this.myTasksSignal.set(response.tasks);
+        this.myTasksLoadingSignal.set(false);
+      }),
+      catchError((err) => {
+        this.myTasksErrorSignal.set('Failed to load my tasks');
+        this.myTasksLoadingSignal.set(false);
         return throwError(() => err);
       }),
     );
