@@ -4,6 +4,7 @@ import { Router } from '@angular/router';
 import { Observable, tap } from 'rxjs';
 import { environment } from '../../environments/environment.development';
 import { StorageService } from './storage.service';
+import { TokenService } from './token.service';
 import { STORAGE_KEYS } from './storage-keys';
 
 export interface RegisterRequest {
@@ -34,17 +35,6 @@ export interface User {
   lastName?: string | null;
 }
 
-interface DecodedToken {
-  userId: string;
-  email: string;
-  role?: 'admin' | 'parent' | 'child';
-  firstName?: string | null;
-  lastName?: string | null;
-  type: string;
-  iat: number;
-  exp: number;
-}
-
 @Injectable({
   providedIn: 'root',
 })
@@ -52,6 +42,7 @@ export class AuthService {
   private readonly http = inject(HttpClient);
   private readonly router = inject(Router);
   private readonly storage = inject(StorageService);
+  private readonly tokenService = inject(TokenService);
   private readonly apiUrl = `${environment.apiUrl}/api/auth`;
 
   // Signals for reactive state
@@ -64,53 +55,20 @@ export class AuthService {
   }
 
   private checkAuthStatus(): void {
-    const accessToken =
-      this.storage.getString(STORAGE_KEYS.ACCESS_TOKEN) ||
-      sessionStorage.getItem(STORAGE_KEYS.ACCESS_TOKEN);
+    const accessToken = this.tokenService.getAccessToken();
     if (accessToken) {
       // Decode JWT to get user info including role
-      const user = this.decodeToken(accessToken);
-      if (user) {
-        this.currentUser.set(user);
+      const decoded = this.tokenService.decodeToken(accessToken);
+      if (decoded) {
+        this.currentUser.set({
+          id: decoded.userId,
+          email: decoded.email,
+          role: decoded.role,
+          firstName: decoded.firstName,
+          lastName: decoded.lastName,
+        });
         this.isAuthenticated.set(true);
       }
-    }
-  }
-
-  /**
-   * Decode JWT token to extract user information
-   * @param token - The JWT access token
-   * @returns User object or null if token is invalid
-   */
-  private decodeToken(token: string): User | null {
-    try {
-      // JWT tokens have 3 parts separated by dots: header.payload.signature
-      const parts = token.split('.');
-      if (parts.length !== 3) {
-        return null;
-      }
-
-      // Decode the payload (second part)
-      const payload = parts[1];
-      const decodedPayload = atob(payload.replace(/-/g, '+').replace(/_/g, '/'));
-      const decoded = JSON.parse(decodedPayload) as DecodedToken;
-
-      // Check if token is expired
-      const now = Math.floor(Date.now() / 1000);
-      if (decoded.exp && decoded.exp < now) {
-        return null;
-      }
-
-      return {
-        id: decoded.userId,
-        email: decoded.email,
-        role: decoded.role,
-        firstName: decoded.firstName,
-        lastName: decoded.lastName,
-      };
-    } catch (error) {
-      console.error('Failed to decode token:', error);
-      return null;
     }
   }
 
@@ -136,23 +94,23 @@ export class AuthService {
       })
       .pipe(
         tap((response) => {
-          // Store tokens based on rememberMe preference
-          if (rememberMe) {
-            this.storage.set(STORAGE_KEYS.ACCESS_TOKEN, response.accessToken);
-            this.storage.set(STORAGE_KEYS.REFRESH_TOKEN, response.refreshToken);
-            sessionStorage.removeItem(STORAGE_KEYS.ACCESS_TOKEN);
-            sessionStorage.removeItem(STORAGE_KEYS.REFRESH_TOKEN);
-          } else {
-            sessionStorage.setItem(STORAGE_KEYS.ACCESS_TOKEN, response.accessToken);
-            sessionStorage.setItem(STORAGE_KEYS.REFRESH_TOKEN, response.refreshToken);
-            this.storage.remove(STORAGE_KEYS.ACCESS_TOKEN);
-            this.storage.remove(STORAGE_KEYS.REFRESH_TOKEN);
-          }
+          // Store tokens using TokenService
+          this.tokenService.storeTokens(
+            response.accessToken,
+            response.refreshToken,
+            rememberMe ? 'persistent' : 'session',
+          );
 
           // Decode token to get user info with role
-          const user = this.decodeToken(response.accessToken);
-          if (user) {
-            this.currentUser.set(user);
+          const decoded = this.tokenService.decodeToken(response.accessToken);
+          if (decoded) {
+            this.currentUser.set({
+              id: decoded.userId,
+              email: decoded.email,
+              role: decoded.role,
+              firstName: decoded.firstName,
+              lastName: decoded.lastName,
+            });
             this.isAuthenticated.set(true);
           }
         }),
@@ -166,18 +124,19 @@ export class AuthService {
       })
       .pipe(
         tap((response) => {
-          // Always use localStorage for OAuth (remember user)
-          this.storage.set(STORAGE_KEYS.ACCESS_TOKEN, response.accessToken);
-          this.storage.set(STORAGE_KEYS.REFRESH_TOKEN, response.refreshToken);
-
-          // Clear session storage
-          sessionStorage.removeItem(STORAGE_KEYS.ACCESS_TOKEN);
-          sessionStorage.removeItem(STORAGE_KEYS.REFRESH_TOKEN);
+          // Always use persistent storage for OAuth (remember user)
+          this.tokenService.storeTokens(response.accessToken, response.refreshToken, 'persistent');
 
           // Decode token to get user info with role
-          const user = this.decodeToken(response.accessToken);
-          if (user) {
-            this.currentUser.set(user);
+          const decoded = this.tokenService.decodeToken(response.accessToken);
+          if (decoded) {
+            this.currentUser.set({
+              id: decoded.userId,
+              email: decoded.email,
+              role: decoded.role,
+              firstName: decoded.firstName,
+              lastName: decoded.lastName,
+            });
             this.isAuthenticated.set(true);
           }
         }),
@@ -185,11 +144,8 @@ export class AuthService {
   }
 
   logout(): void {
-    // Clear tokens from both storages
-    this.storage.remove(STORAGE_KEYS.ACCESS_TOKEN);
-    this.storage.remove(STORAGE_KEYS.REFRESH_TOKEN);
-    sessionStorage.removeItem(STORAGE_KEYS.ACCESS_TOKEN);
-    sessionStorage.removeItem(STORAGE_KEYS.REFRESH_TOKEN);
+    // Clear tokens using TokenService
+    this.tokenService.clearTokens();
 
     // Clear household context
     this.storage.remove(STORAGE_KEYS.ACTIVE_HOUSEHOLD_ID);
@@ -203,17 +159,11 @@ export class AuthService {
   }
 
   getAccessToken(): string | null {
-    return (
-      this.storage.getString(STORAGE_KEYS.ACCESS_TOKEN) ||
-      sessionStorage.getItem(STORAGE_KEYS.ACCESS_TOKEN)
-    );
+    return this.tokenService.getAccessToken();
   }
 
   getRefreshToken(): string | null {
-    return (
-      this.storage.getString(STORAGE_KEYS.REFRESH_TOKEN) ||
-      sessionStorage.getItem(STORAGE_KEYS.REFRESH_TOKEN)
-    );
+    return this.tokenService.getRefreshToken();
   }
 
   /**

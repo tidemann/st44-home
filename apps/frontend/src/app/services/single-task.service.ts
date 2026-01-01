@@ -1,6 +1,7 @@
 import { Injectable, signal, computed, inject } from '@angular/core';
 import { Observable, tap, catchError, throwError } from 'rxjs';
 import { ApiService } from './api.service';
+import { ErrorHandlerService } from './error-handler.service';
 
 /**
  * Available Single Task - enriched task data with availability status
@@ -72,6 +73,7 @@ export interface AcceptTaskResponse {
 })
 export class SingleTaskService {
   private apiService = inject(ApiService);
+  private errorHandler = inject(ErrorHandlerService);
 
   // Available tasks state (for children)
   private availableTasksSignal = signal<AvailableSingleTask[]>([]);
@@ -127,7 +129,7 @@ export class SingleTaskService {
           this.availableTasksSignal.update((tasks) => tasks.filter((t) => t.id !== taskId));
         }),
         catchError((error) => {
-          console.error('Failed to accept task:', error);
+          this.errorHandler.handle(error, { context: 'SingleTaskService.acceptTask' });
           return throwError(() => error);
         }),
       );
@@ -149,7 +151,7 @@ export class SingleTaskService {
           this.availableTasksSignal.update((tasks) => tasks.filter((t) => t.id !== taskId));
         }),
         catchError((error) => {
-          console.error('Failed to decline task:', error);
+          this.errorHandler.handle(error, { context: 'SingleTaskService.declineTask' });
           return throwError(() => error);
         }),
       );
@@ -178,7 +180,7 @@ export class SingleTaskService {
           this.loadAvailableTasks();
         }),
         catchError((error) => {
-          console.error('Failed to undo decline:', error);
+          this.errorHandler.handle(error, { context: 'SingleTaskService.undoDecline' });
           return throwError(() => error);
         }),
       );
@@ -201,7 +203,10 @@ export class SingleTaskService {
       catchError((error) => {
         this.availableErrorSignal.set('Failed to load available tasks');
         this.availableLoadingSignal.set(false);
-        console.error('Failed to load available tasks:', error);
+        this.errorHandler.handle(error, {
+          context: 'SingleTaskService.loadAvailableTasks',
+          silent: true,
+        });
         return throwError(() => error);
       }),
     );
@@ -227,7 +232,10 @@ export class SingleTaskService {
         catchError((error) => {
           this.failedErrorSignal.set('Failed to load failed tasks');
           this.failedLoadingSignal.set(false);
-          console.error('Failed to load failed tasks:', error);
+          this.errorHandler.handle(error, {
+            context: 'SingleTaskService.loadFailedTasks',
+            silent: true,
+          });
           return throwError(() => error);
         }),
       );
@@ -253,7 +261,10 @@ export class SingleTaskService {
         catchError((error) => {
           this.expiredErrorSignal.set('Failed to load expired tasks');
           this.expiredLoadingSignal.set(false);
-          console.error('Failed to load expired tasks:', error);
+          this.errorHandler.handle(error, {
+            context: 'SingleTaskService.loadExpiredTasks',
+            silent: true,
+          });
           return throwError(() => error);
         }),
       );
@@ -276,7 +287,7 @@ export class SingleTaskService {
       }>(`/households/${householdId}/tasks/${taskId}/candidates`)
       .pipe(
         catchError((error) => {
-          console.error('Failed to load task candidates:', error);
+          this.errorHandler.handle(error, { context: 'SingleTaskService.getTaskCandidates' });
           return throwError(() => error);
         }),
       );

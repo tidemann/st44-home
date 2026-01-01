@@ -6,14 +6,13 @@
  *
  * Features:
  * - Adds Authorization header with Bearer token
- * - Retrieves token from localStorage or sessionStorage
+ * - Retrieves token from TokenService (handles both storage strategies)
  * - Skips auth header for requests that don't need it
  */
 
 import { HttpInterceptorFn, HttpRequest, HttpHandlerFn } from '@angular/common/http';
 import { inject } from '@angular/core';
-import { StorageService } from '../services/storage.service';
-import { STORAGE_KEYS } from '../services/storage-keys';
+import { TokenService } from '../services/token.service';
 
 /**
  * URLs that should skip authentication
@@ -44,12 +43,10 @@ export const authInterceptor: HttpInterceptorFn = (
     return next(req);
   }
 
-  const storage = inject(StorageService);
+  const tokenService = inject(TokenService);
 
-  // Get token from localStorage (remember me) or sessionStorage
-  const token =
-    storage.getString(STORAGE_KEYS.ACCESS_TOKEN) ||
-    sessionStorage.getItem(STORAGE_KEYS.ACCESS_TOKEN);
+  // Get token from TokenService
+  const token = tokenService.getAccessToken();
 
   // If no token, proceed without auth header
   if (!token) {
