@@ -477,11 +477,4 @@ export class Tasks {
     this.reassignModalOpen.set(false);
     this.reassigningAssignment.set(null);
   }
-
-  /**
-   * Check if filter is active
-   */
-  protected isFilterActive(filter: TaskFilter): boolean {
-    return this.activeFilter() === filter;
-  }
 }

@@ -430,17 +430,17 @@ describe('Tasks Component', () => {
     });
   });
 
-  describe('isFilterActive', () => {
-    it('should return true for active filter', () => {
+  describe('activeFilter', () => {
+    it('should match active filter after click', () => {
       fixture.detectChanges();
       component['onFilterClick']('mine');
-      expect(component['isFilterActive']('mine')).toBe(true);
+      expect(component['activeFilter']()).toBe('mine');
     });
 
-    it('should return false for inactive filter', () => {
+    it('should not match inactive filter', () => {
       fixture.detectChanges();
       component['onFilterClick']('mine');
-      expect(component['isFilterActive']('all')).toBe(false);
+      expect(component['activeFilter']()).not.toBe('all');
     });
   });
 });
