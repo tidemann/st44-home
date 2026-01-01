@@ -114,12 +114,6 @@ describe('SingleTaskService', () => {
     });
 
     it('should set loading to true during request', async () => {
-      // Create a delayed observable to check loading state
-      let resolveApi: (value: { tasks: AvailableSingleTask[] }) => void;
-      const delayedObservable = new Promise<{ tasks: AvailableSingleTask[] }>((resolve) => {
-        resolveApi = resolve;
-      });
-
       mockApiService.get$.mockReturnValue(of({ tasks: [] }));
 
       // Start loading
