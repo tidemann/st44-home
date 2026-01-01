@@ -1,5 +1,5 @@
 import { Injectable, signal, computed, inject } from '@angular/core';
-import { Observable, tap, catchError, throwError } from 'rxjs';
+import { Observable, tap, catchError, throwError, switchMap, map } from 'rxjs';
 import { ApiService } from './api.service';
 import { ErrorHandlerService } from './error-handler.service';
 
@@ -175,10 +175,9 @@ export class SingleTaskService {
         success: boolean;
       }>(`/households/${householdId}/tasks/${taskId}/responses/${childId}`)
       .pipe(
-        tap(() => {
-          // Reload available tasks to show the task again
-          this.loadAvailableTasks();
-        }),
+        // Chain with loadAvailableTasks using switchMap to ensure the HTTP request fires
+        // and propagate completion/errors properly to callers
+        switchMap(() => this.loadAvailableTasks().pipe(map(() => ({ success: true })))),
         catchError((error) => {
           this.errorHandler.handle(error, { context: 'SingleTaskService.undoDecline' });
           return throwError(() => error);
