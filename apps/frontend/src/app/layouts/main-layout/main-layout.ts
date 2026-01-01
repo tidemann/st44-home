@@ -8,17 +8,13 @@ import {
   OnDestroy,
 } from '@angular/core';
 import { Router, RouterOutlet, NavigationEnd } from '@angular/router';
-import { filter, Subscription, switchMap } from 'rxjs';
+import { filter, Subscription } from 'rxjs';
 import { BottomNav } from '../../components/navigation/bottom-nav/bottom-nav';
 import { SidebarNav } from '../../components/navigation/sidebar-nav/sidebar-nav';
 import { HouseholdSwitcherComponent } from '../../components/household-switcher/household-switcher';
-import {
-  QuickAddModal,
-  type QuickAddTaskData,
-} from '../../components/modals/quick-add-modal/quick-add-modal';
+import { CreateTaskModal } from '../../components/modals/create-task-modal/create-task-modal';
 import { AuthService } from '../../services/auth.service';
 import { HouseholdService } from '../../services/household.service';
-import { TaskService } from '../../services/task.service';
 import { ChildrenService } from '../../services/children.service';
 import type { SidebarUser } from '../../components/navigation/sidebar-nav/sidebar-nav';
 import type { NavScreen } from '../../components/navigation/bottom-nav/bottom-nav';
@@ -31,14 +27,14 @@ import type { Child } from '@st44/types';
  * - Sidebar navigation (desktop)
  * - Bottom navigation (mobile)
  * - Router outlet for page content
- * - Quick-add task modal
+ * - Create task modal (full-featured)
  *
  * This layout handles navigation state and routing,
  * allowing page components to focus on their content.
  */
 @Component({
   selector: 'app-main-layout',
-  imports: [RouterOutlet, BottomNav, SidebarNav, HouseholdSwitcherComponent, QuickAddModal],
+  imports: [RouterOutlet, BottomNav, SidebarNav, HouseholdSwitcherComponent, CreateTaskModal],
   templateUrl: './main-layout.html',
   styleUrl: './main-layout.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -47,7 +43,6 @@ export class MainLayout implements OnInit, OnDestroy {
   private readonly router = inject(Router);
   private readonly authService = inject(AuthService);
   private readonly householdService = inject(HouseholdService);
-  private readonly taskService = inject(TaskService);
   private readonly childrenService = inject(ChildrenService);
 
   private routerSubscription: Subscription | null = null;
@@ -59,7 +54,7 @@ export class MainLayout implements OnInit, OnDestroy {
   protected readonly children = signal<Child[]>([]);
 
   // Modal state
-  protected readonly quickAddOpen = signal(false);
+  protected readonly createTaskOpen = signal(false);
 
   // Computed values
   protected readonly sidebarUser = computed<SidebarUser>(() => {
@@ -88,7 +83,7 @@ export class MainLayout implements OnInit, OnDestroy {
   }
 
   /**
-   * Load household data for sidebar and quick-add modal
+   * Load household data for sidebar and create task modal
    */
   private async loadHouseholdData(): Promise<void> {
     try {
@@ -107,7 +102,7 @@ export class MainLayout implements OnInit, OnDestroy {
   }
 
   /**
-   * Load children for quick-add modal
+   * Load children for create task modal
    */
   private async loadChildren(): Promise<void> {
     const household = this.householdId();
@@ -163,57 +158,28 @@ export class MainLayout implements OnInit, OnDestroy {
   }
 
   /**
-   * Open quick-add modal
+   * Open create task modal
    */
-  protected async openQuickAdd(): Promise<void> {
+  protected async openCreateTask(): Promise<void> {
     // Ensure children are loaded before opening modal
     if (this.children().length === 0) {
       await this.loadChildren();
     }
-    this.quickAddOpen.set(true);
+    this.createTaskOpen.set(true);
   }
 
   /**
-   * Close quick-add modal
+   * Close create task modal
    */
-  protected closeQuickAdd(): void {
-    this.quickAddOpen.set(false);
+  protected closeCreateTask(): void {
+    this.createTaskOpen.set(false);
   }
 
   /**
-   * Handle quick-add task creation
-   *
-   * Creates a daily task with the assigned child, then creates
-   * a manual assignment for today so the task appears immediately.
+   * Handle task creation success
    */
-  protected onTaskCreated(data: QuickAddTaskData): void {
-    const household = this.householdId();
-    if (!household) return;
-
-    const today = new Date().toISOString().split('T')[0];
-
-    this.taskService
-      .createTask(household, {
-        name: data.name,
-        points: data.points,
-        ruleType: 'daily',
-        ruleConfig: {
-          assignedChildren: [data.assignedChildId],
-        },
-      })
-      .pipe(
-        switchMap((task) =>
-          this.taskService.createManualAssignment(task.id, data.assignedChildId, today),
-        ),
-      )
-      .subscribe({
-        next: () => {
-          this.quickAddOpen.set(false);
-        },
-        error: (err) => {
-          console.error('Failed to create task:', err);
-        },
-      });
+  protected onTaskCreated(): void {
+    this.createTaskOpen.set(false);
   }
 
   /**
