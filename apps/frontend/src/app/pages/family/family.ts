@@ -354,6 +354,21 @@ export class Family implements OnInit {
   }
 
   /**
+   * Handle child updated event - reload data to reflect changes
+   */
+  protected async onChildUpdated(): Promise<void> {
+    await this.loadData();
+  }
+
+  /**
+   * Handle child deleted event - reload data to reflect changes
+   */
+  protected async onChildDeleted(): Promise<void> {
+    this.closeChildDetailsModal();
+    await this.loadData();
+  }
+
+  /**
    * Check if a member is a child (for clickable state)
    */
   protected isChildMember(member: MemberCardData): boolean {

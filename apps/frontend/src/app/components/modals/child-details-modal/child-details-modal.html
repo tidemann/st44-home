@@ -1,85 +1,205 @@
 <app-modal [open]="open()" (closeModal)="onClose()" title="Child Details">
   @if (child(); as child) {
     <div class="child-details">
-      <!-- Child Info Section -->
-      <div class="info-section">
-        <div class="child-avatar">
-          <span class="avatar-emoji">
-            @if (child.avatarUrl) {
-              {{ child.avatarUrl }}
-            } @else {
-              👤
-            }
-          </span>
+      <!-- Error Message -->
+      @if (errorMessage()) {
+        <div class="error-banner" role="alert">
+          {{ errorMessage() }}
         </div>
+      }
 
-        <div class="child-info">
-          <h3 class="child-name">{{ child.name }}</h3>
-          @if (childAge()) {
-            <p class="child-age">{{ childAge() }} years old</p>
-          }
-        </div>
-      </div>
-
-      <!-- Account Status Section -->
-      <div class="account-section">
-        <h4 class="section-title">Login Account</h4>
-
-        @if (hasAccount()) {
-          <!-- Child has account -->
-          <div class="account-status has-account">
-            <span class="status-icon">✓</span>
-            <div class="status-info">
-              <p class="status-label">Account Active</p>
-              @if (childEmail()) {
-                <p class="status-detail">{{ childEmail() }}</p>
-              }
-            </div>
-          </div>
-        } @else {
-          <!-- Child does not have account -->
-          @if (!showCreateAccount()) {
-            <div class="account-status no-account">
-              <span class="status-icon">✗</span>
-              <div class="status-info">
-                <p class="status-label">No Account</p>
-                <p class="status-detail">Create login credentials so this child can sign in</p>
-              </div>
-            </div>
-
+      <!-- Delete Confirmation -->
+      @if (showDeleteConfirm()) {
+        <div class="delete-confirmation">
+          <div class="confirm-icon">⚠️</div>
+          <h3 class="confirm-title">Remove {{ child.name }}?</h3>
+          <p class="confirm-message">
+            Are you sure you want to remove {{ child.name }} from this household? This action cannot
+            be undone.
+          </p>
+          <div class="confirm-actions">
             <button
               type="button"
-              class="btn btn-primary create-btn"
-              (click)="toggleCreateAccount()"
+              class="btn btn-secondary"
+              (click)="cancelDelete()"
+              [disabled]="deleting()"
             >
-              Create Login
+              Cancel
             </button>
-          } @else {
-            <!-- Create Account Form -->
-            <app-create-child-account
-              [child]="child"
-              [householdId]="householdId()"
-              (accountCreated)="onAccountCreated()"
-              (cancelled)="onCreateAccountCancelled()"
-            />
-          }
-        }
-      </div>
-
-      <!-- QR Code Section (Future Feature) -->
-      <div class="qr-section">
-        <h4 class="section-title">QR Code Login</h4>
-        <div class="qr-placeholder">
-          <div class="qr-icon">📱</div>
-          <p class="qr-label">Coming Soon</p>
-          <p class="qr-description">Quick login with QR code scan</p>
+            <button
+              type="button"
+              class="btn btn-danger"
+              (click)="confirmDelete()"
+              [disabled]="deleting()"
+            >
+              @if (deleting()) {
+                Removing...
+              } @else {
+                Remove Child
+              }
+            </button>
+          </div>
         </div>
-      </div>
+      } @else {
+        <!-- Child Info Section -->
+        <div class="info-section">
+          <div class="child-avatar">
+            <span class="avatar-emoji">
+              @if (child.avatarUrl) {
+                {{ child.avatarUrl }}
+              } @else {
+                👤
+              }
+            </span>
+          </div>
+
+          @if (editMode()) {
+            <!-- Edit Mode -->
+            <form class="edit-form" [formGroup]="form" (ngSubmit)="saveEdit()">
+              <div class="form-group">
+                <label class="form-label" for="child-name">Name</label>
+                <input
+                  type="text"
+                  id="child-name"
+                  class="form-input"
+                  formControlName="name"
+                  [class.error]="form.controls.name.invalid && form.controls.name.touched"
+                />
+                @if (form.controls.name.invalid && form.controls.name.touched) {
+                  <div class="form-error">Name is required</div>
+                }
+              </div>
+
+              <div class="form-group">
+                <label class="form-label" for="birth-year">Birth Year</label>
+                <input
+                  type="number"
+                  id="birth-year"
+                  class="form-input birth-year-input"
+                  formControlName="birthYear"
+                  [min]="minBirthYear"
+                  [max]="currentYear"
+                  [class.error]="form.controls.birthYear.invalid && form.controls.birthYear.touched"
+                />
+                @if (form.controls.birthYear.invalid && form.controls.birthYear.touched) {
+                  <div class="form-error">Please enter a valid birth year</div>
+                }
+              </div>
+
+              <div class="edit-actions">
+                <button
+                  type="button"
+                  class="btn btn-secondary btn-sm"
+                  (click)="cancelEdit()"
+                  [disabled]="saving()"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  class="btn btn-primary btn-sm"
+                  [disabled]="form.invalid || saving()"
+                >
+                  @if (saving()) {
+                    Saving...
+                  } @else {
+                    Save
+                  }
+                </button>
+              </div>
+            </form>
+          } @else {
+            <!-- View Mode -->
+            <div class="child-info">
+              <h3 class="child-name">{{ child.name }}</h3>
+              @if (childAge()) {
+                <p class="child-age">{{ childAge() }} years old</p>
+              }
+              <button
+                type="button"
+                class="btn-edit"
+                (click)="enterEditMode()"
+                aria-label="Edit child details"
+              >
+                ✏️ Edit
+              </button>
+            </div>
+          }
+        </div>
+
+        <!-- Account Status Section -->
+        @if (!editMode()) {
+          <div class="account-section">
+            <h4 class="section-title">Login Account</h4>
+
+            @if (hasAccount()) {
+              <!-- Child has account -->
+              <div class="account-status has-account">
+                <span class="status-icon">✓</span>
+                <div class="status-info">
+                  <p class="status-label">Account Active</p>
+                  @if (childEmail()) {
+                    <p class="status-detail">{{ childEmail() }}</p>
+                  }
+                </div>
+              </div>
+            } @else {
+              <!-- Child does not have account -->
+              @if (!showCreateAccount()) {
+                <div class="account-status no-account">
+                  <span class="status-icon">✗</span>
+                  <div class="status-info">
+                    <p class="status-label">No Account</p>
+                    <p class="status-detail">Create login credentials so this child can sign in</p>
+                  </div>
+                </div>
+
+                <button
+                  type="button"
+                  class="btn btn-primary create-btn"
+                  (click)="toggleCreateAccount()"
+                >
+                  Create Login
+                </button>
+              } @else {
+                <!-- Create Account Form -->
+                <app-create-child-account
+                  [child]="child"
+                  [householdId]="householdId()"
+                  (accountCreated)="onAccountCreated()"
+                  (cancelled)="onCreateAccountCancelled()"
+                />
+              }
+            }
+          </div>
+
+          <!-- QR Code Section (Future Feature) -->
+          <div class="qr-section">
+            <h4 class="section-title">QR Code Login</h4>
+            <div class="qr-placeholder">
+              <div class="qr-icon">📱</div>
+              <p class="qr-label">Coming Soon</p>
+              <p class="qr-description">Quick login with QR code scan</p>
+            </div>
+          </div>
+
+          <!-- Danger Zone -->
+          <div class="danger-zone">
+            <h4 class="section-title danger-title">Danger Zone</h4>
+            <p class="danger-description">
+              Removing a child will delete all their task assignments and points history.
+            </p>
+            <button type="button" class="btn btn-danger-outline" (click)="showDeleteConfirmation()">
+              Remove Child
+            </button>
+          </div>
+        }
+      }
     </div>
   }
 
   <!-- Modal Actions -->
-  @if (!showCreateAccount()) {
+  @if (!showCreateAccount() && !editMode() && !showDeleteConfirm()) {
     <div class="modal-actions" modal-actions>
       <button type="button" class="btn btn-secondary" (click)="onClose()">Close</button>
     </div>
