@@ -465,17 +465,17 @@ export default async function assignmentRoutes(fastify: FastifyInstance) {
 
         const result = await pool.query(query, queryParams);
 
-        // Transform to expected response format (snake_case to match API convention)
+        // Transform to expected response format (camelCase to match @st44/types Assignment schema)
         const assignments = result.rows.map((row) => ({
           id: row.id,
-          task_id: row.task_id,
-          child_id: childId, // From request params
+          taskId: row.task_id,
+          childId: childId, // From request params
           title: row.title,
           description: row.description,
-          rule_type: row.rule_type,
+          ruleType: row.rule_type,
           date: row.date,
           status: row.status,
-          completed_at: row.completed_at || null,
+          completedAt: row.completed_at || null,
         }));
 
         return reply.code(200).send({
@@ -539,11 +539,13 @@ export default async function assignmentRoutes(fastify: FastifyInstance) {
             ta.task_id,
             t.name as title,
             t.description,
+            t.rule_type,
             ta.child_id,
             c.name as child_name,
             ta.date::text as date,
             ta.status,
-            tc.completed_at::text as completed_at
+            tc.completed_at::text as completed_at,
+            ta.created_at::text as created_at
           FROM task_assignments ta
           JOIN tasks t ON ta.task_id = t.id
           LEFT JOIN children c ON ta.child_id = c.id
@@ -577,16 +579,19 @@ export default async function assignmentRoutes(fastify: FastifyInstance) {
 
         const result = await pool.query(query, queryParams);
 
-        // Transform to expected response format (snake_case to match existing API)
+        // Transform to expected response format (camelCase to match @st44/types Assignment schema)
         const assignments = result.rows.map((row) => ({
           id: row.id,
-          task_id: row.task_id,
-          task_name: row.title,
-          child_id: row.child_id,
-          child_name: row.child_name,
+          taskId: row.task_id,
+          title: row.title,
+          description: row.description,
+          ruleType: row.rule_type,
+          childId: row.child_id,
+          childName: row.child_name,
           date: row.date,
           status: row.status,
-          completed_at: row.completed_at || null,
+          completedAt: row.completed_at || null,
+          createdAt: row.created_at,
         }));
 
         return reply.code(200).send({
@@ -722,9 +727,9 @@ export default async function assignmentRoutes(fastify: FastifyInstance) {
         return reply.code(200).send({
           id: completedAssignment.id,
           status: completedAssignment.status,
-          completed_at: new Date().toISOString(),
-          child_id: completedAssignment.child_id,
-          task_id: completedAssignment.task_id,
+          completedAt: new Date().toISOString(),
+          childId: completedAssignment.child_id,
+          taskId: completedAssignment.task_id,
         });
       } catch (error) {
         if (error instanceof z.ZodError) {
@@ -1023,8 +1028,8 @@ export default async function assignmentRoutes(fastify: FastifyInstance) {
 
         return reply.code(200).send({
           id: updateResult.rows[0].id,
-          child_id: updateResult.rows[0].child_id,
-          child_name: newChild.name,
+          childId: updateResult.rows[0].child_id,
+          childName: newChild.name,
         });
       } catch (error) {
         if (error instanceof z.ZodError) {

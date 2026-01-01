@@ -367,7 +367,7 @@ describe('Assignments API', () => {
       );
     });
 
-    test('returns assignments with task_name, child_name', async () => {
+    test('returns assignments with title, childName (camelCase)', async () => {
       const response = await app.inject({
         method: 'GET',
         url: `/api/households/${householdId}/assignments?date=2025-01-01&days=5`,
@@ -381,13 +381,13 @@ describe('Assignments API', () => {
       assert.ok(Array.isArray(body.assignments));
       assert.strictEqual(body.total, 5);
 
-      // Verify fields
+      // Verify fields (camelCase to match @st44/types Assignment schema)
       const assignment = body.assignments[0];
       assert.ok(assignment.id);
-      assert.ok(assignment.task_id);
-      assert.ok(assignment.task_name);
-      assert.ok(assignment.child_id);
-      assert.ok(assignment.child_name);
+      assert.ok(assignment.taskId);
+      assert.ok(assignment.title);
+      assert.ok(assignment.childId);
+      assert.ok(assignment.childName);
       assert.ok(assignment.date);
       assert.ok(assignment.status);
     });
@@ -450,7 +450,7 @@ describe('Assignments API', () => {
       // Schema validation returns 400 for out of range
     });
 
-    test('orders by date ASC, child_name ASC', async () => {
+    test('orders by date ASC, childName ASC', async () => {
       const response = await app.inject({
         method: 'GET',
         url: `/api/households/${householdId}/assignments?date=2025-01-01&days=5`,
@@ -474,8 +474,8 @@ describe('Assignments API', () => {
       if (jan1Assignments.length > 1) {
         for (let i = 1; i < jan1Assignments.length; i++) {
           assert.ok(
-            jan1Assignments[i - 1].child_name <= jan1Assignments[i].child_name,
-            'Should be ordered by child_name ASC',
+            jan1Assignments[i - 1].childName <= jan1Assignments[i].childName,
+            'Should be ordered by childName ASC',
           );
         }
       }
@@ -523,7 +523,7 @@ describe('Assignments API', () => {
 
       // Verify all assignments are from household 1
       for (const assignment of body.assignments) {
-        assert.strictEqual(assignment.task_name, 'Test Task');
+        assert.strictEqual(assignment.title, 'Test Task');
       }
 
       // Cleanup household 2
@@ -574,8 +574,8 @@ describe('Assignments API', () => {
       // Schema validation returns 400 for invalid date format
     });
 
-    test('handles null child_id (LEFT JOIN)', async () => {
-      // Create assignment with null child_id
+    test('handles null childId (LEFT JOIN)', async () => {
+      // Create assignment with null childId
       await pool.query(
         `INSERT INTO task_assignments (household_id, task_id, child_id, date, status)
          VALUES ($1, $2, NULL, '2025-01-10', 'pending')`,
@@ -592,8 +592,8 @@ describe('Assignments API', () => {
 
       const body = JSON.parse(response.body);
       assert.strictEqual(body.total, 1);
-      assert.strictEqual(body.assignments[0].child_id, null);
-      assert.strictEqual(body.assignments[0].child_name, null);
+      assert.strictEqual(body.assignments[0].childId, null);
+      assert.strictEqual(body.assignments[0].childName, null);
     });
 
     test('parent can view household assignments', async () => {
@@ -653,7 +653,7 @@ describe('Assignments API', () => {
 
       const assignment = body.assignments[0];
       assert.ok(assignment.id);
-      assert.ok(assignment.task_id); // Use snake_case to match API convention
+      assert.ok(assignment.taskId); // Use camelCase to match @st44/types convention
       assert.ok(assignment.title);
       assert.strictEqual(assignment.date, '2025-01-20');
       assert.strictEqual(assignment.status, 'pending');
@@ -685,7 +685,7 @@ describe('Assignments API', () => {
       const body = JSON.parse(response.body);
       assert.strictEqual(body.total, 1);
       assert.strictEqual(body.assignments[0].status, 'completed');
-      assert.ok(body.assignments[0].completed_at);
+      assert.ok(body.assignments[0].completedAt);
     });
 
     test('defaults to today if no date parameter', async () => {
@@ -840,10 +840,10 @@ describe('Assignments API', () => {
       const body = JSON.parse(response.body);
       // Should have 1 task for child 0, not 2 (child 1 also has task on same date)
       assert.strictEqual(body.total, 1);
-      assert.strictEqual(body.assignments[0].child_id, childIds[0]);
+      assert.strictEqual(body.assignments[0].childId, childIds[0]);
     });
 
-    test('includes task details (title, description, rule_type)', async () => {
+    test('includes task details (title, description, ruleType)', async () => {
       const response = await app.inject({
         method: 'GET',
         url: `/api/children/${childIds[0]}/tasks?date=2025-01-20`,
@@ -856,7 +856,7 @@ describe('Assignments API', () => {
       const assignment = body.assignments[0];
       assert.ok(assignment.title);
       assert.strictEqual(assignment.title, 'Test Task');
-      assert.strictEqual(assignment.rule_type, 'daily');
+      assert.strictEqual(assignment.ruleType, 'daily');
     });
   });
 
@@ -888,9 +888,9 @@ describe('Assignments API', () => {
       const body = JSON.parse(response.body);
       assert.strictEqual(body.id, assignmentId);
       assert.strictEqual(body.status, 'completed');
-      assert.ok(body.completed_at);
-      assert.ok(body.child_id);
-      assert.ok(body.task_id);
+      assert.ok(body.completedAt);
+      assert.ok(body.childId);
+      assert.ok(body.taskId);
 
       // Verify database state
       const dbResult = await pool.query('SELECT status FROM task_assignments WHERE id = $1', [
@@ -995,7 +995,7 @@ describe('Assignments API', () => {
       assert.strictEqual(response.statusCode, 200);
 
       const body = JSON.parse(response.body);
-      const completedAt = new Date(body.completed_at);
+      const completedAt = new Date(body.completedAt);
 
       assert.ok(completedAt >= beforeTime);
       assert.ok(completedAt <= afterTime);
@@ -1037,9 +1037,9 @@ describe('Assignments API', () => {
       const body = JSON.parse(response.body);
       assert.ok(body.id);
       assert.ok(body.status);
-      assert.ok(body.completed_at);
-      assert.ok(body.child_id);
-      assert.ok(body.task_id);
+      assert.ok(body.completedAt);
+      assert.ok(body.childId);
+      assert.ok(body.taskId);
     });
   });
 
@@ -1338,8 +1338,8 @@ describe('Assignments API', () => {
 
       const body = JSON.parse(response.body);
       assert.strictEqual(body.id, assignmentId);
-      assert.strictEqual(body.child_id, childIds[1]);
-      assert.strictEqual(body.child_name, 'Bob');
+      assert.strictEqual(body.childId, childIds[1]);
+      assert.strictEqual(body.childName, 'Bob');
 
       // Verify database state
       const dbResult = await pool.query('SELECT child_id FROM task_assignments WHERE id = $1', [
@@ -1359,7 +1359,7 @@ describe('Assignments API', () => {
       assert.strictEqual(response.statusCode, 200);
 
       const body = JSON.parse(response.body);
-      assert.strictEqual(body.child_id, childIds[1]);
+      assert.strictEqual(body.childId, childIds[1]);
     });
 
     test('returns 404 if assignment not found', async () => {
@@ -1519,8 +1519,8 @@ describe('Assignments API', () => {
       assert.strictEqual(response.statusCode, 200);
 
       const body = JSON.parse(response.body);
-      assert.strictEqual(body.child_id, childIds[0]);
-      assert.strictEqual(body.child_name, 'Alice');
+      assert.strictEqual(body.childId, childIds[0]);
+      assert.strictEqual(body.childName, 'Alice');
     });
 
     test('does not modify other assignments', async () => {
@@ -1560,8 +1560,8 @@ describe('Assignments API', () => {
 
       const body = JSON.parse(response.body);
       assert.ok(body.id);
-      assert.ok(body.child_id);
-      assert.ok(body.child_name);
+      assert.ok(body.childId);
+      assert.ok(body.childName);
     });
   });
 
