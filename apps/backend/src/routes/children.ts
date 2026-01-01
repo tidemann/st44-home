@@ -57,8 +57,8 @@ interface CreateChildRequest {
 interface UpdateChildRequest {
   Params: ChildParams;
   Body: {
-    name: string;
-    birthYear: number;
+    name?: string;
+    birthYear?: number | null;
   };
 }
 
@@ -158,12 +158,17 @@ async function updateChild(request: FastifyRequest<UpdateChildRequest>, reply: F
   try {
     const validatedData = validateRequest(UpdateChildRequestSchema, request.body);
 
+    // Use COALESCE to preserve existing values when fields are not provided
+    // This prevents data corruption from partial updates
     const result = await db.query(
       `UPDATE children
-       SET name = $1, birth_year = $2, updated_at = NOW()
+       SET
+         name = COALESCE($1, name),
+         birth_year = COALESCE($2, birth_year),
+         updated_at = NOW()
        WHERE id = $3 AND household_id = $4
-       RETURNING id, household_id, name, birth_year, created_at, updated_at`,
-      [validatedData.name, validatedData.birthYear, id, householdId],
+       RETURNING id, household_id, user_id, name, birth_year, created_at, updated_at`,
+      [validatedData.name ?? null, validatedData.birthYear ?? null, id, householdId],
     );
 
     if (result.rows.length === 0) {
@@ -178,6 +183,7 @@ async function updateChild(request: FastifyRequest<UpdateChildRequest>, reply: F
     return reply.send({
       id: child.id,
       householdId: child.household_id,
+      userId: child.user_id,
       name: child.name,
       birthYear: child.birth_year,
       avatarUrl: null,

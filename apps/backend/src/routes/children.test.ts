@@ -215,6 +215,95 @@ describe('Children API', () => {
       });
       assert.strictEqual(response.statusCode, 404);
     });
+
+    test('should update only name without corrupting birthYear (partial update)', async () => {
+      // Create child with both name and birthYear
+      const createResponse = await app.inject({
+        method: 'POST',
+        url: `/api/households/${householdId}/children`,
+        headers: { Authorization: `Bearer ${adminToken}` },
+        payload: { name: 'Partial Update Test', birthYear: 2016 },
+      });
+      assert.strictEqual(createResponse.statusCode, 201);
+      const createdChild = JSON.parse(createResponse.body);
+      assert.strictEqual(createdChild.birthYear, 2016);
+
+      // Update only name - birthYear should be preserved
+      const updateResponse = await app.inject({
+        method: 'PUT',
+        url: `/api/households/${householdId}/children/${createdChild.id}`,
+        headers: { Authorization: `Bearer ${adminToken}` },
+        payload: { name: 'New Name Only' },
+      });
+      assert.strictEqual(updateResponse.statusCode, 200);
+      const updatedChild = JSON.parse(updateResponse.body);
+      assert.strictEqual(updatedChild.name, 'New Name Only');
+      assert.strictEqual(
+        updatedChild.birthYear,
+        2016,
+        'birthYear should be preserved on partial update',
+      );
+    });
+
+    test('should update only birthYear without corrupting name (partial update)', async () => {
+      // Create child with both name and birthYear
+      const createResponse = await app.inject({
+        method: 'POST',
+        url: `/api/households/${householdId}/children`,
+        headers: { Authorization: `Bearer ${adminToken}` },
+        payload: { name: 'Another Partial Test', birthYear: 2017 },
+      });
+      assert.strictEqual(createResponse.statusCode, 201);
+      const createdChild = JSON.parse(createResponse.body);
+
+      // Update only birthYear - name should be preserved
+      const updateResponse = await app.inject({
+        method: 'PUT',
+        url: `/api/households/${householdId}/children/${createdChild.id}`,
+        headers: { Authorization: `Bearer ${adminToken}` },
+        payload: { birthYear: 2018 },
+      });
+      assert.strictEqual(updateResponse.statusCode, 200);
+      const updatedChild = JSON.parse(updateResponse.body);
+      assert.strictEqual(
+        updatedChild.name,
+        'Another Partial Test',
+        'name should be preserved on partial update',
+      );
+      assert.strictEqual(updatedChild.birthYear, 2018);
+    });
+
+    test('should handle empty update without corrupting data', async () => {
+      // Create child with both fields
+      const createResponse = await app.inject({
+        method: 'POST',
+        url: `/api/households/${householdId}/children`,
+        headers: { Authorization: `Bearer ${adminToken}` },
+        payload: { name: 'Empty Update Test', birthYear: 2019 },
+      });
+      assert.strictEqual(createResponse.statusCode, 201);
+      const createdChild = JSON.parse(createResponse.body);
+
+      // Empty update - all fields should be preserved
+      const updateResponse = await app.inject({
+        method: 'PUT',
+        url: `/api/households/${householdId}/children/${createdChild.id}`,
+        headers: { Authorization: `Bearer ${adminToken}` },
+        payload: {},
+      });
+      assert.strictEqual(updateResponse.statusCode, 200);
+      const updatedChild = JSON.parse(updateResponse.body);
+      assert.strictEqual(
+        updatedChild.name,
+        'Empty Update Test',
+        'name should be preserved on empty update',
+      );
+      assert.strictEqual(
+        updatedChild.birthYear,
+        2019,
+        'birthYear should be preserved on empty update',
+      );
+    });
   });
 
   describe('DELETE /api/households/:householdId/children/:id', () => {
