@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { of, throwError } from 'rxjs';
+import { of } from 'rxjs';
 import { Home } from './home';
 import { TaskService } from '../../services/task.service';
 import { ChildrenService } from '../../services/children.service';
