@@ -166,6 +166,7 @@ export class Family implements OnInit {
         // For children, use child:childId format for consistent lookup
         // For linked children: look up childId from userIdToChildId
         // For unlinked children: member.userId IS the childId
+        // For orphaned children (registered with email but not in children table): use user:userId format
         let memberId = member.userId;
         if (isChild) {
           const linkedChildId = userIdToChildId.get(member.userId);
@@ -175,6 +176,10 @@ export class Family implements OnInit {
           } else if (childByIdMap.has(member.userId)) {
             // Unlinked child - member.userId IS the child ID
             memberId = `child:${member.userId}`;
+          } else {
+            // Orphaned child - has user account but no children table entry
+            // Use user: prefix so we can identify them in click handler
+            memberId = `user:${member.userId}`;
           }
         }
 
@@ -310,31 +315,60 @@ export class Family implements OnInit {
 
   /**
    * Handle member card click - opens child details modal for children
-   * All children use "child:childId" format for consistent lookup
+   * Children can have:
+   * - "child:childId" format - for children in the children table
+   * - "user:userId" format - for orphaned children (registered but not in children table)
    */
   protected onMemberClick(memberId: string): void {
-    // All children should use "child:" prefix
-    if (!memberId.startsWith('child:')) {
-      return; // Not a child, ignore
-    }
+    // Handle children in the children table
+    if (memberId.startsWith('child:')) {
+      const childId = memberId.substring(6); // Remove "child:" prefix
+      const child = this.childrenById().get(childId);
 
-    const childId = memberId.substring(6); // Remove "child:" prefix
-    const child = this.childrenById().get(childId);
+      if (!child) {
+        return;
+      }
 
-    if (!child) {
+      // Get email if child has an account (has userId)
+      let email: string | null = null;
+      if (child.userId) {
+        const member = this.householdMembers().find((m) => m.userId === child.userId);
+        email = member?.email ?? null;
+      }
+
+      this.selectedChildEmail.set(email);
+      this.selectedChild.set(child);
+      this.childDetailsModalOpen.set(true);
       return;
     }
 
-    // Get email if child has an account (has userId)
-    let email: string | null = null;
-    if (child.userId) {
-      const member = this.householdMembers().find((m) => m.userId === child.userId);
-      email = member?.email ?? null;
+    // Handle orphaned children (registered with email but not in children table)
+    if (memberId.startsWith('user:')) {
+      const userId = memberId.substring(5); // Remove "user:" prefix
+      const member = this.householdMembers().find((m) => m.userId === userId);
+
+      if (!member) {
+        return;
+      }
+
+      // Create a synthetic child object for display
+      // This allows the modal to show what info is available
+      const syntheticChild: Child = {
+        id: userId, // Use userId as a placeholder
+        householdId: this.householdId() || '',
+        name: member.displayName || member.email?.split('@')[0] || 'Unnamed',
+        userId: userId,
+        createdAt: '',
+        updatedAt: '',
+      };
+
+      this.selectedChildEmail.set(member.email ?? null);
+      this.selectedChild.set(syntheticChild);
+      this.childDetailsModalOpen.set(true);
+      return;
     }
 
-    this.selectedChildEmail.set(email);
-    this.selectedChild.set(child);
-    this.childDetailsModalOpen.set(true);
+    // Not a child, ignore
   }
 
   /**
