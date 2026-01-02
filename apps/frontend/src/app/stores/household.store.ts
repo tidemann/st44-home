@@ -460,6 +460,15 @@ export class HouseholdStore {
   }
 
   /**
+   * Remove a household from the store (after leave/delete)
+   */
+  removeHousehold(householdId: string): void {
+    this.updateState({
+      households: this.state().households.filter((h) => h.id !== householdId),
+    });
+  }
+
+  /**
    * Invalidate all caches (force refresh on next load)
    */
   invalidateAll(): void {
