@@ -372,6 +372,91 @@ async function getHouseholdDashboard(
 }
 
 /**
+ * DELETE /api/households/:id/members/me - Leave household
+ * Removes user from household membership
+ */
+async function leaveHousehold(request: FastifyRequest<GetHouseholdRequest>, reply: FastifyReply) {
+  const { householdId } = request.params;
+  const userId = request.user?.userId;
+
+  if (!userId) {
+    return reply.status(401).send({
+      statusCode: 401,
+      error: 'Unauthorized',
+      message: 'Authentication required',
+    });
+  }
+
+  try {
+    // Check if user is the only admin
+    const adminCountResult = await db.query(
+      `SELECT COUNT(*) as admin_count FROM household_members
+       WHERE household_id = $1 AND role = 'admin'`,
+      [householdId],
+    );
+
+    const adminCount = parseInt(adminCountResult.rows[0].admin_count, 10);
+    const userRole = request.household?.role;
+
+    if (userRole === 'admin' && adminCount === 1) {
+      return reply.status(400).send({
+        statusCode: 400,
+        error: 'Bad Request',
+        code: 'ONLY_ADMIN',
+        message: 'You are the only admin. Transfer admin role or delete the household instead.',
+      });
+    }
+
+    // Remove user from household
+    await db.query('DELETE FROM household_members WHERE household_id = $1 AND user_id = $2', [
+      householdId,
+      userId,
+    ]);
+
+    return reply.status(204).send();
+  } catch (error) {
+    request.log.error(error, 'Failed to leave household');
+    return reply.status(500).send({
+      statusCode: 500,
+      error: 'Internal Server Error',
+      message: 'Failed to leave household',
+    });
+  }
+}
+
+/**
+ * DELETE /api/households/:id - Delete household
+ * Permanently removes household and all related data (admin only)
+ */
+async function deleteHousehold(request: FastifyRequest<GetHouseholdRequest>, reply: FastifyReply) {
+  const { householdId } = request.params;
+
+  try {
+    // Delete household - CASCADE will remove all related data
+    const result = await db.query('DELETE FROM households WHERE id = $1 RETURNING id', [
+      householdId,
+    ]);
+
+    if (result.rowCount === 0) {
+      return reply.status(404).send({
+        statusCode: 404,
+        error: 'Not Found',
+        message: 'Household not found',
+      });
+    }
+
+    return reply.status(204).send();
+  } catch (error) {
+    request.log.error(error, 'Failed to delete household');
+    return reply.status(500).send({
+      statusCode: 500,
+      error: 'Internal Server Error',
+      message: 'Failed to delete household',
+    });
+  }
+}
+
+/**
  * GET /api/households/:id/members - Get household members
  * Returns list of all members in the household with their stats
  */
@@ -688,5 +773,51 @@ export default async function householdRoutes(server: FastifyInstance) {
     }),
     preHandler: [authenticateUser, validateHouseholdMembership],
     handler: getHouseholdDashboard,
+  });
+
+  // Leave household (member access)
+  server.delete('/api/households/:householdId/members/me', {
+    schema: stripResponseValidation({
+      summary: 'Leave household',
+      description: 'Remove yourself from a household. Cannot leave if you are the only admin.',
+      tags: ['households'],
+      security: [{ bearerAuth: [] }],
+      params: zodToOpenAPI(HouseholdParamsSchema),
+      response: {
+        204: {
+          type: 'null',
+          description: 'Successfully left household',
+        },
+        ...CommonErrors.BadRequest,
+        ...CommonErrors.Unauthorized,
+        ...CommonErrors.Forbidden,
+        ...CommonErrors.InternalServerError,
+      },
+    }),
+    preHandler: [authenticateUser, validateHouseholdMembership],
+    handler: leaveHousehold,
+  });
+
+  // Delete household (admin only)
+  server.delete('/api/households/:householdId', {
+    schema: stripResponseValidation({
+      summary: 'Delete household',
+      description: 'Permanently delete a household and all related data. Admin only.',
+      tags: ['households'],
+      security: [{ bearerAuth: [] }],
+      params: zodToOpenAPI(HouseholdParamsSchema),
+      response: {
+        204: {
+          type: 'null',
+          description: 'Successfully deleted household',
+        },
+        ...CommonErrors.Unauthorized,
+        ...CommonErrors.Forbidden,
+        ...CommonErrors.NotFound,
+        ...CommonErrors.InternalServerError,
+      },
+    }),
+    preHandler: [authenticateUser, validateHouseholdMembership, requireHouseholdAdmin],
+    handler: deleteHousehold,
   });
 }
