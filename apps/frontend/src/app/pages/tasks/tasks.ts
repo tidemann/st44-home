@@ -215,11 +215,17 @@ export class Tasks implements OnInit {
   ngOnInit(): void {
     // Load filter from URL query params or localStorage on init
     const queryFilter = this.route.snapshot.queryParams['filter'] as TaskFilter | undefined;
+    const queryChild = this.route.snapshot.queryParams['child'] as string | undefined;
     const savedFilter = this.storage.getString(STORAGE_KEYS.TASKS_FILTER) as TaskFilter | undefined;
     const initialFilter = queryFilter || savedFilter || 'all';
 
     if (initialFilter && ['all', 'mine', 'person', 'completed'].includes(initialFilter)) {
       this.activeFilter.set(initialFilter);
+    }
+
+    // Load child selection from URL if present
+    if (queryChild) {
+      this.selectedPersonId.set(queryChild);
     }
 
     // Load initial data
@@ -343,13 +349,22 @@ export class Tasks implements OnInit {
     // Update filter state
     this.activeFilter.set(filter);
 
+    // Clear person selection when switching away from 'person' filter
+    if (filter !== 'person') {
+      this.selectedPersonId.set(null);
+    }
+
     // Persist to localStorage
     this.storage.set(STORAGE_KEYS.TASKS_FILTER, filter);
 
-    // Update URL query params
+    // Update URL query params (remove child param when not on person filter)
+    const queryParams: { filter: TaskFilter; child?: string | null } = { filter };
+    if (filter !== 'person') {
+      queryParams.child = null; // This removes the param from URL
+    }
     this.router.navigate([], {
       relativeTo: this.route,
-      queryParams: { filter },
+      queryParams,
       queryParamsHandling: 'merge',
       replaceUrl: true,
     });
@@ -362,11 +377,23 @@ export class Tasks implements OnInit {
   }
 
   /**
-   * Handle person selection change
+   * Handle person tab selection
    */
-  protected onPersonChange(event: Event): void {
-    const select = event.target as HTMLSelectElement;
-    this.selectedPersonId.set(select.value || null);
+  protected onPersonSelect(childId: string): void {
+    if (this.selectedPersonId() === childId) {
+      return;
+    }
+
+    this.selectedPersonId.set(childId);
+
+    // Update URL query params to include child selection
+    this.router.navigate([], {
+      relativeTo: this.route,
+      queryParams: { filter: this.activeFilter(), child: childId },
+      queryParamsHandling: 'merge',
+      replaceUrl: true,
+    });
+
     this.loadTasks();
   }
 
