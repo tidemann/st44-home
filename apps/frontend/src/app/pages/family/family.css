@@ -70,166 +70,27 @@
   box-shadow: var(--shadow-md);
 }
 
-/* ===== MAIN LAYOUT ===== */
+/* ===== HEADER BUTTON STYLES ===== */
 
-.family-container {
-  display: flex;
-  min-height: 100vh;
-  background: var(--color-background);
-}
-
-/* Sidebar (Desktop only) */
-.sidebar-container {
-  display: none;
-}
-
-@media (min-width: 1024px) {
-  .sidebar-container {
-    display: block;
-    width: 280px;
-    flex-shrink: 0;
-  }
-}
-
-/* Main Content Area */
-.main-content {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  overflow-y: auto;
-  padding-bottom: 80px; /* Space for bottom nav on mobile */
-}
-
-@media (min-width: 1024px) {
-  .main-content {
-    padding-bottom: 0;
-  }
-}
-
-/* ===== HEADER ===== */
-
-.header {
-  background: var(--gradient-primary);
-  padding: var(--space-xl) var(--space-md) var(--space-lg);
-  color: white;
-}
-
-@media (min-width: 768px) {
-  .header {
-    padding: var(--space-xl) var(--space-xl) var(--space-lg);
-  }
-}
-
-.header-content {
-  max-width: 1200px;
-  margin: 0 auto;
-}
-
-.logo {
-  font-family: var(--font-heading);
-  font-size: var(--font-size-2xl);
-  font-weight: var(--font-weight-bold);
-  margin: 0;
-  color: white;
-}
-
-/* ===== CONTENT ===== */
-
-.content {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: var(--space-md);
-  width: 100%;
-}
-
-@media (min-width: 768px) {
-  .content {
-    padding: var(--space-xl);
-  }
-}
-
-/* ===== HOUSEHOLD INFO ===== */
-
-.household-info {
-  background: var(--color-surface);
-  border-radius: var(--radius-md);
-  padding: var(--space-lg);
-  margin-bottom: var(--space-lg);
-  box-shadow: var(--shadow-sm);
-}
-
-.household-details {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-xs);
-}
-
-.household-name {
-  font-family: var(--font-heading);
-  font-size: var(--font-size-xl);
-  font-weight: var(--font-weight-bold);
-  color: var(--color-text-primary);
-  margin: 0;
-}
-
-@media (min-width: 768px) {
-  .household-name {
-    font-size: var(--font-size-2xl);
-  }
-}
-
-.household-count {
-  font-family: var(--font-body);
-  font-size: var(--font-size-sm);
-  color: var(--color-text-secondary);
-}
-
-/* ===== ACTION BUTTONS ===== */
-
-.action-buttons {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-sm);
-  margin-bottom: var(--space-xl);
-}
-
-@media (min-width: 640px) {
-  .action-buttons {
-    flex-direction: row;
-  }
-}
-
-.btn {
-  padding: var(--space-sm) var(--space-lg);
+.btn-header {
+  padding: var(--space-xs) var(--space-md);
+  background: white;
+  color: var(--color-primary);
+  border: none;
   border-radius: var(--radius-sm);
   font-family: var(--font-body);
-  font-size: var(--font-size-base);
+  font-size: var(--font-size-sm);
   font-weight: var(--font-weight-semibold);
   cursor: pointer;
   transition:
     transform 0.2s,
     box-shadow 0.2s;
-  border: none;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: var(--space-xs);
-}
-
-.btn-primary {
-  background: var(--gradient-primary);
-  color: white;
   box-shadow: var(--shadow-sm);
 }
 
-.btn-primary:hover {
+.btn-header:hover {
   transform: translateY(-2px);
   box-shadow: var(--shadow-md);
-}
-
-.btn-primary:active {
-  transform: translateY(0);
-  box-shadow: var(--shadow-sm);
 }
 
 /* ===== MEMBERS SECTION ===== */
@@ -292,23 +153,6 @@
   margin: 0;
 }
 
-/* ===== NAVIGATION ===== */
-
-.bottom-nav-container {
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  z-index: var(--z-navigation, 100);
-  display: block;
-}
-
-@media (min-width: 1024px) {
-  .bottom-nav-container {
-    display: none;
-  }
-}
-
 /* ===== ANIMATIONS ===== */
 
 @keyframes fadeIn {
@@ -340,12 +184,4 @@
 
 .member-list app-member-card:nth-child(4) {
   animation-delay: 0.2s;
-}
-
-.household-info {
-  animation: fadeIn 0.4s ease-out;
-}
-
-.action-buttons {
-  animation: fadeIn 0.5s ease-out;
 }

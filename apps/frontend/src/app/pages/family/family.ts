@@ -17,6 +17,7 @@ import {
   type AddChildData,
 } from '../../components/modals/add-child-modal/add-child-modal';
 import { ChildDetailsModal } from '../../components/modals/child-details-modal/child-details-modal';
+import { PageComponent } from '../../components/page/page';
 import { HouseholdService, type HouseholdMemberResponse } from '../../services/household.service';
 import { AuthService } from '../../services/auth.service';
 import { InvitationService } from '../../services/invitation.service';
@@ -36,7 +37,7 @@ import { ChildrenService } from '../../services/children.service';
  */
 @Component({
   selector: 'app-family',
-  imports: [MemberCard, InviteModal, AddChildModal, ChildDetailsModal],
+  imports: [MemberCard, InviteModal, AddChildModal, ChildDetailsModal, PageComponent],
   templateUrl: './family.html',
   styleUrl: './family.css',
   changeDetection: ChangeDetectionStrategy.OnPush,

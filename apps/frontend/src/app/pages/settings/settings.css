@@ -70,55 +70,6 @@
   box-shadow: var(--shadow-md);
 }
 
-/* ===== MAIN LAYOUT ===== */
-
-.settings-page {
-  min-height: 100vh;
-  background: var(--color-background);
-}
-
-/* ===== HEADER ===== */
-
-.header {
-  background: var(--gradient-primary);
-  padding: var(--space-xl) var(--space-md) var(--space-lg);
-  color: white;
-}
-
-@media (min-width: 768px) {
-  .header {
-    padding: var(--space-xl) var(--space-xl) var(--space-lg);
-  }
-}
-
-.header-content {
-  max-width: 800px;
-  margin: 0 auto;
-}
-
-.page-title {
-  font-family: var(--font-heading);
-  font-size: var(--font-size-2xl);
-  font-weight: var(--font-weight-bold);
-  margin: 0;
-  color: white;
-}
-
-/* ===== CONTENT ===== */
-
-.content {
-  max-width: 800px;
-  margin: 0 auto;
-  padding: var(--space-md);
-  width: 100%;
-}
-
-@media (min-width: 768px) {
-  .content {
-    padding: var(--space-xl);
-  }
-}
-
 /* ===== ALERTS ===== */
 
 .alert {

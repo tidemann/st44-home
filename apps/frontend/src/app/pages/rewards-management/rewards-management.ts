@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { RewardService } from '../../services/reward.service';
 import { HouseholdService } from '../../services/household.service';
+import { PageComponent } from '../../components/page/page';
 import type { Reward, CreateRewardRequest } from '@st44/types';
 
 /**
@@ -19,7 +20,7 @@ import type { Reward, CreateRewardRequest } from '@st44/types';
 @Component({
   selector: 'app-rewards-management',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, PageComponent],
   templateUrl: './rewards-management.html',
   styleUrls: ['./rewards-management.css'],
 })

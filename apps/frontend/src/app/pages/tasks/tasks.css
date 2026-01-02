@@ -3,26 +3,6 @@
  * Based on Diddit! Design System (Proposal 5)
  */
 
-.tasks-page {
-  min-height: 100vh;
-  background: var(--color-background);
-  padding: var(--space-lg);
-  padding-bottom: 100px; /* Space for bottom nav */
-}
-
-/* Header */
-.tasks-header {
-  margin-bottom: var(--space-lg);
-}
-
-.tasks-title {
-  font-family: var(--font-heading);
-  font-size: var(--font-size-3xl);
-  font-weight: var(--font-weight-bold);
-  color: var(--color-text-primary);
-  margin: 0;
-}
-
 /* Filter Tabs */
 .filter-tabs {
   display: flex;
@@ -221,60 +201,9 @@
   gap: var(--space-md);
 }
 
-/* Responsive Navigation */
-.bottom-nav-container {
-  display: block;
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  z-index: 100;
-}
-
-.sidebar-nav-container {
-  display: none;
-}
-
 /* Responsive Styles */
 @media (min-width: 768px) {
-  .tasks-page {
-    max-width: 800px;
-    margin: 0 auto;
-    padding: var(--space-xl);
-    padding-bottom: 100px; /* Keep space for bottom nav on tablet */
-  }
-
-  .tasks-title {
-    font-size: var(--font-size-4xl);
-  }
-
   .filter-tabs {
     gap: var(--space-md);
-  }
-}
-
-/* Desktop Layout - Hide bottom nav, show sidebar */
-@media (min-width: 1024px) {
-  .bottom-nav-container {
-    display: none;
-  }
-
-  .sidebar-nav-container {
-    display: block;
-    position: fixed;
-    left: 0;
-    top: 0;
-    bottom: 0;
-    z-index: 100;
-  }
-
-  .tasks-page {
-    max-width: 1000px;
-    margin-left: 280px; /* Match sidebar width from home.css */
-    padding-bottom: var(--space-xl);
-  }
-
-  .tasks-title {
-    font-size: var(--font-size-5xl);
   }
 }
