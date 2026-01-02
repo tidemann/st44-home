@@ -216,17 +216,28 @@ CREATE INDEX IF NOT EXISTS idx_reward_redemptions_reward ON reward_redemptions(r
 CREATE INDEX IF NOT EXISTS idx_reward_redemptions_household_status ON reward_redemptions(household_id, status);
 
 -- View for child points balance (earned from task completions minus spent on redemptions)
+-- Uses subqueries to pre-aggregate each table to avoid Cartesian product issues
 CREATE OR REPLACE VIEW child_points_balance AS
 SELECT
   c.id as child_id,
   c.household_id,
-  COALESCE(SUM(tc.points_earned), 0) as points_earned,
-  COALESCE(SUM(rr.points_spent), 0) as points_spent,
-  COALESCE(SUM(tc.points_earned), 0) - COALESCE(SUM(rr.points_spent), 0) as points_balance
+  COALESCE(tc_agg.total_earned, 0) as points_earned,
+  COALESCE(rr_agg.total_spent, 0) as points_spent,
+  COALESCE(tc_agg.total_earned, 0) - COALESCE(rr_agg.total_spent, 0) as points_balance
 FROM children c
-LEFT JOIN task_completions tc ON c.id = tc.child_id
-LEFT JOIN reward_redemptions rr ON c.id = rr.child_id AND rr.status != 'rejected'
-GROUP BY c.id, c.household_id;
+LEFT JOIN (
+  -- Pre-aggregate task completions per child
+  SELECT child_id, SUM(points_earned) as total_earned
+  FROM task_completions
+  GROUP BY child_id
+) tc_agg ON c.id = tc_agg.child_id
+LEFT JOIN (
+  -- Pre-aggregate non-rejected redemptions per child
+  SELECT child_id, SUM(points_spent) as total_spent
+  FROM reward_redemptions
+  WHERE status != 'rejected'
+  GROUP BY child_id
+) rr_agg ON c.id = rr_agg.child_id;
 
 -- Sample items table (for testing)
 CREATE TABLE IF NOT EXISTS items (
