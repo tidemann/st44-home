@@ -173,6 +173,7 @@ async function updateChild(request: FastifyRequest<UpdateChildRequest>, reply: F
 
     if (result.rows.length === 0) {
       return reply.status(404).send({
+        statusCode: 404,
         error: 'Not Found',
         message: 'Child not found in this household',
       });
@@ -266,15 +267,13 @@ async function deleteChild(request: FastifyRequest<DeleteChildRequest>, reply: F
 
     if (result.rows.length === 0) {
       return reply.status(404).send({
+        statusCode: 404,
         error: 'Not Found',
         message: 'Child not found in this household',
       });
     }
 
-    return reply.send({
-      success: true,
-      message: 'Child removed successfully',
-    });
+    return reply.status(204).send();
   } catch (error) {
     if (error instanceof z.ZodError) {
       return handleZodError(error, reply);
