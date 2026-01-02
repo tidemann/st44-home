@@ -9,6 +9,7 @@ import {
 import { AuthService } from '../../services/auth.service';
 import { HouseholdService } from '../../services/household.service';
 import { AnalyticsService } from '../../services/analytics.service';
+import { PageComponent } from '../../components/page/page';
 import type { HouseholdAnalytics, ChildStreak } from '@st44/types';
 
 /**
@@ -61,7 +62,7 @@ interface HouseholdStats {
  */
 @Component({
   selector: 'app-progress',
-  imports: [],
+  imports: [PageComponent],
   templateUrl: './progress.html',
   styleUrl: './progress.css',
   changeDetection: ChangeDetectionStrategy.OnPush,

@@ -1,22 +1,22 @@
-<div class="progress-page">
-  <!-- Loading State -->
-  @if (loading()) {
-    <div class="loading-container" role="status" aria-live="polite">
-      <div class="loading-spinner" aria-hidden="true"></div>
-      <p>Loading progress...</p>
-    </div>
-  }
+<!-- Loading State -->
+@if (loading()) {
+  <div class="loading-container" role="status" aria-live="polite">
+    <div class="loading-spinner" aria-hidden="true"></div>
+    <p>Loading progress...</p>
+  </div>
+}
 
-  <!-- Error State -->
-  @if (error()) {
-    <div class="error-container" role="alert" aria-live="assertive">
-      <p class="error-message">{{ error() }}</p>
-      <button class="retry-button" (click)="loadData()">Try Again</button>
-    </div>
-  }
+<!-- Error State -->
+@if (error()) {
+  <div class="error-container" role="alert" aria-live="assertive">
+    <p class="error-message">{{ error() }}</p>
+    <button class="retry-button" (click)="loadData()">Try Again</button>
+  </div>
+}
 
-  <!-- Main Content -->
-  @if (!loading() && !error()) {
+<!-- Main Content -->
+@if (!loading() && !error()) {
+  <app-page title="Progress" maxWidth="wide">
     <!-- Household Stats Section -->
     <section class="stats-section" aria-labelledby="stats-heading">
       <h2 id="stats-heading" class="visually-hidden">Household Statistics</h2>
@@ -134,5 +134,5 @@
         </div>
       }
     </section>
-  }
-</div>
+  </app-page>
+}

@@ -1,58 +1,5 @@
 /* Progress Screen Styles */
 
-/* Layout */
-:host {
-  display: flex;
-  min-height: 100vh;
-  background: var(--color-background);
-  animation: fadeIn 0.2s ease-out;
-}
-
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
-}
-
-.desktop-nav {
-  display: none;
-}
-
-.main-content {
-  flex: 1;
-  padding: var(--space-lg) var(--space-md);
-  padding-bottom: calc(var(--space-xl) + 80px); /* Space for bottom nav */
-  max-width: 1200px;
-  margin: 0 auto;
-  width: 100%;
-}
-
-/* Tablet Layout */
-@media (min-width: 768px) {
-  .main-content {
-    padding: var(--space-xl);
-    padding-bottom: calc(var(--space-xl) + 80px); /* Keep space for bottom nav on tablet */
-  }
-}
-
-/* Desktop Layout - Hide bottom nav, show sidebar */
-@media (min-width: 1024px) {
-  .desktop-nav {
-    display: block;
-  }
-
-  .mobile-nav {
-    display: none;
-  }
-
-  .main-content {
-    padding-bottom: var(--space-xl);
-  }
-}
-
 /* Loading State */
 .loading-container {
   display: flex;
@@ -364,11 +311,6 @@
 
 /* Responsive Adjustments */
 @media (max-width: 768px) {
-  .main-content {
-    padding: var(--space-md);
-    padding-bottom: calc(var(--space-xl) + 80px);
-  }
-
   .section-header h2 {
     font-size: 20px;
   }
