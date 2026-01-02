@@ -368,4 +368,190 @@ describe('Household API', () => {
       assert.strictEqual(response.statusCode, 403);
     });
   });
+
+  describe('DELETE /api/households/:id/members/me (Leave Household)', () => {
+    let leaveHouseholdId: string;
+    let adminToken: string;
+    let memberToken: string;
+    let memberId: string;
+
+    before(async () => {
+      // Create a new household for leave tests
+      const adminEmail = `leave-test-admin-${Date.now()}@example.com`;
+      const memberEmail = `leave-test-member-${Date.now()}@example.com`;
+      const testPassword = 'TestPass123!';
+
+      const adminData = await registerAndLogin(app, adminEmail, testPassword);
+      const memberData = await registerAndLogin(app, memberEmail, testPassword);
+
+      adminToken = adminData.accessToken;
+      memberToken = memberData.accessToken;
+
+      // Get member user ID
+      const memberResult = await pool.query('SELECT id FROM users WHERE email = $1', [memberEmail]);
+      memberId = memberResult.rows[0].id;
+
+      // Create household with admin
+      const createResponse = await app.inject({
+        method: 'POST',
+        url: '/api/households',
+        headers: { Authorization: `Bearer ${adminToken}` },
+        payload: { name: `Leave Test Household ${Date.now()}` },
+      });
+      leaveHouseholdId = JSON.parse(createResponse.body).id;
+
+      // Add member as parent
+      await pool.query(
+        `INSERT INTO household_members (household_id, user_id, role) VALUES ($1, $2, 'parent')`,
+        [leaveHouseholdId, memberId],
+      );
+    });
+
+    test('should allow member to leave household', async () => {
+      const response = await app.inject({
+        method: 'DELETE',
+        url: `/api/households/${leaveHouseholdId}/members/me`,
+        headers: { Authorization: `Bearer ${memberToken}` },
+      });
+
+      assert.strictEqual(response.statusCode, 204);
+
+      // Verify member was removed
+      const checkResult = await pool.query(
+        'SELECT * FROM household_members WHERE household_id = $1 AND user_id = $2',
+        [leaveHouseholdId, memberId],
+      );
+      assert.strictEqual(checkResult.rows.length, 0);
+    });
+
+    test('should return ONLY_ADMIN error when user is the only admin', async () => {
+      const response = await app.inject({
+        method: 'DELETE',
+        url: `/api/households/${leaveHouseholdId}/members/me`,
+        headers: { Authorization: `Bearer ${adminToken}` },
+      });
+
+      assert.strictEqual(response.statusCode, 400);
+      const body = JSON.parse(response.body);
+      assert.strictEqual(body.code, 'ONLY_ADMIN');
+    });
+
+    test('should reject without authentication', async () => {
+      const response = await app.inject({
+        method: 'DELETE',
+        url: `/api/households/${leaveHouseholdId}/members/me`,
+      });
+      assert.strictEqual(response.statusCode, 401);
+    });
+
+    test('should reject non-member', async () => {
+      const response = await app.inject({
+        method: 'DELETE',
+        url: `/api/households/${leaveHouseholdId}/members/me`,
+        headers: { Authorization: `Bearer ${user2Token}` },
+      });
+      assert.strictEqual(response.statusCode, 403);
+    });
+  });
+
+  describe('DELETE /api/households/:id (Delete Household)', () => {
+    let deleteHouseholdId: string;
+    let adminToken: string;
+    let parentToken: string;
+    let parentId: string;
+
+    before(async () => {
+      // Create a new household for delete tests
+      const adminEmail = `delete-test-admin-${Date.now()}@example.com`;
+      const parentEmail = `delete-test-parent-${Date.now()}@example.com`;
+      const testPassword = 'TestPass123!';
+
+      const adminData = await registerAndLogin(app, adminEmail, testPassword);
+      const parentData = await registerAndLogin(app, parentEmail, testPassword);
+
+      adminToken = adminData.accessToken;
+      parentToken = parentData.accessToken;
+
+      // Get parent user ID
+      const parentResult = await pool.query('SELECT id FROM users WHERE email = $1', [parentEmail]);
+      parentId = parentResult.rows[0].id;
+
+      // Create household with admin
+      const createResponse = await app.inject({
+        method: 'POST',
+        url: '/api/households',
+        headers: { Authorization: `Bearer ${adminToken}` },
+        payload: { name: `Delete Test Household ${Date.now()}` },
+      });
+      deleteHouseholdId = JSON.parse(createResponse.body).id;
+
+      // Add parent member
+      await pool.query(
+        `INSERT INTO household_members (household_id, user_id, role) VALUES ($1, $2, 'parent')`,
+        [deleteHouseholdId, parentId],
+      );
+
+      // Add a child for cascade delete testing
+      await pool.query(
+        `INSERT INTO children (household_id, name, birth_year) VALUES ($1, 'Delete Test Child', 2018)`,
+        [deleteHouseholdId],
+      );
+    });
+
+    test('should reject non-admin from deleting household', async () => {
+      const response = await app.inject({
+        method: 'DELETE',
+        url: `/api/households/${deleteHouseholdId}`,
+        headers: { Authorization: `Bearer ${parentToken}` },
+      });
+
+      assert.strictEqual(response.statusCode, 403);
+    });
+
+    test('should reject without authentication', async () => {
+      const response = await app.inject({
+        method: 'DELETE',
+        url: `/api/households/${deleteHouseholdId}`,
+      });
+      assert.strictEqual(response.statusCode, 401);
+    });
+
+    test('should reject non-member', async () => {
+      const response = await app.inject({
+        method: 'DELETE',
+        url: `/api/households/${deleteHouseholdId}`,
+        headers: { Authorization: `Bearer ${user2Token}` },
+      });
+      assert.strictEqual(response.statusCode, 403);
+    });
+
+    test('should allow admin to delete household', async () => {
+      const response = await app.inject({
+        method: 'DELETE',
+        url: `/api/households/${deleteHouseholdId}`,
+        headers: { Authorization: `Bearer ${adminToken}` },
+      });
+
+      assert.strictEqual(response.statusCode, 204);
+
+      // Verify household was deleted
+      const householdCheck = await pool.query('SELECT * FROM households WHERE id = $1', [
+        deleteHouseholdId,
+      ]);
+      assert.strictEqual(householdCheck.rows.length, 0);
+
+      // Verify members were cascade deleted
+      const membersCheck = await pool.query(
+        'SELECT * FROM household_members WHERE household_id = $1',
+        [deleteHouseholdId],
+      );
+      assert.strictEqual(membersCheck.rows.length, 0);
+
+      // Verify children were cascade deleted
+      const childrenCheck = await pool.query('SELECT * FROM children WHERE household_id = $1', [
+        deleteHouseholdId,
+      ]);
+      assert.strictEqual(childrenCheck.rows.length, 0);
+    });
+  });
 });
