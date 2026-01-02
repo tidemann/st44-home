@@ -59,7 +59,7 @@ describe('authenticateUser Middleware', () => {
       await authenticateUser(request, reply);
 
       assert.strictEqual(reply.getStatus(), 401);
-      assert.strictEqual(reply.getBody().error, 'Missing or invalid authorization header');
+      assert.strictEqual(reply.getBody().message, 'Missing or invalid authorization header');
     });
 
     test('should return 401 when header does not start with Bearer', async () => {
@@ -80,7 +80,7 @@ describe('authenticateUser Middleware', () => {
       await authenticateUser(request, reply);
 
       assert.strictEqual(reply.getStatus(), 401);
-      assert.strictEqual(reply.getBody().error, 'Invalid token');
+      assert.strictEqual(reply.getBody().message, 'Invalid token');
     });
 
     test('should return 401 for expired token', async () => {
@@ -91,7 +91,7 @@ describe('authenticateUser Middleware', () => {
       await authenticateUser(request, reply);
 
       assert.strictEqual(reply.getStatus(), 401);
-      assert.strictEqual(reply.getBody().error, 'Token expired');
+      assert.strictEqual(reply.getBody().message, 'Token expired');
     });
 
     test('should return 401 for token with wrong secret', async () => {
@@ -116,7 +116,7 @@ describe('authenticateUser Middleware', () => {
       await authenticateUser(request, reply);
 
       assert.strictEqual(reply.getStatus(), 401);
-      assert.strictEqual(reply.getBody().error, 'Invalid token type');
+      assert.strictEqual(reply.getBody().message, 'Invalid token type');
     });
   });
 

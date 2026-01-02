@@ -71,6 +71,7 @@ export async function validateHouseholdMembership(
         'User attempted to access household they are not a member of',
       );
       return reply.status(403).send({
+        statusCode: 403,
         error: 'Forbidden',
         message: 'You are not a member of this household',
       });
@@ -86,6 +87,7 @@ export async function validateHouseholdMembership(
   } catch (error) {
     request.log.error(error, 'Failed to validate household membership');
     return reply.status(500).send({
+      statusCode: 500,
       error: 'Internal Server Error',
       message: 'Membership validation failed',
     });
@@ -102,6 +104,7 @@ export async function requireHouseholdAdmin(request: FastifyRequest, reply: Fast
   if (!role) {
     request.log.error('requireHouseholdAdmin called without household context');
     return reply.status(500).send({
+      statusCode: 500,
       error: 'Internal Server Error',
       message: 'Household context missing',
     });
@@ -113,6 +116,7 @@ export async function requireHouseholdAdmin(request: FastifyRequest, reply: Fast
       'User attempted admin-only action without admin role',
     );
     return reply.status(403).send({
+      statusCode: 403,
       error: 'Forbidden',
       message: 'Admin role required for this action',
     });
@@ -131,6 +135,7 @@ export async function requireHouseholdParent(request: FastifyRequest, reply: Fas
   if (!role) {
     request.log.error('requireHouseholdParent called without household context');
     return reply.status(500).send({
+      statusCode: 500,
       error: 'Internal Server Error',
       message: 'Household context missing',
     });
@@ -142,6 +147,7 @@ export async function requireHouseholdParent(request: FastifyRequest, reply: Fas
       'User attempted parent-level action without sufficient role',
     );
     return reply.status(403).send({
+      statusCode: 403,
       error: 'Forbidden',
       message: 'Parent or admin role required for this action',
     });

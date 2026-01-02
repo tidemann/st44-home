@@ -30,7 +30,9 @@ export async function authenticateUser(request: FastifyRequest, reply: FastifyRe
 
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
       return reply.code(401).send({
-        error: 'Missing or invalid authorization header',
+        statusCode: 401,
+        error: 'Unauthorized',
+        message: 'Missing or invalid authorization header',
       });
     }
 
@@ -43,7 +45,9 @@ export async function authenticateUser(request: FastifyRequest, reply: FastifyRe
     if (decoded.type !== 'access') {
       request.log.warn('Attempted to use non-access token for authentication');
       return reply.code(401).send({
-        error: 'Invalid token type',
+        statusCode: 401,
+        error: 'Unauthorized',
+        message: 'Invalid token type',
       });
     }
 
@@ -59,21 +63,27 @@ export async function authenticateUser(request: FastifyRequest, reply: FastifyRe
     // Handle JWT-specific errors
     if (error instanceof jwt.TokenExpiredError) {
       return reply.code(401).send({
-        error: 'Token expired',
+        statusCode: 401,
+        error: 'Unauthorized',
+        message: 'Token expired',
       });
     }
 
     if (error instanceof jwt.JsonWebTokenError) {
       request.log.warn({ error: (error as Error).message }, 'Invalid token');
       return reply.code(401).send({
-        error: 'Invalid token',
+        statusCode: 401,
+        error: 'Unauthorized',
+        message: 'Invalid token',
       });
     }
 
     // Log error but don't expose internal details
     request.log.error(error, 'Authentication error');
     return reply.code(500).send({
-      error: 'Authentication failed',
+      statusCode: 500,
+      error: 'Internal Server Error',
+      message: 'Authentication failed',
     });
   }
 }
