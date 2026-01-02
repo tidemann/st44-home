@@ -15,6 +15,12 @@
         <span>{{ item.label }}</span>
       </button>
     }
+
+    <div class="sidebar-divider" role="separator"></div>
+
+    <div class="sidebar-household-section">
+      <app-household-switcher></app-household-switcher>
+    </div>
   </div>
 
   <button type="button" class="sidebar-add-btn" (click)="handleAddTask()" aria-label="Add new task">
@@ -32,7 +38,6 @@
     </div>
     <div class="sidebar-user-info">
       <h4>{{ user().name }}</h4>
-      <app-household-switcher></app-household-switcher>
     </div>
     <span class="settings-icon" aria-hidden="true">⚙️</span>
   </button>
