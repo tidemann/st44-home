@@ -19,12 +19,15 @@ export const TaskRuleConfigSchema = z
   .object({
     // For weekly_rotation: odd_even_week or alternating
     rotationType: z.enum(['odd_even_week', 'alternating']).optional(),
-    
+
     // For repeating: days of week (0=Sunday, 6=Saturday)
     repeatDays: z.array(z.number().int().min(0).max(6)).optional(),
-    
-    // For weekly_rotation: children assigned to the task
+
+    // For weekly_rotation and single: children assigned to the task
     assignedChildren: z.array(z.string().uuid()).optional(),
+
+    // For single tasks: optional deadline
+    deadline: z.string().datetime().optional(),
   })
   .nullable();
 

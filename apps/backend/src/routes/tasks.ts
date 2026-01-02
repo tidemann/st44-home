@@ -81,6 +81,7 @@ type NormalizedRuleConfig = {
   rotationType?: 'odd_even_week' | 'alternating';
   repeatDays?: number[];
   assignedChildren?: string[];
+  deadline?: string;
 } | null;
 
 function normalizeRuleConfig(ruleConfig: unknown): NormalizedRuleConfig | undefined {
@@ -102,6 +103,7 @@ function normalizeRuleConfig(ruleConfig: unknown): NormalizedRuleConfig | undefi
   const rotationType = (obj.rotationType ?? obj['rotation_type']) as unknown;
   const repeatDays = (obj.repeatDays ?? obj['repeat_days']) as unknown;
   const assignedChildren = (obj.assignedChildren ?? obj['assigned_children']) as unknown;
+  const deadline = obj.deadline as unknown;
 
   const normalized: Exclude<NormalizedRuleConfig, null> = {};
   if (typeof rotationType === 'string') {
@@ -112,6 +114,9 @@ function normalizeRuleConfig(ruleConfig: unknown): NormalizedRuleConfig | undefi
   }
   if (Array.isArray(assignedChildren)) {
     normalized.assignedChildren = assignedChildren as string[];
+  }
+  if (typeof deadline === 'string') {
+    normalized.deadline = deadline;
   }
 
   return normalized;
@@ -134,6 +139,7 @@ function mapTaskRowToTask(row: TaskRow): Task {
     points: row.points,
     ruleType: row.rule_type,
     ruleConfig: normalizedRuleConfig === undefined ? null : normalizedRuleConfig,
+    deadline: row.deadline ? toDateTimeString(row.deadline) : null,
     active: row.active !== false,
     createdAt: toDateTimeString(row.created_at),
     updatedAt: toDateTimeString(row.updated_at),
@@ -182,6 +188,13 @@ function validateTaskData(
     if (data.ruleType === 'daily') {
       // Assigned children optional for daily tasks
       // No specific validation needed
+    }
+
+    if (data.ruleType === 'single') {
+      // At least one candidate child is required for single tasks
+      if (!config.assignedChildren || config.assignedChildren.length < 1) {
+        errors.push('At least one candidate child is required for single tasks');
+      }
     }
   }
 
@@ -254,23 +267,66 @@ async function createTask(request: FastifyRequest<CreateTaskRequest>, reply: Fas
       }
     }
 
+    // Extract deadline from ruleConfig for single tasks
+    const deadline =
+      ruleType === 'single' && normalizedRuleConfig?.deadline
+        ? normalizedRuleConfig.deadline
+        : null;
+
+    // Create a copy of ruleConfig without the deadline (it's stored separately)
+    const ruleConfigForStorage = normalizedRuleConfig
+      ? {
+          ...(normalizedRuleConfig.rotationType && {
+            rotationType: normalizedRuleConfig.rotationType,
+          }),
+          ...(normalizedRuleConfig.repeatDays && { repeatDays: normalizedRuleConfig.repeatDays }),
+          ...(normalizedRuleConfig.assignedChildren && {
+            assignedChildren: normalizedRuleConfig.assignedChildren,
+          }),
+        }
+      : null;
+
     const result = await db.query(
-      `INSERT INTO tasks (household_id, name, description, points, rule_type, rule_config)
-       VALUES ($1, $2, $3, $4, $5, $6)
-       RETURNING id, household_id, name, description, points, rule_type, rule_config, created_at, updated_at`,
+      `INSERT INTO tasks (household_id, name, description, points, rule_type, rule_config, deadline)
+       VALUES ($1, $2, $3, $4, $5, $6, $7)
+       RETURNING id, household_id, name, description, points, rule_type, rule_config, deadline, active, created_at, updated_at`,
       [
         householdId,
         name.trim(),
         description || null,
         points,
         ruleType,
-        normalizedRuleConfig === undefined || normalizedRuleConfig === null
+        ruleConfigForStorage === null || Object.keys(ruleConfigForStorage).length === 0
           ? null
-          : JSON.stringify(normalizedRuleConfig),
+          : JSON.stringify(ruleConfigForStorage),
+        deadline,
       ],
     );
 
-    return reply.status(201).send(mapTaskRowToTask(result.rows[0]));
+    const createdTask = result.rows[0];
+
+    // For single tasks, insert candidates into task_candidates table
+    if (
+      ruleType === 'single' &&
+      normalizedRuleConfig?.assignedChildren &&
+      normalizedRuleConfig.assignedChildren.length > 0
+    ) {
+      const candidateValues = normalizedRuleConfig.assignedChildren
+        .map(
+          (_, index) =>
+            `($1, $${index + 2}, $${normalizedRuleConfig.assignedChildren!.length + 2})`,
+        )
+        .join(', ');
+
+      await db.query(
+        `INSERT INTO task_candidates (task_id, child_id, household_id)
+         VALUES ${candidateValues}
+         ON CONFLICT (task_id, child_id) DO NOTHING`,
+        [createdTask.id, ...normalizedRuleConfig.assignedChildren, householdId],
+      );
+    }
+
+    return reply.status(201).send(mapTaskRowToTask(createdTask));
   } catch (error) {
     // Handle Zod validation errors
     if (error instanceof z.ZodError) {
