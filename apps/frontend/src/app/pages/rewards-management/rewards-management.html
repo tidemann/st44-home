@@ -148,8 +148,8 @@
                 <h3>Redemption Request</h3>
                 <span class="status-badge">{{ redemption.status }}</span>
               </div>
-              <p class="child-name">Child ID: {{ redemption.childId }}</p>
-              <p class="reward-id">Reward ID: {{ redemption.rewardId }}</p>
+              <p class="child-name">Child: {{ redemption.childName || redemption.childId }}</p>
+              <p class="reward-name">Reward: {{ redemption.rewardName || redemption.rewardId }}</p>
               <p class="points">Points Spent: {{ redemption.pointsSpent }}</p>
               <p class="date">Redeemed: {{ redemption.redeemedAt | date: 'short' }}</p>
               @if (redemption.fulfilledAt) {

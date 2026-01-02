@@ -47,6 +47,9 @@ export const RewardRedemptionSchema = z.object({
   status: RewardRedemptionStatusSchema,
   redeemedAt: z.string().datetime(),
   fulfilledAt: z.string().datetime().nullable(),
+  // Added by list endpoint for display purposes
+  rewardName: z.string().optional(),
+  childName: z.string().optional(),
 });
 
 export type RewardRedemption = z.infer<typeof RewardRedemptionSchema>;
