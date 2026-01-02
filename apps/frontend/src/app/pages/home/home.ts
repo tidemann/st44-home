@@ -190,27 +190,26 @@ export class Home implements OnInit {
   /**
    * Handle task completion
    */
-  protected onCompleteTask(taskId: string): void {
-    this.taskService.completeTask(taskId).subscribe({
-      next: () => {
-        // Remove from today's tasks
-        this.todayTasks.update((tasks) => tasks.filter((t) => t.id !== taskId));
+  protected async onCompleteTask(taskId: string): Promise<void> {
+    try {
+      await this.taskService.completeTask(taskId);
 
-        // Update stats
-        this.stats.update((current) => ({
-          ...current,
-          activeCount: current.activeCount - 1,
-          totalPoints: current.totalPoints + 10,
-        }));
+      // Remove from today's tasks
+      this.todayTasks.update((tasks) => tasks.filter((t) => t.id !== taskId));
 
-        // TODO: Add celebration animation
-        this.showCelebration();
-      },
-      error: (err) => {
-        console.error('Failed to complete task:', err);
-        this.error.set('Failed to complete task. Please try again.');
-      },
-    });
+      // Update stats
+      this.stats.update((current) => ({
+        ...current,
+        activeCount: current.activeCount - 1,
+        totalPoints: current.totalPoints + 10,
+      }));
+
+      // TODO: Add celebration animation
+      this.showCelebration();
+    } catch (err) {
+      console.error('Failed to complete task:', err);
+      this.error.set('Failed to complete task. Please try again.');
+    }
   }
 
   /**

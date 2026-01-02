@@ -150,7 +150,7 @@ export function mockCompleteTaskSuccess(
     completion: { id: string; pointsEarned: number; completedAt: string };
   },
 ): void {
-  service.completeTask.mockReturnValue(of(response));
+  service.completeTask.mockResolvedValue(response);
 }
 
 /**

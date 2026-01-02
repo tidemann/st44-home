@@ -906,21 +906,24 @@ describe('TaskService', () => {
       await firstValueFrom(result$);
     });
 
-    it('should perform optimistic update', () => {
+    it('should perform optimistic update', async () => {
       mockApiService.post.mockResolvedValue(completedAssignmentResponse);
 
-      service.completeTask('assignment-1');
+      // Start the completion (don't await yet)
+      const promise = service.completeTask('assignment-1');
 
-      // Should update immediately
+      // Should update immediately (optimistic)
       const assignments = service.assignments();
       expect(assignments[0].status).toBe('completed');
+
+      // Wait for completion
+      await promise;
     });
 
     it('should call ApiService.post with correct endpoint', async () => {
       mockApiService.post.mockResolvedValue(completedAssignmentResponse);
 
-      const result$ = service.completeTask('assignment-1');
-      await firstValueFrom(result$);
+      await service.completeTask('assignment-1');
 
       expect(mockApiService.post).toHaveBeenCalledWith('/assignments/assignment-1/complete', {});
     });
@@ -928,8 +931,7 @@ describe('TaskService', () => {
     it('should return completed assignment response', async () => {
       mockApiService.post.mockResolvedValue(completedAssignmentResponse);
 
-      const result$ = service.completeTask('assignment-1');
-      const result = await firstValueFrom(result$);
+      const result = await service.completeTask('assignment-1');
 
       expect(result.taskAssignment.status).toBe('completed');
       expect(result.taskAssignment.completedAt).toBe('2025-01-20T12:00:00Z');
@@ -939,10 +941,8 @@ describe('TaskService', () => {
     it('should rollback optimistic update on API error', async () => {
       mockApiService.post.mockRejectedValue(new Error('Already completed'));
 
-      const result$ = service.completeTask('assignment-1');
-
       try {
-        await firstValueFrom(result$);
+        await service.completeTask('assignment-1');
       } catch {
         // Expected
       }
@@ -955,9 +955,7 @@ describe('TaskService', () => {
     it('should set error message on failure', async () => {
       mockApiService.post.mockRejectedValue(new Error('Server error'));
 
-      const result$ = service.completeTask('assignment-1');
-
-      await expect(firstValueFrom(result$)).rejects.toThrow();
+      await expect(service.completeTask('assignment-1')).rejects.toThrow();
       expect(service.assignmentsError()).toBe('Failed to complete task');
     });
 
@@ -973,8 +971,7 @@ describe('TaskService', () => {
 
       mockApiService.post.mockResolvedValue(completedAssignmentResponse);
 
-      const result$ = service.completeTask('assignment-1');
-      await firstValueFrom(result$);
+      await service.completeTask('assignment-1');
 
       const assignments = service.assignments();
       expect(assignments.length).toBe(2);
@@ -1140,8 +1137,7 @@ describe('TaskService', () => {
         },
       });
 
-      const result$ = service.completeTask('assignment-1');
-      await firstValueFrom(result$);
+      await service.completeTask('assignment-1');
 
       expect(service.pendingAssignments().length).toBe(1);
       expect(service.completedAssignments().length).toBe(2);

@@ -373,17 +373,15 @@ export class Tasks implements OnInit {
   /**
    * Handle task completion
    */
-  protected onTaskComplete(taskId: string): void {
-    this.taskService.completeTask(taskId).subscribe({
-      next: () => {
-        // Reload tasks to reflect completion
-        this.loadTasks();
-      },
-      error: (err) => {
-        this.error.set('Failed to complete task');
-        console.error('Complete task error:', err);
-      },
-    });
+  protected async onTaskComplete(taskId: string): Promise<void> {
+    try {
+      await this.taskService.completeTask(taskId);
+      // Reload tasks to reflect completion
+      this.loadTasks();
+    } catch (err) {
+      this.error.set('Failed to complete task');
+      console.error('Complete task error:', err);
+    }
   }
 
   /**

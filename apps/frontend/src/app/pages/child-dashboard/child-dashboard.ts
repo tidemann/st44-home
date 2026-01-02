@@ -7,9 +7,9 @@ import {
   ChangeDetectionStrategy,
 } from '@angular/core';
 import { Router } from '@angular/router';
-import { DashboardService, MyTasksResponse, ChildTask } from '../../services/dashboard.service';
+import { firstValueFrom } from 'rxjs';
 import { AnalyticsService } from '../../services/analytics.service';
-import { TaskService } from '../../services/task.service';
+import { TaskService, type MyTaskAssignment } from '../../services/task.service';
 import { AvailableTasksSectionComponent } from '../../components/available-tasks-section/available-tasks-section';
 import type { ChildAnalytics } from '@st44/types';
 
@@ -33,22 +33,22 @@ import type { ChildAnalytics } from '@st44/types';
 })
 export class ChildDashboardComponent implements OnInit {
   private router = inject(Router);
-  private dashboardService = inject(DashboardService);
   private analyticsService = inject(AnalyticsService);
   private taskService = inject(TaskService);
 
-  // State
-  childDashboard = signal<MyTasksResponse | null>(null);
+  // Local state
   analytics = signal<ChildAnalytics | null>(null);
-  isLoading = signal(true);
   errorMessage = signal('');
   completingTasks = signal<Set<string>>(new Set());
 
-  // Computed values
-  childName = computed(() => this.childDashboard()?.childName ?? '');
-  tasks = computed(() => this.childDashboard()?.tasks ?? []);
-  totalPoints = computed(() => this.childDashboard()?.totalPointsToday ?? 0);
-  completedPoints = computed(() => this.childDashboard()?.completedPoints ?? 0);
+  // Use TaskService signals directly for reactive updates
+  isLoading = this.taskService.myTasksLoading;
+  childName = this.taskService.myTasksChildName;
+  tasks = this.taskService.myTasks;
+  totalPoints = this.taskService.myTasksTotalPoints;
+  completedPoints = this.taskService.myTasksCompletedPoints;
+
+  // Computed values derived from TaskService signals
   progressPercent = computed(() => {
     const total = this.totalPoints();
     if (total === 0) return 0;
@@ -67,21 +67,18 @@ export class ChildDashboardComponent implements OnInit {
   }
 
   async loadMyTasks() {
-    this.isLoading.set(true);
     this.errorMessage.set('');
 
     try {
       // Get today's date in YYYY-MM-DD format
       const today = new Date().toISOString().split('T')[0];
 
-      // Load both tasks and analytics
-      const [data, analyticsData] = await Promise.all([
-        this.dashboardService.getMyTasks(today),
-        this.analyticsService.getChildAnalytics('week'),
+      // Load tasks via TaskService (updates signals automatically)
+      // and analytics in parallel
+      await Promise.all([
+        firstValueFrom(this.taskService.getMyTasks(undefined, today)),
+        this.analyticsService.getChildAnalytics('week').then((data) => this.analytics.set(data)),
       ]);
-
-      this.childDashboard.set(data);
-      this.analytics.set(analyticsData);
     } catch (error: unknown) {
       const httpError = error as { status?: number };
 
@@ -95,29 +92,27 @@ export class ChildDashboardComponent implements OnInit {
       } else {
         this.errorMessage.set("We couldn't load your tasks right now. Please try again!");
       }
-    } finally {
-      this.isLoading.set(false);
     }
   }
 
-  async onMarkDone(task: ChildTask) {
-    // Add to completing set to show loading state
-    const completing = new Set(this.completingTasks());
-    completing.add(task.id);
-    this.completingTasks.set(completing);
+  async onMarkDone(task: MyTaskAssignment) {
+    // Add to completing set to show loading state on the button
+    this.completingTasks.update((set) => new Set(set).add(task.id));
 
     try {
+      // Complete task - signal updates automatically via optimistic update
       await this.taskService.completeTask(task.id);
-      // Reload dashboard to get updated data
-      await this.loadMyTasks();
+      // No reload needed - TaskService updates myTasksResponseSignal optimistically
     } catch (error) {
       console.error('Failed to complete task:', error);
       this.errorMessage.set('Failed to mark task as done. Please try again.');
     } finally {
       // Remove from completing set
-      const completing = new Set(this.completingTasks());
-      completing.delete(task.id);
-      this.completingTasks.set(completing);
+      this.completingTasks.update((set) => {
+        const newSet = new Set(set);
+        newSet.delete(task.id);
+        return newSet;
+      });
     }
   }
 
