@@ -12,9 +12,10 @@ export interface HouseholdListItem {
   name: string;
   createdAt: string;
   updatedAt: string;
-  role: 'parent' | 'child'; // User's role in this household
+  role: 'admin' | 'parent' | 'child'; // User's role in this household
   memberCount?: number;
   childrenCount?: number;
+  adminCount?: number; // Number of admins in the household
 }
 
 /**
@@ -141,5 +142,33 @@ export class HouseholdService {
    */
   async autoActivateHousehold(): Promise<void> {
     return this.store.autoActivateHousehold();
+  }
+
+  /**
+   * Leave a household (remove current user from membership)
+   * @throws Error if user is the only admin
+   */
+  async leaveHousehold(householdId: string): Promise<void> {
+    await this.apiService.delete(`/households/${householdId}/members/me`);
+    this.store.removeHousehold(householdId);
+
+    // If leaving active household, switch to another
+    if (this.store.activeHouseholdId() === householdId) {
+      await this.store.autoActivateHousehold();
+    }
+  }
+
+  /**
+   * Delete a household permanently (admin only)
+   * This will cascade delete all related data (members, children, tasks, rewards)
+   */
+  async deleteHousehold(householdId: string): Promise<void> {
+    await this.apiService.delete(`/households/${householdId}`);
+    this.store.removeHousehold(householdId);
+
+    // If deleting active household, switch to another
+    if (this.store.activeHouseholdId() === householdId) {
+      await this.store.autoActivateHousehold();
+    }
   }
 }
