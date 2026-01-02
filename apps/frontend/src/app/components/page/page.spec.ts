@@ -3,7 +3,6 @@ import { By } from '@angular/platform-browser';
 import { PageComponent } from './page';
 
 describe('PageComponent', () => {
-  let component: PageComponent;
   let fixture: ComponentFixture<PageComponent>;
 
   beforeEach(async () => {
@@ -12,7 +11,6 @@ describe('PageComponent', () => {
     }).compileComponents();
 
     fixture = TestBed.createComponent(PageComponent);
-    component = fixture.componentInstance;
   });
 
   describe('title input', () => {
