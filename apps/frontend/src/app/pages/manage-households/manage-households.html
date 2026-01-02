@@ -1,0 +1,274 @@
+<!-- Loading State -->
+@if (loading()) {
+  <div class="loading-container" role="status" aria-live="polite">
+    <div class="spinner" aria-hidden="true"></div>
+    <p>Loading your households...</p>
+  </div>
+}
+
+<!-- Error State (full page) -->
+@if (error() && !loading() && households().length === 0) {
+  <div class="error-container" role="alert" aria-live="assertive">
+    <div class="error-icon" aria-hidden="true">!</div>
+    <h2>Oops!</h2>
+    <p>{{ error() }}</p>
+    <button class="btn-retry" (click)="loadHouseholds()">Try Again</button>
+  </div>
+}
+
+<!-- Main Content -->
+@if (!loading()) {
+  <app-page title="Manage Households" maxWidth="narrow">
+    <!-- Success Message -->
+    @if (successMessage()) {
+      <div class="alert alert-success" role="status" aria-live="polite">
+        <span>{{ successMessage() }}</span>
+        <button class="alert-dismiss" (click)="dismissSuccess()" aria-label="Dismiss">x</button>
+      </div>
+    }
+
+    <!-- Error Message (inline) -->
+    @if (error() && households().length > 0) {
+      <div class="alert alert-error" role="alert" aria-live="assertive">
+        <span>{{ error() }}</span>
+        <button class="alert-dismiss" (click)="dismissError()" aria-label="Dismiss">x</button>
+      </div>
+    }
+
+    <!-- Create Button -->
+    <div class="create-section">
+      <button class="btn btn-primary" (click)="openCreateModal()">+ Create New Household</button>
+    </div>
+
+    <!-- Households List -->
+    @if (households().length === 0) {
+      <div class="empty-state">
+        <div class="empty-icon">🏠</div>
+        <h3>No Households Yet</h3>
+        <p>Create your first household to get started!</p>
+      </div>
+    } @else {
+      <div class="households-list">
+        @for (household of households(); track household.id) {
+          <div class="household-card" [class.is-active]="household.id === activeHouseholdId()">
+            <div class="household-header">
+              <div class="household-info">
+                <h3 class="household-name">{{ household.name }}</h3>
+                <span [class]="getRoleBadgeClass(household.role)">
+                  {{ household.role }}
+                </span>
+                @if (household.id === activeHouseholdId()) {
+                  <span class="active-badge">Active</span>
+                }
+              </div>
+            </div>
+
+            <div class="household-stats">
+              @if (household.memberCount !== undefined) {
+                <span class="stat">
+                  <span class="stat-icon">👥</span>
+                  {{ household.memberCount }} members
+                </span>
+              }
+              @if (household.childrenCount !== undefined) {
+                <span class="stat">
+                  <span class="stat-icon">👶</span>
+                  {{ household.childrenCount }} children
+                </span>
+              }
+            </div>
+
+            <div class="household-actions">
+              @if (household.id !== activeHouseholdId()) {
+                <button
+                  class="btn btn-outline btn-sm"
+                  (click)="switchToHousehold(household)"
+                  aria-label="Switch to {{ household.name }}"
+                >
+                  Switch to
+                </button>
+              }
+
+              @if (isAdmin(household)) {
+                <button
+                  class="btn btn-outline btn-sm"
+                  (click)="openEditModal(household)"
+                  aria-label="Edit {{ household.name }}"
+                >
+                  Edit
+                </button>
+              }
+
+              @if (canLeaveHousehold(household)) {
+                <button
+                  class="btn btn-outline btn-sm btn-warning"
+                  (click)="openLeaveModal(household)"
+                  aria-label="Leave {{ household.name }}"
+                >
+                  Leave
+                </button>
+              } @else if (isAdmin(household)) {
+                <span class="leave-hint" title="You are the only admin"> Only admin </span>
+              }
+
+              @if (isAdmin(household)) {
+                <button
+                  class="btn btn-outline btn-sm btn-danger"
+                  (click)="openDeleteModal(household)"
+                  aria-label="Delete {{ household.name }}"
+                >
+                  Delete
+                </button>
+              }
+            </div>
+          </div>
+        }
+      </div>
+    }
+  </app-page>
+}
+
+<!-- Create Household Modal -->
+<app-modal
+  [open]="showCreateModal()"
+  (closeModal)="closeCreateModal()"
+  title="Create New Household"
+>
+  <form class="modal-form" (submit)="createHousehold(); $event.preventDefault()">
+    <div class="form-group">
+      <label for="create-name">Household Name</label>
+      <input
+        type="text"
+        id="create-name"
+        name="name"
+        [(ngModel)]="createHouseholdName"
+        placeholder="e.g., Smith Family"
+        maxlength="100"
+        required
+      />
+      <small class="form-hint">Give your household a name (1-100 characters)</small>
+    </div>
+
+    <div class="modal-actions">
+      <button
+        type="button"
+        class="btn btn-outline"
+        (click)="closeCreateModal()"
+        [disabled]="actionInProgress()"
+      >
+        Cancel
+      </button>
+      <button
+        type="submit"
+        class="btn btn-primary"
+        [disabled]="actionInProgress() || !createHouseholdName.trim()"
+      >
+        {{ actionInProgress() ? 'Creating...' : 'Create' }}
+      </button>
+    </div>
+  </form>
+</app-modal>
+
+<!-- Edit Household Modal -->
+<app-modal [open]="showEditModal()" (closeModal)="closeEditModal()" title="Edit Household">
+  <form class="modal-form" (submit)="saveHousehold(); $event.preventDefault()">
+    <div class="form-group">
+      <label for="edit-name">Household Name</label>
+      <input
+        type="text"
+        id="edit-name"
+        name="name"
+        [(ngModel)]="editHouseholdName"
+        placeholder="Household name"
+        maxlength="100"
+        required
+      />
+    </div>
+
+    <div class="modal-actions">
+      <button
+        type="button"
+        class="btn btn-outline"
+        (click)="closeEditModal()"
+        [disabled]="actionInProgress()"
+      >
+        Cancel
+      </button>
+      <button
+        type="submit"
+        class="btn btn-primary"
+        [disabled]="actionInProgress() || !editHouseholdName.trim()"
+      >
+        {{ actionInProgress() ? 'Saving...' : 'Save' }}
+      </button>
+    </div>
+  </form>
+</app-modal>
+
+<!-- Leave Household Modal -->
+<app-modal [open]="showLeaveModal()" (closeModal)="closeLeaveModal()" title="Leave Household">
+  <div class="modal-content">
+    <div class="warning-icon">⚠️</div>
+    <p class="warning-text">
+      Are you sure you want to leave <strong>{{ selectedHousehold()?.name }}</strong
+      >?
+    </p>
+    <p class="warning-detail">
+      You will lose access to all tasks, rewards, and data in this household. You can be re-invited
+      by an admin if you change your mind.
+    </p>
+  </div>
+
+  <div class="modal-actions">
+    <button
+      type="button"
+      class="btn btn-outline"
+      (click)="closeLeaveModal()"
+      [disabled]="actionInProgress()"
+    >
+      Cancel
+    </button>
+    <button
+      type="button"
+      class="btn btn-warning"
+      (click)="leaveHousehold()"
+      [disabled]="actionInProgress()"
+    >
+      {{ actionInProgress() ? 'Leaving...' : 'Leave Household' }}
+    </button>
+  </div>
+</app-modal>
+
+<!-- Delete Household Modal -->
+<app-modal [open]="showDeleteModal()" (closeModal)="closeDeleteModal()" title="Delete Household">
+  <div class="modal-content">
+    <div class="danger-icon">🗑️</div>
+    <p class="danger-text">
+      Are you sure you want to permanently delete <strong>{{ selectedHousehold()?.name }}</strong
+      >?
+    </p>
+    <p class="danger-detail">
+      <strong>This action cannot be undone.</strong> All members, children, tasks, rewards, and
+      progress data will be permanently deleted.
+    </p>
+  </div>
+
+  <div class="modal-actions">
+    <button
+      type="button"
+      class="btn btn-outline"
+      (click)="closeDeleteModal()"
+      [disabled]="actionInProgress()"
+    >
+      Cancel
+    </button>
+    <button
+      type="button"
+      class="btn btn-danger"
+      (click)="deleteHousehold()"
+      [disabled]="actionInProgress()"
+    >
+      {{ actionInProgress() ? 'Deleting...' : 'Delete Permanently' }}
+    </button>
+  </div>
+</app-modal>
