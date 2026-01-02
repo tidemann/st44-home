@@ -46,45 +46,54 @@
   outline-offset: 2px;
 }
 
-/* Person Filter Dropdown */
-.person-filter {
+/* Person Filter Tabs */
+.person-tabs {
+  display: flex;
+  gap: var(--space-sm);
   margin-bottom: var(--space-lg);
-  padding: var(--space-md);
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  padding-bottom: var(--space-xs);
+}
+
+.person-tab {
+  flex-shrink: 0;
+  padding: var(--space-sm) var(--space-lg);
   background: var(--color-surface);
-  border-radius: var(--radius-sm);
+  border: 2px solid transparent;
+  border-radius: var(--radius-full);
+  font-family: var(--font-body);
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  transition: all 0.2s ease;
   box-shadow: var(--shadow-sm);
 }
 
-.person-filter-label {
-  display: block;
-  font-family: var(--font-body);
-  font-size: var(--font-size-sm);
-  font-weight: var(--font-weight-medium);
-  color: var(--color-text-secondary);
-  margin-bottom: var(--space-xs);
+.person-tab:hover {
+  background: #f1f5f9;
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
 }
 
-.person-select {
-  width: 100%;
-  padding: var(--space-sm) var(--space-md);
-  background: var(--color-background);
-  border: 2px solid #e2e8f0;
-  border-radius: var(--radius-sm);
+.person-tab.active {
+  background: var(--gradient-secondary, var(--gradient-primary));
+  color: white;
+  border-color: transparent;
+  box-shadow: var(--shadow-md);
+}
+
+.person-tab:focus {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+.no-members-message {
   font-family: var(--font-body);
   font-size: var(--font-size-base);
-  color: var(--color-text-primary);
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-.person-select:hover {
-  border-color: var(--color-primary);
-}
-
-.person-select:focus {
-  outline: none;
-  border-color: var(--color-primary);
-  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+  color: var(--color-text-secondary);
+  padding: var(--space-md);
 }
 
 /* Loading State */

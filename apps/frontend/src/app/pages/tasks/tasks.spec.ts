@@ -364,19 +364,44 @@ describe('Tasks Component', () => {
   });
 
   describe('Person Filter', () => {
-    it('should update selected person when dropdown changes', () => {
+    it('should update selected person when tab is clicked', () => {
       fixture.detectChanges();
-      const event = { target: { value: 'child-1' } } as unknown as Event;
-      component['onPersonChange'](event);
+      component['onPersonSelect']('child-1');
       expect(component['selectedPersonId']()).toBe('child-1');
     });
 
     it('should reload tasks when person selection changes', () => {
       fixture.detectChanges();
       vi.clearAllMocks();
-      const event = { target: { value: 'child-1' } } as unknown as Event;
-      component['onPersonChange'](event);
+      component['onPersonSelect']('child-1');
       expect(mockTaskService.getTasks).toHaveBeenCalled();
+    });
+
+    it('should update URL query params when person is selected', () => {
+      fixture.detectChanges();
+      component['onPersonSelect']('child-1');
+      expect(mockRouter.navigate).toHaveBeenCalledWith([], {
+        relativeTo: mockActivatedRoute,
+        queryParams: { filter: 'all', child: 'child-1' },
+        queryParamsHandling: 'merge',
+        replaceUrl: true,
+      });
+    });
+
+    it('should not reload tasks if same person is selected', () => {
+      fixture.detectChanges();
+      component['selectedPersonId'].set('child-1');
+      vi.clearAllMocks();
+      component['onPersonSelect']('child-1');
+      expect(mockTaskService.getTasks).not.toHaveBeenCalled();
+    });
+
+    it('should load child from URL query params on init', () => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const mockRoute = mockActivatedRoute as { snapshot: any };
+      mockRoute.snapshot.queryParams = { filter: 'person', child: 'child-1' };
+      fixture.detectChanges();
+      expect(component['selectedPersonId']()).toBe('child-1');
     });
   });
 

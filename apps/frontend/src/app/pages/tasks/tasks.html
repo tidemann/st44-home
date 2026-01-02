@@ -15,21 +15,25 @@
     }
   </div>
 
-  <!-- Person Filter Dropdown (only shown when filter = 'person') -->
+  <!-- Person Filter Tabs (only shown when filter = 'person') -->
   @if (activeFilter() === 'person') {
-    <div class="person-filter">
-      <label for="person-select" class="person-filter-label">Select Person:</label>
-      <select
-        id="person-select"
-        class="person-select"
-        [value]="selectedPersonId() || ''"
-        (change)="onPersonChange($event)"
-      >
-        <option value="">Choose a person...</option>
-        @for (member of members(); track member.id) {
-          <option [value]="member.id">{{ member.name }}</option>
-        }
-      </select>
+    <div class="person-tabs" role="tablist" aria-label="Filter by person">
+      @for (member of members(); track member.id) {
+        <button
+          type="button"
+          role="tab"
+          class="person-tab"
+          [class.active]="selectedPersonId() === member.id"
+          [attr.aria-selected]="selectedPersonId() === member.id"
+          [attr.aria-label]="'View tasks for ' + member.name"
+          (click)="onPersonSelect(member.id)"
+        >
+          {{ member.name }}
+        </button>
+      }
+      @if (members().length === 0) {
+        <p class="no-members-message">No children in this household.</p>
+      }
     </div>
   }
 
