@@ -92,6 +92,12 @@ export const routes: Routes = [
         title: 'Settings - Diddit!',
         loadComponent: () => import('./pages/settings/settings').then((m) => m.Settings),
       },
+      {
+        path: 'households',
+        title: 'Manage Households - Diddit!',
+        loadComponent: () =>
+          import('./pages/manage-households/manage-households').then((m) => m.ManageHouseholds),
+      },
       // Default redirect for authenticated parent/admin users
       {
         path: '',
