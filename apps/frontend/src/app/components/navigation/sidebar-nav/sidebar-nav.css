@@ -30,7 +30,16 @@
   display: flex;
   flex-direction: column;
   gap: var(--space-sm, 8px);
-  flex: 1;
+}
+
+.sidebar-divider {
+  height: 1px;
+  background: rgba(0, 0, 0, 0.1);
+  margin: var(--space-sm, 8px) 0;
+}
+
+.sidebar-household-section {
+  padding: var(--space-xs, 4px) var(--space-sm, 8px);
 }
 
 .sidebar-btn {
@@ -177,36 +186,38 @@
 }
 
 /* Household switcher overrides for sidebar context */
-:host ::ng-deep .sidebar-user-info .household-switcher {
-  margin-top: var(--space-xs, 4px);
+:host ::ng-deep .sidebar-household-section .household-switcher {
+  width: 100%;
 }
 
-:host ::ng-deep .sidebar-user-info .switcher-toggle {
+:host ::ng-deep .sidebar-household-section .switcher-toggle {
   min-width: unset;
   width: 100%;
-  padding: var(--space-xs, 4px) var(--space-sm, 8px);
-  background: transparent;
+  padding: var(--space-sm, 8px) var(--space-md, 16px);
+  background: var(--color-background, #f9fafb);
   border: 1px solid rgba(0, 0, 0, 0.1);
-  font-size: 13px;
+  border-radius: var(--radius-sm, 8px);
+  font-size: 14px;
 }
 
-:host ::ng-deep .sidebar-user-info .switcher-toggle:hover {
-  background: rgba(255, 255, 255, 0.5);
+:host ::ng-deep .sidebar-household-section .switcher-toggle:hover {
+  background: var(--color-surface-hover, #f3f4f6);
 }
 
-:host ::ng-deep .sidebar-user-info .switcher-toggle__name {
-  font-size: 13px;
-  color: var(--color-text-secondary, #6b7280);
+:host ::ng-deep .sidebar-household-section .switcher-toggle__name {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--color-text-primary, #1f2937);
 }
 
-:host ::ng-deep .sidebar-user-info .switcher-toggle__role {
-  font-size: 10px;
+:host ::ng-deep .sidebar-household-section .switcher-toggle__role {
+  font-size: 11px;
 }
 
-:host ::ng-deep .sidebar-user-info .switcher-dropdown {
-  min-width: 200px;
-  left: auto;
-  right: 0;
+:host ::ng-deep .sidebar-household-section .switcher-dropdown {
+  min-width: 220px;
+  left: 0;
+  right: auto;
 }
 
 /* Show sidebar on tablet and desktop (>= 768px) */
