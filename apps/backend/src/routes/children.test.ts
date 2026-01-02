@@ -326,9 +326,8 @@ describe('Children API', () => {
         headers: { Authorization: `Bearer ${adminToken}` },
       });
 
-      assert.strictEqual(response.statusCode, 200);
-      const body = JSON.parse(response.body);
-      assert.strictEqual(body.message, 'Child removed successfully');
+      assert.strictEqual(response.statusCode, 204);
+      assert.strictEqual(response.body, ''); // No content
     });
 
     test('should return 404 for non-existent child', async () => {
