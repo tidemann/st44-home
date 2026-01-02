@@ -128,6 +128,16 @@ describe('Household API', () => {
       const body = JSON.parse(response.body);
       assert.ok(Array.isArray(body));
       assert.ok(body.length >= 1);
+
+      // Verify household list item structure
+      const household = body[0];
+      assert.ok(household.id);
+      assert.ok(household.name);
+      assert.ok(household.role);
+      assert.strictEqual(typeof household.memberCount, 'number');
+      assert.strictEqual(typeof household.childrenCount, 'number');
+      assert.strictEqual(typeof household.adminCount, 'number');
+      assert.ok(household.adminCount >= 1, 'adminCount should be at least 1');
     });
 
     test('should reject without authentication', async () => {

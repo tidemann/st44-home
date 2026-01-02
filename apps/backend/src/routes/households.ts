@@ -121,15 +121,16 @@ async function listHouseholds(request: FastifyRequest, reply: FastifyReply) {
 
   try {
     const result = await db.query(
-      `SELECT 
-        h.id, 
+      `SELECT
+        h.id,
         h.name,
         h.created_at,
         h.updated_at,
-        hm.role, 
+        hm.role,
         hm.joined_at,
         (SELECT COUNT(*) FROM household_members WHERE household_id = h.id) as member_count,
-        (SELECT COUNT(*) FROM children WHERE household_id = h.id) as children_count
+        (SELECT COUNT(*) FROM children WHERE household_id = h.id) as children_count,
+        (SELECT COUNT(*) FROM household_members WHERE household_id = h.id AND role = 'admin') as admin_count
       FROM households h
       JOIN household_members hm ON h.id = hm.household_id
       WHERE hm.user_id = $1
@@ -143,6 +144,7 @@ async function listHouseholds(request: FastifyRequest, reply: FastifyReply) {
       role: row.role,
       memberCount: parseInt(row.member_count, 10),
       childrenCount: parseInt(row.children_count, 10),
+      adminCount: parseInt(row.admin_count, 10),
       joinedAt: row.joined_at,
       createdAt: toDateTimeString(row.created_at),
       updatedAt: toDateTimeString(row.updated_at),
