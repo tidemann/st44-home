@@ -1,9 +1,4 @@
-<div class="tasks-page">
-  <!-- Header -->
-  <div class="tasks-header">
-    <h1 class="tasks-title">All Tasks</h1>
-  </div>
-
+<app-page title="All Tasks" [showGradient]="false" maxWidth="medium">
   <!-- Filter Tabs -->
   <div class="filter-tabs">
     @for (tab of filterTabs(); track tab.id) {
@@ -99,4 +94,4 @@
     (closeRequested)="onReassignModalClose()"
     (reassigned)="onReassignConfirm($event)"
   />
-</div>
+</app-page>

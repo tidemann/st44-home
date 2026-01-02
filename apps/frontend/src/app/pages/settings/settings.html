@@ -18,186 +18,176 @@
 
 <!-- Main Content -->
 @if (!loading() && profile()) {
-  <div class="settings-page">
-    <!-- Header with Gradient -->
-    <header class="header">
-      <div class="header-content">
-        <h1 class="page-title">Settings</h1>
+  <app-page title="Settings" maxWidth="narrow">
+    <!-- Success Message -->
+    @if (successMessage()) {
+      <div class="alert alert-success" role="status" aria-live="polite">
+        <span>{{ successMessage() }}</span>
+        <button class="alert-dismiss" (click)="dismissSuccess()" aria-label="Dismiss">x</button>
       </div>
-    </header>
+    }
 
-    <!-- Content -->
-    <div class="content">
-      <!-- Success Message -->
-      @if (successMessage()) {
-        <div class="alert alert-success" role="status" aria-live="polite">
-          <span>{{ successMessage() }}</span>
-          <button class="alert-dismiss" (click)="dismissSuccess()" aria-label="Dismiss">x</button>
+    <!-- Error Message (inline) -->
+    @if (error() && profile()) {
+      <div class="alert alert-error" role="alert" aria-live="assertive">
+        <span>{{ error() }}</span>
+        <button class="alert-dismiss" (click)="dismissError()" aria-label="Dismiss">x</button>
+      </div>
+    }
+
+    <!-- Profile Section -->
+    <section class="settings-section">
+      <h2>Profile</h2>
+
+      <form class="settings-form" (submit)="saveProfile(); $event.preventDefault()">
+        <!-- First Name Field -->
+        <div class="form-group">
+          <label for="firstName">First Name</label>
+          <input
+            type="text"
+            id="firstName"
+            name="firstName"
+            [(ngModel)]="firstName"
+            placeholder="Enter your first name"
+            maxlength="100"
+          />
         </div>
-      }
 
-      <!-- Error Message (inline) -->
-      @if (error() && profile()) {
-        <div class="alert alert-error" role="alert" aria-live="assertive">
-          <span>{{ error() }}</span>
-          <button class="alert-dismiss" (click)="dismissError()" aria-label="Dismiss">x</button>
+        <!-- Last Name Field -->
+        <div class="form-group">
+          <label for="lastName">Last Name</label>
+          <input
+            type="text"
+            id="lastName"
+            name="lastName"
+            [(ngModel)]="lastName"
+            placeholder="Enter your last name"
+            maxlength="100"
+          />
+          <small class="form-hint">This is how you'll appear to other family members</small>
         </div>
-      }
 
-      <!-- Profile Section -->
-      <section class="settings-section">
-        <h2>Profile</h2>
+        <!-- Email Field -->
+        <div class="form-group">
+          <label for="email">Email Address</label>
+          <input
+            type="email"
+            id="email"
+            name="email"
+            [(ngModel)]="email"
+            placeholder="Enter your email"
+            required
+          />
+        </div>
 
-        <form class="settings-form" (submit)="saveProfile(); $event.preventDefault()">
-          <!-- First Name Field -->
-          <div class="form-group">
-            <label for="firstName">First Name</label>
-            <input
-              type="text"
-              id="firstName"
-              name="firstName"
-              [(ngModel)]="firstName"
-              placeholder="Enter your first name"
-              maxlength="100"
-            />
+        <!-- Password Section Toggle -->
+        <button type="button" class="btn-link" (click)="togglePasswordSection()">
+          {{ showPasswordSection() ? '- Hide password section' : '+ Change password' }}
+        </button>
+
+        <!-- Password Fields (conditionally shown) -->
+        @if (showPasswordSection()) {
+          <div class="password-section">
+            <div class="form-group">
+              <label for="newPassword">New Password</label>
+              <input
+                type="password"
+                id="newPassword"
+                name="newPassword"
+                [(ngModel)]="newPassword"
+                placeholder="Enter new password"
+                minlength="8"
+                autocomplete="new-password"
+              />
+              <small class="form-hint">
+                Minimum 8 characters, must include uppercase, lowercase, and number
+              </small>
+            </div>
+
+            <div class="form-group">
+              <label for="confirmPassword">Confirm New Password</label>
+              <input
+                type="password"
+                id="confirmPassword"
+                name="confirmPassword"
+                [(ngModel)]="confirmPassword"
+                placeholder="Confirm new password"
+                autocomplete="new-password"
+              />
+            </div>
           </div>
+        }
 
-          <!-- Last Name Field -->
-          <div class="form-group">
-            <label for="lastName">Last Name</label>
-            <input
-              type="text"
-              id="lastName"
-              name="lastName"
-              [(ngModel)]="lastName"
-              placeholder="Enter your last name"
-              maxlength="100"
-            />
-            <small class="form-hint">This is how you'll appear to other family members</small>
-          </div>
-
-          <!-- Email Field -->
-          <div class="form-group">
-            <label for="email">Email Address</label>
-            <input
-              type="email"
-              id="email"
-              name="email"
-              [(ngModel)]="email"
-              placeholder="Enter your email"
-              required
-            />
-          </div>
-
-          <!-- Password Section Toggle -->
-          <button type="button" class="btn-link" (click)="togglePasswordSection()">
-            {{ showPasswordSection() ? '- Hide password section' : '+ Change password' }}
+        <!-- Save Button -->
+        <div class="form-actions">
+          <button type="submit" class="btn btn-primary" [disabled]="saving()">
+            {{ saving() ? 'Saving...' : 'Save Changes' }}
           </button>
+        </div>
+      </form>
+    </section>
 
-          <!-- Password Fields (conditionally shown) -->
-          @if (showPasswordSection()) {
-            <div class="password-section">
-              <div class="form-group">
-                <label for="newPassword">New Password</label>
-                <input
-                  type="password"
-                  id="newPassword"
-                  name="newPassword"
-                  [(ngModel)]="newPassword"
-                  placeholder="Enter new password"
-                  minlength="8"
-                  autocomplete="new-password"
-                />
-                <small class="form-hint">
-                  Minimum 8 characters, must include uppercase, lowercase, and number
-                </small>
-              </div>
-
-              <div class="form-group">
-                <label for="confirmPassword">Confirm New Password</label>
-                <input
-                  type="password"
-                  id="confirmPassword"
-                  name="confirmPassword"
-                  [(ngModel)]="confirmPassword"
-                  placeholder="Confirm new password"
-                  autocomplete="new-password"
-                />
-              </div>
-            </div>
-          }
-
-          <!-- Save Button -->
-          <div class="form-actions">
-            <button type="submit" class="btn btn-primary" [disabled]="saving()">
-              {{ saving() ? 'Saving...' : 'Save Changes' }}
-            </button>
-          </div>
-        </form>
-      </section>
-
-      <!-- Household Section -->
-      @if (activeHousehold()) {
-        <section class="settings-section">
-          <h2>Household</h2>
-
-          <div class="household-info">
-            <div class="info-row">
-              <span class="info-label">Current Household</span>
-              <span class="info-value">{{ activeHousehold()?.name }}</span>
-            </div>
-          </div>
-
-          <div class="household-links">
-            <a routerLink="/household/settings" class="settings-link">
-              <span class="link-icon">⚙️</span>
-              <span class="link-text">Household Settings</span>
-              <span class="link-arrow">→</span>
-            </a>
-
-            <a routerLink="/invitations" class="settings-link">
-              <span class="link-icon">✉️</span>
-              <span class="link-text">Invitations</span>
-              @if (pendingInvitationsCount() > 0) {
-                <span class="badge">{{ pendingInvitationsCount() }}</span>
-              }
-              <span class="link-arrow">→</span>
-            </a>
-          </div>
-        </section>
-      }
-
-      <!-- Account Section -->
+    <!-- Household Section -->
+    @if (activeHousehold()) {
       <section class="settings-section">
-        <h2>Account</h2>
+        <h2>Household</h2>
 
-        <div class="account-info">
+        <div class="household-info">
           <div class="info-row">
-            <span class="info-label">Member since</span>
-            <span class="info-value">{{ profile()?.createdAt | date: 'mediumDate' }}</span>
+            <span class="info-label">Current Household</span>
+            <span class="info-value">{{ activeHousehold()?.name }}</span>
           </div>
         </div>
 
-        <div class="danger-zone">
-          <button type="button" class="btn btn-danger" (click)="logout()">Log Out</button>
-        </div>
-      </section>
+        <div class="household-links">
+          <a routerLink="/household/settings" class="settings-link">
+            <span class="link-icon">⚙️</span>
+            <span class="link-text">Household Settings</span>
+            <span class="link-arrow">→</span>
+          </a>
 
-      <!-- About Section -->
-      <section class="settings-section">
-        <h2>About</h2>
-
-        <div class="account-info">
-          <div class="info-row">
-            <span class="info-label">Version</span>
-            <span class="info-value">{{ appVersion }}</span>
-          </div>
-          <div class="info-row">
-            <span class="info-label">Build</span>
-            <span class="info-value">{{ buildTime | date: 'medium' }}</span>
-          </div>
+          <a routerLink="/invitations" class="settings-link">
+            <span class="link-icon">✉️</span>
+            <span class="link-text">Invitations</span>
+            @if (pendingInvitationsCount() > 0) {
+              <span class="badge">{{ pendingInvitationsCount() }}</span>
+            }
+            <span class="link-arrow">→</span>
+          </a>
         </div>
       </section>
-    </div>
-  </div>
+    }
+
+    <!-- Account Section -->
+    <section class="settings-section">
+      <h2>Account</h2>
+
+      <div class="account-info">
+        <div class="info-row">
+          <span class="info-label">Member since</span>
+          <span class="info-value">{{ profile()?.createdAt | date: 'mediumDate' }}</span>
+        </div>
+      </div>
+
+      <div class="danger-zone">
+        <button type="button" class="btn btn-danger" (click)="logout()">Log Out</button>
+      </div>
+    </section>
+
+    <!-- About Section -->
+    <section class="settings-section">
+      <h2>About</h2>
+
+      <div class="account-info">
+        <div class="info-row">
+          <span class="info-label">Version</span>
+          <span class="info-value">{{ appVersion }}</span>
+        </div>
+        <div class="info-row">
+          <span class="info-label">Build</span>
+          <span class="info-value">{{ buildTime | date: 'medium' }}</span>
+        </div>
+      </div>
+    </section>
+  </app-page>
 }

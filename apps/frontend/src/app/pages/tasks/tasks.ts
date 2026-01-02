@@ -16,6 +16,7 @@ import {
   type EditTaskData,
 } from '../../components/modals/edit-task-modal/edit-task-modal';
 import { ReassignTaskModal } from '../../components/modals/reassign-task-modal/reassign-task-modal';
+import { PageComponent } from '../../components/page/page';
 import type { Task, Child, Assignment } from '@st44/types';
 import { ApiService } from '../../services/api.service';
 import { StorageService } from '../../services/storage.service';
@@ -45,7 +46,7 @@ export type TaskFilter = 'all' | 'mine' | 'person' | 'completed';
  */
 @Component({
   selector: 'app-tasks',
-  imports: [TaskCardComponent, EditTaskModal, ReassignTaskModal],
+  imports: [TaskCardComponent, EditTaskModal, ReassignTaskModal, PageComponent],
   templateUrl: './tasks.html',
   styleUrl: './tasks.css',
   changeDetection: ChangeDetectionStrategy.OnPush,

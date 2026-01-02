@@ -1,0 +1,164 @@
+/* ===== PAGE CONTAINER ===== */
+
+.page {
+  min-height: 100%;
+  background: var(--color-background);
+  animation: pageEnter var(--transition-base) ease-out;
+}
+
+/* ===== WIDTH VARIANTS ===== */
+
+/* Narrow: 600px - Forms, settings */
+.page-container--narrow .page-header-content,
+.page-container--narrow .page-content {
+  max-width: 600px;
+}
+
+/* Medium: 800px - Default for most pages */
+.page-container--medium .page-header-content,
+.page-container--medium .page-content {
+  max-width: 800px;
+}
+
+/* Wide: 1200px - Dashboards, family */
+.page-container--wide .page-header-content,
+.page-container--wide .page-content {
+  max-width: 1200px;
+}
+
+/* ===== HEADER SECTION ===== */
+
+.page-header {
+  padding: var(--space-xl) var(--space-md) var(--space-lg);
+}
+
+/* Gradient header style (default) */
+.page-header--gradient {
+  background: var(--gradient-primary);
+  color: white;
+}
+
+/* Plain header style */
+.page-header--plain {
+  background: var(--color-surface);
+  color: var(--color-text-primary);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.page-header-content {
+  margin: 0 auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: var(--space-md);
+  width: 100%;
+}
+
+.page-header-text {
+  flex: 1;
+  min-width: 0;
+}
+
+/* ===== TITLE STYLES ===== */
+
+.page-title {
+  font-family: var(--font-heading);
+  font-size: var(--font-size-2xl);
+  font-weight: var(--font-weight-bold);
+  line-height: var(--line-height-tight);
+  margin: 0;
+}
+
+/* Gradient header: white title */
+.page-header--gradient .page-title {
+  color: white;
+}
+
+/* Plain header: primary text color */
+.page-header--plain .page-title {
+  color: var(--color-text-primary);
+}
+
+/* ===== SUBTITLE STYLES ===== */
+
+.page-subtitle {
+  font-family: var(--font-body);
+  font-size: var(--font-size-base);
+  line-height: var(--line-height-normal);
+  margin: var(--space-xs) 0 0 0;
+}
+
+/* Gradient header: semi-transparent white */
+.page-header--gradient .page-subtitle {
+  color: rgba(255, 255, 255, 0.9);
+}
+
+/* Plain header: secondary text color */
+.page-header--plain .page-subtitle {
+  color: var(--color-text-secondary);
+}
+
+/* ===== HEADER ACTIONS ===== */
+
+.page-header-actions {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+}
+
+/* ===== CONTENT SECTION ===== */
+
+.page-content {
+  margin: 0 auto;
+  padding: var(--space-md);
+  width: 100%;
+}
+
+/* ===== RESPONSIVE: TABLET (768px+) ===== */
+
+@media (min-width: 768px) {
+  .page-header {
+    padding: var(--space-xl) var(--space-xl) var(--space-lg);
+  }
+
+  .page-title {
+    font-size: var(--font-size-3xl);
+  }
+
+  .page-content {
+    padding: var(--space-lg) var(--space-xl);
+  }
+}
+
+/* ===== RESPONSIVE: DESKTOP (1024px+) ===== */
+
+@media (min-width: 1024px) {
+  .page-title {
+    font-size: var(--font-size-4xl);
+  }
+
+  .page-content {
+    padding: var(--space-xl);
+  }
+}
+
+/* ===== ANIMATIONS ===== */
+
+@keyframes pageEnter {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Respect reduced motion preference */
+@media (prefers-reduced-motion: reduce) {
+  .page {
+    animation: none;
+  }
+}

@@ -1,0 +1,23 @@
+<div class="page" [class]="containerClass()">
+  <!-- Header Section -->
+  @if (showHeader()) {
+    <header class="page-header" [class]="headerClass()">
+      <div class="page-header-content">
+        <div class="page-header-text">
+          <h1 class="page-title">{{ title() }}</h1>
+          @if (subtitle()) {
+            <p class="page-subtitle">{{ subtitle() }}</p>
+          }
+        </div>
+        <div class="page-header-actions">
+          <ng-content select="[page-actions]" />
+        </div>
+      </div>
+    </header>
+  }
+
+  <!-- Main Content -->
+  <main class="page-content">
+    <ng-content />
+  </main>
+</div>
