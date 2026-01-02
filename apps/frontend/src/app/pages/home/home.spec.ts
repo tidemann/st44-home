@@ -107,24 +107,22 @@ describe('Home', () => {
   });
 
   describe('task completion', () => {
-    it('should complete task and update state', () => {
+    it('should complete task and update state', async () => {
       const taskId = 'task-1';
       const mockTask: Partial<Assignment> = { id: taskId, status: 'pending' };
       component['todayTasks'].set([mockTask as Assignment]);
       component['stats'].set({ activeCount: 1, weekProgress: 0, totalPoints: 0 });
 
-      mockTaskService.completeTask.mockReturnValue(
-        of({
-          taskAssignment: {
-            id: taskId,
-            status: 'completed',
-            completedAt: new Date().toISOString(),
-          },
-          completion: { id: 'c1', pointsEarned: 10, completedAt: new Date().toISOString() },
-        }),
-      );
+      mockTaskService.completeTask.mockResolvedValue({
+        taskAssignment: {
+          id: taskId,
+          status: 'completed',
+          completedAt: new Date().toISOString(),
+        },
+        completion: { id: 'c1', pointsEarned: 10, completedAt: new Date().toISOString() },
+      });
 
-      component['onCompleteTask'](taskId);
+      await component['onCompleteTask'](taskId);
 
       expect(mockTaskService.completeTask).toHaveBeenCalledWith(taskId);
       expect(component['todayTasks']().length).toBe(0);
@@ -132,11 +130,11 @@ describe('Home', () => {
       expect(component['stats']().totalPoints).toBe(10);
     });
 
-    it('should handle completion error', () => {
+    it('should handle completion error', async () => {
       const taskId = 'task-1';
-      mockTaskService.completeTask.mockReturnValue(throwError(() => new Error('Failed')));
+      mockTaskService.completeTask.mockRejectedValue(new Error('Failed'));
 
-      component['onCompleteTask'](taskId);
+      await component['onCompleteTask'](taskId);
 
       expect(component['error']()).toBe('Failed to complete task. Please try again.');
     });

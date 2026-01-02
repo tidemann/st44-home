@@ -80,7 +80,7 @@ export class TaskService {
   private assignmentsErrorSignal = signal<string | null>(null);
 
   // My tasks state signals (for /children/me/tasks endpoint)
-  private myTasksSignal = signal<MyTaskAssignment[]>([]);
+  private myTasksResponseSignal = signal<MyTasksResponse | null>(null);
   private myTasksLoadingSignal = signal<boolean>(false);
   private myTasksErrorSignal = signal<string | null>(null);
 
@@ -96,7 +96,15 @@ export class TaskService {
   public readonly assignmentsError = this.assignmentsErrorSignal.asReadonly();
 
   // Public readonly signals for my tasks
-  public readonly myTasks = this.myTasksSignal.asReadonly();
+  public readonly myTasksResponse = this.myTasksResponseSignal.asReadonly();
+  public readonly myTasks = computed(() => this.myTasksResponseSignal()?.tasks ?? []);
+  public readonly myTasksChildName = computed(() => this.myTasksResponseSignal()?.childName ?? '');
+  public readonly myTasksTotalPoints = computed(
+    () => this.myTasksResponseSignal()?.totalPointsToday ?? 0,
+  );
+  public readonly myTasksCompletedPoints = computed(
+    () => this.myTasksResponseSignal()?.completedPoints ?? 0,
+  );
   public readonly myTasksLoading = this.myTasksLoadingSignal.asReadonly();
   public readonly myTasksError = this.myTasksErrorSignal.asReadonly();
 
@@ -352,7 +360,7 @@ export class TaskService {
 
     return from(this.apiService.get<MyTasksResponse>(endpoint)).pipe(
       tap((response) => {
-        this.myTasksSignal.set(response.tasks);
+        this.myTasksResponseSignal.set(response);
         this.myTasksLoadingSignal.set(false);
       }),
       catchError((err) => {
@@ -366,51 +374,75 @@ export class TaskService {
   /**
    * Mark a task assignment as complete (with optimistic update)
    *
+   * Updates both assignmentsSignal and myTasksResponseSignal for immediate UI feedback.
+   *
    * @param assignmentId - ID of the task assignment
-   * @returns Observable of the completion response (taskAssignment + completion)
+   * @returns Promise of the completion response (taskAssignment + completion)
    */
-  completeTask(assignmentId: string): Observable<{
+  async completeTask(assignmentId: string): Promise<{
     taskAssignment: { id: string; status: string; completedAt: string };
     completion: { id: string; pointsEarned: number; completedAt: string };
   }> {
-    // Optimistic update
+    // Store previous state for rollback
     const previousAssignments = this.assignmentsSignal();
+    const previousMyTasks = this.myTasksResponseSignal();
     const now = new Date().toISOString();
 
+    // Optimistic update on assignmentsSignal
     this.assignmentsSignal.update((assignments) =>
       assignments.map((a) =>
         a.id === assignmentId ? { ...a, status: 'completed' as const, completedAt: now } : a,
       ),
     );
 
-    // API call using POST
-    return from(
-      this.apiService.post<{
+    // Optimistic update on myTasksResponseSignal
+    this.myTasksResponseSignal.update((response) => {
+      if (!response) return response;
+      const task = response.tasks.find((t) => t.id === assignmentId);
+      const pointsEarned = task?.points ?? 0;
+      return {
+        ...response,
+        tasks: response.tasks.map((t) =>
+          t.id === assignmentId ? { ...t, status: 'completed' as const, completedAt: now } : t,
+        ),
+        completedPoints: response.completedPoints + pointsEarned,
+      };
+    });
+
+    try {
+      // Make API call
+      const result = await this.apiService.post<{
         taskAssignment: { id: string; status: string; completedAt: string };
         completion: { id: string; pointsEarned: number; completedAt: string };
-      }>(`/assignments/${assignmentId}/complete`, {}),
-    ).pipe(
-      tap((response) => {
-        // Update with server response
-        this.assignmentsSignal.update((assignments) =>
-          assignments.map((a) =>
-            a.id === assignmentId
-              ? {
-                  ...a,
-                  status: 'completed' as const,
-                  completedAt: response.taskAssignment.completedAt,
-                }
-              : a,
+      }>(`/assignments/${assignmentId}/complete`, {});
+
+      // Update with server response timestamp
+      this.assignmentsSignal.update((assignments) =>
+        assignments.map((a) =>
+          a.id === assignmentId
+            ? { ...a, status: 'completed' as const, completedAt: result.taskAssignment.completedAt }
+            : a,
+        ),
+      );
+
+      this.myTasksResponseSignal.update((response) => {
+        if (!response) return response;
+        return {
+          ...response,
+          tasks: response.tasks.map((t) =>
+            t.id === assignmentId ? { ...t, completedAt: result.taskAssignment.completedAt } : t,
           ),
-        );
-      }),
-      catchError((err) => {
-        // Rollback on error
-        this.assignmentsSignal.set(previousAssignments);
-        this.assignmentsErrorSignal.set('Failed to complete task');
-        return throwError(() => err);
-      }),
-    );
+        };
+      });
+
+      return result;
+    } catch (err) {
+      // Rollback on error
+      this.assignmentsSignal.set(previousAssignments);
+      this.myTasksResponseSignal.set(previousMyTasks);
+      this.assignmentsErrorSignal.set('Failed to complete task');
+      throw err;
+    }
   }
 
   /**

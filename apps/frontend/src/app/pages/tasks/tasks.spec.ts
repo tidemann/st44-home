@@ -79,7 +79,7 @@ describe('Tasks Component', () => {
       getMyTasks: vi
         .fn()
         .mockReturnValue(of({ tasks: [], totalPointsToday: 0, completedPoints: 0, childName: '' })),
-      completeTask: vi.fn().mockReturnValue(of({ taskAssignment: {}, completion: {} })),
+      completeTask: vi.fn().mockResolvedValue({ taskAssignment: {}, completion: {} }),
       updateTask: vi.fn().mockReturnValue(of(mockTask)),
       deleteTask: vi.fn().mockReturnValue(of(undefined)),
       // Store writable signals for test manipulation

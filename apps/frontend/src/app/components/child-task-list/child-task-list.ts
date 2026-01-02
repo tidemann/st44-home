@@ -96,13 +96,13 @@ export class ChildTaskListComponent implements OnInit {
   /**
    * Handle task completion
    */
-  protected onComplete(assignmentId: string): void {
-    this.taskService.completeTask(assignmentId).subscribe({
-      error: (err) => {
-        console.error('Failed to complete task:', err);
-        // Error is already set in service signal
-      },
-    });
+  protected async onComplete(assignmentId: string): Promise<void> {
+    try {
+      await this.taskService.completeTask(assignmentId);
+    } catch (err) {
+      console.error('Failed to complete task:', err);
+      // Error is already set in service signal
+    }
   }
 
   /**
