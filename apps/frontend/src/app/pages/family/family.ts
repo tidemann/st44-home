@@ -22,6 +22,7 @@ import { HouseholdService, type HouseholdMemberResponse } from '../../services/h
 import { AuthService } from '../../services/auth.service';
 import { InvitationService } from '../../services/invitation.service';
 import { ChildrenService } from '../../services/children.service';
+import { HouseholdStore } from '../../stores/household.store';
 
 /**
  * Family Screen
@@ -44,6 +45,7 @@ import { ChildrenService } from '../../services/children.service';
 })
 export class Family implements OnInit {
   private readonly householdService = inject(HouseholdService);
+  private readonly householdStore = inject(HouseholdStore);
   private readonly authService = inject(AuthService);
   private readonly invitationService = inject(InvitationService);
   private readonly childrenService = inject(ChildrenService);
@@ -103,6 +105,10 @@ export class Family implements OnInit {
       const household = households[0];
       this.householdId.set(household.id);
       this.householdName.set(household.name);
+
+      // CRITICAL: Set household as active BEFORE loading data
+      // This ensures the correct household context for cache operations
+      this.householdStore.setActiveHousehold(household.id);
 
       // Load household members and children in parallel
       const [householdMembers, children] = await Promise.all([

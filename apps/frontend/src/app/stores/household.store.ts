@@ -13,10 +13,9 @@ interface HouseholdState {
   households: HouseholdListItem[];
   // Current active household details
   activeHouseholdId: string | null;
-  // Members of the active household
-  members: HouseholdMemberResponse[];
-  // Children in the active household
-  children: Child[];
+  // Per-household caches (Map<householdId, data>)
+  membersByHousehold: Map<string, HouseholdMemberResponse[]>;
+  childrenByHousehold: Map<string, Child[]>;
   // Loading states
   loading: {
     households: boolean;
@@ -29,11 +28,14 @@ interface HouseholdState {
     members: string | null;
     children: string | null;
   };
-  // Cache timestamps for invalidation
+  // Per-household cache timestamps
+  lastFetchedByHousehold: {
+    members: Map<string, number>;
+    children: Map<string, number>;
+  };
+  // Global cache timestamp for households list
   lastFetched: {
     households: number | null;
-    members: number | null;
-    children: number | null;
   };
 }
 
@@ -48,8 +50,8 @@ const CACHE_TTL = 5 * 60 * 1000;
 const initialState: HouseholdState = {
   households: [],
   activeHouseholdId: null,
-  members: [],
-  children: [],
+  membersByHousehold: new Map(),
+  childrenByHousehold: new Map(),
   loading: {
     households: false,
     members: false,
@@ -60,10 +62,12 @@ const initialState: HouseholdState = {
     members: null,
     children: null,
   },
+  lastFetchedByHousehold: {
+    members: new Map(),
+    children: new Map(),
+  },
   lastFetched: {
     households: null,
-    members: null,
-    children: null,
   },
 };
 
@@ -109,8 +113,9 @@ export class HouseholdStore {
   // In-flight request tracking to prevent duplicate requests
   private pendingRequests = {
     households: null as Promise<HouseholdListItem[]> | null,
-    members: null as Promise<HouseholdMemberResponse[]> | null,
-    children: null as Promise<Child[]> | null,
+    // Per-household request tracking
+    membersByHousehold: new Map<string, Promise<HouseholdMemberResponse[]>>(),
+    childrenByHousehold: new Map<string, Promise<Child[]>>(),
   };
 
   // ============================================
@@ -131,10 +136,18 @@ export class HouseholdStore {
   });
 
   /** Members of the active household */
-  readonly members = computed(() => this.state().members);
+  readonly members = computed(() => {
+    const id = this.state().activeHouseholdId;
+    if (!id) return [];
+    return this.state().membersByHousehold.get(id) ?? [];
+  });
 
   /** Children in the active household */
-  readonly children = computed(() => this.state().children);
+  readonly children = computed(() => {
+    const id = this.state().activeHouseholdId;
+    if (!id) return [];
+    return this.state().childrenByHousehold.get(id) ?? [];
+  });
 
   /** Whether any data is currently loading */
   readonly isLoadingAny = computed(() => {
@@ -161,10 +174,34 @@ export class HouseholdStore {
   readonly hasHouseholds = computed(() => this.state().households.length > 0);
 
   /** Count of children in active household */
-  readonly childrenCount = computed(() => this.state().children.length);
+  readonly childrenCount = computed(() => {
+    const id = this.state().activeHouseholdId;
+    if (!id) return 0;
+    return this.state().childrenByHousehold.get(id)?.length ?? 0;
+  });
 
   /** Count of members in active household */
-  readonly memberCount = computed(() => this.state().members.length);
+  readonly memberCount = computed(() => {
+    const id = this.state().activeHouseholdId;
+    if (!id) return 0;
+    return this.state().membersByHousehold.get(id)?.length ?? 0;
+  });
+
+  /**
+   * Get children for a specific household (not necessarily active)
+   * Useful when displaying multiple households simultaneously
+   */
+  getChildrenForHousehold(householdId: string): Child[] {
+    return this.state().childrenByHousehold.get(householdId) ?? [];
+  }
+
+  /**
+   * Get members for a specific household (not necessarily active)
+   * Useful when displaying multiple households simultaneously
+   */
+  getMembersForHousehold(householdId: string): HouseholdMemberResponse[] {
+    return this.state().membersByHousehold.get(householdId) ?? [];
+  }
 
   // ============================================
   // PUBLIC ACTIONS
@@ -221,25 +258,31 @@ export class HouseholdStore {
   }
 
   /**
-   * Load members for the active household
+   * Load members for a specific household (or active household if not specified)
    *
+   * @param householdId - The household ID to load members for (optional, defaults to active)
    * @param options.forceRefresh - Skip cache and fetch fresh data
    * @returns The loaded members
    */
-  async loadMembers(options?: { forceRefresh?: boolean }): Promise<HouseholdMemberResponse[]> {
-    const householdId = this.state().activeHouseholdId;
-    if (!householdId) {
+  async loadMembers(
+    householdId?: string,
+    options?: { forceRefresh?: boolean },
+  ): Promise<HouseholdMemberResponse[]> {
+    // Default to active household if not specified
+    const targetHouseholdId = householdId ?? this.state().activeHouseholdId;
+    if (!targetHouseholdId) {
       return [];
     }
 
-    // Check cache
-    if (!options?.forceRefresh && this.isCacheValid('members')) {
-      return this.state().members;
+    // Check cache for this specific household
+    if (!options?.forceRefresh && this.isCacheValidForHousehold('members', targetHouseholdId)) {
+      return this.state().membersByHousehold.get(targetHouseholdId) ?? [];
     }
 
-    // Return pending request if one exists
-    if (this.pendingRequests.members) {
-      return this.pendingRequests.members;
+    // Return pending request if one exists for this household
+    const pendingRequest = this.pendingRequests.membersByHousehold.get(targetHouseholdId);
+    if (pendingRequest) {
+      return pendingRequest;
     }
 
     // Set loading state
@@ -247,15 +290,27 @@ export class HouseholdStore {
     this.updateState({ errors: { ...this.state().errors, members: null } });
 
     try {
-      const request = this.api.get<HouseholdMemberResponse[]>(`/households/${householdId}/members`);
-      this.pendingRequests.members = request;
+      const request = this.api.get<HouseholdMemberResponse[]>(
+        `/households/${targetHouseholdId}/members`,
+      );
+      this.pendingRequests.membersByHousehold.set(targetHouseholdId, request);
 
       const members = await request;
 
+      // Update cache for this household
+      const newMap = new Map(this.state().membersByHousehold);
+      newMap.set(targetHouseholdId, members);
+
+      const newTimestamps = new Map(this.state().lastFetchedByHousehold.members);
+      newTimestamps.set(targetHouseholdId, Date.now());
+
       this.updateState({
-        members,
+        membersByHousehold: newMap,
         loading: { ...this.state().loading, members: false },
-        lastFetched: { ...this.state().lastFetched, members: Date.now() },
+        lastFetchedByHousehold: {
+          ...this.state().lastFetchedByHousehold,
+          members: newTimestamps,
+        },
       });
 
       return members;
@@ -269,30 +324,33 @@ export class HouseholdStore {
       });
       throw error;
     } finally {
-      this.pendingRequests.members = null;
+      this.pendingRequests.membersByHousehold.delete(targetHouseholdId);
     }
   }
 
   /**
-   * Load children for the active household
+   * Load children for a specific household (or active household if not specified)
    *
+   * @param householdId - The household ID to load children for (optional, defaults to active)
    * @param options.forceRefresh - Skip cache and fetch fresh data
    * @returns The loaded children
    */
-  async loadChildren(options?: { forceRefresh?: boolean }): Promise<Child[]> {
-    const householdId = this.state().activeHouseholdId;
-    if (!householdId) {
+  async loadChildren(householdId?: string, options?: { forceRefresh?: boolean }): Promise<Child[]> {
+    // Default to active household if not specified
+    const targetHouseholdId = householdId ?? this.state().activeHouseholdId;
+    if (!targetHouseholdId) {
       return [];
     }
 
-    // Check cache
-    if (!options?.forceRefresh && this.isCacheValid('children')) {
-      return this.state().children;
+    // Check cache for this specific household
+    if (!options?.forceRefresh && this.isCacheValidForHousehold('children', targetHouseholdId)) {
+      return this.state().childrenByHousehold.get(targetHouseholdId) ?? [];
     }
 
-    // Return pending request if one exists
-    if (this.pendingRequests.children) {
-      return this.pendingRequests.children;
+    // Return pending request if one exists for this household
+    const pendingRequest = this.pendingRequests.childrenByHousehold.get(targetHouseholdId);
+    if (pendingRequest) {
+      return pendingRequest;
     }
 
     // Set loading state
@@ -301,16 +359,26 @@ export class HouseholdStore {
 
     try {
       const request = this.api
-        .get<{ children: Child[] }>(`/households/${householdId}/children`)
+        .get<{ children: Child[] }>(`/households/${targetHouseholdId}/children`)
         .then((response) => response.children);
-      this.pendingRequests.children = request;
+      this.pendingRequests.childrenByHousehold.set(targetHouseholdId, request);
 
       const children = await request;
 
+      // Update cache for this household
+      const newMap = new Map(this.state().childrenByHousehold);
+      newMap.set(targetHouseholdId, children);
+
+      const newTimestamps = new Map(this.state().lastFetchedByHousehold.children);
+      newTimestamps.set(targetHouseholdId, Date.now());
+
       this.updateState({
-        children,
+        childrenByHousehold: newMap,
         loading: { ...this.state().loading, children: false },
-        lastFetched: { ...this.state().lastFetched, children: Date.now() },
+        lastFetchedByHousehold: {
+          ...this.state().lastFetchedByHousehold,
+          children: newTimestamps,
+        },
       });
 
       return children;
@@ -324,7 +392,7 @@ export class HouseholdStore {
       });
       throw error;
     } finally {
-      this.pendingRequests.children = null;
+      this.pendingRequests.childrenByHousehold.delete(targetHouseholdId);
     }
   }
 
@@ -336,13 +404,16 @@ export class HouseholdStore {
   async loadHouseholdContext(options?: { forceRefresh?: boolean }): Promise<void> {
     await Promise.all([
       this.loadHouseholds(options),
-      this.loadMembers(options),
-      this.loadChildren(options),
+      this.loadMembers(undefined, options),
+      this.loadChildren(undefined, options),
     ]);
   }
 
   /**
-   * Set the active household and invalidate dependent caches
+   * Set the active household
+   *
+   * Preserves all household caches - switching between households is fast
+   * because each household's data remains cached independently
    *
    * @param householdId - The household ID to activate
    */
@@ -354,17 +425,9 @@ export class HouseholdStore {
       return;
     }
 
-    // Update state and persist to storage
+    // Just update active ID - keep all caches intact
     this.updateState({
       activeHouseholdId: householdId,
-      // Clear dependent data when switching households
-      members: [],
-      children: [],
-      lastFetched: {
-        ...this.state().lastFetched,
-        members: null,
-        children: null,
-      },
     });
 
     this.storage.set(STORAGE_KEYS.ACTIVE_HOUSEHOLD_ID, householdId);
@@ -406,37 +469,54 @@ export class HouseholdStore {
   clearActiveHousehold(): void {
     this.updateState({
       activeHouseholdId: null,
-      members: [],
-      children: [],
     });
     this.storage.remove(STORAGE_KEYS.ACTIVE_HOUSEHOLD_ID);
   }
 
   /**
    * Add a child to the store (after creation)
+   *
+   * @param householdId - The household this child belongs to
+   * @param child - The child to add
    */
-  addChild(child: Child): void {
-    this.updateState({
-      children: [...this.state().children, child],
-    });
+  addChild(householdId: string, child: Child): void {
+    const newMap = new Map(this.state().childrenByHousehold);
+    const current = newMap.get(householdId) ?? [];
+    newMap.set(householdId, [...current, child]);
+    this.updateState({ childrenByHousehold: newMap });
   }
 
   /**
    * Update a child in the store
+   *
+   * @param householdId - The household this child belongs to
+   * @param childId - The child ID to update
+   * @param updates - Partial child data to merge
    */
-  updateChild(childId: string, updates: Partial<Child>): void {
-    this.updateState({
-      children: this.state().children.map((c) => (c.id === childId ? { ...c, ...updates } : c)),
-    });
+  updateChild(householdId: string, childId: string, updates: Partial<Child>): void {
+    const newMap = new Map(this.state().childrenByHousehold);
+    const current = newMap.get(householdId) ?? [];
+    newMap.set(
+      householdId,
+      current.map((c) => (c.id === childId ? { ...c, ...updates } : c)),
+    );
+    this.updateState({ childrenByHousehold: newMap });
   }
 
   /**
    * Remove a child from the store
+   *
+   * @param householdId - The household this child belongs to
+   * @param childId - The child ID to remove
    */
-  removeChild(childId: string): void {
-    this.updateState({
-      children: this.state().children.filter((c) => c.id !== childId),
-    });
+  removeChild(householdId: string, childId: string): void {
+    const newMap = new Map(this.state().childrenByHousehold);
+    const current = newMap.get(householdId) ?? [];
+    newMap.set(
+      householdId,
+      current.filter((c) => c.id !== childId),
+    );
+    this.updateState({ childrenByHousehold: newMap });
   }
 
   /**
@@ -475,8 +555,10 @@ export class HouseholdStore {
     this.updateState({
       lastFetched: {
         households: null,
-        members: null,
-        children: null,
+      },
+      lastFetchedByHousehold: {
+        members: new Map(),
+        children: new Map(),
       },
     });
   }
@@ -500,8 +582,25 @@ export class HouseholdStore {
     return this.storage.getString(STORAGE_KEYS.ACTIVE_HOUSEHOLD_ID);
   }
 
-  private isCacheValid(key: 'households' | 'members' | 'children'): boolean {
+  /**
+   * Check if cache is valid for households list
+   * (Members and children use per-household caching via isCacheValidForHousehold)
+   */
+  private isCacheValid(key: 'households'): boolean {
     const lastFetched = this.state().lastFetched[key];
+    if (!lastFetched) return false;
+    return Date.now() - lastFetched < CACHE_TTL;
+  }
+
+  /**
+   * Check if cache is valid for a specific household
+   *
+   * @param key - The cache type to check
+   * @param householdId - The household ID to check cache for
+   * @returns true if cache exists and is within TTL
+   */
+  private isCacheValidForHousehold(key: 'members' | 'children', householdId: string): boolean {
+    const lastFetched = this.state().lastFetchedByHousehold[key].get(householdId);
     if (!lastFetched) return false;
     return Date.now() - lastFetched < CACHE_TTL;
   }
