@@ -45,6 +45,11 @@
             [progress]="analytics()!.monthProgress"
           />
         </div>
+
+        <!-- Daily Points Chart -->
+        @if (analytics()!.dailyPoints.length > 0) {
+          <app-daily-points-chart [dailyData]="analytics()!.dailyPoints" title="Points This Week" />
+        }
       </section>
     }
 

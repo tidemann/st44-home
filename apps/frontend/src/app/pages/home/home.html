@@ -43,6 +43,16 @@
         <app-stat-card [icon]="'⭐'" [value]="stats().totalPoints" [label]="'Points'" />
       </div>
 
+      <!-- Analytics Section -->
+      @if (analytics()) {
+        <div class="analytics-section">
+          <app-week-comparison [comparison]="analytics()!.periodComparison" />
+          @if (analytics()!.childrenProgress.length > 0) {
+            <app-children-trends [childrenProgress]="analytics()!.childrenProgress" />
+          }
+        </div>
+      }
+
       <!-- Today's Tasks Section -->
       <section class="tasks-section">
         <div class="section-header">

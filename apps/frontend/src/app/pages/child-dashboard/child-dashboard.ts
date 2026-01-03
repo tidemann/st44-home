@@ -13,6 +13,7 @@ import { TaskService, type MyTaskAssignment } from '../../services/task.service'
 import { AvailableTasksSectionComponent } from '../../components/available-tasks-section/available-tasks-section';
 import { StreakCounter } from '../../components/streak-counter/streak-counter';
 import { ProgressSummary } from '../../components/progress-summary/progress-summary';
+import { DailyPointsChart } from '../../components/daily-points-chart/daily-points-chart';
 import type { ChildAnalytics } from '@st44/types';
 
 /**
@@ -28,7 +29,7 @@ import type { ChildAnalytics } from '@st44/types';
  */
 @Component({
   selector: 'app-child-dashboard',
-  imports: [AvailableTasksSectionComponent, StreakCounter, ProgressSummary],
+  imports: [AvailableTasksSectionComponent, StreakCounter, ProgressSummary, DailyPointsChart],
   templateUrl: './child-dashboard.html',
   styleUrl: './child-dashboard.css',
   changeDetection: ChangeDetectionStrategy.OnPush,

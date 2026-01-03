@@ -1,0 +1,36 @@
+.daily-points-chart {
+  padding: var(--space-4, 1rem);
+  border-radius: var(--radius-lg, 0.75rem);
+  background: var(--surface-secondary, #f8f9fa);
+}
+
+.chart-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--space-3, 0.75rem);
+}
+
+.chart-title {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text-primary, #212529);
+}
+
+.total-points {
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: var(--color-warning, #fbbf24);
+  background: rgba(251, 191, 36, 0.1);
+  padding: var(--space-1, 0.25rem) var(--space-2, 0.5rem);
+  border-radius: var(--radius-md, 0.5rem);
+}
+
+.empty-state {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 150px;
+  color: var(--text-secondary, #6c757d);
+}

@@ -1,0 +1,37 @@
+<div class="children-trends" role="region" aria-label="Children progress trends">
+  <h3 class="trends-title">Children Progress</h3>
+
+  @if (childrenProgress().length > 0 && chartLabels().length > 0) {
+    <!-- Line Chart -->
+    <app-line-chart
+      [labels]="chartLabels()"
+      [series]="chartSeries()"
+      [height]="height()"
+      [showLegend]="showLegend()"
+      yAxisLabel="Completion %"
+    />
+
+    <!-- Summary Cards -->
+    <div class="summary-cards">
+      @for (child of childSummaries(); track child.name) {
+        <div class="child-summary" [style.border-color]="child.color">
+          <span class="child-name">{{ child.name }}</span>
+          <div class="child-stats">
+            <span class="stat">
+              <span class="stat-value">{{ child.avgRate }}%</span>
+              <span class="stat-label">avg</span>
+            </span>
+            <span class="stat">
+              <span class="stat-value">{{ child.totalPoints }}</span>
+              <span class="stat-label">pts</span>
+            </span>
+          </div>
+        </div>
+      }
+    </div>
+  } @else {
+    <div class="empty-state">
+      <p>No progress data available yet</p>
+    </div>
+  }
+</div>
