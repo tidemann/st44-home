@@ -240,7 +240,7 @@ describe('HouseholdStore - Multi-household caching', () => {
     it('should persist active household to storage', () => {
       store.setActiveHousehold('household-a');
 
-      expect(mockStorageService.set).toHaveBeenCalledWith('active_household_id', 'household-a');
+      expect(mockStorageService.set).toHaveBeenCalledWith('activeHouseholdId', 'household-a');
     });
 
     it('should not update if same household is already active', () => {
@@ -665,7 +665,7 @@ describe('HouseholdStore - Multi-household caching', () => {
 
       expect(store.activeHouseholdId()).toBeNull();
       expect(store.children()).toEqual([]);
-      expect(mockStorageService.remove).toHaveBeenCalledWith('active_household_id');
+      expect(mockStorageService.remove).toHaveBeenCalledWith('activeHouseholdId');
     });
   });
 
