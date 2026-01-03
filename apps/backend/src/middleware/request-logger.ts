@@ -162,8 +162,8 @@ export async function requestLoggerPlugin(fastify: FastifyInstance): Promise<voi
         responseTimeMs,
       };
 
-      // Add response time header
-      reply.header('X-Response-Time', `${responseTimeMs}ms`);
+      // NOTE: Cannot set headers in onResponse hook (response already sent)
+      // Response time is logged in the context instead
 
       // Log with appropriate level based on status and timing
       if (reply.statusCode >= 500) {
