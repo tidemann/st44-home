@@ -44,7 +44,8 @@ export function formatPoints(
       formattedNumber = String(points);
     }
   } else {
-    formattedNumber = points.toLocaleString();
+    // Use en-US locale for consistent comma-separated formatting
+    formattedNumber = points.toLocaleString('en-US');
   }
 
   if (showSuffix) {
