@@ -9,6 +9,7 @@ import {
 import { AuthService } from '../../services/auth.service';
 import { HouseholdService } from '../../services/household.service';
 import { AnalyticsService } from '../../services/analytics.service';
+import { HouseholdStore } from '../../stores/household.store';
 import { PageComponent } from '../../components/page/page';
 import type { HouseholdAnalytics, ChildStreak } from '@st44/types';
 
@@ -70,6 +71,7 @@ interface HouseholdStats {
 export class Progress implements OnInit {
   private readonly authService = inject(AuthService);
   private readonly householdService = inject(HouseholdService);
+  private readonly householdStore = inject(HouseholdStore);
   private readonly analyticsService = inject(AnalyticsService);
 
   // State signals
@@ -111,16 +113,30 @@ export class Progress implements OnInit {
 
       this.currentUserId.set(user.id);
 
-      // Get user's household
+      // Get user's households
       const households = await this.householdService.listHouseholds();
       if (households.length === 0) {
         this.error.set('No household found');
         return;
       }
 
-      const household = households[0];
+      // Get active household from store (respects user's selection from switcher)
+      let activeHouseholdId = this.householdStore.activeHouseholdId();
+
+      // If no active household, auto-activate the first one
+      if (!activeHouseholdId) {
+        await this.householdStore.autoActivateHousehold();
+        activeHouseholdId = this.householdStore.activeHouseholdId();
+      }
+
+      // Find the active household in the list (fallback to first if not found)
+      const household = households.find((h) => h.id === activeHouseholdId) || households[0];
+
       this.householdId.set(household.id);
       this.householdName.set(household.name);
+
+      // Active household is already set - don't overwrite it
+      // (either from switcher or from autoActivateHousehold above)
 
       // Fetch analytics data from API
       const analytics = await this.analyticsService.getHouseholdAnalytics(household.id, 'week');
