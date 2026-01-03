@@ -1,0 +1,39 @@
+<div
+  class="streak-counter"
+  [class.has-streak]="currentStreak() > 0"
+  [class.new-record]="isNewRecord()"
+  role="region"
+  aria-label="Streak information"
+>
+  <!-- Fire Icons -->
+  <div class="streak-fires" aria-hidden="true">
+    @for (_ of [].constructor(fireCount()); track $index) {
+      <span class="fire-icon">🔥</span>
+    }
+    @if (fireCount() === 0) {
+      <span class="fire-icon inactive">🔥</span>
+    }
+  </div>
+
+  <!-- Current Streak -->
+  <div class="streak-main">
+    <span class="streak-number" [attr.aria-label]="currentStreak() + ' day streak'">
+      {{ currentStreak() }}
+    </span>
+    <span class="streak-label">{{ currentStreak() === 1 ? 'Day' : 'Days' }}</span>
+  </div>
+
+  <!-- Message -->
+  <p class="streak-message">{{ streakMessage() }}</p>
+
+  <!-- Longest Streak Badge -->
+  @if (showLongest() && longestStreak() > 0) {
+    <div class="longest-streak" [class.is-current]="isNewRecord()">
+      @if (isNewRecord()) {
+        <span class="record-badge">New Record!</span>
+      } @else {
+        <span class="record-label">Best: {{ longestStreak() }} days</span>
+      }
+    </div>
+  }
+</div>

@@ -1,0 +1,127 @@
+.progress-summary {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3, 0.75rem);
+  padding: var(--space-4, 1rem);
+  border-radius: var(--radius-lg, 0.75rem);
+  background: var(--surface-secondary, #f8f9fa);
+}
+
+/* Header */
+.progress-header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2, 0.5rem);
+}
+
+.progress-icon {
+  font-size: 1.25rem;
+}
+
+.progress-title {
+  margin: 0;
+  flex: 1;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text-primary, #212529);
+}
+
+.progress-percent {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--text-primary, #212529);
+}
+
+/* Progress Bar */
+.progress-bar-wrapper {
+  height: 0.75rem;
+  border-radius: var(--radius-full, 9999px);
+  background: var(--surface-tertiary, #e9ecef);
+  overflow: hidden;
+}
+
+.progress-bar {
+  height: 100%;
+  border-radius: var(--radius-full, 9999px);
+  transition: width 0.5s ease-out;
+  min-width: 0;
+}
+
+.progress-bar.progress-excellent {
+  background: linear-gradient(90deg, #28a745 0%, #20c997 100%);
+}
+
+.progress-bar.progress-good {
+  background: linear-gradient(90deg, #17a2b8 0%, #20c997 100%);
+}
+
+.progress-bar.progress-fair {
+  background: linear-gradient(90deg, #ffc107 0%, #fd7e14 100%);
+}
+
+.progress-bar.progress-low {
+  background: linear-gradient(90deg, #dc3545 0%, #fd7e14 100%);
+}
+
+/* Stats */
+.progress-stats {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--space-4, 1rem);
+}
+
+.stat {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1, 0.25rem);
+}
+
+.stat-value {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--text-primary, #212529);
+}
+
+.stat-label {
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--text-secondary, #6c757d);
+}
+
+/* Message */
+.progress-message {
+  margin: 0;
+  font-size: 0.875rem;
+  font-weight: 600;
+  text-align: center;
+}
+
+.progress-message.progress-excellent {
+  color: #28a745;
+}
+
+.progress-message.progress-good {
+  color: #17a2b8;
+}
+
+.progress-message.progress-fair {
+  color: #fd7e14;
+}
+
+.progress-message.progress-low {
+  color: #dc3545;
+}
+
+/* Responsive */
+@media (max-width: 480px) {
+  .progress-stats {
+    flex-direction: column;
+    gap: var(--space-2, 0.5rem);
+  }
+
+  .stat {
+    flex-direction: row;
+    align-items: baseline;
+    gap: var(--space-2, 0.5rem);
+  }
+}
