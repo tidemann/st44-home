@@ -37,19 +37,10 @@ export class ChildrenService {
 
   /**
    * List all children in a household
-   * Uses cached data from HouseholdStore when available (for active household)
+   * Uses cached data from HouseholdStore (supports any household, not just active)
    */
   async listChildren(householdId: string): Promise<Child[]> {
-    // If requesting active household children, use store
-    if (householdId === this.store.activeHouseholdId()) {
-      return this.store.loadChildren();
-    }
-
-    // Otherwise, fallback to API
-    const response = await this.api.get<ListChildrenResponse>(
-      `/households/${householdId}/children`,
-    );
-    return response.children;
+    return this.store.loadChildren(householdId);
   }
 
   /**
@@ -57,12 +48,7 @@ export class ChildrenService {
    */
   async createChild(householdId: string, data: CreateChildRequest): Promise<Child> {
     const child = await this.api.post<Child>(`/households/${householdId}/children`, data);
-
-    // Update store if this is the active household
-    if (householdId === this.store.activeHouseholdId()) {
-      this.store.addChild(child);
-    }
-
+    this.store.addChild(householdId, child);
     return child;
   }
 
@@ -75,12 +61,7 @@ export class ChildrenService {
     data: UpdateChildRequest,
   ): Promise<Child> {
     const child = await this.api.put<Child>(`/households/${householdId}/children/${childId}`, data);
-
-    // Update store if this is the active household
-    if (householdId === this.store.activeHouseholdId()) {
-      this.store.updateChild(childId, child);
-    }
-
+    this.store.updateChild(householdId, childId, child);
     return child;
   }
 
@@ -91,12 +72,7 @@ export class ChildrenService {
     const response = await this.api.delete<DeleteChildResponse>(
       `/households/${householdId}/children/${childId}`,
     );
-
-    // Update store if this is the active household
-    if (householdId === this.store.activeHouseholdId()) {
-      this.store.removeChild(childId);
-    }
-
+    this.store.removeChild(householdId, childId);
     return response;
   }
 
@@ -117,12 +93,7 @@ export class ChildrenService {
         password,
       },
     );
-
-    // Update store if this is the active household
-    if (householdId === this.store.activeHouseholdId()) {
-      this.store.updateChild(childId, child);
-    }
-
+    this.store.updateChild(householdId, childId, child);
     return child;
   }
 }
