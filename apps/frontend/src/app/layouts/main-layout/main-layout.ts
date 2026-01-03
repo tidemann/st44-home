@@ -18,6 +18,7 @@ import {
 } from '../../components/modals/task-form-modal/task-form-modal';
 import { AuthService } from '../../services/auth.service';
 import { HouseholdService } from '../../services/household.service';
+import { HouseholdStore } from '../../stores/household.store';
 import { ChildrenService } from '../../services/children.service';
 import type { SidebarUser } from '../../components/navigation/sidebar-nav/sidebar-nav';
 import type { NavScreen } from '../../components/navigation/bottom-nav/bottom-nav';
@@ -48,6 +49,7 @@ export class MainLayout implements OnInit, OnDestroy {
   private readonly router = inject(Router);
   private readonly authService = inject(AuthService);
   private readonly householdService = inject(HouseholdService);
+  private readonly householdStore = inject(HouseholdStore);
   private readonly childrenService = inject(ChildrenService);
   private readonly taskService = inject(TaskService);
 
@@ -94,14 +96,30 @@ export class MainLayout implements OnInit, OnDestroy {
   private async loadHouseholdData(): Promise<void> {
     try {
       const households = await this.householdService.listHouseholds();
-      if (households.length > 0) {
-        const household = households[0];
-        this.householdId.set(household.id);
-        this.householdName.set(household.name);
-
-        // Pre-load children for quick-add modal
-        await this.loadChildren();
+      if (households.length === 0) {
+        return;
       }
+
+      // Get active household from store (respects user's selection from switcher)
+      let activeHouseholdId = this.householdStore.activeHouseholdId();
+
+      // If no active household, auto-activate the first one
+      if (!activeHouseholdId) {
+        await this.householdStore.autoActivateHousehold();
+        activeHouseholdId = this.householdStore.activeHouseholdId();
+      }
+
+      // Find the active household in the list (fallback to first if not found)
+      const household = households.find((h) => h.id === activeHouseholdId) || households[0];
+
+      this.householdId.set(household.id);
+      this.householdName.set(household.name);
+
+      // Active household is already set - don't overwrite it
+      // (either from switcher or from autoActivateHousehold above)
+
+      // Pre-load children for quick-add modal
+      await this.loadChildren();
     } catch (err) {
       console.error('Failed to load household data:', err);
     }

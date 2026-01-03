@@ -95,20 +95,30 @@ export class Family implements OnInit {
 
       this.currentUserId.set(user.id);
 
-      // Get user's household
+      // Get user's households
       const households = await this.householdService.listHouseholds();
       if (households.length === 0) {
         this.error.set('No household found');
         return;
       }
 
-      const household = households[0];
+      // Get active household from store (respects user's selection from switcher)
+      let activeHouseholdId = this.householdStore.activeHouseholdId();
+
+      // If no active household, auto-activate the first one
+      if (!activeHouseholdId) {
+        await this.householdStore.autoActivateHousehold();
+        activeHouseholdId = this.householdStore.activeHouseholdId();
+      }
+
+      // Find the active household in the list (fallback to first if not found)
+      const household = households.find((h) => h.id === activeHouseholdId) || households[0];
+
       this.householdId.set(household.id);
       this.householdName.set(household.name);
 
-      // CRITICAL: Set household as active BEFORE loading data
-      // This ensures the correct household context for cache operations
-      this.householdStore.setActiveHousehold(household.id);
+      // Active household is already set - don't overwrite it
+      // (either from switcher or from autoActivateHousehold above)
 
       // Load household members and children in parallel
       const [householdMembers, children] = await Promise.all([
