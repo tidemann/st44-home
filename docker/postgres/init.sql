@@ -31,7 +31,9 @@ VALUES
   ('023', 'add_rewards_system', NOW()),
   ('038', 'create_password_reset_tokens_table', NOW()),
   ('039', 'add_name_to_users', NOW()),
-  ('040', 'add_user_name_fields', NOW())
+  ('040', 'add_user_name_fields', NOW()),
+  ('046', 'fix_child_household_mismatches', NOW()),
+  ('047', 'add_child_household_consistency_check', NOW())
 ON CONFLICT (version) DO NOTHING;
 
 -- Users table for authentication (supports email/password and OAuth)
@@ -327,6 +329,70 @@ CREATE TRIGGER update_items_updated_at
 BEFORE UPDATE ON items
 FOR EACH ROW
 EXECUTE FUNCTION update_updated_at_column();
+
+-- ============================================================================
+-- Child Household Consistency Enforcement
+-- ============================================================================
+-- Ensures children with user accounts always belong to the same household as their user
+-- This prevents data inconsistency bugs where DELETE operations fail with 404
+
+-- Function to check child household consistency on INSERT/UPDATE
+CREATE OR REPLACE FUNCTION check_child_household_consistency()
+RETURNS TRIGGER AS $$
+BEGIN
+  -- Only check if user_id is set (linked children)
+  IF NEW.user_id IS NOT NULL THEN
+    -- Verify the user belongs to this household
+    IF NOT EXISTS (
+      SELECT 1
+      FROM household_members
+      WHERE user_id = NEW.user_id
+        AND household_id = NEW.household_id
+    ) THEN
+      RAISE EXCEPTION 'Child user_id % must belong to household % in household_members',
+        NEW.user_id, NEW.household_id;
+    END IF;
+  END IF;
+
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+-- Create trigger on children table
+DROP TRIGGER IF EXISTS enforce_child_household_consistency ON children;
+CREATE TRIGGER enforce_child_household_consistency
+  BEFORE INSERT OR UPDATE ON children
+  FOR EACH ROW
+  WHEN (NEW.user_id IS NOT NULL)
+  EXECUTE FUNCTION check_child_household_consistency();
+
+-- Function to prevent moving a user to different household if they have linked children
+CREATE OR REPLACE FUNCTION prevent_child_user_household_change()
+RETURNS TRIGGER AS $$
+BEGIN
+  -- Only check on UPDATE when household_id changes
+  IF TG_OP = 'UPDATE' AND OLD.household_id != NEW.household_id THEN
+    -- Check if this user is linked to any children
+    IF EXISTS (
+      SELECT 1
+      FROM children
+      WHERE user_id = NEW.user_id
+    ) THEN
+      RAISE EXCEPTION 'Cannot move user % to different household because they are linked to children. Update children.household_id first.',
+        NEW.user_id;
+    END IF;
+  END IF;
+
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+-- Create trigger on household_members table
+DROP TRIGGER IF EXISTS prevent_child_user_household_change ON household_members;
+CREATE TRIGGER prevent_child_user_household_change
+  BEFORE UPDATE ON household_members
+  FOR EACH ROW
+  EXECUTE FUNCTION prevent_child_user_household_change();
 
 -- ============================================================================
 -- Row-Level Security (RLS) Policies
