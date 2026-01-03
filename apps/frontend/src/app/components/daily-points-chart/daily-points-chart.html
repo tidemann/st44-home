@@ -1,0 +1,18 @@
+<div class="daily-points-chart" role="region" [attr.aria-label]="title()">
+  <!-- Header -->
+  <div class="chart-header">
+    <h3 class="chart-title">{{ title() }}</h3>
+    <span class="total-points" [attr.aria-label]="totalPoints() + ' total points'">
+      {{ totalPoints() }} pts
+    </span>
+  </div>
+
+  <!-- Chart -->
+  @if (chartData().length > 0) {
+    <app-bar-chart [data]="chartData()" [barColor]="barColor()" [height]="height()" />
+  } @else {
+    <div class="empty-state">
+      <p>No data available</p>
+    </div>
+  }
+</div>

@@ -1,0 +1,45 @@
+<div class="week-comparison" role="region" aria-label="Weekly comparison">
+  <h3 class="comparison-title">This Week vs Last Week</h3>
+
+  <div class="comparison-grid">
+    <!-- This Week -->
+    <div class="period-card current">
+      <span class="period-label">This Week</span>
+      <span class="period-value">{{ currentRate() }}%</span>
+      <span class="period-sublabel">
+        {{ comparison().current.completedTasks }}/{{ comparison().current.totalTasks }} tasks
+      </span>
+    </div>
+
+    <!-- Trend Indicator -->
+    <div
+      class="trend-indicator"
+      [class.improved]="isImproved()"
+      [class.declined]="isDeclined()"
+      [attr.aria-label]="trendMessage()"
+    >
+      <span class="trend-arrow">{{ trendArrow() }}</span>
+      <span class="trend-change">{{ rateChange() > 0 ? '+' : '' }}{{ rateChange() }}%</span>
+    </div>
+
+    <!-- Last Week -->
+    <div class="period-card previous">
+      <span class="period-label">Last Week</span>
+      <span class="period-value">{{ previousRate() }}%</span>
+      <span class="period-sublabel">
+        {{ comparison().previous.completedTasks }}/{{ comparison().previous.totalTasks }} tasks
+      </span>
+    </div>
+  </div>
+
+  <!-- Points Change -->
+  <div class="points-change">
+    <span class="points-label">Points this week:</span>
+    <span class="points-value">{{ comparison().current.totalPoints }}</span>
+    @if (pointsChange() !== 0) {
+      <span class="points-delta" [class.positive]="pointsChange() > 0">
+        ({{ pointsChange() > 0 ? '+' : '' }}{{ pointsChange() }} from last week)
+      </span>
+    }
+  </div>
+</div>

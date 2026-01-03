@@ -1,0 +1,9 @@
+.line-chart-container {
+  width: 100%;
+  position: relative;
+}
+
+canvas {
+  width: 100% !important;
+  height: 100% !important;
+}

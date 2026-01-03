@@ -14,12 +14,15 @@ import {
 } from '../../components/modals/task-form-modal/task-form-modal';
 import { CelebrationComponent } from '../../components/celebration/celebration';
 import { FailedTasksSectionComponent } from '../../components/failed-tasks-section/failed-tasks-section';
+import { WeekComparison } from '../../components/week-comparison/week-comparison';
+import { ChildrenTrends } from '../../components/children-trends/children-trends';
 import { TaskService } from '../../services/task.service';
 import { ChildrenService } from '../../services/children.service';
 import { AuthService } from '../../services/auth.service';
 import { HouseholdService } from '../../services/household.service';
 import { DashboardService } from '../../services/dashboard.service';
-import type { Task, Assignment, Child } from '@st44/types';
+import { AnalyticsService } from '../../services/analytics.service';
+import type { Task, Assignment, Child, HouseholdAnalytics } from '@st44/types';
 
 /**
  * Dashboard stats for home screen
@@ -49,6 +52,8 @@ interface DashboardStats {
     TaskFormModal,
     CelebrationComponent,
     FailedTasksSectionComponent,
+    WeekComparison,
+    ChildrenTrends,
   ],
   templateUrl: './home.html',
   styleUrl: './home.css',
@@ -60,6 +65,7 @@ export class Home implements OnInit {
   private readonly authService = inject(AuthService);
   private readonly householdService = inject(HouseholdService);
   private readonly dashboardService = inject(DashboardService);
+  private readonly analyticsService = inject(AnalyticsService);
 
   // State signals
   protected readonly loading = signal(false);
@@ -75,6 +81,7 @@ export class Home implements OnInit {
   protected readonly userName = signal<string>('there');
   protected readonly householdId = signal<string | null>(null);
   protected readonly householdName = signal<string>('My Family');
+  protected readonly analytics = signal<HouseholdAnalytics | null>(null);
 
   // Modal state
   protected readonly editTaskOpen = signal(false);
@@ -125,12 +132,13 @@ export class Home implements OnInit {
       // Use firstName if available, fallback to email username
       this.userName.set(user.firstName || user.email.split('@')[0]);
 
-      // Load children, tasks, and stats in parallel
+      // Load children, tasks, stats, and analytics in parallel
       const [childrenData] = await Promise.all([
         this.childrenService.listChildren(household.id),
         this.loadTodayTasks(household.id),
         this.loadUpcomingTasks(household.id),
         this.loadStats(household.id),
+        this.loadAnalytics(household.id),
       ]);
 
       this.children.set(childrenData);
@@ -187,6 +195,19 @@ export class Home implements OnInit {
       });
     } catch (err) {
       console.error('Failed to load stats:', err);
+    }
+  }
+
+  /**
+   * Load household analytics for trends and comparison
+   */
+  private async loadAnalytics(householdId: string): Promise<void> {
+    try {
+      const analytics = await this.analyticsService.getHouseholdAnalytics(householdId, 'week');
+      this.analytics.set(analytics);
+    } catch (err) {
+      console.error('Failed to load analytics:', err);
+      // Analytics is optional - don't show error to user
     }
   }
 
