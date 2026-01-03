@@ -449,4 +449,121 @@ describe('AuthService', () => {
       sessionStorage.clear();
     });
   });
+
+  describe('loginWithGoogle', () => {
+    const mockAccessToken = createMockJWT('456', 'google@example.com', 'parent');
+    const mockGoogleResponse = {
+      message: 'Google login successful',
+      user: {
+        id: '456',
+        email: 'google@example.com',
+      },
+      accessToken: mockAccessToken,
+      refreshToken: 'mock-google-refresh-token',
+    };
+
+    it('should call Google OAuth endpoint with credential', () => {
+      service.loginWithGoogle('mock.google.credential').subscribe({
+        next: (response) => {
+          expect(response).toEqual(mockGoogleResponse);
+        },
+      });
+
+      const req = httpMock.expectOne(`/api/auth/google`);
+      expect(req.request.method).toBe('POST');
+      expect(req.request.body).toEqual({
+        credential: 'mock.google.credential',
+      });
+
+      req.flush(mockGoogleResponse);
+      httpMock.verify();
+    });
+
+    it('should always use persistent storage for Google OAuth', () => {
+      service.loginWithGoogle('mock.google.credential').subscribe({
+        next: () => {
+          // Check localStorage (persistent)
+          expect(localStorage.getItem('accessToken')).toBe(mockAccessToken);
+          expect(localStorage.getItem('refreshToken')).toBe('mock-google-refresh-token');
+
+          // Ensure sessionStorage is empty
+          expect(sessionStorage.getItem('accessToken')).toBeNull();
+          expect(sessionStorage.getItem('refreshToken')).toBeNull();
+        },
+      });
+
+      const req = httpMock.expectOne(`/api/auth/google`);
+      req.flush(mockGoogleResponse);
+      httpMock.verify();
+    });
+
+    it('should update currentUser signal on successful Google login', () => {
+      service.loginWithGoogle('mock.google.credential').subscribe({
+        next: () => {
+          expect(service.currentUser()).toEqual({
+            id: '456',
+            email: 'google@example.com',
+            role: 'parent',
+          });
+        },
+      });
+
+      const req = httpMock.expectOne(`/api/auth/google`);
+      req.flush(mockGoogleResponse);
+      httpMock.verify();
+    });
+
+    it('should update isAuthenticated signal on successful Google login', () => {
+      expect(service.isAuthenticated()).toBe(false);
+
+      service.loginWithGoogle('mock.google.credential').subscribe({
+        next: () => {
+          expect(service.isAuthenticated()).toBe(true);
+        },
+      });
+
+      const req = httpMock.expectOne(`/api/auth/google`);
+      req.flush(mockGoogleResponse);
+      httpMock.verify();
+    });
+
+    it('should handle Google authentication errors', () => {
+      const mockError = {
+        error: 'Google authentication failed',
+      };
+
+      service.loginWithGoogle('invalid.google.credential').subscribe({
+        next: () => {
+          throw new Error('Should have failed');
+        },
+        error: (error) => {
+          expect(error.error.error).toBe('Google authentication failed');
+        },
+      });
+
+      const req = httpMock.expectOne(`/api/auth/google`);
+      req.flush(mockError, { status: 401, statusText: 'Unauthorized' });
+      httpMock.verify();
+    });
+
+    it('should clear existing session storage when Google login succeeds', () => {
+      // Set existing tokens in sessionStorage
+      sessionStorage.setItem('accessToken', 'old-session-token');
+      sessionStorage.setItem('refreshToken', 'old-session-refresh');
+
+      service.loginWithGoogle('mock.google.credential').subscribe({
+        next: () => {
+          // Session storage should be cleared, localStorage should have new tokens
+          expect(sessionStorage.getItem('accessToken')).toBeNull();
+          expect(sessionStorage.getItem('refreshToken')).toBeNull();
+          expect(localStorage.getItem('accessToken')).toBe(mockAccessToken);
+          expect(localStorage.getItem('refreshToken')).toBe('mock-google-refresh-token');
+        },
+      });
+
+      const req = httpMock.expectOne(`/api/auth/google`);
+      req.flush(mockGoogleResponse);
+      httpMock.verify();
+    });
+  });
 });
