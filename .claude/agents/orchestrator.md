@@ -132,6 +132,21 @@ gh issue view <NUMBER>
 - Link tasks to parent feature ("Part of #XXX")
 - Assign area labels (frontend/backend/database)
 
+### 1.5 Live Solution Debugging
+
+Debug production at **home.st44.no** using Chrome browser tools:
+
+```bash
+tabs_context_mcp(createIfEmpty: true)
+navigate(url: "https://home.st44.no", tabId: <id>)
+computer(action: "screenshot", tabId: <id>)
+read_page(tabId: <id>)
+```
+
+**Use for**: Understanding PO wishes, bug investigation, deployment verification.
+
+See `.claude/skills/live-debug/SKILL.md` for full documentation.
+
 ### 2. Agent Delegation
 
 **Subagent Handover Pattern (MANDATORY)**:

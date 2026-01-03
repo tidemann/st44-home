@@ -239,6 +239,67 @@ gh issue list --milestone "MVP Launch" --state open
 - Document architectural decisions and constraints
 - Map data flows and API interactions
 
+### 2.5 Live Solution Debugging (Chrome Browser Tools)
+
+Use Chrome browser automation tools to debug and understand the production application at **home.st44.no**.
+
+#### When to Use
+
+- **Understanding PO Wishes**: Observe current app behavior to understand requirements
+- **Bug Investigation**: See exact visual state of reported issues
+- **Deployment Verification**: Confirm features work after shipping
+- **Requirements Clarification**: Visual reference for ambiguous requirements
+
+#### Available Tools
+
+```
+mcp__claude-in-chrome__tabs_context_mcp  - Get/create browser tabs
+mcp__claude-in-chrome__navigate          - Navigate to URLs
+mcp__claude-in-chrome__computer          - Screenshots, clicks, interactions
+mcp__claude-in-chrome__read_page         - Read accessibility tree
+mcp__claude-in-chrome__javascript_tool   - Execute JS for state inspection
+mcp__claude-in-chrome__gif_creator       - Record bug reproduction GIFs
+mcp__claude-in-chrome__read_network_requests - Monitor API calls
+mcp__claude-in-chrome__read_console_messages - View console errors
+```
+
+#### Standard Workflow
+
+```bash
+# 1. Get tab context (creates MCP tab group if needed)
+tabs_context_mcp(createIfEmpty: true)
+
+# 2. Navigate to production
+navigate(url: "https://home.st44.no", tabId: <id>)
+
+# 3. Screenshot current state
+computer(action: "screenshot", tabId: <id>)
+
+# 4. Read page structure
+read_page(tabId: <id>, filter: "interactive")
+
+# 5. Inspect with JavaScript
+javascript_tool(text: "document.querySelector('[data-testid=\"...\"]')", tabId: <id>)
+```
+
+#### Recording Bug Reproductions
+
+For complex bugs, record a GIF:
+
+```bash
+gif_creator(action: "start_recording", tabId: <id>)
+computer(action: "screenshot", tabId: <id>)  # Initial frame
+# ... perform reproduction steps ...
+computer(action: "screenshot", tabId: <id>)  # Final frame
+gif_creator(action: "stop_recording", tabId: <id>)
+gif_creator(action: "export", download: true, filename: "bug-repro.gif", tabId: <id>)
+```
+
+#### Related Resources
+
+- **Live Debug Skill**: `.claude/skills/live-debug/SKILL.md` - Full debugging skill
+- **Report Bug Skill**: `.claude/skills/report-bug/SKILL.md` - Create issues with screenshots
+
 ### 3. Implementation Planning
 
 - Break down tasks into logical subtasks

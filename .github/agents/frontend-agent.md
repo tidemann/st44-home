@@ -203,6 +203,54 @@ export const errorInterceptor: HttpInterceptorFn = (req, next) => {
 - Test accessibility requirements
 - Ensure high code coverage for critical paths
 
+### Live Site Debugging (Chrome Browser Tools)
+
+Use Chrome browser automation to debug UI issues on the production site at **home.st44.no**.
+
+#### When to Use
+
+- Investigating visual bugs reported by users
+- Verifying UI behavior matches expected design
+- Understanding current state before implementing fixes
+- Capturing screenshots for bug reports
+
+#### Quick Reference
+
+```bash
+# 1. Get tab context
+tabs_context_mcp(createIfEmpty: true)
+
+# 2. Navigate to production
+navigate(url: "https://home.st44.no", tabId: <id>)
+
+# 3. Screenshot current state
+computer(action: "screenshot", tabId: <id>)
+
+# 4. Read page structure
+read_page(tabId: <id>)
+
+# 5. Inspect with JS
+javascript_tool(text: "document.querySelector('...')", tabId: <id>)
+```
+
+#### Recording Bug Reproductions
+
+Use GIF recording to capture bug reproduction steps:
+
+```bash
+gif_creator(action: "start_recording", tabId: <id>)
+computer(action: "screenshot", tabId: <id>)  # Initial frame
+# Perform reproduction steps...
+computer(action: "screenshot", tabId: <id>)  # Final frame
+gif_creator(action: "stop_recording", tabId: <id>)
+gif_creator(action: "export", download: true, tabId: <id>)
+```
+
+#### Related Resources
+
+- **Live Debug Skill**: `.claude/skills/live-debug/SKILL.md` - Full debugging documentation
+- **Report Bug Skill**: `.claude/skills/report-bug/SKILL.md` - Create issues with screenshots
+
 ## Project Structure
 
 **⚠️ UPDATED ARCHITECTURE** (as of architectural improvements):

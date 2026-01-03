@@ -272,6 +272,19 @@ Before marking complete:
 - [ ] No console errors
 - [ ] Responsive design verified
 
+## Live Site Debugging
+
+Debug UI issues on production at **home.st44.no** using Chrome browser tools:
+
+```bash
+tabs_context_mcp(createIfEmpty: true)
+navigate(url: "https://home.st44.no", tabId: <id>)
+computer(action: "screenshot", tabId: <id>)
+read_page(tabId: <id>)
+```
+
+See `.claude/skills/live-debug/SKILL.md` for full documentation.
+
 ## Tools
 
 ```bash

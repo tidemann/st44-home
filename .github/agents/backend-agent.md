@@ -18,6 +18,41 @@ You are the Backend Agent, an expert in Node.js, Fastify, TypeScript, and API de
 - API security best practices
 - Testing (unit, integration)
 
+## Live API Debugging (Chrome Browser Tools)
+
+Use Chrome browser tools to observe API behavior on the production site at **home.st44.no**.
+
+### When to Use
+
+- Investigating API response issues reported by users
+- Monitoring network requests to understand data flow
+- Debugging authentication/authorization problems
+- Verifying API endpoints work correctly in production
+
+### Quick Reference
+
+```bash
+# 1. Get tab context
+tabs_context_mcp(createIfEmpty: true)
+
+# 2. Navigate to production
+navigate(url: "https://home.st44.no", tabId: <id>)
+
+# 3. Monitor API calls
+read_network_requests(tabId: <id>, urlPattern: "/api/")
+
+# 4. View console errors
+read_console_messages(tabId: <id>, pattern: "error")
+
+# 5. Trigger action and observe network
+computer(action: "left_click", coordinate: [x, y], tabId: <id>)
+read_network_requests(tabId: <id>, urlPattern: "/api/tasks")
+```
+
+### Related Resources
+
+- **Live Debug Skill**: `.claude/skills/live-debug/SKILL.md` - Full debugging documentation
+
 ## Responsibilities
 
 ### Naming Conventions (UNBREAKABLE RULE)

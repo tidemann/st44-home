@@ -2,7 +2,7 @@
 name: report-bug
 description: Quickly report bugs and minor issues to GitHub Issues
 user-invocable: true
-allowed-tools: Bash, AskUserQuestion
+allowed-tools: Bash, AskUserQuestion, mcp__claude-in-chrome__*
 ---
 
 # Bug Reporter Skill
@@ -119,3 +119,53 @@ The skill should:
 5. Return the issue URL
 
 Keep it simple and fast - the goal is to make bug reporting frictionless.
+
+## Capturing Live Screenshots (Optional Enhancement)
+
+For visual bugs, capture evidence from the production site at **home.st44.no**:
+
+### Take Screenshot
+
+```bash
+# 1. Get tab context
+tabs_context_mcp(createIfEmpty: true)
+
+# 2. Navigate to the affected page
+navigate(url: "https://home.st44.no/...", tabId: <id>)
+
+# 3. Take screenshot
+computer(action: "screenshot", tabId: <id>)
+
+# Include screenshot ID in bug report description
+```
+
+### Record Bug Reproduction (For Complex Bugs)
+
+```bash
+# 1. Start recording
+gif_creator(action: "start_recording", tabId: <id>)
+computer(action: "screenshot", tabId: <id>)  # Initial frame
+
+# 2. Reproduce the bug steps
+computer(action: "left_click", coordinate: [x, y], tabId: <id>)
+# ... more steps ...
+
+# 3. Capture final state
+computer(action: "screenshot", tabId: <id>)
+gif_creator(action: "stop_recording", tabId: <id>)
+
+# 4. Export GIF
+gif_creator(action: "export", download: true, filename: "bug-reproduction.gif", tabId: <id>)
+```
+
+### When to Capture Visual Evidence
+
+- **Always** for visual/UI bugs (layout, styling, positioning)
+- **Recommended** for UX issues (confusing flows, unexpected behavior)
+- **Optional** for API/backend bugs (unless UI shows error state)
+
+Visual evidence helps developers understand and fix bugs faster.
+
+## Related Resources
+
+- **Live Debug Skill**: `.claude/skills/live-debug/SKILL.md` - Full browser debugging documentation

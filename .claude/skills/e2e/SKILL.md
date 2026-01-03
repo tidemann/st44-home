@@ -864,6 +864,74 @@ Before marking E2E work complete:
 - [ ] Tests documented
 - [ ] No flaky tests
 
+## Comparing with Live Behavior
+
+Use Chrome browser tools to compare e2e test expectations with actual production behavior at **home.st44.no**.
+
+### When to Use
+
+- E2e test assertions don't match live behavior
+- Investigating discrepancies between local and production
+- Verifying fixes deployed correctly
+- Understanding production state for test updates
+
+### Comparison Workflow
+
+```bash
+# 1. Run e2e test locally to see expected behavior
+npm run test:e2e:ui
+
+# 2. Check live site
+tabs_context_mcp(createIfEmpty: true)
+navigate(url: "https://home.st44.no", tabId: <id>)
+computer(action: "screenshot", tabId: <id>)
+
+# 3. Read page structure
+read_page(tabId: <id>)
+
+# 4. Compare with test assertions
+# - Check element presence
+# - Verify text content
+# - Confirm state matches expectations
+
+# 5. Update tests or file bug as needed
+```
+
+### Example: Comparing Login Flow
+
+```bash
+# Local e2e test expects:
+# - "Welcome Back!" heading
+# - Email and Password fields
+# - "Log In" button
+
+# Check live site:
+tabs_context_mcp(createIfEmpty: true)
+navigate(url: "https://home.st44.no/login", tabId: <id>)
+computer(action: "screenshot", tabId: <id>)
+read_page(tabId: <id>, filter: "interactive")
+
+# Compare elements with test assertions
+find(query: "login button", tabId: <id>)
+find(query: "email input", tabId: <id>)
+```
+
+### Test vs Production Differences
+
+Common causes of discrepancies:
+
+- **Different data**: Test database vs production data
+- **Feature flags**: Features enabled differently
+- **Caching**: Browser/CDN cache differences
+- **Timing**: Animation/load timing differences
+- **Environment**: API URL, config differences
+
+When differences found:
+
+1. Determine if test or production is "correct"
+2. Update test expectations if production is correct
+3. File bug if production behavior is wrong
+
 ## Related Resources
 
 ### Documentation
