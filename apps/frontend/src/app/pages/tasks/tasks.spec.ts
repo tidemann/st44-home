@@ -341,7 +341,12 @@ describe('Tasks Component', () => {
     it('should update task from modal', () => {
       fixture.detectChanges();
       component['editingTask'].set(mockTask);
-      const updateData = { name: 'Updated task', points: 15, ruleType: 'daily' as const };
+      const updateData = {
+        name: 'Updated task',
+        points: 15,
+        ruleType: 'daily' as const,
+        ruleConfig: { assignedChildren: [] },
+      };
       component['onTaskUpdate'](updateData);
       expect(mockTaskService.updateTask).toHaveBeenCalledWith('household-1', 'task-1', updateData);
     });

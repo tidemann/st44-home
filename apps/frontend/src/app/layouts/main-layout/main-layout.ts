@@ -12,13 +12,18 @@ import { filter, Subscription } from 'rxjs';
 import { BottomNav } from '../../components/navigation/bottom-nav/bottom-nav';
 import { SidebarNav } from '../../components/navigation/sidebar-nav/sidebar-nav';
 import { HouseholdSwitcherComponent } from '../../components/household-switcher/household-switcher';
-import { CreateTaskModal } from '../../components/modals/create-task-modal/create-task-modal';
+import {
+  TaskFormModal,
+  type TaskFormData,
+} from '../../components/modals/task-form-modal/task-form-modal';
 import { AuthService } from '../../services/auth.service';
 import { HouseholdService } from '../../services/household.service';
 import { ChildrenService } from '../../services/children.service';
 import type { SidebarUser } from '../../components/navigation/sidebar-nav/sidebar-nav';
 import type { NavScreen } from '../../components/navigation/bottom-nav/bottom-nav';
 import type { Child } from '@st44/types';
+import { TaskService } from '../../services/task.service';
+import { take } from 'rxjs';
 
 /**
  * Main Layout Component
@@ -34,7 +39,7 @@ import type { Child } from '@st44/types';
  */
 @Component({
   selector: 'app-main-layout',
-  imports: [RouterOutlet, BottomNav, SidebarNav, HouseholdSwitcherComponent, CreateTaskModal],
+  imports: [RouterOutlet, BottomNav, SidebarNav, HouseholdSwitcherComponent, TaskFormModal],
   templateUrl: './main-layout.html',
   styleUrl: './main-layout.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -44,6 +49,7 @@ export class MainLayout implements OnInit, OnDestroy {
   private readonly authService = inject(AuthService);
   private readonly householdService = inject(HouseholdService);
   private readonly childrenService = inject(ChildrenService);
+  private readonly taskService = inject(TaskService);
 
   private routerSubscription: Subscription | null = null;
 
@@ -176,10 +182,29 @@ export class MainLayout implements OnInit, OnDestroy {
   }
 
   /**
-   * Handle task creation success
+   * Handle task form submission
    */
-  protected onTaskCreated(): void {
-    this.createTaskOpen.set(false);
+  protected onTaskFormSubmit(data: TaskFormData): void {
+    const household = this.householdId();
+    if (!household) return;
+
+    this.taskService
+      .createTask(household, {
+        name: data.name,
+        description: data.description,
+        points: data.points,
+        ruleType: data.ruleType,
+        ruleConfig: data.ruleConfig,
+      })
+      .pipe(take(1))
+      .subscribe({
+        next: () => {
+          this.createTaskOpen.set(false);
+        },
+        error: (error) => {
+          console.error('Failed to create task:', error);
+        },
+      });
   }
 
   /**

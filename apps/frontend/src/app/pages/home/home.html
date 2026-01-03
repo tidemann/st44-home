@@ -91,11 +91,13 @@
     </div>
 
     <!-- Edit Task Modal -->
-    <app-edit-task-modal
+    <app-task-form-modal
       [open]="editTaskOpen()"
+      mode="edit"
       [task]="selectedTask()"
+      [children]="children()"
       (closeRequested)="closeEditTask()"
-      (taskUpdated)="onTaskUpdated($event)"
+      (formSubmitted)="onTaskUpdated($event)"
       (taskDeleted)="onTaskDeleted()"
     />
 

@@ -81,11 +81,13 @@
   }
 
   <!-- Edit Task Modal -->
-  <app-edit-task-modal
+  <app-task-form-modal
     [open]="editModalOpen()"
+    mode="edit"
     [task]="editingTask()"
+    [children]="members()"
     (closeRequested)="onModalClose()"
-    (taskUpdated)="onTaskUpdate($event)"
+    (formSubmitted)="onTaskUpdate($event)"
     (taskDeleted)="onTaskDelete()"
   />
 
