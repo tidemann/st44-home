@@ -177,10 +177,13 @@ export class Home implements OnInit {
   private async loadStats(householdId: string): Promise<void> {
     try {
       const dashboard = await this.dashboardService.getDashboard(householdId);
+      const weekSummary = dashboard?.weekSummary;
+      const children = dashboard?.children ?? [];
+
       this.stats.set({
-        activeCount: dashboard.weekSummary.pending,
-        weekProgress: dashboard.weekSummary.completionRate,
-        totalPoints: dashboard.children.reduce((sum, c) => sum + c.tasksCompleted * 10, 0),
+        activeCount: weekSummary?.pending ?? 0,
+        weekProgress: weekSummary?.completionRate ?? 0,
+        totalPoints: children.reduce((sum, c) => sum + c.tasksCompleted * 10, 0),
       });
     } catch (err) {
       console.error('Failed to load stats:', err);
