@@ -34,7 +34,8 @@ VALUES
   ('040', 'add_user_name_fields', NOW()),
   ('046', 'fix_child_household_mismatches', NOW()),
   ('047', 'add_child_household_consistency_check', NOW()),
-  ('048', 'fix_multi_household_child_assignments', NOW())
+  ('048', 'fix_multi_household_child_assignments', NOW()),
+  ('049', 'cleanup_orphaned_child_memberships', NOW())
 ON CONFLICT (version) DO NOTHING;
 
 -- Users table for authentication (supports email/password and OAuth)
