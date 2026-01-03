@@ -23,6 +23,31 @@
       <h1 class="greeting">Hi {{ childName() }}! 👋</h1>
     </header>
 
+    <!-- Streak and Progress Section -->
+    @if (analytics()) {
+      <section class="analytics-section">
+        <!-- Streak Counter -->
+        <app-streak-counter
+          [currentStreak]="analytics()!.currentStreak"
+          [longestStreak]="analytics()!.longestStreak"
+        />
+
+        <!-- Week/Month Progress -->
+        <div class="progress-cards">
+          <app-progress-summary
+            title="This Week"
+            icon="📅"
+            [progress]="analytics()!.weekProgress"
+          />
+          <app-progress-summary
+            title="This Month"
+            icon="📆"
+            [progress]="analytics()!.monthProgress"
+          />
+        </div>
+      </section>
+    }
+
     <!-- Available Single Tasks -->
     <app-available-tasks-section />
 
