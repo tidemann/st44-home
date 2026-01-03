@@ -207,7 +207,10 @@ export class Home implements OnInit {
       this.stats.set({
         activeCount: weekSummary?.pending ?? 0,
         weekProgress: weekSummary?.completionRate ?? 0,
-        totalPoints: children.reduce((sum, c) => sum + c.tasksCompleted * 10, 0),
+        totalPoints: children.reduce((sum, c) => {
+          const tasks = Number(c.tasksCompleted) || 0;
+          return sum + tasks * 10;
+        }, 0),
       });
     } catch (err) {
       console.error('Failed to load stats:', err);
