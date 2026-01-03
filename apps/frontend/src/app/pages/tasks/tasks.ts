@@ -12,9 +12,9 @@ import { TaskService, type MyTaskAssignment } from '../../services/task.service'
 import { AuthService } from '../../services/auth.service';
 import { TaskCardComponent } from '../../components/task-card/task-card';
 import {
-  EditTaskModal,
-  type EditTaskData,
-} from '../../components/modals/edit-task-modal/edit-task-modal';
+  TaskFormModal,
+  type TaskFormData,
+} from '../../components/modals/task-form-modal/task-form-modal';
 import { ReassignTaskModal } from '../../components/modals/reassign-task-modal/reassign-task-modal';
 import { PageComponent } from '../../components/page/page';
 import type { Task, Child, Assignment } from '@st44/types';
@@ -40,13 +40,13 @@ export type TaskFilter = 'all' | 'mine' | 'person' | 'completed';
  * - Filter tabs with localStorage persistence
  * - URL query params for shareability
  * - Task completion inline
- * - Task editing via EditTaskModal
+ * - Task editing via TaskFormModal
  *
  * Navigation is handled by the parent MainLayout component.
  */
 @Component({
   selector: 'app-tasks',
-  imports: [TaskCardComponent, EditTaskModal, ReassignTaskModal, PageComponent],
+  imports: [TaskCardComponent, TaskFormModal, ReassignTaskModal, PageComponent],
   templateUrl: './tasks.html',
   styleUrl: './tasks.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -425,7 +425,7 @@ export class Tasks implements OnInit {
   /**
    * Handle task update from modal
    */
-  protected onTaskUpdate(data: EditTaskData): void {
+  protected onTaskUpdate(data: TaskFormData): void {
     const task = this.editingTask();
     const household = this.householdId();
 

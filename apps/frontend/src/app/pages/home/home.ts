@@ -9,9 +9,9 @@ import {
 import { TaskCardComponent } from '../../components/task-card/task-card';
 import { StatCard } from '../../components/stat-card/stat-card';
 import {
-  EditTaskModal,
-  type EditTaskData,
-} from '../../components/modals/edit-task-modal/edit-task-modal';
+  TaskFormModal,
+  type TaskFormData,
+} from '../../components/modals/task-form-modal/task-form-modal';
 import { CelebrationComponent } from '../../components/celebration/celebration';
 import { FailedTasksSectionComponent } from '../../components/failed-tasks-section/failed-tasks-section';
 import { TaskService } from '../../services/task.service';
@@ -46,7 +46,7 @@ interface DashboardStats {
   imports: [
     TaskCardComponent,
     StatCard,
-    EditTaskModal,
+    TaskFormModal,
     CelebrationComponent,
     FailedTasksSectionComponent,
   ],
@@ -235,7 +235,7 @@ export class Home implements OnInit {
   /**
    * Handle task update from edit modal
    */
-  protected onTaskUpdated(data: EditTaskData): void {
+  protected onTaskUpdated(data: TaskFormData): void {
     const task = this.selectedTask();
     const householdIdValue = this.householdId();
     if (!task || !householdIdValue) return;

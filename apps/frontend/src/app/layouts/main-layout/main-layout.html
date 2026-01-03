@@ -42,14 +42,15 @@
     <button class="fab" (click)="openCreateTask()" aria-label="Add new task">+</button>
   </div>
 
-  <!-- Create Task Modal (Full-featured) -->
+  <!-- Task Form Modal (Create mode) -->
   @if (householdId()) {
-    <app-create-task-modal
+    <app-task-form-modal
       [open]="createTaskOpen()"
+      mode="create"
       [householdId]="householdId()!"
       [children]="children()"
       (closeRequested)="closeCreateTask()"
-      (taskCreated)="onTaskCreated()"
+      (formSubmitted)="onTaskFormSubmit($event)"
     />
   }
 </div>

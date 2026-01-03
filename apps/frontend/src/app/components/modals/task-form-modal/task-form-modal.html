@@ -1,0 +1,250 @@
+<app-modal [open]="open()" (closeModal)="onClose()" [title]="modalTitle()">
+  @if (!showDeleteConfirm()) {
+    <form [formGroup]="form" (ngSubmit)="onSubmit()">
+      <!-- Error Message -->
+      @if (errorMessage()) {
+        <div class="form-error-banner" role="alert">
+          {{ errorMessage() }}
+        </div>
+      }
+
+      <!-- Task Name -->
+      <div class="form-group">
+        <label class="form-label" for="task-name">Task Name *</label>
+        <input
+          type="text"
+          id="task-name"
+          class="form-input"
+          formControlName="name"
+          placeholder="e.g., Clean your room"
+          [class.error]="form.controls.name.invalid && form.controls.name.touched"
+          [attr.aria-invalid]="form.controls.name.invalid && form.controls.name.touched"
+          [attr.aria-describedby]="
+            form.controls.name.invalid && form.controls.name.touched ? 'task-name-error' : null
+          "
+        />
+        @if (form.controls.name.invalid && form.controls.name.touched) {
+          <div id="task-name-error" class="form-error" role="alert">
+            @if (form.controls.name.errors?.['required']) {
+              Task name is required
+            }
+            @if (form.controls.name.errors?.['maxlength']) {
+              Task name is too long (max 255 characters)
+            }
+          </div>
+        }
+      </div>
+
+      <!-- Description -->
+      <div class="form-group">
+        <label class="form-label" for="description">Description (optional)</label>
+        <textarea
+          id="description"
+          class="form-textarea"
+          formControlName="description"
+          placeholder="Add any details about this task..."
+          rows="2"
+        ></textarea>
+      </div>
+
+      <!-- Points -->
+      <div class="form-group">
+        <label class="form-label" for="points">Points *</label>
+        <input
+          type="number"
+          id="points"
+          class="form-input points-input"
+          formControlName="points"
+          min="1"
+          max="1000"
+          [class.error]="form.controls.points.invalid && form.controls.points.touched"
+          [attr.aria-invalid]="form.controls.points.invalid && form.controls.points.touched"
+          [attr.aria-describedby]="
+            form.controls.points.invalid && form.controls.points.touched ? 'points-error' : null
+          "
+        />
+        @if (form.controls.points.invalid && form.controls.points.touched) {
+          <div id="points-error" class="form-error" role="alert">
+            Points must be between 1 and 1000
+          </div>
+        }
+      </div>
+
+      <!-- Task Type -->
+      <div class="form-group">
+        <label class="form-label" for="rule-type">Task Type *</label>
+        <select id="rule-type" class="form-select" formControlName="ruleType">
+          @for (type of taskTypes; track type.value) {
+            <option [value]="type.value">{{ type.label }} - {{ type.description }}</option>
+          }
+        </select>
+      </div>
+
+      <!-- Repeating: Day Selection -->
+      @if (ruleType === 'repeating') {
+        <fieldset class="form-group">
+          <legend class="form-label">Select Days *</legend>
+          <div class="day-pills">
+            @for (day of daysOfWeek; track day.value) {
+              <button
+                type="button"
+                class="day-pill"
+                [class.selected]="isDaySelected(day.value)"
+                (click)="onDayChange(day.value, !isDaySelected(day.value))"
+                [attr.aria-pressed]="isDaySelected(day.value)"
+                [attr.aria-label]="day.label"
+              >
+                {{ day.shortLabel }}
+              </button>
+            }
+          </div>
+          @if (repeatDaysArray.length === 0) {
+            <div class="form-hint">Please select at least one day</div>
+          }
+        </fieldset>
+      }
+
+      <!-- Weekly Rotation: Rotation Type & Children -->
+      @if (ruleType === 'weekly_rotation') {
+        <div class="form-group">
+          <label class="form-label" for="rotation-type">Rotation Type *</label>
+          <select id="rotation-type" class="form-select" formControlName="rotationType">
+            @for (type of rotationTypes; track type.value) {
+              <option [value]="type.value">{{ type.label }}</option>
+            }
+          </select>
+        </div>
+
+        <fieldset class="form-group">
+          <legend class="form-label">Select Children (2 or more) *</legend>
+          <div class="child-selection">
+            @for (child of children(); track child.id) {
+              <label class="child-checkbox">
+                <input
+                  type="checkbox"
+                  [checked]="isChildSelected(child.id)"
+                  (change)="onChildChange(child.id, $any($event.target).checked)"
+                  [attr.aria-label]="'Assign to ' + child.name"
+                />
+                <span class="child-name">{{ child.name }}</span>
+              </label>
+            }
+            @if (children().length === 0) {
+              <p class="no-children">No children in this household yet.</p>
+            }
+          </div>
+          @if (assignedChildrenArray.length < 2 && assignedChildrenArray.length > 0) {
+            <div class="form-hint">Select at least 2 children for rotation</div>
+          }
+        </fieldset>
+      }
+
+      <!-- Single Task: Deadline & Candidates -->
+      @if (ruleType === 'single') {
+        <div class="form-group">
+          <label class="form-label" for="deadline">Deadline (optional)</label>
+          <input
+            type="datetime-local"
+            id="deadline"
+            class="form-input"
+            formControlName="deadline"
+            [min]="minDeadline()"
+          />
+          <div class="form-hint">When should this task be completed by?</div>
+        </div>
+
+        <fieldset class="form-group">
+          <legend class="form-label">Candidates *</legend>
+          <div class="form-hint-top">Which children can accept this task?</div>
+          <div class="child-selection">
+            @for (child of children(); track child.id) {
+              <label class="child-checkbox">
+                <input
+                  type="checkbox"
+                  [checked]="isChildSelected(child.id)"
+                  (change)="onChildChange(child.id, $any($event.target).checked)"
+                  [attr.aria-label]="'Add ' + child.name + ' as candidate'"
+                />
+                <span class="child-name">{{ child.name }}</span>
+              </label>
+            }
+            @if (children().length === 0) {
+              <p class="no-children">No children in this household yet.</p>
+            }
+          </div>
+          @if (assignedChildrenArray.length === 0) {
+            <div class="form-hint">Select at least one candidate</div>
+          }
+        </fieldset>
+      }
+
+      <!-- Daily/Repeating: Optional Children Assignment -->
+      @if (ruleType === 'daily' || ruleType === 'repeating') {
+        <fieldset class="form-group">
+          <legend class="form-label">
+            Assign to Children
+            @if (ruleType === 'daily') {
+              <span class="help-text">(Optional)</span>
+            }
+          </legend>
+          <div class="child-selection">
+            @for (child of children(); track child.id) {
+              <label class="child-checkbox">
+                <input
+                  type="checkbox"
+                  [checked]="isChildSelected(child.id)"
+                  (change)="onChildChange(child.id, $any($event.target).checked)"
+                  [attr.aria-label]="'Assign to ' + child.name"
+                />
+                <span class="child-name">{{ child.name }}</span>
+              </label>
+            }
+            @if (children().length === 0) {
+              <p class="no-children">No children in this household yet.</p>
+            }
+          </div>
+        </fieldset>
+      }
+
+      <!-- Action Buttons -->
+      @if (mode() === 'edit') {
+        <!-- Edit mode: Delete on left, Cancel/Save on right -->
+        <div class="modal-actions-split" modal-actions>
+          <button type="button" class="btn btn-danger" (click)="onDeleteClick()">Delete</button>
+          <div class="modal-actions-right">
+            <button type="button" class="btn btn-secondary" (click)="onCancel()">Cancel</button>
+            <button
+              type="submit"
+              class="btn btn-primary"
+              [disabled]="!isFormValid() || submitting()"
+            >
+              {{ submitButtonText() }}
+            </button>
+          </div>
+        </div>
+      } @else {
+        <!-- Create mode: Cancel/Create on right -->
+        <div class="modal-actions" modal-actions>
+          <button type="button" class="btn btn-secondary" (click)="onCancel()">Cancel</button>
+          <button type="submit" class="btn btn-primary" [disabled]="!isFormValid() || submitting()">
+            {{ submitButtonText() }}
+          </button>
+        </div>
+      }
+    </form>
+  } @else {
+    <!-- Delete Confirmation -->
+    <div class="delete-confirm">
+      <p class="delete-confirm-text">
+        Are you sure you want to delete this task? This action cannot be undone.
+      </p>
+
+      <div class="modal-actions" modal-actions>
+        <button type="button" class="btn btn-secondary" (click)="onCancelDelete()">Cancel</button>
+        <button type="button" class="btn btn-danger" (click)="onConfirmDelete()">
+          Yes, Delete Task
+        </button>
+      </div>
+    </div>
+  }
+</app-modal>
