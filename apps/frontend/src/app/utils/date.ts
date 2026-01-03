@@ -212,6 +212,7 @@ export function formatRelativeDate(date: Date | string, locale?: string): string
 /**
  * Formats a date to ISO date string (YYYY-MM-DD).
  * Useful for API calls and form values.
+ * Uses local date components to avoid timezone conversion issues.
  *
  * @param date - Date to format
  * @returns ISO date string in YYYY-MM-DD format
@@ -223,7 +224,10 @@ export function formatRelativeDate(date: Date | string, locale?: string): string
  */
 export function toISODateString(date: Date | string): string {
   const d = parseDate(date);
-  return d.toISOString().split('T')[0];
+  const year = d.getFullYear();
+  const month = String(d.getMonth() + 1).padStart(2, '0');
+  const day = String(d.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
 }
 
 /**
