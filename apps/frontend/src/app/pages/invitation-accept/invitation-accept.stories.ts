@@ -1,5 +1,5 @@
-import { Meta, StoryObj, moduleMetadata, applicationConfig } from '@storybook/angular';
-import { Component, signal } from '@angular/core';
+import { Meta, StoryObj, applicationConfig } from '@storybook/angular';
+import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { provideRouter } from '@angular/router';
 
@@ -13,7 +13,7 @@ import { provideRouter } from '@angular/router';
 
 // Wrapper component for unauthenticated state
 @Component({
-  selector: 'story-invitation-unauthenticated',
+  selector: 'app-story-invitation-unauthenticated',
   standalone: true,
   imports: [CommonModule],
   template: `
@@ -41,7 +41,7 @@ class InvitationUnauthenticatedStory {}
 
 // Wrapper component for authenticated state
 @Component({
-  selector: 'story-invitation-authenticated',
+  selector: 'app-story-invitation-authenticated',
   standalone: true,
   imports: [CommonModule],
   template: `
@@ -68,7 +68,7 @@ class InvitationAuthenticatedStory {}
 
 // Wrapper component for processing state
 @Component({
-  selector: 'story-invitation-processing',
+  selector: 'app-story-invitation-processing',
   standalone: true,
   imports: [CommonModule],
   template: `
@@ -98,7 +98,7 @@ class InvitationProcessingStory {}
 
 // Wrapper component for success state
 @Component({
-  selector: 'story-invitation-success',
+  selector: 'app-story-invitation-success',
   standalone: true,
   imports: [CommonModule],
   template: `
@@ -136,7 +136,7 @@ class InvitationSuccessStory {}
 
 // Wrapper component for declined state
 @Component({
-  selector: 'story-invitation-declined',
+  selector: 'app-story-invitation-declined',
   standalone: true,
   imports: [CommonModule],
   template: `
@@ -174,7 +174,7 @@ class InvitationDeclinedStory {}
 
 // Wrapper component for error state - invalid token
 @Component({
-  selector: 'story-invitation-error-invalid',
+  selector: 'app-story-invitation-error-invalid',
   standalone: true,
   imports: [CommonModule],
   template: `
@@ -215,7 +215,7 @@ class InvitationErrorInvalidStory {}
 
 // Wrapper component for error state - not found
 @Component({
-  selector: 'story-invitation-error-notfound',
+  selector: 'app-story-invitation-error-notfound',
   standalone: true,
   imports: [CommonModule],
   template: `
@@ -256,7 +256,7 @@ class InvitationErrorNotFoundStory {}
 
 // Wrapper component for error state - expired
 @Component({
-  selector: 'story-invitation-error-expired',
+  selector: 'app-story-invitation-error-expired',
   standalone: true,
   imports: [CommonModule],
   template: `
@@ -297,7 +297,7 @@ class InvitationErrorExpiredStory {}
 
 // Wrapper component for error state - wrong email
 @Component({
-  selector: 'story-invitation-error-wrongemail',
+  selector: 'app-story-invitation-error-wrongemail',
   standalone: true,
   imports: [CommonModule],
   template: `
@@ -338,7 +338,7 @@ class InvitationErrorWrongEmailStory {}
 
 // Wrapper component for error state - already member
 @Component({
-  selector: 'story-invitation-error-alreadymember',
+  selector: 'app-story-invitation-error-alreadymember',
   standalone: true,
   imports: [CommonModule],
   template: `
