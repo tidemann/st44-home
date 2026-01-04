@@ -1,5 +1,6 @@
 // These placeholders are replaced during the Docker build process
 // If not replaced, falls back to development defaults
+// Build args: BUILD_TIME, GOOGLE_CLIENT_ID
 const BUILD_TIME = 'BUILD_TIME_PLACEHOLDER';
 const GOOGLE_CLIENT_ID = 'GOOGLE_CLIENT_ID_PLACEHOLDER';
 
