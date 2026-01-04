@@ -9,7 +9,7 @@ import {
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormGroup, FormControl, Validators } from '@angular/forms';
-import { Router, RouterLink } from '@angular/router';
+import { Router, ActivatedRoute, RouterLink } from '@angular/router';
 import { AuthService } from '../services/auth.service';
 import { lastValueFrom } from 'rxjs';
 import { environment } from '../../environments/environment';
@@ -56,6 +56,7 @@ declare const google: {
 export class RegisterComponent implements OnInit, AfterViewInit {
   private authService = inject(AuthService);
   private router = inject(Router);
+  private route = inject(ActivatedRoute);
 
   protected googleClientId = environment.googleClientId;
   protected showPassword = signal(false);
@@ -139,8 +140,13 @@ export class RegisterComponent implements OnInit, AfterViewInit {
     try {
       await lastValueFrom(this.authService.loginWithGoogle(response.credential));
 
-      // Success - navigate to household creation page (user already created and logged in)
-      this.router.navigate(['/household/create']);
+      // Success - navigate to returnUrl if provided, otherwise household creation page
+      const returnUrl = this.route.snapshot.queryParams['returnUrl'];
+      if (returnUrl) {
+        this.router.navigateByUrl(returnUrl);
+      } else {
+        this.router.navigate(['/household/create']);
+      }
     } catch (error: unknown) {
       const err = error as { error?: { error?: string; message?: string } };
       const message = err.error?.error || 'Google sign-up failed. Please try again.';
@@ -164,10 +170,13 @@ export class RegisterComponent implements OnInit, AfterViewInit {
       const { email, password, firstName, lastName } = this.registerForm.value;
       await this.authService.register(email!, password!, firstName!, lastName!).toPromise();
 
-      // Success - navigate to login
-      this.router.navigate(['/login'], {
-        queryParams: { registered: 'true' },
-      });
+      // Success - navigate to login, preserving returnUrl if provided
+      const returnUrl = this.route.snapshot.queryParams['returnUrl'];
+      const queryParams: Record<string, string> = { registered: 'true' };
+      if (returnUrl) {
+        queryParams['returnUrl'] = returnUrl;
+      }
+      this.router.navigate(['/login'], { queryParams });
     } catch (error: unknown) {
       const err = error as { error?: { error?: string } };
       this.errorMessage.set(err.error?.error || 'Registration failed. Please try again.');

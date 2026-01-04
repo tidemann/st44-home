@@ -1,0 +1,90 @@
+<div class="invitation-accept-container">
+  <div class="invitation-accept-card">
+    <div class="card-header">
+      <h1>Household Invitation</h1>
+    </div>
+
+    <div class="card-content">
+      @if (errorMessage()) {
+        <div class="error-message">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="20"
+            height="20"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <circle cx="12" cy="12" r="10"></circle>
+            <line x1="12" y1="8" x2="12" y2="12"></line>
+            <line x1="12" y1="16" x2="12.01" y2="16"></line>
+          </svg>
+          <span>{{ errorMessage() }}</span>
+        </div>
+        <div class="actions">
+          <a routerLink="/home" class="btn btn-secondary">Go to Home</a>
+        </div>
+      } @else if (successMessage()) {
+        <div class="success-message">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="20"
+            height="20"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+            <polyline points="22 4 12 14.01 9 11.01"></polyline>
+          </svg>
+          <span>{{ successMessage() }}</span>
+        </div>
+        <p class="redirect-note">Redirecting you to the home page...</p>
+      } @else if (!isAuthenticated()) {
+        <p class="invitation-text">
+          You've been invited to join a household. Please sign in or create an account to accept
+          this invitation.
+        </p>
+
+        <div class="actions">
+          <a [href]="loginUrl()" class="btn btn-primary">Sign In</a>
+          <a [href]="registerUrl()" class="btn btn-secondary">Create Account</a>
+        </div>
+      } @else {
+        <p class="invitation-text">
+          You've been invited to join a household. Would you like to accept this invitation?
+        </p>
+
+        <div class="actions">
+          <button
+            type="button"
+            class="btn btn-primary"
+            [disabled]="isProcessing()"
+            (click)="acceptInvitation()"
+          >
+            @if (isProcessing()) {
+              <span class="spinner"></span>
+              Processing...
+            } @else {
+              Accept Invitation
+            }
+          </button>
+          <button
+            type="button"
+            class="btn btn-secondary"
+            [disabled]="isProcessing()"
+            (click)="declineInvitation()"
+          >
+            Decline
+          </button>
+        </div>
+      }
+    </div>
+  </div>
+</div>
