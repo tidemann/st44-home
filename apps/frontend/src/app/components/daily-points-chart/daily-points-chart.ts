@@ -52,7 +52,10 @@ export class DailyPointsChart {
 
   /** Format date to short day name (Mon, Tue, etc.) */
   private formatDayLabel(dateStr: string): string {
-    const date = new Date(dateStr + 'T12:00:00'); // Use noon to avoid timezone issues
+    // Handle both YYYY-MM-DD and full ISO timestamp formats
+    // Extract just the date portion if it's an ISO timestamp
+    const dateOnly = dateStr.includes('T') ? dateStr.split('T')[0] : dateStr;
+    const date = new Date(dateOnly + 'T12:00:00'); // Use noon to avoid timezone issues
     return date.toLocaleDateString('en-US', { weekday: 'short' });
   }
 }
