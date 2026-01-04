@@ -18,6 +18,22 @@ export class InvitationsSentListComponent implements OnInit {
   successMessage = signal<string | null>(null);
   errorMessage = signal<string | null>(null);
 
+  /**
+   * Check if there are any old invitations that can be cleaned up
+   */
+  hasOldInvitations(): boolean {
+    const now = new Date();
+    return this.invitations().some((inv) => {
+      if (inv.status === 'cancelled' || inv.status === 'declined') {
+        return true;
+      }
+      if (inv.status === 'pending' && new Date(inv.expiresAt) < now) {
+        return true;
+      }
+      return false;
+    });
+  }
+
   ngOnInit() {
     this.loadInvitations();
   }
@@ -103,6 +119,38 @@ export class InvitationsSentListComponent implements OnInit {
    */
   canCancel(invitation: Invitation): boolean {
     return invitation.status === 'pending';
+  }
+
+  /**
+   * Clean up cancelled and expired invitations
+   */
+  async cleanupInvitations() {
+    const confirmed = confirm(
+      'Are you sure you want to remove all cancelled, declined, and expired invitations?',
+    );
+    if (!confirmed) {
+      return;
+    }
+
+    const householdId = this.householdService.getActiveHouseholdId();
+    if (!householdId) {
+      this.errorMessage.set('No active household selected');
+      return;
+    }
+
+    this.isLoading.set(true);
+    this.errorMessage.set(null);
+
+    try {
+      const result = await this.invitationService.cleanupInvitations(householdId);
+      this.showSuccessMessage(result.message);
+      await this.loadInvitations();
+    } catch (error) {
+      console.error('Failed to cleanup invitations:', error);
+      this.errorMessage.set('Failed to cleanup invitations. Please try again.');
+    } finally {
+      this.isLoading.set(false);
+    }
   }
 
   /**

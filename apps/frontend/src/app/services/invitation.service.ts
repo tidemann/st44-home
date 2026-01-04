@@ -105,4 +105,14 @@ export class InvitationService {
   async cancelInvitation(householdId: string, invitationId: string): Promise<void> {
     return this.api.delete<void>(`/households/${householdId}/invitations/${invitationId}`);
   }
+
+  /**
+   * Cleanup cancelled and expired invitations (admin only)
+   * @returns Number of deleted invitations
+   */
+  async cleanupInvitations(householdId: string): Promise<{ deleted: number; message: string }> {
+    return this.api.delete<{ deleted: number; message: string }>(
+      `/households/${householdId}/invitations/cleanup`,
+    );
+  }
 }
