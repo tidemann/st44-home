@@ -207,12 +207,20 @@ export default async function authRoutes(fastify: FastifyInstance) {
     },
     async (request, reply) => {
       const { email, password } = request.body;
+      const executionId = `${request.id}-${Date.now()}`;
+
+      fastify.log.debug({ executionId, reqId: request.id }, '[LOGIN START]');
 
       try {
         // Query user by email, including name fields
+        fastify.log.debug({ executionId }, '[LOGIN] Before user query');
         const result = await pool.query(
           'SELECT id, email, password_hash, first_name, last_name FROM users WHERE email = $1',
           [email],
+        );
+        fastify.log.debug(
+          { executionId, rowCount: result.rows.length },
+          '[LOGIN] After user query',
         );
 
         // User not found - same error message for security
@@ -224,7 +232,9 @@ export default async function authRoutes(fastify: FastifyInstance) {
         const user = result.rows[0];
 
         // Compare password using bcrypt (timing-safe)
+        fastify.log.debug({ executionId }, '[LOGIN] Before bcrypt compare');
         const passwordMatch = await bcrypt.compare(password, user.password_hash);
+        fastify.log.debug({ executionId, passwordMatch }, '[LOGIN] After bcrypt compare');
 
         if (!passwordMatch) {
           fastify.log.warn({ userId: user.id, email }, 'Login attempt with wrong password');
@@ -232,9 +242,14 @@ export default async function authRoutes(fastify: FastifyInstance) {
         }
 
         // Query household_members to get user's role and household
+        fastify.log.debug({ executionId }, '[LOGIN] Before household query');
         const householdResult = await pool.query(
           'SELECT household_id, role FROM household_members WHERE user_id = $1 LIMIT 1',
           [user.id],
+        );
+        fastify.log.debug(
+          { executionId, rowCount: householdResult.rows.length },
+          '[LOGIN] After household query',
         );
 
         let role: string | undefined;
@@ -246,6 +261,7 @@ export default async function authRoutes(fastify: FastifyInstance) {
         }
 
         // Generate tokens with role and name
+        fastify.log.debug({ executionId }, '[LOGIN] Before token generation');
         const accessToken = generateAccessToken(
           user.id,
           user.email,
@@ -254,9 +270,11 @@ export default async function authRoutes(fastify: FastifyInstance) {
           user.last_name,
         );
         const refreshToken = generateRefreshToken(user.id);
+        fastify.log.debug({ executionId }, '[LOGIN] After token generation');
 
         fastify.log.info({ userId: user.id, email, role, householdId }, 'Successful login');
 
+        fastify.log.debug({ executionId, replySent: reply.sent }, '[LOGIN] Before return send');
         return reply.code(200).send({
           accessToken,
           refreshToken,
@@ -269,7 +287,7 @@ export default async function authRoutes(fastify: FastifyInstance) {
         });
       } catch (error: unknown) {
         // Log error but don't expose internal details
-        fastify.log.error(error, 'Login error');
+        fastify.log.error({ executionId, error }, 'Login error');
         if (!reply.sent) {
           return reply.code(500).send({ error: 'Authentication failed' });
         }
