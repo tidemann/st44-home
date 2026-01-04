@@ -206,6 +206,16 @@ export default async function authRoutes(fastify: FastifyInstance) {
       preHandler: rateLimiters.login,
     },
     async (request, reply) => {
+      // CRITICAL: Guard against double execution bug
+      // Somehow async callbacks are firing handler again after reply is sent
+      if (reply.sent) {
+        fastify.log.warn(
+          { reqId: request.id },
+          'Login handler called but reply already sent - skipping',
+        );
+        return;
+      }
+
       const { email, password } = request.body;
       const executionId = `${request.id}-${Date.now()}`;
 
