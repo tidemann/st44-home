@@ -5,11 +5,16 @@ import {
   OnInit,
   ChangeDetectionStrategy,
   computed,
+  DestroyRef,
 } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CommonModule } from '@angular/common';
 import { Router, ActivatedRoute, RouterLink } from '@angular/router';
+import { timer } from 'rxjs';
 import { InvitationService, AcceptInvitationResponse } from '../../services/invitation.service';
 import { AuthService } from '../../services/auth.service';
+
+const REDIRECT_DELAY_MS = 2000;
 
 @Component({
   selector: 'app-invitation-accept',
@@ -23,9 +28,9 @@ export class InvitationAcceptComponent implements OnInit {
   private readonly authService = inject(AuthService);
   private readonly router = inject(Router);
   private readonly route = inject(ActivatedRoute);
+  private readonly destroyRef = inject(DestroyRef);
 
   protected readonly token = signal<string | null>(null);
-  protected readonly isLoading = signal(false);
   protected readonly isProcessing = signal(false);
   protected readonly errorMessage = signal<string | null>(null);
   protected readonly successMessage = signal<string | null>(null);
@@ -65,10 +70,8 @@ export class InvitationAcceptComponent implements OnInit {
       this.householdName.set(response.household.name);
       this.successMessage.set(`Successfully joined "${response.household.name}"!`);
 
-      // Redirect to home after a brief delay
-      setTimeout(() => {
-        this.router.navigate(['/home']);
-      }, 2000);
+      // Redirect to home after a brief delay (with proper cleanup)
+      this.redirectToHomeAfterDelay();
     } catch (error: unknown) {
       console.error('Failed to accept invitation:', error);
       this.handleError(error);
@@ -91,10 +94,8 @@ export class InvitationAcceptComponent implements OnInit {
       await this.invitationService.declineInvitation(token);
       this.successMessage.set('Invitation declined.');
 
-      // Redirect to home after a brief delay
-      setTimeout(() => {
-        this.router.navigate(['/home']);
-      }, 2000);
+      // Redirect to home after a brief delay (with proper cleanup)
+      this.redirectToHomeAfterDelay();
     } catch (error: unknown) {
       console.error('Failed to decline invitation:', error);
       this.handleError(error);
@@ -120,5 +121,13 @@ export class InvitationAcceptComponent implements OnInit {
     } else {
       this.errorMessage.set(err.error?.message || 'Something went wrong. Please try again.');
     }
+  }
+
+  private redirectToHomeAfterDelay(): void {
+    timer(REDIRECT_DELAY_MS)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(() => {
+        this.router.navigate(['/home']);
+      });
   }
 }
