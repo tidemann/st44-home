@@ -50,18 +50,20 @@
           }
 
           @if (isAdmin()) {
-            <button
-              type="submit"
-              class="btn btn--primary"
-              [disabled]="householdForm.invalid || isSaving()"
-              [attr.aria-busy]="isSaving()"
-            >
-              @if (isSaving()) {
-                <span>Saving...</span>
-              } @else {
-                <span>Save Changes</span>
-              }
-            </button>
+            <div class="form-actions">
+              <button
+                type="submit"
+                class="btn btn-primary"
+                [disabled]="householdForm.invalid || isSaving()"
+                [attr.aria-busy]="isSaving()"
+              >
+                @if (isSaving()) {
+                  <span>Saving...</span>
+                } @else {
+                  <span>Save Changes</span>
+                }
+              </button>
+            </div>
           }
         </form>
       </section>
