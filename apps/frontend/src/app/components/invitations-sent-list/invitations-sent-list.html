@@ -1,15 +1,28 @@
 <div class="invitations-sent-list">
   <div class="header">
     <h3>Sent Invitations</h3>
-    <button
-      type="button"
-      class="btn btn-secondary btn-sm"
-      (click)="loadInvitations()"
-      [disabled]="isLoading()"
-      aria-label="Refresh invitations list"
-    >
-      Refresh
-    </button>
+    <div class="header-actions">
+      @if (hasOldInvitations()) {
+        <button
+          type="button"
+          class="btn btn-warning btn-sm"
+          (click)="cleanupInvitations()"
+          [disabled]="isLoading()"
+          aria-label="Remove cancelled and expired invitations"
+        >
+          Clean up old
+        </button>
+      }
+      <button
+        type="button"
+        class="btn btn-secondary btn-sm"
+        (click)="loadInvitations()"
+        [disabled]="isLoading()"
+        aria-label="Refresh invitations list"
+      >
+        Refresh
+      </button>
+    </div>
   </div>
 
   <!-- Success message -->

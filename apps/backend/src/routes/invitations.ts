@@ -60,6 +60,12 @@ interface DeclineInvitationRequest {
   };
 }
 
+interface CleanupInvitationsRequest {
+  Params: {
+    householdId: string;
+  };
+}
+
 /**
  * Generate secure random token for invitation
  */
@@ -539,6 +545,67 @@ async function declineInvitation(
 }
 
 /**
+ * DELETE /api/households/:householdId/invitations/cleanup - Remove cancelled and expired invitations
+ */
+async function cleanupInvitations(
+  request: FastifyRequest<CleanupInvitationsRequest>,
+  reply: FastifyReply,
+) {
+  const { householdId } = request.params;
+  const userId = request.user?.userId;
+
+  if (!userId) {
+    return reply.status(401).send({
+      error: 'Unauthorized',
+      message: 'Authentication required',
+    });
+  }
+
+  try {
+    // Check user's role in household (must be admin)
+    const memberCheck = await db.query(
+      `SELECT role FROM household_members
+       WHERE household_id = $1 AND user_id = $2`,
+      [householdId, userId],
+    );
+
+    if (memberCheck.rows.length === 0) {
+      return reply.status(403).send({
+        error: 'Forbidden',
+        message: 'You are not a member of this household',
+      });
+    }
+
+    if (memberCheck.rows[0].role !== 'admin') {
+      return reply.status(403).send({
+        error: 'Forbidden',
+        message: 'Only admins can clean up invitations',
+      });
+    }
+
+    // Delete cancelled and expired invitations
+    const result = await db.query(
+      `DELETE FROM invitations
+       WHERE household_id = $1
+         AND (status IN ('cancelled', 'declined') OR (status = 'pending' AND expires_at < NOW()))
+       RETURNING id`,
+      [householdId],
+    );
+
+    return reply.status(200).send({
+      deleted: result.rows.length,
+      message: `Removed ${result.rows.length} old invitation(s)`,
+    });
+  } catch (error) {
+    request.log.error(error, 'Failed to cleanup invitations');
+    return reply.status(500).send({
+      error: 'Internal Server Error',
+      message: 'Failed to cleanup invitations',
+    });
+  }
+}
+
+/**
  * Register invitation routes
  */
 export async function invitationRoutes(fastify: FastifyInstance) {
@@ -572,6 +639,15 @@ export async function invitationRoutes(fastify: FastifyInstance) {
       preHandler: [authenticateUser, validateHouseholdMembership as preHandlerHookHandler],
     },
     cancelInvitation,
+  );
+
+  // Cleanup old invitations (admin only)
+  fastify.delete<CleanupInvitationsRequest>(
+    '/api/households/:householdId/invitations/cleanup',
+    {
+      preHandler: [authenticateUser, validateHouseholdMembership as preHandlerHookHandler],
+    },
+    cleanupInvitations,
   );
 
   // List received invitations (requires authentication only)
