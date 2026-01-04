@@ -9,7 +9,10 @@ describe('SidebarNav', () => {
   let fixture: ComponentFixture<SidebarNav>;
 
   const mockUser: SidebarUser = {
-    name: 'Sarah Johnson',
+    name: 'Sarah',
+    firstName: 'Sarah',
+    lastName: 'Johnson',
+    email: 'sarah@example.com',
     avatar: 'SJ',
     household: 'The Johnson Family',
   };
@@ -129,7 +132,7 @@ describe('SidebarNav', () => {
     const userName = fixture.nativeElement.querySelector('.sidebar-user-info h4');
     const householdSwitcher = fixture.nativeElement.querySelector('app-household-switcher');
 
-    expect(userName?.textContent).toContain('Sarah Johnson');
+    expect(userName?.textContent).toContain('Sarah');
     expect(householdSwitcher).toBeTruthy();
   });
 
@@ -150,10 +153,13 @@ describe('SidebarNav', () => {
     expect(component.userInitials()).toBe('SJ');
   });
 
-  it('should handle single name for initials', () => {
+  it('should handle single name for initials (email fallback)', () => {
     const singleNameUser: SidebarUser = {
       name: 'Mike',
-      avatar: 'MI',
+      firstName: null,
+      lastName: null,
+      email: 'mike@example.com',
+      avatar: 'M',
       household: 'Test Family',
     };
 
@@ -161,7 +167,24 @@ describe('SidebarNav', () => {
     componentRef.setInput('user', singleNameUser);
     fixture.detectChanges();
 
-    expect(component.userInitials()).toBe('MI');
+    expect(component.userInitials()).toBe('M');
+  });
+
+  it('should compute initials from firstName/lastName when available', () => {
+    const userWithNames: SidebarUser = {
+      name: 'John',
+      firstName: 'John',
+      lastName: 'Doe',
+      email: 'john@example.com',
+      avatar: 'JD',
+      household: 'Test Family',
+    };
+
+    componentRef.setInput('activeScreen', 'home');
+    componentRef.setInput('user', userWithNames);
+    fixture.detectChanges();
+
+    expect(component.userInitials()).toBe('JD');
   });
 
   it('should have correct accessibility attributes on nav', () => {
@@ -200,7 +223,7 @@ describe('SidebarNav', () => {
     fixture.detectChanges();
 
     const avatar = fixture.nativeElement.querySelector('.sidebar-avatar');
-    expect(avatar.getAttribute('aria-label')).toBe('Avatar for Sarah Johnson');
+    expect(avatar.getAttribute('aria-label')).toBe('Avatar for Sarah');
   });
 
   it('should update active state when activeScreen changes', () => {
@@ -225,10 +248,13 @@ describe('SidebarNav', () => {
     fixture.detectChanges();
 
     let userName = fixture.nativeElement.querySelector('.sidebar-user-info h4');
-    expect(userName?.textContent).toContain('Sarah Johnson');
+    expect(userName?.textContent).toContain('Sarah');
 
     const newUser: SidebarUser = {
-      name: 'Mike Smith',
+      name: 'Mike',
+      firstName: 'Mike',
+      lastName: 'Smith',
+      email: 'mike@example.com',
       avatar: 'MS',
       household: 'The Smith Family',
     };
@@ -238,6 +264,6 @@ describe('SidebarNav', () => {
 
     userName = fixture.nativeElement.querySelector('.sidebar-user-info h4');
 
-    expect(userName?.textContent).toContain('Mike Smith');
+    expect(userName?.textContent).toContain('Mike');
   });
 });
