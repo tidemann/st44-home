@@ -17,7 +17,7 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpContext } from '@angular/common/http';
 import { Observable, firstValueFrom } from 'rxjs';
-import { environment } from '../../environments/environment.development';
+import { environment } from '../../environments/environment';
 import { SKIP_LOADING } from '../interceptors/loading.interceptor';
 
 /**

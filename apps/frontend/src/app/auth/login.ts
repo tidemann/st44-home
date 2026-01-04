@@ -5,7 +5,7 @@ import { Router, RouterLink, ActivatedRoute } from '@angular/router';
 import { AuthService } from '../services/auth.service';
 import { HouseholdService } from '../services/household.service';
 import { lastValueFrom } from 'rxjs';
-import { environment } from '../../environments/environment.development';
+import { environment } from '../../environments/environment';
 
 interface GoogleSignInResponse {
   credential: string;

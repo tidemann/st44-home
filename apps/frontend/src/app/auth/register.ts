@@ -11,7 +11,7 @@ import { ReactiveFormsModule, FormGroup, FormControl, Validators } from '@angula
 import { Router, RouterLink } from '@angular/router';
 import { AuthService } from '../services/auth.service';
 import { lastValueFrom } from 'rxjs';
-import { environment } from '../../environments/environment.development';
+import { environment } from '../../environments/environment';
 import {
   passwordStrengthValidator,
   passwordMatchValidator,
