@@ -71,6 +71,8 @@ jobs:
           file: ./infra/nginx/Dockerfile.frontend
           push: true
           tags: ghcr.io/${{ github.repository_owner }}/${{ github.event.repository.name }}-frontend:latest
+          build-args: |
+            GOOGLE_CLIENT_ID=${{ secrets.GOOGLE_CLIENT_ID }}
 
   build-and-push-backend:
     needs: check-changes

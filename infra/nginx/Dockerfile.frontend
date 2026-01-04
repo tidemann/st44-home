@@ -4,6 +4,9 @@
 FROM node:24-alpine AS build
 WORKDIR /app
 
+# Build argument for Google OAuth Client ID
+ARG GOOGLE_CLIENT_ID=""
+
 # Copy workspace root package files
 COPY package*.json ./
 
@@ -30,9 +33,10 @@ COPY apps/frontend/tsconfig*.json ./apps/frontend/
 COPY apps/frontend/.postcssrc.json ./apps/frontend/.postcssrc.json
 COPY apps/frontend/eslint.config.js ./apps/frontend/eslint.config.js
 
-# Inject build timestamp into environment.ts
+# Inject build timestamp and Google Client ID into environment.ts
 RUN BUILD_TIME=$(date -u +"%Y-%m-%dT%H:%M:%SZ") && \
-    sed -i "s/BUILD_TIME_PLACEHOLDER/$BUILD_TIME/g" apps/frontend/src/environments/environment.ts
+    sed -i "s/BUILD_TIME_PLACEHOLDER/$BUILD_TIME/g" apps/frontend/src/environments/environment.ts && \
+    sed -i "s/GOOGLE_CLIENT_ID_PLACEHOLDER/$GOOGLE_CLIENT_ID/g" apps/frontend/src/environments/environment.ts
 
 # Build frontend
 RUN npm run build --workspace=apps/frontend --omit=dev
