@@ -185,7 +185,7 @@ export default async function authRoutes(fastify: FastifyInstance) {
           if (!reply.sent) {
             return reply.code(409).send({ error: 'Email already registered' });
           }
-          return;
+          return; // Reply already sent by global error handler
         }
 
         // Log error but don't expose internal details to client
@@ -193,6 +193,7 @@ export default async function authRoutes(fastify: FastifyInstance) {
         if (!reply.sent) {
           return reply.code(500).send({ error: 'Registration failed' });
         }
+        return; // Reply already sent by global error handler
       }
     },
   );
@@ -272,6 +273,7 @@ export default async function authRoutes(fastify: FastifyInstance) {
         if (!reply.sent) {
           return reply.code(500).send({ error: 'Authentication failed' });
         }
+        return; // Reply already sent by global error handler
       }
     },
   );
@@ -335,7 +337,7 @@ export default async function authRoutes(fastify: FastifyInstance) {
           if (!reply.sent) {
             return reply.code(401).send({ error: 'Invalid or expired refresh token' });
           }
-          return;
+          return; // Reply already sent by global error handler
         }
 
         if (error instanceof jwt.JsonWebTokenError) {
@@ -343,7 +345,7 @@ export default async function authRoutes(fastify: FastifyInstance) {
           if (!reply.sent) {
             return reply.code(401).send({ error: 'Invalid or expired refresh token' });
           }
-          return;
+          return; // Reply already sent by global error handler
         }
 
         // Log error but don't expose internal details
@@ -351,6 +353,7 @@ export default async function authRoutes(fastify: FastifyInstance) {
         if (!reply.sent) {
           return reply.code(500).send({ error: 'Token refresh failed' });
         }
+        return; // Reply already sent by global error handler
       }
     },
   );
@@ -519,6 +522,7 @@ export default async function authRoutes(fastify: FastifyInstance) {
         if (!reply.sent) {
           return reply.code(401).send({ error: 'Google authentication failed' });
         }
+        return; // Reply already sent by global error handler
       }
     },
   );
@@ -578,6 +582,7 @@ export default async function authRoutes(fastify: FastifyInstance) {
         if (!reply.sent) {
           return reply.code(500).send({ error: 'Failed to process password reset request' });
         }
+        return; // Reply already sent by global error handler
       }
     },
   );
@@ -666,6 +671,7 @@ export default async function authRoutes(fastify: FastifyInstance) {
         if (!reply.sent) {
           return reply.code(500).send({ error: 'Failed to reset password' });
         }
+        return; // Reply already sent by global error handler
       }
     },
   );
