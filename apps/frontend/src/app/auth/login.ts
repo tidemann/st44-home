@@ -1,4 +1,11 @@
-import { Component, signal, inject, ChangeDetectionStrategy, OnInit } from '@angular/core';
+import {
+  Component,
+  signal,
+  inject,
+  ChangeDetectionStrategy,
+  OnInit,
+  AfterViewInit,
+} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormGroup, FormControl, Validators } from '@angular/forms';
 import { Router, RouterLink, ActivatedRoute } from '@angular/router';
@@ -11,6 +18,29 @@ interface GoogleSignInResponse {
   credential: string;
 }
 
+declare const google: {
+  accounts: {
+    id: {
+      initialize: (config: {
+        client_id: string;
+        callback: (response: GoogleSignInResponse) => void;
+        auto_select?: boolean;
+      }) => void;
+      renderButton: (
+        element: HTMLElement,
+        config: {
+          type: string;
+          shape: string;
+          theme: string;
+          text: string;
+          size: string;
+          logo_alignment: string;
+        },
+      ) => void;
+    };
+  };
+};
+
 @Component({
   selector: 'app-login',
   templateUrl: './login.html',
@@ -18,7 +48,7 @@ interface GoogleSignInResponse {
   imports: [CommonModule, ReactiveFormsModule, RouterLink],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class LoginComponent implements OnInit {
+export class LoginComponent implements OnInit, AfterViewInit {
   private readonly authService = inject(AuthService);
   private readonly householdService = inject(HouseholdService);
   private readonly router = inject(Router);
@@ -53,6 +83,33 @@ export class LoginComponent implements OnInit {
     (
       window as Window & { handleGoogleSignIn?: (response: GoogleSignInResponse) => void }
     ).handleGoogleSignIn = this.handleGoogleSignIn.bind(this);
+  }
+
+  ngAfterViewInit(): void {
+    // Initialize Google Sign-In after view is ready
+    if (this.googleClientId && typeof google !== 'undefined') {
+      this.initializeGoogleSignIn();
+    }
+  }
+
+  private initializeGoogleSignIn(): void {
+    google.accounts.id.initialize({
+      client_id: this.googleClientId,
+      callback: this.handleGoogleSignIn.bind(this),
+      auto_select: false,
+    });
+
+    const buttonElement = document.querySelector('.g_id_signin');
+    if (buttonElement) {
+      google.accounts.id.renderButton(buttonElement as HTMLElement, {
+        type: 'standard',
+        shape: 'rectangular',
+        theme: 'outline',
+        text: 'signin_with',
+        size: 'large',
+        logo_alignment: 'left',
+      });
+    }
   }
 
   protected async handleGoogleSignIn(response: GoogleSignInResponse): Promise<void> {

@@ -5,6 +5,7 @@ import {
   inject,
   ChangeDetectionStrategy,
   OnInit,
+  AfterViewInit,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormGroup, FormControl, Validators } from '@angular/forms';
@@ -22,6 +23,29 @@ interface GoogleSignInResponse {
   credential: string;
 }
 
+declare const google: {
+  accounts: {
+    id: {
+      initialize: (config: {
+        client_id: string;
+        callback: (response: GoogleSignInResponse) => void;
+        auto_select?: boolean;
+      }) => void;
+      renderButton: (
+        element: HTMLElement,
+        config: {
+          type: string;
+          shape: string;
+          theme: string;
+          text: string;
+          size: string;
+          logo_alignment: string;
+        },
+      ) => void;
+    };
+  };
+};
+
 @Component({
   selector: 'app-register',
   imports: [CommonModule, ReactiveFormsModule, RouterLink],
@@ -29,7 +53,7 @@ interface GoogleSignInResponse {
   styleUrl: './register.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class RegisterComponent implements OnInit {
+export class RegisterComponent implements OnInit, AfterViewInit {
   private authService = inject(AuthService);
   private router = inject(Router);
 
@@ -79,6 +103,33 @@ export class RegisterComponent implements OnInit {
     (
       window as Window & { handleGoogleSignUp?: (response: GoogleSignInResponse) => void }
     ).handleGoogleSignUp = this.handleGoogleSignUp.bind(this);
+  }
+
+  ngAfterViewInit(): void {
+    // Initialize Google Sign-In after view is ready
+    if (this.googleClientId && typeof google !== 'undefined') {
+      this.initializeGoogleSignIn();
+    }
+  }
+
+  private initializeGoogleSignIn(): void {
+    google.accounts.id.initialize({
+      client_id: this.googleClientId,
+      callback: this.handleGoogleSignUp.bind(this),
+      auto_select: false,
+    });
+
+    const buttonElement = document.querySelector('.g_id_signin');
+    if (buttonElement) {
+      google.accounts.id.renderButton(buttonElement as HTMLElement, {
+        type: 'standard',
+        shape: 'rectangular',
+        theme: 'outline',
+        text: 'signup_with',
+        size: 'large',
+        logo_alignment: 'left',
+      });
+    }
   }
 
   protected async handleGoogleSignUp(response: GoogleSignInResponse): Promise<void> {
