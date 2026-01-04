@@ -1072,23 +1072,19 @@ describe('Assignments API', () => {
       const childPassword = 'ChildPass123!';
       const childData = await registerAndLogin(app, childEmail, childPassword);
       childToken = childData.accessToken;
+      childUserId = childData.userId;
 
-      const childUserResult = await pool.query('SELECT id FROM users WHERE email = $1', [
-        childEmail,
-      ]);
-      childUserId = childUserResult.rows[0].id;
-
-      // Link child profile to user
-      await pool.query('UPDATE children SET user_id = $1 WHERE id = $2', [
-        childUserId,
-        childIds[0],
-      ]);
-
-      // Add child to household_members
+      // Add child to household_members FIRST (trigger requires this before linking user_id)
       await pool.query(
         `INSERT INTO household_members (household_id, user_id, role) VALUES ($1, $2, 'child')`,
         [householdId, childUserId],
       );
+
+      // Link child profile to user (after household membership is established)
+      await pool.query('UPDATE children SET user_id = $1 WHERE id = $2', [
+        childUserId,
+        childIds[0],
+      ]);
     });
 
     afterEach(async () => {

@@ -8,7 +8,7 @@
  * - Per-IP, per-user, or custom key strategies
  */
 
-import { FastifyRequest, FastifyReply, HookHandlerDoneFunction } from 'fastify';
+import { FastifyRequest, FastifyReply } from 'fastify';
 import { redis, isRedisReady } from '../core/redis.js';
 import { TooManyRequestsError } from '../errors/index.js';
 
@@ -69,18 +69,15 @@ export function createRateLimiter(options: RateLimitOptions) {
     skipOnError = true,
   } = options;
 
-  return async (
-    request: FastifyRequest,
-    reply: FastifyReply,
-    done?: HookHandlerDoneFunction,
-  ): Promise<void> => {
+  // Return async preHandler - do NOT call done() in async functions
+  // Fastify uses promise resolution to signal completion in async handlers
+  return async (request: FastifyRequest, reply: FastifyReply): Promise<void> => {
     // Generate the rate limit key
     const identifier = keyGenerator(request);
 
     // Skip if no identifier could be generated
     if (!identifier) {
       request.log.warn({ keyPrefix }, 'Rate limiter: No identifier, skipping');
-      if (done) done();
       return;
     }
 
@@ -90,7 +87,6 @@ export function createRateLimiter(options: RateLimitOptions) {
     if (!isRedisReady()) {
       if (skipOnError) {
         request.log.warn({ key }, 'Rate limiter: Redis unavailable, skipping check');
-        if (done) done();
         return;
       }
       // If not skipping on error, deny the request for safety
@@ -106,7 +102,6 @@ export function createRateLimiter(options: RateLimitOptions) {
 
       if (!results) {
         request.log.warn({ key }, 'Rate limiter: Pipeline returned null');
-        if (done) done();
         return;
       }
 
@@ -145,8 +140,6 @@ export function createRateLimiter(options: RateLimitOptions) {
 
       // Update remaining header after increment
       reply.header('X-RateLimit-Remaining', Math.max(0, remaining - 1));
-
-      if (done) done();
     } catch (error) {
       // Re-throw our own errors
       if (error instanceof TooManyRequestsError) {
@@ -157,7 +150,6 @@ export function createRateLimiter(options: RateLimitOptions) {
       request.log.error({ err: error, key }, 'Rate limiter: Redis error');
 
       if (skipOnError) {
-        if (done) done();
         return;
       }
 

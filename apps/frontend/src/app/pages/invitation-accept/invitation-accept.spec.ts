@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { InvitationAcceptComponent } from './invitation-accept';
 import { InvitationService } from '../../services/invitation.service';
 import { AuthService } from '../../services/auth.service';
@@ -176,16 +176,17 @@ describe('InvitationAcceptComponent', () => {
       expect(component['isProcessing']()).toBe(false);
     });
 
-    it('should navigate to home after successful acceptance', fakeAsync(() => {
+    it('should navigate to home after successful acceptance', async () => {
       mockInvitationService.acceptInvitation.mockResolvedValue({
         household: { id: 'h1', name: 'Test Household' },
       });
 
-      component['acceptInvitation']();
-      tick(2100);
+      await component['acceptInvitation']();
+      // Wait for navigation timeout (2 second delay in component)
+      await new Promise((resolve) => setTimeout(resolve, 2100));
 
       expect(router.navigate).toHaveBeenCalledWith(['/home']);
-    }));
+    });
 
     it('should clear error message on new acceptance attempt', async () => {
       component['errorMessage'].set('Previous error');
@@ -244,12 +245,13 @@ describe('InvitationAcceptComponent', () => {
       expect(component['successMessage']()).toBe('Invitation declined.');
     });
 
-    it('should navigate to home after successful decline', fakeAsync(() => {
+    it('should navigate to home after successful decline', async () => {
       mockInvitationService.declineInvitation.mockResolvedValue({});
-      component['declineInvitation']();
-      tick(2100);
+      await component['declineInvitation']();
+      // Wait for navigation timeout (2 second delay in component)
+      await new Promise((resolve) => setTimeout(resolve, 2100));
       expect(router.navigate).toHaveBeenCalledWith(['/home']);
-    }));
+    });
   });
 
   describe('Error Handling', () => {

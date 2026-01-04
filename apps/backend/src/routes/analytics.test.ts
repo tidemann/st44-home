@@ -63,6 +63,12 @@ describe('Analytics API', () => {
       [householdId, parentUserId, 'admin'],
     );
 
+    // Add child to household_members FIRST (trigger requires this before linking user_id)
+    await pool.query(
+      'INSERT INTO household_members (household_id, user_id, role) VALUES ($1, $2, $3)',
+      [householdId, childUserId, 'child'],
+    );
+
     // Create child profile and link to user
     const childProfileResult = await pool.query(
       'INSERT INTO children (household_id, user_id, name, birth_year) VALUES ($1, $2, $3, $4) RETURNING id',

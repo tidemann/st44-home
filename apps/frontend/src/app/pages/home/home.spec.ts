@@ -6,6 +6,7 @@ import { TaskService } from '../../services/task.service';
 import { ChildrenService } from '../../services/children.service';
 import { AuthService } from '../../services/auth.service';
 import { HouseholdService } from '../../services/household.service';
+import { HouseholdStore } from '../../stores/household.store';
 import type { Assignment, Task } from '@st44/types';
 
 describe('Home', () => {
@@ -22,6 +23,10 @@ describe('Home', () => {
   let mockChildrenService: { listChildren: ReturnType<typeof vi.fn> };
   let mockAuthService: { currentUser: ReturnType<typeof vi.fn> };
   let mockHouseholdService: { listHouseholds: ReturnType<typeof vi.fn> };
+  let mockHouseholdStore: {
+    activeHouseholdId: ReturnType<typeof vi.fn>;
+    autoActivateHousehold: ReturnType<typeof vi.fn>;
+  };
 
   beforeEach(async () => {
     // Create mock services
@@ -46,6 +51,11 @@ describe('Home', () => {
     mockChildrenService.listChildren.mockResolvedValue([]);
     mockTaskService.getHouseholdAssignments.mockReturnValue(of([]));
 
+    mockHouseholdStore = {
+      activeHouseholdId: vi.fn().mockReturnValue('household-1'),
+      autoActivateHousehold: vi.fn().mockResolvedValue(undefined),
+    };
+
     await TestBed.configureTestingModule({
       imports: [Home],
       providers: [
@@ -53,6 +63,7 @@ describe('Home', () => {
         { provide: ChildrenService, useValue: mockChildrenService },
         { provide: AuthService, useValue: mockAuthService },
         { provide: HouseholdService, useValue: mockHouseholdService },
+        { provide: HouseholdStore, useValue: mockHouseholdStore },
       ],
     }).compileComponents();
 
