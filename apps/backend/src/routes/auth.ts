@@ -155,11 +155,10 @@ export default async function authRoutes(fastify: FastifyInstance) {
 
       // Validate password strength
       if (!validatePasswordStrength(password)) {
-        reply.code(400);
-        return {
+        return reply.code(400).send({
           error:
             'Password must contain at least one uppercase letter, one lowercase letter, and one number',
-        };
+        });
       }
 
       try {
@@ -174,24 +173,26 @@ export default async function authRoutes(fastify: FastifyInstance) {
           [email, passwordHash, firstName, lastName],
         );
 
-        reply.code(201);
-        return {
+        return reply.code(201).send({
           userId: result.rows[0].id,
           email: result.rows[0].email,
           firstName: result.rows[0].first_name,
           lastName: result.rows[0].last_name,
-        };
+        });
       } catch (error: unknown) {
         // Handle duplicate email (PostgreSQL unique violation)
         if (error && typeof error === 'object' && 'code' in error && error.code === '23505') {
-          reply.code(409);
-          return { error: 'Email already registered' };
+          if (!reply.sent) {
+            return reply.code(409).send({ error: 'Email already registered' });
+          }
+          return;
         }
 
         // Log error but don't expose internal details to client
         fastify.log.error(error);
-        reply.code(500);
-        return { error: 'Registration failed' };
+        if (!reply.sent) {
+          return reply.code(500).send({ error: 'Registration failed' });
+        }
       }
     },
   );
@@ -216,8 +217,7 @@ export default async function authRoutes(fastify: FastifyInstance) {
         // User not found - same error message for security
         if (result.rows.length === 0) {
           fastify.log.warn({ email }, 'Login attempt with non-existent email');
-          reply.code(401);
-          return { error: 'Invalid email or password' };
+          return reply.code(401).send({ error: 'Invalid email or password' });
         }
 
         const user = result.rows[0];
@@ -227,8 +227,7 @@ export default async function authRoutes(fastify: FastifyInstance) {
 
         if (!passwordMatch) {
           fastify.log.warn({ userId: user.id, email }, 'Login attempt with wrong password');
-          reply.code(401);
-          return { error: 'Invalid email or password' };
+          return reply.code(401).send({ error: 'Invalid email or password' });
         }
 
         // Query household_members to get user's role and household
@@ -257,8 +256,7 @@ export default async function authRoutes(fastify: FastifyInstance) {
 
         fastify.log.info({ userId: user.id, email, role, householdId }, 'Successful login');
 
-        reply.code(200);
-        return {
+        return reply.code(200).send({
           accessToken,
           refreshToken,
           userId: user.id,
@@ -267,12 +265,13 @@ export default async function authRoutes(fastify: FastifyInstance) {
           householdId,
           firstName: user.first_name,
           lastName: user.last_name,
-        };
+        });
       } catch (error: unknown) {
         // Log error but don't expose internal details
         fastify.log.error(error, 'Login error');
-        reply.code(500);
-        return { error: 'Authentication failed' };
+        if (!reply.sent) {
+          return reply.code(500).send({ error: 'Authentication failed' });
+        }
       }
     },
   );
@@ -293,8 +292,7 @@ export default async function authRoutes(fastify: FastifyInstance) {
         // Verify it's a refresh token (not access token)
         if (decoded.type !== 'refresh') {
           fastify.log.warn('Attempted to use non-refresh token for refresh');
-          reply.code(401);
-          return { error: 'Invalid or expired refresh token' };
+          return reply.code(401).send({ error: 'Invalid or expired refresh token' });
         }
 
         // Get user data from database
@@ -305,8 +303,7 @@ export default async function authRoutes(fastify: FastifyInstance) {
 
         if (result.rows.length === 0) {
           fastify.log.warn({ userId: decoded.userId }, 'User not found for refresh token');
-          reply.code(401);
-          return { error: 'Invalid or expired refresh token' };
+          return reply.code(401).send({ error: 'Invalid or expired refresh token' });
         }
 
         const user = result.rows[0];
@@ -330,26 +327,30 @@ export default async function authRoutes(fastify: FastifyInstance) {
 
         fastify.log.info({ userId: decoded.userId }, 'Token refreshed successfully');
 
-        reply.code(200);
-        return { accessToken };
+        return reply.code(200).send({ accessToken });
       } catch (error: unknown) {
         // Handle JWT-specific errors
         if (error instanceof jwt.TokenExpiredError) {
           fastify.log.warn('Expired refresh token used');
-          reply.code(401);
-          return { error: 'Invalid or expired refresh token' };
+          if (!reply.sent) {
+            return reply.code(401).send({ error: 'Invalid or expired refresh token' });
+          }
+          return;
         }
 
         if (error instanceof jwt.JsonWebTokenError) {
           fastify.log.warn({ error: (error as Error).message }, 'Invalid refresh token');
-          reply.code(401);
-          return { error: 'Invalid or expired refresh token' };
+          if (!reply.sent) {
+            return reply.code(401).send({ error: 'Invalid or expired refresh token' });
+          }
+          return;
         }
 
         // Log error but don't expose internal details
         fastify.log.error(error, 'Token refresh error');
-        reply.code(500);
-        return { error: 'Token refresh failed' };
+        if (!reply.sent) {
+          return reply.code(500).send({ error: 'Token refresh failed' });
+        }
       }
     },
   );
@@ -364,8 +365,7 @@ export default async function authRoutes(fastify: FastifyInstance) {
       // In basic implementation, logout is client-side (delete tokens)
       // Future enhancement: Add token to blacklist in database
       fastify.log.info({ userId: request.user?.userId }, 'User logged out');
-      reply.code(200);
-      return { success: true, message: 'Logged out successfully' };
+      return reply.code(200).send({ success: true, message: 'Logged out successfully' });
     },
   );
 
@@ -398,8 +398,7 @@ export default async function authRoutes(fastify: FastifyInstance) {
         const payload = ticket.getPayload();
         if (!payload) {
           fastify.log.warn('Invalid Google token - no payload');
-          reply.code(401);
-          return { error: 'Invalid Google token' };
+          return reply.code(401).send({ error: 'Invalid Google token' });
         }
 
         const {
@@ -411,8 +410,7 @@ export default async function authRoutes(fastify: FastifyInstance) {
 
         if (!email) {
           fastify.log.warn('Google token missing email');
-          reply.code(400);
-          return { error: 'Email not provided by Google' };
+          return reply.code(400).send({ error: 'Email not provided by Google' });
         }
 
         // Check if user exists (by email or OAuth ID)
@@ -506,8 +504,7 @@ export default async function authRoutes(fastify: FastifyInstance) {
         const accessToken = generateAccessToken(userId, userEmail, role, firstName, lastName);
         const refreshToken = generateRefreshToken(userId);
 
-        reply.code(200);
-        return {
+        return reply.code(200).send({
           accessToken,
           refreshToken,
           userId,
@@ -516,11 +513,12 @@ export default async function authRoutes(fastify: FastifyInstance) {
           householdId,
           firstName,
           lastName,
-        };
+        });
       } catch (error) {
         fastify.log.error(error, 'Google OAuth error');
-        reply.code(401);
-        return { error: 'Google authentication failed' };
+        if (!reply.sent) {
+          return reply.code(401).send({ error: 'Google authentication failed' });
+        }
       }
     },
   );
@@ -547,8 +545,7 @@ export default async function authRoutes(fastify: FastifyInstance) {
 
         if (userResult.rows.length === 0) {
           fastify.log.info({ email: emailLower }, 'Password reset requested for non-existent user');
-          reply.code(200);
-          return { message: standardMessage };
+          return reply.code(200).send({ message: standardMessage });
         }
 
         const user = userResult.rows[0];
@@ -575,12 +572,12 @@ export default async function authRoutes(fastify: FastifyInstance) {
 
         fastify.log.info({ userId: user.id }, 'Password reset email sent');
 
-        reply.code(200);
-        return { message: standardMessage };
+        return reply.code(200).send({ message: standardMessage });
       } catch (error) {
         fastify.log.error(error, 'Error processing password reset request');
-        reply.code(500);
-        return { error: 'Failed to process password reset request' };
+        if (!reply.sent) {
+          return reply.code(500).send({ error: 'Failed to process password reset request' });
+        }
       }
     },
   );
@@ -596,11 +593,10 @@ export default async function authRoutes(fastify: FastifyInstance) {
 
       // Validate password strength
       if (!validatePasswordStrength(newPassword)) {
-        reply.code(400);
-        return {
+        return reply.code(400).send({
           error:
             'Password must be at least 8 characters and include uppercase, lowercase, and number',
-        };
+        });
       }
 
       try {
@@ -615,8 +611,7 @@ export default async function authRoutes(fastify: FastifyInstance) {
 
         if (tokenResult.rows.length === 0) {
           fastify.log.warn('Invalid password reset token attempted');
-          reply.code(401);
-          return { error: 'Invalid or expired reset token' };
+          return reply.code(401).send({ error: 'Invalid or expired reset token' });
         }
 
         const resetData = tokenResult.rows[0];
@@ -627,15 +622,13 @@ export default async function authRoutes(fastify: FastifyInstance) {
             { userId: resetData.user_id },
             'Attempted to reuse password reset token',
           );
-          reply.code(401);
-          return { error: 'Reset token has already been used' };
+          return reply.code(401).send({ error: 'Reset token has already been used' });
         }
 
         // Check if token has expired
         if (new Date(resetData.expires_at) < new Date()) {
           fastify.log.warn({ userId: resetData.user_id }, 'Expired password reset token attempted');
-          reply.code(401);
-          return { error: 'Reset token has expired' };
+          return reply.code(401).send({ error: 'Reset token has expired' });
         }
 
         // Hash new password
@@ -659,8 +652,9 @@ export default async function authRoutes(fastify: FastifyInstance) {
 
           fastify.log.info({ userId: resetData.user_id }, 'Password reset successful');
 
-          reply.code(200);
-          return { message: 'Password reset successful. You can now log in.' };
+          return reply
+            .code(200)
+            .send({ message: 'Password reset successful. You can now log in.' });
         } catch (error) {
           await client.query('ROLLBACK');
           throw error;
@@ -669,8 +663,9 @@ export default async function authRoutes(fastify: FastifyInstance) {
         }
       } catch (error) {
         fastify.log.error(error, 'Error resetting password');
-        reply.code(500);
-        return { error: 'Failed to reset password' };
+        if (!reply.sent) {
+          return reply.code(500).send({ error: 'Failed to reset password' });
+        }
       }
     },
   );
@@ -682,14 +677,13 @@ export default async function authRoutes(fastify: FastifyInstance) {
       preHandler: [authenticateUser],
     },
     async (request, reply) => {
-      reply.code(200);
-      return {
+      return reply.code(200).send({
         message: 'This is protected data',
         user: {
           userId: request.user?.userId,
           email: request.user?.email,
         },
-      };
+      });
     },
   );
 }
