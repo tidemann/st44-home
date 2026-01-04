@@ -105,6 +105,10 @@ describe('Tasks Component', () => {
       currentUser: currentUserSignal.asReadonly(),
       isAuthenticated: isAuthenticatedSignal.asReadonly(),
       hasRole: vi.fn((role: string) => currentUserSignal()?.role === role),
+      hasAnyRole: vi.fn((roles: string[]) => {
+        const userRole = currentUserSignal()?.role;
+        return userRole !== undefined && roles.includes(userRole);
+      }),
       // Store writable signal for test manipulation
       _currentUserSignal: currentUserSignal,
     } as unknown as Partial<AuthService> & {

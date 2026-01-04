@@ -133,12 +133,15 @@ export class Tasks implements OnInit {
   });
 
   /**
-   * Check if current user is a parent
+   * Check if current user is a parent or admin (not a child)
+   * Parents and admins don't complete tasks, only children do
    */
-  protected readonly isParent = computed(() => this.authService.hasRole('parent'));
+  protected readonly isParentOrAdmin = computed(() =>
+    this.authService.hasAnyRole(['parent', 'admin']),
+  );
 
   /**
-   * Filter tabs configuration - excludes 'My Tasks' for parents
+   * Filter tabs configuration - excludes 'My Tasks' for parents/admins
    */
   protected readonly filterTabs = computed(() => {
     const allTabs: { id: TaskFilter; label: string }[] = [
@@ -148,8 +151,8 @@ export class Tasks implements OnInit {
       { id: 'completed', label: 'Completed' },
     ];
 
-    // Parents don't have tasks assigned to them, so hide "My Tasks"
-    if (this.isParent()) {
+    // Parents/admins don't have tasks assigned to them, so hide "My Tasks"
+    if (this.isParentOrAdmin()) {
       return allTabs.filter((tab) => tab.id !== 'mine');
     }
 
