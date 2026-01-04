@@ -4,6 +4,7 @@ import { Progress } from './progress';
 import { AuthService } from '../../services/auth.service';
 import { HouseholdService } from '../../services/household.service';
 import { AnalyticsService } from '../../services/analytics.service';
+import { HouseholdStore } from '../../stores/household.store';
 import type { HouseholdAnalytics } from '@st44/types';
 
 describe('Progress', () => {
@@ -12,6 +13,10 @@ describe('Progress', () => {
   let mockAuthService: { currentUser: ReturnType<typeof vi.fn> };
   let mockHouseholdService: { listHouseholds: ReturnType<typeof vi.fn> };
   let mockAnalyticsService: { getHouseholdAnalytics: ReturnType<typeof vi.fn> };
+  let mockHouseholdStore: {
+    activeHouseholdId: ReturnType<typeof vi.fn>;
+    autoActivateHousehold: ReturnType<typeof vi.fn>;
+  };
 
   const mockUser = {
     id: 'test-user-id',
@@ -123,12 +128,18 @@ describe('Progress', () => {
       getHouseholdAnalytics: vi.fn().mockResolvedValue(mockAnalytics),
     };
 
+    mockHouseholdStore = {
+      activeHouseholdId: vi.fn().mockReturnValue('test-household-id'),
+      autoActivateHousehold: vi.fn().mockResolvedValue(undefined),
+    };
+
     await TestBed.configureTestingModule({
       imports: [Progress],
       providers: [
         { provide: AuthService, useValue: mockAuthService },
         { provide: HouseholdService, useValue: mockHouseholdService },
         { provide: AnalyticsService, useValue: mockAnalyticsService },
+        { provide: HouseholdStore, useValue: mockHouseholdStore },
       ],
     }).compileComponents();
 

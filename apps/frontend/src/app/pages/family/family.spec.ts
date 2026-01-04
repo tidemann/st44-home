@@ -5,6 +5,7 @@ import { HouseholdService, type HouseholdMemberResponse } from '../../services/h
 import { AuthService } from '../../services/auth.service';
 import { InvitationService } from '../../services/invitation.service';
 import { ChildrenService } from '../../services/children.service';
+import { HouseholdStore } from '../../stores/household.store';
 import type { InviteMemberData } from '../../components/modals/invite-modal/invite-modal';
 import type { AddChildData } from '../../components/modals/add-child-modal/add-child-modal';
 
@@ -20,6 +21,10 @@ describe('Family', () => {
   let mockChildrenService: {
     createChild: ReturnType<typeof vi.fn>;
     listChildren: ReturnType<typeof vi.fn>;
+  };
+  let mockHouseholdStore: {
+    activeHouseholdId: ReturnType<typeof vi.fn>;
+    autoActivateHousehold: ReturnType<typeof vi.fn>;
   };
 
   const mockUser = { id: 'user-1', email: 'test@example.com' };
@@ -79,6 +84,11 @@ describe('Family', () => {
     mockHouseholdService.listHouseholds.mockResolvedValue([mockHousehold]);
     mockHouseholdService.getHouseholdMembers.mockResolvedValue(mockMembers);
 
+    mockHouseholdStore = {
+      activeHouseholdId: vi.fn().mockReturnValue('household-1'),
+      autoActivateHousehold: vi.fn().mockResolvedValue(undefined),
+    };
+
     await TestBed.configureTestingModule({
       imports: [Family],
       providers: [
@@ -86,6 +96,7 @@ describe('Family', () => {
         { provide: AuthService, useValue: mockAuthService },
         { provide: InvitationService, useValue: mockInvitationService },
         { provide: ChildrenService, useValue: mockChildrenService },
+        { provide: HouseholdStore, useValue: mockHouseholdStore },
       ],
     }).compileComponents();
 

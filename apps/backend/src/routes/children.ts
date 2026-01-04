@@ -358,18 +358,19 @@ async function createChildUserAccount(
 
       const newUserId = userResult.rows[0].id;
 
-      // 5. Link child to user by setting children.user_id
-      await client.query('UPDATE children SET user_id = $1, updated_at = NOW() WHERE id = $2', [
-        newUserId,
-        childId,
-      ]);
-
-      // 6. Add household_members entry with role='child'
+      // 5. Add household_members entry with role='child' FIRST
+      // (trigger requires this before linking user_id to children)
       await client.query(
         `INSERT INTO household_members (household_id, user_id, role)
          VALUES ($1, $2, 'child')`,
         [householdId, newUserId],
       );
+
+      // 6. Link child to user by setting children.user_id
+      await client.query('UPDATE children SET user_id = $1, updated_at = NOW() WHERE id = $2', [
+        newUserId,
+        childId,
+      ]);
 
       return newUserId;
     });

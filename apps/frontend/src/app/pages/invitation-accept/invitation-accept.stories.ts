@@ -420,7 +420,10 @@ export default meta;
  */
 export const Unauthenticated: StoryObj = {
   render: () => ({
-    component: InvitationUnauthenticatedStory,
+    template: '<app-story-invitation-unauthenticated></app-story-invitation-unauthenticated>',
+    moduleMetadata: {
+      imports: [InvitationUnauthenticatedStory],
+    },
   }),
 };
 
@@ -429,7 +432,10 @@ export const Unauthenticated: StoryObj = {
  */
 export const Authenticated: StoryObj = {
   render: () => ({
-    component: InvitationAuthenticatedStory,
+    template: '<app-story-invitation-authenticated></app-story-invitation-authenticated>',
+    moduleMetadata: {
+      imports: [InvitationAuthenticatedStory],
+    },
   }),
 };
 
@@ -438,7 +444,10 @@ export const Authenticated: StoryObj = {
  */
 export const Processing: StoryObj = {
   render: () => ({
-    component: InvitationProcessingStory,
+    template: '<app-story-invitation-processing></app-story-invitation-processing>',
+    moduleMetadata: {
+      imports: [InvitationProcessingStory],
+    },
   }),
 };
 
@@ -447,7 +456,10 @@ export const Processing: StoryObj = {
  */
 export const SuccessAccepted: StoryObj = {
   render: () => ({
-    component: InvitationSuccessStory,
+    template: '<app-story-invitation-success></app-story-invitation-success>',
+    moduleMetadata: {
+      imports: [InvitationSuccessStory],
+    },
   }),
 };
 
@@ -456,7 +468,10 @@ export const SuccessAccepted: StoryObj = {
  */
 export const SuccessDeclined: StoryObj = {
   render: () => ({
-    component: InvitationDeclinedStory,
+    template: '<app-story-invitation-declined></app-story-invitation-declined>',
+    moduleMetadata: {
+      imports: [InvitationDeclinedStory],
+    },
   }),
 };
 
@@ -465,7 +480,10 @@ export const SuccessDeclined: StoryObj = {
  */
 export const ErrorInvalidLink: StoryObj = {
   render: () => ({
-    component: InvitationErrorInvalidStory,
+    template: '<app-story-invitation-error-invalid></app-story-invitation-error-invalid>',
+    moduleMetadata: {
+      imports: [InvitationErrorInvalidStory],
+    },
   }),
 };
 
@@ -474,7 +492,10 @@ export const ErrorInvalidLink: StoryObj = {
  */
 export const ErrorNotFound: StoryObj = {
   render: () => ({
-    component: InvitationErrorNotFoundStory,
+    template: '<app-story-invitation-error-notfound></app-story-invitation-error-notfound>',
+    moduleMetadata: {
+      imports: [InvitationErrorNotFoundStory],
+    },
   }),
 };
 
@@ -483,7 +504,10 @@ export const ErrorNotFound: StoryObj = {
  */
 export const ErrorExpired: StoryObj = {
   render: () => ({
-    component: InvitationErrorExpiredStory,
+    template: '<app-story-invitation-error-expired></app-story-invitation-error-expired>',
+    moduleMetadata: {
+      imports: [InvitationErrorExpiredStory],
+    },
   }),
 };
 
@@ -492,7 +516,10 @@ export const ErrorExpired: StoryObj = {
  */
 export const ErrorWrongEmail: StoryObj = {
   render: () => ({
-    component: InvitationErrorWrongEmailStory,
+    template: '<app-story-invitation-error-wrongemail></app-story-invitation-error-wrongemail>',
+    moduleMetadata: {
+      imports: [InvitationErrorWrongEmailStory],
+    },
   }),
 };
 
@@ -501,6 +528,10 @@ export const ErrorWrongEmail: StoryObj = {
  */
 export const ErrorAlreadyMember: StoryObj = {
   render: () => ({
-    component: InvitationErrorAlreadyMemberStory,
+    template:
+      '<app-story-invitation-error-alreadymember></app-story-invitation-error-alreadymember>',
+    moduleMetadata: {
+      imports: [InvitationErrorAlreadyMemberStory],
+    },
   }),
 };

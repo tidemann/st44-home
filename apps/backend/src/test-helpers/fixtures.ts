@@ -24,6 +24,8 @@ export interface CreateTestUserOptions {
   email?: string;
   password?: string;
   googleId?: string;
+  firstName?: string;
+  lastName?: string;
 }
 
 /**
@@ -35,12 +37,14 @@ export async function createTestUser(options: CreateTestUserOptions = {}): Promi
     options.email ?? `test-${Date.now()}-${Math.random().toString(36).slice(2)}@example.com`;
   const password = options.password ?? 'Test1234!';
   const passwordHash = await bcrypt.hash(password, 10);
+  const firstName = options.firstName ?? 'Test';
+  const lastName = options.lastName ?? 'User';
 
   const result = await pool.query<TestUser>(
-    `INSERT INTO users (email, password_hash, google_id)
-     VALUES ($1, $2, $3)
+    `INSERT INTO users (email, password_hash, google_id, first_name, last_name)
+     VALUES ($1, $2, $3, $4, $5)
      RETURNING *`,
-    [email, passwordHash, options.googleId ?? null],
+    [email, passwordHash, options.googleId ?? null, firstName, lastName],
   );
 
   return result.rows[0];
