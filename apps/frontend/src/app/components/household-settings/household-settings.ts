@@ -5,6 +5,7 @@ import {
   inject,
   OnInit,
   ChangeDetectionStrategy,
+  viewChild,
 } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -37,6 +38,9 @@ export class HouseholdSettingsComponent implements OnInit {
   private readonly router = inject(Router);
   private readonly householdService = inject(HouseholdService);
   private readonly authService = inject(AuthService);
+
+  // ViewChild for invitations list to refresh after sending
+  private readonly invitationsSentList = viewChild(InvitationsSentListComponent);
 
   household = signal<HouseholdListItem | null>(null);
   members = signal<HouseholdMemberResponse[]>([]);
@@ -149,7 +153,10 @@ export class HouseholdSettingsComponent implements OnInit {
   }
 
   async onInvitationSent() {
-    // Refresh members list
+    // Refresh the sent invitations list
+    this.invitationsSentList()?.loadInvitations();
+
+    // Also refresh members list for consistency
     const householdId = this.household()?.id;
     if (householdId) {
       // Note: New member won't appear until they accept, but refresh for consistency
