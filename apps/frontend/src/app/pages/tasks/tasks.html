@@ -68,7 +68,7 @@
         @for (task of filteredTasks(); track task.id) {
           <app-task-card
             [task]="task"
-            [showCompleteButton]="!isParent()"
+            [showCompleteButton]="!isParentOrAdmin()"
             [clickable]="true"
             [showReassignButton]="activeFilter() !== 'all'"
             (complete)="onTaskComplete($event)"
