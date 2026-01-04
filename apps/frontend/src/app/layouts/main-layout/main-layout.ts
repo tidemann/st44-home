@@ -67,8 +67,15 @@ export class MainLayout implements OnInit, OnDestroy {
   // Computed values
   protected readonly sidebarUser = computed<SidebarUser>(() => {
     const user = this.authService.currentUser();
+    const firstName = user?.firstName || null;
+    const lastName = user?.lastName || null;
+    // Use first name if available, otherwise fall back to email prefix
+    const displayName = firstName || user?.email?.split('@')[0] || 'User';
     return {
-      name: user?.email?.split('@')[0] || 'User',
+      name: displayName,
+      firstName,
+      lastName,
+      email: user?.email || null,
       avatar: '',
       household: this.householdName(),
     };

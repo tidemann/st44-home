@@ -7,6 +7,9 @@ import { HouseholdSwitcherComponent } from '../../household-switcher/household-s
  */
 export interface SidebarUser {
   name: string;
+  firstName: string | null;
+  lastName: string | null;
+  email: string | null;
   avatar: string;
   household: string;
 }
@@ -56,14 +59,30 @@ export class SidebarNav {
   ];
 
   /**
-   * Compute initials from user name
+   * Compute initials from user name fields
    */
   userInitials = computed(() => {
-    const name = this.user().name;
+    const user = this.user();
+    const firstName = user.firstName;
+    const lastName = user.lastName;
+
+    // Use firstName/lastName if available
+    if (firstName && lastName) {
+      return `${firstName.charAt(0)}${lastName.charAt(0)}`.toUpperCase();
+    }
+
+    // Fall back to splitting the name (for display name)
+    const name = user.name;
     const parts = name.split(' ');
     if (parts.length >= 2) {
-      return `${parts[0][0]}${parts[1][0]}`.toUpperCase();
+      return `${parts[0].charAt(0)}${parts[1].charAt(0)}`.toUpperCase();
     }
+
+    // Fall back to first letter of email if available
+    if (user.email) {
+      return user.email.charAt(0).toUpperCase();
+    }
+
     return name.substring(0, 2).toUpperCase();
   });
 

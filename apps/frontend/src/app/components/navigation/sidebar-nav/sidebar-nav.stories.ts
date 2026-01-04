@@ -43,7 +43,10 @@ const meta: Meta<SidebarNav> = {
 export default meta;
 
 const defaultUser: SidebarUser = {
-  name: 'Sarah Johnson',
+  name: 'Sarah',
+  firstName: 'Sarah',
+  lastName: 'Johnson',
+  email: 'sarah@example.com',
   avatar: 'SJ',
   household: 'The Johnson Family',
 };
@@ -89,14 +92,17 @@ export const Progress: StoryObj<SidebarNav> = {
 };
 
 /**
- * User with single name
+ * User with single name (no lastName)
  */
 export const SingleNameUser: StoryObj<SidebarNav> = {
   args: {
     activeScreen: 'home',
     user: {
       name: 'Mike',
-      avatar: 'MI',
+      firstName: 'Mike',
+      lastName: null,
+      email: 'mike@example.com',
+      avatar: 'M',
       household: 'The Smith Family',
     },
   },
@@ -109,7 +115,10 @@ export const LongHouseholdName: StoryObj<SidebarNav> = {
   args: {
     activeScreen: 'home',
     user: {
-      name: 'Alexandra Martinez',
+      name: 'Alexandra',
+      firstName: 'Alexandra',
+      lastName: 'Martinez',
+      email: 'alexandra@example.com',
       avatar: 'AM',
       household: 'The Martinez-Rodriguez Family Household',
     },
