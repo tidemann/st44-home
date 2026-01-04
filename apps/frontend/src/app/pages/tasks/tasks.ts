@@ -417,6 +417,10 @@ export class Tasks implements OnInit {
   protected onTaskEdit(taskId: string): void {
     const task = this.tasks().find((t) => t.id === taskId);
     if (task) {
+      // Ensure children are loaded for the edit modal
+      if (this.members().length === 0) {
+        this.loadMembers();
+      }
       this.editingTask.set(task);
       this.editModalOpen.set(true);
     }
