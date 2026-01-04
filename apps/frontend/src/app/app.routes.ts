@@ -28,6 +28,14 @@ export const routes: Routes = [
     title: 'Reset Password - Diddit!',
     loadComponent: () => import('./auth/reset-password').then((m) => m.ResetPasswordComponent),
   },
+  {
+    path: 'invitations/accept/:token',
+    title: 'Accept Invitation - Diddit!',
+    loadComponent: () =>
+      import('./pages/invitation-accept/invitation-accept').then(
+        (m) => m.InvitationAcceptComponent,
+      ),
+  },
 
   // Parent/Admin routes - wrapped in MainLayout
   {

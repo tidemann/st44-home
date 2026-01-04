@@ -2,7 +2,7 @@ import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { RegisterComponent } from './register';
 import { AuthService } from '../services/auth.service';
-import { Router, provideRouter } from '@angular/router';
+import { Router, provideRouter, ActivatedRoute } from '@angular/router';
 import { of, throwError } from 'rxjs';
 import { provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
@@ -11,6 +11,7 @@ describe('RegisterComponent', () => {
   let component: RegisterComponent;
   let fixture: ComponentFixture<RegisterComponent>;
   let mockAuthService: { register: ReturnType<typeof vi.fn> };
+  let mockActivatedRoute: { snapshot: { queryParams: Record<string, string> } };
   let router: Router;
 
   beforeEach(() => {
@@ -22,6 +23,9 @@ describe('RegisterComponent', () => {
     mockAuthService = {
       register: vi.fn(),
     };
+    mockActivatedRoute = {
+      snapshot: { queryParams: {} },
+    };
 
     TestBed.configureTestingModule({
       imports: [RegisterComponent],
@@ -30,6 +34,7 @@ describe('RegisterComponent', () => {
         provideHttpClientTesting(),
         provideRouter([]),
         { provide: AuthService, useValue: mockAuthService },
+        { provide: ActivatedRoute, useValue: mockActivatedRoute },
       ],
     });
 
@@ -253,6 +258,28 @@ describe('RegisterComponent', () => {
 
       expect(router.navigate).toHaveBeenCalledWith(['/login'], {
         queryParams: { registered: 'true' },
+      });
+    });
+
+    it('should preserve returnUrl when navigating to login after registration', async () => {
+      mockActivatedRoute.snapshot.queryParams = {
+        returnUrl: '/invitations/accept/test-token',
+      };
+
+      component['registerForm'].patchValue({
+        firstName: 'Test',
+        lastName: 'User',
+        email: 'test@example.com',
+        password: 'Test1234',
+        confirmPassword: 'Test1234',
+      });
+
+      mockAuthService.register.mockReturnValue(of({}));
+
+      await component['onSubmit']();
+
+      expect(router.navigate).toHaveBeenCalledWith(['/login'], {
+        queryParams: { registered: 'true', returnUrl: '/invitations/accept/test-token' },
       });
     });
 
