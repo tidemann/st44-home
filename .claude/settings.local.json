@@ -94,7 +94,22 @@
       "Bash(npx ng:*)",
       "Bash(npx node:*)",
       "Bash(timeout:*)",
-      "Bash(git rebase:*)"
+      "Bash(git rebase:*)",
+      "Bash(git branch:*)",
+      "Bash(docker build:*)",
+      "Bash(docker run:*)",
+      "Bash(docker rm:*)",
+      "Bash(docker stop:*)",
+      "Bash(gh run rerun:*)",
+      "Bash(Select-String -Pattern \"migration\" -Context 3)",
+      "Bash(Select-Object -First 10)",
+      "Skill(live-debug)",
+      "Bash(pwsh -Command:*)",
+      "Bash(MSYS_NO_PATHCONV=1 docker exec:*)",
+      "Bash(ConvertTo-Json -Depth 10)",
+      "Bash(tee:*)",
+      "Bash(npx tsx:*)",
+      "Bash(cmd /c:*)"
     ]
   }
 }

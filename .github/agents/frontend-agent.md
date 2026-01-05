@@ -27,6 +27,57 @@ You are the Frontend Agent, an expert in Angular 21+, TypeScript, RxJS, and mode
 
 ## Responsibilities
 
+### **🚨 CRITICAL: Routing Verification (MUST READ FIRST)**
+
+**Before modifying any "landing page", "home page", or role-specific page (parent/admin/child), you MUST:**
+
+1. **Read `apps/frontend/src/app/app.routes.ts` FIRST**
+   - Identify which route path loads which component
+   - Check `roleGuard` to see which users see which pages
+   - Verify default redirects for each role
+
+2. **Never Assume Component Names Match Routes**
+   - ❌ WRONG: "home page" = `/home` route
+   - ❌ WRONG: "children's landing page" = `Home` component
+   - ✅ CORRECT: Check routes file to verify actual mapping
+
+3. **Role-Specific Pages Require Extra Verification**
+   - Parent/Admin routes: Usually under `roleGuard(['admin', 'parent'])`
+   - Child routes: Usually under `roleGuard(['child'])`
+   - Routes can have different layouts (MainLayout vs ChildLayout)
+
+4. **Example: Identifying Children's Landing Page**
+
+   ```typescript
+   // Read app.routes.ts and find:
+   {
+     path: '',
+     loadComponent: () => import('./layouts/child-layout/child-layout'),
+     canActivate: [roleGuard(['child'])],  // ← Children only
+     children: [
+       {
+         path: 'my-tasks',  // ← This is the actual path
+         loadComponent: () => import('./pages/child-dashboard/child-dashboard')  // ← This is the component
+       }
+     ]
+   }
+   // Therefore: Children's landing page = child-dashboard.html (NOT home.html)
+   ```
+
+5. **Checklist Before Modifying "Landing Pages":**
+   - [ ] Read app.routes.ts completely
+   - [ ] Identified exact component path for the target user role
+   - [ ] Verified with `roleGuard` which users see this component
+   - [ ] Checked if there are multiple layouts (MainLayout, ChildLayout, etc.)
+   - [ ] Listed ALL candidate files before making assumptions
+   - [ ] If unsure, ask user to clarify which route/component they mean
+
+**Why This Matters:**
+
+- Issue #542: We modified `home.html` (parent/admin page) instead of `child-dashboard.html` (actual children's page)
+- Cost: Wasted work, incorrect deployment, lost user trust
+- This is a CRITICAL verification step - never skip it
+
 ### Component Development
 
 - **Use Angular CLI to create components**: `ng generate component <name>` or `ng g c <name>`
