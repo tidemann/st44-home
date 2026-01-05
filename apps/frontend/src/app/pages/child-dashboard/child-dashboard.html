@@ -23,65 +23,6 @@
       <h1 class="greeting">Hi {{ childName() }}! 👋</h1>
     </header>
 
-    <!-- Streak and Progress Section -->
-    @if (analytics()) {
-      <section class="analytics-section">
-        <!-- Streak Counter -->
-        <app-streak-counter
-          [currentStreak]="analytics()!.currentStreak"
-          [longestStreak]="analytics()!.longestStreak"
-        />
-
-        <!-- Week/Month Progress -->
-        <div class="progress-cards">
-          <app-progress-summary
-            title="This Week"
-            icon="📅"
-            [progress]="analytics()!.weekProgress"
-          />
-          <app-progress-summary
-            title="This Month"
-            icon="📆"
-            [progress]="analytics()!.monthProgress"
-          />
-        </div>
-
-        <!-- Daily Points Chart -->
-        @if (analytics()!.dailyPoints.length > 0) {
-          <app-daily-points-chart [dailyData]="analytics()!.dailyPoints" title="Points This Week" />
-        }
-      </section>
-    }
-
-    <!-- Available Single Tasks -->
-    <app-available-tasks-section />
-
-    <!-- Points Progress -->
-    <section class="points-section">
-      <div class="points-header">
-        <h2>Today's Points</h2>
-        <div class="points-display">
-          <span class="completed-points">{{ completedPoints() }}</span>
-          <span class="points-separator">/</span>
-          <span class="total-points">{{ totalPoints() }}</span>
-        </div>
-      </div>
-      <div class="progress-bar-container">
-        <div
-          class="progress-bar"
-          [class]="getProgressClass()"
-          [style.width.%]="progressPercent()"
-          role="progressbar"
-          [attr.aria-valuenow]="progressPercent()"
-          [attr.aria-valuemin]="0"
-          [attr.aria-valuemax]="100"
-        ></div>
-      </div>
-      @if (allCompleted() && hasTasks()) {
-        <div class="celebration">🎉 All tasks complete! Great job!</div>
-      }
-    </section>
-
     <!-- Tasks List -->
     <section class="tasks-section">
       <h2>Today's Tasks</h2>
@@ -160,5 +101,66 @@
         }
       }
     </section>
+
+    <!-- Available Single Tasks -->
+    @if (hasAvailableTasks()) {
+      <app-available-tasks-section />
+    }
+
+    <!-- Points Progress -->
+    <section class="points-section">
+      <div class="points-header">
+        <h2>Today's Points</h2>
+        <div class="points-display">
+          <span class="completed-points">{{ completedPoints() }}</span>
+          <span class="points-separator">/</span>
+          <span class="total-points">{{ totalPoints() }}</span>
+        </div>
+      </div>
+      <div class="progress-bar-container">
+        <div
+          class="progress-bar"
+          [class]="getProgressClass()"
+          [style.width.%]="progressPercent()"
+          role="progressbar"
+          [attr.aria-valuenow]="progressPercent()"
+          [attr.aria-valuemin]="0"
+          [attr.aria-valuemax]="100"
+        ></div>
+      </div>
+      @if (allCompleted() && hasTasks()) {
+        <div class="celebration">🎉 All tasks complete! Great job!</div>
+      }
+    </section>
+
+    <!-- Streak and Progress Section -->
+    @if (analytics()) {
+      <section class="analytics-section">
+        <!-- Streak Counter -->
+        <app-streak-counter
+          [currentStreak]="analytics()!.currentStreak"
+          [longestStreak]="analytics()!.longestStreak"
+        />
+
+        <!-- Week/Month Progress -->
+        <div class="progress-cards">
+          <app-progress-summary
+            title="This Week"
+            icon="📅"
+            [progress]="analytics()!.weekProgress"
+          />
+          <app-progress-summary
+            title="This Month"
+            icon="📆"
+            [progress]="analytics()!.monthProgress"
+          />
+        </div>
+
+        <!-- Daily Points Chart -->
+        @if (analytics()!.dailyPoints.length > 0) {
+          <app-daily-points-chart [dailyData]="analytics()!.dailyPoints" title="Points This Week" />
+        }
+      </section>
+    }
   }
 </div>

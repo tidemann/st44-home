@@ -10,6 +10,7 @@ import { Router } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
 import { AnalyticsService } from '../../services/analytics.service';
 import { TaskService, type MyTaskAssignment } from '../../services/task.service';
+import { SingleTaskService } from '../../services/single-task.service';
 import { AvailableTasksSectionComponent } from '../../components/available-tasks-section/available-tasks-section';
 import { StreakCounter } from '../../components/streak-counter/streak-counter';
 import { ProgressSummary } from '../../components/progress-summary/progress-summary';
@@ -38,6 +39,7 @@ export class ChildDashboardComponent implements OnInit {
   private router = inject(Router);
   private analyticsService = inject(AnalyticsService);
   private taskService = inject(TaskService);
+  private singleTaskService = inject(SingleTaskService);
 
   // Local state
   analytics = signal<ChildAnalytics | null>(null);
@@ -64,6 +66,7 @@ export class ChildDashboardComponent implements OnInit {
   });
   pendingTasks = computed(() => this.tasks().filter((t) => t.status === 'pending'));
   completedTasks = computed(() => this.tasks().filter((t) => t.status === 'completed'));
+  hasAvailableTasks = computed(() => this.singleTaskService.availableTasks().length > 0);
 
   async ngOnInit() {
     await this.loadMyTasks();

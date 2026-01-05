@@ -16,7 +16,6 @@ import { CelebrationComponent } from '../../components/celebration/celebration';
 import { FailedTasksSectionComponent } from '../../components/failed-tasks-section/failed-tasks-section';
 import { WeekComparison } from '../../components/week-comparison/week-comparison';
 import { ChildrenTrends } from '../../components/children-trends/children-trends';
-import { AvailableTasksSectionComponent } from '../../components/available-tasks-section/available-tasks-section';
 import { TaskService } from '../../services/task.service';
 import { ChildrenService } from '../../services/children.service';
 import { AuthService } from '../../services/auth.service';
@@ -24,7 +23,6 @@ import { HouseholdService } from '../../services/household.service';
 import { HouseholdStore } from '../../stores/household.store';
 import { DashboardService } from '../../services/dashboard.service';
 import { AnalyticsService } from '../../services/analytics.service';
-import { SingleTaskService } from '../../services/single-task.service';
 import type { Task, Assignment, Child, HouseholdAnalytics } from '@st44/types';
 
 /**
@@ -57,7 +55,6 @@ interface DashboardStats {
     FailedTasksSectionComponent,
     WeekComparison,
     ChildrenTrends,
-    AvailableTasksSectionComponent,
   ],
   templateUrl: './home.html',
   styleUrl: './home.css',
@@ -71,7 +68,6 @@ export class Home implements OnInit {
   private readonly householdStore = inject(HouseholdStore);
   private readonly dashboardService = inject(DashboardService);
   private readonly analyticsService = inject(AnalyticsService);
-  private readonly singleTaskService = inject(SingleTaskService);
 
   // State signals
   protected readonly loading = signal(false);
@@ -106,7 +102,6 @@ export class Home implements OnInit {
 
   protected readonly hasTodayTasks = computed(() => this.todayTasks().length > 0);
   protected readonly hasUpcomingTasks = computed(() => this.upcomingTasks().length > 0);
-  protected readonly hasAvailableTasks = this.singleTaskService.hasAvailableTasks;
 
   async ngOnInit(): Promise<void> {
     await this.loadData();

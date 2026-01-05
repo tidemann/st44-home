@@ -31,6 +31,28 @@
 
     <!-- Content -->
     <div class="content">
+      <!-- Failed/Expired Tasks Alert -->
+      @if (householdId()) {
+        <app-failed-tasks-section [householdId]="householdId()!" />
+      }
+
+      <!-- Stats Grid -->
+      <div class="stats-grid">
+        <app-stat-card [icon]="'🎯'" [value]="stats().activeCount" [label]="'Active'" />
+        <app-stat-card [icon]="'📊'" [value]="stats().weekProgress + '%'" [label]="'Week'" />
+        <app-stat-card [icon]="'⭐'" [value]="stats().totalPoints" [label]="'Points'" />
+      </div>
+
+      <!-- Analytics Section -->
+      @if (analytics()) {
+        <div class="analytics-section">
+          <app-week-comparison [comparison]="analytics()!.periodComparison" />
+          @if (analytics()!.childrenProgress.length > 0) {
+            <app-children-trends [childrenProgress]="analytics()!.childrenProgress" />
+          }
+        </div>
+      }
+
       <!-- Today's Tasks Section -->
       <section class="tasks-section">
         <div class="section-header">
@@ -57,33 +79,6 @@
           </div>
         }
       </section>
-
-      <!-- Available Tasks Section (conditional) -->
-      @if (hasAvailableTasks()) {
-        <app-available-tasks-section />
-      }
-
-      <!-- Failed/Expired Tasks Alert -->
-      @if (householdId()) {
-        <app-failed-tasks-section [householdId]="householdId()!" />
-      }
-
-      <!-- Stats Grid -->
-      <div class="stats-grid">
-        <app-stat-card [icon]="'🎯'" [value]="stats().activeCount" [label]="'Active'" />
-        <app-stat-card [icon]="'📊'" [value]="stats().weekProgress + '%'" [label]="'Week'" />
-        <app-stat-card [icon]="'⭐'" [value]="stats().totalPoints" [label]="'Points'" />
-      </div>
-
-      <!-- Analytics Section -->
-      @if (analytics()) {
-        <div class="analytics-section">
-          <app-week-comparison [comparison]="analytics()!.periodComparison" />
-          @if (analytics()!.childrenProgress.length > 0) {
-            <app-children-trends [childrenProgress]="analytics()!.childrenProgress" />
-          }
-        </div>
-      }
 
       <!-- Coming Up Section -->
       @if (hasUpcomingTasks()) {
