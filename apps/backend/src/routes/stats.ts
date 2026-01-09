@@ -174,6 +174,7 @@ async function getDashboardStats(
 
   if (!userId) {
     return reply.status(401).send({
+      statusCode: 401,
       error: 'Unauthorized',
       message: 'Authentication required',
     });
@@ -184,6 +185,7 @@ async function getDashboardStats(
 
     if (!householdId) {
       return reply.status(404).send({
+        statusCode: 404,
         error: 'Not Found',
         message: 'No household found for user',
       });
@@ -305,6 +307,7 @@ async function getDashboardStats(
   } catch (error) {
     request.log.error(error, 'Failed to get dashboard stats');
     return reply.status(500).send({
+      statusCode: 500,
       error: 'Internal Server Error',
       message: 'Failed to retrieve dashboard statistics',
     });
@@ -323,6 +326,7 @@ async function getLeaderboard(
 
   if (!userId) {
     return reply.status(401).send({
+      statusCode: 401,
       error: 'Unauthorized',
       message: 'Authentication required',
     });
@@ -333,6 +337,7 @@ async function getLeaderboard(
 
     if (!householdId) {
       return reply.status(404).send({
+        statusCode: 404,
         error: 'Not Found',
         message: 'No household found for user',
       });
@@ -384,6 +389,7 @@ async function getLeaderboard(
   } catch (error) {
     request.log.error(error, 'Failed to get leaderboard');
     return reply.status(500).send({
+      statusCode: 500,
       error: 'Internal Server Error',
       message: 'Failed to retrieve leaderboard',
     });
@@ -412,6 +418,7 @@ async function getAchievements(
 
     if (!householdId) {
       return reply.status(404).send({
+        statusCode: 404,
         error: 'Not Found',
         message: 'No household found for user',
       });
@@ -430,6 +437,7 @@ async function getAchievements(
 
       if (childResult.rows.length === 0) {
         return reply.status(404).send({
+          statusCode: 404,
           error: 'Not Found',
           message: 'User not found in household',
         });
@@ -523,6 +531,7 @@ async function getAchievements(
   } catch (error) {
     request.log.error(error, 'Failed to get achievements');
     return reply.status(500).send({
+      statusCode: 500,
       error: 'Internal Server Error',
       message: 'Failed to retrieve achievements',
     });

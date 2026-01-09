@@ -197,7 +197,7 @@ describe('Stats API', () => {
     test('should return leaderboard for week period', async () => {
       const response = await app.inject({
         method: 'GET',
-        url: '/api/stats/leaderboard?period=week',
+        url: `/api/stats/leaderboard?period=week&householdId=${householdId}`,
         headers: { Authorization: `Bearer ${parentToken}` },
       });
 
@@ -220,7 +220,7 @@ describe('Stats API', () => {
     test('should return leaderboard for month period', async () => {
       const response = await app.inject({
         method: 'GET',
-        url: '/api/stats/leaderboard?period=month',
+        url: `/api/stats/leaderboard?period=month&householdId=${householdId}`,
         headers: { Authorization: `Bearer ${parentToken}` },
       });
 
@@ -232,7 +232,7 @@ describe('Stats API', () => {
     test('should return leaderboard for alltime period', async () => {
       const response = await app.inject({
         method: 'GET',
-        url: '/api/stats/leaderboard?period=alltime',
+        url: `/api/stats/leaderboard?period=alltime&householdId=${householdId}`,
         headers: { Authorization: `Bearer ${parentToken}` },
       });
 
@@ -306,7 +306,7 @@ describe('Stats API', () => {
     test('should return achievements with specific userId', async () => {
       const response = await app.inject({
         method: 'GET',
-        url: `/api/stats/achievements?userId=${childId}`,
+        url: `/api/stats/achievements?userId=${childId}&householdId=${householdId}`,
         headers: { Authorization: `Bearer ${parentToken}` },
       });
 
@@ -338,7 +338,7 @@ describe('Stats API', () => {
     test('should unlock first_task achievement after completing a task', async () => {
       const response = await app.inject({
         method: 'GET',
-        url: '/api/stats/achievements',
+        url: `/api/stats/achievements?householdId=${householdId}`,
         headers: { Authorization: `Bearer ${childToken}` },
       });
 
