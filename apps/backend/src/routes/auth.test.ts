@@ -32,7 +32,20 @@ describe('Authentication API', () => {
 
   after(async () => {
     if (userId) {
+      // Get household ID before deleting user
+      const householdResult = await pool.query(
+        'SELECT household_id FROM household_members WHERE user_id = $1',
+        [userId],
+      );
+      const householdId = householdResult.rows[0]?.household_id;
+
+      // Delete user (cascades to household_members)
       await pool.query('DELETE FROM users WHERE id = $1', [userId]);
+
+      // Delete household if it exists
+      if (householdId) {
+        await pool.query('DELETE FROM households WHERE id = $1', [householdId]);
+      }
     }
     await pool.end();
     await app.close();
@@ -59,6 +72,15 @@ describe('Authentication API', () => {
       assert.ok(body.userId);
 
       userId = body.userId;
+
+      // Verify household was created and user is admin
+      const householdResult = await pool.query(
+        'SELECT household_id, role FROM household_members WHERE user_id = $1',
+        [userId],
+      );
+      assert.strictEqual(householdResult.rows.length, 1);
+      assert.strictEqual(householdResult.rows[0].role, 'admin');
+      assert.ok(householdResult.rows[0].household_id);
     });
 
     test('should reject duplicate email', async () => {
@@ -369,6 +391,72 @@ describe('Authentication API', () => {
       });
 
       assert.strictEqual(response.statusCode, 401);
+    });
+  });
+
+  describe('End-to-end registration and login flow', () => {
+    test('should complete full registration and login flow with household', async () => {
+      const newUserEmail = `e2e-test-${Date.now()}@example.com`;
+      let newUserId: string;
+      let newHouseholdId: string;
+
+      try {
+        // Step 1: Register new user
+        const registerResponse = await app.inject({
+          method: 'POST',
+          url: '/api/auth/register',
+          payload: {
+            email: newUserEmail,
+            password: 'E2eTest123!',
+            firstName: 'E2E',
+            lastName: 'Tester',
+          },
+        });
+
+        assert.strictEqual(registerResponse.statusCode, 201);
+        const registerBody = JSON.parse(registerResponse.body);
+        newUserId = registerBody.userId;
+
+        // Step 2: Verify household was created
+        const householdCheck = await pool.query(
+          'SELECT household_id, role FROM household_members WHERE user_id = $1',
+          [newUserId],
+        );
+        assert.strictEqual(householdCheck.rows.length, 1);
+        assert.strictEqual(householdCheck.rows[0].role, 'admin');
+        newHouseholdId = householdCheck.rows[0].household_id;
+
+        // Step 3: Login immediately after registration
+        const loginResponse = await app.inject({
+          method: 'POST',
+          url: '/api/auth/login',
+          payload: {
+            email: newUserEmail,
+            password: 'E2eTest123!',
+          },
+        });
+
+        assert.strictEqual(loginResponse.statusCode, 200);
+        const loginBody = JSON.parse(loginResponse.body);
+
+        // Step 4: Verify login response includes household info
+        assert.ok(loginBody.accessToken);
+        assert.ok(loginBody.refreshToken);
+        assert.strictEqual(loginBody.userId, newUserId);
+        assert.strictEqual(loginBody.email, newUserEmail);
+        assert.strictEqual(loginBody.firstName, 'E2E');
+        assert.strictEqual(loginBody.lastName, 'Tester');
+        assert.strictEqual(loginBody.role, 'admin');
+        assert.strictEqual(loginBody.householdId, newHouseholdId);
+      } finally {
+        // Cleanup
+        if (newUserId) {
+          await pool.query('DELETE FROM users WHERE id = $1', [newUserId]);
+        }
+        if (newHouseholdId) {
+          await pool.query('DELETE FROM households WHERE id = $1', [newHouseholdId]);
+        }
+      }
     });
   });
 });

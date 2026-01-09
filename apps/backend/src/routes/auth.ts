@@ -165,20 +165,54 @@ export default async function authRoutes(fastify: FastifyInstance) {
         // Hash password with bcrypt (cost factor 12)
         const passwordHash = await bcrypt.hash(password, 12);
 
-        // Insert user into database with name fields
-        const result = await pool.query(
-          `INSERT INTO users (email, password_hash, first_name, last_name)
-           VALUES ($1, $2, $3, $4)
-           RETURNING id, email, first_name, last_name`,
-          [email, passwordHash, firstName, lastName],
-        );
+        // Use transaction to create user, household, and membership atomically
+        const client = await pool.connect();
+        try {
+          await client.query('BEGIN');
 
-        return reply.code(201).send({
-          userId: result.rows[0].id,
-          email: result.rows[0].email,
-          firstName: result.rows[0].first_name,
-          lastName: result.rows[0].last_name,
-        });
+          // Insert user into database with name fields
+          const userResult = await client.query(
+            `INSERT INTO users (email, password_hash, first_name, last_name)
+             VALUES ($1, $2, $3, $4)
+             RETURNING id, email, first_name, last_name`,
+            [email, passwordHash, firstName, lastName],
+          );
+
+          const user = userResult.rows[0];
+
+          // Create default household for new user
+          const householdResult = await client.query(
+            `INSERT INTO households (name)
+             VALUES ($1)
+             RETURNING id`,
+            [`${firstName}'s Household`],
+          );
+
+          const householdId = householdResult.rows[0].id;
+
+          // Add user as admin of their new household
+          await client.query(
+            `INSERT INTO household_members (household_id, user_id, role)
+             VALUES ($1, $2, $3)`,
+            [householdId, user.id, 'admin'],
+          );
+
+          await client.query('COMMIT');
+
+          fastify.log.info({ userId: user.id, householdId }, 'User registered with new household');
+
+          return reply.code(201).send({
+            userId: user.id,
+            email: user.email,
+            firstName: user.first_name,
+            lastName: user.last_name,
+          });
+        } catch (error) {
+          await client.query('ROLLBACK');
+          throw error;
+        } finally {
+          client.release();
+        }
       } catch (error: unknown) {
         // Handle duplicate email (PostgreSQL unique violation)
         if (error && typeof error === 'object' && 'code' in error && error.code === '23505') {
