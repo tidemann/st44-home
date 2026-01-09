@@ -491,17 +491,51 @@ export default async function authRoutes(fastify: FastifyInstance) {
 
         if (existingUserResult.rows.length === 0) {
           // Create new user with Google OAuth including name from Google
-          const insertResult = await pool.query(
-            `INSERT INTO users (email, oauth_provider, oauth_provider_id, first_name, last_name)
-             VALUES ($1, $2, $3, $4, $5)
-             RETURNING id, email, first_name, last_name`,
-            [email, 'google', googleId, googleFirstName || null, googleLastName || null],
-          );
-          userId = insertResult.rows[0].id;
-          userEmail = insertResult.rows[0].email;
-          firstName = insertResult.rows[0].first_name;
-          lastName = insertResult.rows[0].last_name;
-          fastify.log.info({ userId, email: userEmail }, 'New user created via Google OAuth');
+          // Use transaction to create user, household, and membership atomically
+          const client = await pool.connect();
+          try {
+            await client.query('BEGIN');
+
+            // Create user
+            const insertResult = await client.query(
+              `INSERT INTO users (email, oauth_provider, oauth_provider_id, first_name, last_name)
+               VALUES ($1, $2, $3, $4, $5)
+               RETURNING id, email, first_name, last_name`,
+              [email, 'google', googleId, googleFirstName || null, googleLastName || null],
+            );
+            userId = insertResult.rows[0].id;
+            userEmail = insertResult.rows[0].email;
+            firstName = insertResult.rows[0].first_name;
+            lastName = insertResult.rows[0].last_name;
+
+            // Create default household for new user
+            const householdName = firstName
+              ? `${firstName}'s Household`
+              : `${userEmail.split('@')[0]}'s Household`;
+            const householdResult = await client.query(
+              `INSERT INTO households (name) VALUES ($1) RETURNING id`,
+              [householdName],
+            );
+            const newHouseholdId = householdResult.rows[0].id;
+
+            // Add user as admin of their household
+            await client.query(
+              `INSERT INTO household_members (household_id, user_id, role)
+               VALUES ($1, $2, $3)`,
+              [newHouseholdId, userId, 'admin'],
+            );
+
+            await client.query('COMMIT');
+            fastify.log.info(
+              { userId, email: userEmail, householdId: newHouseholdId },
+              'New user and household created via Google OAuth',
+            );
+          } catch (error) {
+            await client.query('ROLLBACK');
+            throw error;
+          } finally {
+            client.release();
+          }
         } else {
           userId = existingUserResult.rows[0].id;
           userEmail = existingUserResult.rows[0].email;
