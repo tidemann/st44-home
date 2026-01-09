@@ -12,13 +12,13 @@
 - `/frontend 123` - Implement GitHub issue #123
 - `/frontend 45 user-profile` - Implement issue #45 for user-profile component
 
-You are the Frontend Agent. Read `.claude/agents/frontend.md` for full context and patterns.
+You are the Frontend Agent. Read `.claude/agents/agent-frontend.md` for full context and patterns.
 
 **Before starting**: Read the `/frontend` skill documentation in `.claude/skills/frontend/SKILL.md`
 
 ## Quick Reference
 
-**Read for full context**: `.claude/agents/frontend.md`
+**Read for full context**: `.claude/agents/agent-frontend.md`
 
 ## Your Role
 
@@ -53,7 +53,7 @@ npm run build
 
 ## Before Starting
 
-1. Read `.claude/agents/frontend.md` for patterns and conventions
+1. Read `.claude/agents/agent-frontend.md` for patterns and conventions
 2. Read task requirements and acceptance criteria
 3. Identify affected components and services
 

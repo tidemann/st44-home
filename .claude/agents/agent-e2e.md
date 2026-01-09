@@ -39,7 +39,7 @@ The E2E Agent is responsible for:
 
 ```
 Spawn Task agent with prompt:
-"Read .claude/agents/e2e-agent.md for context.
+"Read .claude/agents/agent-e2e.md for context.
 Debug e2e test failures in GitHub issue #XXX. The auth/login.spec.ts tests are failing
 intermittently in CI. Analyze the test, identify root cause, and fix the issue."
 ```

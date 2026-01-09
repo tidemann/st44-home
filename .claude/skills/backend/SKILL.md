@@ -1,5 +1,5 @@
 ---
-name: backend
+name: agent-backend
 description: Fastify Node.js expert for .ts API files, REST endpoints, routes, middleware, handlers, PostgreSQL, SQL queries, pg.Pool, Zod schemas, validation, authentication, authorization, async/await, database connections, camelCase, type safety, error handling
 allowed-tools: Read, Write, Edit, Glob, Grep, Bash
 ---
@@ -273,7 +273,7 @@ await pool.query('SELECT id, name, email FROM users');
 
 ## Workflow
 
-1. **Read** the optimized agent spec: `.claude/agents/backend.md`
+1. **Read** the optimized agent spec: `.claude/agents/agent-backend.md`
 2. **Check** database schema for column names and types
 3. **Implement** endpoint with camelCase throughout
 4. **Validate** schema-query alignment
@@ -285,7 +285,7 @@ await pool.query('SELECT id, name, email FROM users');
 
 For detailed patterns and examples:
 
-- `.claude/agents/backend.md` - Complete agent specification
+- `.claude/agents/agent-backend.md` - Complete agent specification
 - `apps/backend/AGENTS.md` - Project-specific patterns (if exists)
 - `CLAUDE.md` - Project-wide conventions
 - `docker/postgres/init.sql` - Database schema

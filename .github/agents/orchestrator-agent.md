@@ -322,22 +322,22 @@ gif_creator(action: "export", download: true, filename: "bug-repro.gif", tabId: 
 #### Agent Assignment
 
 - Assign subtasks to specialized expert agents:
-  - **GitHub Issues Agent**: Issue creation, tracking, milestones, labels
+  - **agent-github-issues**: Issue creation, tracking, milestones, labels
     - ⚠️ **CRITICAL**: ALL work must be tracked in GitHub Issues
     - Delegate ALL issue creation/updates to this agent
     - See `.github/agents/github-issues-agent.md` for workflows
-  - **Frontend Agent**: Angular components, services, UI/UX
-  - **Backend Agent**: Fastify APIs, business logic, middleware
-  - **Database Agent**: Schema changes, migrations, queries
+  - **agent-frontend**: Angular components, services, UI/UX
+  - **agent-backend**: Fastify APIs, business logic, middleware
+  - **agent-database**: Schema changes, migrations, queries
     - ⚠️ **CRITICAL**: Database Agent MUST create migration files
     - Verify migrations exist before marking DB tasks complete
     - See `docker/postgres/migrations/README.md` for requirements
-  - **CI/CD Agent**: GitHub Actions monitoring, quality gates, build fixes
+  - **agent-cicd**: GitHub Actions monitoring, quality gates, build fixes
     - ⚠️ **CRITICAL**: CI/CD Agent MUST monitor every push to ensure CI passes
     - Delegate CI monitoring after EVERY commit
     - See `.github/agents/cicd-agent.md` for monitoring workflows
-  - **DevOps Agent**: Docker, infrastructure, deployment configurations
-  - **Testing Agent**: Unit tests, integration tests, E2E tests
+  - **agent-devops**: Docker, infrastructure, deployment configurations
+  - **agent-testing**: Unit tests, integration tests, E2E tests
 - Monitor agent progress via GitHub issue comments and labels
 - Coordinate dependencies between agents using issue references
 - Integrate work from multiple agents
@@ -399,15 +399,15 @@ According to CLAUDE.md, each subagent must be given:
 ❌ **DON'T**: Use "general-purpose" for everything
 ✅ **DO**: Use specialized agent types
 
-- **Backend work**: Use backend-focused subagent
+- **Backend work**: Use subagent_type="agent-backend"
   - Read: `.github/agents/backend-agent.md`
   - Use for: Fastify APIs, routes, middleware, business logic
 
-- **Frontend work**: Use frontend-focused subagent
+- **Frontend work**: Use subagent_type="agent-frontend"
   - Read: `.github/agents/frontend-agent.md`
   - Use for: Angular components, services, UI/UX
 
-- **Database work**: Use database-focused subagent
+- **Database work**: Use subagent_type="agent-database"
   - Read: `.github/agents/database-agent.md`
   - Use for: Migrations, schema changes, queries
 
@@ -814,7 +814,7 @@ gh run list --limit 1 --json databaseId,headBranch
 
 # Delegate monitoring to CI/CD Agent
 Spawn Task agent with:
-  subagent_type: "general-purpose"
+  subagent_type: "agent-cicd"
   prompt: """
   **Context Files** (read these first):
   1. .github/agents/cicd-agent.md - CI/CD monitoring workflows
@@ -1852,10 +1852,10 @@ Regularly review and update:
 5. Review: Validate plans against security best practices
    ↓
 6. Delegation:
-   - Backend Agent: task-007, task-008 (sequential)
-   - Frontend Agent: task-009 (depends on task-007)
-   - Backend Agent: task-010 (depends on task-008)
-   - Testing Agent: Auth flow tests (depends on all)
+   - agent-backend: task-007, task-008 (sequential)
+   - agent-frontend: task-009 (depends on task-007)
+   - agent-backend: task-010 (depends on task-008)
+   - agent-testing: Auth flow tests (depends on all)
    ↓
 7. Coordination: Monitor progress, resolve blockers
    ↓
@@ -1882,8 +1882,8 @@ Epic: User Management System (epic-001)
   ├─ Feature: User Profile (feature-002)
   │   Status: in-progress
   │   ├─ Task: Extend users schema (task-004) ✓
-  │   ├─ Task: Profile API endpoints (task-005) [Backend Agent]
-  │   └─ Task: Profile UI components (task-006) [Frontend Agent]
+  │   ├─ Task: Profile API endpoints (task-005) [agent-backend]
+  │   └─ Task: Profile UI components (task-006) [agent-frontend]
   │
   └─ Feature: User Authentication (feature-003)
       Status: pending

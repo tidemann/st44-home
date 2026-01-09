@@ -146,11 +146,11 @@ Claude Code acts as orchestrator:
 
 ### Agent Selection
 
-- **Frontend**: `.claude/agents/frontend.md` - Angular components, services, UI
-- **Backend**: `.claude/agents/backend.md` - Fastify APIs, routes, middleware
-- **Database**: `.claude/agents/database.md` - Migrations, schema changes
-- **CI/CD**: `.claude/agents/cicd.md` - Monitor builds, fix failures
-- **GitHub Issues**: `.claude/agents/github-issues.md` - Issue creation, tracking
+- **Frontend**: `.claude/agents/agent-frontend.md` - Angular components, services, UI
+- **Backend**: `.claude/agents/agent-backend.md` - Fastify APIs, routes, middleware
+- **Database**: `.claude/agents/agent-database.md` - Migrations, schema changes
+- **CI/CD**: `.claude/agents/agent-cicd.md` - Monitor builds, fix failures
+- **GitHub Issues**: `.claude/agents/agent-github-issues.md` - Issue creation, tracking
 
 ## Settings
 

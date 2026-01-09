@@ -954,7 +954,7 @@ Before marking HTTP layer implementation complete:
 ### Project-Specific
 
 - GitHub Issue #257: HTTP Layer Improvements
-- `.github/agents/frontend-agent.md`: Complete frontend patterns
+- `.claude/agents/agent-frontend.md`: Complete frontend patterns
 
 ### Angular Functional Interceptors (2025)
 

@@ -304,49 +304,49 @@ Use the **Task tool** to spawn specialized agents. Each agent should be given:
 
 ```
 Spawn Task agent with subagent_type="agent-github-issues" and prompt:
-"Read .github/agents/github-issues-agent.md for context. Create issues for: [description]"
+"Read .claude/agents/agent-github-issues.md for context. Create issues for: [description]"
 ```
 
 **agent-frontend** - Angular components, services, UI
 
 ```
 Spawn Task agent with subagent_type="agent-frontend" and prompt:
-"Read .github/agents/frontend-agent.md for context. Implement GitHub issue #XXX"
+"Read .claude/agents/agent-frontend.md for context. Implement GitHub issue #XXX"
 ```
 
 **agent-storybook** - Component stories, visual testing, design system docs
 
 ```
 Spawn Task agent with subagent_type="agent-storybook" and prompt:
-"Read .claude/agents/storybook-agent.md and .claude/skills/storybook/SKILL.md for context. Create Storybook story for ComponentName (#XXX) with all variants"
+"Read .claude/agents/agent-storybook.md and .claude/skills/storybook/SKILL.md for context. Create Storybook story for ComponentName (#XXX) with all variants"
 ```
 
 **agent-e2e** - Playwright e2e testing, test debugging, page objects
 
 ```
 Spawn Task agent with subagent_type="agent-e2e" and prompt:
-"Read .claude/agents/e2e-agent.md for context. Debug e2e test failures in GitHub issue #XXX"
+"Read .claude/agents/agent-e2e.md for context. Debug e2e test failures in GitHub issue #XXX"
 ```
 
 **agent-backend** - Fastify routes, business logic, middleware
 
 ```
 Spawn Task agent with subagent_type="agent-backend" and prompt:
-"Read .github/agents/backend-agent.md for context. Implement GitHub issue #XXX"
+"Read .claude/agents/agent-backend.md for context. Implement GitHub issue #XXX"
 ```
 
 **agent-database** - Migrations, schema changes, queries
 
 ```
 Spawn Task agent with subagent_type="agent-database" and prompt:
-"Read .github/agents/database-agent.md for context. Implement GitHub issue #XXX"
+"Read .claude/agents/agent-database.md for context. Implement GitHub issue #XXX"
 ```
 
 **agent-cicd** - GitHub Actions monitoring, quality gates
 
 ```
 Spawn Task agent with subagent_type="agent-cicd" and prompt:
-"Read .github/agents/cicd-agent.md for context. Monitor CI for commit/PR"
+"Read .claude/agents/agent-cicd.md for context. Monitor CI for commit/PR"
 ```
 
 ### Parallel Execution
@@ -415,11 +415,13 @@ gh issue comment 123 --body "Progress update..."
 
 ### Agent Specs
 
-Detailed agent specifications in `.github/agents/`:
+Detailed agent specifications in `.claude/agents/`:
 
-- `orchestrator-agent.md` - Full workflow documentation
-- `github-issues-agent.md` - Issue management workflows
-- `frontend-agent.md` - Angular patterns and conventions
-- `backend-agent.md` - Fastify patterns and conventions
-- `database-agent.md` - Migration and query patterns
-- `cicd-agent.md` - CI/CD monitoring and quality gates
+- `agent-orchestrator.md` - Full workflow documentation
+- `agent-github-issues.md` - Issue management workflows
+- `agent-frontend.md` - Angular patterns and conventions
+- `agent-backend.md` - Fastify patterns and conventions
+- `agent-database.md` - Migration and query patterns
+- `agent-cicd.md` - CI/CD monitoring and quality gates
+- `agent-storybook.md` - Storybook component development
+- `agent-e2e.md` - Playwright e2e testing

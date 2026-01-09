@@ -1,5 +1,5 @@
 ---
-name: database
+name: agent-database
 description: PostgreSQL expert for .sql migration files, CREATE TABLE, ALTER TABLE, indexes, constraints, foreign keys, schema changes, docker/postgres/migrations/, init.sql, idempotent SQL, transactions, BEGIN/COMMIT, psql, database testing, schema_migrations
 allowed-tools: Read, Write, Edit, Glob, Grep, Bash
 ---
@@ -271,7 +271,7 @@ npm run db:test:down
 
 ## Workflow
 
-1. **Read** the optimized agent spec: `.claude/agents/database.md`
+1. **Read** the optimized agent spec: `.claude/agents/agent-database.md`
 2. **Understand** what schema changes are needed
 3. **Create** migration file with next sequential number
 4. **Write** idempotent SQL with camelCase columns
@@ -284,7 +284,7 @@ npm run db:test:down
 
 For detailed patterns and examples:
 
-- `.claude/agents/database.md` - Complete agent specification
+- `.claude/agents/agent-database.md` - Complete agent specification
 - `docker/postgres/init.sql` - Current database schema
 - `docker/postgres/migrations/` - Existing migration examples
 - `CLAUDE.md` - Project-wide conventions

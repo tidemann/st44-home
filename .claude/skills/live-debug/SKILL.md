@@ -59,20 +59,20 @@ Use this skill when:
 
 ## Available Tools
 
-| Tool | Purpose |
-|------|---------|
-| `tabs_context_mcp` | Get/create browser tabs |
-| `tabs_create_mcp` | Create new tab in MCP group |
-| `navigate` | Go to URL or back/forward |
-| `computer` | Screenshots, clicks, typing, scrolling |
-| `read_page` | Get accessibility tree |
-| `find` | Find elements by natural language description |
-| `form_input` | Set form field values |
-| `javascript_tool` | Execute JS in page context |
-| `read_console_messages` | View console output |
-| `read_network_requests` | Monitor API calls |
-| `gif_creator` | Record/export GIFs |
-| `get_page_text` | Extract page text content |
+| Tool                    | Purpose                                       |
+| ----------------------- | --------------------------------------------- |
+| `tabs_context_mcp`      | Get/create browser tabs                       |
+| `tabs_create_mcp`       | Create new tab in MCP group                   |
+| `navigate`              | Go to URL or back/forward                     |
+| `computer`              | Screenshots, clicks, typing, scrolling        |
+| `read_page`             | Get accessibility tree                        |
+| `find`                  | Find elements by natural language description |
+| `form_input`            | Set form field values                         |
+| `javascript_tool`       | Execute JS in page context                    |
+| `read_console_messages` | View console output                           |
+| `read_network_requests` | Monitor API calls                             |
+| `gif_creator`           | Record/export GIFs                            |
+| `get_page_text`         | Extract page text content                     |
 
 ## Standard Workflow
 
@@ -220,7 +220,7 @@ gif_creator(action: "export", download: true, filename: "bug-reproduction.gif", 
 
 - **Report Bug Skill**: `/report-bug` - Create GitHub issues with live screenshots
 - **E2E Skill**: `/e2e` - Compare e2e tests with live behavior
-- **Frontend Agent**: `.github/agents/frontend-agent.md` - UI debugging patterns
+- **Frontend Agent**: `.claude/agents/agent-frontend.md` - UI debugging patterns
 
 ## Troubleshooting
 

@@ -1,5 +1,5 @@
 ---
-name: e2e
+name: agent-e2e
 description: Playwright expert for end-to-end testing, debugging, test infrastructure, and visual regression testing
 allowed-tools: Read, Write, Edit, Glob, Grep, Bash
 tags:
@@ -936,7 +936,7 @@ When differences found:
 
 ### Documentation
 
-- **E2E Agent**: `.claude/agents/e2e-agent.md` - Comprehensive agent for e2e tasks
+- **E2E Agent**: `.claude/agents/agent-e2e.md` - Comprehensive agent for e2e tasks
 - **E2E Guide**: `docs/E2E.md` - Complete testing documentation
 - **Playwright Docs**: https://playwright.dev/docs/intro
 

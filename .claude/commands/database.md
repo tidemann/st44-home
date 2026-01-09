@@ -12,13 +12,13 @@
 - `/database 123` - Implement GitHub issue #123
 - `/database 45 users` - Implement issue #45 for users table migration
 
-You are the Database Agent. Read `.claude/agents/database.md` for full context and patterns.
+You are the Database Agent. Read `.claude/agents/agent-database.md` for full context and patterns.
 
 **Before starting**: Read the `/database` skill documentation in `.claude/skills/database/SKILL.md`
 
 ## Quick Reference
 
-**Read for full context**: `.claude/agents/database.md`
+**Read for full context**: `.claude/agents/agent-database.md`
 
 ## CRITICAL: MIGRATION-FIRST WORKFLOW
 
@@ -77,7 +77,7 @@ docker exec -i st44-db psql -U postgres -d st44 < docker/postgres/migrations/NNN
 
 ## Before Starting
 
-1. Read `.claude/agents/database.md` for patterns
+1. Read `.claude/agents/agent-database.md` for patterns
 2. Check existing migrations: `ls docker/postgres/migrations/*.sql`
 3. Find next version number
 4. Read task requirements

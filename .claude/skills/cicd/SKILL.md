@@ -1,5 +1,5 @@
 ---
-name: cicd
+name: agent-cicd
 description: GitHub Actions expert for CI/CD pipelines, workflows, build failures, test failures, lint errors, format checks, gh run, gh pr checks, ESLint, Prettier, TypeScript errors, quality gates, automated fixes, pipeline debugging, workflow monitoring
 allowed-tools: Read, Write, Edit, Bash
 ---
@@ -304,7 +304,7 @@ cat .github/workflows/ci.yml
 
 For detailed patterns and examples:
 
-- `.claude/agents/cicd.md` - Complete agent specification
+- `.claude/agents/agent-cicd.md` - Complete agent specification
 - `.github/workflows/ci.yml` - CI workflow configuration
 - `CLAUDE.md` - Project conventions
 

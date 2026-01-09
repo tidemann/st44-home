@@ -917,7 +917,7 @@ Before marking testing infrastructure complete:
 ### Project-Specific
 
 - GitHub Issue #261: Testing Infrastructure
-- `.github/agents/frontend-agent.md`: Complete frontend patterns
+- `.claude/agents/agent-frontend.md`: Complete frontend patterns
 - `.claude/skills/state-management/SKILL.md`: State patterns for testing
 - `.claude/skills/http-interceptors/SKILL.md`: HTTP mocking patterns
 

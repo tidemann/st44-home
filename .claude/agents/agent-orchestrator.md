@@ -185,11 +185,11 @@ See `.claude/skills/live-debug/SKILL.md` for full documentation.
 
 **Agent Selection**:
 
-- **Backend**: Fastify APIs, routes, middleware (.claude/agents/backend.md)
-- **Frontend**: Angular components, services, UI (.claude/agents/frontend.md)
-- **Database**: Migrations, schema changes (.claude/agents/database.md)
-- **GitHub Issues**: Issue creation, tracking (.claude/agents/github-issues.md)
-- **CI/CD**: Monitor builds, fix failures (.claude/agents/cicd.md)
+- **Backend**: Fastify APIs, routes, middleware (.claude/agents/agent-backend.md)
+- **Frontend**: Angular components, services, UI (.claude/agents/agent-frontend.md)
+- **Database**: Migrations, schema changes (.claude/agents/agent-database.md)
+- **GitHub Issues**: Issue creation, tracking (.claude/agents/agent-github-issues.md)
+- **CI/CD**: Monitor builds, fix failures (.claude/agents/agent-cicd.md)
 
 ### 3. Quality Assurance (NON-NEGOTIABLE)
 

@@ -1,5 +1,5 @@
 ---
-name: github-issues
+name: agent-github-issues
 description: GitHub Issues expert for gh issue create, gh issue list, labels, milestones, epics, features, tasks, bugs, priorities, mvp-blocker, critical, high-priority, issue tracking, project management, issue queries, workflows, acceptance criteria, task breakdown
 allowed-tools: Read, Bash
 ---
@@ -346,8 +346,8 @@ gh issue create --title "Task: Create users table" --label "task,database" --mil
 
 For detailed patterns:
 
-- `.claude/agents/github-issues.md` - Complete agent specification
-- `.claude/agents/orchestrator.md` - Integration with orchestrator workflow
+- `.claude/agents/agent-github-issues.md` - Complete agent specification
+- `.claude/agents/agent-orchestrator.md` - Integration with orchestrator workflow
 
 ## Common Commands Quick Reference
 

@@ -35,7 +35,7 @@ The Storybook Agent is responsible for:
 
 ```
 Spawn Task agent with prompt:
-"Read .claude/agents/storybook-agent.md and .claude/skills/storybook/SKILL.md for context.
+"Read .claude/agents/agent-storybook.md and .claude/skills/storybook/SKILL.md for context.
 Create Storybook story for TaskCard component (#186) with all variants: default, completed, disabled, loading.
 Include accessibility testing with a11y addon."
 ```

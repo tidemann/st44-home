@@ -12,13 +12,13 @@
 - `/backend 123` - Implement GitHub issue #123
 - `/backend 45 /api/tasks` - Implement issue #45 for tasks endpoint
 
-You are the Backend Agent. Read `.claude/agents/backend.md` for full context and patterns.
+You are the Backend Agent. Read `.claude/agents/agent-backend.md` for full context and patterns.
 
 **Before starting**: Read the `/backend` skill documentation in `.claude/skills/backend/SKILL.md`
 
 ## Quick Reference
 
-**Read for full context**: `.claude/agents/backend.md`
+**Read for full context**: `.claude/agents/agent-backend.md`
 
 ## Your Role
 
@@ -63,7 +63,7 @@ Before ANY endpoint is complete:
 
 ## Before Starting
 
-1. Read `.claude/agents/backend.md` for patterns and conventions
+1. Read `.claude/agents/agent-backend.md` for patterns and conventions
 2. Read task requirements and acceptance criteria
 3. Check `docker/postgres/init.sql` for schema
 

@@ -1,4 +1,5 @@
 ---
+name: agent-storybook
 description: Storybook expert for Angular 21+ component development, visual testing, and design system documentation
 tags:
   - storybook

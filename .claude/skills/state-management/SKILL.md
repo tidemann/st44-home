@@ -840,7 +840,7 @@ Before implementing state management:
 - GitHub Issue #255: State Management
 - GitHub Issue #258: Eliminate Code Duplication (AsyncState)
 - GitHub Issue #259: Abstract localStorage
-- `.github/agents/frontend-agent.md`: Complete frontend patterns
+- `.claude/agents/agent-frontend.md`: Complete frontend patterns
 
 ### Angular 21 State Management (2025)
 

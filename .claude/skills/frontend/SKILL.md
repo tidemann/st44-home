@@ -1,5 +1,5 @@
 ---
-name: frontend
+name: agent-frontend
 description: Angular 21+ expert for .ts .html .css files, @Component, UI, components, pages, services, routing, forms, templates, signals, RxJS, HttpClient, inject(), reactive forms, validators, accessibility, WCAG, AXE, browser testing, Karma, Jasmine, e2e, Playwright
 allowed-tools: Read, Write, Edit, Glob, Grep, Bash
 ---
@@ -197,7 +197,7 @@ export class MyService {
 
 ## Workflow
 
-1. **Read** the optimized agent spec: `.claude/agents/frontend.md`
+1. **Read** the optimized agent spec: `.claude/agents/agent-frontend.md`
 2. **Understand** requirements and acceptance criteria
 3. **Research** existing patterns in the codebase
 4. **Implement** following all conventions above
