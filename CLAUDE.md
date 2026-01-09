@@ -8,6 +8,44 @@ Full-stack TypeScript monorepo: Angular 21+ frontend, Fastify backend, PostgreSQ
 
 **CRITICAL**: This is a production application with strict quality requirements. Always run local tests before pushing.
 
+## Platform Awareness
+
+**CRITICAL: Check the Platform field in <env> at the start of EVERY session**
+
+Claude Code CLI automatically provides environment information at the start of each conversation:
+
+```xml
+<env>
+Working directory: C:\code\st44-home
+Is directory a git repo: Yes
+Platform: win32          ← CHECK THIS FIRST!
+OS Version:
+Today's date: 2026-01-09
+</env>
+```
+
+**Platform Detection:**
+
+- `Platform: win32` = **Windows**
+  - Use Windows path format: `C:\path\to\file` (NOT `/c/path/to/file`)
+  - Prefer PowerShell for complex operations
+  - Git Bash available but has limitations
+  - Don't assume Linux utilities exist (`jq`, `awk`, `sed`)
+  - Use `ConvertFrom-Json` instead of `jq`
+  - Use `Select-String` instead of `grep` in PowerShell
+
+- `Platform: linux` = **Linux**
+  - Use Unix path format: `/path/to/file`
+  - Full bash utilities available
+  - Standard Linux tools (`jq`, `awk`, `sed`, etc.)
+
+- `Platform: darwin` = **macOS**
+  - Use Unix path format: `/path/to/file`
+  - Mostly bash compatible
+  - Some BSD-specific differences
+
+**NEVER assume the platform. ALWAYS check `<env>` before writing commands.**
+
 ## Commands
 
 ### Build
@@ -262,52 +300,52 @@ Use the **Task tool** to spawn specialized agents. Each agent should be given:
 - Path to its agent spec file for context
 - Relevant files to read/modify
 
-**GitHub Issues Agent** - Issue creation, tracking, milestones
+**agent-github-issues** - Issue creation, tracking, milestones
 
 ```
-Spawn Task agent with prompt:
+Spawn Task agent with subagent_type="agent-github-issues" and prompt:
 "Read .github/agents/github-issues-agent.md for context. Create issues for: [description]"
 ```
 
-**Frontend Agent** - Angular components, services, UI
+**agent-frontend** - Angular components, services, UI
 
 ```
-Spawn Task agent with prompt:
+Spawn Task agent with subagent_type="agent-frontend" and prompt:
 "Read .github/agents/frontend-agent.md for context. Implement GitHub issue #XXX"
 ```
 
-**Storybook Agent** - Component stories, visual testing, design system docs
+**agent-storybook** - Component stories, visual testing, design system docs
 
 ```
-Spawn Task agent with prompt:
+Spawn Task agent with subagent_type="agent-storybook" and prompt:
 "Read .claude/agents/storybook-agent.md and .claude/skills/storybook/SKILL.md for context. Create Storybook story for ComponentName (#XXX) with all variants"
 ```
 
-**E2E Agent** - Playwright e2e testing, test debugging, page objects
+**agent-e2e** - Playwright e2e testing, test debugging, page objects
 
 ```
-Spawn Task agent with prompt:
+Spawn Task agent with subagent_type="agent-e2e" and prompt:
 "Read .claude/agents/e2e-agent.md for context. Debug e2e test failures in GitHub issue #XXX"
 ```
 
-**Backend Agent** - Fastify routes, business logic, middleware
+**agent-backend** - Fastify routes, business logic, middleware
 
 ```
-Spawn Task agent with prompt:
+Spawn Task agent with subagent_type="agent-backend" and prompt:
 "Read .github/agents/backend-agent.md for context. Implement GitHub issue #XXX"
 ```
 
-**Database Agent** - Migrations, schema changes, queries
+**agent-database** - Migrations, schema changes, queries
 
 ```
-Spawn Task agent with prompt:
+Spawn Task agent with subagent_type="agent-database" and prompt:
 "Read .github/agents/database-agent.md for context. Implement GitHub issue #XXX"
 ```
 
-**CI/CD Agent** - GitHub Actions monitoring, quality gates
+**agent-cicd** - GitHub Actions monitoring, quality gates
 
 ```
-Spawn Task agent with prompt:
+Spawn Task agent with subagent_type="agent-cicd" and prompt:
 "Read .github/agents/cicd-agent.md for context. Monitor CI for commit/PR"
 ```
 
@@ -317,10 +355,10 @@ When tasks are independent, spawn multiple agents in parallel:
 
 ```
 // Example: Feature requires both frontend and backend work
-1. Spawn backend agent for API endpoint (run_in_background: true)
-2. Spawn database agent for migration (run_in_background: true)
+1. Spawn agent-backend for API endpoint (run_in_background: true)
+2. Spawn agent-database for migration (run_in_background: true)
 3. Wait for both to complete
-4. Spawn frontend agent for UI (depends on API)
+4. Spawn agent-frontend for UI (depends on API)
 ```
 
 ### Critical Rules
