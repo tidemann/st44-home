@@ -154,11 +154,12 @@ describe('AuthService', () => {
   describe('login', () => {
     const mockAccessToken = createMockJWT('123', 'test@example.com', 'parent');
     const mockLoginResponse = {
-      message: 'Login successful',
-      user: {
-        id: '123',
-        email: 'test@example.com',
-      },
+      userId: '123',
+      email: 'test@example.com',
+      role: 'parent' as const,
+      householdId: 'household-123',
+      firstName: 'Test',
+      lastName: 'User',
       accessToken: mockAccessToken,
       refreshToken: 'mock-refresh-token',
     };
@@ -207,6 +208,8 @@ describe('AuthService', () => {
             id: '123',
             email: 'test@example.com',
             role: 'parent',
+            firstName: 'Test',
+            lastName: 'User',
           });
         },
       });
@@ -453,11 +456,12 @@ describe('AuthService', () => {
   describe('loginWithGoogle', () => {
     const mockAccessToken = createMockJWT('456', 'google@example.com', 'parent');
     const mockGoogleResponse = {
-      message: 'Google login successful',
-      user: {
-        id: '456',
-        email: 'google@example.com',
-      },
+      userId: '456',
+      email: 'google@example.com',
+      role: 'parent' as const,
+      householdId: 'household-456',
+      firstName: 'Google',
+      lastName: 'User',
       accessToken: mockAccessToken,
       refreshToken: 'mock-google-refresh-token',
     };
@@ -504,6 +508,8 @@ describe('AuthService', () => {
             id: '456',
             email: 'google@example.com',
             role: 'parent',
+            firstName: 'Google',
+            lastName: 'User',
           });
         },
       });

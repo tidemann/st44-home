@@ -17,13 +17,14 @@ export interface LoginRequest {
 }
 
 export interface AuthResponse {
-  message: string;
-  user: {
-    id: string;
-    email: string;
-  };
   accessToken: string;
   refreshToken: string;
+  userId: string;
+  email: string;
+  role?: 'admin' | 'parent' | 'child';
+  householdId?: string;
+  firstName?: string | null;
+  lastName?: string | null;
 }
 
 export interface User {
@@ -100,17 +101,19 @@ export class AuthService {
             rememberMe ? 'persistent' : 'session',
           );
 
-          // Decode token to get user info with role
-          const decoded = this.tokenService.decodeToken(response.accessToken);
-          if (decoded) {
-            this.currentUser.set({
-              id: decoded.userId,
-              email: decoded.email,
-              role: decoded.role,
-              firstName: decoded.firstName,
-              lastName: decoded.lastName,
-            });
-            this.isAuthenticated.set(true);
+          // Use response data directly (matches backend LoginResponse)
+          this.currentUser.set({
+            id: response.userId,
+            email: response.email,
+            role: response.role,
+            firstName: response.firstName,
+            lastName: response.lastName,
+          });
+          this.isAuthenticated.set(true);
+
+          // If user has household, set it as active immediately
+          if (response.householdId) {
+            this.householdStore.setActiveHousehold(response.householdId);
           }
         }),
       );
@@ -126,17 +129,19 @@ export class AuthService {
           // Always use persistent storage for OAuth (remember user)
           this.tokenService.storeTokens(response.accessToken, response.refreshToken, 'persistent');
 
-          // Decode token to get user info with role
-          const decoded = this.tokenService.decodeToken(response.accessToken);
-          if (decoded) {
-            this.currentUser.set({
-              id: decoded.userId,
-              email: decoded.email,
-              role: decoded.role,
-              firstName: decoded.firstName,
-              lastName: decoded.lastName,
-            });
-            this.isAuthenticated.set(true);
+          // Use response data directly (matches backend LoginResponse)
+          this.currentUser.set({
+            id: response.userId,
+            email: response.email,
+            role: response.role,
+            firstName: response.firstName,
+            lastName: response.lastName,
+          });
+          this.isAuthenticated.set(true);
+
+          // If user has household, set it as active immediately
+          if (response.householdId) {
+            this.householdStore.setActiveHousehold(response.householdId);
           }
         }),
       );
