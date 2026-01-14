@@ -123,6 +123,44 @@
   gap: var(--space-sm);
 }
 
+.member-row {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.member-row app-member-card {
+  flex: 1;
+}
+
+.btn-qr {
+  padding: 0.5rem 1rem;
+  background: #f3f4f6;
+  color: #374151;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+
+.btn-qr:hover {
+  background: #e5e7eb;
+  border-color: #9ca3af;
+}
+
+@media (max-width: 640px) {
+  .member-row {
+    flex-direction: column;
+  }
+
+  .btn-qr {
+    width: 100%;
+  }
+}
+
 /* ===== EMPTY STATE ===== */
 
 .empty-state {

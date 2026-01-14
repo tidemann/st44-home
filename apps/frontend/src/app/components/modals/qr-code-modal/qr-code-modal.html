@@ -1,0 +1,6 @@
+<app-modal [open]="open()" (closeRequested)="handleClose()">
+  <h2 slot="title">QR Code Login</h2>
+  <div slot="content">
+    <app-qr-code-display [childId]="childId()" [childName]="childName()" />
+  </div>
+</app-modal>

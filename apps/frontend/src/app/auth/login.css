@@ -340,6 +340,34 @@
   margin-bottom: var(--space-md);
 }
 
+/* ===== QR CODE SCANNER ===== */
+.qr-scanner-section {
+  margin-top: 1rem;
+}
+
+.btn-qr-login {
+  width: 100%;
+  padding: 0.75rem;
+  background: #f3f4f6;
+  color: #374151;
+  border: 2px solid #d1d5db;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.btn-qr-login:hover {
+  background: #e5e7eb;
+  border-color: #9ca3af;
+  transform: translateY(-1px);
+}
+
 /* ===== ANIMATIONS ===== */
 @keyframes slideUp {
   from {

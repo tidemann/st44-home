@@ -5,6 +5,7 @@ import swaggerUi from '@fastify/swagger-ui';
 import { z } from 'zod';
 import { pool } from './database.js';
 import authRoutes from './routes/auth.js';
+import qrAuthRoutes from './routes/qr-auth.js';
 import householdRoutes from './routes/households.js';
 import childrenRoutes from './routes/children.js';
 import taskRoutes from './routes/tasks.js';
@@ -189,6 +190,7 @@ async function buildApp() {
 
   // Register auth routes with /api/auth prefix
   await fastify.register(authRoutes, { prefix: '/api/auth' });
+  await fastify.register(qrAuthRoutes);
 
   // Register household, children, invitation, task, assignment, rewards, and analytics routes
   await fastify.register(householdRoutes);

@@ -1,0 +1,63 @@
+<div class="qr-display-container">
+  <!-- Loading State -->
+  @if (loading()) {
+    <div class="loading-state" role="status" aria-live="polite">
+      <div class="spinner" aria-hidden="true"></div>
+      <p>Generating QR code...</p>
+    </div>
+  }
+
+  <!-- Error State -->
+  @if (error() && !loading()) {
+    <div class="error-state" role="alert" aria-live="assertive">
+      <div class="error-icon" aria-hidden="true">⚠️</div>
+      <p>{{ error() }}</p>
+      <button class="btn btn-secondary" (click)="loadQrToken()">Try Again</button>
+    </div>
+  }
+
+  <!-- QR Code Display -->
+  @if (qrToken() && !loading() && !error()) {
+    <div class="qr-content">
+      <div class="qr-header">
+        <h3>Login QR Code</h3>
+        @if (childName()) {
+          <p class="child-name">for {{ childName() }}</p>
+        }
+      </div>
+
+      <div class="qr-canvas-wrapper">
+        <canvas #qrCanvas aria-label="QR code for child login"></canvas>
+      </div>
+
+      @if (expiresAt()) {
+        <p class="expiration-text">{{ getExpirationText() }}</p>
+      }
+
+      <div class="qr-instructions">
+        <p>Scan this QR code with the Diddit app to log in quickly.</p>
+      </div>
+
+      <div class="qr-actions">
+        <button
+          class="btn btn-secondary"
+          (click)="download()"
+          aria-label="Download QR code as image"
+        >
+          📥 Download
+        </button>
+        <button class="btn btn-secondary" (click)="print()" aria-label="Print QR code">
+          🖨️ Print
+        </button>
+        <button
+          class="btn btn-secondary"
+          (click)="regenerate()"
+          aria-label="Regenerate QR code"
+          [disabled]="loading()"
+        >
+          🔄 Regenerate
+        </button>
+      </div>
+    </div>
+  }
+</div>
