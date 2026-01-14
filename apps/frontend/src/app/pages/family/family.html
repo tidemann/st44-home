@@ -34,12 +34,24 @@
       @if (members().length > 0) {
         <div class="member-list">
           @for (member of members(); track member.id) {
-            <app-member-card
-              [member]="member"
-              [showStats]="true"
-              [clickable]="isChildMember(member)"
-              (cardClick)="onMemberClick($event)"
-            />
+            <div class="member-row">
+              <app-member-card
+                [member]="member"
+                [showStats]="true"
+                [clickable]="isChildMember(member)"
+                (cardClick)="onMemberClick($event)"
+              />
+              @if (isChildMember(member)) {
+                <button
+                  class="btn btn-qr"
+                  (click)="openQrCodeModal(member.id)"
+                  aria-label="Show QR code for {{ member.name }}"
+                  title="Generate QR code for quick login"
+                >
+                  📱 QR Code
+                </button>
+              }
+            </div>
           }
         </div>
       } @else {
@@ -74,6 +86,15 @@
         (accountCreated)="onChildAccountCreated()"
         (childUpdated)="onChildUpdated()"
         (childDeleted)="onChildDeleted()"
+      />
+    }
+
+    @if (qrCodeChildId()) {
+      <app-qr-code-modal
+        [open]="qrCodeModalOpen()"
+        [childId]="qrCodeChildId()"
+        [childName]="qrCodeChildName()"
+        (closeRequested)="closeQrCodeModal()"
       />
     }
   </app-page>

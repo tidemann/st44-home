@@ -35,7 +35,8 @@ VALUES
   ('046', 'fix_child_household_mismatches', NOW()),
   ('047', 'add_child_household_consistency_check', NOW()),
   ('048', 'fix_multi_household_child_assignments', NOW()),
-  ('049', 'cleanup_orphaned_child_memberships', NOW())
+  ('049', 'cleanup_orphaned_child_memberships', NOW()),
+  ('051', 'add_qr_token_to_children', NOW())
 ON CONFLICT (version) DO NOTHING;
 
 -- Users table for authentication (supports email/password and OAuth)
@@ -127,6 +128,7 @@ CREATE TABLE IF NOT EXISTS children (
   user_id UUID REFERENCES users(id) ON DELETE SET NULL, -- Added in migration 022 for child authentication
   name VARCHAR(255) NOT NULL,
   birth_year INTEGER,
+  qr_token VARCHAR(255) UNIQUE, -- Added in migration 051 for QR code-based authentication
   created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
@@ -135,6 +137,7 @@ CREATE INDEX IF NOT EXISTS idx_children_household ON children(household_id);
 CREATE INDEX IF NOT EXISTS idx_children_household_name ON children(household_id, name); -- Added in migration 017 for search optimization
 CREATE INDEX IF NOT EXISTS idx_children_user_id ON children(user_id); -- Added in migration 022 for auth performance
 CREATE UNIQUE INDEX IF NOT EXISTS idx_children_user_household_unique ON children(user_id, household_id) WHERE user_id IS NOT NULL; -- Added in migration 022 to prevent duplicate child profiles
+CREATE INDEX IF NOT EXISTS idx_children_qr_token ON children(qr_token) WHERE qr_token IS NOT NULL; -- Added in migration 051 for QR token lookups
 
 -- Tasks table (templates/definitions for household chores)
 CREATE TABLE IF NOT EXISTS tasks (

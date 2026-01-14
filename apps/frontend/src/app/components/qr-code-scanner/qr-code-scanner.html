@@ -1,0 +1,65 @@
+<div class="qr-scanner-container">
+  <!-- Loading State -->
+  @if (loading()) {
+    <div class="loading-state" role="status" aria-live="polite">
+      <div class="spinner" aria-hidden="true"></div>
+      <p>Initializing camera...</p>
+    </div>
+  }
+
+  <!-- Camera Permission Denied -->
+  @if (cameraPermissionDenied() && !loading()) {
+    <div class="permission-denied" role="alert" aria-live="assertive">
+      <div class="icon" aria-hidden="true">📷</div>
+      <h3>Camera Access Required</h3>
+      <p>Please allow camera access to scan QR codes.</p>
+      <div class="actions">
+        <button class="btn btn-primary" (click)="requestPermission()">Allow Camera Access</button>
+        <button class="btn btn-secondary" (click)="cancel()">Cancel</button>
+      </div>
+    </div>
+  }
+
+  <!-- No Camera Available -->
+  @if (noCameraAvailable() && !loading()) {
+    <div class="no-camera" role="alert" aria-live="assertive">
+      <div class="icon" aria-hidden="true">📵</div>
+      <h3>No Camera Found</h3>
+      <p>Your device doesn't have a camera or it's not accessible.</p>
+      <p class="help-text">
+        You can use password/PIN login instead, or try scanning from a different device.
+      </p>
+      <button class="btn btn-secondary" (click)="cancel()">Back to Login</button>
+    </div>
+  }
+
+  <!-- Error State -->
+  @if (error() && !loading() && !cameraPermissionDenied() && !noCameraAvailable()) {
+    <div class="error-state" role="alert" aria-live="assertive">
+      <div class="error-icon" aria-hidden="true">⚠️</div>
+      <p>{{ error() }}</p>
+      <div class="actions">
+        <button class="btn btn-primary" (click)="retry()">Try Again</button>
+        <button class="btn btn-secondary" (click)="cancel()">Cancel</button>
+      </div>
+    </div>
+  }
+
+  <!-- Scanner Active -->
+  @if (scanning() && !error()) {
+    <div class="scanner-active">
+      <div class="video-wrapper">
+        <video #videoElement autoplay playsinline></video>
+        <div class="scan-overlay">
+          <div class="scan-frame"></div>
+        </div>
+      </div>
+
+      <div class="scanner-instructions">
+        <p>Position the QR code within the frame</p>
+      </div>
+
+      <button class="btn btn-cancel" (click)="cancel()">Cancel Scanning</button>
+    </div>
+  }
+</div>

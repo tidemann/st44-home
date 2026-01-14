@@ -17,6 +17,7 @@ import {
   type AddChildData,
 } from '../../components/modals/add-child-modal/add-child-modal';
 import { ChildDetailsModal } from '../../components/modals/child-details-modal/child-details-modal';
+import { QrCodeModal } from '../../components/modals/qr-code-modal/qr-code-modal';
 import { PageComponent } from '../../components/page/page';
 import { HouseholdService, type HouseholdMemberResponse } from '../../services/household.service';
 import { AuthService } from '../../services/auth.service';
@@ -38,7 +39,7 @@ import { HouseholdStore } from '../../stores/household.store';
  */
 @Component({
   selector: 'app-family',
-  imports: [MemberCard, InviteModal, AddChildModal, ChildDetailsModal, PageComponent],
+  imports: [MemberCard, InviteModal, AddChildModal, ChildDetailsModal, QrCodeModal, PageComponent],
   templateUrl: './family.html',
   styleUrl: './family.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -62,10 +63,15 @@ export class Family implements OnInit {
   protected readonly inviteModalOpen = signal(false);
   protected readonly addChildModalOpen = signal(false);
   protected readonly childDetailsModalOpen = signal(false);
+  protected readonly qrCodeModalOpen = signal(false);
 
   // Child details modal data
   protected readonly selectedChild = signal<Child | null>(null);
   protected readonly selectedChildEmail = signal<string | null>(null);
+
+  // QR code modal data
+  protected readonly qrCodeChildId = signal<string>('');
+  protected readonly qrCodeChildName = signal<string>('');
 
   // Children map for looking up child by id or userId
   private readonly childrenById = signal<Map<string, Child>>(new Map());
@@ -424,5 +430,35 @@ export class Family implements OnInit {
    */
   protected isChildMember(member: MemberCardData): boolean {
     return member.role === 'child';
+  }
+
+  /**
+   * Open QR code modal for a child
+   */
+  protected openQrCodeModal(memberId: string): void {
+    // Extract child ID from member ID (format: "child:childId")
+    if (!memberId.startsWith('child:')) {
+      return;
+    }
+
+    const childId = memberId.substring(6); // Remove "child:" prefix
+    const child = this.childrenById().get(childId);
+
+    if (!child) {
+      return;
+    }
+
+    this.qrCodeChildId.set(childId);
+    this.qrCodeChildName.set(child.name);
+    this.qrCodeModalOpen.set(true);
+  }
+
+  /**
+   * Close QR code modal
+   */
+  protected closeQrCodeModal(): void {
+    this.qrCodeModalOpen.set(false);
+    this.qrCodeChildId.set('');
+    this.qrCodeChildName.set('');
   }
 }
