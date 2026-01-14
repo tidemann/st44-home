@@ -12,7 +12,7 @@ import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
 import jwt from 'jsonwebtoken';
 import { pool } from '../database.js';
 import { authenticateUser } from '../middleware/auth.js';
-import { rateLimiters, createIpRateLimiter } from '../middleware/rate-limit.js';
+import { createIpRateLimiter } from '../middleware/rate-limit.js';
 import {
   generateQrToken,
   regenerateQrToken,
@@ -111,11 +111,11 @@ async function isParentOrAdmin(
  */
 export default async function qrAuthRoutes(fastify: FastifyInstance) {
   /**
-   * POST /api/qr-auth/generate/:childId
+   * POST /generate/:childId
    * Generate a new QR token for a child account (parent only)
    */
   fastify.post<{ Params: ChildIdParams; Reply: QrTokenResponse | ErrorResponse }>(
-    '/api/qr-auth/generate/:childId',
+    '/generate/:childId',
     {
       preHandler: [authenticateUser],
     },
@@ -158,11 +158,11 @@ export default async function qrAuthRoutes(fastify: FastifyInstance) {
   );
 
   /**
-   * POST /api/qr-auth/regenerate/:childId
+   * POST /regenerate/:childId
    * Regenerate QR token for a child (invalidates old token, parent only)
    */
   fastify.post<{ Params: ChildIdParams; Reply: QrTokenResponse | ErrorResponse }>(
-    '/api/qr-auth/regenerate/:childId',
+    '/regenerate/:childId',
     {
       preHandler: [authenticateUser],
     },
@@ -207,11 +207,11 @@ export default async function qrAuthRoutes(fastify: FastifyInstance) {
   );
 
   /**
-   * POST /api/qr-auth/login
+   * POST /login
    * Login using a QR token (public endpoint with rate limiting)
    */
   fastify.post<QrTokenLoginRequest, { Reply: QrLoginResponse | ErrorResponse }>(
-    '/api/qr-auth/login',
+    '/login',
     {
       preHandler: [qrLoginRateLimiter],
     },
@@ -269,11 +269,11 @@ export default async function qrAuthRoutes(fastify: FastifyInstance) {
   );
 
   /**
-   * GET /api/qr-auth/token/:childId
+   * GET /token/:childId
    * Get current QR token for a child (parent only)
    */
   fastify.get<{ Params: ChildIdParams; Reply: QrTokenResponse | ErrorResponse }>(
-    '/api/qr-auth/token/:childId',
+    '/token/:childId',
     {
       preHandler: [authenticateUser],
     },
