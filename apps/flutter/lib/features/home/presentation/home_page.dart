@@ -3,6 +3,11 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/theme/app_colors.dart';
 import '../../auth/providers/providers.dart';
+import '../providers/home_provider.dart';
+import 'widgets/child_progress_card.dart';
+import 'widgets/quick_add_button.dart';
+import 'widgets/stat_card.dart';
+import 'widgets/task_summary.dart';
 
 /// Home page - Parent dashboard.
 class HomePage extends ConsumerWidget {
@@ -11,12 +16,31 @@ class HomePage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final authState = ref.watch(authProvider);
+    final dashboardState = ref.watch(homeDashboardProvider);
     final user = authState.user;
 
     return Scaffold(
       appBar: AppBar(
         title: const Text('Diddit!'),
         actions: [
+          // Household selector (placeholder)
+          Padding(
+            padding: const EdgeInsets.only(right: 8.0),
+            child: Center(
+              child: TextButton.icon(
+                onPressed: () {
+                  // TODO: Show household selector dialog
+                },
+                icon: const Icon(Icons.home, color: Colors.white),
+                label: Text(
+                  'My Household',
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        color: Colors.white,
+                      ),
+                ),
+              ),
+            ),
+          ),
           IconButton(
             icon: const Icon(Icons.logout),
             onPressed: () => ref.read(authProvider.notifier).logout(),
@@ -24,31 +48,39 @@ class HomePage extends ConsumerWidget {
         ],
       ),
       body: SafeArea(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.all(16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Welcome section
-              _WelcomeCard(userName: user?.firstName ?? 'Parent'),
-              const SizedBox(height: 24),
+        child: RefreshIndicator(
+          onRefresh: () => ref.read(homeDashboardProvider.notifier).refresh(),
+          child: dashboardState.isLoading
+              ? const Center(child: CircularProgressIndicator())
+              : SingleChildScrollView(
+                  physics: const AlwaysScrollableScrollPhysics(),
+                  padding: const EdgeInsets.all(16),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // Welcome section
+                      _WelcomeCard(userName: user?.firstName ?? 'Parent'),
+                      const SizedBox(height: 24),
 
-              // Quick stats
-              const _QuickStatsSection(),
-              const SizedBox(height: 24),
+                      // Quick stats
+                      _QuickStatsSection(dashboardState: dashboardState),
+                      const SizedBox(height: 24),
 
-              // Recent activity
-              const _RecentActivitySection(),
-            ],
-          ),
+                      // Today's tasks
+                      _TodaysTasksSection(dashboardState: dashboardState),
+                      const SizedBox(height: 24),
+
+                      // Children progress
+                      _ChildrenProgressSection(dashboardState: dashboardState),
+                    ],
+                  ),
+                ),
         ),
       ),
-      floatingActionButton: FloatingActionButton.extended(
+      floatingActionButton: QuickAddButton(
         onPressed: () {
           // TODO: Navigate to create task
         },
-        icon: const Icon(Icons.add),
-        label: const Text('New Task'),
       ),
     );
   }
@@ -103,7 +135,9 @@ class _WelcomeCard extends StatelessWidget {
 }
 
 class _QuickStatsSection extends StatelessWidget {
-  const _QuickStatsSection();
+  const _QuickStatsSection({required this.dashboardState});
+
+  final HomeDashboardState dashboardState;
 
   @override
   Widget build(BuildContext context) {
@@ -118,19 +152,19 @@ class _QuickStatsSection extends StatelessWidget {
         Row(
           children: [
             Expanded(
-              child: _StatCard(
+              child: StatCard(
                 icon: Icons.task_alt,
                 label: 'Pending Tasks',
-                value: '5',
+                value: '${dashboardState.pendingTasks}',
                 color: AppColors.primary,
               ),
             ),
             const SizedBox(width: 12),
             Expanded(
-              child: _StatCard(
+              child: StatCard(
                 icon: Icons.check_circle,
                 label: 'Completed Today',
-                value: '3',
+                value: '${dashboardState.completedToday}',
                 color: AppColors.success,
               ),
             ),
@@ -140,19 +174,19 @@ class _QuickStatsSection extends StatelessWidget {
         Row(
           children: [
             Expanded(
-              child: _StatCard(
+              child: StatCard(
                 icon: Icons.pending_actions,
                 label: 'Awaiting Approval',
-                value: '2',
+                value: '${dashboardState.awaitingApproval}',
                 color: AppColors.warning,
               ),
             ),
             const SizedBox(width: 12),
             Expanded(
-              child: _StatCard(
+              child: StatCard(
                 icon: Icons.stars,
                 label: 'Points Given',
-                value: '45',
+                value: '${dashboardState.pointsGiven}',
                 color: AppColors.accent,
               ),
             ),
@@ -163,50 +197,10 @@ class _QuickStatsSection extends StatelessWidget {
   }
 }
 
-class _StatCard extends StatelessWidget {
-  const _StatCard({
-    required this.icon,
-    required this.label,
-    required this.value,
-    required this.color,
-  });
+class _TodaysTasksSection extends StatelessWidget {
+  const _TodaysTasksSection({required this.dashboardState});
 
-  final IconData icon;
-  final String label;
-  final String value;
-  final Color color;
-
-  @override
-  Widget build(BuildContext context) {
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Icon(icon, color: color, size: 28),
-            const SizedBox(height: 8),
-            Text(
-              value,
-              style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
-            ),
-            Text(
-              label,
-              style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    color: AppColors.textSecondary,
-                  ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class _RecentActivitySection extends StatelessWidget {
-  const _RecentActivitySection();
+  final HomeDashboardState dashboardState;
 
   @override
   Widget build(BuildContext context) {
@@ -214,37 +208,49 @@ class _RecentActivitySection extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Recent Activity',
+          "Today's Tasks",
           style: Theme.of(context).textTheme.titleLarge,
         ),
         const SizedBox(height: 12),
-        Card(
-          child: Padding(
-            padding: const EdgeInsets.all(24),
-            child: Center(
-              child: Column(
-                children: [
-                  Icon(
-                    Icons.history,
-                    size: 48,
-                    color: AppColors.textTertiary,
-                  ),
-                  const SizedBox(height: 12),
-                  Text(
-                    'No recent activity',
-                    style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                          color: AppColors.textSecondary,
-                        ),
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    'Tasks and rewards will appear here',
-                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                          color: AppColors.textTertiary,
-                        ),
-                  ),
-                ],
-              ),
+        TaskSummary(
+          tasks: dashboardState.todaysTasks,
+          onTaskTap: (task) {
+            // TODO: Navigate to task detail
+          },
+        ),
+      ],
+    );
+  }
+}
+
+class _ChildrenProgressSection extends StatelessWidget {
+  const _ChildrenProgressSection({required this.dashboardState});
+
+  final HomeDashboardState dashboardState;
+
+  @override
+  Widget build(BuildContext context) {
+    if (dashboardState.children.isEmpty) {
+      return const SizedBox.shrink();
+    }
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'Children Progress',
+          style: Theme.of(context).textTheme.titleLarge,
+        ),
+        const SizedBox(height: 12),
+        ...dashboardState.children.map(
+          (child) => Padding(
+            padding: const EdgeInsets.only(bottom: 12),
+            child: ChildProgressCard(
+              childName: child.name,
+              completedTasks: child.completedTasks,
+              totalTasks: child.totalTasks,
+              points: child.points,
+              avatarUrl: child.avatarUrl,
             ),
           ),
         ),
