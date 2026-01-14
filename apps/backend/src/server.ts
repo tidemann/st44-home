@@ -190,7 +190,7 @@ async function buildApp() {
 
   // Register auth routes with /api/auth prefix
   await fastify.register(authRoutes, { prefix: '/api/auth' });
-  await fastify.register(qrAuthRoutes);
+  await fastify.register(qrAuthRoutes, { prefix: '/api/qr-auth' });
 
   // Register household, children, invitation, task, assignment, rewards, and analytics routes
   await fastify.register(householdRoutes);

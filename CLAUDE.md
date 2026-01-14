@@ -248,11 +248,33 @@ infra/                           # Docker Compose configuration
 
 1. Create feature branch: `git checkout -b feature/name`
 2. Make changes (pre-commit hooks automatically format/lint on commit)
-3. **YOU MUST run all tests locally before pushing** (see Testing section above)
-4. Push and create PR: `gh pr create --base main`
-5. Squash merge after CI passes
+3. **MANDATORY LOCAL TESTING BEFORE PUSHING**:
 
-**Pre-push validation is MANDATORY** - if tests fail locally, DO NOT push.
+   ```bash
+   # Run all tests
+   cd apps/backend && npm test
+   cd apps/frontend && npm test
+
+   # Build and run locally
+   cd apps/backend
+   npm run build              # Compile TypeScript
+   npm start                  # Start server
+   # Test endpoints with curl
+   curl http://localhost:3000/api/your-endpoint
+   curl http://localhost:3000/health
+   ```
+
+4. **Verify in browser/API client** - Test new endpoints/features work
+5. Push and create PR: `gh pr create --base main`
+6. Squash merge after CI passes
+
+**Pre-push validation is MANDATORY**:
+
+- ❌ DO NOT push if tests fail locally
+- ❌ DO NOT push if build fails
+- ❌ DO NOT push if server won't start
+- ❌ DO NOT push if endpoints return 404/500
+- ✅ ONLY push when everything works locally
 
 ## Shared Types (@st44/types)
 

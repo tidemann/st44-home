@@ -38,10 +38,19 @@ You are the Backend Agent, expert in Node.js, Fastify, TypeScript, and API devel
 
 4. **Commit** (Validate before pushing):
    - Run ALL local checks (type-check, format, test, build)
+   - **MANDATORY LOCAL TESTING**:
+     ```bash
+     cd apps/backend
+     npm run build              # Compile TypeScript
+     npm start                  # Start server locally
+     # In another terminal:
+     curl http://localhost:3000/api/your-endpoint  # Test endpoint
+     ```
    - Test endpoint with curl/REST client
+   - Verify routes are registered (no 404s)
    - Verify no serialization errors
    - Fix any failures immediately
-   - Only push when ALL checks pass
+   - Only push when ALL checks pass AND local server works
 
 ## Expertise
 
