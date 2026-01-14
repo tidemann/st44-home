@@ -110,11 +110,6 @@ export class AuthService {
             lastName: response.lastName,
           });
           this.isAuthenticated.set(true);
-
-          // If user has household, set it as active immediately
-          if (response.householdId) {
-            this.householdStore.setActiveHousehold(response.householdId);
-          }
         }),
       );
   }
@@ -138,11 +133,6 @@ export class AuthService {
             lastName: response.lastName,
           });
           this.isAuthenticated.set(true);
-
-          // If user has household, set it as active immediately
-          if (response.householdId) {
-            this.householdStore.setActiveHousehold(response.householdId);
-          }
         }),
       );
   }
