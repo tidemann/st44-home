@@ -228,6 +228,34 @@ onSubmit(): void {
 }
 ```
 
+## Modal Components
+
+**CRITICAL: Use the global Modal component for ALL modals**
+
+The codebase has a centralized Modal component at `apps/frontend/src/app/components/modals/modal/modal.ts` that handles backdrop clicks, ESC key, close button, focus trap, and accessibility.
+
+**✅ Correct Usage:**
+
+```html
+<app-modal [open]="open()" (closeModal)="handleClose()" title="Modal Title">
+  <!-- Your content -->
+</app-modal>
+```
+
+**❌ Common Mistakes:**
+
+- Using wrong event name: `(closeRequested)` instead of `(closeModal)`
+- Using slots for title: `<h2 slot="title">` instead of `title` input
+- Not creating Storybook stories for modal testing
+
+**See `.claude/skills/modal-components/SKILL.md` for complete documentation.**
+
+**Study these working examples:**
+
+- `apps/frontend/src/app/components/modals/add-child-modal/`
+- `apps/frontend/src/app/components/modals/invite-modal/`
+- `apps/frontend/src/app/components/modals/task-form-modal/`
+
 ## Testing Strategy
 
 Test where it's smart to do so:

@@ -275,6 +275,101 @@ export const EmptyState: Story = {
 };
 ```
 
+### Modal Component Story
+
+**CRITICAL: All modal components MUST have Storybook stories.**
+
+Modals require special testing because they have multiple interaction points (backdrop, ESC key, close button) that can fail silently.
+
+```typescript
+import type { Meta, StoryObj } from '@storybook/angular';
+import { signal } from '@angular/core';
+import { AddChildModal } from './add-child-modal';
+
+const meta: Meta<AddChildModal> = {
+  title: 'Components/Modals/AddChildModal',
+  component: AddChildModal,
+  tags: ['autodocs'],
+  argTypes: {
+    open: { control: 'boolean' },
+  },
+  // Decorators for modal positioning
+  decorators: [
+    (story) => ({
+      template: `
+        <div style="min-height: 600px; position: relative;">
+          <story />
+        </div>
+      `,
+    }),
+  ],
+};
+
+export default meta;
+type Story = StoryObj<AddChildModal>;
+
+// Default: Modal open
+export const Default: Story = {
+  args: {
+    open: true,
+  },
+};
+
+// Closed state
+export const Closed: Story = {
+  args: {
+    open: false,
+  },
+  parameters: {
+    docs: {
+      description: {
+        story: 'Modal in closed state (not visible)',
+      },
+    },
+  },
+};
+
+// With validation errors
+export const WithValidationErrors: Story = {
+  args: {
+    open: true,
+  },
+  play: async ({ canvasElement }) => {
+    // Simulate invalid form state for visual testing
+    const canvas = within(canvasElement);
+    const submitButton = await canvas.findByRole('button', { name: /add child/i });
+    await userEvent.click(submitButton);
+    // Form validation errors should now be visible
+  },
+};
+```
+
+**Modal Story Testing Checklist:**
+
+Test these interactions in Storybook:
+
+- [ ] **Open/Close**: Toggle `open` control
+- [ ] **Close Button**: Click X button
+- [ ] **Backdrop Click**: Click outside modal
+- [ ] **ESC Key**: Press Escape
+- [ ] **Form Validation**: Submit empty form
+- [ ] **Loading State**: Test submitting state
+- [ ] **Error State**: Test error messages
+- [ ] **Accessibility**: No violations in a11y addon
+
+**Common Modal Story Mistakes:**
+
+❌ **Wrong:** No Storybook story (bugs discovered in production)
+✅ **Correct:** Story created BEFORE integrating into app
+
+❌ **Wrong:** Only testing open state
+✅ **Correct:** Testing open, closed, loading, error states
+
+❌ **Wrong:** Not testing close interactions
+✅ **Correct:** Manually test X button, backdrop, ESC in Storybook
+
+**See `.claude/skills/modal-components/SKILL.md` for Modal API usage.**
+
 ## Design System Documentation
 
 ### Color Palette Story

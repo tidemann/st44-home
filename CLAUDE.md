@@ -447,3 +447,10 @@ Detailed agent specifications in `.claude/agents/`:
 - `agent-cicd.md` - CI/CD monitoring and quality gates
 - `agent-storybook.md` - Storybook component development
 - `agent-e2e.md` - Playwright e2e testing
+
+### Skills
+
+Additional focused guides in `.claude/skills/`:
+
+- `modal-components/SKILL.md` - Global Modal component usage (CRITICAL for frontend)
+- `storybook/SKILL.md` - Storybook component development and testing
