@@ -319,12 +319,35 @@ describe('QR Authentication API', () => {
 
   describe('Security: Token uniqueness and cryptographic strength', () => {
     test('should generate unique tokens for each child', async () => {
-      // Create second child
+      // Create second child user (different from first child)
+      const child2Email = `test-qr-child2-${Date.now()}@example.com`;
+      const child2RegisterResponse = await app.inject({
+        method: 'POST',
+        url: '/api/auth/register',
+        payload: {
+          email: child2Email,
+          password: testPassword,
+          firstName: 'Child2',
+          lastName: 'Test',
+        },
+      });
+
+      const child2RegisterBody = JSON.parse(child2RegisterResponse.body);
+      const child2UserId = child2RegisterBody.userId;
+
+      // Add second child user to parent's household
+      await pool.query(
+        `INSERT INTO household_members (household_id, user_id, role)
+         VALUES ($1, $2, $3)`,
+        [householdId, child2UserId, 'child'],
+      );
+
+      // Create second child profile
       const childResult2 = await pool.query(
         `INSERT INTO children (household_id, user_id, name, birth_year)
          VALUES ($1, $2, $3, $4)
          RETURNING id`,
-        [householdId, childUserId, 'Test Child 2', 2016],
+        [householdId, child2UserId, 'Test Child 2', 2016],
       );
 
       const childId2 = childResult2.rows[0].id;
@@ -343,6 +366,8 @@ describe('QR Authentication API', () => {
 
       // Cleanup
       await pool.query('DELETE FROM children WHERE id = $1', [childId2]);
+      await pool.query('DELETE FROM household_members WHERE user_id = $1', [child2UserId]);
+      await pool.query('DELETE FROM users WHERE id = $1', [child2UserId]);
     });
 
     test('should generate tokens with sufficient entropy (32+ bytes)', async () => {
