@@ -1,5 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { SidebarNav, type SidebarUser } from './sidebar-nav';
+import { SidebarNav } from './sidebar-nav';
 import { ComponentRef } from '@angular/core';
 import { HouseholdService } from '../../../services/household.service';
 
@@ -7,15 +7,6 @@ describe('SidebarNav', () => {
   let component: SidebarNav;
   let componentRef: ComponentRef<SidebarNav>;
   let fixture: ComponentFixture<SidebarNav>;
-
-  const mockUser: SidebarUser = {
-    name: 'Sarah',
-    firstName: 'Sarah',
-    lastName: 'Johnson',
-    email: 'sarah@example.com',
-    avatar: 'SJ',
-    household: 'The Johnson Family',
-  };
 
   const mockHouseholdService = {
     listHouseholds: vi
@@ -42,7 +33,6 @@ describe('SidebarNav', () => {
 
   it('should display logo', () => {
     componentRef.setInput('activeScreen', 'home');
-    componentRef.setInput('user', mockUser);
     fixture.detectChanges();
 
     const logo = fixture.nativeElement.querySelector('.sidebar-logo');
@@ -51,7 +41,6 @@ describe('SidebarNav', () => {
 
   it('should display all 5 navigation items', () => {
     componentRef.setInput('activeScreen', 'home');
-    componentRef.setInput('user', mockUser);
     fixture.detectChanges();
 
     const navButtons = fixture.nativeElement.querySelectorAll('.sidebar-btn');
@@ -60,7 +49,6 @@ describe('SidebarNav', () => {
 
   it('should display correct icons and labels', () => {
     componentRef.setInput('activeScreen', 'home');
-    componentRef.setInput('user', mockUser);
     fixture.detectChanges();
 
     const navButtons = fixture.nativeElement.querySelectorAll('.sidebar-btn');
@@ -77,7 +65,6 @@ describe('SidebarNav', () => {
 
   it('should apply active class to current screen', () => {
     componentRef.setInput('activeScreen', 'tasks');
-    componentRef.setInput('user', mockUser);
     fixture.detectChanges();
 
     const navButtons = fixture.nativeElement.querySelectorAll('.sidebar-btn');
@@ -91,7 +78,6 @@ describe('SidebarNav', () => {
     component.navigate.subscribe(navigateSpy);
 
     componentRef.setInput('activeScreen', 'home');
-    componentRef.setInput('user', mockUser);
     fixture.detectChanges();
 
     const navButtons = fixture.nativeElement.querySelectorAll('.sidebar-btn');
@@ -103,7 +89,6 @@ describe('SidebarNav', () => {
 
   it('should display "Add Task" button', () => {
     componentRef.setInput('activeScreen', 'home');
-    componentRef.setInput('user', mockUser);
     fixture.detectChanges();
 
     const addButton = fixture.nativeElement.querySelector('.sidebar-add-btn');
@@ -115,7 +100,6 @@ describe('SidebarNav', () => {
     component.addTask.subscribe(addTaskSpy);
 
     componentRef.setInput('activeScreen', 'home');
-    componentRef.setInput('user', mockUser);
     fixture.detectChanges();
 
     const addButton = fixture.nativeElement.querySelector('.sidebar-add-btn');
@@ -124,72 +108,16 @@ describe('SidebarNav', () => {
     expect(addTaskSpy).toHaveBeenCalled();
   });
 
-  it('should display user information', () => {
+  it('should display household switcher', () => {
     componentRef.setInput('activeScreen', 'home');
-    componentRef.setInput('user', mockUser);
     fixture.detectChanges();
 
-    const userName = fixture.nativeElement.querySelector('.sidebar-user-info h4');
     const householdSwitcher = fixture.nativeElement.querySelector('app-household-switcher');
-
-    expect(userName?.textContent).toContain('Sarah');
     expect(householdSwitcher).toBeTruthy();
-  });
-
-  it('should display user initials in avatar', () => {
-    componentRef.setInput('activeScreen', 'home');
-    componentRef.setInput('user', mockUser);
-    fixture.detectChanges();
-
-    const avatar = fixture.nativeElement.querySelector('.sidebar-avatar');
-    expect(avatar?.textContent?.trim()).toBe('SJ');
-  });
-
-  it('should compute initials from user name', () => {
-    componentRef.setInput('activeScreen', 'home');
-    componentRef.setInput('user', mockUser);
-    fixture.detectChanges();
-
-    expect(component.userInitials()).toBe('SJ');
-  });
-
-  it('should handle single name for initials (email fallback)', () => {
-    const singleNameUser: SidebarUser = {
-      name: 'Mike',
-      firstName: null,
-      lastName: null,
-      email: 'mike@example.com',
-      avatar: 'M',
-      household: 'Test Family',
-    };
-
-    componentRef.setInput('activeScreen', 'home');
-    componentRef.setInput('user', singleNameUser);
-    fixture.detectChanges();
-
-    expect(component.userInitials()).toBe('M');
-  });
-
-  it('should compute initials from firstName/lastName when available', () => {
-    const userWithNames: SidebarUser = {
-      name: 'John',
-      firstName: 'John',
-      lastName: 'Doe',
-      email: 'john@example.com',
-      avatar: 'JD',
-      household: 'Test Family',
-    };
-
-    componentRef.setInput('activeScreen', 'home');
-    componentRef.setInput('user', userWithNames);
-    fixture.detectChanges();
-
-    expect(component.userInitials()).toBe('JD');
   });
 
   it('should have correct accessibility attributes on nav', () => {
     componentRef.setInput('activeScreen', 'home');
-    componentRef.setInput('user', mockUser);
     fixture.detectChanges();
 
     const nav = fixture.nativeElement.querySelector('.sidebar-nav');
@@ -199,7 +127,6 @@ describe('SidebarNav', () => {
 
   it('should set aria-current on active item', () => {
     componentRef.setInput('activeScreen', 'progress');
-    componentRef.setInput('user', mockUser);
     fixture.detectChanges();
 
     const navButtons = fixture.nativeElement.querySelectorAll('.sidebar-btn');
@@ -210,25 +137,14 @@ describe('SidebarNav', () => {
 
   it('should have aria-label for "Add Task" button', () => {
     componentRef.setInput('activeScreen', 'home');
-    componentRef.setInput('user', mockUser);
     fixture.detectChanges();
 
     const addButton = fixture.nativeElement.querySelector('.sidebar-add-btn');
     expect(addButton.getAttribute('aria-label')).toBe('Add new task');
   });
 
-  it('should have aria-label for avatar', () => {
-    componentRef.setInput('activeScreen', 'home');
-    componentRef.setInput('user', mockUser);
-    fixture.detectChanges();
-
-    const avatar = fixture.nativeElement.querySelector('.sidebar-avatar');
-    expect(avatar.getAttribute('aria-label')).toBe('Avatar for Sarah');
-  });
-
   it('should update active state when activeScreen changes', () => {
     componentRef.setInput('activeScreen', 'home');
-    componentRef.setInput('user', mockUser);
     fixture.detectChanges();
 
     let navButtons = fixture.nativeElement.querySelectorAll('.sidebar-btn');
@@ -240,30 +156,5 @@ describe('SidebarNav', () => {
     navButtons = fixture.nativeElement.querySelectorAll('.sidebar-btn');
     expect(navButtons[0].classList.contains('active')).toBe(false);
     expect(navButtons[2].classList.contains('active')).toBe(true);
-  });
-
-  it('should update user info when user changes', () => {
-    componentRef.setInput('activeScreen', 'home');
-    componentRef.setInput('user', mockUser);
-    fixture.detectChanges();
-
-    let userName = fixture.nativeElement.querySelector('.sidebar-user-info h4');
-    expect(userName?.textContent).toContain('Sarah');
-
-    const newUser: SidebarUser = {
-      name: 'Mike',
-      firstName: 'Mike',
-      lastName: 'Smith',
-      email: 'mike@example.com',
-      avatar: 'MS',
-      household: 'The Smith Family',
-    };
-
-    componentRef.setInput('user', newUser);
-    fixture.detectChanges();
-
-    userName = fixture.nativeElement.querySelector('.sidebar-user-info h4');
-
-    expect(userName?.textContent).toContain('Mike');
   });
 });

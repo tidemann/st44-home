@@ -1,0 +1,7 @@
+<button type="button" class="user-button" (click)="handleClick()" aria-label="Open user settings">
+  <div class="user-button__avatar" [attr.aria-label]="'Avatar for ' + user().name">
+    {{ userInitials() }}
+  </div>
+  <span class="user-button__name">{{ user().name }}</span>
+  <span class="user-button__settings-icon" aria-hidden="true">⚙️</span>
+</button>

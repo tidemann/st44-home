@@ -107,6 +107,17 @@
   gap: var(--space-sm);
 }
 
+/* Hide user button on mobile (shown in mobile header instead) */
+.page-header-actions app-user-button {
+  display: none;
+}
+
+@media (min-width: 768px) {
+  .page-header-actions app-user-button {
+    display: block;
+  }
+}
+
 /* ===== CONTENT SECTION ===== */
 
 .page-content {

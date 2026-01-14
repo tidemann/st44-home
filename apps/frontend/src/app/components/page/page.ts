@@ -1,4 +1,7 @@
-import { Component, ChangeDetectionStrategy, input, computed } from '@angular/core';
+import { Component, ChangeDetectionStrategy, input, output, computed, inject } from '@angular/core';
+import { Router } from '@angular/router';
+import { UserButton, type UserButtonData } from '../user-button/user-button';
+import { AuthService } from '../../services/auth.service';
 
 /**
  * Page width variants
@@ -44,11 +47,15 @@ export type PageWidth = 'narrow' | 'medium' | 'wide';
  */
 @Component({
   selector: 'app-page',
+  imports: [UserButton],
   templateUrl: './page.html',
   styleUrl: './page.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PageComponent {
+  private readonly router = inject(Router);
+  private readonly authService = inject(AuthService);
+
   /**
    * Page title displayed in the header (required)
    */
@@ -80,6 +87,12 @@ export class PageComponent {
   showHeader = input<boolean>(true);
 
   /**
+   * Show user button in header (default: true on desktop)
+   * Set to false to hide the user button
+   */
+  showUserButton = input<boolean>(true);
+
+  /**
    * Computed CSS class for container width
    */
   protected containerClass = computed(() => {
@@ -97,4 +110,31 @@ export class PageComponent {
   protected headerClass = computed(() => {
     return this.showGradient() ? 'page-header--gradient' : 'page-header--plain';
   });
+
+  /**
+   * Get user data for the user button
+   */
+  protected userData = computed<UserButtonData | null>(() => {
+    const user = this.authService.currentUser();
+    if (!user) return null;
+
+    const firstName = user.firstName || null;
+    const lastName = user.lastName || null;
+    // Use first name if available, otherwise fall back to email prefix
+    const displayName = firstName || user.email?.split('@')[0] || 'User';
+
+    return {
+      name: displayName,
+      firstName,
+      lastName,
+      email: user.email || null,
+    };
+  });
+
+  /**
+   * Handle user button click - navigate to settings
+   */
+  protected handleUserButtonClick() {
+    void this.router.navigate(['/settings']);
+  }
 }

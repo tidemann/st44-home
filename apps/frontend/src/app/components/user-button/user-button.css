@@ -1,0 +1,84 @@
+.user-button {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm, 8px);
+  padding: var(--space-sm, 8px) var(--space-md, 16px);
+  background: var(--color-background, #f9fafb);
+  border-radius: var(--radius-md, 12px);
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-align: left;
+}
+
+.user-button:hover {
+  background: var(--color-surface-hover, #f3f4f6);
+}
+
+.user-button:focus-visible {
+  outline: 2px solid var(--color-primary, #6366f1);
+  outline-offset: 2px;
+}
+
+.user-button__avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: linear-gradient(
+    135deg,
+    var(--color-primary, #6366f1) 0%,
+    var(--color-secondary, #ec4899) 100%
+  );
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-weight: 700;
+  font-size: 14px;
+  flex-shrink: 0;
+}
+
+.user-button__name {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--color-text-primary, #1f2937);
+}
+
+.user-button__settings-icon {
+  font-size: 18px;
+  color: var(--color-text-secondary, #6b7280);
+  transition: color 0.2s ease;
+  flex-shrink: 0;
+}
+
+.user-button:hover .user-button__settings-icon {
+  color: var(--color-text-primary, #1f2937);
+}
+
+/* Hide user name on mobile screens */
+@media (max-width: 640px) {
+  .user-button__name {
+    display: none;
+  }
+
+  .user-button {
+    padding: var(--space-sm, 8px);
+  }
+}
+
+/* Responsive Design for tablets */
+@media (min-width: 641px) and (max-width: 1024px) {
+  .user-button__name {
+    font-size: 13px;
+  }
+
+  .user-button__avatar {
+    width: 36px;
+    height: 36px;
+    font-size: 13px;
+  }
+
+  .user-button__settings-icon {
+    font-size: 16px;
+  }
+}

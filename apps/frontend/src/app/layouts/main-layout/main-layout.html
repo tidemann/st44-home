@@ -3,10 +3,8 @@
   <div class="sidebar-container">
     <app-sidebar-nav
       [activeScreen]="activeScreen()"
-      [user]="sidebarUser()"
       (navigate)="onNavigate($event)"
       (addTask)="openCreateTask()"
-      (settings)="onSettings()"
     />
   </div>
 
@@ -18,14 +16,7 @@
         <div class="mobile-logo">Diddit!</div>
         <div class="mobile-header-actions">
           <app-household-switcher />
-          <button
-            type="button"
-            class="settings-btn"
-            (click)="onSettings()"
-            aria-label="Open settings"
-          >
-            ⚙️
-          </button>
+          <app-user-button [user]="userData()" (clicked)="onSettings()" />
         </div>
       </div>
     </header>
