@@ -26,19 +26,4 @@
   <button type="button" class="sidebar-add-btn" (click)="handleAddTask()" aria-label="Add new task">
     + Add Task
   </button>
-
-  <button
-    type="button"
-    class="sidebar-user"
-    (click)="handleSettingsClick()"
-    aria-label="Open settings"
-  >
-    <div class="sidebar-avatar" [attr.aria-label]="'Avatar for ' + user().name">
-      {{ userInitials() }}
-    </div>
-    <div class="sidebar-user-info">
-      <h4>{{ user().name }}</h4>
-    </div>
-    <span class="settings-icon" aria-hidden="true">⚙️</span>
-  </button>
 </nav>

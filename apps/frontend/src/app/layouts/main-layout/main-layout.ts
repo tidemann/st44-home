@@ -16,11 +16,11 @@ import {
   TaskFormModal,
   type TaskFormData,
 } from '../../components/modals/task-form-modal/task-form-modal';
+import { UserButton, type UserButtonData } from '../../components/user-button/user-button';
 import { AuthService } from '../../services/auth.service';
 import { HouseholdService } from '../../services/household.service';
 import { HouseholdStore } from '../../stores/household.store';
 import { ChildrenService } from '../../services/children.service';
-import type { SidebarUser } from '../../components/navigation/sidebar-nav/sidebar-nav';
 import type { NavScreen } from '../../components/navigation/bottom-nav/bottom-nav';
 import type { Child } from '@st44/types';
 import { TaskService } from '../../services/task.service';
@@ -40,7 +40,14 @@ import { take } from 'rxjs';
  */
 @Component({
   selector: 'app-main-layout',
-  imports: [RouterOutlet, BottomNav, SidebarNav, HouseholdSwitcherComponent, TaskFormModal],
+  imports: [
+    RouterOutlet,
+    BottomNav,
+    SidebarNav,
+    HouseholdSwitcherComponent,
+    TaskFormModal,
+    UserButton,
+  ],
   templateUrl: './main-layout.html',
   styleUrl: './main-layout.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -65,7 +72,7 @@ export class MainLayout implements OnInit, OnDestroy {
   protected readonly createTaskOpen = signal(false);
 
   // Computed values
-  protected readonly sidebarUser = computed<SidebarUser>(() => {
+  protected readonly userData = computed<UserButtonData>(() => {
     const user = this.authService.currentUser();
     const firstName = user?.firstName || null;
     const lastName = user?.lastName || null;
@@ -76,8 +83,6 @@ export class MainLayout implements OnInit, OnDestroy {
       firstName,
       lastName,
       email: user?.email || null,
-      avatar: '',
-      household: this.householdName(),
     };
   });
 

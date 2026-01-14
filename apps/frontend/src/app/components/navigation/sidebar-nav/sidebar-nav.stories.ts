@@ -1,10 +1,10 @@
 import { Meta, StoryObj } from '@storybook/angular';
-import { SidebarNav, type SidebarUser } from './sidebar-nav';
+import { SidebarNav } from './sidebar-nav';
 import type { NavScreen } from '../bottom-nav/bottom-nav';
 
 /**
  * SidebarNav provides desktop navigation with fixed sidebar.
- * Includes navigation menu, "Add Task" button, and user profile section.
+ * Includes navigation menu and "Add Task" button.
  *
  * Part of the Diddit! Design System - Navigation Components.
  */
@@ -17,9 +17,6 @@ const meta: Meta<SidebarNav> = {
       control: 'select',
       options: ['home', 'tasks', 'family', 'progress'],
       description: 'Currently active screen',
-    },
-    user: {
-      description: 'User information for profile section',
     },
   },
   decorators: [
@@ -42,22 +39,12 @@ const meta: Meta<SidebarNav> = {
 
 export default meta;
 
-const defaultUser: SidebarUser = {
-  name: 'Sarah',
-  firstName: 'Sarah',
-  lastName: 'Johnson',
-  email: 'sarah@example.com',
-  avatar: 'SJ',
-  household: 'The Johnson Family',
-};
-
 /**
  * Default state with Home active
  */
 export const Home: StoryObj<SidebarNav> = {
   args: {
     activeScreen: 'home',
-    user: defaultUser,
   },
 };
 
@@ -67,7 +54,6 @@ export const Home: StoryObj<SidebarNav> = {
 export const Tasks: StoryObj<SidebarNav> = {
   args: {
     activeScreen: 'tasks',
-    user: defaultUser,
   },
 };
 
@@ -77,7 +63,6 @@ export const Tasks: StoryObj<SidebarNav> = {
 export const Family: StoryObj<SidebarNav> = {
   args: {
     activeScreen: 'family',
-    user: defaultUser,
   },
 };
 
@@ -87,41 +72,6 @@ export const Family: StoryObj<SidebarNav> = {
 export const Progress: StoryObj<SidebarNav> = {
   args: {
     activeScreen: 'progress',
-    user: defaultUser,
-  },
-};
-
-/**
- * User with single name (no lastName)
- */
-export const SingleNameUser: StoryObj<SidebarNav> = {
-  args: {
-    activeScreen: 'home',
-    user: {
-      name: 'Mike',
-      firstName: 'Mike',
-      lastName: null,
-      email: 'mike@example.com',
-      avatar: 'M',
-      household: 'The Smith Family',
-    },
-  },
-};
-
-/**
- * User with long household name
- */
-export const LongHouseholdName: StoryObj<SidebarNav> = {
-  args: {
-    activeScreen: 'home',
-    user: {
-      name: 'Alexandra',
-      firstName: 'Alexandra',
-      lastName: 'Martinez',
-      email: 'alexandra@example.com',
-      avatar: 'AM',
-      household: 'The Martinez-Rodriguez Family Household',
-    },
   },
 };
 
@@ -133,7 +83,6 @@ export const Interactive: StoryObj<SidebarNav> = {
     props: {
       ...args,
       currentScreen: 'home' as NavScreen,
-      user: defaultUser,
       handleNavigate(screen: NavScreen) {
         this['currentScreen'] = screen;
         console.log('Navigated to:', screen);
@@ -152,7 +101,6 @@ export const Interactive: StoryObj<SidebarNav> = {
         </div>
         <app-sidebar-nav
           [activeScreen]="currentScreen"
-          [user]="user"
           (navigate)="handleNavigate($event)"
           (addTask)="handleAddTask()" />
       </div>
