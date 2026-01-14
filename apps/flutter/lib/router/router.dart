@@ -9,102 +9,92 @@ import '../features/home/home.dart';
 import '../features/rewards/rewards.dart';
 import '../features/settings/settings.dart';
 import '../features/tasks/tasks.dart';
+import '../shared/widgets/child_shell_scaffold.dart';
 import '../shared/widgets/shell_scaffold.dart';
-
-/// Route names for type-safe navigation.
-abstract final class Routes {
-  static const login = 'login';
-  static const register = 'register';
-  static const home = 'home';
-  static const tasks = 'tasks';
-  static const family = 'family';
-  static const rewards = 'rewards';
-  static const settings = 'settings';
-  static const childDashboard = 'child-dashboard';
-}
+import 'guards/auth_guard.dart';
+import 'guards/role_guard.dart';
+import 'routes.dart';
 
 /// The main router provider.
 ///
-/// Uses GoRouter for declarative routing with authentication guards.
+/// Uses GoRouter for declarative routing with authentication and role guards.
 final routerProvider = Provider<GoRouter>((ref) {
-  final authState = ref.watch(authProvider);
-
   return GoRouter(
-    initialLocation: '/',
+    initialLocation: Routes.homePath,
     debugLogDiagnostics: true,
-    refreshListenable: GoRouterRefreshStream(ref),
+    refreshListenable: _GoRouterRefreshStream(ref),
     redirect: (context, state) {
-      final isAuthenticated = authState.isAuthenticated;
-      final isLoading = authState.isLoading;
-      final isAuthRoute = state.matchedLocation == '/login' ||
-          state.matchedLocation == '/register';
+      // Apply auth guard
+      final authRedirect = authGuard(ref, state.matchedLocation);
+      if (authRedirect != null) return authRedirect;
 
-      // Don't redirect while loading
-      if (isLoading) return null;
-
-      // Redirect to login if not authenticated and not on auth route
-      if (!isAuthenticated && !isAuthRoute) {
-        return '/login';
-      }
-
-      // Redirect to home if authenticated and on auth route
-      if (isAuthenticated && isAuthRoute) {
-        // Check if user is a child - redirect to child dashboard
-        final user = authState.user;
-        if (user?.role == 'child') {
-          return '/child';
-        }
-        return '/';
-      }
+      // Apply role guard
+      final roleRedirect = roleGuard(ref, state.matchedLocation);
+      if (roleRedirect != null) return roleRedirect;
 
       return null;
     },
     routes: [
       // Auth routes (no shell)
       GoRoute(
-        path: '/login',
+        path: Routes.loginPath,
         name: Routes.login,
         builder: (context, state) => const LoginPage(),
       ),
       GoRoute(
-        path: '/register',
+        path: Routes.registerPath,
         name: Routes.register,
         builder: (context, state) => const RegisterPage(),
       ),
 
-      // Child dashboard (separate from parent shell)
-      GoRoute(
-        path: '/child',
-        name: Routes.childDashboard,
-        builder: (context, state) => const ChildDashboardPage(),
+      // Child shell with bottom navigation (3 tabs)
+      ShellRoute(
+        builder: (context, state, child) => ChildShellScaffold(child: child),
+        routes: [
+          GoRoute(
+            path: Routes.childDashboardPath,
+            name: Routes.childDashboard,
+            builder: (context, state) => const ChildDashboardPage(),
+          ),
+          GoRoute(
+            path: Routes.childTasksPath,
+            name: Routes.childTasks,
+            builder: (context, state) => const ChildTasksPage(),
+          ),
+          GoRoute(
+            path: Routes.childRewardsPath,
+            name: Routes.childRewards,
+            builder: (context, state) => const ChildRewardsPage(),
+          ),
+        ],
       ),
 
-      // Main app shell with bottom navigation (parent view)
+      // Parent shell with bottom navigation (5 tabs)
       ShellRoute(
         builder: (context, state, child) => ShellScaffold(child: child),
         routes: [
           GoRoute(
-            path: '/',
+            path: Routes.homePath,
             name: Routes.home,
             builder: (context, state) => const HomePage(),
           ),
           GoRoute(
-            path: '/tasks',
+            path: Routes.tasksPath,
             name: Routes.tasks,
             builder: (context, state) => const TasksPage(),
           ),
           GoRoute(
-            path: '/family',
+            path: Routes.familyPath,
             name: Routes.family,
             builder: (context, state) => const FamilyPage(),
           ),
           GoRoute(
-            path: '/rewards',
+            path: Routes.rewardsPath,
             name: Routes.rewards,
             builder: (context, state) => const RewardsPage(),
           ),
           GoRoute(
-            path: '/settings',
+            path: Routes.settingsPath,
             name: Routes.settings,
             builder: (context, state) => const SettingsPage(),
           ),
@@ -133,7 +123,7 @@ final routerProvider = Provider<GoRouter>((ref) {
             ),
             const SizedBox(height: 24),
             ElevatedButton(
-              onPressed: () => context.go('/'),
+              onPressed: () => context.go(Routes.homePath),
               child: const Text('Go Home'),
             ),
           ],
@@ -144,8 +134,8 @@ final routerProvider = Provider<GoRouter>((ref) {
 });
 
 /// Listenable for GoRouter refresh when auth state changes.
-class GoRouterRefreshStream extends ChangeNotifier {
-  GoRouterRefreshStream(this._ref) {
+class _GoRouterRefreshStream extends ChangeNotifier {
+  _GoRouterRefreshStream(this._ref) {
     _ref.listen(authProvider, (_, __) => notifyListeners());
   }
 
