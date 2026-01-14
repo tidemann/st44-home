@@ -1,4 +1,4 @@
-import { Component, ChangeDetectionStrategy, input, output, computed, inject } from '@angular/core';
+import { Component, ChangeDetectionStrategy, input, computed, inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { UserButton, type UserButtonData } from '../user-button/user-button';
 import { AuthService } from '../../services/auth.service';
