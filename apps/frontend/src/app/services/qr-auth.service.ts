@@ -33,7 +33,7 @@ export class QrAuthService {
    * @returns Observable with QR token response
    */
   generateQrToken(childId: string): Observable<QrTokenResponse> {
-    return this.http.post<QrTokenResponse>(`${this.apiUrl}/generate`, { childId });
+    return this.http.post<QrTokenResponse>(`${this.apiUrl}/generate/${childId}`, {});
   }
 
   /**
@@ -42,7 +42,7 @@ export class QrAuthService {
    * @returns Observable with QR token response
    */
   regenerateQrToken(childId: string): Observable<QrTokenResponse> {
-    return this.http.post<QrTokenResponse>(`${this.apiUrl}/regenerate`, { childId });
+    return this.http.post<QrTokenResponse>(`${this.apiUrl}/regenerate/${childId}`, {});
   }
 
   /**
