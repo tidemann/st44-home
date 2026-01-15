@@ -42,7 +42,9 @@ export class InvitationInboxComponent implements OnInit {
       this.invitations.set(pending);
     } catch (error) {
       console.error('Failed to load invitations:', error);
-      this.errorMessage.set('Failed to load invitations. Please try again.');
+      this.errorMessage.set(
+        $localize`:@@invitationInbox.loadFailed:Kunne ikke laste invitasjoner. Vennligst prøv igjen.`,
+      );
     } finally {
       this.isLoading.set(false);
     }
@@ -60,7 +62,9 @@ export class InvitationInboxComponent implements OnInit {
     }
 
     if (!invitation.token) {
-      this.errorMessage.set('Invalid invitation - missing token');
+      this.errorMessage.set(
+        $localize`:@@invitationInbox.invalidToken:Ugyldig invitasjon - mangler token`,
+      );
       return;
     }
 
@@ -83,7 +87,9 @@ export class InvitationInboxComponent implements OnInit {
       }, 1500);
     } catch (error) {
       console.error('Failed to accept invitation:', error);
-      this.errorMessage.set('Failed to accept invitation. Please try again.');
+      this.errorMessage.set(
+        $localize`:@@invitationInbox.acceptFailed:Kunne ikke akseptere invitasjon. Vennligst prøv igjen.`,
+      );
     } finally {
       this.processingId.set(null);
     }
@@ -101,7 +107,9 @@ export class InvitationInboxComponent implements OnInit {
     }
 
     if (!invitation.token) {
-      this.errorMessage.set('Invalid invitation - missing token');
+      this.errorMessage.set(
+        $localize`:@@invitationInbox.invalidToken:Ugyldig invitasjon - mangler token`,
+      );
       return;
     }
 
@@ -117,7 +125,9 @@ export class InvitationInboxComponent implements OnInit {
       this.invitations.update((list) => list.filter((inv) => inv.id !== invitation.id));
     } catch (error) {
       console.error('Failed to decline invitation:', error);
-      this.errorMessage.set('Failed to decline invitation. Please try again.');
+      this.errorMessage.set(
+        $localize`:@@invitationInbox.declineFailed:Kunne ikke avslå invitasjon. Vennligst prøv igjen.`,
+      );
     } finally {
       this.processingId.set(null);
     }

@@ -678,42 +678,42 @@
         <source>Kunne ikke akseptere oppgave</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/available-tasks-section/available-tasks-section.ts</context>
-          <context context-type="linenumber">72</context>
+          <context context-type="linenumber">74</context>
         </context-group>
       </trans-unit>
       <trans-unit id="availableTasks.declineFailed" datatype="html">
         <source>Kunne ikke avvise oppgave</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/available-tasks-section/available-tasks-section.ts</context>
-          <context context-type="linenumber">95</context>
+          <context context-type="linenumber">98</context>
         </context-group>
       </trans-unit>
       <trans-unit id="availableTasks.overdue" datatype="html">
         <source>Forfalt</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/available-tasks-section/available-tasks-section.ts</context>
-          <context context-type="linenumber">109</context>
+          <context context-type="linenumber">112</context>
         </context-group>
       </trans-unit>
       <trans-unit id="availableTasks.dueToday" datatype="html">
         <source>Forfaller i dag</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/available-tasks-section/available-tasks-section.ts</context>
-          <context context-type="linenumber">110</context>
+          <context context-type="linenumber">113</context>
         </context-group>
       </trans-unit>
       <trans-unit id="availableTasks.dueTomorrow" datatype="html">
         <source>Forfaller i morgen</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/available-tasks-section/available-tasks-section.ts</context>
-          <context context-type="linenumber">111</context>
+          <context context-type="linenumber">114</context>
         </context-group>
       </trans-unit>
       <trans-unit id="availableTasks.dueInDays" datatype="html">
         <source>Forfaller om <x id="PH" equiv-text="days"/> dager</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/available-tasks-section/available-tasks-section.ts</context>
-          <context context-type="linenumber">112</context>
+          <context context-type="linenumber">115</context>
         </context-group>
       </trans-unit>
       <trans-unit id="childrenManagement.title" datatype="html">
@@ -1106,14 +1106,14 @@
         <source>Vennligst fyll ut alle obligatoriske felt korrekt</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/create-child-account/create-child-account.ts</context>
-          <context context-type="linenumber">84</context>
+          <context context-type="linenumber">85</context>
         </context-group>
       </trans-unit>
       <trans-unit id="createChildAccount.createFailed" datatype="html">
         <source>Kunne ikke opprette konto</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/create-child-account/create-child-account.ts</context>
-          <context context-type="linenumber">109</context>
+          <context context-type="linenumber">114</context>
         </context-group>
       </trans-unit>
       <trans-unit id="failedTasks.title" datatype="html">
@@ -1571,6 +1571,38 @@
           <context context-type="linenumber">131,133</context>
         </context-group>
       </trans-unit>
+      <trans-unit id="invitationInbox.loadFailed" datatype="html">
+        <source>Kunne ikke laste invitasjoner. Vennligst prøv igjen.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/invitation-inbox/invitation-inbox.ts</context>
+          <context context-type="linenumber">45</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="invitationInbox.invalidToken" datatype="html">
+        <source>Ugyldig invitasjon - mangler token</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/invitation-inbox/invitation-inbox.ts</context>
+          <context context-type="linenumber">63</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/invitation-inbox/invitation-inbox.ts</context>
+          <context context-type="linenumber">104</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="invitationInbox.acceptFailed" datatype="html">
+        <source>Kunne ikke akseptere invitasjon. Vennligst prøv igjen.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/invitation-inbox/invitation-inbox.ts</context>
+          <context context-type="linenumber">86</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="invitationInbox.declineFailed" datatype="html">
+        <source>Kunne ikke avslå invitasjon. Vennligst prøv igjen.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/invitation-inbox/invitation-inbox.ts</context>
+          <context context-type="linenumber">120</context>
+        </context-group>
+      </trans-unit>
       <trans-unit id="invitationsSent.title" datatype="html">
         <source>Sendte invitasjoner</source>
         <context-group purpose="location">
@@ -1683,6 +1715,42 @@
           <context context-type="linenumber">111,112</context>
         </context-group>
       </trans-unit>
+      <trans-unit id="invitationsSent.noActiveHousehold" datatype="html">
+        <source>Ingen aktiv husstand valgt</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/invitations-sent-list/invitations-sent-list.ts</context>
+          <context context-type="linenumber">47</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/invitations-sent-list/invitations-sent-list.ts</context>
+          <context context-type="linenumber">78</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/invitations-sent-list/invitations-sent-list.ts</context>
+          <context context-type="linenumber">137</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="invitationsSent.loadFailed" datatype="html">
+        <source>Kunne ikke laste invitasjoner. Vennligst prøv igjen.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/invitations-sent-list/invitations-sent-list.ts</context>
+          <context context-type="linenumber">59</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="invitationsSent.cancelFailed" datatype="html">
+        <source>Kunne ikke kansellere invitasjon. Vennligst prøv igjen.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/invitations-sent-list/invitations-sent-list.ts</context>
+          <context context-type="linenumber">91</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="invitationsSent.cleanupFailed" datatype="html">
+        <source>Kunne ikke rydde opp i invitasjoner. Vennligst prøv igjen.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/invitations-sent-list/invitations-sent-list.ts</context>
+          <context context-type="linenumber">150</context>
+        </context-group>
+      </trans-unit>
       <trans-unit id="inviteUser.title" datatype="html">
         <source>Inviter noen</source>
         <context-group purpose="location">
@@ -1779,6 +1847,62 @@
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/invite-user/invite-user.html</context>
           <context context-type="linenumber">95,98</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="inviteUser.sendFailed" datatype="html">
+        <source>Kunne ikke sende invitasjon. Vennligst prøv igjen.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/invite-user/invite-user.ts</context>
+          <context context-type="linenumber">56</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="inviteUser.checkEmail" datatype="html">
+        <source>Vennligst sjekk e-postadressen.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/invite-user/invite-user.ts</context>
+          <context context-type="linenumber">59</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="inviteUser.sessionExpired" datatype="html">
+        <source>Økten har utløpt. Vennligst logg inn igjen.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/invite-user/invite-user.ts</context>
+          <context context-type="linenumber">61</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="inviteUser.noPermission" datatype="html">
+        <source>Du har ikke tillatelse til å invitere brukere til denne husholdningen.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/invite-user/invite-user.ts</context>
+          <context context-type="linenumber">63</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="inviteUser.alreadyMember" datatype="html">
+        <source>Denne brukeren er allerede medlem av husholdningen din.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/invite-user/invite-user.ts</context>
+          <context context-type="linenumber">66</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="inviteUser.pendingInvitation" datatype="html">
+        <source>En ventende invitasjon eksisterer allerede for denne e-posten.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/invite-user/invite-user.ts</context>
+          <context context-type="linenumber">68</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="inviteUser.cannotInvite" datatype="html">
+        <source>Denne brukeren kan ikke inviteres.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/invite-user/invite-user.ts</context>
+          <context context-type="linenumber">70</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="inviteUser.copyFailed" datatype="html">
+        <source>Kunne ikke kopiere lenke. Vennligst kopier manuelt.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/invite-user/invite-user.ts</context>
+          <context context-type="linenumber">95</context>
         </context-group>
       </trans-unit>
       <trans-unit id="addChildModal.title" datatype="html">
