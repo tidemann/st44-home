@@ -2,6 +2,37 @@
 
 Execute the autonomous development workflow. Pick up the next priority from GitHub Issues and work through tasks continuously.
 
+## Usage
+
+**Standard Mode** (semi-autonomous, manual continuation):
+
+```bash
+/continue-work
+```
+
+**Ralph Loop Mode** (fully autonomous with self-correction):
+
+```bash
+/continue-work --ralph
+/continue-work --ralph --max-iterations 50
+```
+
+## Ralph Loop Mode
+
+**⚠️ WINDOWS COMPATIBILITY WARNING**: The Ralph Loop plugin uses `.sh` hook files which may not work properly on Windows. If you encounter errors about "stop-hook.sh" or similar, the plugin may not be fully compatible with Windows environments. Consider using Standard Mode instead, or run in WSL/Git Bash.
+
+When invoked with `--ralph`, this command runs in Ralph Loop mode:
+
+- **Self-correcting**: Each iteration sees previous work in git history
+- **Automatic retry**: Failed builds/tests trigger new iteration with full context
+- **No manual intervention**: Runs until all priority issues resolved
+- **Completion detection**: Stops when `<promise>ALL PRIORITY WORK COMPLETE</promise>` detected
+- **Max iterations**: Default 100, customize with `--max-iterations N`
+
+**Perfect for overnight/weekend autonomous development on Linux/macOS.**
+
+---
+
 ## Current Status
 
 Branch: main
@@ -27,7 +58,10 @@ b651da5 fix: return camelCase timestamps for households (#142)
 6. Delegate to specialized subagents (frontend, backend, database, github-issues) OR implement directly
 7. Run tests locally, create PR with "Closes #<NUMBER>", wait for CI, merge
 8. Issue auto-closes when PR merges
-9. Pull main, then **IMMEDIATELY and AUTOMATICALLY continue to next issue WITHOUT asking**
+9. Pull main: `git checkout main && git pull`
+10. **Check for completion** (Ralph Loop integration):
+    - If NO priority issues remain → Output `<promise>ALL PRIORITY WORK COMPLETE</promise>`
+    - If priority issues remain → **IMMEDIATELY continue to next issue WITHOUT asking**
 
 ## Subagent Delegation Pattern
 
@@ -176,7 +210,7 @@ Create comprehensive developer documentation for the shared types system. Write 
 
 **Testing**: No code changes, verify documentation completeness
 
-```
+````
 
 ## Critical Rules
 
@@ -224,7 +258,55 @@ Execute the workflow NOW. This is a continuous autonomous loop:
 
 **If you simply finish one task and wonder "what's next?" - that is NOT a blocker. Immediately query the next issue and continue.**
 
+## Ralph Loop Completion Detection
+
+After completing each issue, check if any priority work remains:
+
+```bash
+# Check for remaining priority work
+gh issue list --label "mvp-blocker" --state open
+gh issue list --label "critical" --state open
+gh issue list --label "high-priority" --state open
+````
+
+**If NO priority issues remain**, output completion promise:
+
+```
+<promise>ALL PRIORITY WORK COMPLETE</promise>
+```
+
+This signals Ralph Loop to stop. Without this promise, the loop continues indefinitely.
+
+**If priority issues remain**, immediately continue to next issue (no promise needed).
+
+---
+
+---
+
+## Execution Start
+
+**IMPORTANT**: Check if user invoked with `--ralph` flag:
+
+### If `--ralph` flag present:
+
+Activate Ralph Loop mode by invoking the ralph-loop skill:
+
+```bash
+/ralph-loop "Execute continue-work workflow" --completion-promise "ALL PRIORITY WORK COMPLETE" --max-iterations 100
+```
+
+Use user-specified `--max-iterations` if provided, otherwise default to 100.
+
+**STOP HERE** - The ralph-loop skill will handle execution from this point.
+
+### If NO `--ralph` flag (Standard Mode):
+
+Execute the workflow NOW in standard mode:
+
 **First command**: `gh issue list --label "mvp-blocker" --state open`
 
 **BEGIN AUTONOMOUS EXECUTION NOW.**
+
+```
+
 ```

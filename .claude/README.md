@@ -36,12 +36,36 @@ Read tasks/ROADMAP.md and execute the top priority from the "Now" section
 ### Use Skills (Slash Commands)
 
 ```
-/frontend     # Execute frontend development task
-/backend      # Execute backend development task
-/database     # Execute database migration task
+/frontend      # Execute frontend development task
+/backend       # Execute backend development task
+/database      # Execute database migration task
 /continue-work # Start/continue autonomous loop
-/ship         # Create PR and merge
+/ship          # Create PR and merge
 ```
+
+### Ralph Loop Integration (NEW!)
+
+**⚠️ Note**: Ralph Loop uses `.sh` hooks and is recommended for Linux/macOS. Windows users should use standard mode or WSL.
+
+**Fully autonomous development with self-correction (Linux/macOS):**
+
+```bash
+# Start Ralph Loop mode
+/continue-work --ralph
+/continue-work --ralph --max-iterations 50
+```
+
+**What is Ralph Loop?**
+
+- Iterative AI development using the Ralph Wiggum technique
+- Same prompt fed repeatedly, Claude sees previous work in git history
+- Self-corrects failed builds/tests automatically
+- Runs until all priority issues resolved or max iterations (default: 100)
+- Perfect for overnight/weekend autonomous development
+
+**Windows users**: Use `/continue-work` in standard mode (without `--ralph`) or run in WSL.
+
+**See**: `.claude/commands/ralph-loop.md` for full documentation
 
 ### Manual Agent Invocation
 
@@ -186,13 +210,14 @@ Pre-approved commands that won't require confirmation:
 
 ## Commands Reference
 
-| Command            | Purpose             | Agent Spec        |
-| ------------------ | ------------------- | ----------------- |
-| `continue-work.md` | Autonomous loop     | `orchestrator.md` |
-| `frontend.md`      | Frontend tasks      | `frontend.md`     |
-| `backend.md`       | Backend tasks       | `backend.md`      |
-| `database.md`      | Database migrations | `database.md`     |
-| `ship.md`          | PR and merge        | `orchestrator.md` |
+| Command            | Purpose                           | Agent Spec        |
+| ------------------ | --------------------------------- | ----------------- |
+| `continue-work.md` | Autonomous loop                   | `orchestrator.md` |
+| `ralph-loop.md`    | Ralph Loop mode (self-correcting) | `orchestrator.md` |
+| `frontend.md`      | Frontend tasks                    | `frontend.md`     |
+| `backend.md`       | Backend tasks                     | `backend.md`      |
+| `database.md`      | Database migrations               | `database.md`     |
+| `ship.md`          | PR and merge                      | `orchestrator.md` |
 
 ## Success Metrics
 
