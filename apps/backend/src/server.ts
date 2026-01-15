@@ -22,6 +22,7 @@ import type { ErrorResponse } from './types/error-response.js';
 import { requestIdPlugin } from './middleware/request-id.js';
 import { requestLoggerPlugin, getRequestContext } from './middleware/request-logger.js';
 import { connectRedis, isRedisReady, disconnectRedis } from './core/redis.js';
+import { initI18n, createI18nHook } from './core/i18n.js';
 
 // Extend FastifyRequest type to include user info
 declare module 'fastify' {
@@ -50,6 +51,11 @@ async function buildApp() {
 
   // Register request logging middleware
   await fastify.register(requestLoggerPlugin);
+
+  // Initialize i18n and add onRequest hook for language detection
+  // Using onRequest so i18n is available even for validation errors
+  await initI18n();
+  fastify.addHook('onRequest', createI18nHook());
 
   // Global error handler - centralized error handling for all routes
   fastify.setErrorHandler(
@@ -86,9 +92,14 @@ async function buildApp() {
           'Validation error',
         );
 
+        // Use i18n for translated validation error message
+        const translatedMessage = request.t
+          ? request.t('errors.validation.failed')
+          : 'Validation failed';
+
         const response: ErrorResponse = {
           error: 'VALIDATION_ERROR',
-          message: 'Validation failed',
+          message: translatedMessage,
           statusCode: 400,
           details: {
             validationErrors: error.issues.map((issue) => ({
@@ -111,10 +122,24 @@ async function buildApp() {
           error.message,
         );
 
+        // Check if this is a validation error (Fastify schema validation)
+        const isValidationError = error.code === 'FST_ERR_VALIDATION';
+        let translatedMessage: string;
+
+        if (isValidationError) {
+          translatedMessage = request.t
+            ? request.t('errors.validation.failed')
+            : 'Validation failed';
+        } else {
+          translatedMessage = request.t ? request.t('errors.request.failed') : 'Request failed';
+        }
+
         const response: ErrorResponse = {
           error: error.code || 'REQUEST_ERROR',
-          message: isProduction ? 'Request failed' : error.message,
+          message: translatedMessage,
           statusCode: error.statusCode,
+          // Include original error details in non-production for debugging
+          details: !isProduction ? { originalMessage: error.message } : undefined,
         };
         return reply.code(error.statusCode).send(response);
       }
@@ -129,10 +154,17 @@ async function buildApp() {
         'Unhandled error',
       );
 
+      // Use i18n for translated internal error message
+      const translatedMessage = request.t
+        ? request.t('errors.internal.server_error')
+        : 'Internal server error';
+
       const response: ErrorResponse = {
         error: 'INTERNAL_ERROR',
-        message: isProduction ? 'Internal server error' : error.message,
+        message: translatedMessage,
         statusCode: 500,
+        // Include original error details in non-production for debugging
+        details: !isProduction ? { originalMessage: error.message } : undefined,
       };
       return reply.code(500).send(response);
     },

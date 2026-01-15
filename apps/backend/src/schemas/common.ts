@@ -25,9 +25,12 @@ export function stripResponseValidation<T extends SchemaWithResponse>(schema: T)
 export const errorResponseSchema = {
   type: 'object',
   properties: {
-    error: { type: 'string' },
+    error: { type: 'string', description: 'Machine-readable error type' },
+    message: { type: 'string', description: 'Human-readable error message' },
+    statusCode: { type: 'number', description: 'HTTP status code' },
+    details: { type: 'object', description: 'Optional error details', additionalProperties: true },
   },
-  required: ['error'],
+  required: ['error', 'message', 'statusCode'],
 } as const;
 
 export const uuidSchema = {

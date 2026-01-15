@@ -1,0 +1,72 @@
+{
+  "errors": {
+    "validation": {
+      "failed": "Validation failed",
+      "required": "This field is required",
+      "invalid_email": "Invalid email address",
+      "invalid_format": "Invalid format",
+      "too_short": "Value is too short",
+      "too_long": "Value is too long",
+      "invalid_password": "Password does not meet requirements",
+      "passwords_mismatch": "Passwords do not match",
+      "invalid_uuid": "Invalid ID format",
+      "invalid_date": "Invalid date format",
+      "field_errors": "{{count}} validation error(s)"
+    },
+    "auth": {
+      "required": "Authentication required",
+      "invalid_credentials": "Invalid username or password",
+      "invalid_token": "Invalid access token",
+      "token_expired": "Session has expired. Please log in again.",
+      "token_missing": "Access token is missing",
+      "invalid_refresh_token": "Invalid refresh token"
+    },
+    "authorization": {
+      "access_denied": "Access denied",
+      "insufficient_permissions": "You do not have sufficient permissions for this action",
+      "not_household_member": "You must be a member of the household",
+      "not_owner": "Only the owner can perform this action",
+      "child_only": "This action is for children only"
+    },
+    "not_found": {
+      "resource": "Resource not found",
+      "user": "User not found",
+      "household": "Household not found",
+      "child": "Child not found",
+      "task": "Task not found",
+      "assignment": "Task assignment not found",
+      "invitation": "Invitation not found",
+      "reward": "Reward not found"
+    },
+    "conflict": {
+      "resource_exists": "Resource already exists",
+      "email_in_use": "Email address is already in use",
+      "already_member": "User is already a member of the household",
+      "assignment_exists": "Task is already assigned"
+    },
+    "rate_limit": {
+      "exceeded": "Too many requests. Please wait before trying again.",
+      "retry_after": "Try again in {{seconds}} seconds"
+    },
+    "internal": {
+      "server_error": "An internal error occurred. Please try again later.",
+      "database_error": "Database error occurred",
+      "service_unavailable": "Service is temporarily unavailable"
+    },
+    "request": {
+      "failed": "Request failed",
+      "invalid_body": "Invalid request body",
+      "missing_parameter": "Missing required parameter: {{param}}"
+    }
+  },
+  "messages": {
+    "success": {
+      "created": "Created successfully",
+      "updated": "Updated successfully",
+      "deleted": "Deleted successfully",
+      "login": "Logged in successfully",
+      "logout": "Logged out successfully",
+      "registered": "Registered successfully"
+    }
+  }
+}

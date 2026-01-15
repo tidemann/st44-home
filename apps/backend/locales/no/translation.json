@@ -1,0 +1,72 @@
+{
+  "errors": {
+    "validation": {
+      "failed": "Validering feilet",
+      "required": "Dette feltet er obligatorisk",
+      "invalid_email": "Ugyldig e-postadresse",
+      "invalid_format": "Ugyldig format",
+      "too_short": "Verdien er for kort",
+      "too_long": "Verdien er for lang",
+      "invalid_password": "Passordet oppfyller ikke kravene",
+      "passwords_mismatch": "Passordene stemmer ikke overens",
+      "invalid_uuid": "Ugyldig ID-format",
+      "invalid_date": "Ugyldig datoformat",
+      "field_errors": "{{count}} valideringsfeil"
+    },
+    "auth": {
+      "required": "Autentisering kreves",
+      "invalid_credentials": "Ugyldig brukernavn eller passord",
+      "invalid_token": "Ugyldig tilgangstoken",
+      "token_expired": "Sesjonen har utløpt. Vennligst logg inn på nytt.",
+      "token_missing": "Tilgangstoken mangler",
+      "invalid_refresh_token": "Ugyldig oppdateringstoken"
+    },
+    "authorization": {
+      "access_denied": "Ingen tilgang",
+      "insufficient_permissions": "Du har ikke tilstrekkelige rettigheter for denne handlingen",
+      "not_household_member": "Du må være medlem av husholdningen",
+      "not_owner": "Bare eieren kan utføre denne handlingen",
+      "child_only": "Denne handlingen er kun for barn"
+    },
+    "not_found": {
+      "resource": "Ressurs ikke funnet",
+      "user": "Bruker ikke funnet",
+      "household": "Husholdning ikke funnet",
+      "child": "Barn ikke funnet",
+      "task": "Oppgave ikke funnet",
+      "assignment": "Oppgavetildeling ikke funnet",
+      "invitation": "Invitasjon ikke funnet",
+      "reward": "Belønning ikke funnet"
+    },
+    "conflict": {
+      "resource_exists": "Ressursen eksisterer allerede",
+      "email_in_use": "E-postadressen er allerede i bruk",
+      "already_member": "Brukeren er allerede medlem av husholdningen",
+      "assignment_exists": "Oppgaven er allerede tildelt"
+    },
+    "rate_limit": {
+      "exceeded": "For mange forespørsler. Vennligst vent litt før du prøver igjen.",
+      "retry_after": "Prøv igjen om {{seconds}} sekunder"
+    },
+    "internal": {
+      "server_error": "En intern feil oppstod. Vennligst prøv igjen senere.",
+      "database_error": "Databasefeil oppstod",
+      "service_unavailable": "Tjenesten er midlertidig utilgjengelig"
+    },
+    "request": {
+      "failed": "Forespørselen feilet",
+      "invalid_body": "Ugyldig forespørselskropp",
+      "missing_parameter": "Manglende påkrevd parameter: {{param}}"
+    }
+  },
+  "messages": {
+    "success": {
+      "created": "Opprettet",
+      "updated": "Oppdatert",
+      "deleted": "Slettet",
+      "login": "Innlogget",
+      "logout": "Logget ut",
+      "registered": "Registrert"
+    }
+  }
+}
