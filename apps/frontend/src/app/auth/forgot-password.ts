@@ -40,7 +40,7 @@ export class ForgotPasswordComponent {
       await lastValueFrom(this.authService.forgotPassword(email!));
 
       this.successMessage.set(
-        'If an account exists with that email, a reset link has been sent. Please check your inbox.',
+        $localize`:@@forgotPassword.successMessage:Hvis en konto finnes med den e-posten, er en tilbakestillingslenke sendt. Vennligst sjekk innboksen din.`,
       );
       this.forgotPasswordForm.reset();
     } catch (error: unknown) {
@@ -50,10 +50,14 @@ export class ForgotPasswordComponent {
       };
 
       if (err.status === 429) {
-        this.errorMessage.set('Too many requests. Please try again later.');
+        this.errorMessage.set(
+          $localize`:@@forgotPassword.tooManyRequests:For mange forespørsler. Vennligst prøv igjen senere.`,
+        );
       } else {
         this.errorMessage.set(
-          err.error?.error || err.error?.message || 'Failed to send reset email. Please try again.',
+          err.error?.error ||
+            err.error?.message ||
+            $localize`:@@forgotPassword.sendResetEmailFailed:Kunne ikke sende tilbakestillings-e-post. Vennligst prøv igjen.`,
         );
       }
     } finally {

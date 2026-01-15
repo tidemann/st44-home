@@ -3,7 +3,7 @@
   @if (isLoading()) {
     <div class="loading-container">
       <div class="loading-spinner"></div>
-      <p>Loading your tasks...</p>
+      <p i18n="@@childDashboard.loading">Laster oppgavene dine...</p>
     </div>
   }
 
@@ -12,7 +12,9 @@
     <div class="error-container">
       <div class="error-icon">⚠️</div>
       <p class="error-message">{{ errorMessage() }}</p>
-      <button class="retry-button" (click)="loadMyTasks()">Try Again</button>
+      <button class="retry-button" (click)="loadMyTasks()" i18n="@@childDashboard.tryAgain">
+        Prøv igjen
+      </button>
     </div>
   }
 
@@ -20,25 +22,25 @@
   @if (!isLoading() && !errorMessage()) {
     <!-- Greeting -->
     <header class="greeting-section">
-      <h1 class="greeting">Hi {{ childName() }}! 👋</h1>
+      <h1 class="greeting" i18n="@@childDashboard.greeting">Hei {{ childName() }}! 👋</h1>
     </header>
 
     <!-- Tasks List -->
     <section class="tasks-section">
-      <h2>Today's Tasks</h2>
+      <h2 i18n="@@childDashboard.todaysTasks">Dagens oppgaver</h2>
 
       @if (!hasTasks()) {
         <!-- Empty State -->
         <div class="empty-state">
           <div class="empty-icon">🎉</div>
-          <p class="empty-message">No tasks for today!</p>
-          <p class="empty-subtitle">Enjoy your free time!</p>
+          <p class="empty-message" i18n="@@childDashboard.noTasksToday">Ingen oppgaver i dag!</p>
+          <p class="empty-subtitle" i18n="@@childDashboard.enjoyFreeTime">Nyt fritiden din!</p>
         </div>
       } @else {
         <!-- Pending Tasks -->
         @if (pendingTasks().length > 0) {
           <div class="task-group">
-            <h3 class="task-group-title">To Do</h3>
+            <h3 class="task-group-title" i18n="@@childDashboard.toDo">Å gjøre</h3>
             @for (task of pendingTasks(); track task.id) {
               <div
                 class="task-card pending"
@@ -48,7 +50,7 @@
                 <div class="task-header">
                   <h4 class="task-name">{{ task.taskName }}</h4>
                   <span class="task-points" [attr.aria-label]="task.points + ' points'">
-                    {{ task.points }} pts
+                    {{ task.points }} <ng-container i18n="@@childDashboard.pts">poeng</ng-container>
                   </span>
                 </div>
                 @if (task.taskDescription) {
@@ -62,9 +64,9 @@
                 >
                   @if (isCompleting(task.id)) {
                     <span class="button-spinner"></span>
-                    <span>Marking...</span>
+                    <span i18n="@@childDashboard.marking">Markerer...</span>
                   } @else {
-                    <span>✓ Mark Done</span>
+                    <span i18n="@@childDashboard.markDone">✓ Merk som ferdig</span>
                   }
                 </button>
               </div>
@@ -75,7 +77,7 @@
         <!-- Completed Tasks -->
         @if (completedTasks().length > 0) {
           <div class="task-group">
-            <h3 class="task-group-title">Completed</h3>
+            <h3 class="task-group-title" i18n="@@childDashboard.completed">Fullført</h3>
             @for (task of completedTasks(); track task.id) {
               <div
                 class="task-card completed"
@@ -85,7 +87,7 @@
                 <div class="task-header">
                   <h4 class="task-name">{{ task.taskName }}</h4>
                   <span class="task-points" [attr.aria-label]="task.points + ' points earned'">
-                    {{ task.points }} pts
+                    {{ task.points }} <ng-container i18n="@@childDashboard.pts">poeng</ng-container>
                   </span>
                 </div>
                 @if (task.taskDescription) {
@@ -93,7 +95,7 @@
                 }
                 <div class="completed-badge">
                   <span class="checkmark">✓</span>
-                  <span>Done!</span>
+                  <span i18n="@@childDashboard.done">Ferdig!</span>
                 </div>
               </div>
             }
@@ -110,7 +112,7 @@
     <!-- Points Progress -->
     <section class="points-section">
       <div class="points-header">
-        <h2>Today's Points</h2>
+        <h2 i18n="@@childDashboard.todaysPoints">Dagens poeng</h2>
         <div class="points-display">
           <span class="completed-points">{{ completedPoints() }}</span>
           <span class="points-separator">/</span>
@@ -129,7 +131,9 @@
         ></div>
       </div>
       @if (allCompleted() && hasTasks()) {
-        <div class="celebration">🎉 All tasks complete! Great job!</div>
+        <div class="celebration" i18n="@@childDashboard.allComplete">
+          🎉 Alle oppgaver fullført! Bra jobba!
+        </div>
       }
     </section>
 
@@ -145,12 +149,14 @@
         <!-- Week/Month Progress -->
         <div class="progress-cards">
           <app-progress-summary
-            title="This Week"
+            i18n-title="@@childDashboard.thisWeek"
+            title="Denne uken"
             icon="📅"
             [progress]="analytics()!.weekProgress"
           />
           <app-progress-summary
-            title="This Month"
+            i18n-title="@@childDashboard.thisMonth"
+            title="Denne måneden"
             icon="📆"
             [progress]="analytics()!.monthProgress"
           />
@@ -158,7 +164,11 @@
 
         <!-- Daily Points Chart -->
         @if (analytics()!.dailyPoints.length > 0) {
-          <app-daily-points-chart [dailyData]="analytics()!.dailyPoints" title="Points This Week" />
+          <app-daily-points-chart
+            [dailyData]="analytics()!.dailyPoints"
+            i18n-title="@@childDashboard.pointsThisWeek"
+            title="Poeng denne uken"
+          />
         }
       </section>
     }

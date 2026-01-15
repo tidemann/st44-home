@@ -149,7 +149,9 @@ export class RegisterComponent implements OnInit, AfterViewInit {
       }
     } catch (error: unknown) {
       const err = error as { error?: { error?: string; message?: string } };
-      const message = err.error?.error || 'Google sign-up failed. Please try again.';
+      const message =
+        err.error?.error ||
+        $localize`:@@register.googleSignupFailed:Google-registrering feilet. Vennligst prøv igjen.`;
       this.errorMessage.set(message);
     } finally {
       this.isLoading.set(false);
@@ -179,7 +181,10 @@ export class RegisterComponent implements OnInit, AfterViewInit {
       this.router.navigate(['/login'], { queryParams });
     } catch (error: unknown) {
       const err = error as { error?: { error?: string } };
-      this.errorMessage.set(err.error?.error || 'Registration failed. Please try again.');
+      this.errorMessage.set(
+        err.error?.error ||
+          $localize`:@@register.registrationFailed:Registrering feilet. Vennligst prøv igjen.`,
+      );
     } finally {
       this.isLoading.set(false);
     }

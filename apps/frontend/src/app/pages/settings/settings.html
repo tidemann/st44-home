@@ -2,7 +2,7 @@
 @if (loading()) {
   <div class="loading-container" role="status" aria-live="polite">
     <div class="spinner" aria-hidden="true"></div>
-    <p>Loading your profile...</p>
+    <p i18n="@@settings.loading">Laster profilen din...</p>
   </div>
 }
 
@@ -10,20 +10,27 @@
 @if (error() && !loading() && !profile()) {
   <div class="error-container" role="alert" aria-live="assertive">
     <div class="error-icon" aria-hidden="true">!</div>
-    <h2>Oops!</h2>
+    <h2 i18n="@@settings.errorTitle">Oops!</h2>
     <p>{{ error() }}</p>
-    <button class="btn-retry" (click)="loadProfile()">Try Again</button>
+    <button class="btn-retry" (click)="loadProfile()" i18n="@@settings.tryAgain">Prøv igjen</button>
   </div>
 }
 
 <!-- Main Content -->
 @if (!loading() && profile()) {
-  <app-page title="Settings" maxWidth="narrow">
+  <app-page i18n-title="@@settings.pageTitle" title="Innstillinger" maxWidth="narrow">
     <!-- Success Message -->
     @if (successMessage()) {
       <div class="alert alert-success" role="status" aria-live="polite">
         <span>{{ successMessage() }}</span>
-        <button class="alert-dismiss" (click)="dismissSuccess()" aria-label="Dismiss">x</button>
+        <button
+          class="alert-dismiss"
+          (click)="dismissSuccess()"
+          i18n-aria-label="@@settings.dismissAriaLabel"
+          aria-label="Lukk"
+        >
+          x
+        </button>
       </div>
     }
 
@@ -31,87 +38,107 @@
     @if (error() && profile()) {
       <div class="alert alert-error" role="alert" aria-live="assertive">
         <span>{{ error() }}</span>
-        <button class="alert-dismiss" (click)="dismissError()" aria-label="Dismiss">x</button>
+        <button
+          class="alert-dismiss"
+          (click)="dismissError()"
+          i18n-aria-label="@@settings.dismissAriaLabel"
+          aria-label="Lukk"
+        >
+          x
+        </button>
       </div>
     }
 
     <!-- Profile Section -->
     <section class="settings-section">
-      <h2>Profile</h2>
+      <h2 i18n="@@settings.profileTitle">Profil</h2>
 
       <form class="settings-form" (submit)="saveProfile(); $event.preventDefault()">
         <!-- First Name Field -->
         <div class="form-group">
-          <label for="firstName">First Name</label>
+          <label for="firstName" i18n="@@settings.firstNameLabel">Fornavn</label>
           <input
             type="text"
             id="firstName"
             name="firstName"
             [(ngModel)]="firstName"
-            placeholder="Enter your first name"
+            i18n-placeholder="@@settings.firstNamePlaceholder"
+            placeholder="Skriv inn fornavnet ditt"
             maxlength="100"
           />
         </div>
 
         <!-- Last Name Field -->
         <div class="form-group">
-          <label for="lastName">Last Name</label>
+          <label for="lastName" i18n="@@settings.lastNameLabel">Etternavn</label>
           <input
             type="text"
             id="lastName"
             name="lastName"
             [(ngModel)]="lastName"
-            placeholder="Enter your last name"
+            i18n-placeholder="@@settings.lastNamePlaceholder"
+            placeholder="Skriv inn etternavnet ditt"
             maxlength="100"
           />
-          <small class="form-hint">This is how you'll appear to other family members</small>
+          <small class="form-hint" i18n="@@settings.lastNameHint"
+            >Slik vil du vises for andre familiemedlemmer</small
+          >
         </div>
 
         <!-- Email Field -->
         <div class="form-group">
-          <label for="email">Email Address</label>
+          <label for="email" i18n="@@settings.emailLabel">E-postadresse</label>
           <input
             type="email"
             id="email"
             name="email"
             [(ngModel)]="email"
-            placeholder="Enter your email"
+            i18n-placeholder="@@settings.emailPlaceholder"
+            placeholder="Skriv inn e-posten din"
             required
           />
         </div>
 
         <!-- Password Section Toggle -->
         <button type="button" class="btn-link" (click)="togglePasswordSection()">
-          {{ showPasswordSection() ? '- Hide password section' : '+ Change password' }}
+          @if (showPasswordSection()) {
+            <span i18n="@@settings.hidePasswordSection">- Skjul passordseksjon</span>
+          } @else {
+            <span i18n="@@settings.changePassword">+ Endre passord</span>
+          }
         </button>
 
         <!-- Password Fields (conditionally shown) -->
         @if (showPasswordSection()) {
           <div class="password-section">
             <div class="form-group">
-              <label for="newPassword">New Password</label>
+              <label for="newPassword" i18n="@@settings.newPasswordLabel">Nytt passord</label>
               <input
                 type="password"
                 id="newPassword"
                 name="newPassword"
                 [(ngModel)]="newPassword"
-                placeholder="Enter new password"
+                i18n-placeholder="@@settings.newPasswordPlaceholder"
+                placeholder="Skriv inn nytt passord"
                 minlength="8"
                 autocomplete="new-password"
               />
-              <small class="form-hint">
-                Minimum 8 characters, must include uppercase, lowercase, and number
+              <small class="form-hint" i18n="@@settings.passwordHint">
+                Minimum 8 tegn, må inneholde stor bokstav, liten bokstav og tall
               </small>
             </div>
 
             <div class="form-group">
-              <label for="confirmPassword">Confirm New Password</label>
+              <label for="confirmPassword" i18n="@@settings.confirmPasswordLabel"
+                >Bekreft nytt passord</label
+              >
               <input
                 type="password"
                 id="confirmPassword"
                 name="confirmPassword"
                 [(ngModel)]="confirmPassword"
-                placeholder="Confirm new password"
+                i18n-placeholder="@@settings.confirmPasswordPlaceholder"
+                placeholder="Bekreft nytt passord"
                 autocomplete="new-password"
               />
             </div>
@@ -121,7 +148,11 @@
         <!-- Save Button -->
         <div class="form-actions">
           <button type="submit" class="btn btn-primary" [disabled]="saving()">
-            {{ saving() ? 'Saving...' : 'Save Changes' }}
+            @if (saving()) {
+              <span i18n="@@settings.saving">Lagrer...</span>
+            } @else {
+              <span i18n="@@settings.saveChanges">Lagre endringer</span>
+            }
           </button>
         </div>
       </form>
@@ -130,11 +161,13 @@
     <!-- Household Section -->
     @if (activeHousehold()) {
       <section class="settings-section">
-        <h2>Household</h2>
+        <h2 i18n="@@settings.householdTitle">Husstand</h2>
 
         <div class="household-info">
           <div class="info-row">
-            <span class="info-label">Current Household</span>
+            <span class="info-label" i18n="@@settings.currentHouseholdLabel"
+              >Nåværende husstand</span
+            >
             <span class="info-value">{{ activeHousehold()?.name }}</span>
           </div>
         </div>
@@ -142,19 +175,23 @@
         <div class="household-links">
           <a routerLink="/household/settings" class="settings-link">
             <span class="link-icon">⚙️</span>
-            <span class="link-text">Household Settings</span>
+            <span class="link-text" i18n="@@settings.householdSettingsLink"
+              >Husstandsinnstillinger</span
+            >
             <span class="link-arrow">→</span>
           </a>
 
           <a routerLink="/households" class="settings-link">
             <span class="link-icon">🏠</span>
-            <span class="link-text">Manage Households</span>
+            <span class="link-text" i18n="@@settings.manageHouseholdsLink"
+              >Administrer husstander</span
+            >
             <span class="link-arrow">→</span>
           </a>
 
           <a routerLink="/invitations" class="settings-link">
             <span class="link-icon">✉️</span>
-            <span class="link-text">Invitations</span>
+            <span class="link-text" i18n="@@settings.invitationsLink">Invitasjoner</span>
             @if (pendingInvitationsCount() > 0) {
               <span class="badge">{{ pendingInvitationsCount() }}</span>
             }
@@ -166,31 +203,38 @@
 
     <!-- Account Section -->
     <section class="settings-section">
-      <h2>Account</h2>
+      <h2 i18n="@@settings.accountTitle">Konto</h2>
 
       <div class="account-info">
         <div class="info-row">
-          <span class="info-label">Member since</span>
+          <span class="info-label" i18n="@@settings.memberSinceLabel">Medlem siden</span>
           <span class="info-value">{{ profile()?.createdAt | date: 'mediumDate' }}</span>
         </div>
       </div>
 
       <div class="danger-zone">
-        <button type="button" class="btn btn-danger" (click)="logout()">Log Out</button>
+        <button
+          type="button"
+          class="btn btn-danger"
+          (click)="logout()"
+          i18n="@@settings.logOutButton"
+        >
+          Logg ut
+        </button>
       </div>
     </section>
 
     <!-- About Section -->
     <section class="settings-section">
-      <h2>About</h2>
+      <h2 i18n="@@settings.aboutTitle">Om</h2>
 
       <div class="account-info">
         <div class="info-row">
-          <span class="info-label">Version</span>
+          <span class="info-label" i18n="@@settings.versionLabel">Versjon</span>
           <span class="info-value">{{ appVersion }}</span>
         </div>
         <div class="info-row">
-          <span class="info-label">Build</span>
+          <span class="info-label" i18n="@@settings.buildLabel">Bygg</span>
           <span class="info-value">{{ buildTime | date: 'medium' }}</span>
         </div>
       </div>

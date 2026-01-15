@@ -1,16 +1,17 @@
 <div class="invite-user">
-  <h2>Invite Someone</h2>
+  <h2 i18n="@@inviteUser.title">Inviter noen</h2>
 
   <form [formGroup]="inviteForm" (ngSubmit)="onSubmit()" class="invite-form">
     <!-- Email Input -->
     <div class="form-group">
-      <label for="email" class="required">Email Address</label>
+      <label for="email" class="required" i18n="@@inviteUser.emailLabel">E-postadresse</label>
       <input
         type="email"
         id="email"
         formControlName="email"
         class="form-control"
-        placeholder="user@example.com"
+        i18n-placeholder="@@inviteUser.emailPlaceholder"
+        placeholder="bruker@eksempel.no"
         [attr.aria-invalid]="inviteForm.get('email')?.invalid && inviteForm.get('email')?.touched"
         [attr.aria-describedby]="getEmailError() ? 'email-error' : null"
         required
@@ -22,14 +23,14 @@
 
     <!-- Role Selector -->
     <div class="form-group">
-      <label for="role">Role</label>
+      <label for="role" i18n="@@inviteUser.roleLabel">Rolle</label>
       <select id="role" formControlName="role" class="form-control">
-        <option value="parent">Parent</option>
-        <option value="admin">Admin</option>
+        <option value="parent" i18n="@@inviteUser.roleParent">Forelder</option>
+        <option value="admin" i18n="@@inviteUser.roleAdmin">Administrator</option>
       </select>
-      <small class="form-hint">
-        Parents can manage children and tasks. Admins can also invite users and edit household
-        settings.
+      <small class="form-hint" i18n="@@inviteUser.roleHint">
+        Foreldre kan administrere barn og oppgaver. Administratorer kan også invitere brukere og
+        redigere husstandsinnstillinger.
       </small>
     </div>
 
@@ -50,7 +51,9 @@
     <!-- Invitation Link -->
     @if (invitationLink()) {
       <div class="invitation-link-section">
-        <label for="invitation-link">Invitation Link</label>
+        <label for="invitation-link" i18n="@@inviteUser.invitationLinkLabel"
+          >Invitasjonslenke</label
+        >
         <div class="link-container">
           <input
             type="text"
@@ -58,19 +61,22 @@
             readonly
             [value]="invitationLink()"
             class="form-control link-input"
-            aria-label="Invitation link"
+            i18n-aria-label="@@inviteUser.invitationLinkAria"
+            aria-label="Invitasjonslenke"
           />
           <button
             type="button"
             (click)="copyInvitationLink()"
             class="btn btn-secondary"
-            aria-label="Copy invitation link to clipboard"
+            i18n-aria-label="@@inviteUser.copyLinkAria"
+            aria-label="Kopier invitasjonslenke til utklippstavle"
+            i18n="@@inviteUser.copyLink"
           >
-            Copy Link
+            Kopier lenke
           </button>
         </div>
-        <small class="form-hint">
-          Share this link with the person you invited. It expires in 7 days.
+        <small class="form-hint" i18n="@@inviteUser.invitationLinkHint">
+          Del denne lenken med personen du inviterte. Den utløper om 7 dager.
         </small>
       </div>
     }
@@ -84,9 +90,9 @@
         [attr.aria-busy]="isSending()"
       >
         @if (isSending()) {
-          <span>Sending Invitation...</span>
+          <span i18n="@@inviteUser.sendingInvitation">Sender invitasjon...</span>
         } @else {
-          <span>Send Invitation</span>
+          <span i18n="@@inviteUser.sendInvitation">Send invitasjon</span>
         }
       </button>
     </div>

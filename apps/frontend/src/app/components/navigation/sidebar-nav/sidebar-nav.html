@@ -1,4 +1,9 @@
-<nav class="sidebar-nav" role="navigation" aria-label="Main navigation">
+<nav
+  class="sidebar-nav"
+  role="navigation"
+  i18n-aria-label="@@nav.mainNavigation"
+  aria-label="Hovednavigasjon"
+>
   <div class="sidebar-logo">Diddit!</div>
 
   <div class="sidebar-menu">
@@ -23,7 +28,13 @@
     </div>
   </div>
 
-  <button type="button" class="sidebar-add-btn" (click)="handleAddTask()" aria-label="Add new task">
-    + Add Task
+  <button
+    type="button"
+    class="sidebar-add-btn"
+    (click)="handleAddTask()"
+    i18n-aria-label="@@nav.addNewTask"
+    aria-label="Legg til ny oppgave"
+  >
+    <ng-container i18n="@@nav.addTask">+ Legg til oppgave</ng-container>
   </button>
 </nav>

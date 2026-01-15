@@ -7,14 +7,14 @@
   (keydown)="onKeyDown($event)"
   [attr.tabindex]="clickable() ? '0' : null"
   [attr.role]="clickable() ? 'button' : null"
-  [attr.aria-label]="clickable() ? 'Edit ' + taskName() : null"
+  [attr.aria-label]="clickable() ? 'Rediger ' + taskName() : null"
 >
   <!-- Complete Button -->
   @if (showCompleteButton() && !completed()) {
     <button
       class="task-complete-btn"
       (click)="onCompleteClick($event)"
-      [attr.aria-label]="'Mark ' + taskName() + ' as complete'"
+      [attr.aria-label]="'Merk ' + taskName() + ' som fullført'"
       type="button"
     >
       <span class="checkmark">✓</span>
@@ -53,9 +53,10 @@
     <button
       class="task-reassign-btn"
       (click)="onReassignClick($event)"
-      [attr.aria-label]="'Reassign ' + taskName()"
+      [attr.aria-label]="'Tilordne ' + taskName() + ' på nytt'"
       type="button"
-      title="Reassign to another child"
+      i18n-title="@@taskCard.reassignToAnotherChild"
+      title="Tilordne til et annet barn"
     >
       <span class="reassign-icon">🔄</span>
     </button>

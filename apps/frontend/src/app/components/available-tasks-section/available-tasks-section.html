@@ -1,10 +1,10 @@
 <div class="available-tasks-section">
-  <h2 class="section-title">Available Tasks</h2>
+  <h2 class="section-title" i18n="@@availableTasks.title">Tilgjengelige oppgaver</h2>
 
   @if (loading()) {
     <div class="loading">
       <div class="spinner"></div>
-      <p>Loading available tasks...</p>
+      <p i18n="@@availableTasks.loading">Laster tilgjengelige oppgaver...</p>
     </div>
   }
 
@@ -22,8 +22,10 @@
 
   @if (!loading() && !hasTasks()) {
     <div class="empty-state">
-      <p>No tasks available for you right now.</p>
-      <p class="empty-state-hint">Check back later or ask your parents!</p>
+      <p i18n="@@availableTasks.noTasks">Ingen oppgaver tilgjengelig for deg akkurat na.</p>
+      <p class="empty-state-hint" i18n="@@availableTasks.checkBackLater">
+        Sjekk tilbake senere eller spor foreldrene dine!
+      </p>
     </div>
   }
 
@@ -33,7 +35,7 @@
         <div class="task-card" [class.processing]="isTaskProcessing(task.id)">
           <div class="task-header">
             <h3 class="task-name">{{ task.name }}</h3>
-            <span class="task-points">{{ task.points }} pts</span>
+            <span class="task-points" i18n="@@availableTasks.points">{{ task.points }} poeng</span>
           </div>
 
           @if (task.description) {
@@ -47,7 +49,9 @@
               </span>
             }
             @if (task.candidateCount > 1) {
-              <span class="candidates-badge"> {{ task.candidateCount }} candidates </span>
+              <span class="candidates-badge" i18n="@@availableTasks.candidates">
+                {{ task.candidateCount }} kandidater
+              </span>
             }
           </div>
 
@@ -60,9 +64,9 @@
             >
               @if (isTaskProcessing(task.id)) {
                 <span class="btn-spinner"></span>
-                Accepting...
+                <ng-container i18n="@@availableTasks.accepting">Aksepterer...</ng-container>
               } @else {
-                ✓ Accept
+                <ng-container i18n="@@availableTasks.accept">✓ Aksepter</ng-container>
               }
             </button>
 
@@ -74,9 +78,9 @@
             >
               @if (isTaskProcessing(task.id)) {
                 <span class="btn-spinner"></span>
-                Declining...
+                <ng-container i18n="@@availableTasks.declining">Avviser...</ng-container>
               } @else {
-                ✗ Decline
+                <ng-container i18n="@@availableTasks.decline">✗ Avvis</ng-container>
               }
             </button>
           </div>

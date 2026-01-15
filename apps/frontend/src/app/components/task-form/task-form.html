@@ -7,7 +7,7 @@
     role="dialog"
     aria-modal="true"
   >
-    <h2>{{ task() ? 'Edit Task' : 'Add Task' }}</h2>
+    <h2 i18n="@@taskForm.title">{{ task() ? 'Rediger oppgave' : 'Legg til oppgave' }}</h2>
 
     @if (errorMessage()) {
       <div class="error">{{ errorMessage() }}</div>
@@ -16,96 +16,98 @@
     @if (formReady()) {
       <form [formGroup]="form" (ngSubmit)="onSubmit()">
         <div class="form-field">
-          <label for="name">Name *</label>
+          <label for="name" i18n="@@taskForm.nameLabel">Navn *</label>
           <input id="name" type="text" formControlName="name" />
         </div>
 
         <div class="form-field">
-          <label for="description">Description</label>
+          <label for="description" i18n="@@taskForm.descriptionLabel">Beskrivelse</label>
           <textarea id="description" formControlName="description" rows="3"></textarea>
         </div>
 
         <div class="form-field">
-          <label for="points">Points *</label>
+          <label for="points" i18n="@@taskForm.pointsLabel">Poeng *</label>
           <input id="points" type="number" formControlName="points" min="0" />
         </div>
 
         <div class="form-field">
-          <label for="ruleType">Type *</label>
+          <label for="ruleType" i18n="@@taskForm.typeLabel">Type *</label>
           <select id="ruleType" name="ruleType" formControlName="ruleType">
-            <option value="daily">Daily</option>
-            <option value="repeating">Repeating</option>
-            <option value="weekly_rotation">Weekly Rotation</option>
-            <option value="single">Single (One-time)</option>
+            <option value="daily" i18n="@@taskForm.typeDaily">Daglig</option>
+            <option value="repeating" i18n="@@taskForm.typeRepeating">Gjentagende</option>
+            <option value="weekly_rotation" i18n="@@taskForm.typeWeeklyRotation">
+              Ukentlig rotasjon
+            </option>
+            <option value="single" i18n="@@taskForm.typeSingle">Engangs</option>
           </select>
         </div>
 
         @if (form?.value?.ruleType === 'repeating') {
           <fieldset class="form-field">
-            <legend>Select days *</legend>
+            <legend i18n="@@taskForm.selectDaysLegend">Velg dager *</legend>
             <div class="day-selection">
               <label>
                 <input
                   type="checkbox"
                   [checked]="isDaySelected(1)"
                   (change)="toggleDay(1)"
-                  aria-label="Monday"
+                  aria-label="Mandag"
                 />
-                Monday
+                <ng-container i18n="@@taskForm.monday">Mandag</ng-container>
               </label>
               <label>
                 <input
                   type="checkbox"
                   [checked]="isDaySelected(2)"
                   (change)="toggleDay(2)"
-                  aria-label="Tuesday"
+                  aria-label="Tirsdag"
                 />
-                Tuesday
+                <ng-container i18n="@@taskForm.tuesday">Tirsdag</ng-container>
               </label>
               <label>
                 <input
                   type="checkbox"
                   [checked]="isDaySelected(3)"
                   (change)="toggleDay(3)"
-                  aria-label="Wednesday"
+                  aria-label="Onsdag"
                 />
-                Wednesday
+                <ng-container i18n="@@taskForm.wednesday">Onsdag</ng-container>
               </label>
               <label>
                 <input
                   type="checkbox"
                   [checked]="isDaySelected(4)"
                   (change)="toggleDay(4)"
-                  aria-label="Thursday"
+                  aria-label="Torsdag"
                 />
-                Thursday
+                <ng-container i18n="@@taskForm.thursday">Torsdag</ng-container>
               </label>
               <label>
                 <input
                   type="checkbox"
                   [checked]="isDaySelected(5)"
                   (change)="toggleDay(5)"
-                  aria-label="Friday"
+                  aria-label="Fredag"
                 />
-                Friday
+                <ng-container i18n="@@taskForm.friday">Fredag</ng-container>
               </label>
               <label>
                 <input
                   type="checkbox"
                   [checked]="isDaySelected(6)"
                   (change)="toggleDay(6)"
-                  aria-label="Saturday"
+                  aria-label="Lordag"
                 />
-                Saturday
+                <ng-container i18n="@@taskForm.saturday">Lordag</ng-container>
               </label>
               <label>
                 <input
                   type="checkbox"
                   [checked]="isDaySelected(0)"
                   (change)="toggleDay(0)"
-                  aria-label="Sunday"
+                  aria-label="Sondag"
                 />
-                Sunday
+                <ng-container i18n="@@taskForm.sunday">Sondag</ng-container>
               </label>
             </div>
           </fieldset>
@@ -113,19 +115,23 @@
 
         @if (form?.value?.ruleType === 'single') {
           <div class="form-field">
-            <label for="deadline">Deadline (optional)</label>
+            <label for="deadline" i18n="@@taskForm.deadlineLabel">Frist (valgfritt)</label>
             <input
               id="deadline"
               type="datetime-local"
               formControlName="deadline"
               [min]="minDeadline"
             />
-            <small class="help-text">When should this task be completed by?</small>
+            <small class="help-text" i18n="@@taskForm.deadlineHelp"
+              >Nar skal denne oppgaven vaere fullfort?</small
+            >
           </div>
 
           <fieldset class="form-field">
-            <legend>Select candidates *</legend>
-            <small class="help-text">Which children can accept this task?</small>
+            <legend i18n="@@taskForm.selectCandidatesLegend">Velg kandidater *</legend>
+            <small class="help-text" i18n="@@taskForm.candidatesHelp"
+              >Hvilke barn kan ta denne oppgaven?</small
+            >
             <div class="candidate-selection">
               @for (child of children(); track child.id) {
                 <label class="candidate-label">
@@ -139,14 +145,23 @@
                 </label>
               }
               @if (children().length === 0) {
-                <p class="no-children">No children in this household yet.</p>
+                <p class="no-children" i18n="@@taskForm.noChildren">
+                  Ingen barn i denne husholdningen enna.
+                </p>
               }
             </div>
           </fieldset>
         }
 
         <div class="form-actions">
-          <button type="button" (click)="onCancel()" [disabled]="isSubmitting()">Cancel</button>
+          <button
+            type="button"
+            (click)="onCancel()"
+            [disabled]="isSubmitting()"
+            i18n="@@taskForm.cancelButton"
+          >
+            Avbryt
+          </button>
           <button type="submit" [disabled]="isSubmitting()">
             {{ buttonText() }}
           </button>

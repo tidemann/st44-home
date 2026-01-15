@@ -3,9 +3,15 @@
   <header class="child-header">
     <div class="child-header-content">
       <div class="child-logo">Diddit!</div>
-      <button type="button" class="logout-btn" (click)="onLogout()" aria-label="Log out">
+      <button
+        type="button"
+        class="logout-btn"
+        (click)="onLogout()"
+        i18n-aria-label="@@childLayout.logout.ariaLabel"
+        aria-label="Logg ut"
+      >
         <span class="logout-icon">👋</span>
-        <span class="logout-text">Bye!</span>
+        <span class="logout-text" i18n="@@childLayout.logout.text">Ha det!</span>
       </button>
     </div>
   </header>

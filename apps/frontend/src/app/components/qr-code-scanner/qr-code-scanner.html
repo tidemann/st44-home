@@ -3,7 +3,7 @@
   @if (loading()) {
     <div class="loading-state" role="status" aria-live="polite">
       <div class="spinner" aria-hidden="true"></div>
-      <p>Initializing camera...</p>
+      <p i18n="@@qrCodeScanner.initializing">Initialiserer kamera...</p>
     </div>
   }
 
@@ -11,11 +11,21 @@
   @if (cameraPermissionDenied() && !loading()) {
     <div class="permission-denied" role="alert" aria-live="assertive">
       <div class="icon" aria-hidden="true">📷</div>
-      <h3>Camera Access Required</h3>
-      <p>Please allow camera access to scan QR codes.</p>
+      <h3 i18n="@@qrCodeScanner.cameraAccessRequired">Kameratilgang pakrevd</h3>
+      <p i18n="@@qrCodeScanner.allowCameraMessage">
+        Vennligst tillat kameratilgang for a skanne QR-koder.
+      </p>
       <div class="actions">
-        <button class="btn btn-primary" (click)="requestPermission()">Allow Camera Access</button>
-        <button class="btn btn-secondary" (click)="cancel()">Cancel</button>
+        <button
+          class="btn btn-primary"
+          (click)="requestPermission()"
+          i18n="@@qrCodeScanner.allowCameraButton"
+        >
+          Tillat kameratilgang
+        </button>
+        <button class="btn btn-secondary" (click)="cancel()" i18n="@@qrCodeScanner.cancelButton">
+          Avbryt
+        </button>
       </div>
     </div>
   }
@@ -24,12 +34,16 @@
   @if (noCameraAvailable() && !loading()) {
     <div class="no-camera" role="alert" aria-live="assertive">
       <div class="icon" aria-hidden="true">📵</div>
-      <h3>No Camera Found</h3>
-      <p>Your device doesn't have a camera or it's not accessible.</p>
-      <p class="help-text">
-        You can use password/PIN login instead, or try scanning from a different device.
+      <h3 i18n="@@qrCodeScanner.noCameraFound">Ingen kamera funnet</h3>
+      <p i18n="@@qrCodeScanner.noCameraMessage">
+        Enheten din har ikke et kamera eller det er ikke tilgjengelig.
       </p>
-      <button class="btn btn-secondary" (click)="cancel()">Back to Login</button>
+      <p class="help-text" i18n="@@qrCodeScanner.alternativeLogin">
+        Du kan bruke passord/PIN-innlogging i stedet, eller prove a skanne fra en annen enhet.
+      </p>
+      <button class="btn btn-secondary" (click)="cancel()" i18n="@@qrCodeScanner.backToLogin">
+        Tilbake til innlogging
+      </button>
     </div>
   }
 
@@ -39,8 +53,12 @@
       <div class="error-icon" aria-hidden="true">⚠️</div>
       <p>{{ error() }}</p>
       <div class="actions">
-        <button class="btn btn-primary" (click)="retry()">Try Again</button>
-        <button class="btn btn-secondary" (click)="cancel()">Cancel</button>
+        <button class="btn btn-primary" (click)="retry()" i18n="@@qrCodeScanner.tryAgainButton">
+          Prov igjen
+        </button>
+        <button class="btn btn-secondary" (click)="cancel()" i18n="@@qrCodeScanner.cancelButton2">
+          Avbryt
+        </button>
       </div>
     </div>
   }
@@ -56,10 +74,12 @@
       </div>
 
       <div class="scanner-instructions">
-        <p>Position the QR code within the frame</p>
+        <p i18n="@@qrCodeScanner.positionQrCode">Plasser QR-koden innenfor rammen</p>
       </div>
 
-      <button class="btn btn-cancel" (click)="cancel()">Cancel Scanning</button>
+      <button class="btn btn-cancel" (click)="cancel()" i18n="@@qrCodeScanner.cancelScanning">
+        Avbryt skanning
+      </button>
     </div>
   }
 </div>

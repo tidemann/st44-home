@@ -1,5 +1,9 @@
-<app-modal [open]="open()" (closeModal)="handleClose()">
-  <h2 slot="title">QR Code Login</h2>
+<app-modal
+  [open]="open()"
+  (closeModal)="handleClose()"
+  i18n-title="@@qrCodeModal.title"
+  title="QR-kode innlogging"
+>
   <div slot="content">
     <app-qr-code-display [childId]="childId()" [childName]="childName()" />
   </div>

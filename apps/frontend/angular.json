@@ -13,6 +13,14 @@
       "root": "",
       "sourceRoot": "src",
       "prefix": "app",
+      "i18n": {
+        "sourceLocale": "no",
+        "locales": {
+          "en": {
+            "translation": "src/locale/messages.en.xlf"
+          }
+        }
+      },
       "architect": {
         "build": {
           "builder": "@angular/build:application",
@@ -25,10 +33,72 @@
                 "input": "public"
               }
             ],
-            "styles": ["src/styles.css"]
+            "styles": ["src/styles.css"],
+            "polyfills": ["@angular/localize/init"]
           },
           "configurations": {
             "production": {
+              "localize": true,
+              "budgets": [
+                {
+                  "type": "initial",
+                  "maximumWarning": "500kB",
+                  "maximumError": "1MB"
+                },
+                {
+                  "type": "anyComponentStyle",
+                  "maximumWarning": "4kB",
+                  "maximumError": "8kB"
+                }
+              ],
+              "outputHashing": "all",
+              "optimization": {
+                "styles": {
+                  "minify": true,
+                  "inlineCritical": false
+                },
+                "scripts": true,
+                "fonts": true
+              },
+              "fileReplacements": [
+                {
+                  "replace": "src/environments/environment.development.ts",
+                  "with": "src/environments/environment.ts"
+                }
+              ]
+            },
+            "production-no": {
+              "localize": ["no"],
+              "budgets": [
+                {
+                  "type": "initial",
+                  "maximumWarning": "500kB",
+                  "maximumError": "1MB"
+                },
+                {
+                  "type": "anyComponentStyle",
+                  "maximumWarning": "4kB",
+                  "maximumError": "8kB"
+                }
+              ],
+              "outputHashing": "all",
+              "optimization": {
+                "styles": {
+                  "minify": true,
+                  "inlineCritical": false
+                },
+                "scripts": true,
+                "fonts": true
+              },
+              "fileReplacements": [
+                {
+                  "replace": "src/environments/environment.development.ts",
+                  "with": "src/environments/environment.ts"
+                }
+              ]
+            },
+            "production-en": {
+              "localize": ["en"],
               "budgets": [
                 {
                   "type": "initial",

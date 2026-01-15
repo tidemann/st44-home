@@ -2,7 +2,7 @@
 @if (loading()) {
   <div class="loading-container" role="status" aria-live="polite">
     <div class="spinner" aria-hidden="true"></div>
-    <p>Loading your dashboard...</p>
+    <p i18n="@@home.loading">Laster dashboardet ditt...</p>
   </div>
 }
 
@@ -10,9 +10,9 @@
 @if (error() && !loading()) {
   <div class="error-container" role="alert" aria-live="assertive">
     <div class="error-icon" aria-hidden="true">!</div>
-    <h2>Oops!</h2>
+    <h2 i18n="@@home.errorTitle">Oops!</h2>
     <p>{{ error() }}</p>
-    <button class="btn-retry" (click)="loadData()">Try Again</button>
+    <button class="btn-retry" (click)="loadData()" i18n="@@home.tryAgain">Prøv igjen</button>
   </div>
 }
 
@@ -24,7 +24,7 @@
       <div class="header-content">
         <div class="greeting-section">
           <h2 class="greeting">{{ greeting() }}, {{ userName() }}!</h2>
-          <p class="subtitle">Let's get those tasks done today</p>
+          <p class="subtitle" i18n="@@home.subtitle">La oss få gjort oppgavene i dag</p>
         </div>
       </div>
     </header>
@@ -38,9 +38,24 @@
 
       <!-- Stats Grid -->
       <div class="stats-grid">
-        <app-stat-card [icon]="'🎯'" [value]="stats().activeCount" [label]="'Active'" />
-        <app-stat-card [icon]="'📊'" [value]="stats().weekProgress + '%'" [label]="'Week'" />
-        <app-stat-card [icon]="'⭐'" [value]="stats().totalPoints" [label]="'Points'" />
+        <app-stat-card
+          [icon]="'🎯'"
+          [value]="stats().activeCount"
+          i18n-label="@@home.stats.active"
+          [label]="'Aktive'"
+        />
+        <app-stat-card
+          [icon]="'📊'"
+          [value]="stats().weekProgress + '%'"
+          i18n-label="@@home.stats.week"
+          [label]="'Uke'"
+        />
+        <app-stat-card
+          [icon]="'⭐'"
+          [value]="stats().totalPoints"
+          i18n-label="@@home.stats.points"
+          [label]="'Poeng'"
+        />
       </div>
 
       <!-- Analytics Section -->
@@ -56,7 +71,7 @@
       <!-- Today's Tasks Section -->
       <section class="tasks-section">
         <div class="section-header">
-          <h2>Today's Tasks</h2>
+          <h2 i18n="@@home.todaysTasks">Dagens oppgaver</h2>
         </div>
 
         @if (hasTodayTasks()) {
@@ -74,8 +89,10 @@
         } @else {
           <div class="empty-state" role="status">
             <div class="empty-icon" aria-hidden="true">📋</div>
-            <h3>No tasks for today</h3>
-            <p>No tasks have been scheduled for today. Create tasks in the Tasks section.</p>
+            <h3 i18n="@@home.noTasksToday">Ingen oppgaver i dag</h3>
+            <p i18n="@@home.noTasksTodayDescription">
+              Ingen oppgaver er planlagt for i dag. Opprett oppgaver i Oppgaver-seksjonen.
+            </p>
           </div>
         }
       </section>
@@ -84,7 +101,7 @@
       @if (hasUpcomingTasks()) {
         <section class="tasks-section">
           <div class="section-header">
-            <h2>Coming Up</h2>
+            <h2 i18n="@@home.comingUp">Kommende</h2>
           </div>
           <div class="task-list">
             @for (task of upcomingTasks(); track task.id) {

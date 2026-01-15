@@ -3,23 +3,28 @@
     <!-- Logo -->
     <div class="auth-logo">
       <div class="auth-logo-icon">🎉</div>
-      <div class="auth-logo-text">Welcome!</div>
+      <div class="auth-logo-text" i18n="@@householdCreate.welcome">Velkommen!</div>
     </div>
 
     <!-- Title -->
-    <h1 class="auth-title">Let's Set Up Your Household</h1>
-    <p class="auth-subtitle">What should we call your household?</p>
+    <h1 class="auth-title" i18n="@@householdCreate.title">La oss sette opp husholdningen din</h1>
+    <p class="auth-subtitle" i18n="@@householdCreate.subtitle">
+      Hva skal vi kalle husholdningen din?
+    </p>
 
     <form [formGroup]="householdForm" (ngSubmit)="onSubmit()">
       <!-- Household Name -->
       <div class="form-group">
-        <label for="household-name" class="form-label">Household Name</label>
+        <label for="household-name" class="form-label" i18n="@@householdCreate.nameLabel"
+          >Husholdningsnavn</label
+        >
         <input
           id="household-name"
           type="text"
           formControlName="name"
           class="form-input"
-          placeholder="e.g., The Smith Family"
+          i18n-placeholder="@@householdCreate.namePlaceholder"
+          placeholder="f.eks. Familien Hansen"
           [attr.aria-invalid]="
             householdForm.get('name')?.invalid && householdForm.get('name')?.touched
           "
@@ -33,10 +38,12 @@
         @if (householdForm.get('name')?.invalid && householdForm.get('name')?.touched) {
           <div id="name-error" class="form-error" role="alert">
             @if (householdForm.get('name')?.errors?.['required']) {
-              <span>Household name is required</span>
+              <span i18n="@@householdCreate.nameRequired">Husholdningsnavn er pakrevd</span>
             }
             @if (householdForm.get('name')?.errors?.['maxlength']) {
-              <span>Household name must be less than 100 characters</span>
+              <span i18n="@@householdCreate.nameMaxLength"
+                >Husholdningsnavn ma vaere under 100 tegn</span
+              >
             }
           </div>
         }
@@ -57,9 +64,9 @@
         [attr.aria-busy]="isLoading()"
       >
         @if (isLoading()) {
-          <span>Creating household...</span>
+          <span i18n="@@householdCreate.creatingButton">Oppretter husholdning...</span>
         } @else {
-          <span>Create Household</span>
+          <span i18n="@@householdCreate.createButton">Opprett husholdning</span>
         }
       </button>
     </form>

@@ -2,7 +2,7 @@
 @if (loading()) {
   <div class="loading-container" role="status" aria-live="polite">
     <div class="spinner" aria-hidden="true"></div>
-    <p>Loading family members...</p>
+    <p i18n="@@family.loading">Laster familiemedlemmer...</p>
   </div>
 }
 
@@ -10,25 +10,29 @@
 @if (error() && !loading()) {
   <div class="error-container" role="alert" aria-live="assertive">
     <div class="error-icon" aria-hidden="true">!</div>
-    <h2>Oops!</h2>
+    <h2 i18n="@@family.errorTitle">Oops!</h2>
     <p>{{ error() }}</p>
-    <button class="btn-retry" (click)="loadData()">Try Again</button>
+    <button class="btn-retry" (click)="loadData()" i18n="@@family.tryAgain">Prøv igjen</button>
   </div>
 }
 
 <!-- Main Content -->
 @if (!loading() && !error()) {
-  <app-page [title]="householdName()" [subtitle]="memberCount() + ' members'" maxWidth="wide">
+  <app-page [title]="householdName()" [subtitle]="memberCount() + ' medlemmer'" maxWidth="wide">
     <!-- Header Actions -->
     <ng-container page-actions>
-      <button class="btn btn-header" (click)="openInviteModal()">+ Invite</button>
-      <button class="btn btn-header" (click)="openAddChildModal()">+ Add Child</button>
+      <button class="btn btn-header" (click)="openInviteModal()" i18n="@@family.inviteButton">
+        + Inviter
+      </button>
+      <button class="btn btn-header" (click)="openAddChildModal()" i18n="@@family.addChildButton">
+        + Legg til barn
+      </button>
     </ng-container>
 
     <!-- Family Members Section -->
     <section class="members-section">
       <div class="section-header">
-        <h2>Family Members</h2>
+        <h2 i18n="@@family.membersTitle">Familiemedlemmer</h2>
       </div>
 
       @if (members().length > 0) {
@@ -45,10 +49,13 @@
                 <button
                   class="btn btn-qr"
                   (click)="openQrCodeModal(member.id)"
-                  aria-label="Show QR code for {{ member.name }}"
-                  title="Generate QR code for quick login"
+                  i18n-aria-label="@@family.qrCodeAriaLabel"
+                  aria-label="Vis QR-kode for {{ member.name }}"
+                  i18n-title="@@family.qrCodeTitle"
+                  title="Generer QR-kode for rask innlogging"
+                  i18n="@@family.qrCodeButton"
                 >
-                  📱 QR Code
+                  QR-kode
                 </button>
               }
             </div>
@@ -57,8 +64,10 @@
       } @else {
         <div class="empty-state" role="status">
           <div class="empty-icon" aria-hidden="true">👨‍👩‍👧‍👦</div>
-          <h3>No members yet</h3>
-          <p>Start inviting family members to your household.</p>
+          <h3 i18n="@@family.noMembersTitle">Ingen medlemmer ennå</h3>
+          <p i18n="@@family.noMembersDescription">
+            Begynn å invitere familiemedlemmer til husstanden din.
+          </p>
         </div>
       }
     </section>

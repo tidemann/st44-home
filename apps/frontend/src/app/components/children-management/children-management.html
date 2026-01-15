@@ -1,14 +1,19 @@
 <div class="children-management">
   <div class="header">
-    <h2>Children Management</h2>
+    <h2 i18n="@@childrenManagement.title">Barneadministrasjon</h2>
     <button
       type="button"
       class="btn btn-primary"
       (click)="toggleAddForm()"
       [disabled]="isLoading()"
-      aria-label="Add child"
+      i18n-aria-label="@@childrenManagement.addChildAriaLabel"
+      aria-label="Legg til barn"
     >
-      {{ isAdding() ? 'Cancel' : '+ Add Child' }}
+      @if (isAdding()) {
+        <span i18n="@@childrenManagement.cancel">Avbryt</span>
+      } @else {
+        <span i18n="@@childrenManagement.addChild">+ Legg til barn</span>
+      }
     </button>
   </div>
 
@@ -29,35 +34,38 @@
   <!-- Add child form -->
   @if (isAdding()) {
     <form [formGroup]="addForm" (ngSubmit)="addChild()" class="child-form">
-      <h3>Add New Child</h3>
+      <h3 i18n="@@childrenManagement.addNewChild">Legg til nytt barn</h3>
 
       <div class="form-group">
-        <label for="add-name">Name *</label>
+        <label for="add-name" i18n="@@childrenManagement.nameLabel">Navn *</label>
         <input
           id="add-name"
           type="text"
           formControlName="name"
-          placeholder="Child's name"
+          i18n-placeholder="@@childrenManagement.namePlaceholder"
+          placeholder="Barnets navn"
           [class.invalid]="addForm.get('name')?.invalid && addForm.get('name')?.touched"
           aria-required="true"
         />
         @if (addForm.get('name')?.invalid && addForm.get('name')?.touched) {
           <span class="error-text" role="alert">
             @if (addForm.get('name')?.errors?.['required']) {
-              Name is required
+              <span i18n="@@childrenManagement.nameRequired">Navn er påkrevd</span>
             }
             @if (addForm.get('name')?.errors?.['minlength']) {
-              Name must be at least 2 characters
+              <span i18n="@@childrenManagement.nameMinLength">Navn må være minst 2 tegn</span>
             }
             @if (addForm.get('name')?.errors?.['maxlength']) {
-              Name must be 100 characters or less
+              <span i18n="@@childrenManagement.nameMaxLength"
+                >Navn må være 100 tegn eller mindre</span
+              >
             }
           </span>
         }
       </div>
 
       <div class="form-group">
-        <label for="add-birth-year">Birth Year *</label>
+        <label for="add-birth-year" i18n="@@childrenManagement.birthYearLabel">Fødselsår *</label>
         <input
           id="add-birth-year"
           type="number"
@@ -70,12 +78,14 @@
         @if (addForm.get('birthYear')?.invalid && addForm.get('birthYear')?.touched) {
           <span class="error-text" role="alert">
             @if (addForm.get('birthYear')?.errors?.['required']) {
-              Birth year is required
+              <span i18n="@@childrenManagement.birthYearRequired">Fødselsår er påkrevd</span>
             }
             @if (
               addForm.get('birthYear')?.errors?.['min'] || addForm.get('birthYear')?.errors?.['max']
             ) {
-              Birth year must be between 2000 and {{ currentYear }}
+              <span i18n="@@childrenManagement.birthYearRange"
+                >Fødselsår må være mellom 2000 og {{ currentYear }}</span
+              >
             }
           </span>
         }
@@ -86,12 +96,13 @@
           type="submit"
           class="btn btn-primary"
           [disabled]="isLoading() || addForm.invalid"
-          aria-label="Add child to household"
+          i18n-aria-label="@@childrenManagement.addChildToHouseholdAriaLabel"
+          aria-label="Legg til barn i husstanden"
         >
           @if (isLoading()) {
-            Adding...
+            <span i18n="@@childrenManagement.adding">Legger til...</span>
           } @else {
-            Add Child
+            <span i18n="@@childrenManagement.addChildButton">Legg til barn</span>
           }
         </button>
         <button
@@ -99,9 +110,11 @@
           class="btn btn-secondary"
           (click)="toggleAddForm()"
           [disabled]="isLoading()"
-          aria-label="Cancel adding child"
+          i18n-aria-label="@@childrenManagement.cancelAddingAriaLabel"
+          aria-label="Avbryt å legge til barn"
+          i18n="@@childrenManagement.cancelButton"
         >
-          Cancel
+          Avbryt
         </button>
       </div>
     </form>
@@ -109,14 +122,14 @@
 
   <!-- Loading state -->
   @if (isLoading() && !isAdding()) {
-    <div class="loading">Loading children...</div>
+    <div class="loading" i18n="@@childrenManagement.loading">Laster barn...</div>
   }
 
   <!-- Empty state -->
   @if (!isLoading() && children().length === 0) {
     <div class="empty-state">
-      <p>No children added yet.</p>
-      <p>Click "Add Child" to get started.</p>
+      <p i18n="@@childrenManagement.noChildrenYet">Ingen barn lagt til ennå.</p>
+      <p i18n="@@childrenManagement.clickToAdd">Klikk "Legg til barn" for å komme i gang.</p>
     </div>
   }
 
@@ -129,7 +142,9 @@
             <!-- Edit mode -->
             <form [formGroup]="editForm" (ngSubmit)="saveEdit(child.id)" class="edit-form">
               <div class="form-group">
-                <label [attr.for]="'edit-name-' + child.id">Name *</label>
+                <label [attr.for]="'edit-name-' + child.id" i18n="@@childrenManagement.nameLabel"
+                  >Navn *</label
+                >
                 <input
                   [id]="'edit-name-' + child.id"
                   type="text"
@@ -140,17 +155,23 @@
                 @if (editForm.get('name')?.invalid && editForm.get('name')?.touched) {
                   <span class="error-text" role="alert">
                     @if (editForm.get('name')?.errors?.['required']) {
-                      Name is required
+                      <span i18n="@@childrenManagement.nameRequired">Navn er påkrevd</span>
                     }
                     @if (editForm.get('name')?.errors?.['minlength']) {
-                      Name must be at least 2 characters
+                      <span i18n="@@childrenManagement.nameMinLength"
+                        >Navn må være minst 2 tegn</span
+                      >
                     }
                   </span>
                 }
               </div>
 
               <div class="form-group">
-                <label [attr.for]="'edit-birth-year-' + child.id">Birth Year *</label>
+                <label
+                  [attr.for]="'edit-birth-year-' + child.id"
+                  i18n="@@childrenManagement.birthYearLabel"
+                  >Fødselsår *</label
+                >
                 <input
                   [id]="'edit-birth-year-' + child.id"
                   type="number"
@@ -163,23 +184,29 @@
                   aria-required="true"
                 />
                 @if (editForm.get('birthYear')?.invalid && editForm.get('birthYear')?.touched) {
-                  <span class="error-text" role="alert">
-                    Birth year must be between 2000 and {{ currentYear }}
+                  <span class="error-text" role="alert" i18n="@@childrenManagement.birthYearRange">
+                    Fødselsår må være mellom 2000 og {{ currentYear }}
                   </span>
                 }
               </div>
 
               <div class="form-actions">
-                <button type="submit" class="btn btn-sm btn-primary" [disabled]="isLoading()">
-                  Save
+                <button
+                  type="submit"
+                  class="btn btn-sm btn-primary"
+                  [disabled]="isLoading()"
+                  i18n="@@childrenManagement.save"
+                >
+                  Lagre
                 </button>
                 <button
                   type="button"
                   class="btn btn-sm btn-secondary"
                   (click)="cancelEdit()"
                   [disabled]="isLoading()"
+                  i18n="@@childrenManagement.cancelButton"
                 >
-                  Cancel
+                  Avbryt
                 </button>
               </div>
             </form>
@@ -189,7 +216,10 @@
               <div class="child-details">
                 <h3>{{ child.name }}</h3>
                 <p class="child-age">
-                  Age: {{ getAge(child.birthYear ?? null) }} (Born {{ child.birthYear }})
+                  <ng-container i18n="@@childrenManagement.age"
+                    >Alder: {{ getAge(child.birthYear ?? null) }} (Født
+                    {{ child.birthYear }})</ng-container
+                  >
                 </p>
               </div>
               <div class="child-actions">
@@ -199,8 +229,9 @@
                   (click)="startEdit(child)"
                   [disabled]="isLoading()"
                   [attr.aria-label]="'Edit ' + child.name"
+                  i18n="@@childrenManagement.edit"
                 >
-                  Edit
+                  Rediger
                 </button>
                 <button
                   type="button"
@@ -208,8 +239,9 @@
                   (click)="deleteChild(child)"
                   [disabled]="isLoading()"
                   [attr.aria-label]="'Delete ' + child.name"
+                  i18n="@@childrenManagement.delete"
                 >
-                  Delete
+                  Slett
                 </button>
               </div>
             </div>

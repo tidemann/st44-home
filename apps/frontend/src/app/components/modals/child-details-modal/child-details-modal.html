@@ -1,4 +1,9 @@
-<app-modal [open]="open()" (closeModal)="onClose()" title="Child Details">
+<app-modal
+  [open]="open()"
+  (closeModal)="onClose()"
+  i18n-title="@@childDetailsModal.title"
+  title="Barnedetaljer"
+>
   @if (child(); as child) {
     <div class="child-details">
       <!-- Error Message -->
@@ -12,10 +17,12 @@
       @if (showDeleteConfirm()) {
         <div class="delete-confirmation">
           <div class="confirm-icon">⚠️</div>
-          <h3 class="confirm-title">Remove {{ child.name }}?</h3>
-          <p class="confirm-message">
-            Are you sure you want to remove {{ child.name }} from this household? This action cannot
-            be undone.
+          <h3 class="confirm-title" i18n="@@childDetailsModal.removeConfirmTitle">
+            Fjerne {{ child.name }}?
+          </h3>
+          <p class="confirm-message" i18n="@@childDetailsModal.removeConfirmMessage">
+            Er du sikker på at du vil fjerne {{ child.name }} fra denne husholdningen? Denne
+            handlingen kan ikke angres.
           </p>
           <div class="confirm-actions">
             <button
@@ -23,8 +30,9 @@
               class="btn btn-secondary"
               (click)="cancelDelete()"
               [disabled]="deleting()"
+              i18n="@@childDetailsModal.cancelButton"
             >
-              Cancel
+              Avbryt
             </button>
             <button
               type="button"
@@ -33,9 +41,9 @@
               [disabled]="deleting()"
             >
               @if (deleting()) {
-                Removing...
+                <span i18n="@@childDetailsModal.removingButton">Fjerner...</span>
               } @else {
-                Remove Child
+                <span i18n="@@childDetailsModal.removeChildButton">Fjern barn</span>
               }
             </button>
           </div>
@@ -57,7 +65,9 @@
             <!-- Edit Mode -->
             <form class="edit-form" [formGroup]="form" (ngSubmit)="saveEdit()">
               <div class="form-group">
-                <label class="form-label" for="child-name">Name</label>
+                <label class="form-label" for="child-name" i18n="@@childDetailsModal.nameLabel"
+                  >Navn</label
+                >
                 <input
                   type="text"
                   id="child-name"
@@ -66,12 +76,16 @@
                   [class.error]="form.controls.name.invalid && form.controls.name.touched"
                 />
                 @if (form.controls.name.invalid && form.controls.name.touched) {
-                  <div class="form-error">Name is required</div>
+                  <div class="form-error" i18n="@@childDetailsModal.nameRequired">
+                    Navn er obligatorisk
+                  </div>
                 }
               </div>
 
               <div class="form-group">
-                <label class="form-label" for="birth-year">Birth Year</label>
+                <label class="form-label" for="birth-year" i18n="@@childDetailsModal.birthYearLabel"
+                  >Fødselsår</label
+                >
                 <input
                   type="number"
                   id="birth-year"
@@ -82,7 +96,9 @@
                   [class.error]="form.controls.birthYear.invalid && form.controls.birthYear.touched"
                 />
                 @if (form.controls.birthYear.invalid && form.controls.birthYear.touched) {
-                  <div class="form-error">Please enter a valid birth year</div>
+                  <div class="form-error" i18n="@@childDetailsModal.birthYearInvalid">
+                    Vennligst oppgi et gyldig fødselsår
+                  </div>
                 }
               </div>
 
@@ -92,8 +108,9 @@
                   class="btn btn-secondary btn-sm"
                   (click)="cancelEdit()"
                   [disabled]="saving()"
+                  i18n="@@childDetailsModal.cancelEditButton"
                 >
-                  Cancel
+                  Avbryt
                 </button>
                 <button
                   type="submit"
@@ -101,9 +118,9 @@
                   [disabled]="form.invalid || saving()"
                 >
                   @if (saving()) {
-                    Saving...
+                    <span i18n="@@childDetailsModal.savingButton">Lagrer...</span>
                   } @else {
-                    Save
+                    <span i18n="@@childDetailsModal.saveButton">Lagre</span>
                   }
                 </button>
               </div>
@@ -113,15 +130,18 @@
             <div class="child-info">
               <h3 class="child-name">{{ child.name }}</h3>
               @if (childAge()) {
-                <p class="child-age">{{ childAge() }} years old</p>
+                <p class="child-age" i18n="@@childDetailsModal.yearsOld">
+                  {{ childAge() }} år gammel
+                </p>
               }
               <button
                 type="button"
                 class="btn-edit"
                 (click)="enterEditMode()"
-                aria-label="Edit child details"
+                i18n-aria-label="@@childDetailsModal.editAriaLabel"
+                aria-label="Rediger barnedetaljer"
               >
-                ✏️ Edit
+                <span i18n="@@childDetailsModal.editButton">✏️ Rediger</span>
               </button>
             </div>
           }
@@ -130,14 +150,16 @@
         <!-- Account Status Section -->
         @if (!editMode()) {
           <div class="account-section">
-            <h4 class="section-title">Login Account</h4>
+            <h4 class="section-title" i18n="@@childDetailsModal.loginAccountTitle">
+              Innloggingskonto
+            </h4>
 
             @if (hasAccount()) {
               <!-- Child has account -->
               <div class="account-status has-account">
                 <span class="status-icon">✓</span>
                 <div class="status-info">
-                  <p class="status-label">Account Active</p>
+                  <p class="status-label" i18n="@@childDetailsModal.accountActive">Konto aktiv</p>
                   @if (childEmail()) {
                     <p class="status-detail">{{ childEmail() }}</p>
                   }
@@ -149,8 +171,10 @@
                 <div class="account-status no-account">
                   <span class="status-icon">✗</span>
                   <div class="status-info">
-                    <p class="status-label">No Account</p>
-                    <p class="status-detail">Create login credentials so this child can sign in</p>
+                    <p class="status-label" i18n="@@childDetailsModal.noAccount">Ingen konto</p>
+                    <p class="status-detail" i18n="@@childDetailsModal.noAccountDescription">
+                      Opprett innloggingsdetaljer slik at barnet kan logge inn
+                    </p>
                   </div>
                 </div>
 
@@ -158,8 +182,9 @@
                   type="button"
                   class="btn btn-primary create-btn"
                   (click)="toggleCreateAccount()"
+                  i18n="@@childDetailsModal.createLoginButton"
                 >
-                  Create Login
+                  Opprett innlogging
                 </button>
               } @else {
                 <!-- Create Account Form -->
@@ -175,22 +200,31 @@
 
           <!-- QR Code Section (Future Feature) -->
           <div class="qr-section">
-            <h4 class="section-title">QR Code Login</h4>
+            <h4 class="section-title" i18n="@@childDetailsModal.qrCodeTitle">QR-kode innlogging</h4>
             <div class="qr-placeholder">
               <div class="qr-icon">📱</div>
-              <p class="qr-label">Coming Soon</p>
-              <p class="qr-description">Quick login with QR code scan</p>
+              <p class="qr-label" i18n="@@childDetailsModal.comingSoon">Kommer snart</p>
+              <p class="qr-description" i18n="@@childDetailsModal.qrDescription">
+                Rask innlogging med QR-kode skanning
+              </p>
             </div>
           </div>
 
           <!-- Danger Zone -->
           <div class="danger-zone">
-            <h4 class="section-title danger-title">Danger Zone</h4>
-            <p class="danger-description">
-              Removing a child will delete all their task assignments and points history.
+            <h4 class="section-title danger-title" i18n="@@childDetailsModal.dangerZoneTitle">
+              Faresone
+            </h4>
+            <p class="danger-description" i18n="@@childDetailsModal.dangerZoneDescription">
+              Fjerning av et barn vil slette alle oppgavetildelinger og poenghistorikk.
             </p>
-            <button type="button" class="btn btn-danger-outline" (click)="showDeleteConfirmation()">
-              Remove Child
+            <button
+              type="button"
+              class="btn btn-danger-outline"
+              (click)="showDeleteConfirmation()"
+              i18n="@@childDetailsModal.removeChildAction"
+            >
+              Fjern barn
             </button>
           </div>
         }
@@ -201,7 +235,14 @@
   <!-- Modal Actions -->
   @if (!showCreateAccount() && !editMode() && !showDeleteConfirm()) {
     <div class="modal-actions" modal-actions>
-      <button type="button" class="btn btn-secondary" (click)="onClose()">Close</button>
+      <button
+        type="button"
+        class="btn btn-secondary"
+        (click)="onClose()"
+        i18n="@@childDetailsModal.closeButton"
+      >
+        Lukk
+      </button>
     </div>
   }
 </app-modal>

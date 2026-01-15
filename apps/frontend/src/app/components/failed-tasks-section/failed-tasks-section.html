@@ -1,6 +1,6 @@
 <div class="failed-tasks-section">
   <div class="section-header">
-    <h2 class="section-title">Tasks Needing Attention</h2>
+    <h2 class="section-title" i18n="@@failedTasks.title">Oppgaver som trenger oppmerksomhet</h2>
     @if (totalCount() > 0) {
       <span class="count-badge">{{ totalCount() }}</span>
     }
@@ -9,22 +9,28 @@
   @if (isLoading()) {
     <div class="loading">
       <div class="spinner"></div>
-      <p>Loading tasks...</p>
+      <p i18n="@@failedTasks.loading">Laster oppgaver...</p>
     </div>
   }
 
   @if (failedError()) {
-    <div class="error-message">Failed to load declined tasks: {{ failedError() }}</div>
+    <div class="error-message" i18n="@@failedTasks.failedLoadError">
+      Kunne ikke laste avviste oppgaver: {{ failedError() }}
+    </div>
   }
 
   @if (expiredError()) {
-    <div class="error-message">Failed to load expired tasks: {{ expiredError() }}</div>
+    <div class="error-message" i18n="@@failedTasks.expiredLoadError">
+      Kunne ikke laste utlopte oppgaver: {{ expiredError() }}
+    </div>
   }
 
   @if (!isLoading() && !hasProblemTasks()) {
     <div class="empty-state">
-      <p>✓ All tasks are on track!</p>
-      <p class="empty-state-hint">No tasks have been declined or expired.</p>
+      <p i18n="@@failedTasks.allOnTrack">✓ Alle oppgaver er pa sporet!</p>
+      <p class="empty-state-hint" i18n="@@failedTasks.noDeclinedOrExpired">
+        Ingen oppgaver har blitt avvist eller utlopt.
+      </p>
     </div>
   }
 
@@ -35,7 +41,7 @@
         <div class="task-category">
           <h3 class="category-title">
             <span class="icon">⚠️</span>
-            All Children Declined
+            <ng-container i18n="@@failedTasks.allDeclined">Alle barn avviste</ng-container>
             <span class="category-count">{{ failedTasks().length }}</span>
           </h3>
 
@@ -49,20 +55,29 @@
                       <p class="task-description">{{ task.description }}</p>
                     }
                   </div>
-                  <span class="task-points">{{ task.points }} pts</span>
+                  <span class="task-points" i18n="@@failedTasks.points"
+                    >{{ task.points }} poeng</span
+                  >
                 </div>
 
                 <div class="task-meta">
-                  <span class="meta-item"> {{ task.candidateCount }} children declined </span>
+                  <span class="meta-item" i18n="@@failedTasks.childrenDeclined">
+                    {{ task.candidateCount }} barn avviste
+                  </span>
                   @if (task.deadline) {
-                    <span class="meta-item deadline">
-                      Deadline: {{ formatDeadline(task.deadline) }}
+                    <span class="meta-item deadline" i18n="@@failedTasks.deadline">
+                      Frist: {{ formatDeadline(task.deadline) }}
                     </span>
                   }
                 </div>
 
-                <button class="btn-assign" (click)="onAssignManually(task.id)" type="button">
-                  Assign Manually
+                <button
+                  class="btn-assign"
+                  (click)="onAssignManually(task.id)"
+                  type="button"
+                  i18n="@@failedTasks.assignManually"
+                >
+                  Tildel manuelt
                 </button>
               </div>
             }
@@ -75,7 +90,7 @@
         <div class="task-category">
           <h3 class="category-title">
             <span class="icon">⏰</span>
-            Deadline Expired
+            <ng-container i18n="@@failedTasks.deadlineExpired">Frist utlopt</ng-container>
             <span class="category-count">{{ expiredTasks().length }}</span>
           </h3>
 
@@ -89,20 +104,29 @@
                       <p class="task-description">{{ task.description }}</p>
                     }
                   </div>
-                  <span class="task-points">{{ task.points }} pts</span>
+                  <span class="task-points" i18n="@@failedTasks.pointsExpired"
+                    >{{ task.points }} poeng</span
+                  >
                 </div>
 
                 <div class="task-meta">
-                  <span class="meta-item overdue"> {{ getDaysOverdue(task) }} days overdue </span>
+                  <span class="meta-item overdue" i18n="@@failedTasks.daysOverdue">
+                    {{ getDaysOverdue(task) }} dager pa overtid
+                  </span>
                   @if (task.candidateCount > 0) {
-                    <span class="meta-item">
-                      {{ task.declineCount }} / {{ task.candidateCount }} declined
+                    <span class="meta-item" i18n="@@failedTasks.declineCount">
+                      {{ task.declineCount }} / {{ task.candidateCount }} avviste
                     </span>
                   }
                 </div>
 
-                <button class="btn-assign" (click)="onAssignManually(task.id)" type="button">
-                  Assign Manually
+                <button
+                  class="btn-assign"
+                  (click)="onAssignManually(task.id)"
+                  type="button"
+                  i18n="@@failedTasks.assignManuallyExpired"
+                >
+                  Tildel manuelt
                 </button>
               </div>
             }

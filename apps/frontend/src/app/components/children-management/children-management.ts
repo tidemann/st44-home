@@ -53,7 +53,9 @@ export class ChildrenManagementComponent implements OnInit {
   async loadChildren() {
     const householdId = this.householdService.getActiveHouseholdId();
     if (!householdId) {
-      this.errorMessage.set('No active household selected');
+      this.errorMessage.set(
+        $localize`:@@childrenManagement.noActiveHousehold:Ingen aktiv husstand valgt`,
+      );
       return;
     }
 
@@ -65,7 +67,9 @@ export class ChildrenManagementComponent implements OnInit {
       this.children.set(children);
     } catch (error) {
       console.error('Failed to load children:', error);
-      this.errorMessage.set('Failed to load children. Please try again.');
+      this.errorMessage.set(
+        $localize`:@@childrenManagement.loadChildrenFailed:Kunne ikke laste barn. Vennligst prøv igjen.`,
+      );
     } finally {
       this.isLoading.set(false);
     }
@@ -90,13 +94,17 @@ export class ChildrenManagementComponent implements OnInit {
   async addChild() {
     if (this.addForm.invalid) {
       this.addForm.markAllAsTouched();
-      this.errorMessage.set('Please fill in all required fields correctly.');
+      this.errorMessage.set(
+        $localize`:@@childrenManagement.fillAllFields:Vennligst fyll ut alle obligatoriske felt korrekt.`,
+      );
       return;
     }
 
     const householdId = this.householdService.getActiveHouseholdId();
     if (!householdId) {
-      this.errorMessage.set('No active household selected');
+      this.errorMessage.set(
+        $localize`:@@childrenManagement.noActiveHousehold:Ingen aktiv husstand valgt`,
+      );
       return;
     }
 
@@ -110,7 +118,7 @@ export class ChildrenManagementComponent implements OnInit {
       };
 
       await this.childrenService.createChild(householdId, data);
-      this.showSuccessMessage('Child added successfully');
+      this.showSuccessMessage($localize`:@@childrenManagement.childAdded:Barn lagt til`);
       this.addForm.reset({
         name: '',
         birthYear: this.currentYear - 5,
@@ -119,7 +127,9 @@ export class ChildrenManagementComponent implements OnInit {
       await this.loadChildren();
     } catch (error) {
       console.error('Failed to add child:', error);
-      this.errorMessage.set('Failed to add child. Please try again.');
+      this.errorMessage.set(
+        $localize`:@@childrenManagement.addChildFailed:Kunne ikke legge til barn. Vennligst prøv igjen.`,
+      );
     } finally {
       this.isLoading.set(false);
     }
@@ -155,7 +165,9 @@ export class ChildrenManagementComponent implements OnInit {
 
     const householdId = this.householdService.getActiveHouseholdId();
     if (!householdId) {
-      this.errorMessage.set('No active household selected');
+      this.errorMessage.set(
+        $localize`:@@childrenManagement.noActiveHousehold:Ingen aktiv husstand valgt`,
+      );
       return;
     }
 
@@ -169,12 +181,14 @@ export class ChildrenManagementComponent implements OnInit {
       };
 
       await this.childrenService.updateChild(householdId, childId, data);
-      this.showSuccessMessage('Child updated successfully');
+      this.showSuccessMessage($localize`:@@childrenManagement.childUpdated:Barn oppdatert`);
       this.editingId.set(null);
       await this.loadChildren();
     } catch (error) {
       console.error('Failed to update child:', error);
-      this.errorMessage.set('Failed to update child. Please try again.');
+      this.errorMessage.set(
+        $localize`:@@childrenManagement.updateChildFailed:Kunne ikke oppdatere barn. Vennligst prøv igjen.`,
+      );
     } finally {
       this.isLoading.set(false);
     }
@@ -193,7 +207,9 @@ export class ChildrenManagementComponent implements OnInit {
 
     const householdId = this.householdService.getActiveHouseholdId();
     if (!householdId) {
-      this.errorMessage.set('No active household selected');
+      this.errorMessage.set(
+        $localize`:@@childrenManagement.noActiveHousehold:Ingen aktiv husstand valgt`,
+      );
       return;
     }
 
@@ -206,7 +222,9 @@ export class ChildrenManagementComponent implements OnInit {
       await this.loadChildren();
     } catch (error) {
       console.error('Failed to delete child:', error);
-      this.errorMessage.set('Failed to remove child. Please try again.');
+      this.errorMessage.set(
+        $localize`:@@childrenManagement.removeChildFailed:Kunne ikke fjerne barn. Vennligst prøv igjen.`,
+      );
     } finally {
       this.isLoading.set(false);
     }

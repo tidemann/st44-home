@@ -42,7 +42,8 @@ describe('ChildNav', () => {
     );
 
     expect(icons).toEqual(['📋', '🎁']);
-    expect(labels).toEqual(['My Tasks', 'My Rewards']);
+    // Norwegian is the source language
+    expect(labels).toEqual(['Mine oppgaver', 'Mine belønninger']);
   });
 
   it('should apply active class to current screen', () => {
@@ -105,7 +106,8 @@ describe('ChildNav', () => {
 
     const nav = fixture.nativeElement.querySelector('.child-nav');
     expect(nav.getAttribute('role')).toBe('navigation');
-    expect(nav.getAttribute('aria-label')).toBe('Child navigation');
+    // Norwegian is the source language
+    expect(nav.getAttribute('aria-label')).toBe('Barnenavigasjon');
   });
 
   it('should set aria-current on active item', () => {
@@ -137,7 +139,8 @@ describe('ChildNav', () => {
       (btn as HTMLElement).getAttribute('aria-label'),
     );
 
-    expect(labels).toEqual(['My Tasks', 'My Rewards']);
+    // Norwegian is the source language
+    expect(labels).toEqual(['Mine oppgaver', 'Mine belønninger']);
   });
 
   it('should update active state when activeScreen changes', () => {

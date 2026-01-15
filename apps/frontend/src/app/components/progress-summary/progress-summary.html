@@ -1,11 +1,11 @@
-<div class="progress-summary" role="region" [attr.aria-label]="title() + ' progress'">
+<div class="progress-summary" role="region" [attr.aria-label]="title() + ' fremgang'">
   <!-- Header -->
   <div class="progress-header">
     @if (icon()) {
       <span class="progress-icon" aria-hidden="true">{{ icon() }}</span>
     }
     <h3 class="progress-title">{{ title() }}</h3>
-    <span class="progress-percent" [attr.aria-label]="progressPercent() + ' percent complete'">
+    <span class="progress-percent" [attr.aria-label]="progressPercent() + ' prosent fullfort'">
       {{ progressPercent() }}%
     </span>
   </div>
@@ -27,11 +27,13 @@
   <div class="progress-stats">
     <div class="stat">
       <span class="stat-value">{{ progress().completedTasks }}</span>
-      <span class="stat-label">of {{ progress().totalTasks }} tasks</span>
+      <span class="stat-label" i18n="@@progressSummary.ofTasks"
+        >av {{ progress().totalTasks }} oppgaver</span
+      >
     </div>
     <div class="stat">
       <span class="stat-value">{{ progress().pointsEarned }}</span>
-      <span class="stat-label">points earned</span>
+      <span class="stat-label" i18n="@@progressSummary.pointsEarned">poeng opptjent</span>
     </div>
   </div>
 

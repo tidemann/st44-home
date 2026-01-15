@@ -1,13 +1,21 @@
-<app-modal [open]="open()" (closeModal)="onClose()" title="Add Child">
+<app-modal
+  [open]="open()"
+  (closeModal)="onClose()"
+  i18n-title="@@addChildModal.title"
+  title="Legg til barn"
+>
   <form [formGroup]="form" (ngSubmit)="onSubmit()">
     <div class="form-group">
-      <label class="form-label" for="child-name">Child's Name *</label>
+      <label class="form-label" for="child-name" i18n="@@addChildModal.nameLabel"
+        >Barnets navn *</label
+      >
       <input
         type="text"
         id="child-name"
         class="form-input"
         formControlName="name"
-        placeholder="e.g., Emma"
+        i18n-placeholder="@@addChildModal.namePlaceholder"
+        placeholder="f.eks. Emma"
         [class.error]="form.controls.name.invalid && form.controls.name.touched"
         [attr.aria-invalid]="form.controls.name.invalid && form.controls.name.touched"
         [attr.aria-describedby]="
@@ -17,23 +25,24 @@
       @if (form.controls.name.invalid && form.controls.name.touched) {
         <div id="child-name-error" class="form-error" role="alert">
           @if (form.controls.name.errors?.['required']) {
-            Child's name is required
+            <span i18n="@@addChildModal.nameRequired">Barnets navn er obligatorisk</span>
           }
           @if (form.controls.name.errors?.['maxlength']) {
-            Name is too long (max 255 characters)
+            <span i18n="@@addChildModal.nameTooLong">Navnet er for langt (maks 255 tegn)</span>
           }
         </div>
       }
     </div>
 
     <div class="form-group">
-      <label class="form-label" for="child-age">Age *</label>
+      <label class="form-label" for="child-age" i18n="@@addChildModal.ageLabel">Alder *</label>
       <input
         type="number"
         id="child-age"
         class="form-input"
         formControlName="age"
-        placeholder="e.g., 10"
+        i18n-placeholder="@@addChildModal.agePlaceholder"
+        placeholder="f.eks. 10"
         min="1"
         max="18"
         [class.error]="form.controls.age.invalid && form.controls.age.touched"
@@ -45,20 +54,22 @@
       @if (form.controls.age.invalid && form.controls.age.touched) {
         <div id="child-age-error" class="form-error" role="alert">
           @if (form.controls.age.errors?.['required']) {
-            Age is required
+            <span i18n="@@addChildModal.ageRequired">Alder er obligatorisk</span>
           }
           @if (form.controls.age.errors?.['min']) {
-            Age must be at least 1
+            <span i18n="@@addChildModal.ageMin">Alder må være minst 1</span>
           }
           @if (form.controls.age.errors?.['max']) {
-            Age must be at most 18
+            <span i18n="@@addChildModal.ageMax">Alder må være maks 18</span>
           }
         </div>
       }
     </div>
 
     <div class="form-group">
-      <label class="form-label" for="child-avatar">Avatar Emoji</label>
+      <label class="form-label" for="child-avatar" i18n="@@addChildModal.avatarLabel"
+        >Avatar-emoji</label
+      >
       <select id="child-avatar" class="form-select avatar-select" formControlName="avatar">
         @for (option of avatarOptions; track option.value) {
           <option [value]="option.value">{{ option.label }}</option>
@@ -67,9 +78,21 @@
     </div>
 
     <div class="modal-actions" modal-actions>
-      <button type="button" class="btn btn-secondary" (click)="onCancel()">Cancel</button>
-      <button type="submit" class="btn btn-primary" [disabled]="form.invalid || submitting()">
-        Add Child
+      <button
+        type="button"
+        class="btn btn-secondary"
+        (click)="onCancel()"
+        i18n="@@addChildModal.cancelButton"
+      >
+        Avbryt
+      </button>
+      <button
+        type="submit"
+        class="btn btn-primary"
+        [disabled]="form.invalid || submitting()"
+        i18n="@@addChildModal.submitButton"
+      >
+        Legg til barn
       </button>
     </div>
   </form>
