@@ -21,12 +21,11 @@
   <!-- QR Code Display -->
   @if (qrToken() && !loading() && !error()) {
     <div class="qr-content">
-      <div class="qr-header">
-        <h3 i18n="@@qrCodeDisplay.title">Innloggings-QR-kode</h3>
-        @if (childName()) {
+      @if (childName()) {
+        <div class="qr-header">
           <p class="child-name" i18n="@@qrCodeDisplay.forChild">for {{ childName() }}</p>
-        }
-      </div>
+        </div>
+      }
 
       <div class="qr-canvas-wrapper">
         <canvas #qrCanvas aria-label="QR-kode for barneinnlogging"></canvas>

@@ -294,36 +294,11 @@ This repo supports fully autonomous development. To take over development:
 
 ### Start the Loop
 
-**Standard Mode** (manual/semi-autonomous):
-
 ```bash
 # Query GitHub Issues for next priority
 gh issue list --label "mvp-blocker" --state open
 gh issue list --milestone "MVP Launch" --state open
-
-# Or use the continue-work command
-/continue-work
 ```
-
-**Ralph Loop Mode** (fully autonomous with self-correction - Linux/macOS):
-
-```bash
-# Start Ralph Loop mode (requires Linux/macOS or WSL)
-/continue-work --ralph
-/continue-work --ralph --max-iterations 50
-```
-
-**What is Ralph Loop?**
-
-- Implements the Ralph Wiggum technique (continuous AI loops)
-- Same prompt fed repeatedly, Claude sees previous work in git history
-- Self-corrects failed builds/tests automatically
-- Runs until all priority issues resolved or max iterations (default: 100)
-- Perfect for overnight/weekend autonomous development
-
-**⚠️ Windows Note**: Ralph Loop uses `.sh` hooks that don't work natively on Windows. Use standard mode (`/continue-work` without `--ralph`) or run in WSL.
-
-**See**: `.claude/commands/ralph-loop.md` and `.claude/commands/continue-work.md` for full documentation
 
 ### Orchestrator Workflow
 
