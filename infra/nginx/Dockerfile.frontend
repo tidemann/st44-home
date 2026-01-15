@@ -50,8 +50,8 @@ WORKDIR /usr/share/nginx/html
 # Remove default nginx content
 RUN rm -rf ./*
 
-# Copy built Angular app (Norwegian locale)
-COPY --from=build /app/apps/frontend/dist/home/browser/no ./
+# Copy built Angular app (Norwegian locale) - maintain /no/ path for i18n
+COPY --from=build /app/apps/frontend/dist/home/browser/no ./no
 
 # Provide custom nginx config
 COPY infra/nginx/nginx.conf /etc/nginx/conf.d/default.conf
