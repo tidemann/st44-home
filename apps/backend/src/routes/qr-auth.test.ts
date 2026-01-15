@@ -319,6 +319,17 @@ describe('QR Authentication API', () => {
 
   describe('Security: Token uniqueness and cryptographic strength', () => {
     test('should generate unique tokens for each child', async () => {
+      // First, generate a token for the first child
+      const firstResponse = await app.inject({
+        method: 'POST',
+        url: `/api/qr-auth/generate/${childId}`,
+        headers: {
+          authorization: `Bearer ${parentAccessToken}`,
+        },
+      });
+      const firstBody = JSON.parse(firstResponse.body);
+      const firstToken = firstBody.token;
+
       // Create second child user (different from first child)
       const child2Email = `test-qr-child2-${Date.now()}@example.com`;
       const child2RegisterResponse = await app.inject({
@@ -362,7 +373,7 @@ describe('QR Authentication API', () => {
       });
 
       const body = JSON.parse(response.body);
-      assert.notStrictEqual(body.token, qrToken); // Should be different from first child's token
+      assert.notStrictEqual(body.token, firstToken); // Should be different from first child's token
 
       // Cleanup
       await pool.query('DELETE FROM children WHERE id = $1', [childId2]);
@@ -379,8 +390,14 @@ describe('QR Authentication API', () => {
         },
       });
 
+      assert.strictEqual(
+        response.statusCode,
+        201,
+        `Expected 201 but got ${response.statusCode}: ${response.body}`,
+      );
       const body = JSON.parse(response.body);
       // Base64url encoding of 32 bytes = 43 characters (without padding)
+      assert.ok(body.token, 'Token should exist in response');
       assert.ok(body.token.length >= 43, 'Token should be at least 43 characters (32 bytes)');
     });
   });
