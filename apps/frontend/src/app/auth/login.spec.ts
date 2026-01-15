@@ -296,7 +296,9 @@ describe('LoginComponent', () => {
 
       await component['onSubmit']();
 
-      expect(component['errorMessage']()).toBe('Pålogging feilet. Vennligst sjekk dine innloggingsopplysninger.');
+      expect(component['errorMessage']()).toBe(
+        'Pålogging feilet. Vennligst sjekk dine innloggingsopplysninger.',
+      );
     });
 
     it('should default rememberMe to false if not set', async () => {
