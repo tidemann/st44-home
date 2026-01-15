@@ -222,13 +222,13 @@ describe('AvailableTasksSectionComponent', () => {
       };
       fixture.detectChanges();
       const text = component['getDeadlineText'](todayTask);
-      expect(text).toBe('Due today');
+      expect(text).toBe('Forfaller i dag');
     });
 
     it('should return "Due tomorrow" for tasks due tomorrow', () => {
       fixture.detectChanges();
       const text = component['getDeadlineText'](mockTaskWithDeadline);
-      expect(text).toBe('Due tomorrow');
+      expect(text).toBe('Forfaller i morgen');
     });
 
     it('should return "Overdue" for overdue tasks', () => {
@@ -239,7 +239,7 @@ describe('AvailableTasksSectionComponent', () => {
       };
       fixture.detectChanges();
       const text = component['getDeadlineText'](overdueTask);
-      expect(text).toBe('Overdue');
+      expect(text).toBe('Forfalt');
     });
 
     it('should return days remaining for future tasks', () => {
@@ -250,7 +250,7 @@ describe('AvailableTasksSectionComponent', () => {
       };
       fixture.detectChanges();
       const text = component['getDeadlineText'](futureTask);
-      expect(text).toBe('Due in 5 days');
+      expect(text).toBe('Forfaller om 5 dager');
     });
   });
 
