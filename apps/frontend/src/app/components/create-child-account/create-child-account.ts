@@ -81,7 +81,9 @@ export class CreateChildAccountComponent {
 
   protected async onSubmit(): Promise<void> {
     if (this.form.invalid) {
-      this.errorMessage.set('Please fill all required fields correctly');
+      this.errorMessage.set(
+        $localize`:@@createChildAccount.fillAllFields:Vennligst fyll ut alle obligatoriske felt korrekt`,
+      );
       return;
     }
 
@@ -106,7 +108,10 @@ export class CreateChildAccountComponent {
       }, 1500);
     } catch (error: unknown) {
       const err = error as { error?: { error?: string; message?: string } };
-      const message = err.error?.error || err.error?.message || 'Failed to create account';
+      const message =
+        err.error?.error ||
+        err.error?.message ||
+        $localize`:@@createChildAccount.createFailed:Kunne ikke opprette konto`;
       this.errorMessage.set(message);
     } finally {
       this.isSubmitting.set(false);
