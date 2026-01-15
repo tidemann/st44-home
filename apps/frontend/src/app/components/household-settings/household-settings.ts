@@ -91,14 +91,14 @@ export class HouseholdSettingsComponent implements OnInit {
       }
     } catch (error: unknown) {
       const httpError = error as { status?: number };
-      let message = 'Failed to load household data. Please try again.';
+      let message = $localize`:@@householdSettings.loadFailed:Kunne ikke laste husstandsdata. Vennligst prøv igjen.`;
 
       if (httpError?.status === 401) {
-        message = 'Session expired. Please log in again.';
+        message = $localize`:@@householdSettings.sessionExpired:Økten har utløpt. Vennligst logg inn igjen.`;
         await this.router.navigate(['/login']);
         return;
       } else if (httpError?.status === 404) {
-        message = 'Household not found.';
+        message = $localize`:@@householdSettings.notFound:Husstand ikke funnet.`;
         await this.router.navigate(['/']);
         return;
       }
@@ -130,16 +130,16 @@ export class HouseholdSettingsComponent implements OnInit {
       setTimeout(() => this.successMessage.set(''), 3000);
     } catch (error: unknown) {
       const httpError = error as { status?: number };
-      let message = 'Failed to update household. Please try again.';
+      let message = $localize`:@@householdSettings.updateFailed:Kunne ikke oppdatere husstand. Vennligst prøv igjen.`;
 
       if (httpError?.status === 400) {
-        message = 'Please check your household name.';
+        message = $localize`:@@householdSettings.checkName:Vennligst sjekk husstandsnavnet.`;
       } else if (httpError?.status === 401) {
-        message = 'Session expired. Please log in again.';
+        message = $localize`:@@householdSettings.sessionExpired:Økten har utløpt. Vennligst logg inn igjen.`;
         await this.router.navigate(['/login']);
         return;
       } else if (httpError?.status === 403) {
-        message = 'You do not have permission to edit this household.';
+        message = $localize`:@@householdSettings.noPermission:Du har ikke tillatelse til å redigere denne husholdningen.`;
       }
 
       this.errorMessage.set(message);
