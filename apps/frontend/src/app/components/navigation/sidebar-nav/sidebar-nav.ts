@@ -1,3 +1,4 @@
+import '@angular/localize/init';
 import { Component, ChangeDetectionStrategy, input, output } from '@angular/core';
 import type { NavScreen, NavItem } from '../bottom-nav/bottom-nav';
 import { HouseholdSwitcherComponent } from '../../household-switcher/household-switcher';
@@ -27,13 +28,14 @@ export class SidebarNav {
 
   /**
    * Navigation items configuration
+   * Norwegian is the source language - translations handled via @angular/localize
    */
   readonly navItems: NavItem[] = [
-    { id: 'home', icon: '🏠', label: 'Home' },
-    { id: 'tasks', icon: '✓', label: 'Tasks' },
-    { id: 'family', icon: '👥', label: 'Family' },
-    { id: 'progress', icon: '🏆', label: 'Progress' },
-    { id: 'rewards', icon: '🎁', label: 'Rewards' },
+    { id: 'home', icon: '🏠', label: $localize`:@@nav.home:Hjem` },
+    { id: 'tasks', icon: '✓', label: $localize`:@@nav.tasks:Oppgaver` },
+    { id: 'family', icon: '👥', label: $localize`:@@nav.family:Familie` },
+    { id: 'progress', icon: '🏆', label: $localize`:@@nav.progress:Fremgang` },
+    { id: 'rewards', icon: '🎁', label: $localize`:@@nav.rewards:Belønninger` },
   ];
 
   /**

@@ -1,0 +1,25 @@
+{
+  "$schema": "https://localazy.com/directlink/jsonschema-v1.json",
+  "version": "1.0",
+  "description": "Localazy configuration for st44-home multilingual support",
+  "sourceLanguage": "no",
+  "languages": ["no", "en"],
+  "upload": {
+    "type": "xliff",
+    "files": [
+      {
+        "pattern": "apps/frontend/src/locale/messages.xlf",
+        "lang": "no",
+        "buildType": "angular-xliff"
+      }
+    ]
+  },
+  "download": {
+    "files": [
+      {
+        "pattern": "apps/frontend/src/locale/messages.${lang}.xlf",
+        "buildType": "angular-xliff"
+      }
+    ]
+  }
+}

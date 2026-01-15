@@ -1,0 +1,259 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
+  <file source-language="no" target-language="en" datatype="plaintext" original="ng2.template">
+    <body>
+      <trans-unit id="childLogin.title" datatype="html">
+        <source>Velkommen tilbake!</source>
+        <target>Welcome Back!</target>
+      </trans-unit>
+      <trans-unit id="childLogin.subtitle" datatype="html">
+        <source>La oss komme i gang med oppgavene dine</source>
+        <target>Let's get started with your tasks</target>
+      </trans-unit>
+      <trans-unit id="childLogin.email.label" datatype="html">
+        <source>Din e-post</source>
+        <target>Your Email</target>
+      </trans-unit>
+      <trans-unit id="childLogin.email.placeholder" datatype="html">
+        <source>deg@eksempel.no</source>
+        <target>you@example.com</target>
+      </trans-unit>
+      <trans-unit id="error.email.invalid" datatype="html">
+        <source>Vennligst oppgi en gyldig e-postadresse</source>
+        <target>Please enter a valid email address</target>
+      </trans-unit>
+      <trans-unit id="childLogin.password.label" datatype="html">
+        <source>Ditt passord</source>
+        <target>Your Password</target>
+      </trans-unit>
+      <trans-unit id="childLogin.password.placeholder" datatype="html">
+        <source>Skriv inn passordet ditt</source>
+        <target>Enter your password</target>
+      </trans-unit>
+      <trans-unit id="error.password.enterYours" datatype="html">
+        <source>Vennligst skriv inn passordet ditt</source>
+        <target>Please enter your password</target>
+      </trans-unit>
+      <trans-unit id="childLogin.submit.loading" datatype="html">
+        <source>Logger inn...</source>
+        <target>Logging In...</target>
+      </trans-unit>
+      <trans-unit id="childLogin.submit.button" datatype="html">
+        <source>🚀 Logg inn</source>
+        <target>🚀 Log In</target>
+      </trans-unit>
+      <trans-unit id="childLogin.help.needHelp" datatype="html">
+        <source>Trenger du hjelp?</source>
+        <target>Need help?</target>
+      </trans-unit>
+      <trans-unit id="childLogin.help.askParent" datatype="html">
+        <source>Spor en forelder</source>
+        <target>Ask a parent</target>
+      </trans-unit>
+      <trans-unit id="login.title" datatype="html">
+        <source>Velkommen tilbake!</source>
+        <target>Welcome Back!</target>
+      </trans-unit>
+      <trans-unit id="login.subtitle" datatype="html">
+        <source>Logg inn for å administrere husholdningsoppgavene</source>
+        <target>Log in to manage your household tasks</target>
+      </trans-unit>
+      <trans-unit id="login.registration.success" datatype="html">
+        <source>Konto opprettet! Vennligst logg inn.</source>
+        <target>Account created successfully! Please log in.</target>
+      </trans-unit>
+      <trans-unit id="common.or" datatype="html">
+        <source>ELLER</source>
+        <target>OR</target>
+      </trans-unit>
+      <trans-unit id="login.email.label" datatype="html">
+        <source>E-post</source>
+        <target>Email</target>
+      </trans-unit>
+      <trans-unit id="login.email.placeholder" datatype="html">
+        <source>deg@eksempel.no</source>
+        <target>you@example.com</target>
+      </trans-unit>
+      <trans-unit id="error.email.required" datatype="html">
+        <source>E-post er påkrevd</source>
+        <target>Email is required</target>
+      </trans-unit>
+      <trans-unit id="login.password.label" datatype="html">
+        <source>Passord</source>
+        <target>Password</target>
+      </trans-unit>
+      <trans-unit id="login.password.placeholder" datatype="html">
+        <source>Skriv inn passordet ditt</source>
+        <target>Enter your password</target>
+      </trans-unit>
+      <trans-unit id="error.password.required" datatype="html">
+        <source>Passord er påkrevd</source>
+        <target>Password is required</target>
+      </trans-unit>
+      <trans-unit id="login.rememberMe" datatype="html">
+        <source>Husk meg</source>
+        <target>Remember me</target>
+      </trans-unit>
+      <trans-unit id="login.submit.loading" datatype="html">
+        <source>Logger inn...</source>
+        <target>Logging in...</target>
+      </trans-unit>
+      <trans-unit id="login.submit.button" datatype="html">
+        <source>Logg inn</source>
+        <target>Log In</target>
+      </trans-unit>
+      <trans-unit id="login.forgotPassword" datatype="html">
+        <source>Glemt passord?</source>
+        <target>Forgot password?</target>
+      </trans-unit>
+      <trans-unit id="login.createAccount" datatype="html">
+        <source>Opprett konto</source>
+        <target>Create account</target>
+      </trans-unit>
+      <trans-unit id="login.qrCode.button" datatype="html">
+        <source> 📱 Skann QR-kode for å logge inn </source>
+        <target> 📱 Scan QR Code to Login </target>
+      </trans-unit>
+      <trans-unit id="register.title" datatype="html">
+        <source>Opprett konto</source>
+        <target>Create Account</target>
+      </trans-unit>
+      <trans-unit id="register.subtitle" datatype="html">
+        <source>Begynn å administrere husholdningen din i dag</source>
+        <target>Start managing your household today</target>
+      </trans-unit>
+      <trans-unit id="register.firstName.label" datatype="html">
+        <source>Fornavn</source>
+        <target>First Name</target>
+      </trans-unit>
+      <trans-unit id="register.firstName.placeholder" datatype="html">
+        <source>Fornavn</source>
+        <target>First name</target>
+      </trans-unit>
+      <trans-unit id="error.firstName.required" datatype="html">
+        <source>Fornavn er påkrevd</source>
+        <target>First name is required</target>
+      </trans-unit>
+      <trans-unit id="error.firstName.tooLong" datatype="html">
+        <source>Fornavnet er for langt</source>
+        <target>First name is too long</target>
+      </trans-unit>
+      <trans-unit id="register.lastName.label" datatype="html">
+        <source>Etternavn</source>
+        <target>Last Name</target>
+      </trans-unit>
+      <trans-unit id="register.lastName.placeholder" datatype="html">
+        <source>Etternavn</source>
+        <target>Last name</target>
+      </trans-unit>
+      <trans-unit id="error.lastName.required" datatype="html">
+        <source>Etternavn er påkrevd</source>
+        <target>Last name is required</target>
+      </trans-unit>
+      <trans-unit id="error.lastName.tooLong" datatype="html">
+        <source>Etternavnet er for langt</source>
+        <target>Last name is too long</target>
+      </trans-unit>
+      <trans-unit id="register.email.label" datatype="html">
+        <source>E-post</source>
+        <target>Email</target>
+      </trans-unit>
+      <trans-unit id="register.email.placeholder" datatype="html">
+        <source>deg@eksempel.no</source>
+        <target>you@example.com</target>
+      </trans-unit>
+      <trans-unit id="register.password.label" datatype="html">
+        <source>Passord</source>
+        <target>Password</target>
+      </trans-unit>
+      <trans-unit id="register.password.placeholder" datatype="html">
+        <source>Opprett et sterkt passord</source>
+        <target>Create a strong password</target>
+      </trans-unit>
+      <trans-unit id="register.password.strength" datatype="html">
+        <source>Styrke:</source>
+        <target>Strength:</target>
+      </trans-unit>
+      <trans-unit id="error.password.requirements" datatype="html">
+        <source> Passordet må være minst 8 tegn med store bokstaver, små bokstaver og tall </source>
+        <target> Password must be at least 8 characters with uppercase, lowercase, and number </target>
+      </trans-unit>
+      <trans-unit id="register.confirmPassword.label" datatype="html">
+        <source>Bekreft passord</source>
+        <target>Confirm Password</target>
+      </trans-unit>
+      <trans-unit id="register.confirmPassword.placeholder" datatype="html">
+        <source>Bekreft passordet ditt</source>
+        <target>Confirm your password</target>
+      </trans-unit>
+      <trans-unit id="error.password.mismatch" datatype="html">
+        <source>Passordene samsvarer ikke</source>
+        <target>Passwords do not match</target>
+      </trans-unit>
+      <trans-unit id="register.submit.loading" datatype="html">
+        <source>Oppretter konto...</source>
+        <target>Creating account...</target>
+      </trans-unit>
+      <trans-unit id="register.submit.button" datatype="html">
+        <source>Opprett konto</source>
+        <target>Create Account</target>
+      </trans-unit>
+      <trans-unit id="register.hasAccount" datatype="html">
+        <source>Har du allerede en konto?</source>
+        <target>Already have an account?</target>
+      </trans-unit>
+      <trans-unit id="register.login" datatype="html">
+        <source>Logg inn</source>
+        <target>Log in</target>
+      </trans-unit>
+      <trans-unit id="resetPassword.title" datatype="html">
+        <source>Sett nytt passord</source>
+        <target>Set New Password</target>
+      </trans-unit>
+      <trans-unit id="resetPassword.subtitle" datatype="html">
+        <source>Vennligst skriv inn ditt nye passord nedenfor.</source>
+        <target>Please enter your new password below.</target>
+      </trans-unit>
+      <trans-unit id="resetPassword.success" datatype="html">
+        <source> Passord tilbakestilt! Omdirigerer til innlogging... </source>
+        <target> Password reset successful! Redirecting to login... </target>
+      </trans-unit>
+      <trans-unit id="resetPassword.newPassword.label" datatype="html">
+        <source>Nytt passord</source>
+        <target>New Password</target>
+      </trans-unit>
+      <trans-unit id="resetPassword.newPassword.placeholder" datatype="html">
+        <source>Skriv inn nytt passord</source>
+        <target>Enter new password</target>
+      </trans-unit>
+      <trans-unit id="error.password.minLength" datatype="html">
+        <source>Passordet må være minst 8 tegn</source>
+        <target>Password must be at least 8 characters</target>
+      </trans-unit>
+      <trans-unit id="resetPassword.confirmPassword.label" datatype="html">
+        <source>Bekreft passord</source>
+        <target>Confirm Password</target>
+      </trans-unit>
+      <trans-unit id="resetPassword.confirmPassword.placeholder" datatype="html">
+        <source>Bekreft nytt passord</source>
+        <target>Re-enter new password</target>
+      </trans-unit>
+      <trans-unit id="resetPassword.submit.loading" datatype="html">
+        <source>Tilbakestiller passord...</source>
+        <target>Resetting Password...</target>
+      </trans-unit>
+      <trans-unit id="resetPassword.submit.button" datatype="html">
+        <source>Tilbakestill passord</source>
+        <target>Reset Password</target>
+      </trans-unit>
+      <trans-unit id="resetPassword.backToLogin" datatype="html">
+        <source>Tilbake til innlogging</source>
+        <target>Back to login</target>
+      </trans-unit>
+      <trans-unit id="resetPassword.requestNewLink" datatype="html">
+        <source>Be om ny lenke</source>
+        <target>Request new link</target>
+      </trans-unit>
+    </body>
+  </file>
+</xliff>

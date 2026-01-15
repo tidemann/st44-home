@@ -1,13 +1,21 @@
-<app-modal [open]="open()" (closeModal)="onClose()" title="Quick Add Daily Task">
+<app-modal
+  [open]="open()"
+  (closeModal)="onClose()"
+  i18n-title="@@quickAddModal.title"
+  title="Hurtiglegg til daglig oppgave"
+>
   <form [formGroup]="form" (ngSubmit)="onSubmit()">
     <div class="form-group">
-      <label class="form-label" for="task-name">Task Name *</label>
+      <label class="form-label" for="task-name" i18n="@@quickAddModal.taskNameLabel"
+        >Oppgavenavn *</label
+      >
       <input
         type="text"
         id="task-name"
         class="form-input"
         formControlName="name"
-        placeholder="e.g., Take out trash"
+        i18n-placeholder="@@quickAddModal.taskNamePlaceholder"
+        placeholder="f.eks. Ta ut søpla"
         [class.error]="form.controls.name.invalid && form.controls.name.touched"
         [attr.aria-invalid]="form.controls.name.invalid && form.controls.name.touched"
         [attr.aria-describedby]="
@@ -17,17 +25,21 @@
       @if (form.controls.name.invalid && form.controls.name.touched) {
         <div id="task-name-error" class="form-error" role="alert">
           @if (form.controls.name.errors?.['required']) {
-            Task name is required
+            <span i18n="@@quickAddModal.taskNameRequired">Oppgavenavn er obligatorisk</span>
           }
           @if (form.controls.name.errors?.['maxlength']) {
-            Task name is too long (max 255 characters)
+            <span i18n="@@quickAddModal.taskNameTooLong"
+              >Oppgavenavnet er for langt (maks 255 tegn)</span
+            >
           }
         </div>
       }
     </div>
 
     <div class="form-group">
-      <label class="form-label" for="assign-to">Assign to *</label>
+      <label class="form-label" for="assign-to" i18n="@@quickAddModal.assignToLabel"
+        >Tildel til *</label
+      >
       <select
         id="assign-to"
         class="form-select"
@@ -44,20 +56,25 @@
             : null
         "
       >
-        <option value="">Choose person...</option>
+        <option value="" i18n="@@quickAddModal.choosePerson">Velg person...</option>
         @for (child of children(); track child.id) {
           <option [value]="child.id">{{ child.name }}</option>
         }
       </select>
       @if (form.controls.assignedChildId.invalid && form.controls.assignedChildId.touched) {
-        <div id="assign-to-error" class="form-error" role="alert">
-          Please select who to assign this task to
+        <div
+          id="assign-to-error"
+          class="form-error"
+          role="alert"
+          i18n="@@quickAddModal.selectAssignee"
+        >
+          Vennligst velg hvem som skal tildeles denne oppgaven
         </div>
       }
     </div>
 
     <div class="form-group">
-      <label class="form-label" for="points">Points</label>
+      <label class="form-label" for="points" i18n="@@quickAddModal.pointsLabel">Poeng</label>
       <input
         type="number"
         id="points"
@@ -74,19 +91,31 @@
       @if (form.controls.points.invalid && form.controls.points.touched) {
         <div id="points-error" class="form-error" role="alert">
           @if (form.controls.points.errors?.['min']) {
-            Points must be at least 1
+            <span i18n="@@quickAddModal.pointsMin">Poeng må være minst 1</span>
           }
           @if (form.controls.points.errors?.['max']) {
-            Points must be at most 1000
+            <span i18n="@@quickAddModal.pointsMax">Poeng må være maks 1000</span>
           }
         </div>
       }
     </div>
 
     <div class="modal-actions" modal-actions>
-      <button type="button" class="btn btn-secondary" (click)="onCancel()">Cancel</button>
-      <button type="submit" class="btn btn-primary" [disabled]="form.invalid || submitting()">
-        Create
+      <button
+        type="button"
+        class="btn btn-secondary"
+        (click)="onCancel()"
+        i18n="@@quickAddModal.cancelButton"
+      >
+        Avbryt
+      </button>
+      <button
+        type="submit"
+        class="btn btn-primary"
+        [disabled]="form.invalid || submitting()"
+        i18n="@@quickAddModal.submitButton"
+      >
+        Opprett
       </button>
     </div>
   </form>

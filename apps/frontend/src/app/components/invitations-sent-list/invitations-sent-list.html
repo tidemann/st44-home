@@ -1,6 +1,6 @@
 <div class="invitations-sent-list">
   <div class="header">
-    <h3>Sent Invitations</h3>
+    <h3 i18n="@@invitationsSent.title">Sendte invitasjoner</h3>
     <div class="header-actions">
       @if (hasOldInvitations()) {
         <button
@@ -8,9 +8,11 @@
           class="btn btn-warning btn-sm"
           (click)="cleanupInvitations()"
           [disabled]="isLoading()"
-          aria-label="Remove cancelled and expired invitations"
+          i18n-aria-label="@@invitationsSent.cleanupAria"
+          aria-label="Fjern kansellerte og utløpte invitasjoner"
+          i18n="@@invitationsSent.cleanup"
         >
-          Clean up old
+          Rydd opp gamle
         </button>
       }
       <button
@@ -18,9 +20,11 @@
         class="btn btn-secondary btn-sm"
         (click)="loadInvitations()"
         [disabled]="isLoading()"
-        aria-label="Refresh invitations list"
+        i18n-aria-label="@@invitationsSent.refreshAria"
+        aria-label="Oppdater invitasjonsliste"
+        i18n="@@invitationsSent.refresh"
       >
-        Refresh
+        Oppdater
       </button>
     </div>
   </div>
@@ -41,27 +45,42 @@
 
   <!-- Loading state -->
   @if (isLoading()) {
-    <div class="loading">Loading invitations...</div>
+    <div class="loading" i18n="@@invitationsSent.loading">Laster invitasjoner...</div>
   }
 
   <!-- Empty state -->
   @if (!isLoading() && invitations().length === 0) {
     <div class="empty-state">
-      <p>No invitations sent yet.</p>
-      <p>Use the "Invite User" form above to invite someone to your household.</p>
+      <p i18n="@@invitationsSent.noInvitations">Ingen invitasjoner sendt ennå.</p>
+      <p i18n="@@invitationsSent.emptyStateHint">
+        Bruk skjemaet "Inviter noen" ovenfor for å invitere noen til husstanden din.
+      </p>
     </div>
   }
 
   <!-- Invitations table -->
   @if (!isLoading() && invitations().length > 0) {
-    <div class="invitations-table" role="table" aria-label="Sent invitations">
+    <div
+      class="invitations-table"
+      role="table"
+      i18n-aria-label="@@invitationsSent.tableAria"
+      aria-label="Sendte invitasjoner"
+    >
       <div class="table-header" role="row">
-        <div class="cell email" role="columnheader">Email</div>
-        <div class="cell role" role="columnheader">Role</div>
-        <div class="cell status" role="columnheader">Status</div>
-        <div class="cell date" role="columnheader">Sent</div>
-        <div class="cell expires" role="columnheader">Expires</div>
-        <div class="cell actions" role="columnheader">Actions</div>
+        <div class="cell email" role="columnheader" i18n="@@invitationsSent.columnEmail">
+          E-post
+        </div>
+        <div class="cell role" role="columnheader" i18n="@@invitationsSent.columnRole">Rolle</div>
+        <div class="cell status" role="columnheader" i18n="@@invitationsSent.columnStatus">
+          Status
+        </div>
+        <div class="cell date" role="columnheader" i18n="@@invitationsSent.columnSent">Sendt</div>
+        <div class="cell expires" role="columnheader" i18n="@@invitationsSent.columnExpires">
+          Utløper
+        </div>
+        <div class="cell actions" role="columnheader" i18n="@@invitationsSent.columnActions">
+          Handlinger
+        </div>
       </div>
 
       @for (invitation of invitations(); track invitation.id) {
@@ -86,9 +105,10 @@
                 class="btn btn-danger btn-sm"
                 (click)="cancelInvitation(invitation)"
                 [disabled]="isLoading()"
-                [attr.aria-label]="'Cancel invitation to ' + invitation.invitedEmail"
+                [attr.aria-label]="'Avbryt invitasjon til ' + invitation.invitedEmail"
+                i18n="@@invitationsSent.cancel"
               >
-                Cancel
+                Avbryt
               </button>
             }
           </div>

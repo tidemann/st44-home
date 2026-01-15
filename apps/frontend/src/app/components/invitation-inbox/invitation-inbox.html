@@ -1,9 +1,14 @@
-<div class="invitation-inbox" role="region" aria-label="Invitation Inbox">
+<div
+  class="invitation-inbox"
+  role="region"
+  i18n-aria-label="@@invitationInbox.region"
+  aria-label="Innboks for invitasjoner"
+>
   <div class="header">
     <h2 id="inbox-title">
-      Invitation Inbox
+      <ng-container i18n="@@invitationInbox.title">Invitasjonsinnboks</ng-container>
       @if (pendingCount > 0) {
-        <span class="badge badge-count" aria-label="{{ pendingCount }} pending invitations">
+        <span class="badge badge-count" [attr.aria-label]="pendingCount + ' ventende invitasjoner'">
           {{ pendingCount }}
         </span>
       }
@@ -13,9 +18,11 @@
       class="btn btn-secondary"
       (click)="loadInvitations()"
       [disabled]="isLoading()"
-      aria-label="Refresh invitations"
+      i18n-aria-label="@@invitationInbox.refreshAria"
+      aria-label="Oppdater invitasjoner"
+      i18n="@@invitationInbox.refresh"
     >
-      Refresh
+      Oppdater
     </button>
   </div>
 
@@ -36,15 +43,18 @@
   <!-- Loading state -->
   @if (isLoading()) {
     <div class="loading" role="status" aria-live="polite">
-      <span aria-hidden="true">⏳</span> Loading invitations...
+      <span aria-hidden="true">⏳</span>
+      <ng-container i18n="@@invitationInbox.loading">Laster invitasjoner...</ng-container>
     </div>
   }
 
   <!-- Empty state -->
   @if (!isLoading() && invitations().length === 0) {
     <div class="empty-state" role="status">
-      <p>No pending invitations.</p>
-      <p>When someone invites you to join their household, it will appear here.</p>
+      <p i18n="@@invitationInbox.noInvitations">Ingen ventende invitasjoner.</p>
+      <p i18n="@@invitationInbox.emptyStateHint">
+        Når noen inviterer deg til å bli med i husstanden deres, vil det vises her.
+      </p>
     </div>
   }
 
@@ -55,28 +65,39 @@
         <li class="invitation-card" [class.expired]="isExpired(invitation)">
           <div class="invitation-details">
             <h3 class="household-name">
-              {{ invitation.householdName || 'Unknown Household' }}
+              {{ invitation.householdName || 'Ukjent husstand' }}
             </h3>
             <p class="inviter">
-              Invited by: {{ invitation.inviterName || invitation.inviterEmail || 'Unknown' }}
+              <ng-container i18n="@@invitationInbox.invitedBy">Invitert av:</ng-container>
+              {{ invitation.inviterName || invitation.inviterEmail || 'Ukjent' }}
             </p>
             <p class="role">
-              Role: <strong>{{ invitation.role | titlecase }}</strong>
+              <ng-container i18n="@@invitationInbox.role">Rolle:</ng-container>
+              <strong>{{ invitation.role | titlecase }}</strong>
             </p>
             <p class="dates">
-              Sent: {{ invitation.createdAt | date: 'mediumDate' }}
+              <ng-container i18n="@@invitationInbox.sent">Sendt:</ng-container>
+              {{ invitation.createdAt | date: 'mediumDate' }}
               <span class="separator">•</span>
               @if (isExpired(invitation)) {
-                <span class="text-danger">Expired</span>
+                <span class="text-danger" i18n="@@invitationInbox.expired">Utløpt</span>
               } @else {
-                Expires: {{ invitation.expiresAt | date: 'mediumDate' }}
+                <ng-container i18n="@@invitationInbox.expires">Utløper:</ng-container>
+                {{ invitation.expiresAt | date: 'mediumDate' }}
               }
             </p>
           </div>
 
           <div class="invitation-actions">
             @if (isExpired(invitation)) {
-              <span class="expired-badge" aria-label="This invitation has expired"> Expired </span>
+              <span
+                class="expired-badge"
+                i18n-aria-label="@@invitationInbox.expiredAria"
+                aria-label="Denne invitasjonen har utløpt"
+                i18n="@@invitationInbox.expiredBadge"
+              >
+                Utløpt
+              </span>
             } @else {
               <button
                 type="button"
@@ -84,14 +105,14 @@
                 (click)="acceptInvitation(invitation)"
                 [disabled]="isProcessing(invitation)"
                 [attr.aria-label]="
-                  'Accept invitation to join ' + (invitation.householdName || 'household')
+                  'Godta invitasjon til å bli med i ' + (invitation.householdName || 'husstand')
                 "
                 [attr.aria-busy]="isProcessing(invitation)"
               >
                 @if (isProcessing(invitation)) {
-                  Accepting...
+                  <ng-container i18n="@@invitationInbox.accepting">Godtar...</ng-container>
                 } @else {
-                  Accept
+                  <ng-container i18n="@@invitationInbox.accept">Godta</ng-container>
                 }
               </button>
               <button
@@ -100,14 +121,14 @@
                 (click)="declineInvitation(invitation)"
                 [disabled]="isProcessing(invitation)"
                 [attr.aria-label]="
-                  'Decline invitation to join ' + (invitation.householdName || 'household')
+                  'Avslå invitasjon til å bli med i ' + (invitation.householdName || 'husstand')
                 "
                 [attr.aria-busy]="isProcessing(invitation)"
               >
                 @if (isProcessing(invitation)) {
-                  Declining...
+                  <ng-container i18n="@@invitationInbox.declining">Avslår...</ng-container>
                 } @else {
-                  Decline
+                  <ng-container i18n="@@invitationInbox.decline">Avslå</ng-container>
                 }
               </button>
             }

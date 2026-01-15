@@ -123,7 +123,8 @@ describe('FailedTasksSectionComponent', () => {
       const compiled = fixture.nativeElement as HTMLElement;
       const error = compiled.querySelector('.error-message');
       expect(error).toBeTruthy();
-      expect(error?.textContent).toContain('Failed to load declined tasks');
+      // Norwegian is the source language
+      expect(error?.textContent).toContain('Kunne ikke laste avviste oppgaver');
     });
 
     it('should show expired error when present', () => {
@@ -132,7 +133,8 @@ describe('FailedTasksSectionComponent', () => {
       const compiled = fixture.nativeElement as HTMLElement;
       const error = compiled.querySelector('.error-message');
       expect(error).toBeTruthy();
-      expect(error?.textContent).toContain('Failed to load expired tasks');
+      // Norwegian is the source language
+      expect(error?.textContent).toContain('Kunne ikke laste utlopte oppgaver');
     });
   });
 

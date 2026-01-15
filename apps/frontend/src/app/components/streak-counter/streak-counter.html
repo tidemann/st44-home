@@ -3,7 +3,7 @@
   [class.has-streak]="currentStreak() > 0"
   [class.new-record]="isNewRecord()"
   role="region"
-  aria-label="Streak information"
+  aria-label="Rekkeinformasjon"
 >
   <!-- Fire Icons -->
   <div class="streak-fires" aria-hidden="true">
@@ -17,10 +17,12 @@
 
   <!-- Current Streak -->
   <div class="streak-main">
-    <span class="streak-number" [attr.aria-label]="currentStreak() + ' day streak'">
+    <span class="streak-number" [attr.aria-label]="currentStreak() + ' dagers rekke'">
       {{ currentStreak() }}
     </span>
-    <span class="streak-label">{{ currentStreak() === 1 ? 'Day' : 'Days' }}</span>
+    <span class="streak-label" i18n="@@streakCounter.daysLabel">{{
+      currentStreak() === 1 ? 'Dag' : 'Dager'
+    }}</span>
   </div>
 
   <!-- Message -->
@@ -30,9 +32,11 @@
   @if (showLongest() && longestStreak() > 0) {
     <div class="longest-streak" [class.is-current]="isNewRecord()">
       @if (isNewRecord()) {
-        <span class="record-badge">New Record!</span>
+        <span class="record-badge" i18n="@@streakCounter.newRecord">Ny rekord!</span>
       } @else {
-        <span class="record-label">Best: {{ longestStreak() }} days</span>
+        <span class="record-label" i18n="@@streakCounter.bestStreak"
+          >Beste: {{ longestStreak() }} dager</span
+        >
       }
     </div>
   }

@@ -1,19 +1,25 @@
 <div class="task-list">
   <div class="list-header">
-    <h2>Task Templates</h2>
+    <h2 i18n="@@taskList.title">Oppgavemaler</h2>
 
     <!-- Filters & Sort -->
     <div class="controls">
-      <div class="filter-toggle" role="group" aria-label="Filter tasks">
+      <div
+        class="filter-toggle"
+        role="group"
+        i18n-aria-label="@@taskList.filterTasks"
+        aria-label="Filtrer oppgaver"
+      >
         <label class="filter-option">
           <input
             type="radio"
             name="filter"
             [checked]="showActiveOnly()"
             (change)="onFilterChange(true)"
-            aria-label="Show active tasks only"
+            i18n-aria-label="@@taskList.showActiveOnly"
+            aria-label="Vis kun aktive oppgaver"
           />
-          Active only
+          <ng-container i18n="@@taskList.activeOnly">Kun aktive</ng-container>
         </label>
         <label class="filter-option">
           <input
@@ -21,18 +27,19 @@
             name="filter"
             [checked]="!showActiveOnly()"
             (change)="onFilterChange(false)"
-            aria-label="Show all tasks"
+            i18n-aria-label="@@taskList.showAllTasks"
+            aria-label="Vis alle oppgaver"
           />
-          Show all
+          <ng-container i18n="@@taskList.showAll">Vis alle</ng-container>
         </label>
       </div>
 
       <div class="sort-control">
-        <label for="sort">Sort by:</label>
+        <label for="sort" i18n="@@taskList.sortBy">Sorter etter:</label>
         <select id="sort" (change)="onSortChange($event)" [value]="sortBy()">
-          <option value="created">Newest first</option>
-          <option value="title">Title (A-Z)</option>
-          <option value="ruleType">Rule type</option>
+          <option value="created" i18n="@@taskList.sortNewest">Nyeste først</option>
+          <option value="title" i18n="@@taskList.sortTitle">Tittel (A-Å)</option>
+          <option value="ruleType" i18n="@@taskList.sortRuleType">Regeltype</option>
         </select>
       </div>
     </div>
@@ -42,7 +49,7 @@
   @if (taskService.loading()) {
     <div class="loading" role="status" aria-live="polite">
       <div class="spinner" aria-hidden="true"></div>
-      <p>Loading tasks...</p>
+      <p i18n="@@taskList.loading">Laster oppgaver...</p>
     </div>
   }
 
@@ -50,15 +57,19 @@
   @if (taskService.error()) {
     <div class="error-state" role="alert" aria-live="assertive">
       <p>{{ taskService.error() }}</p>
-      <button type="button" (click)="loadTasks()" class="btn-secondary">Try again</button>
+      <button type="button" (click)="loadTasks()" class="btn-secondary" i18n="@@taskList.tryAgain">
+        Prøv igjen
+      </button>
     </div>
   }
 
   <!-- Empty State -->
   @if (!taskService.loading() && !taskService.error() && displayedTasks().length === 0) {
     <div class="empty-state">
-      <p class="empty-title">No task templates yet</p>
-      <p class="empty-description">Create your first task to get started!</p>
+      <p class="empty-title" i18n="@@taskList.emptyTitle">Ingen oppgavemaler ennå</p>
+      <p class="empty-description" i18n="@@taskList.emptyDescription">
+        Opprett din første oppgave for å komme i gang!
+      </p>
     </div>
   }
 
@@ -80,35 +91,39 @@
 
           <div class="task-details">
             <div class="detail-row">
-              <strong>Assigned to:</strong>
+              <strong i18n="@@taskList.assignedTo">Tildelt til:</strong>
               <span>{{ getChildrenNames(task) }}</span>
             </div>
 
             @if (task.points) {
               <div class="detail-row">
-                <strong>Points:</strong>
+                <strong i18n="@@taskList.points">Poeng:</strong>
                 <span>{{ task.points }}</span>
               </div>
             }
 
             @if (task.ruleType === 'repeating' && task.ruleConfig?.repeatDays) {
               <div class="detail-row">
-                <strong>Days:</strong>
+                <strong i18n="@@taskList.days">Dager:</strong>
                 <span>{{ getRepeatDaysLabel(task.ruleConfig?.repeatDays) }}</span>
               </div>
             }
 
             @if (task.ruleType === 'weekly_rotation' && task.ruleConfig?.rotationType) {
               <div class="detail-row">
-                <strong>Rotation:</strong>
+                <strong i18n="@@taskList.rotation">Rotasjon:</strong>
                 <span>{{ getRotationTypeLabel(task.ruleConfig?.rotationType) }}</span>
               </div>
             }
 
             <div class="detail-row">
-              <strong>Status:</strong>
+              <strong i18n="@@taskList.status">Status:</strong>
               <span [class.status-active]="task.active" [class.status-inactive]="!task.active">
-                {{ task.active ? 'Active' : 'Inactive' }}
+                @if (task.active) {
+                  <ng-container i18n="@@taskList.statusActive">Aktiv</ng-container>
+                } @else {
+                  <ng-container i18n="@@taskList.statusInactive">Inaktiv</ng-container>
+                }
               </span>
             </div>
           </div>
@@ -118,25 +133,31 @@
               type="button"
               (click)="onEdit(task)"
               class="btn-secondary btn-sm"
-              [attr.aria-label]="'Edit ' + task.name"
+              [attr.aria-label]="'Rediger ' + task.name"
+              i18n="@@taskList.edit"
             >
-              Edit
+              Rediger
             </button>
             <button
               type="button"
               (click)="onToggleActive(task)"
               class="btn-secondary btn-sm"
-              [attr.aria-label]="(task.active ? 'Disable ' : 'Enable ') + task.name"
+              [attr.aria-label]="(task.active ? 'Deaktiver ' : 'Aktiver ') + task.name"
             >
-              {{ task.active ? 'Disable' : 'Enable' }}
+              @if (task.active) {
+                <ng-container i18n="@@taskList.disable">Deaktiver</ng-container>
+              } @else {
+                <ng-container i18n="@@taskList.enable">Aktiver</ng-container>
+              }
             </button>
             <button
               type="button"
               (click)="onDeleteClick(task)"
               class="btn-danger btn-sm"
-              [attr.aria-label]="'Delete ' + task.name"
+              [attr.aria-label]="'Slett ' + task.name"
+              i18n="@@taskList.delete"
             >
-              Delete
+              Slett
             </button>
           </div>
         </article>
@@ -161,15 +182,29 @@
         (keydown.enter)="$event.stopPropagation()"
         tabindex="0"
       >
-        <h3 id="dialog-title">Delete Task Template?</h3>
-        <p>
-          Are you sure you want to delete
-          <strong>"{{ taskToDelete()?.name }}"</strong>? This will remove the template but preserve
-          existing task assignments.
+        <h3 id="dialog-title" i18n="@@taskList.deleteDialogTitle">Slette oppgavemal?</h3>
+        <p i18n="@@taskList.deleteDialogMessage">
+          Er du sikker på at du vil slette
+          <strong>"{{ taskToDelete()?.name }}"</strong>? Dette vil fjerne malen, men bevare
+          eksisterende oppgavetildelinger.
         </p>
         <div class="dialog-actions">
-          <button type="button" (click)="cancelDelete()" class="btn-secondary">Cancel</button>
-          <button type="button" (click)="confirmDelete()" class="btn-danger">Delete</button>
+          <button
+            type="button"
+            (click)="cancelDelete()"
+            class="btn-secondary"
+            i18n="@@taskList.cancel"
+          >
+            Avbryt
+          </button>
+          <button
+            type="button"
+            (click)="confirmDelete()"
+            class="btn-danger"
+            i18n="@@taskList.confirmDelete"
+          >
+            Slett
+          </button>
         </div>
       </div>
     </div>

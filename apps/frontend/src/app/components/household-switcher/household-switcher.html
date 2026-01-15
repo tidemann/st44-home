@@ -1,13 +1,13 @@
 <div class="household-switcher">
   @if (isLoading()) {
-    <div class="switcher-loading">Loading...</div>
+    <div class="switcher-loading" i18n="@@householdSwitcher.loading">Laster...</div>
   } @else if (households().length > 1) {
     <button
       type="button"
       class="switcher-toggle"
       [attr.aria-expanded]="isOpen()"
       [attr.aria-haspopup]="true"
-      [attr.aria-label]="'Switch household. Current: ' + (getActiveHousehold()?.name || 'None')"
+      [attr.aria-label]="'Bytt husholdning. Navarende: ' + (getActiveHousehold()?.name || 'Ingen')"
       (click)="toggleDropdown()"
       (keydown)="onToggleKeyDown($event)"
     >
@@ -22,7 +22,9 @@
             {{ active.role }}
           </span>
         } @else {
-          <span class="switcher-toggle__name">Select Household</span>
+          <span class="switcher-toggle__name" i18n="@@householdSwitcher.selectHousehold"
+            >Velg husholdning</span
+          >
         }
       </span>
       <svg
@@ -46,7 +48,7 @@
     </button>
 
     @if (isOpen()) {
-      <div class="switcher-dropdown" role="menu" aria-label="Household list">
+      <div class="switcher-dropdown" role="menu" aria-label="Husholdningsliste">
         @for (household of households(); track household.id) {
           <button
             type="button"

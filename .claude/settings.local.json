@@ -109,7 +109,8 @@
       "Bash(ConvertTo-Json -Depth 10)",
       "Bash(tee:*)",
       "Bash(npx tsx:*)",
-      "Bash(cmd /c:*)"
+      "Bash(cmd /c:*)",
+      "Bash(git --version:*)"
     ]
   }
 }

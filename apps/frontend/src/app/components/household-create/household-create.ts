@@ -41,17 +41,17 @@ export class HouseholdCreateComponent {
       this.isLoading.set(false);
 
       // User-friendly error messages
-      let message = 'Failed to create household. Please try again.';
+      let message = $localize`:@@householdCreate.createFailed:Kunne ikke opprette husstand. Vennligst prøv igjen.`;
 
       const httpError = error as { status?: number };
       if (httpError?.status === 400) {
-        message = 'Please check your household name.';
+        message = $localize`:@@householdCreate.checkName:Vennligst sjekk husstands navnet.`;
       } else if (httpError?.status === 401) {
-        message = 'Session expired. Please log in again.';
+        message = $localize`:@@householdCreate.sessionExpired:Økten har utløpt. Vennligst logg inn igjen.`;
         await this.router.navigate(['/login']);
         return;
       } else if (!navigator.onLine) {
-        message = 'No internet connection. Please check your connection.';
+        message = $localize`:@@householdCreate.noInternet:Ingen internettforbindelse. Vennligst sjekk forbindelsen din.`;
       }
 
       this.errorMessage.set(message);

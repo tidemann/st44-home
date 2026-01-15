@@ -53,7 +53,7 @@ export class ResetPasswordComponent implements OnInit {
     const token = this.route.snapshot.queryParams['token'];
     if (!token) {
       this.errorMessage.set(
-        'Invalid or missing reset token. Please request a new password reset link.',
+        $localize`:@@resetPassword.invalidToken:Ugyldig eller manglende tilbakestillingstoken. Vennligst be om en ny lenke for tilbakestilling av passord.`,
       );
     } else {
       this.resetToken.set(token);
@@ -78,16 +78,16 @@ export class ResetPasswordComponent implements OnInit {
     const hasMinLength = password.length >= 8;
 
     if (hasUpperCase && hasLowerCase && hasNumber && hasMinLength) {
-      return 'Strong password';
+      return $localize`:@@resetPassword.strongPassword:Sterkt passord`;
     }
 
     const missing: string[] = [];
-    if (!hasMinLength) missing.push('8 characters');
-    if (!hasUpperCase) missing.push('uppercase letter');
-    if (!hasLowerCase) missing.push('lowercase letter');
-    if (!hasNumber) missing.push('number');
+    if (!hasMinLength) missing.push($localize`:@@resetPassword.8characters:8 tegn`);
+    if (!hasUpperCase) missing.push($localize`:@@resetPassword.uppercaseLetter:stor bokstav`);
+    if (!hasLowerCase) missing.push($localize`:@@resetPassword.lowercaseLetter:liten bokstav`);
+    if (!hasNumber) missing.push($localize`:@@resetPassword.number:tall`);
 
-    return `Password must include: ${missing.join(', ')}`;
+    return $localize`:@@resetPassword.passwordMustInclude:Passordet må inneholde: ${missing.join(', ')}`;
   }
 
   protected async onSubmit(): Promise<void> {
@@ -105,7 +105,9 @@ export class ResetPasswordComponent implements OnInit {
       // Redirect to login after 2 seconds
       setTimeout(() => {
         this.router.navigate(['/login'], {
-          queryParams: { message: 'Password reset successful. Please log in.' },
+          queryParams: {
+            message: $localize`:@@resetPassword.successMessage:Tilbakestilling av passord vellykket. Vennligst logg inn.`,
+          },
         });
       }, 2000);
     } catch (error: unknown) {
@@ -115,10 +117,14 @@ export class ResetPasswordComponent implements OnInit {
       };
 
       if (err.status === 401) {
-        this.errorMessage.set('Reset link has expired or is invalid. Please request a new one.');
+        this.errorMessage.set(
+          $localize`:@@resetPassword.linkExpired:Tilbakestillingslenken har utløpt eller er ugyldig. Vennligst be om en ny.`,
+        );
       } else {
         this.errorMessage.set(
-          err.error?.error || err.error?.message || 'Failed to reset password. Please try again.',
+          err.error?.error ||
+            err.error?.message ||
+            $localize`:@@resetPassword.resetFailed:Kunne ikke tilbakestille passord. Vennligst prøv igjen.`,
         );
       }
     } finally {

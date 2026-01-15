@@ -1,3 +1,4 @@
+import '@angular/localize/init';
 import { Component, ChangeDetectionStrategy, input, output } from '@angular/core';
 
 /**
@@ -43,10 +44,11 @@ export class ChildNav {
 
   /**
    * Navigation items configuration
+   * Norwegian is the source language - translations handled via @angular/localize
    */
   readonly navItems: ChildNavItem[] = [
-    { id: 'tasks', icon: '📋', label: 'My Tasks' },
-    { id: 'rewards', icon: '🎁', label: 'My Rewards' },
+    { id: 'tasks', icon: '📋', label: $localize`:@@childNav.tasks:Mine oppgaver` },
+    { id: 'rewards', icon: '🎁', label: $localize`:@@childNav.rewards:Mine belønninger` },
   ];
 
   /**

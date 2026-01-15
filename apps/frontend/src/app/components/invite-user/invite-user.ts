@@ -53,21 +53,23 @@ export class InviteUserComponent {
       this.inviteForm.reset({ role: 'parent' });
     } catch (error: unknown) {
       const httpError = error as { error?: { message?: string }; status?: number };
-      let message = 'Failed to send invitation. Please try again.';
+      let message = $localize`:@@inviteUser.sendFailed:Kunne ikke sende invitasjon. Vennligst prøv igjen.`;
 
       if (httpError?.status === 400) {
-        message = 'Please check the email address.';
+        message = $localize`:@@inviteUser.checkEmail:Vennligst sjekk e-postadressen.`;
       } else if (httpError?.status === 401) {
-        message = 'Session expired. Please log in again.';
+        message = $localize`:@@inviteUser.sessionExpired:Økten har utløpt. Vennligst logg inn igjen.`;
       } else if (httpError?.status === 403) {
-        message = 'You do not have permission to invite users to this household.';
+        message = $localize`:@@inviteUser.noPermission:Du har ikke tillatelse til å invitere brukere til denne husholdningen.`;
       } else if (httpError?.status === 409) {
         if (httpError.error?.message?.includes('already a household member')) {
-          message = 'This user is already a member of your household.';
+          message = $localize`:@@inviteUser.alreadyMember:Denne brukeren er allerede medlem av husholdningen din.`;
         } else if (httpError.error?.message?.includes('pending invitation')) {
-          message = 'A pending invitation already exists for this email.';
+          message = $localize`:@@inviteUser.pendingInvitation:En ventende invitasjon eksisterer allerede for denne e-posten.`;
         } else {
-          message = httpError.error?.message || 'This user cannot be invited.';
+          message =
+            httpError.error?.message ||
+            $localize`:@@inviteUser.cannotInvite:Denne brukeren kan ikke inviteres.`;
         }
       }
 
@@ -92,7 +94,9 @@ export class InviteUserComponent {
         }, 2000);
       })
       .catch(() => {
-        this.errorMessage.set('Failed to copy link. Please copy manually.');
+        this.errorMessage.set(
+          $localize`:@@inviteUser.copyFailed:Kunne ikke kopiere lenke. Vennligst kopier manuelt.`,
+        );
       });
   }
 

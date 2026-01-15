@@ -10,13 +10,16 @@
 
       <!-- Task Name -->
       <div class="form-group">
-        <label class="form-label" for="task-name">Task Name *</label>
+        <label class="form-label" for="task-name" i18n="@@taskFormModal.taskNameLabel"
+          >Oppgavenavn *</label
+        >
         <input
           type="text"
           id="task-name"
           class="form-input"
           formControlName="name"
-          placeholder="e.g., Clean your room"
+          i18n-placeholder="@@taskFormModal.taskNamePlaceholder"
+          placeholder="f.eks. Rydd rommet ditt"
           [class.error]="form.controls.name.invalid && form.controls.name.touched"
           [attr.aria-invalid]="form.controls.name.invalid && form.controls.name.touched"
           [attr.aria-describedby]="
@@ -26,10 +29,12 @@
         @if (form.controls.name.invalid && form.controls.name.touched) {
           <div id="task-name-error" class="form-error" role="alert">
             @if (form.controls.name.errors?.['required']) {
-              Task name is required
+              <span i18n="@@taskFormModal.taskNameRequired">Oppgavenavn er obligatorisk</span>
             }
             @if (form.controls.name.errors?.['maxlength']) {
-              Task name is too long (max 255 characters)
+              <span i18n="@@taskFormModal.taskNameTooLong"
+                >Oppgavenavnet er for langt (maks 255 tegn)</span
+              >
             }
           </div>
         }
@@ -37,19 +42,22 @@
 
       <!-- Description -->
       <div class="form-group">
-        <label class="form-label" for="description">Description (optional)</label>
+        <label class="form-label" for="description" i18n="@@taskFormModal.descriptionLabel"
+          >Beskrivelse (valgfritt)</label
+        >
         <textarea
           id="description"
           class="form-textarea"
           formControlName="description"
-          placeholder="Add any details about this task..."
+          i18n-placeholder="@@taskFormModal.descriptionPlaceholder"
+          placeholder="Legg til detaljer om denne oppgaven..."
           rows="2"
         ></textarea>
       </div>
 
       <!-- Points -->
       <div class="form-group">
-        <label class="form-label" for="points">Points *</label>
+        <label class="form-label" for="points" i18n="@@taskFormModal.pointsLabel">Poeng *</label>
         <input
           type="number"
           id="points"
@@ -64,15 +72,17 @@
           "
         />
         @if (form.controls.points.invalid && form.controls.points.touched) {
-          <div id="points-error" class="form-error" role="alert">
-            Points must be between 1 and 1000
+          <div id="points-error" class="form-error" role="alert" i18n="@@taskFormModal.pointsRange">
+            Poeng må være mellom 1 og 1000
           </div>
         }
       </div>
 
       <!-- Task Type -->
       <div class="form-group">
-        <label class="form-label" for="rule-type">Task Type *</label>
+        <label class="form-label" for="rule-type" i18n="@@taskFormModal.taskTypeLabel"
+          >Oppgavetype *</label
+        >
         <select id="rule-type" class="form-select" formControlName="ruleType">
           @for (type of taskTypes; track type.value) {
             <option [value]="type.value">{{ type.label }} - {{ type.description }}</option>
@@ -83,7 +93,7 @@
       <!-- Repeating: Day Selection -->
       @if (ruleType === 'repeating') {
         <fieldset class="form-group">
-          <legend class="form-label">Select Days *</legend>
+          <legend class="form-label" i18n="@@taskFormModal.selectDaysLabel">Velg dager *</legend>
           <div class="day-pills">
             @for (day of daysOfWeek; track day.value) {
               <button
@@ -99,7 +109,9 @@
             }
           </div>
           @if (repeatDaysArray.length === 0) {
-            <div class="form-hint">Please select at least one day</div>
+            <div class="form-hint" i18n="@@taskFormModal.selectAtLeastOneDay">
+              Vennligst velg minst én dag
+            </div>
           }
         </fieldset>
       }
@@ -107,7 +119,9 @@
       <!-- Weekly Rotation: Rotation Type & Children -->
       @if (ruleType === 'weekly_rotation') {
         <div class="form-group">
-          <label class="form-label" for="rotation-type">Rotation Type *</label>
+          <label class="form-label" for="rotation-type" i18n="@@taskFormModal.rotationTypeLabel"
+            >Rotasjonstype *</label
+          >
           <select id="rotation-type" class="form-select" formControlName="rotationType">
             @for (type of rotationTypes; track type.value) {
               <option [value]="type.value">{{ type.label }}</option>
@@ -116,7 +130,9 @@
         </div>
 
         <fieldset class="form-group">
-          <legend class="form-label">Select Children (2 or more) *</legend>
+          <legend class="form-label" i18n="@@taskFormModal.selectChildrenRotationLabel">
+            Velg barn (2 eller flere) *
+          </legend>
           <div class="child-selection">
             @for (child of children(); track child.id) {
               <label class="child-checkbox">
@@ -124,17 +140,21 @@
                   type="checkbox"
                   [checked]="isChildSelected(child.id)"
                   (change)="onChildChange(child.id, $any($event.target).checked)"
-                  [attr.aria-label]="'Assign to ' + child.name"
+                  [attr.aria-label]="'Tildel til ' + child.name"
                 />
                 <span class="child-name">{{ child.name }}</span>
               </label>
             }
             @if (children().length === 0) {
-              <p class="no-children">No children in this household yet.</p>
+              <p class="no-children" i18n="@@taskFormModal.noChildrenYet">
+                Ingen barn i denne husholdningen ennå.
+              </p>
             }
           </div>
           @if (assignedChildrenArray.length < 2 && assignedChildrenArray.length > 0) {
-            <div class="form-hint">Select at least 2 children for rotation</div>
+            <div class="form-hint" i18n="@@taskFormModal.selectAtLeastTwoForRotation">
+              Velg minst 2 barn for rotasjon
+            </div>
           }
         </fieldset>
       }
@@ -142,7 +162,9 @@
       <!-- Single Task: Deadline & Candidates -->
       @if (ruleType === 'single') {
         <div class="form-group">
-          <label class="form-label" for="deadline">Deadline (optional)</label>
+          <label class="form-label" for="deadline" i18n="@@taskFormModal.deadlineLabel"
+            >Frist (valgfritt)</label
+          >
           <input
             type="datetime-local"
             id="deadline"
@@ -150,12 +172,16 @@
             formControlName="deadline"
             [min]="minDeadline()"
           />
-          <div class="form-hint">When should this task be completed by?</div>
+          <div class="form-hint" i18n="@@taskFormModal.deadlineHint">
+            Når skal denne oppgaven være fullført?
+          </div>
         </div>
 
         <fieldset class="form-group">
-          <legend class="form-label">Candidates *</legend>
-          <div class="form-hint-top">Which children can accept this task?</div>
+          <legend class="form-label" i18n="@@taskFormModal.candidatesLabel">Kandidater *</legend>
+          <div class="form-hint-top" i18n="@@taskFormModal.candidatesHint">
+            Hvilke barn kan ta denne oppgaven?
+          </div>
           <div class="child-selection">
             @for (child of children(); track child.id) {
               <label class="child-checkbox">
@@ -163,17 +189,21 @@
                   type="checkbox"
                   [checked]="isChildSelected(child.id)"
                   (change)="onChildChange(child.id, $any($event.target).checked)"
-                  [attr.aria-label]="'Add ' + child.name + ' as candidate'"
+                  [attr.aria-label]="'Legg til ' + child.name + ' som kandidat'"
                 />
                 <span class="child-name">{{ child.name }}</span>
               </label>
             }
             @if (children().length === 0) {
-              <p class="no-children">No children in this household yet.</p>
+              <p class="no-children" i18n="@@taskFormModal.noChildrenYetSingle">
+                Ingen barn i denne husholdningen ennå.
+              </p>
             }
           </div>
           @if (assignedChildrenArray.length === 0) {
-            <div class="form-hint">Select at least one candidate</div>
+            <div class="form-hint" i18n="@@taskFormModal.selectAtLeastOneCandidate">
+              Velg minst én kandidat
+            </div>
           }
         </fieldset>
       }
@@ -182,9 +212,9 @@
       @if (ruleType === 'daily' || ruleType === 'repeating') {
         <fieldset class="form-group">
           <legend class="form-label">
-            Assign to Children
+            <span i18n="@@taskFormModal.assignToChildrenLabel">Tildel til barn</span>
             @if (ruleType === 'daily') {
-              <span class="help-text">(Optional)</span>
+              <span class="help-text" i18n="@@taskFormModal.optional">(Valgfritt)</span>
             }
           </legend>
           <div class="child-selection">
@@ -194,13 +224,15 @@
                   type="checkbox"
                   [checked]="isChildSelected(child.id)"
                   (change)="onChildChange(child.id, $any($event.target).checked)"
-                  [attr.aria-label]="'Assign to ' + child.name"
+                  [attr.aria-label]="'Tildel til ' + child.name"
                 />
                 <span class="child-name">{{ child.name }}</span>
               </label>
             }
             @if (children().length === 0) {
-              <p class="no-children">No children in this household yet.</p>
+              <p class="no-children" i18n="@@taskFormModal.noChildrenYetDaily">
+                Ingen barn i denne husholdningen ennå.
+              </p>
             }
           </div>
         </fieldset>
@@ -210,9 +242,23 @@
       @if (mode() === 'edit') {
         <!-- Edit mode: Delete on left, Cancel/Save on right -->
         <div class="modal-actions-split" modal-actions>
-          <button type="button" class="btn btn-danger" (click)="onDeleteClick()">Delete</button>
+          <button
+            type="button"
+            class="btn btn-danger"
+            (click)="onDeleteClick()"
+            i18n="@@taskFormModal.deleteButton"
+          >
+            Slett
+          </button>
           <div class="modal-actions-right">
-            <button type="button" class="btn btn-secondary" (click)="onCancel()">Cancel</button>
+            <button
+              type="button"
+              class="btn btn-secondary"
+              (click)="onCancel()"
+              i18n="@@taskFormModal.cancelButton"
+            >
+              Avbryt
+            </button>
             <button
               type="submit"
               class="btn btn-primary"
@@ -225,7 +271,14 @@
       } @else {
         <!-- Create mode: Cancel/Create on right -->
         <div class="modal-actions" modal-actions>
-          <button type="button" class="btn btn-secondary" (click)="onCancel()">Cancel</button>
+          <button
+            type="button"
+            class="btn btn-secondary"
+            (click)="onCancel()"
+            i18n="@@taskFormModal.cancelButtonCreate"
+          >
+            Avbryt
+          </button>
           <button type="submit" class="btn btn-primary" [disabled]="!isFormValid() || submitting()">
             {{ submitButtonText() }}
           </button>
@@ -235,14 +288,26 @@
   } @else {
     <!-- Delete Confirmation -->
     <div class="delete-confirm">
-      <p class="delete-confirm-text">
-        Are you sure you want to delete this task? This action cannot be undone.
+      <p class="delete-confirm-text" i18n="@@taskFormModal.deleteConfirmText">
+        Er du sikker på at du vil slette denne oppgaven? Denne handlingen kan ikke angres.
       </p>
 
       <div class="modal-actions" modal-actions>
-        <button type="button" class="btn btn-secondary" (click)="onCancelDelete()">Cancel</button>
-        <button type="button" class="btn btn-danger" (click)="onConfirmDelete()">
-          Yes, Delete Task
+        <button
+          type="button"
+          class="btn btn-secondary"
+          (click)="onCancelDelete()"
+          i18n="@@taskFormModal.cancelDeleteButton"
+        >
+          Avbryt
+        </button>
+        <button
+          type="button"
+          class="btn btn-danger"
+          (click)="onConfirmDelete()"
+          i18n="@@taskFormModal.confirmDeleteButton"
+        >
+          Ja, slett oppgave
         </button>
       </div>
     </div>

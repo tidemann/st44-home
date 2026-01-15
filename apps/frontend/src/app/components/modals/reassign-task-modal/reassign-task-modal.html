@@ -1,7 +1,12 @@
-<app-modal [open]="open()" (closeRequested)="onCancel()" title="Reassign Task">
+<app-modal
+  [open]="open()"
+  (closeRequested)="onCancel()"
+  i18n-title="@@reassignModal.title"
+  title="Tilordne oppgave på nytt"
+>
   <div class="reassign-form">
-    <p class="reassign-description">
-      Reassign <strong>{{ taskName() }}</strong> to a different child.
+    <p class="reassign-description" i18n="@@reassignModal.description">
+      Tilordne <strong>{{ taskName() }}</strong> til et annet barn.
     </p>
 
     @if (error()) {
@@ -11,7 +16,7 @@
     }
 
     <div class="form-group">
-      <label for="child-select">Select Child</label>
+      <label for="child-select" i18n="@@reassignModal.selectChildLabel">Velg barn</label>
       <select
         id="child-select"
         name="childId"
@@ -19,7 +24,9 @@
         (ngModelChange)="onChildChange($event)"
         required
       >
-        <option value="" disabled selected>Choose a child...</option>
+        <option value="" disabled selected i18n="@@reassignModal.chooseChildPlaceholder">
+          Velg et barn...
+        </option>
         @for (child of children(); track child.id) {
           @if (child.id !== currentChildId()) {
             <option [value]="child.id">{{ child.name }}</option>
@@ -29,14 +36,22 @@
     </div>
 
     <div class="form-actions">
-      <button type="button" class="btn btn-secondary" (click)="onCancel()">Cancel</button>
+      <button
+        type="button"
+        class="btn btn-secondary"
+        (click)="onCancel()"
+        i18n="@@reassignModal.cancelButton"
+      >
+        Avbryt
+      </button>
       <button
         type="button"
         class="btn btn-primary"
         (click)="onSubmit()"
         [disabled]="!selectedChildId()"
+        i18n="@@reassignModal.submitButton"
       >
-        Reassign
+        Tilordne på nytt
       </button>
     </div>
   </div>

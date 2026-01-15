@@ -3,7 +3,7 @@
   @if (loading()) {
     <div class="loading-state" role="status" aria-live="polite">
       <div class="spinner" aria-hidden="true"></div>
-      <p>Generating QR code...</p>
+      <p i18n="@@qrCodeDisplay.generating">Genererer QR-kode...</p>
     </div>
   }
 
@@ -12,7 +12,9 @@
     <div class="error-state" role="alert" aria-live="assertive">
       <div class="error-icon" aria-hidden="true">⚠️</div>
       <p>{{ error() }}</p>
-      <button class="btn btn-secondary" (click)="loadQrToken()">Try Again</button>
+      <button class="btn btn-secondary" (click)="loadQrToken()" i18n="@@qrCodeDisplay.tryAgain">
+        Prov igjen
+      </button>
     </div>
   }
 
@@ -21,12 +23,12 @@
     <div class="qr-content">
       @if (childName()) {
         <div class="qr-header">
-          <p class="child-name">for {{ childName() }}</p>
+          <p class="child-name" i18n="@@qrCodeDisplay.forChild">for {{ childName() }}</p>
         </div>
       }
 
       <div class="qr-canvas-wrapper">
-        <canvas #qrCanvas aria-label="QR code for child login"></canvas>
+        <canvas #qrCanvas aria-label="QR-kode for barneinnlogging"></canvas>
       </div>
 
       @if (expiresAt()) {
@@ -34,27 +36,36 @@
       }
 
       <div class="qr-instructions">
-        <p>Scan this QR code with the Diddit app to log in quickly.</p>
+        <p i18n="@@qrCodeDisplay.instructions">
+          Skann denne QR-koden med Diddit-appen for a logge inn raskt.
+        </p>
       </div>
 
       <div class="qr-actions">
         <button
           class="btn btn-secondary"
           (click)="download()"
-          aria-label="Download QR code as image"
+          aria-label="Last ned QR-kode som bilde"
+          i18n="@@qrCodeDisplay.download"
         >
-          📥 Download
+          📥 Last ned
         </button>
-        <button class="btn btn-secondary" (click)="print()" aria-label="Print QR code">
-          🖨️ Print
+        <button
+          class="btn btn-secondary"
+          (click)="print()"
+          aria-label="Skriv ut QR-kode"
+          i18n="@@qrCodeDisplay.print"
+        >
+          🖨️ Skriv ut
         </button>
         <button
           class="btn btn-secondary"
           (click)="regenerate()"
-          aria-label="Regenerate QR code"
+          aria-label="Generer QR-kode pa nytt"
           [disabled]="loading()"
+          i18n="@@qrCodeDisplay.regenerate"
         >
-          🔄 Regenerate
+          🔄 Generer pa nytt
         </button>
       </div>
     </div>

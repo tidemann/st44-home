@@ -2,7 +2,7 @@
 @if (loading()) {
   <div class="loading-container" role="status" aria-live="polite">
     <div class="loading-spinner" aria-hidden="true"></div>
-    <p>Loading progress...</p>
+    <p i18n="@@progress.loading">Laster fremgang...</p>
   </div>
 }
 
@@ -10,16 +10,18 @@
 @if (error()) {
   <div class="error-container" role="alert" aria-live="assertive">
     <p class="error-message">{{ error() }}</p>
-    <button class="retry-button" (click)="loadData()">Try Again</button>
+    <button class="retry-button" (click)="loadData()" i18n="@@progress.tryAgain">Prøv igjen</button>
   </div>
 }
 
 <!-- Main Content -->
 @if (!loading() && !error()) {
-  <app-page title="Progress" maxWidth="wide">
+  <app-page i18n-title="@@progress.pageTitle" title="Fremgang" maxWidth="wide">
     <!-- Household Stats Section -->
     <section class="stats-section" aria-labelledby="stats-heading">
-      <h2 id="stats-heading" class="visually-hidden">Household Statistics</h2>
+      <h2 id="stats-heading" class="visually-hidden" i18n="@@progress.statsHeading">
+        Husstandsstatistikk
+      </h2>
       <div class="stats-grid" role="list">
         <div
           class="stat-box"
@@ -27,7 +29,7 @@
           aria-label="Total Points: {{ householdStats().totalPoints }}"
         >
           <div class="stat-value">{{ householdStats().totalPoints }}</div>
-          <div class="stat-label">Total Points</div>
+          <div class="stat-label" i18n="@@progress.totalPoints">Totalt poeng</div>
         </div>
         <div
           class="stat-box"
@@ -35,7 +37,7 @@
           aria-label="Completion Rate: {{ householdStats().completionRate }} percent"
         >
           <div class="stat-value">{{ householdStats().completionRate }}%</div>
-          <div class="stat-label">Completion Rate</div>
+          <div class="stat-label" i18n="@@progress.completionRate">Fullføringsrate</div>
         </div>
         <div
           class="stat-box"
@@ -43,7 +45,7 @@
           aria-label="Tasks This Week: {{ householdStats().tasksCompletedThisWeek }}"
         >
           <div class="stat-value">{{ householdStats().tasksCompletedThisWeek }}</div>
-          <div class="stat-label">Tasks This Week</div>
+          <div class="stat-label" i18n="@@progress.tasksThisWeek">Oppgaver denne uken</div>
         </div>
       </div>
     </section>
@@ -51,12 +53,18 @@
     <!-- Leaderboard Section -->
     <section class="section" aria-labelledby="leaderboard-heading">
       <div class="section-header">
-        <h2 id="leaderboard-heading">This Week's Leaders</h2>
-        <p class="section-subtitle">Great work, everyone!</p>
+        <h2 id="leaderboard-heading" i18n="@@progress.leaderboardTitle">Ukens ledere</h2>
+        <p class="section-subtitle" i18n="@@progress.leaderboardSubtitle">
+          Bra jobba, alle sammen!
+        </p>
       </div>
 
       @if (hasLeaderboard()) {
-        <ol class="leaderboard" aria-label="Weekly leaderboard rankings">
+        <ol
+          class="leaderboard"
+          i18n-aria-label="@@progress.leaderboardAriaLabel"
+          aria-label="Ukentlig toppliste"
+        >
           @for (entry of leaderboard(); track entry.userId) {
             <li
               class="leaderboard-item"
@@ -68,7 +76,11 @@
               </div>
               <div class="leaderboard-info">
                 <div class="leaderboard-name">{{ entry.name }}</div>
-                <div class="leaderboard-tasks">{{ entry.tasksCompleted }} tasks completed</div>
+                <div class="leaderboard-tasks">
+                  <ng-container i18n="@@progress.tasksCompleted"
+                    >{{ entry.tasksCompleted }} oppgaver fullført</ng-container
+                  >
+                </div>
               </div>
               <div class="leaderboard-points" aria-label="{{ entry.points }} points">
                 {{ entry.points }}
@@ -78,7 +90,9 @@
         </ol>
       } @else {
         <div class="empty-state" role="status">
-          <p>No leaderboard data yet. Complete some tasks to get started!</p>
+          <p i18n="@@progress.noLeaderboardData">
+            Ingen toppliste-data ennå. Fullfør noen oppgaver for å komme i gang!
+          </p>
         </div>
       }
     </section>
@@ -86,12 +100,19 @@
     <!-- Achievements Section -->
     <section class="section" aria-labelledby="achievements-heading">
       <div class="section-header">
-        <h2 id="achievements-heading">Achievements</h2>
-        <p class="section-subtitle">Keep up the amazing progress!</p>
+        <h2 id="achievements-heading" i18n="@@progress.achievementsTitle">Prestasjoner</h2>
+        <p class="section-subtitle" i18n="@@progress.achievementsSubtitle">
+          Fortsett den flotte innsatsen!
+        </p>
       </div>
 
       @if (hasAchievements()) {
-        <div class="achievements-grid" role="list" aria-label="Achievement badges">
+        <div
+          class="achievements-grid"
+          role="list"
+          i18n-aria-label="@@progress.achievementBadges"
+          aria-label="Prestasjonsbadger"
+        >
           @for (achievement of achievements(); track achievement.id) {
             <article
               class="achievement-card"
@@ -122,7 +143,7 @@
                   </div>
                 }
                 @if (achievement.unlocked) {
-                  <div class="achievement-unlocked">Unlocked!</div>
+                  <div class="achievement-unlocked" i18n="@@progress.unlocked">Låst opp!</div>
                 }
               </div>
             </article>
@@ -130,7 +151,9 @@
         </div>
       } @else {
         <div class="empty-state" role="status">
-          <p>No achievements yet. Start completing tasks to unlock badges!</p>
+          <p i18n="@@progress.noAchievementsYet">
+            Ingen prestasjoner ennå. Begynn å fullføre oppgaver for å låse opp badges!
+          </p>
         </div>
       }
     </section>

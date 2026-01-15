@@ -51,7 +51,9 @@ export class ChildLoginComponent {
       this.router.navigate(['/my-tasks']);
     } catch (error: unknown) {
       // Child-friendly error message
-      this.errorMessage.set('Oops! Check your email and password and try again.');
+      this.errorMessage.set(
+        $localize`:@@childLogin.loginFailed:Oops! Sjekk e-posten og passordet ditt og prøv igjen.`,
+      );
       console.error('Login failed:', error);
     } finally {
       this.isLoading.set(false);

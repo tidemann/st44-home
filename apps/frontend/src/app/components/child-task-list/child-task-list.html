@@ -1,22 +1,26 @@
 <div class="child-task-list">
   <header class="header">
-    <h1>My Tasks</h1>
+    <h1 i18n="@@childTaskList.title">Mine oppgaver</h1>
     <div class="filter-buttons">
       <button
         class="filter-btn"
         [class.active]="dateFilter() === 'today'"
         (click)="filterDate('today')"
-        aria-label="Show today's tasks"
+        i18n-aria-label="@@childTaskList.showTodayTasks"
+        aria-label="Vis dagens oppgaver"
+        i18n="@@childTaskList.today"
       >
-        Today
+        I dag
       </button>
       <button
         class="filter-btn"
         [class.active]="dateFilter() === 'week'"
         (click)="filterDate('week')"
-        aria-label="Show this week's tasks"
+        i18n-aria-label="@@childTaskList.showWeekTasks"
+        aria-label="Vis denne ukens oppgaver"
+        i18n="@@childTaskList.thisWeek"
       >
-        This Week
+        Denne uken
       </button>
     </div>
   </header>
@@ -24,14 +28,16 @@
   @if (loading()) {
     <div class="loading-state" role="status" aria-live="polite">
       <div class="spinner"></div>
-      <p>Loading tasks...</p>
+      <p i18n="@@childTaskList.loading">Laster oppgaver...</p>
     </div>
   }
 
   @if (error()) {
     <div class="error-state" role="alert">
       <p>{{ error() }}</p>
-      <button class="retry-btn" (click)="filterDate(dateFilter())">Try Again</button>
+      <button class="retry-btn" (click)="filterDate(dateFilter())" i18n="@@childTaskList.tryAgain">
+        Prøv igjen
+      </button>
     </div>
   }
 
@@ -39,16 +45,24 @@
     @if (tasks().length === 0) {
       <div class="empty-state">
         <div class="emoji">🎉</div>
-        <h2>No tasks {{ dateFilter() === 'today' ? 'today' : 'this week' }}!</h2>
-        <p>Great job! You're all caught up!</p>
+        <h2>
+          @if (dateFilter() === 'today') {
+            <ng-container i18n="@@childTaskList.noTasksToday">Ingen oppgaver i dag!</ng-container>
+          } @else {
+            <ng-container i18n="@@childTaskList.noTasksWeek"
+              >Ingen oppgaver denne uken!</ng-container
+            >
+          }
+        </h2>
+        <p i18n="@@childTaskList.allCaughtUp">Flott jobbet! Du er helt ajour!</p>
       </div>
     } @else {
       <div class="progress-section">
         <div class="progress-text">
           <span class="completed">{{ completedCount() }}</span>
-          <span class="divider">of</span>
+          <span class="divider" i18n="@@childTaskList.of">av</span>
           <span class="total">{{ tasks().length }}</span>
-          <span class="label">complete</span>
+          <span class="label" i18n="@@childTaskList.complete">fullført</span>
         </div>
         <div class="progress-bar-container">
           <div
@@ -57,12 +71,14 @@
             [attr.aria-valuenow]="completedCount()"
             [attr.aria-valuemin]="0"
             [attr.aria-valuemax]="tasks().length"
-            [attr.aria-label]="completedCount() + ' of ' + tasks().length + ' tasks complete'"
+            [attr.aria-label]="completedCount() + ' av ' + tasks().length + ' oppgaver fullført'"
             [style.width.%]="progressPercent()"
           ></div>
         </div>
         @if (progressPercent() === 100) {
-          <div class="congrats-message">🌟 All done! Amazing work!</div>
+          <div class="congrats-message" i18n="@@childTaskList.allDone">
+            🌟 Alt gjort! Fantastisk innsats!
+          </div>
         }
       </div>
 

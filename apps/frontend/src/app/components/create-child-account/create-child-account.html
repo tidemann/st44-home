@@ -1,7 +1,7 @@
 <div class="create-account-modal">
   <div class="modal-header">
-    <h2>Create Account for {{ child().name }}</h2>
-    <button type="button" class="btn-close" (click)="onCancel()" aria-label="Close">&times;</button>
+    <h2 i18n="@@createChildAccount.title">Opprett konto for {{ child().name }}</h2>
+    <button type="button" class="btn-close" (click)="onCancel()" aria-label="Lukk">&times;</button>
   </div>
 
   <div class="modal-body">
@@ -22,23 +22,28 @@
     <form [formGroup]="form" (ngSubmit)="onSubmit()">
       <!-- Email Field -->
       <div class="form-group">
-        <label for="email">Email Address</label>
+        <label for="email" i18n="@@createChildAccount.emailLabel">E-postadresse</label>
         <input
           id="email"
           type="email"
           formControlName="email"
           class="form-control"
           [class.invalid]="emailControl.invalid && emailControl.touched"
-          placeholder="child@example.com"
+          i18n-placeholder="@@createChildAccount.emailPlaceholder"
+          placeholder="barn@eksempel.no"
           autocomplete="email"
         />
         @if (emailControl.invalid && emailControl.touched) {
           <div class="error-message">
             @if (emailControl.hasError('required')) {
-              Email is required
+              <ng-container i18n="@@createChildAccount.emailRequired"
+                >E-post er pakrevd</ng-container
+              >
             }
             @if (emailControl.hasError('email')) {
-              Please enter a valid email address
+              <ng-container i18n="@@createChildAccount.emailInvalid"
+                >Vennligst oppgi en gyldig e-postadresse</ng-container
+              >
             }
           </div>
         }
@@ -46,7 +51,7 @@
 
       <!-- Password Field -->
       <div class="form-group">
-        <label for="password">Password</label>
+        <label for="password" i18n="@@createChildAccount.passwordLabel">Passord</label>
         <div class="password-input-wrapper">
           <input
             id="password"
@@ -54,14 +59,15 @@
             formControlName="password"
             class="form-control"
             [class.invalid]="passwordControl.invalid && passwordControl.touched"
-            placeholder="Minimum 8 characters"
+            i18n-placeholder="@@createChildAccount.passwordPlaceholder"
+            placeholder="Minimum 8 tegn"
             autocomplete="new-password"
           />
           <button
             type="button"
             class="btn-toggle-password"
             (click)="togglePasswordVisibility()"
-            [attr.aria-label]="showPassword() ? 'Hide password' : 'Show password'"
+            [attr.aria-label]="showPassword() ? 'Skjul passord' : 'Vis passord'"
           >
             {{ showPassword() ? '👁️' : '👁️‍🗨️' }}
           </button>
@@ -79,13 +85,20 @@
         @if (passwordControl.invalid && passwordControl.touched) {
           <div class="error-message">
             @if (passwordControl.hasError('required')) {
-              Password is required
+              <ng-container i18n="@@createChildAccount.passwordRequired"
+                >Passord er pakrevd</ng-container
+              >
             }
             @if (passwordControl.hasError('minlength')) {
-              Password must be at least 8 characters
+              <ng-container i18n="@@createChildAccount.passwordMinLength"
+                >Passordet ma vaere minst 8 tegn</ng-container
+              >
             }
             @if (passwordControl.hasError('passwordStrength')) {
-              Password must include uppercase, lowercase, number, and special character
+              <ng-container i18n="@@createChildAccount.passwordStrength"
+                >Passordet ma inneholde store bokstaver, sma bokstaver, tall og
+                spesialtegn</ng-container
+              >
             }
           </div>
         }
@@ -93,7 +106,9 @@
 
       <!-- Confirm Password Field -->
       <div class="form-group">
-        <label for="confirmPassword">Confirm Password</label>
+        <label for="confirmPassword" i18n="@@createChildAccount.confirmPasswordLabel"
+          >Bekreft passord</label
+        >
         <input
           id="confirmPassword"
           [type]="showPassword() ? 'text' : 'password'"
@@ -103,14 +118,19 @@
             (confirmPasswordControl.invalid || form.hasError('passwordMismatch')) &&
             confirmPasswordControl.touched
           "
-          placeholder="Re-enter password"
+          i18n-placeholder="@@createChildAccount.confirmPasswordPlaceholder"
+          placeholder="Skriv inn passordet pa nytt"
           autocomplete="new-password"
         />
         @if (confirmPasswordControl.invalid && confirmPasswordControl.touched) {
-          <div class="error-message">Confirm password is required</div>
+          <div class="error-message" i18n="@@createChildAccount.confirmPasswordRequired">
+            Bekreft passord er pakrevd
+          </div>
         }
         @if (form.hasError('passwordMismatch') && confirmPasswordControl.touched) {
-          <div class="error-message">Passwords do not match</div>
+          <div class="error-message" i18n="@@createChildAccount.passwordMismatch">
+            Passordene samsvarer ikke
+          </div>
         }
       </div>
 
@@ -121,14 +141,17 @@
           class="btn btn-secondary"
           (click)="onCancel()"
           [disabled]="isSubmitting()"
+          i18n="@@createChildAccount.cancelButton"
         >
-          Cancel
+          Avbryt
         </button>
         <button type="submit" class="btn btn-primary" [disabled]="form.invalid || isSubmitting()">
           @if (isSubmitting()) {
-            Creating Account...
+            <ng-container i18n="@@createChildAccount.creatingButton"
+              >Oppretter konto...</ng-container
+            >
           } @else {
-            Create Account
+            <ng-container i18n="@@createChildAccount.createButton">Opprett konto</ng-container>
           }
         </button>
       </div>

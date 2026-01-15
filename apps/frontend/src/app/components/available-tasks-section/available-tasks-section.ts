@@ -69,7 +69,9 @@ export class AvailableTasksSectionComponent implements OnInit {
       },
       error: (err) => {
         this.processingTaskId.set(null);
-        const errorMsg = err?.error?.error || 'Failed to accept task';
+        const errorMsg =
+          err?.error?.error ||
+          $localize`:@@availableTasks.acceptFailed:Kunne ikke akseptere oppgave`;
         this.actionError.set(errorMsg);
         console.error('Failed to accept task:', err);
       },
@@ -92,7 +94,8 @@ export class AvailableTasksSectionComponent implements OnInit {
       },
       error: (err) => {
         this.processingTaskId.set(null);
-        const errorMsg = err?.error?.error || 'Failed to decline task';
+        const errorMsg =
+          err?.error?.error || $localize`:@@availableTasks.declineFailed:Kunne ikke avvise oppgave`;
         this.actionError.set(errorMsg);
         console.error('Failed to decline task:', err);
       },
@@ -106,10 +109,10 @@ export class AvailableTasksSectionComponent implements OnInit {
     if (!task.hasDeadline) return '';
 
     const days = task.daysUntilDeadline ?? 0;
-    if (days < 0) return 'Overdue';
-    if (days === 0) return 'Due today';
-    if (days === 1) return 'Due tomorrow';
-    return `Due in ${days} days`;
+    if (days < 0) return $localize`:@@availableTasks.overdue:Forfalt`;
+    if (days === 0) return $localize`:@@availableTasks.dueToday:Forfaller i dag`;
+    if (days === 1) return $localize`:@@availableTasks.dueTomorrow:Forfaller i morgen`;
+    return $localize`:@@availableTasks.dueInDays:Forfaller om ${days} dager`;
   }
 
   /**

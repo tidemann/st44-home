@@ -267,13 +267,15 @@ describe('TaskCardComponent', () => {
     it('should have aria-label on complete button', () => {
       const compiled = fixture.nativeElement as HTMLElement;
       const button = compiled.querySelector('.task-complete-btn') as HTMLButtonElement;
-      expect(button.getAttribute('aria-label')).toBe('Mark Test Task as complete');
+      // Norwegian is the source language
+      expect(button.getAttribute('aria-label')).toBe('Merk Test Task som fullført');
     });
 
     it('should have aria-label on card when clickable', () => {
       const compiled = fixture.nativeElement as HTMLElement;
       const card = compiled.querySelector('.task-card') as HTMLElement;
-      expect(card.getAttribute('aria-label')).toBe('Edit Test Task');
+      // Norwegian is the source language
+      expect(card.getAttribute('aria-label')).toBe('Rediger Test Task');
     });
 
     it('should not have aria-label on card when not clickable', () => {

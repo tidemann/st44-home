@@ -1,13 +1,13 @@
-<div class="week-comparison" role="region" aria-label="Weekly comparison">
-  <h3 class="comparison-title">This Week vs Last Week</h3>
+<div class="week-comparison" role="region" aria-label="Ukessammenligning">
+  <h3 class="comparison-title" i18n="@@weekComparison.title">Denne uken vs forrige uke</h3>
 
   <div class="comparison-grid">
     <!-- This Week -->
     <div class="period-card current">
-      <span class="period-label">This Week</span>
+      <span class="period-label" i18n="@@weekComparison.thisWeek">Denne uken</span>
       <span class="period-value">{{ currentRate() }}%</span>
-      <span class="period-sublabel">
-        {{ comparison().current.completedTasks }}/{{ comparison().current.totalTasks }} tasks
+      <span class="period-sublabel" i18n="@@weekComparison.tasksCompleted">
+        {{ comparison().current.completedTasks }}/{{ comparison().current.totalTasks }} oppgaver
       </span>
     </div>
 
@@ -24,21 +24,25 @@
 
     <!-- Last Week -->
     <div class="period-card previous">
-      <span class="period-label">Last Week</span>
+      <span class="period-label" i18n="@@weekComparison.lastWeek">Forrige uke</span>
       <span class="period-value">{{ previousRate() }}%</span>
-      <span class="period-sublabel">
-        {{ comparison().previous.completedTasks }}/{{ comparison().previous.totalTasks }} tasks
+      <span class="period-sublabel" i18n="@@weekComparison.tasksCompletedPrevious">
+        {{ comparison().previous.completedTasks }}/{{ comparison().previous.totalTasks }} oppgaver
       </span>
     </div>
   </div>
 
   <!-- Points Change -->
   <div class="points-change">
-    <span class="points-label">Points this week:</span>
+    <span class="points-label" i18n="@@weekComparison.pointsThisWeek">Poeng denne uken:</span>
     <span class="points-value">{{ comparison().current.totalPoints }}</span>
     @if (pointsChange() !== 0) {
-      <span class="points-delta" [class.positive]="pointsChange() > 0">
-        ({{ pointsChange() > 0 ? '+' : '' }}{{ pointsChange() }} from last week)
+      <span
+        class="points-delta"
+        [class.positive]="pointsChange() > 0"
+        i18n="@@weekComparison.pointsDelta"
+      >
+        ({{ pointsChange() > 0 ? '+' : '' }}{{ pointsChange() }} fra forrige uke)
       </span>
     }
   </div>

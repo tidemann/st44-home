@@ -366,7 +366,7 @@ describe('RegisterComponent', () => {
 
       await component['onSubmit']();
 
-      expect(component['errorMessage']()).toBe('Registration failed. Please try again.');
+      expect(component['errorMessage']()).toBe('Registrering feilet. Vennligst prøv igjen.');
     });
   });
 });

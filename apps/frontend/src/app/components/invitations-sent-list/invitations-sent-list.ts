@@ -44,7 +44,9 @@ export class InvitationsSentListComponent implements OnInit {
   async loadInvitations() {
     const householdId = this.householdService.getActiveHouseholdId();
     if (!householdId) {
-      this.errorMessage.set('No active household selected');
+      this.errorMessage.set(
+        $localize`:@@invitationsSent.noActiveHousehold:Ingen aktiv husstand valgt`,
+      );
       return;
     }
 
@@ -56,7 +58,9 @@ export class InvitationsSentListComponent implements OnInit {
       this.invitations.set(response.invitations);
     } catch (error) {
       console.error('Failed to load invitations:', error);
-      this.errorMessage.set('Failed to load invitations. Please try again.');
+      this.errorMessage.set(
+        $localize`:@@invitationsSent.loadFailed:Kunne ikke laste invitasjoner. Vennligst prøv igjen.`,
+      );
     } finally {
       this.isLoading.set(false);
     }
@@ -75,7 +79,9 @@ export class InvitationsSentListComponent implements OnInit {
 
     const householdId = this.householdService.getActiveHouseholdId();
     if (!householdId) {
-      this.errorMessage.set('No active household selected');
+      this.errorMessage.set(
+        $localize`:@@invitationsSent.noActiveHousehold:Ingen aktiv husstand valgt`,
+      );
       return;
     }
 
@@ -88,7 +94,9 @@ export class InvitationsSentListComponent implements OnInit {
       await this.loadInvitations();
     } catch (error) {
       console.error('Failed to cancel invitation:', error);
-      this.errorMessage.set('Failed to cancel invitation. Please try again.');
+      this.errorMessage.set(
+        $localize`:@@invitationsSent.cancelFailed:Kunne ikke kansellere invitasjon. Vennligst prøv igjen.`,
+      );
     } finally {
       this.isLoading.set(false);
     }
@@ -134,7 +142,9 @@ export class InvitationsSentListComponent implements OnInit {
 
     const householdId = this.householdService.getActiveHouseholdId();
     if (!householdId) {
-      this.errorMessage.set('No active household selected');
+      this.errorMessage.set(
+        $localize`:@@invitationsSent.noActiveHousehold:Ingen aktiv husstand valgt`,
+      );
       return;
     }
 
@@ -147,7 +157,9 @@ export class InvitationsSentListComponent implements OnInit {
       await this.loadInvitations();
     } catch (error) {
       console.error('Failed to cleanup invitations:', error);
-      this.errorMessage.set('Failed to cleanup invitations. Please try again.');
+      this.errorMessage.set(
+        $localize`:@@invitationsSent.cleanupFailed:Kunne ikke rydde opp i invitasjoner. Vennligst prøv igjen.`,
+      );
     } finally {
       this.isLoading.set(false);
     }

@@ -42,7 +42,8 @@ describe('BottomNav', () => {
     );
 
     expect(icons).toEqual(['🏠', '✓', '👥', '🏆', '🎁']);
-    expect(labels).toEqual(['Home', 'Tasks', 'Family', 'Progress', 'Rewards']);
+    // Norwegian is the source language
+    expect(labels).toEqual(['Hjem', 'Oppgaver', 'Familie', 'Fremgang', 'Belønninger']);
   });
 
   it('should apply active class to current screen', () => {
@@ -106,7 +107,8 @@ describe('BottomNav', () => {
 
     const nav = fixture.nativeElement.querySelector('.bottom-nav');
     expect(nav.getAttribute('role')).toBe('navigation');
-    expect(nav.getAttribute('aria-label')).toBe('Main navigation');
+    // Norwegian is the source language
+    expect(nav.getAttribute('aria-label')).toBe('Hovednavigasjon');
   });
 
   it('should set aria-current on active item', () => {
@@ -138,7 +140,8 @@ describe('BottomNav', () => {
       (btn as HTMLElement).getAttribute('aria-label'),
     );
 
-    expect(labels).toEqual(['Home', 'Tasks', 'Family', 'Progress', 'Rewards']);
+    // Norwegian is the source language
+    expect(labels).toEqual(['Hjem', 'Oppgaver', 'Familie', 'Fremgang', 'Belønninger']);
   });
 
   it('should update active state when activeScreen changes', () => {

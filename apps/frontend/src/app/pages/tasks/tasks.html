@@ -1,4 +1,4 @@
-<app-page title="Tasks" maxWidth="wide">
+<app-page i18n-title="@@tasks.pageTitle" title="Oppgaver" maxWidth="wide">
   <!-- Filter Tabs -->
   <div class="filter-tabs">
     @for (tab of filterTabs(); track tab.id) {
@@ -17,7 +17,12 @@
 
   <!-- Person Filter Tabs (only shown when filter = 'person') -->
   @if (activeFilter() === 'person') {
-    <div class="person-tabs" role="tablist" aria-label="Filter by person">
+    <div
+      class="person-tabs"
+      role="tablist"
+      i18n-aria-label="@@tasks.filterByPerson"
+      aria-label="Filtrer etter person"
+    >
       @for (member of members(); track member.id) {
         <button
           type="button"
@@ -32,7 +37,9 @@
         </button>
       }
       @if (members().length === 0) {
-        <p class="no-members-message">No children in this household.</p>
+        <p class="no-members-message" i18n="@@tasks.noChildrenInHousehold">
+          Ingen barn i denne husstanden.
+        </p>
       }
     </div>
   }
@@ -41,7 +48,7 @@
   @if (loading()) {
     <div class="loading-state" role="status" aria-live="polite">
       <div class="loading-spinner" aria-hidden="true"></div>
-      <p class="loading-text">Loading tasks...</p>
+      <p class="loading-text" i18n="@@tasks.loading">Laster oppgaver...</p>
     </div>
   }
 
@@ -50,7 +57,9 @@
     <div class="error-state" role="alert" aria-live="assertive">
       <div class="error-icon" aria-hidden="true">!</div>
       <p class="error-text">{{ error() }}</p>
-      <button type="button" class="retry-button" (click)="loadTasks()">Retry</button>
+      <button type="button" class="retry-button" (click)="loadTasks()" i18n="@@tasks.retry">
+        Prøv igjen
+      </button>
     </div>
   }
 

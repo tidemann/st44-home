@@ -133,7 +133,9 @@ export class LoginComponent implements OnInit, AfterViewInit {
       this.router.navigateByUrl(returnUrl);
     } catch (error: unknown) {
       const err = error as { error?: { error?: string; message?: string } };
-      const message = err.error?.error || 'Google sign-in failed. Please try again.';
+      const message =
+        err.error?.error ||
+        $localize`:@@login.googleSigninFailed:Google-pålogging feilet. Vennligst prøv igjen.`;
       this.errorMessage.set(message);
     } finally {
       this.isLoading.set(false);
@@ -165,7 +167,9 @@ export class LoginComponent implements OnInit, AfterViewInit {
         error?: { error?: string; message?: string };
       };
       const message =
-        err.error?.error || err.error?.message || 'Login failed. Please check your credentials.';
+        err.error?.error ||
+        err.error?.message ||
+        $localize`:@@login.loginFailed:Pålogging feilet. Vennligst sjekk dine innloggingsopplysninger.`;
       this.errorMessage.set(message);
     } finally {
       this.isLoading.set(false);
@@ -214,7 +218,9 @@ export class LoginComponent implements OnInit, AfterViewInit {
       const err = error as {
         error?: { error?: string; message?: string };
       };
-      const message = err.error?.error || 'QR code login failed. Please try again.';
+      const message =
+        err.error?.error ||
+        $localize`:@@login.qrLoginFailed:QR-kode pålogging feilet. Vennligst prøv igjen.`;
       this.errorMessage.set(message);
     } finally {
       this.isLoading.set(false);

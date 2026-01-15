@@ -1,26 +1,33 @@
 <div class="household-settings">
   @if (isLoading()) {
-    <div class="loading" aria-live="polite">Loading household settings...</div>
+    <div class="loading" aria-live="polite" i18n="@@householdSettings.loading">
+      Laster husholdningsinnstillinger...
+    </div>
   } @else if (household()) {
     <div class="household-settings__header">
-      <h1>Household Settings</h1>
-      <p class="household-settings__subtitle">Manage your household details and members</p>
+      <h1 i18n="@@householdSettings.title">Husholdningsinnstillinger</h1>
+      <p class="household-settings__subtitle" i18n="@@householdSettings.subtitle">
+        Administrer husholdningsdetaljer og medlemmer
+      </p>
     </div>
 
     <div class="household-settings__content">
       <!-- Household Name Section -->
       <section class="settings-section">
-        <h2>Household Details</h2>
+        <h2 i18n="@@householdSettings.detailsTitle">Husholdningsdetaljer</h2>
 
         <form [formGroup]="householdForm" (ngSubmit)="onSubmit()" class="household-form">
           <div class="form-group">
-            <label for="household-name" class="form-label">Household Name</label>
+            <label for="household-name" class="form-label" i18n="@@householdSettings.nameLabel"
+              >Husholdningsnavn</label
+            >
             <input
               id="household-name"
               type="text"
               formControlName="name"
               class="form-input"
-              placeholder="e.g., The Smith Family"
+              i18n-placeholder="@@householdSettings.namePlaceholder"
+              placeholder="f.eks. Familien Hansen"
               [attr.aria-invalid]="
                 householdForm.get('name')?.invalid && householdForm.get('name')?.touched
               "
@@ -34,10 +41,12 @@
             @if (householdForm.get('name')?.invalid && householdForm.get('name')?.touched) {
               <div id="name-error" class="form-error" role="alert">
                 @if (householdForm.get('name')?.errors?.['required']) {
-                  <span>Household name is required</span>
+                  <span i18n="@@householdSettings.nameRequired">Husholdningsnavn er pakrevd</span>
                 }
                 @if (householdForm.get('name')?.errors?.['maxlength']) {
-                  <span>Household name must be less than 100 characters</span>
+                  <span i18n="@@householdSettings.nameMaxLength"
+                    >Husholdningsnavn ma vaere under 100 tegn</span
+                  >
                 }
               </div>
             }
@@ -45,7 +54,9 @@
 
           @if (!isAdmin()) {
             <div class="info-message" role="status">
-              <p>Only household admins can edit household details.</p>
+              <p i18n="@@householdSettings.adminOnlyMessage">
+                Kun husholdningsadministratorer kan redigere husholdningsdetaljer.
+              </p>
             </div>
           }
 
@@ -58,9 +69,9 @@
                 [attr.aria-busy]="isSaving()"
               >
                 @if (isSaving()) {
-                  <span>Saving...</span>
+                  <span i18n="@@householdSettings.savingButton">Lagrer...</span>
                 } @else {
-                  <span>Save Changes</span>
+                  <span i18n="@@householdSettings.saveButton">Lagre endringer</span>
                 }
               </button>
             </div>
@@ -70,7 +81,7 @@
 
       <!-- Members Section -->
       <section class="settings-section">
-        <h2>Household Members</h2>
+        <h2 i18n="@@householdSettings.membersTitle">Husholdningsmedlemmer</h2>
 
         @if (isAdmin()) {
           <div class="section-actions">
@@ -101,22 +112,24 @@
                 </div>
                 <div class="member-meta">
                   <span class="member-email">{{ member.email }}</span>
-                  <span class="member-joined">
-                    Joined {{ member.joinedAt | date: 'mediumDate' }}
+                  <span class="member-joined" i18n="@@householdSettings.joinedDate">
+                    Ble med {{ member.joinedAt | date: 'mediumDate' }}
                   </span>
                 </div>
               </li>
             }
           </ul>
         } @else {
-          <p class="empty-state">No members found.</p>
+          <p class="empty-state" i18n="@@householdSettings.noMembers">Ingen medlemmer funnet.</p>
         }
       </section>
 
       <!-- Children Section -->
       <section class="settings-section">
-        <h2>Children</h2>
-        <p class="section-description">Manage children in your household.</p>
+        <h2 i18n="@@householdSettings.childrenTitle">Barn</h2>
+        <p class="section-description" i18n="@@householdSettings.childrenDescription">
+          Administrer barn i husholdningen din.
+        </p>
         <app-children-management />
       </section>
     </div>

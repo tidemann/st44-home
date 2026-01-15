@@ -1,0 +1,3586 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
+  <file source-language="no" datatype="plaintext" original="ng2.template">
+    <body>
+      <trans-unit id="childLogin.title" datatype="html">
+        <source>Velkommen tilbake!</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/auth/child-login.html</context>
+          <context context-type="linenumber">5,6</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="childLogin.subtitle" datatype="html">
+        <source>La oss komme i gang med oppgavene dine</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/auth/child-login.html</context>
+          <context context-type="linenumber">6,9</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="childLogin.email.label" datatype="html">
+        <source>Din e-post</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/auth/child-login.html</context>
+          <context context-type="linenumber">15,17</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="childLogin.email.placeholder" datatype="html">
+        <source>deg@eksempel.no</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/auth/child-login.html</context>
+          <context context-type="linenumber">23,24</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="error.email.invalid" datatype="html">
+        <source> Vennligst oppgi en gyldig e-postadresse </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/auth/child-login.html</context>
+          <context context-type="linenumber">28,30</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/auth/login.html</context>
+          <context context-type="linenumber">79,81</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/auth/register.html</context>
+          <context context-type="linenumber">124,126</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="childLogin.password.label" datatype="html">
+        <source>Ditt passord</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/auth/child-login.html</context>
+          <context context-type="linenumber">37,39</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="childLogin.password.placeholder" datatype="html">
+        <source>Skriv inn passordet ditt</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/auth/child-login.html</context>
+          <context context-type="linenumber">46,47</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="error.password.enterYours" datatype="html">
+        <source> Vennligst skriv inn passordet ditt </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/auth/child-login.html</context>
+          <context context-type="linenumber">64,67</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="childLogin.submit.loading" datatype="html">
+        <source>Logger inn...</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/auth/child-login.html</context>
+          <context context-type="linenumber">81,83</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="childLogin.submit.button" datatype="html">
+        <source>🚀 Logg inn</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/auth/child-login.html</context>
+          <context context-type="linenumber">83,86</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="childLogin.help.needHelp" datatype="html">
+        <source>Trenger du hjelp?</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/auth/child-login.html</context>
+          <context context-type="linenumber">91,92</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="childLogin.help.askParent" datatype="html">
+        <source>Spor en forelder</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/auth/child-login.html</context>
+          <context context-type="linenumber">93,97</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="childLogin.loginFailed" datatype="html">
+        <source>Oops! Sjekk e-posten og passordet ditt og prøv igjen.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/auth/child-login.ts</context>
+          <context context-type="linenumber">55</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="forgotPassword.successMessage" datatype="html">
+        <source>Hvis en konto finnes med den e-posten, er en tilbakestillingslenke sendt. Vennligst sjekk innboksen din.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/auth/forgot-password.ts</context>
+          <context context-type="linenumber">43</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="forgotPassword.tooManyRequests" datatype="html">
+        <source>For mange forespørsler. Vennligst prøv igjen senere.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/auth/forgot-password.ts</context>
+          <context context-type="linenumber">54</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="forgotPassword.sendResetEmailFailed" datatype="html">
+        <source>Kunne ikke sende tilbakestillings-e-post. Vennligst prøv igjen.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/auth/forgot-password.ts</context>
+          <context context-type="linenumber">60</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="login.title" datatype="html">
+        <source>Velkommen tilbake!</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/auth/login.html</context>
+          <context context-type="linenumber">9,10</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="login.subtitle" datatype="html">
+        <source> Logg inn for å administrere husholdningsoppgavene </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/auth/login.html</context>
+          <context context-type="linenumber">11,14</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="login.registration.success" datatype="html">
+        <source> Konto opprettet! Vennligst logg inn. </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/auth/login.html</context>
+          <context context-type="linenumber">17,21</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="common.or" datatype="html">
+        <source>ELLER</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/auth/login.html</context>
+          <context context-type="linenumber">44,46</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/auth/login.html</context>
+          <context context-type="linenumber">157,160</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/auth/register.html</context>
+          <context context-type="linenumber">37,39</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="login.email.label" datatype="html">
+        <source>E-post</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/auth/login.html</context>
+          <context context-type="linenumber">60,62</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="login.email.placeholder" datatype="html">
+        <source>deg@eksempel.no</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/auth/login.html</context>
+          <context context-type="linenumber">67,68</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="error.email.required" datatype="html">
+        <source>E-post er påkrevd</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/auth/login.html</context>
+          <context context-type="linenumber">76,78</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/auth/register.html</context>
+          <context context-type="linenumber">121,123</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="login.password.label" datatype="html">
+        <source>Passord</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/auth/login.html</context>
+          <context context-type="linenumber">87,88</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="login.password.placeholder" datatype="html">
+        <source>Skriv inn passordet ditt</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/auth/login.html</context>
+          <context context-type="linenumber">95,96</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="error.password.required" datatype="html">
+        <source>Passord er påkrevd</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/auth/login.html</context>
+          <context context-type="linenumber">112,114</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/auth/reset-password.html</context>
+          <context context-type="linenumber">51,53</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="login.rememberMe" datatype="html">
+        <source>Husk meg</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/auth/login.html</context>
+          <context context-type="linenumber">121,123</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="login.submit.loading" datatype="html">
+        <source>Logger inn...</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/auth/login.html</context>
+          <context context-type="linenumber">139,141</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="login.submit.button" datatype="html">
+        <source>Logg inn</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/auth/login.html</context>
+          <context context-type="linenumber">141,143</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="login.forgotPassword" datatype="html">
+        <source>Glemt passord?</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/auth/login.html</context>
+          <context context-type="linenumber">148,150</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="login.createAccount" datatype="html">
+        <source>Opprett konto</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/auth/login.html</context>
+          <context context-type="linenumber">151,154</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="login.qrCode.button" datatype="html">
+        <source> 📱 Skann QR-kode for å logge inn </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/auth/login.html</context>
+          <context context-type="linenumber">166,169</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="login.googleSigninFailed" datatype="html">
+        <source>Google-pålogging feilet. Vennligst prøv igjen.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/auth/login.ts</context>
+          <context context-type="linenumber">138</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="login.loginFailed" datatype="html">
+        <source>Pålogging feilet. Vennligst sjekk dine innloggingsopplysninger.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/auth/login.ts</context>
+          <context context-type="linenumber">172</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="login.qrLoginFailed" datatype="html">
+        <source>QR-kode pålogging feilet. Vennligst prøv igjen.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/auth/login.ts</context>
+          <context context-type="linenumber">223</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="register.title" datatype="html">
+        <source>Opprett konto</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/auth/register.html</context>
+          <context context-type="linenumber">9,10</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="register.subtitle" datatype="html">
+        <source> Begynn å administrere husholdningen din i dag </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/auth/register.html</context>
+          <context context-type="linenumber">11,14</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="register.firstName.label" datatype="html">
+        <source>Fornavn</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/auth/register.html</context>
+          <context context-type="linenumber">47,50</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="register.firstName.placeholder" datatype="html">
+        <source>Fornavn</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/auth/register.html</context>
+          <context context-type="linenumber">56</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="error.firstName.required" datatype="html">
+        <source>Fornavn er påkrevd</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/auth/register.html</context>
+          <context context-type="linenumber">64,66</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="error.firstName.tooLong" datatype="html">
+        <source>Fornavnet er for langt</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/auth/register.html</context>
+          <context context-type="linenumber">67,69</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="register.lastName.label" datatype="html">
+        <source>Etternavn</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/auth/register.html</context>
+          <context context-type="linenumber">76,79</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="register.lastName.placeholder" datatype="html">
+        <source>Etternavn</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/auth/register.html</context>
+          <context context-type="linenumber">84,85</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="error.lastName.required" datatype="html">
+        <source>Etternavn er påkrevd</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/auth/register.html</context>
+          <context context-type="linenumber">93,95</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="error.lastName.tooLong" datatype="html">
+        <source>Etternavnet er for langt</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/auth/register.html</context>
+          <context context-type="linenumber">96,98</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="register.email.label" datatype="html">
+        <source>E-post</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/auth/register.html</context>
+          <context context-type="linenumber">105,107</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="register.email.placeholder" datatype="html">
+        <source>deg@eksempel.no</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/auth/register.html</context>
+          <context context-type="linenumber">112,113</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="register.password.label" datatype="html">
+        <source>Passord</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/auth/register.html</context>
+          <context context-type="linenumber">132,133</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="register.password.placeholder" datatype="html">
+        <source>Opprett et sterkt passord</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/auth/register.html</context>
+          <context context-type="linenumber">140,141</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="register.password.strength" datatype="html">
+        <source>Styrke:</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/auth/register.html</context>
+          <context context-type="linenumber">159,160</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="error.password.requirements" datatype="html">
+        <source> Passordet må være minst 8 tegn med store bokstaver, små bokstaver og tall </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/auth/register.html</context>
+          <context context-type="linenumber">166,169</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="register.confirmPassword.label" datatype="html">
+        <source>Bekreft passord</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/auth/register.html</context>
+          <context context-type="linenumber">174,177</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="register.confirmPassword.placeholder" datatype="html">
+        <source>Bekreft passordet ditt</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/auth/register.html</context>
+          <context context-type="linenumber">182,183</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="error.password.mismatch" datatype="html">
+        <source> Passordene samsvarer ikke </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/auth/register.html</context>
+          <context context-type="linenumber">192,194</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/auth/reset-password.html</context>
+          <context context-type="linenumber">94,97</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="register.submit.loading" datatype="html">
+        <source>Oppretter konto...</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/auth/register.html</context>
+          <context context-type="linenumber">211,213</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="register.submit.button" datatype="html">
+        <source>Opprett konto</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/auth/register.html</context>
+          <context context-type="linenumber">213,217</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="register.hasAccount" datatype="html">
+        <source>Har du allerede en konto?</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/auth/register.html</context>
+          <context context-type="linenumber">219,220</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="register.login" datatype="html">
+        <source>Logg inn</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/auth/register.html</context>
+          <context context-type="linenumber">220,222</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="register.googleSignupFailed" datatype="html">
+        <source>Google-registrering feilet. Vennligst prøv igjen.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/auth/register.ts</context>
+          <context context-type="linenumber">154</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="register.registrationFailed" datatype="html">
+        <source>Registrering feilet. Vennligst prøv igjen.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/auth/register.ts</context>
+          <context context-type="linenumber">186</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="resetPassword.title" datatype="html">
+        <source>Sett nytt passord</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/auth/reset-password.html</context>
+          <context context-type="linenumber">2,3</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="resetPassword.subtitle" datatype="html">
+        <source> Vennligst skriv inn ditt nye passord nedenfor. </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/auth/reset-password.html</context>
+          <context context-type="linenumber">4,7</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="resetPassword.success" datatype="html">
+        <source> Passord tilbakestilt! Omdirigerer til innlogging... </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/auth/reset-password.html</context>
+          <context context-type="linenumber">9,12</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="resetPassword.newPassword.label" datatype="html">
+        <source>Nytt passord</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/auth/reset-password.html</context>
+          <context context-type="linenumber">15,16</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="resetPassword.newPassword.placeholder" datatype="html">
+        <source>Skriv inn nytt passord</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/auth/reset-password.html</context>
+          <context context-type="linenumber">22,23</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="error.password.minLength" datatype="html">
+        <source>Passordet må være minst 8 tegn</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/auth/reset-password.html</context>
+          <context context-type="linenumber">54,57</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="resetPassword.confirmPassword.label" datatype="html">
+        <source>Bekreft passord</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/auth/reset-password.html</context>
+          <context context-type="linenumber">63,65</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="resetPassword.confirmPassword.placeholder" datatype="html">
+        <source>Bekreft nytt passord</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/auth/reset-password.html</context>
+          <context context-type="linenumber">71,73</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="resetPassword.submit.loading" datatype="html">
+        <source>Tilbakestiller passord...</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/auth/reset-password.html</context>
+          <context context-type="linenumber">109,111</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="resetPassword.submit.button" datatype="html">
+        <source>Tilbakestill passord</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/auth/reset-password.html</context>
+          <context context-type="linenumber">111,115</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="resetPassword.backToLogin" datatype="html">
+        <source>Tilbake til innlogging</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/auth/reset-password.html</context>
+          <context context-type="linenumber">116,117</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="resetPassword.requestNewLink" datatype="html">
+        <source>Be om ny lenke</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/auth/reset-password.html</context>
+          <context context-type="linenumber">118,123</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="resetPassword.invalidToken" datatype="html">
+        <source>Ugyldig eller manglende tilbakestillingstoken. Vennligst be om en ny lenke for tilbakestilling av passord.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/auth/reset-password.ts</context>
+          <context context-type="linenumber">56</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="resetPassword.strongPassword" datatype="html">
+        <source>Sterkt passord</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/auth/reset-password.ts</context>
+          <context context-type="linenumber">81</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="resetPassword.8characters" datatype="html">
+        <source>8 tegn</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/auth/reset-password.ts</context>
+          <context context-type="linenumber">85</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="resetPassword.uppercaseLetter" datatype="html">
+        <source>stor bokstav</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/auth/reset-password.ts</context>
+          <context context-type="linenumber">86</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="resetPassword.lowercaseLetter" datatype="html">
+        <source>liten bokstav</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/auth/reset-password.ts</context>
+          <context context-type="linenumber">87</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="resetPassword.number" datatype="html">
+        <source>tall</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/auth/reset-password.ts</context>
+          <context context-type="linenumber">88</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="resetPassword.passwordMustInclude" datatype="html">
+        <source>Passordet må inneholde: <x id="PH" equiv-text="missing.join(&apos;, &apos;)"/></source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/auth/reset-password.ts</context>
+          <context context-type="linenumber">90</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="resetPassword.successMessage" datatype="html">
+        <source>Tilbakestilling av passord vellykket. Vennligst logg inn.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/auth/reset-password.ts</context>
+          <context context-type="linenumber">109</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="resetPassword.linkExpired" datatype="html">
+        <source>Tilbakestillingslenken har utløpt eller er ugyldig. Vennligst be om en ny.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/auth/reset-password.ts</context>
+          <context context-type="linenumber">121</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="resetPassword.resetFailed" datatype="html">
+        <source>Kunne ikke tilbakestille passord. Vennligst prøv igjen.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/auth/reset-password.ts</context>
+          <context context-type="linenumber">127</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="availableTasks.title" datatype="html">
+        <source>Tilgjengelige oppgaver</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/available-tasks-section/available-tasks-section.html</context>
+          <context context-type="linenumber">2,5</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="availableTasks.loading" datatype="html">
+        <source>Laster tilgjengelige oppgaver...</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/available-tasks-section/available-tasks-section.html</context>
+          <context context-type="linenumber">7,11</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="availableTasks.noTasks" datatype="html">
+        <source>Ingen oppgaver tilgjengelig for deg akkurat na.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/available-tasks-section/available-tasks-section.html</context>
+          <context context-type="linenumber">25,26</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="availableTasks.checkBackLater" datatype="html">
+        <source> Sjekk tilbake senere eller spor foreldrene dine! </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/available-tasks-section/available-tasks-section.html</context>
+          <context context-type="linenumber">27,32</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="availableTasks.points" datatype="html">
+        <source><x id="INTERPOLATION" equiv-text="{{ task.points }}"/> poeng</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/available-tasks-section/available-tasks-section.html</context>
+          <context context-type="linenumber">38,39</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="availableTasks.candidates" datatype="html">
+        <source> <x id="INTERPOLATION" equiv-text="{{ task.candidateCount }}"/> kandidater </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/available-tasks-section/available-tasks-section.html</context>
+          <context context-type="linenumber">53,54</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="availableTasks.accepting" datatype="html">
+        <source>Aksepterer...</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/available-tasks-section/available-tasks-section.html</context>
+          <context context-type="linenumber">67,68</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="availableTasks.accept" datatype="html">
+        <source>✓ Aksepter</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/available-tasks-section/available-tasks-section.html</context>
+          <context context-type="linenumber">69,71</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="availableTasks.declining" datatype="html">
+        <source>Avviser...</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/available-tasks-section/available-tasks-section.html</context>
+          <context context-type="linenumber">81,82</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="availableTasks.decline" datatype="html">
+        <source>✗ Avvis</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/available-tasks-section/available-tasks-section.html</context>
+          <context context-type="linenumber">83,85</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="availableTasks.acceptFailed" datatype="html">
+        <source>Kunne ikke akseptere oppgave</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/available-tasks-section/available-tasks-section.ts</context>
+          <context context-type="linenumber">74</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="availableTasks.declineFailed" datatype="html">
+        <source>Kunne ikke avvise oppgave</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/available-tasks-section/available-tasks-section.ts</context>
+          <context context-type="linenumber">98</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="availableTasks.overdue" datatype="html">
+        <source>Forfalt</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/available-tasks-section/available-tasks-section.ts</context>
+          <context context-type="linenumber">112</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="availableTasks.dueToday" datatype="html">
+        <source>Forfaller i dag</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/available-tasks-section/available-tasks-section.ts</context>
+          <context context-type="linenumber">113</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="availableTasks.dueTomorrow" datatype="html">
+        <source>Forfaller i morgen</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/available-tasks-section/available-tasks-section.ts</context>
+          <context context-type="linenumber">114</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="availableTasks.dueInDays" datatype="html">
+        <source>Forfaller om <x id="PH" equiv-text="days"/> dager</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/available-tasks-section/available-tasks-section.ts</context>
+          <context context-type="linenumber">115</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="childrenManagement.title" datatype="html">
+        <source>Barneadministrasjon</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/children-management/children-management.html</context>
+          <context context-type="linenumber">3,6</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="childrenManagement.addChildAriaLabel" datatype="html">
+        <source>Legg til barn</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/children-management/children-management.html</context>
+          <context context-type="linenumber">10,13</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="childrenManagement.cancel" datatype="html">
+        <source>Avbryt</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/children-management/children-management.html</context>
+          <context context-type="linenumber">13,15</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="childrenManagement.addChild" datatype="html">
+        <source>+ Legg til barn</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/children-management/children-management.html</context>
+          <context context-type="linenumber">15,20</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="childrenManagement.addNewChild" datatype="html">
+        <source>Legg til nytt barn</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/children-management/children-management.html</context>
+          <context context-type="linenumber">37,40</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="childrenManagement.nameLabel" datatype="html">
+        <source>Navn *</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/children-management/children-management.html</context>
+          <context context-type="linenumber">40,42</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/children-management/children-management.html</context>
+          <context context-type="linenumber">146,148</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="childrenManagement.namePlaceholder" datatype="html">
+        <source>Barnets navn</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/children-management/children-management.html</context>
+          <context context-type="linenumber">46,47</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="childrenManagement.nameRequired" datatype="html">
+        <source>Navn er påkrevd</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/children-management/children-management.html</context>
+          <context context-type="linenumber">53,55</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/children-management/children-management.html</context>
+          <context context-type="linenumber">158,160</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="childrenManagement.nameMinLength" datatype="html">
+        <source>Navn må være minst 2 tegn</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/children-management/children-management.html</context>
+          <context context-type="linenumber">56,58</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/children-management/children-management.html</context>
+          <context context-type="linenumber">162,164</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="childrenManagement.nameMaxLength" datatype="html">
+        <source>Navn må være 100 tegn eller mindre</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/children-management/children-management.html</context>
+          <context context-type="linenumber">60,63</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="childrenManagement.birthYearLabel" datatype="html">
+        <source>Fødselsår *</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/children-management/children-management.html</context>
+          <context context-type="linenumber">68,70</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/children-management/children-management.html</context>
+          <context context-type="linenumber">173,175</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="childrenManagement.birthYearRequired" datatype="html">
+        <source>Fødselsår er påkrevd</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/children-management/children-management.html</context>
+          <context context-type="linenumber">81,84</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="childrenManagement.birthYearRange" datatype="html">
+        <source>Fødselsår må være mellom 2000 og <x id="INTERPOLATION" equiv-text="{{ currentYear }}"/></source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/children-management/children-management.html</context>
+          <context context-type="linenumber">87,88</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/children-management/children-management.html</context>
+          <context context-type="linenumber">188,189</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="childrenManagement.addChildToHouseholdAriaLabel" datatype="html">
+        <source>Legg til barn i husstanden</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/children-management/children-management.html</context>
+          <context context-type="linenumber">100,103</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="childrenManagement.adding" datatype="html">
+        <source>Legger til...</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/children-management/children-management.html</context>
+          <context context-type="linenumber">103,105</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="childrenManagement.addChildButton" datatype="html">
+        <source>Legg til barn</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/children-management/children-management.html</context>
+          <context context-type="linenumber">105,108</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="childrenManagement.cancelAddingAriaLabel" datatype="html">
+        <source>Avbryt å legge til barn</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/children-management/children-management.html</context>
+          <context context-type="linenumber">114,116</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="childrenManagement.cancelButton" datatype="html">
+        <source> Avbryt </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/children-management/children-management.html</context>
+          <context context-type="linenumber">117,120</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/children-management/children-management.html</context>
+          <context context-type="linenumber">209,211</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="childrenManagement.loading" datatype="html">
+        <source>Laster barn...</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/children-management/children-management.html</context>
+          <context context-type="linenumber">125,129</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="childrenManagement.noChildrenYet" datatype="html">
+        <source>Ingen barn lagt til ennå.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/children-management/children-management.html</context>
+          <context context-type="linenumber">131,132</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="childrenManagement.clickToAdd" datatype="html">
+        <source>Klikk &quot;Legg til barn&quot; for å komme i gang.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/children-management/children-management.html</context>
+          <context context-type="linenumber">132,136</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="childrenManagement.save" datatype="html">
+        <source> Lagre </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/children-management/children-management.html</context>
+          <context context-type="linenumber">200,201</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="childrenManagement.age" datatype="html">
+        <source>Alder: <x id="INTERPOLATION" equiv-text="{{ getAge(child.birthYear ?? null) }}"/> (Født <x id="INTERPOLATION_1" equiv-text="{{ child.birthYear }}"/>)</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/children-management/children-management.html</context>
+          <context context-type="linenumber">220,222</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="childrenManagement.edit" datatype="html">
+        <source> Rediger </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/children-management/children-management.html</context>
+          <context context-type="linenumber">234,235</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="childrenManagement.delete" datatype="html">
+        <source> Slett </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/children-management/children-management.html</context>
+          <context context-type="linenumber">244,245</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="childrenManagement.noActiveHousehold" datatype="html">
+        <source>Ingen aktiv husstand valgt</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/children-management/children-management.ts</context>
+          <context context-type="linenumber">57</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/children-management/children-management.ts</context>
+          <context context-type="linenumber">106</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/children-management/children-management.ts</context>
+          <context context-type="linenumber">169</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/children-management/children-management.ts</context>
+          <context context-type="linenumber">211</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="childrenManagement.loadChildrenFailed" datatype="html">
+        <source>Kunne ikke laste barn. Vennligst prøv igjen.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/children-management/children-management.ts</context>
+          <context context-type="linenumber">71</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="childrenManagement.fillAllFields" datatype="html">
+        <source>Vennligst fyll ut alle obligatoriske felt korrekt.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/children-management/children-management.ts</context>
+          <context context-type="linenumber">98</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="childrenManagement.childAdded" datatype="html">
+        <source>Barn lagt til</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/children-management/children-management.ts</context>
+          <context context-type="linenumber">121</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="childrenManagement.addChildFailed" datatype="html">
+        <source>Kunne ikke legge til barn. Vennligst prøv igjen.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/children-management/children-management.ts</context>
+          <context context-type="linenumber">131</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="childrenManagement.childUpdated" datatype="html">
+        <source>Barn oppdatert</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/children-management/children-management.ts</context>
+          <context context-type="linenumber">184</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="childrenManagement.updateChildFailed" datatype="html">
+        <source>Kunne ikke oppdatere barn. Vennligst prøv igjen.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/children-management/children-management.ts</context>
+          <context context-type="linenumber">190</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="childrenManagement.removeChildFailed" datatype="html">
+        <source>Kunne ikke fjerne barn. Vennligst prøv igjen.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/children-management/children-management.ts</context>
+          <context context-type="linenumber">226</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="createChildAccount.title" datatype="html">
+        <source>Opprett konto for <x id="INTERPOLATION" equiv-text="{{ child().name }}"/></source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/create-child-account/create-child-account.html</context>
+          <context context-type="linenumber">3,4</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="createChildAccount.emailLabel" datatype="html">
+        <source>E-postadresse</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/create-child-account/create-child-account.html</context>
+          <context context-type="linenumber">25,27</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="createChildAccount.emailPlaceholder" datatype="html">
+        <source>barn@eksempel.no</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/create-child-account/create-child-account.html</context>
+          <context context-type="linenumber">33,36</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="createChildAccount.emailRequired" datatype="html">
+        <source>E-post er pakrevd</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/create-child-account/create-child-account.html</context>
+          <context context-type="linenumber">40,43</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="createChildAccount.emailInvalid" datatype="html">
+        <source>Vennligst oppgi en gyldig e-postadresse</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/create-child-account/create-child-account.html</context>
+          <context context-type="linenumber">45,48</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="createChildAccount.passwordLabel" datatype="html">
+        <source>Passord</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/create-child-account/create-child-account.html</context>
+          <context context-type="linenumber">54,55</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="createChildAccount.passwordPlaceholder" datatype="html">
+        <source>Minimum 8 tegn</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/create-child-account/create-child-account.html</context>
+          <context context-type="linenumber">63,65</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="createChildAccount.passwordRequired" datatype="html">
+        <source>Passord er pakrevd</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/create-child-account/create-child-account.html</context>
+          <context context-type="linenumber">89,92</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="createChildAccount.passwordMinLength" datatype="html">
+        <source>Passordet ma vaere minst 8 tegn</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/create-child-account/create-child-account.html</context>
+          <context context-type="linenumber">94,97</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="createChildAccount.passwordStrength" datatype="html">
+        <source>Passordet ma inneholde store bokstaver, sma bokstaver, tall og spesialtegn</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/create-child-account/create-child-account.html</context>
+          <context context-type="linenumber">99,102</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="createChildAccount.confirmPasswordLabel" datatype="html">
+        <source>Bekreft passord</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/create-child-account/create-child-account.html</context>
+          <context context-type="linenumber">110,113</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="createChildAccount.confirmPasswordPlaceholder" datatype="html">
+        <source>Skriv inn passordet pa nytt</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/create-child-account/create-child-account.html</context>
+          <context context-type="linenumber">122,125</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="createChildAccount.confirmPasswordRequired" datatype="html">
+        <source> Bekreft passord er pakrevd </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/create-child-account/create-child-account.html</context>
+          <context context-type="linenumber">127,130</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="createChildAccount.passwordMismatch" datatype="html">
+        <source> Passordene samsvarer ikke </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/create-child-account/create-child-account.html</context>
+          <context context-type="linenumber">132,135</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="createChildAccount.cancelButton" datatype="html">
+        <source> Avbryt </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/create-child-account/create-child-account.html</context>
+          <context context-type="linenumber">146,148</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="createChildAccount.creatingButton" datatype="html">
+        <source>Oppretter konto...</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/create-child-account/create-child-account.html</context>
+          <context context-type="linenumber">151,153</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="createChildAccount.createButton" datatype="html">
+        <source>Opprett konto</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/create-child-account/create-child-account.html</context>
+          <context context-type="linenumber">154,157</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="createChildAccount.fillAllFields" datatype="html">
+        <source>Vennligst fyll ut alle obligatoriske felt korrekt</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/create-child-account/create-child-account.ts</context>
+          <context context-type="linenumber">85</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="createChildAccount.createFailed" datatype="html">
+        <source>Kunne ikke opprette konto</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/create-child-account/create-child-account.ts</context>
+          <context context-type="linenumber">114</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="failedTasks.title" datatype="html">
+        <source>Oppgaver som trenger oppmerksomhet</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/failed-tasks-section/failed-tasks-section.html</context>
+          <context context-type="linenumber">3,4</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="failedTasks.loading" datatype="html">
+        <source>Laster oppgaver...</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/failed-tasks-section/failed-tasks-section.html</context>
+          <context context-type="linenumber">12,16</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="failedTasks.failedLoadError" datatype="html">
+        <source> Kunne ikke laste avviste oppgaver: <x id="INTERPOLATION" equiv-text="{{ failedError() }}"/> </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/failed-tasks-section/failed-tasks-section.html</context>
+          <context context-type="linenumber">18,22</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="failedTasks.expiredLoadError" datatype="html">
+        <source> Kunne ikke laste utlopte oppgaver: <x id="INTERPOLATION" equiv-text="{{ expiredError() }}"/> </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/failed-tasks-section/failed-tasks-section.html</context>
+          <context context-type="linenumber">24,28</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="failedTasks.allOnTrack" datatype="html">
+        <source>✓ Alle oppgaver er pa sporet!</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/failed-tasks-section/failed-tasks-section.html</context>
+          <context context-type="linenumber">30,31</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="failedTasks.noDeclinedOrExpired" datatype="html">
+        <source> Ingen oppgaver har blitt avvist eller utlopt. </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/failed-tasks-section/failed-tasks-section.html</context>
+          <context context-type="linenumber">32,37</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="failedTasks.allDeclined" datatype="html">
+        <source>Alle barn avviste</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/failed-tasks-section/failed-tasks-section.html</context>
+          <context context-type="linenumber">44,45</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="failedTasks.points" datatype="html">
+        <source><x id="INTERPOLATION" equiv-text="{{ task.points }}"/> poeng</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/failed-tasks-section/failed-tasks-section.html</context>
+          <context context-type="linenumber">59,60</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="failedTasks.childrenDeclined" datatype="html">
+        <source> <x id="INTERPOLATION" equiv-text="{{ task.candidateCount }}"/> barn avviste </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/failed-tasks-section/failed-tasks-section.html</context>
+          <context context-type="linenumber">65,66</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="failedTasks.deadline" datatype="html">
+        <source> Frist: <x id="INTERPOLATION" equiv-text="{{ formatDeadline(task.deadline) }}"/> </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/failed-tasks-section/failed-tasks-section.html</context>
+          <context context-type="linenumber">69,70</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="failedTasks.assignManually" datatype="html">
+        <source> Tildel manuelt </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/failed-tasks-section/failed-tasks-section.html</context>
+          <context context-type="linenumber">80,81</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="failedTasks.deadlineExpired" datatype="html">
+        <source>Frist utlopt</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/failed-tasks-section/failed-tasks-section.html</context>
+          <context context-type="linenumber">93,94</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="failedTasks.pointsExpired" datatype="html">
+        <source><x id="INTERPOLATION" equiv-text="{{ task.points }}"/> poeng</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/failed-tasks-section/failed-tasks-section.html</context>
+          <context context-type="linenumber">108,109</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="failedTasks.daysOverdue" datatype="html">
+        <source> <x id="INTERPOLATION" equiv-text="{{ getDaysOverdue(task) }}"/> dager pa overtid </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/failed-tasks-section/failed-tasks-section.html</context>
+          <context context-type="linenumber">114,115</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="failedTasks.declineCount" datatype="html">
+        <source> <x id="INTERPOLATION" equiv-text="{{ task.declineCount }}"/> / <x id="INTERPOLATION_1" equiv-text="{{ task.candidateCount }}"/> avviste </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/failed-tasks-section/failed-tasks-section.html</context>
+          <context context-type="linenumber">118,119</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="failedTasks.assignManuallyExpired" datatype="html">
+        <source> Tildel manuelt </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/failed-tasks-section/failed-tasks-section.html</context>
+          <context context-type="linenumber">129,131</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="householdCreate.welcome" datatype="html">
+        <source>Velkommen!</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/household-create/household-create.html</context>
+          <context context-type="linenumber">6,10</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="householdCreate.title" datatype="html">
+        <source>La oss sette opp husholdningen din</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/household-create/household-create.html</context>
+          <context context-type="linenumber">10,11</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="householdCreate.subtitle" datatype="html">
+        <source> Hva skal vi kalle husholdningen din? </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/household-create/household-create.html</context>
+          <context context-type="linenumber">12,15</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="householdCreate.nameLabel" datatype="html">
+        <source>Husholdningsnavn</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/household-create/household-create.html</context>
+          <context context-type="linenumber">19,22</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="householdCreate.namePlaceholder" datatype="html">
+        <source>f.eks. Familien Hansen</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/household-create/household-create.html</context>
+          <context context-type="linenumber">27,29</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="householdCreate.nameRequired" datatype="html">
+        <source>Husholdningsnavn er pakrevd</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/household-create/household-create.html</context>
+          <context context-type="linenumber">41,43</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="householdCreate.nameMaxLength" datatype="html">
+        <source>Husholdningsnavn ma vaere under 100 tegn</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/household-create/household-create.html</context>
+          <context context-type="linenumber">45,48</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="householdCreate.creatingButton" datatype="html">
+        <source>Oppretter husholdning...</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/household-create/household-create.html</context>
+          <context context-type="linenumber">67,69</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="householdCreate.createButton" datatype="html">
+        <source>Opprett husholdning</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/household-create/household-create.html</context>
+          <context context-type="linenumber">69,72</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="householdCreate.createFailed" datatype="html">
+        <source>Kunne ikke opprette husstand. Vennligst prøv igjen.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/household-create/household-create.ts</context>
+          <context context-type="linenumber">44</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="householdCreate.checkName" datatype="html">
+        <source>Vennligst sjekk husstands navnet.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/household-create/household-create.ts</context>
+          <context context-type="linenumber">48</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="householdCreate.sessionExpired" datatype="html">
+        <source>Økten har utløpt. Vennligst logg inn igjen.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/household-create/household-create.ts</context>
+          <context context-type="linenumber">50</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="householdCreate.noInternet" datatype="html">
+        <source>Ingen internettforbindelse. Vennligst sjekk forbindelsen din.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/household-create/household-create.ts</context>
+          <context context-type="linenumber">54</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="householdSettings.loading" datatype="html">
+        <source> Laster husholdningsinnstillinger... </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/household-settings/household-settings.html</context>
+          <context context-type="linenumber">4,6</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="householdSettings.title" datatype="html">
+        <source>Husholdningsinnstillinger</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/household-settings/household-settings.html</context>
+          <context context-type="linenumber">8,9</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="householdSettings.subtitle" datatype="html">
+        <source> Administrer husholdningsdetaljer og medlemmer </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/household-settings/household-settings.html</context>
+          <context context-type="linenumber">10,14</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="householdSettings.detailsTitle" datatype="html">
+        <source>Husholdningsdetaljer</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/household-settings/household-settings.html</context>
+          <context context-type="linenumber">17,19</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="householdSettings.nameLabel" datatype="html">
+        <source>Husholdningsnavn</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/household-settings/household-settings.html</context>
+          <context context-type="linenumber">22,25</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="householdSettings.namePlaceholder" datatype="html">
+        <source>f.eks. Familien Hansen</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/household-settings/household-settings.html</context>
+          <context context-type="linenumber">30,32</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="householdSettings.nameRequired" datatype="html">
+        <source>Husholdningsnavn er pakrevd</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/household-settings/household-settings.html</context>
+          <context context-type="linenumber">44,46</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="householdSettings.nameMaxLength" datatype="html">
+        <source>Husholdningsnavn ma vaere under 100 tegn</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/household-settings/household-settings.html</context>
+          <context context-type="linenumber">48,51</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="householdSettings.adminOnlyMessage" datatype="html">
+        <source> Kun husholdningsadministratorer kan redigere husholdningsdetaljer. </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/household-settings/household-settings.html</context>
+          <context context-type="linenumber">58,60</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="householdSettings.savingButton" datatype="html">
+        <source>Lagrer...</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/household-settings/household-settings.html</context>
+          <context context-type="linenumber">72,74</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="householdSettings.saveButton" datatype="html">
+        <source>Lagre endringer</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/household-settings/household-settings.html</context>
+          <context context-type="linenumber">74,76</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="householdSettings.membersTitle" datatype="html">
+        <source>Husholdningsmedlemmer</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/household-settings/household-settings.html</context>
+          <context context-type="linenumber">84,87</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="householdSettings.joinedDate" datatype="html">
+        <source> Ble med <x id="INTERPOLATION" equiv-text="{{ member.joinedAt | date: &apos;mediumDate&apos; }}"/> </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/household-settings/household-settings.html</context>
+          <context context-type="linenumber">116,117</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="householdSettings.noMembers" datatype="html">
+        <source>Ingen medlemmer funnet.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/household-settings/household-settings.html</context>
+          <context context-type="linenumber">123,127</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="householdSettings.childrenTitle" datatype="html">
+        <source>Barn</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/household-settings/household-settings.html</context>
+          <context context-type="linenumber">129,130</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="householdSettings.childrenDescription" datatype="html">
+        <source> Administrer barn i husholdningen din. </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/household-settings/household-settings.html</context>
+          <context context-type="linenumber">131,133</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="householdSettings.loadFailed" datatype="html">
+        <source>Kunne ikke laste husstandsdata. Vennligst prøv igjen.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/household-settings/household-settings.ts</context>
+          <context context-type="linenumber">94</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="householdSettings.sessionExpired" datatype="html">
+        <source>Økten har utløpt. Vennligst logg inn igjen.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/household-settings/household-settings.ts</context>
+          <context context-type="linenumber">97</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/household-settings/household-settings.ts</context>
+          <context context-type="linenumber">138</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="householdSettings.notFound" datatype="html">
+        <source>Husstand ikke funnet.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/household-settings/household-settings.ts</context>
+          <context context-type="linenumber">101</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="householdSettings.updateFailed" datatype="html">
+        <source>Kunne ikke oppdatere husstand. Vennligst prøv igjen.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/household-settings/household-settings.ts</context>
+          <context context-type="linenumber">133</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="householdSettings.checkName" datatype="html">
+        <source>Vennligst sjekk husstandsnavnet.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/household-settings/household-settings.ts</context>
+          <context context-type="linenumber">136</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="householdSettings.noPermission" datatype="html">
+        <source>Du har ikke tillatelse til å redigere denne husholdningen.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/household-settings/household-settings.ts</context>
+          <context context-type="linenumber">142</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="householdSwitcher.loading" datatype="html">
+        <source>Laster...</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/household-switcher/household-switcher.html</context>
+          <context context-type="linenumber">3,4</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="householdSwitcher.selectHousehold" datatype="html">
+        <source>Velg husholdning</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/household-switcher/household-switcher.html</context>
+          <context context-type="linenumber">26,30</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="invitationInbox.region" datatype="html">
+        <source>Innboks for invitasjoner</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/invitation-inbox/invitation-inbox.html</context>
+          <context context-type="linenumber">5,8</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="invitationInbox.title" datatype="html">
+        <source>Invitasjonsinnboks</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/invitation-inbox/invitation-inbox.html</context>
+          <context context-type="linenumber">9,10</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="invitationInbox.refreshAria" datatype="html">
+        <source>Oppdater invitasjoner</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/invitation-inbox/invitation-inbox.html</context>
+          <context context-type="linenumber">22,24</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="invitationInbox.refresh" datatype="html">
+        <source> Oppdater </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/invitation-inbox/invitation-inbox.html</context>
+          <context context-type="linenumber">25,29</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="invitationInbox.loading" datatype="html">
+        <source>Laster invitasjoner...</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/invitation-inbox/invitation-inbox.html</context>
+          <context context-type="linenumber">47,51</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="invitationInbox.noInvitations" datatype="html">
+        <source>Ingen ventende invitasjoner.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/invitation-inbox/invitation-inbox.html</context>
+          <context context-type="linenumber">54,55</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="invitationInbox.emptyStateHint" datatype="html">
+        <source> Når noen inviterer deg til å bli med i husstanden deres, vil det vises her. </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/invitation-inbox/invitation-inbox.html</context>
+          <context context-type="linenumber">56,61</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="invitationInbox.invitedBy" datatype="html">
+        <source>Invitert av:</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/invitation-inbox/invitation-inbox.html</context>
+          <context context-type="linenumber">71,72</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="invitationInbox.role" datatype="html">
+        <source>Rolle:</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/invitation-inbox/invitation-inbox.html</context>
+          <context context-type="linenumber">75,76</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="invitationInbox.sent" datatype="html">
+        <source>Sendt:</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/invitation-inbox/invitation-inbox.html</context>
+          <context context-type="linenumber">79,80</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="invitationInbox.expired" datatype="html">
+        <source>Utløpt</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/invitation-inbox/invitation-inbox.html</context>
+          <context context-type="linenumber">83,85</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="invitationInbox.expires" datatype="html">
+        <source>Utløper:</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/invitation-inbox/invitation-inbox.html</context>
+          <context context-type="linenumber">85,86</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="invitationInbox.expiredAria" datatype="html">
+        <source>Denne invitasjonen har utløpt</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/invitation-inbox/invitation-inbox.html</context>
+          <context context-type="linenumber">96,97</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="invitationInbox.expiredBadge" datatype="html">
+        <source> Utløpt </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/invitation-inbox/invitation-inbox.html</context>
+          <context context-type="linenumber">99,101</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="invitationInbox.accepting" datatype="html">
+        <source>Godtar...</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/invitation-inbox/invitation-inbox.html</context>
+          <context context-type="linenumber">113,114</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="invitationInbox.accept" datatype="html">
+        <source>Godta</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/invitation-inbox/invitation-inbox.html</context>
+          <context context-type="linenumber">115,117</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="invitationInbox.declining" datatype="html">
+        <source>Avslår...</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/invitation-inbox/invitation-inbox.html</context>
+          <context context-type="linenumber">129,130</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="invitationInbox.decline" datatype="html">
+        <source>Avslå</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/invitation-inbox/invitation-inbox.html</context>
+          <context context-type="linenumber">131,133</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="invitationInbox.loadFailed" datatype="html">
+        <source>Kunne ikke laste invitasjoner. Vennligst prøv igjen.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/invitation-inbox/invitation-inbox.ts</context>
+          <context context-type="linenumber">46</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="invitationInbox.invalidToken" datatype="html">
+        <source>Ugyldig invitasjon - mangler token</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/invitation-inbox/invitation-inbox.ts</context>
+          <context context-type="linenumber">66</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/invitation-inbox/invitation-inbox.ts</context>
+          <context context-type="linenumber">111</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="invitationInbox.acceptFailed" datatype="html">
+        <source>Kunne ikke akseptere invitasjon. Vennligst prøv igjen.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/invitation-inbox/invitation-inbox.ts</context>
+          <context context-type="linenumber">91</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="invitationInbox.declineFailed" datatype="html">
+        <source>Kunne ikke avslå invitasjon. Vennligst prøv igjen.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/invitation-inbox/invitation-inbox.ts</context>
+          <context context-type="linenumber">129</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="invitationsSent.title" datatype="html">
+        <source>Sendte invitasjoner</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/invitations-sent-list/invitations-sent-list.html</context>
+          <context context-type="linenumber">3,4</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="invitationsSent.cleanupAria" datatype="html">
+        <source>Fjern kansellerte og utløpte invitasjoner</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/invitations-sent-list/invitations-sent-list.html</context>
+          <context context-type="linenumber">12,13</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="invitationsSent.cleanup" datatype="html">
+        <source> Rydd opp gamle </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/invitations-sent-list/invitations-sent-list.html</context>
+          <context context-type="linenumber">15,18</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="invitationsSent.refreshAria" datatype="html">
+        <source>Oppdater invitasjonsliste</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/invitations-sent-list/invitations-sent-list.html</context>
+          <context context-type="linenumber">24,25</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="invitationsSent.refresh" datatype="html">
+        <source> Oppdater </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/invitations-sent-list/invitations-sent-list.html</context>
+          <context context-type="linenumber">27,30</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="invitationsSent.loading" datatype="html">
+        <source>Laster invitasjoner...</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/invitations-sent-list/invitations-sent-list.html</context>
+          <context context-type="linenumber">48,52</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="invitationsSent.noInvitations" datatype="html">
+        <source>Ingen invitasjoner sendt ennå.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/invitations-sent-list/invitations-sent-list.html</context>
+          <context context-type="linenumber">54,55</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="invitationsSent.emptyStateHint" datatype="html">
+        <source> Bruk skjemaet &quot;Inviter noen&quot; ovenfor for å invitere noen til husstanden din. </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/invitations-sent-list/invitations-sent-list.html</context>
+          <context context-type="linenumber">56,61</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="invitationsSent.tableAria" datatype="html">
+        <source>Sendte invitasjoner</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/invitations-sent-list/invitations-sent-list.html</context>
+          <context context-type="linenumber">67,69</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="invitationsSent.columnEmail" datatype="html">
+        <source> E-post </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/invitations-sent-list/invitations-sent-list.html</context>
+          <context context-type="linenumber">71,73</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="invitationsSent.columnRole" datatype="html">
+        <source>Rolle</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/invitations-sent-list/invitations-sent-list.html</context>
+          <context context-type="linenumber">73,74</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="invitationsSent.columnStatus" datatype="html">
+        <source> Status </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/invitations-sent-list/invitations-sent-list.html</context>
+          <context context-type="linenumber">75,77</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="invitationsSent.columnSent" datatype="html">
+        <source>Sendt</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/invitations-sent-list/invitations-sent-list.html</context>
+          <context context-type="linenumber">77,78</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="invitationsSent.columnExpires" datatype="html">
+        <source> Utløper </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/invitations-sent-list/invitations-sent-list.html</context>
+          <context context-type="linenumber">79,81</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="invitationsSent.columnActions" datatype="html">
+        <source> Handlinger </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/invitations-sent-list/invitations-sent-list.html</context>
+          <context context-type="linenumber">82,86</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="invitationsSent.cancel" datatype="html">
+        <source> Avbryt </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/invitations-sent-list/invitations-sent-list.html</context>
+          <context context-type="linenumber">111,112</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="invitationsSent.noActiveHousehold" datatype="html">
+        <source>Ingen aktiv husstand valgt</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/invitations-sent-list/invitations-sent-list.ts</context>
+          <context context-type="linenumber">48</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/invitations-sent-list/invitations-sent-list.ts</context>
+          <context context-type="linenumber">83</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/invitations-sent-list/invitations-sent-list.ts</context>
+          <context context-type="linenumber">146</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="invitationsSent.loadFailed" datatype="html">
+        <source>Kunne ikke laste invitasjoner. Vennligst prøv igjen.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/invitations-sent-list/invitations-sent-list.ts</context>
+          <context context-type="linenumber">62</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="invitationsSent.cancelFailed" datatype="html">
+        <source>Kunne ikke kansellere invitasjon. Vennligst prøv igjen.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/invitations-sent-list/invitations-sent-list.ts</context>
+          <context context-type="linenumber">98</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="invitationsSent.cleanupFailed" datatype="html">
+        <source>Kunne ikke rydde opp i invitasjoner. Vennligst prøv igjen.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/invitations-sent-list/invitations-sent-list.ts</context>
+          <context context-type="linenumber">161</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="inviteUser.title" datatype="html">
+        <source>Inviter noen</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/invite-user/invite-user.html</context>
+          <context context-type="linenumber">2,4</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="inviteUser.emailLabel" datatype="html">
+        <source>E-postadresse</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/invite-user/invite-user.html</context>
+          <context context-type="linenumber">7,9</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="inviteUser.emailPlaceholder" datatype="html">
+        <source>bruker@eksempel.no</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/invite-user/invite-user.html</context>
+          <context context-type="linenumber">14,15</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="inviteUser.roleLabel" datatype="html">
+        <source>Rolle</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/invite-user/invite-user.html</context>
+          <context context-type="linenumber">26,27</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="inviteUser.roleParent" datatype="html">
+        <source>Forelder</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/invite-user/invite-user.html</context>
+          <context context-type="linenumber">28,29</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="inviteUser.roleAdmin" datatype="html">
+        <source>Administrator</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/invite-user/invite-user.html</context>
+          <context context-type="linenumber">29,31</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="inviteUser.roleHint" datatype="html">
+        <source> Foreldre kan administrere barn og oppgaver. Administratorer kan også invitere brukere og redigere husstandsinnstillinger. </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/invite-user/invite-user.html</context>
+          <context context-type="linenumber">32,35</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="inviteUser.invitationLinkLabel" datatype="html">
+        <source>Invitasjonslenke</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/invite-user/invite-user.html</context>
+          <context context-type="linenumber">55,57</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="inviteUser.invitationLinkAria" datatype="html">
+        <source>Invitasjonslenke</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/invite-user/invite-user.html</context>
+          <context context-type="linenumber">65,68</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="inviteUser.copyLinkAria" datatype="html">
+        <source>Kopier invitasjonslenke til utklippstavle</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/invite-user/invite-user.html</context>
+          <context context-type="linenumber">72,73</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="inviteUser.copyLink" datatype="html">
+        <source> Kopier lenke </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/invite-user/invite-user.html</context>
+          <context context-type="linenumber">75,77</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="inviteUser.invitationLinkHint" datatype="html">
+        <source> Del denne lenken med personen du inviterte. Den utløper om 7 dager. </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/invite-user/invite-user.html</context>
+          <context context-type="linenumber">79,82</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="inviteUser.sendingInvitation" datatype="html">
+        <source>Sender invitasjon...</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/invite-user/invite-user.html</context>
+          <context context-type="linenumber">93,95</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="inviteUser.sendInvitation" datatype="html">
+        <source>Send invitasjon</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/invite-user/invite-user.html</context>
+          <context context-type="linenumber">95,98</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="inviteUser.sendFailed" datatype="html">
+        <source>Kunne ikke sende invitasjon. Vennligst prøv igjen.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/invite-user/invite-user.ts</context>
+          <context context-type="linenumber">56</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="inviteUser.checkEmail" datatype="html">
+        <source>Vennligst sjekk e-postadressen.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/invite-user/invite-user.ts</context>
+          <context context-type="linenumber">59</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="inviteUser.sessionExpired" datatype="html">
+        <source>Økten har utløpt. Vennligst logg inn igjen.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/invite-user/invite-user.ts</context>
+          <context context-type="linenumber">61</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="inviteUser.noPermission" datatype="html">
+        <source>Du har ikke tillatelse til å invitere brukere til denne husholdningen.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/invite-user/invite-user.ts</context>
+          <context context-type="linenumber">63</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="inviteUser.alreadyMember" datatype="html">
+        <source>Denne brukeren er allerede medlem av husholdningen din.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/invite-user/invite-user.ts</context>
+          <context context-type="linenumber">66</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="inviteUser.pendingInvitation" datatype="html">
+        <source>En ventende invitasjon eksisterer allerede for denne e-posten.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/invite-user/invite-user.ts</context>
+          <context context-type="linenumber">68</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="inviteUser.cannotInvite" datatype="html">
+        <source>Denne brukeren kan ikke inviteres.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/invite-user/invite-user.ts</context>
+          <context context-type="linenumber">72</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="inviteUser.copyFailed" datatype="html">
+        <source>Kunne ikke kopiere lenke. Vennligst kopier manuelt.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/invite-user/invite-user.ts</context>
+          <context context-type="linenumber">98</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="addChildModal.title" datatype="html">
+        <source>Legg til barn</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/modals/add-child-modal/add-child-modal.html</context>
+          <context context-type="linenumber">5,7</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="addChildModal.nameLabel" datatype="html">
+        <source>Barnets navn *</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/modals/add-child-modal/add-child-modal.html</context>
+          <context context-type="linenumber">10,13</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="addChildModal.namePlaceholder" datatype="html">
+        <source>f.eks. Emma</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/modals/add-child-modal/add-child-modal.html</context>
+          <context context-type="linenumber">18,19</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="addChildModal.nameRequired" datatype="html">
+        <source>Barnets navn er obligatorisk</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/modals/add-child-modal/add-child-modal.html</context>
+          <context context-type="linenumber">28,30</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="addChildModal.nameTooLong" datatype="html">
+        <source>Navnet er for langt (maks 255 tegn)</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/modals/add-child-modal/add-child-modal.html</context>
+          <context context-type="linenumber">31,34</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="addChildModal.ageLabel" datatype="html">
+        <source>Alder *</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/modals/add-child-modal/add-child-modal.html</context>
+          <context context-type="linenumber">38,40</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="addChildModal.agePlaceholder" datatype="html">
+        <source>f.eks. 10</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/modals/add-child-modal/add-child-modal.html</context>
+          <context context-type="linenumber">45,48</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="addChildModal.ageRequired" datatype="html">
+        <source>Alder er obligatorisk</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/modals/add-child-modal/add-child-modal.html</context>
+          <context context-type="linenumber">57,59</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="addChildModal.ageMin" datatype="html">
+        <source>Alder må være minst 1</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/modals/add-child-modal/add-child-modal.html</context>
+          <context context-type="linenumber">60,62</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="addChildModal.ageMax" datatype="html">
+        <source>Alder må være maks 18</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/modals/add-child-modal/add-child-modal.html</context>
+          <context context-type="linenumber">63,66</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="addChildModal.avatarLabel" datatype="html">
+        <source>Avatar-emoji</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/modals/add-child-modal/add-child-modal.html</context>
+          <context context-type="linenumber">71,73</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="addChildModal.cancelButton" datatype="html">
+        <source> Avbryt </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/modals/add-child-modal/add-child-modal.html</context>
+          <context context-type="linenumber">87,90</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="addChildModal.submitButton" datatype="html">
+        <source> Legg til barn </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/modals/add-child-modal/add-child-modal.html</context>
+          <context context-type="linenumber">95,98</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="childDetailsModal.title" datatype="html">
+        <source>Barnedetaljer</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/modals/child-details-modal/child-details-modal.html</context>
+          <context context-type="linenumber">5,8</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="childDetailsModal.removeConfirmTitle" datatype="html">
+        <source> Fjerne <x id="INTERPOLATION" equiv-text="{{ child.name }}"/>? </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/modals/child-details-modal/child-details-modal.html</context>
+          <context context-type="linenumber">21,23</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="childDetailsModal.removeConfirmMessage" datatype="html">
+        <source> Er du sikker på at du vil fjerne <x id="INTERPOLATION" equiv-text="{{ child.name }}"/> fra denne husholdningen? Denne handlingen kan ikke angres. </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/modals/child-details-modal/child-details-modal.html</context>
+          <context context-type="linenumber">24,26</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="childDetailsModal.cancelButton" datatype="html">
+        <source> Avbryt </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/modals/child-details-modal/child-details-modal.html</context>
+          <context context-type="linenumber">35,37</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="childDetailsModal.removingButton" datatype="html">
+        <source>Fjerner...</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/modals/child-details-modal/child-details-modal.html</context>
+          <context context-type="linenumber">44,46</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="childDetailsModal.removeChildButton" datatype="html">
+        <source>Fjern barn</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/modals/child-details-modal/child-details-modal.html</context>
+          <context context-type="linenumber">46,49</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="childDetailsModal.nameLabel" datatype="html">
+        <source>Navn</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/modals/child-details-modal/child-details-modal.html</context>
+          <context context-type="linenumber">69,71</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="childDetailsModal.nameRequired" datatype="html">
+        <source> Navn er obligatorisk </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/modals/child-details-modal/child-details-modal.html</context>
+          <context context-type="linenumber">80,82</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="childDetailsModal.birthYearLabel" datatype="html">
+        <source>Fødselsår</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/modals/child-details-modal/child-details-modal.html</context>
+          <context context-type="linenumber">87,89</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="childDetailsModal.birthYearInvalid" datatype="html">
+        <source> Vennligst oppgi et gyldig fødselsår </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/modals/child-details-modal/child-details-modal.html</context>
+          <context context-type="linenumber">100,102</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="childDetailsModal.cancelEditButton" datatype="html">
+        <source> Avbryt </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/modals/child-details-modal/child-details-modal.html</context>
+          <context context-type="linenumber">113,115</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="childDetailsModal.savingButton" datatype="html">
+        <source>Lagrer...</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/modals/child-details-modal/child-details-modal.html</context>
+          <context context-type="linenumber">121,123</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="childDetailsModal.saveButton" datatype="html">
+        <source>Lagre</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/modals/child-details-modal/child-details-modal.html</context>
+          <context context-type="linenumber">123,125</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="childDetailsModal.yearsOld" datatype="html">
+        <source> <x id="INTERPOLATION" equiv-text="{{ childAge() }}"/> år gammel </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/modals/child-details-modal/child-details-modal.html</context>
+          <context context-type="linenumber">134,135</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="childDetailsModal.editAriaLabel" datatype="html">
+        <source>Rediger barnedetaljer</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/modals/child-details-modal/child-details-modal.html</context>
+          <context context-type="linenumber">142,144</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="childDetailsModal.editButton" datatype="html">
+        <source>✏️ Rediger</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/modals/child-details-modal/child-details-modal.html</context>
+          <context context-type="linenumber">144,146</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="childDetailsModal.loginAccountTitle" datatype="html">
+        <source> Innloggingskonto </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/modals/child-details-modal/child-details-modal.html</context>
+          <context context-type="linenumber">154,157</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="childDetailsModal.accountActive" datatype="html">
+        <source>Konto aktiv</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/modals/child-details-modal/child-details-modal.html</context>
+          <context context-type="linenumber">162,164</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="childDetailsModal.noAccount" datatype="html">
+        <source>Ingen konto</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/modals/child-details-modal/child-details-modal.html</context>
+          <context context-type="linenumber">174,175</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="childDetailsModal.noAccountDescription" datatype="html">
+        <source> Opprett innloggingsdetaljer slik at barnet kan logge inn </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/modals/child-details-modal/child-details-modal.html</context>
+          <context context-type="linenumber">176,178</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="childDetailsModal.createLoginButton" datatype="html">
+        <source> Opprett innlogging </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/modals/child-details-modal/child-details-modal.html</context>
+          <context context-type="linenumber">187,189</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="childDetailsModal.qrCodeTitle" datatype="html">
+        <source>QR-kode innlogging</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/modals/child-details-modal/child-details-modal.html</context>
+          <context context-type="linenumber">203,204</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="childDetailsModal.comingSoon" datatype="html">
+        <source>Kommer snart</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/modals/child-details-modal/child-details-modal.html</context>
+          <context context-type="linenumber">206,207</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="childDetailsModal.qrDescription" datatype="html">
+        <source> Rask innlogging med QR-kode skanning </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/modals/child-details-modal/child-details-modal.html</context>
+          <context context-type="linenumber">208,210</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="childDetailsModal.dangerZoneTitle" datatype="html">
+        <source> Faresone </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/modals/child-details-modal/child-details-modal.html</context>
+          <context context-type="linenumber">216,218</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="childDetailsModal.dangerZoneDescription" datatype="html">
+        <source> Fjerning av et barn vil slette alle oppgavetildelinger og poenghistorikk. </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/modals/child-details-modal/child-details-modal.html</context>
+          <context context-type="linenumber">219,222</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="childDetailsModal.removeChildAction" datatype="html">
+        <source> Fjern barn </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/modals/child-details-modal/child-details-modal.html</context>
+          <context context-type="linenumber">227,229</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="childDetailsModal.closeButton" datatype="html">
+        <source> Lukk </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/modals/child-details-modal/child-details-modal.html</context>
+          <context context-type="linenumber">244,248</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="inviteModal.title" datatype="html">
+        <source>Inviter familiemedlem</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/modals/invite-modal/invite-modal.html</context>
+          <context context-type="linenumber">5,7</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="inviteModal.emailLabel" datatype="html">
+        <source>E-postadresse *</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/modals/invite-modal/invite-modal.html</context>
+          <context context-type="linenumber">10,13</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="inviteModal.emailPlaceholder" datatype="html">
+        <source>familie@eksempel.no</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/modals/invite-modal/invite-modal.html</context>
+          <context context-type="linenumber">18,19</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="inviteModal.emailRequired" datatype="html">
+        <source>E-postadresse er obligatorisk</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/modals/invite-modal/invite-modal.html</context>
+          <context context-type="linenumber">28,30</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="inviteModal.emailInvalid" datatype="html">
+        <source>Vennligst oppgi en gyldig e-postadresse</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/modals/invite-modal/invite-modal.html</context>
+          <context context-type="linenumber">31,34</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="inviteModal.roleLabel" datatype="html">
+        <source>Rolle *</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/modals/invite-modal/invite-modal.html</context>
+          <context context-type="linenumber">38,40</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="inviteModal.parentRoleDescription" datatype="html">
+        <source>Kan administrere oppgaver, barn og innstillinger</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/modals/invite-modal/invite-modal.html</context>
+          <context context-type="linenumber">52,55</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="inviteModal.memberRoleDescription" datatype="html">
+        <source>Kan se og fullføre oppgaver</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/modals/invite-modal/invite-modal.html</context>
+          <context context-type="linenumber">55,60</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="inviteModal.messageLabel" datatype="html">
+        <source>Personlig melding (valgfritt)</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/modals/invite-modal/invite-modal.html</context>
+          <context context-type="linenumber">62,65</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="inviteModal.messagePlaceholder" datatype="html">
+        <source>Bli med i husholdningen vår for å hjelpe til med oppgavene sammen!</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/modals/invite-modal/invite-modal.html</context>
+          <context context-type="linenumber">69,72</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="inviteModal.cancelButton" datatype="html">
+        <source> Avbryt </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/modals/invite-modal/invite-modal.html</context>
+          <context context-type="linenumber">81,84</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="inviteModal.submitButton" datatype="html">
+        <source> Send invitasjon </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/modals/invite-modal/invite-modal.html</context>
+          <context context-type="linenumber">89,92</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="qrCodeModal.title" datatype="html">
+        <source>QR-kode innlogging</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/modals/qr-code-modal/qr-code-modal.html</context>
+          <context context-type="linenumber">5,8</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="reassignModal.title" datatype="html">
+        <source>Tilordne oppgave på nytt</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/modals/reassign-task-modal/reassign-task-modal.html</context>
+          <context context-type="linenumber">5,8</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="reassignModal.description" datatype="html">
+        <source> Tilordne <x id="START_TAG_STRONG" ctype="x-strong" equiv-text="&lt;strong&gt;"/><x id="INTERPOLATION" equiv-text="{{ taskName() }}"/><x id="CLOSE_TAG_STRONG" ctype="x-strong" equiv-text="&lt;/strong&gt;"/> til et annet barn. </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/modals/reassign-task-modal/reassign-task-modal.html</context>
+          <context context-type="linenumber">9,12</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="reassignModal.selectChildLabel" datatype="html">
+        <source>Velg barn</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/modals/reassign-task-modal/reassign-task-modal.html</context>
+          <context context-type="linenumber">19,21</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="reassignModal.chooseChildPlaceholder" datatype="html">
+        <source> Velg et barn... </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/modals/reassign-task-modal/reassign-task-modal.html</context>
+          <context context-type="linenumber">28,30</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="reassignModal.cancelButton" datatype="html">
+        <source> Avbryt </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/modals/reassign-task-modal/reassign-task-modal.html</context>
+          <context context-type="linenumber">45,48</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="reassignModal.submitButton" datatype="html">
+        <source> Tilordne på nytt </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/modals/reassign-task-modal/reassign-task-modal.html</context>
+          <context context-type="linenumber">54,57</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="taskFormModal.taskNameLabel" datatype="html">
+        <source>Oppgavenavn *</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/modals/task-form-modal/task-form-modal.html</context>
+          <context context-type="linenumber">14,17</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="taskFormModal.taskNamePlaceholder" datatype="html">
+        <source>f.eks. Rydd rommet ditt</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/modals/task-form-modal/task-form-modal.html</context>
+          <context context-type="linenumber">22,23</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="taskFormModal.taskNameRequired" datatype="html">
+        <source>Oppgavenavn er obligatorisk</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/modals/task-form-modal/task-form-modal.html</context>
+          <context context-type="linenumber">32,34</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="taskFormModal.taskNameTooLong" datatype="html">
+        <source>Oppgavenavnet er for langt (maks 255 tegn)</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/modals/task-form-modal/task-form-modal.html</context>
+          <context context-type="linenumber">36,39</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="taskFormModal.descriptionLabel" datatype="html">
+        <source>Beskrivelse (valgfritt)</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/modals/task-form-modal/task-form-modal.html</context>
+          <context context-type="linenumber">46,49</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="taskFormModal.descriptionPlaceholder" datatype="html">
+        <source>Legg til detaljer om denne oppgaven...</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/modals/task-form-modal/task-form-modal.html</context>
+          <context context-type="linenumber">53,56</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="taskFormModal.pointsLabel" datatype="html">
+        <source>Poeng *</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/modals/task-form-modal/task-form-modal.html</context>
+          <context context-type="linenumber">60,62</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="taskFormModal.pointsRange" datatype="html">
+        <source> Poeng må være mellom 1 og 1000 </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/modals/task-form-modal/task-form-modal.html</context>
+          <context context-type="linenumber">76,79</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="taskFormModal.taskTypeLabel" datatype="html">
+        <source>Oppgavetype *</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/modals/task-form-modal/task-form-modal.html</context>
+          <context context-type="linenumber">84,86</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="taskFormModal.selectDaysLabel" datatype="html">
+        <source>Velg dager *</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/modals/task-form-modal/task-form-modal.html</context>
+          <context context-type="linenumber">96,98</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="taskFormModal.selectAtLeastOneDay" datatype="html">
+        <source> Vennligst velg minst én dag </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/modals/task-form-modal/task-form-modal.html</context>
+          <context context-type="linenumber">113,116</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="taskFormModal.rotationTypeLabel" datatype="html">
+        <source>Rotasjonstype *</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/modals/task-form-modal/task-form-modal.html</context>
+          <context context-type="linenumber">123,125</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="taskFormModal.selectChildrenRotationLabel" datatype="html">
+        <source> Velg barn (2 eller flere) * </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/modals/task-form-modal/task-form-modal.html</context>
+          <context context-type="linenumber">134,136</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="taskFormModal.noChildrenYet" datatype="html">
+        <source> Ingen barn i denne husholdningen ennå. </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/modals/task-form-modal/task-form-modal.html</context>
+          <context context-type="linenumber">150,152</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="taskFormModal.selectAtLeastTwoForRotation" datatype="html">
+        <source> Velg minst 2 barn for rotasjon </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/modals/task-form-modal/task-form-modal.html</context>
+          <context context-type="linenumber">156,159</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="taskFormModal.deadlineLabel" datatype="html">
+        <source>Frist (valgfritt)</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/modals/task-form-modal/task-form-modal.html</context>
+          <context context-type="linenumber">166,169</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="taskFormModal.deadlineHint" datatype="html">
+        <source> Når skal denne oppgaven være fullført? </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/modals/task-form-modal/task-form-modal.html</context>
+          <context context-type="linenumber">176,178</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="taskFormModal.candidatesLabel" datatype="html">
+        <source>Kandidater *</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/modals/task-form-modal/task-form-modal.html</context>
+          <context context-type="linenumber">181,182</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="taskFormModal.candidatesHint" datatype="html">
+        <source> Hvilke barn kan ta denne oppgaven? </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/modals/task-form-modal/task-form-modal.html</context>
+          <context context-type="linenumber">183,185</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="taskFormModal.noChildrenYetSingle" datatype="html">
+        <source> Ingen barn i denne husholdningen ennå. </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/modals/task-form-modal/task-form-modal.html</context>
+          <context context-type="linenumber">199,201</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="taskFormModal.selectAtLeastOneCandidate" datatype="html">
+        <source> Velg minst én kandidat </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/modals/task-form-modal/task-form-modal.html</context>
+          <context context-type="linenumber">205,208</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="taskFormModal.assignToChildrenLabel" datatype="html">
+        <source>Tildel til barn</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/modals/task-form-modal/task-form-modal.html</context>
+          <context context-type="linenumber">215,217</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="taskFormModal.optional" datatype="html">
+        <source>(Valgfritt)</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/modals/task-form-modal/task-form-modal.html</context>
+          <context context-type="linenumber">217,219</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="taskFormModal.noChildrenYetDaily" datatype="html">
+        <source> Ingen barn i denne husholdningen ennå. </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/modals/task-form-modal/task-form-modal.html</context>
+          <context context-type="linenumber">234,236</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="taskFormModal.deleteButton" datatype="html">
+        <source> Slett </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/modals/task-form-modal/task-form-modal.html</context>
+          <context context-type="linenumber">251,253</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="taskFormModal.cancelButton" datatype="html">
+        <source> Avbryt </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/modals/task-form-modal/task-form-modal.html</context>
+          <context context-type="linenumber">260,262</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="taskFormModal.cancelButtonCreate" datatype="html">
+        <source> Avbryt </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/modals/task-form-modal/task-form-modal.html</context>
+          <context context-type="linenumber">280,282</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="taskFormModal.deleteConfirmText" datatype="html">
+        <source> Er du sikker på at du vil slette denne oppgaven? Denne handlingen kan ikke angres. </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/modals/task-form-modal/task-form-modal.html</context>
+          <context context-type="linenumber">292,295</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="taskFormModal.cancelDeleteButton" datatype="html">
+        <source> Avbryt </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/modals/task-form-modal/task-form-modal.html</context>
+          <context context-type="linenumber">302,305</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="taskFormModal.confirmDeleteButton" datatype="html">
+        <source> Ja, slett oppgave </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/modals/task-form-modal/task-form-modal.html</context>
+          <context context-type="linenumber">310,313</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="nav.mainNavigation" datatype="html">
+        <source>Hovednavigasjon</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/navigation/bottom-nav/bottom-nav.html</context>
+          <context context-type="linenumber">5,7</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/navigation/sidebar-nav/sidebar-nav.html</context>
+          <context context-type="linenumber">5,7</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="nav.home" datatype="html">
+        <source>Hjem</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/navigation/bottom-nav/bottom-nav.ts</context>
+          <context context-type="linenumber">42</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/navigation/sidebar-nav/sidebar-nav.ts</context>
+          <context context-type="linenumber">34</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="nav.tasks" datatype="html">
+        <source>Oppgaver</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/navigation/bottom-nav/bottom-nav.ts</context>
+          <context context-type="linenumber">43</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/navigation/sidebar-nav/sidebar-nav.ts</context>
+          <context context-type="linenumber">35</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="nav.family" datatype="html">
+        <source>Familie</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/navigation/bottom-nav/bottom-nav.ts</context>
+          <context context-type="linenumber">44</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/navigation/sidebar-nav/sidebar-nav.ts</context>
+          <context context-type="linenumber">36</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="nav.progress" datatype="html">
+        <source>Fremgang</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/navigation/bottom-nav/bottom-nav.ts</context>
+          <context context-type="linenumber">45</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/navigation/sidebar-nav/sidebar-nav.ts</context>
+          <context context-type="linenumber">37</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="nav.rewards" datatype="html">
+        <source>Belønninger</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/navigation/bottom-nav/bottom-nav.ts</context>
+          <context context-type="linenumber">46</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/navigation/sidebar-nav/sidebar-nav.ts</context>
+          <context context-type="linenumber">38</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="nav.childNavigation" datatype="html">
+        <source>Barnenavigasjon</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/navigation/child-nav/child-nav.html</context>
+          <context context-type="linenumber">5,7</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="childNav.tasks" datatype="html">
+        <source>Mine oppgaver</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/navigation/child-nav/child-nav.ts</context>
+          <context context-type="linenumber">50</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="childNav.rewards" datatype="html">
+        <source>Mine belønninger</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/navigation/child-nav/child-nav.ts</context>
+          <context context-type="linenumber">51</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="nav.addNewTask" datatype="html">
+        <source>Legg til ny oppgave</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/navigation/sidebar-nav/sidebar-nav.html</context>
+          <context context-type="linenumber">36,38</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="nav.addTask" datatype="html">
+        <source>+ Legg til oppgave</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/navigation/sidebar-nav/sidebar-nav.html</context>
+          <context context-type="linenumber">38,39</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="progressSummary.ofTasks" datatype="html">
+        <source>av <x id="INTERPOLATION" equiv-text="{{ progress().totalTasks }}"/> oppgaver</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/progress-summary/progress-summary.html</context>
+          <context context-type="linenumber">31,33</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="progressSummary.pointsEarned" datatype="html">
+        <source>poeng opptjent</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/progress-summary/progress-summary.html</context>
+          <context context-type="linenumber">36,40</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="qrCodeDisplay.generating" datatype="html">
+        <source>Genererer QR-kode...</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/qr-code-display/qr-code-display.html</context>
+          <context context-type="linenumber">6,10</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="qrCodeDisplay.tryAgain" datatype="html">
+        <source> Prov igjen </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/qr-code-display/qr-code-display.html</context>
+          <context context-type="linenumber">16,18</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="qrCodeDisplay.forChild" datatype="html">
+        <source>for <x id="INTERPOLATION" equiv-text="{{ childName() }}"/></source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/qr-code-display/qr-code-display.html</context>
+          <context context-type="linenumber">26,27</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="qrCodeDisplay.instructions" datatype="html">
+        <source> Skann denne QR-koden med Diddit-appen for a logge inn raskt. </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/qr-code-display/qr-code-display.html</context>
+          <context context-type="linenumber">40,43</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="qrCodeDisplay.download" datatype="html">
+        <source> 📥 Last ned </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/qr-code-display/qr-code-display.html</context>
+          <context context-type="linenumber">51,53</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="qrCodeDisplay.print" datatype="html">
+        <source> 🖨️ Skriv ut </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/qr-code-display/qr-code-display.html</context>
+          <context context-type="linenumber">59,61</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="qrCodeDisplay.regenerate" datatype="html">
+        <source> 🔄 Generer pa nytt </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/qr-code-display/qr-code-display.html</context>
+          <context context-type="linenumber">68,70</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="qrCodeScanner.initializing" datatype="html">
+        <source>Initialiserer kamera...</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/qr-code-scanner/qr-code-scanner.html</context>
+          <context context-type="linenumber">6,10</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="qrCodeScanner.cameraAccessRequired" datatype="html">
+        <source>Kameratilgang pakrevd</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/qr-code-scanner/qr-code-scanner.html</context>
+          <context context-type="linenumber">14,15</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="qrCodeScanner.allowCameraMessage" datatype="html">
+        <source> Vennligst tillat kameratilgang for a skanne QR-koder. </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/qr-code-scanner/qr-code-scanner.html</context>
+          <context context-type="linenumber">16,19</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="qrCodeScanner.allowCameraButton" datatype="html">
+        <source> Tillat kameratilgang </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/qr-code-scanner/qr-code-scanner.html</context>
+          <context context-type="linenumber">24,26</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="qrCodeScanner.cancelButton" datatype="html">
+        <source> Avbryt </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/qr-code-scanner/qr-code-scanner.html</context>
+          <context context-type="linenumber">27,30</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="qrCodeScanner.noCameraFound" datatype="html">
+        <source>Ingen kamera funnet</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/qr-code-scanner/qr-code-scanner.html</context>
+          <context context-type="linenumber">37,38</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="qrCodeScanner.noCameraMessage" datatype="html">
+        <source> Enheten din har ikke et kamera eller det er ikke tilgjengelig. </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/qr-code-scanner/qr-code-scanner.html</context>
+          <context context-type="linenumber">39,41</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="qrCodeScanner.alternativeLogin" datatype="html">
+        <source> Du kan bruke passord/PIN-innlogging i stedet, eller prove a skanne fra en annen enhet. </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/qr-code-scanner/qr-code-scanner.html</context>
+          <context context-type="linenumber">42,44</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="qrCodeScanner.backToLogin" datatype="html">
+        <source> Tilbake til innlogging </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/qr-code-scanner/qr-code-scanner.html</context>
+          <context context-type="linenumber">45,50</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="qrCodeScanner.tryAgainButton" datatype="html">
+        <source> Prov igjen </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/qr-code-scanner/qr-code-scanner.html</context>
+          <context context-type="linenumber">57,59</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="qrCodeScanner.cancelButton2" datatype="html">
+        <source> Avbryt </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/qr-code-scanner/qr-code-scanner.html</context>
+          <context context-type="linenumber">60,63</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="qrCodeScanner.positionQrCode" datatype="html">
+        <source>Plasser QR-koden innenfor rammen</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/qr-code-scanner/qr-code-scanner.html</context>
+          <context context-type="linenumber">77,80</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="qrCodeScanner.cancelScanning" datatype="html">
+        <source> Avbryt skanning </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/qr-code-scanner/qr-code-scanner.html</context>
+          <context context-type="linenumber">81,85</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="streakCounter.daysLabel" datatype="html">
+        <source><x id="INTERPOLATION" equiv-text="{{
+      currentStreak() === 1 ? &apos;Dag&apos; : &apos;Dager&apos;
+    }}"/></source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/streak-counter/streak-counter.html</context>
+          <context context-type="linenumber">24,27</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="streakCounter.newRecord" datatype="html">
+        <source>Ny rekord!</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/streak-counter/streak-counter.html</context>
+          <context context-type="linenumber">35,37</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="streakCounter.bestStreak" datatype="html">
+        <source>Beste: <x id="INTERPOLATION" equiv-text="{{ longestStreak() }}"/> dager</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/streak-counter/streak-counter.html</context>
+          <context context-type="linenumber">38,40</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="taskCard.reassignToAnotherChild" datatype="html">
+        <source>Tilordne til et annet barn</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/task-card/task-card.html</context>
+          <context context-type="linenumber">59,61</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="weekComparison.title" datatype="html">
+        <source>Denne uken vs forrige uke</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/week-comparison/week-comparison.html</context>
+          <context context-type="linenumber">2,4</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="weekComparison.thisWeek" datatype="html">
+        <source>Denne uken</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/week-comparison/week-comparison.html</context>
+          <context context-type="linenumber">7,8</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="weekComparison.tasksCompleted" datatype="html">
+        <source> <x id="INTERPOLATION" equiv-text="{{ comparison().current.completedTasks }}"/>/<x id="INTERPOLATION_1" equiv-text="{{ comparison().current.totalTasks }}"/> oppgaver </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/week-comparison/week-comparison.html</context>
+          <context context-type="linenumber">10,12</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="weekComparison.lastWeek" datatype="html">
+        <source>Forrige uke</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/week-comparison/week-comparison.html</context>
+          <context context-type="linenumber">27,28</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="weekComparison.tasksCompletedPrevious" datatype="html">
+        <source> <x id="INTERPOLATION" equiv-text="{{ comparison().previous.completedTasks }}"/>/<x id="INTERPOLATION_1" equiv-text="{{ comparison().previous.totalTasks }}"/> oppgaver </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/week-comparison/week-comparison.html</context>
+          <context context-type="linenumber">30,32</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="weekComparison.pointsThisWeek" datatype="html">
+        <source>Poeng denne uken:</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/week-comparison/week-comparison.html</context>
+          <context context-type="linenumber">37,38</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="weekComparison.pointsDelta" datatype="html">
+        <source> (<x id="INTERPOLATION" equiv-text="{{ pointsChange() &gt; 0 ? &apos;+&apos; : &apos;&apos; }}"/><x id="INTERPOLATION_1" equiv-text="{{ pointsChange() }}"/> fra forrige uke) </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/week-comparison/week-comparison.html</context>
+          <context context-type="linenumber">45,47</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="childLayout.logout.ariaLabel" datatype="html">
+        <source>Logg ut</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/layouts/child-layout/child-layout.html</context>
+          <context context-type="linenumber">12,13</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="childLayout.logout.text" datatype="html">
+        <source>Ha det!</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/layouts/child-layout/child-layout.html</context>
+          <context context-type="linenumber">14,17</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="mainLayout.fab.ariaLabel" datatype="html">
+        <source>Legg til ny oppgave</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/layouts/main-layout/main-layout.html</context>
+          <context context-type="linenumber">37,42</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="childDashboard.loading" datatype="html">
+        <source>Laster oppgavene dine...</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/pages/child-dashboard/child-dashboard.html</context>
+          <context context-type="linenumber">6,10</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="childDashboard.tryAgain" datatype="html">
+        <source> Prøv igjen </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/pages/child-dashboard/child-dashboard.html</context>
+          <context context-type="linenumber">16,19</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="childDashboard.greeting" datatype="html">
+        <source>Hei <x id="INTERPOLATION" equiv-text="{{ childName() }}"/>! 👋</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/pages/child-dashboard/child-dashboard.html</context>
+          <context context-type="linenumber">25,26</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="childDashboard.todaysTasks" datatype="html">
+        <source>Dagens oppgaver</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/pages/child-dashboard/child-dashboard.html</context>
+          <context context-type="linenumber">30,33</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="childDashboard.noTasksToday" datatype="html">
+        <source>Ingen oppgaver i dag!</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/pages/child-dashboard/child-dashboard.html</context>
+          <context context-type="linenumber">36,37</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="childDashboard.enjoyFreeTime" datatype="html">
+        <source>Nyt fritiden din!</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/pages/child-dashboard/child-dashboard.html</context>
+          <context context-type="linenumber">37,40</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="childDashboard.toDo" datatype="html">
+        <source>Å gjøre</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/pages/child-dashboard/child-dashboard.html</context>
+          <context context-type="linenumber">43,44</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="childDashboard.pts" datatype="html">
+        <source>poeng</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/pages/child-dashboard/child-dashboard.html</context>
+          <context context-type="linenumber">53,54</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/pages/child-dashboard/child-dashboard.html</context>
+          <context context-type="linenumber">90,91</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="childDashboard.marking" datatype="html">
+        <source>Markerer...</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/pages/child-dashboard/child-dashboard.html</context>
+          <context context-type="linenumber">67,69</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="childDashboard.markDone" datatype="html">
+        <source>✓ Merk som ferdig</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/pages/child-dashboard/child-dashboard.html</context>
+          <context context-type="linenumber">69,71</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="childDashboard.completed" datatype="html">
+        <source>Fullført</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/pages/child-dashboard/child-dashboard.html</context>
+          <context context-type="linenumber">80,81</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="childDashboard.done" datatype="html">
+        <source>Ferdig!</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/pages/child-dashboard/child-dashboard.html</context>
+          <context context-type="linenumber">98,100</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="childDashboard.todaysPoints" datatype="html">
+        <source>Dagens poeng</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/pages/child-dashboard/child-dashboard.html</context>
+          <context context-type="linenumber">115,116</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="childDashboard.allComplete" datatype="html">
+        <source> 🎉 Alle oppgaver fullført! Bra jobba! </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/pages/child-dashboard/child-dashboard.html</context>
+          <context context-type="linenumber">135,138</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="childDashboard.thisWeek" datatype="html">
+        <source>Denne uken</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/pages/child-dashboard/child-dashboard.html</context>
+          <context context-type="linenumber">153,155</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="childDashboard.thisMonth" datatype="html">
+        <source>Denne måneden</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/pages/child-dashboard/child-dashboard.html</context>
+          <context context-type="linenumber">159,161</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="childDashboard.pointsThisWeek" datatype="html">
+        <source>Poeng denne uken</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/pages/child-dashboard/child-dashboard.html</context>
+          <context context-type="linenumber">170,174</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="family.loading" datatype="html">
+        <source>Laster familiemedlemmer...</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/pages/family/family.html</context>
+          <context context-type="linenumber">5,9</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="family.errorTitle" datatype="html">
+        <source>Oops!</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/pages/family/family.html</context>
+          <context context-type="linenumber">13,14</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="family.tryAgain" datatype="html">
+        <source>Prøv igjen</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/pages/family/family.html</context>
+          <context context-type="linenumber">15,19</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="family.inviteButton" datatype="html">
+        <source> + Inviter </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/pages/family/family.html</context>
+          <context context-type="linenumber">25,27</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="family.addChildButton" datatype="html">
+        <source> + Legg til barn </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/pages/family/family.html</context>
+          <context context-type="linenumber">28,30</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="family.membersTitle" datatype="html">
+        <source>Familiemedlemmer</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/pages/family/family.html</context>
+          <context context-type="linenumber">35,38</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="family.qrCodeAriaLabel" datatype="html">
+        <source>Vis innloggings-QR-kode for <x id="INTERPOLATION" equiv-text="{{ member.name }}"/></source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/pages/family/family.html</context>
+          <context context-type="linenumber">53,54</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="family.qrCodeTitle" datatype="html">
+        <source>Generer barneinnloggings-QR-kode</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/pages/family/family.html</context>
+          <context context-type="linenumber">55,56</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="family.qrCodeButton" datatype="html">
+        <source> 📱 Barneinnloggings-QR </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/pages/family/family.html</context>
+          <context context-type="linenumber">58,59</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="family.noMembersTitle" datatype="html">
+        <source>Ingen medlemmer ennå</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/pages/family/family.html</context>
+          <context context-type="linenumber">67,68</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="family.noMembersDescription" datatype="html">
+        <source> Begynn å invitere familiemedlemmer til husstanden din. </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/pages/family/family.html</context>
+          <context context-type="linenumber">69,71</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="home.loading" datatype="html">
+        <source>Laster dashboardet ditt...</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/pages/home/home.html</context>
+          <context context-type="linenumber">5,9</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="home.errorTitle" datatype="html">
+        <source>Oops!</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/pages/home/home.html</context>
+          <context context-type="linenumber">13,14</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="home.tryAgain" datatype="html">
+        <source>Prøv igjen</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/pages/home/home.html</context>
+          <context context-type="linenumber">15,19</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="home.subtitle" datatype="html">
+        <source>La oss få gjort oppgavene i dag</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/pages/home/home.html</context>
+          <context context-type="linenumber">27,29</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="home.todaysTasks" datatype="html">
+        <source>Dagens oppgaver</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/pages/home/home.html</context>
+          <context context-type="linenumber">74,77</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="home.noTasksToday" datatype="html">
+        <source>Ingen oppgaver i dag</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/pages/home/home.html</context>
+          <context context-type="linenumber">92,93</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="home.noTasksTodayDescription" datatype="html">
+        <source> Ingen oppgaver er planlagt for i dag. Opprett oppgaver i Oppgaver-seksjonen. </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/pages/home/home.html</context>
+          <context context-type="linenumber">94,96</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="home.comingUp" datatype="html">
+        <source>Kommende</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/pages/home/home.html</context>
+          <context context-type="linenumber">104,106</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="progress.loading" datatype="html">
+        <source>Laster fremgang...</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/pages/progress/progress.html</context>
+          <context context-type="linenumber">5,9</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="progress.tryAgain" datatype="html">
+        <source>Prøv igjen</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/pages/progress/progress.html</context>
+          <context context-type="linenumber">13,17</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="progress.pageTitle" datatype="html">
+        <source>Fremgang</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/pages/progress/progress.html</context>
+          <context context-type="linenumber">19,20</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="progress.statsHeading" datatype="html">
+        <source> Husstandsstatistikk </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/pages/progress/progress.html</context>
+          <context context-type="linenumber">23,25</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="progress.totalPoints" datatype="html">
+        <source>Totalt poeng</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/pages/progress/progress.html</context>
+          <context context-type="linenumber">32,35</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="progress.completionRate" datatype="html">
+        <source>Fullføringsrate</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/pages/progress/progress.html</context>
+          <context context-type="linenumber">40,43</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="progress.tasksThisWeek" datatype="html">
+        <source>Oppgaver denne uken</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/pages/progress/progress.html</context>
+          <context context-type="linenumber">48,51</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="progress.leaderboardTitle" datatype="html">
+        <source>Ukens ledere</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/pages/progress/progress.html</context>
+          <context context-type="linenumber">56,57</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="progress.leaderboardSubtitle" datatype="html">
+        <source> Bra jobba, alle sammen! </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/pages/progress/progress.html</context>
+          <context context-type="linenumber">58,62</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="progress.leaderboardAriaLabel" datatype="html">
+        <source>Ukentlig toppliste</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/pages/progress/progress.html</context>
+          <context context-type="linenumber">66,68</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="progress.tasksCompleted" datatype="html">
+        <source><x id="INTERPOLATION" equiv-text="{{ entry.tasksCompleted }}"/> oppgaver fullført</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/pages/progress/progress.html</context>
+          <context context-type="linenumber">81,82</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="progress.noLeaderboardData" datatype="html">
+        <source> Ingen toppliste-data ennå. Fullfør noen oppgaver for å komme i gang! </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/pages/progress/progress.html</context>
+          <context context-type="linenumber">94,96</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="progress.achievementsTitle" datatype="html">
+        <source>Prestasjoner</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/pages/progress/progress.html</context>
+          <context context-type="linenumber">103,104</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="progress.achievementsSubtitle" datatype="html">
+        <source> Fortsett den flotte innsatsen! </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/pages/progress/progress.html</context>
+          <context context-type="linenumber">105,109</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="progress.achievementBadges" datatype="html">
+        <source>Prestasjonsbadger</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/pages/progress/progress.html</context>
+          <context context-type="linenumber">114,116</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="progress.unlocked" datatype="html">
+        <source>Låst opp!</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/pages/progress/progress.html</context>
+          <context context-type="linenumber">146,148</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="progress.noAchievementsYet" datatype="html">
+        <source> Ingen prestasjoner ennå. Begynn å fullføre oppgaver for å låse opp badges! </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/pages/progress/progress.html</context>
+          <context context-type="linenumber">155,157</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="settings.loading" datatype="html">
+        <source>Laster profilen din...</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/pages/settings/settings.html</context>
+          <context context-type="linenumber">5,9</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="settings.errorTitle" datatype="html">
+        <source>Oops!</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/pages/settings/settings.html</context>
+          <context context-type="linenumber">13,15</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="settings.tryAgain" datatype="html">
+        <source>Prøv igjen</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/pages/settings/settings.html</context>
+          <context context-type="linenumber">15,19</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="settings.pageTitle" datatype="html">
+        <source>Innstillinger</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/pages/settings/settings.html</context>
+          <context context-type="linenumber">21,22</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="settings.dismissAriaLabel" datatype="html">
+        <source>Lukk</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/pages/settings/settings.html</context>
+          <context context-type="linenumber">31,33</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/pages/settings/settings.html</context>
+          <context context-type="linenumber">46,48</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="settings.profileTitle" datatype="html">
+        <source>Profil</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/pages/settings/settings.html</context>
+          <context context-type="linenumber">54,56</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="settings.firstNameLabel" datatype="html">
+        <source>Fornavn</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/pages/settings/settings.html</context>
+          <context context-type="linenumber">59,61</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="settings.firstNamePlaceholder" datatype="html">
+        <source>Skriv inn fornavnet ditt</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/pages/settings/settings.html</context>
+          <context context-type="linenumber">66,69</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="settings.lastNameLabel" datatype="html">
+        <source>Etternavn</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/pages/settings/settings.html</context>
+          <context context-type="linenumber">73,75</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="settings.lastNamePlaceholder" datatype="html">
+        <source>Skriv inn etternavnet ditt</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/pages/settings/settings.html</context>
+          <context context-type="linenumber">80,83</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="settings.lastNameHint" datatype="html">
+        <source>Slik vil du vises for andre familiemedlemmer</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/pages/settings/settings.html</context>
+          <context context-type="linenumber">84,88</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="settings.emailLabel" datatype="html">
+        <source>E-postadresse</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/pages/settings/settings.html</context>
+          <context context-type="linenumber">90,92</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="settings.emailPlaceholder" datatype="html">
+        <source>Skriv inn e-posten din</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/pages/settings/settings.html</context>
+          <context context-type="linenumber">97,100</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="settings.hidePasswordSection" datatype="html">
+        <source>- Skjul passordseksjon</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/pages/settings/settings.html</context>
+          <context context-type="linenumber">105,107</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="settings.changePassword" datatype="html">
+        <source>+ Endre passord</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/pages/settings/settings.html</context>
+          <context context-type="linenumber">107,110</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="settings.newPasswordLabel" datatype="html">
+        <source>Nytt passord</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/pages/settings/settings.html</context>
+          <context context-type="linenumber">115,117</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="settings.newPasswordPlaceholder" datatype="html">
+        <source>Skriv inn nytt passord</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/pages/settings/settings.html</context>
+          <context context-type="linenumber">122,124</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="settings.passwordHint" datatype="html">
+        <source> Minimum 8 tegn, må inneholde stor bokstav, liten bokstav og tall </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/pages/settings/settings.html</context>
+          <context context-type="linenumber">127,128</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="settings.confirmPasswordLabel" datatype="html">
+        <source>Bekreft nytt passord</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/pages/settings/settings.html</context>
+          <context context-type="linenumber">133,135</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="settings.confirmPasswordPlaceholder" datatype="html">
+        <source>Bekreft nytt passord</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/pages/settings/settings.html</context>
+          <context context-type="linenumber">141,143</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="settings.saving" datatype="html">
+        <source>Lagrer...</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/pages/settings/settings.html</context>
+          <context context-type="linenumber">152,154</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="settings.saveChanges" datatype="html">
+        <source>Lagre endringer</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/pages/settings/settings.html</context>
+          <context context-type="linenumber">154,156</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="settings.householdTitle" datatype="html">
+        <source>Husstand</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/pages/settings/settings.html</context>
+          <context context-type="linenumber">164,166</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="settings.currentHouseholdLabel" datatype="html">
+        <source>Nåværende husstand</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/pages/settings/settings.html</context>
+          <context context-type="linenumber">169,171</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="settings.householdSettingsLink" datatype="html">
+        <source>Husstandsinnstillinger</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/pages/settings/settings.html</context>
+          <context context-type="linenumber">179,181</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="settings.manageHouseholdsLink" datatype="html">
+        <source>Administrer husstander</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/pages/settings/settings.html</context>
+          <context context-type="linenumber">187,189</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="settings.invitationsLink" datatype="html">
+        <source>Invitasjoner</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/pages/settings/settings.html</context>
+          <context context-type="linenumber">194,195</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="settings.accountTitle" datatype="html">
+        <source>Konto</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/pages/settings/settings.html</context>
+          <context context-type="linenumber">206,208</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="settings.memberSinceLabel" datatype="html">
+        <source>Medlem siden</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/pages/settings/settings.html</context>
+          <context context-type="linenumber">210,211</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="settings.logOutButton" datatype="html">
+        <source> Logg ut </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/pages/settings/settings.html</context>
+          <context context-type="linenumber">222,224</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="settings.aboutTitle" datatype="html">
+        <source>Om</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/pages/settings/settings.html</context>
+          <context context-type="linenumber">231</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="settings.versionLabel" datatype="html">
+        <source>Versjon</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/pages/settings/settings.html</context>
+          <context context-type="linenumber">233,234</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="settings.buildLabel" datatype="html">
+        <source>Bygg</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/pages/settings/settings.html</context>
+          <context context-type="linenumber">237,238</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="tasks.pageTitle" datatype="html">
+        <source>Oppgaver</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/pages/tasks/tasks.html</context>
+          <context context-type="linenumber">1,2</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="tasks.filterByPerson" datatype="html">
+        <source>Filtrer etter person</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/pages/tasks/tasks.html</context>
+          <context context-type="linenumber">24,26</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="tasks.noChildrenInHousehold" datatype="html">
+        <source> Ingen barn i denne husstanden. </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/pages/tasks/tasks.html</context>
+          <context context-type="linenumber">41,45</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="tasks.loading" datatype="html">
+        <source>Laster oppgaver...</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/pages/tasks/tasks.html</context>
+          <context context-type="linenumber">51,55</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="tasks.retry" datatype="html">
+        <source> Prøv igjen </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/pages/tasks/tasks.html</context>
+          <context context-type="linenumber">61,63</context>
+        </context-group>
+      </trans-unit>
+    </body>
+  </file>
+</xliff>

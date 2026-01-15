@@ -30,7 +30,14 @@
     </div>
 
     <!-- FAB Button (Mobile only) -->
-    <button class="fab" (click)="openCreateTask()" aria-label="Add new task">+</button>
+    <button
+      class="fab"
+      (click)="openCreateTask()"
+      i18n-aria-label="@@mainLayout.fab.ariaLabel"
+      aria-label="Legg til ny oppgave"
+    >
+      +
+    </button>
   </div>
 
   <!-- Task Form Modal (Create mode) -->
