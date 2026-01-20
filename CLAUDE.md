@@ -181,6 +181,38 @@ npm run storybook:docs && npm run storybook
 
 See `.claude/skills/storybook/SKILL.md` for complete guidance.
 
+### Internationalization (i18n)
+
+**Translation Management with Localazy**
+
+```bash
+# Extract translatable strings from Angular frontend
+npm run i18n:extract
+
+# Upload Norwegian source strings to Localazy
+npm run i18n:upload
+
+# Download English translations from Localazy
+npm run i18n:download
+```
+
+**Workflow:**
+
+1. Write code in Norwegian (source language) using `i18n` attributes or `$localize`
+2. Extract strings: `npm run i18n:extract`
+3. Upload to Localazy: `npm run i18n:upload` (requires `LOCALAZY_WRITE_KEY`)
+4. Translate in Localazy web UI
+5. Download translations: `npm run i18n:download` (requires `LOCALAZY_READ_KEY`)
+6. Build multilingual app: `npm run build:frontend`
+
+**Configuration:**
+
+- Source language: Norwegian (`no`)
+- Target languages: English (`en`)
+- Files: `apps/frontend/src/locale/messages.xlf` (source), `messages.en.xlf` (translations)
+
+See `docs/LOCALAZY.md` for complete documentation.
+
 ## Architecture
 
 ```
