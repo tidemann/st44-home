@@ -1,0 +1,82 @@
+name: Localazy Sync
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  schedule:
+    # Daily at 2 AM UTC to catch translation updates
+    - cron: '0 2 * * *'
+  workflow_dispatch: # Allow manual trigger
+
+jobs:
+  sync-translations:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Download translations from Localazy
+        run: npx localazy download
+        env:
+          LOCALAZY_READ_KEY: ${{ secrets.LOCALAZY_READ_KEY }}
+
+      - name: Verify translation files exist
+        run: |
+          # Check that English translation file was downloaded
+          if [ ! -f "apps/frontend/src/locale/messages.en.xlf" ]; then
+            echo "ERROR: English translation file not found"
+            exit 1
+          fi
+          echo "✅ Translation files verified"
+
+      - name: Check for translation changes
+        id: check_changes
+        run: |
+          if git diff --quiet apps/frontend/src/locale/messages.en.xlf; then
+            echo "changes=false" >> $GITHUB_OUTPUT
+            echo "No translation changes detected"
+          else
+            echo "changes=true" >> $GITHUB_OUTPUT
+            echo "Translation changes detected"
+          fi
+
+      - name: Upload translation artifacts
+        if: steps.check_changes.outputs.changes == 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: translations
+          path: |
+            apps/frontend/src/locale/messages.en.xlf
+            apps/backend/locales/en/translation.json
+          retention-days: 7
+
+      - name: Show translation stats
+        run: |
+          echo "📊 Translation Statistics"
+          echo "========================"
+
+          # Count translation units in Norwegian source
+          NO_COUNT=$(grep -c "<trans-unit" apps/frontend/src/locale/messages.xlf || echo "0")
+          echo "Norwegian source strings: $NO_COUNT"
+
+          # Count translation units in English
+          EN_COUNT=$(grep -c "<trans-unit" apps/frontend/src/locale/messages.en.xlf || echo "0")
+          echo "English translated strings: $EN_COUNT"
+
+          # Calculate percentage
+          if [ "$NO_COUNT" -gt 0 ]; then
+            PERCENT=$((EN_COUNT * 100 / NO_COUNT))
+            echo "Translation coverage: ${PERCENT}%"
+          fi

@@ -102,6 +102,21 @@ The `localazy.json` file in the project root defines:
 
 GitHub Actions automatically downloads translations before each build:
 
+**Workflows:**
+
+1. **`.github/workflows/localazy-sync.yml`** - Dedicated translation sync workflow
+   - Runs on push to main
+   - Runs on pull requests
+   - Runs daily at 2 AM UTC (scheduled)
+   - Can be triggered manually via workflow_dispatch
+   - Shows translation statistics
+
+2. **`.github/workflows/ci.yml`** - Main CI workflow
+   - Downloads translations before building frontend
+   - Ensures builds have latest translations
+
+**Translation Download Step:**
+
 ```yaml
 - name: Download Localazy translations
   run: npx localazy download
@@ -109,7 +124,7 @@ GitHub Actions automatically downloads translations before each build:
     LOCALAZY_READ_KEY: ${{ secrets.LOCALAZY_READ_KEY }}
 ```
 
-This ensures production builds always have the latest translations.
+This ensures production builds always have the latest translations from Localazy.
 
 ## Commands Reference
 

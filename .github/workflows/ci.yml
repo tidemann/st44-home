@@ -29,6 +29,11 @@ jobs:
       - name: Install native bindings and jsdom
         run: npm install --no-save @tailwindcss/oxide-linux-x64-gnu lightningcss-linux-x64-gnu jsdom
 
+      - name: Download translations from Localazy
+        run: npx localazy download
+        env:
+          LOCALAZY_READ_KEY: ${{ secrets.LOCALAZY_READ_KEY }}
+
       - name: Lint
         run: npm run lint
         working-directory: apps/frontend
