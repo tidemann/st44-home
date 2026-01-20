@@ -17,8 +17,7 @@
   "download": {
     "files": [
       {
-        "pattern": "apps/frontend/src/locale/messages.${lang}.xlf",
-        "buildType": "angular-xliff"
+        "output": "apps/frontend/src/locale/messages.${lang}.xlf"
       }
     ]
   }
