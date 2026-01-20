@@ -29,10 +29,14 @@
     "db:test:up": "cd infra && docker compose -f docker-compose.test.yml up -d",
     "db:test:down": "cd infra && docker compose -f docker-compose.test.yml down -v",
     "db:test:migrate": "pwsh -Command \"docker exec -i st44-db-test psql -U postgres -d st44_test < docker/postgres/init.sql\"",
+    "i18n:extract": "cd apps/frontend && npm run extract-i18n",
+    "i18n:upload": "npx localazy upload",
+    "i18n:download": "npx localazy download",
     "prepare": "husky || true"
   },
   "packageManager": "npm@11.6.2",
   "devDependencies": {
+    "@localazy/cli": "^2.0.8",
     "husky": "^9.1.7",
     "jsdom": "^27.2.0",
     "lint-staged": "^16.2.7",
