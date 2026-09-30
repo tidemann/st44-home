@@ -384,10 +384,19 @@ Two things to know about the inputs:
   input, builds and pushes images without touching the server — that is for
   checking a build, not for rolling back.)
 
-You do not have to pre-check that the images exist (Step 2 below) on this path. If
-the tag was never pushed, `docker compose pull` fails and the run aborts *before*
-`docker compose up`, so the containers that are running stay running. You get a red
-run, not an outage — pick another SHA and dispatch again.
+You do not have to pre-check that the images exist (Step 2 below) on this path. A
+rollback run checks all three tags on the host before it touches anything and stops
+with a message naming what is missing. Even past that, `docker compose pull` fails
+before `docker compose up`, so the containers that are running stay running. You get
+a red run, not an outage — pick another SHA and dispatch again.
+
+**This rolls back the images, not the database.** Migrations that already ran stay
+applied, and the old backend has to cope with the newer schema — which is what the
+additive-migration rule buys. If the bad release included a migration that is *not*
+backward compatible, an image rollback alone will not save you; read
+[Important: The Schema Rolls Forward, the Images Roll
+Back](#important-the-schema-rolls-forward-the-images-roll-back) above and
+[What this does not cover](#what-this-does-not-cover) below first.
 
 Afterwards, still do the "make it durable" step at the end of this section: revert
 the bad commit on `main`, because the next push to `main` deploys whatever is there.
@@ -402,6 +411,10 @@ workflow itself is what broke. It does exactly what the workflow above does.
 #### Step 1: Find the previous good SHA
 
 (Also the first step of the fast path above.)
+
+**Pick a SHA that has a successful Deploy run behind it**, which is why (a) is
+first. Not every commit on `main` has images: the deploy path filter skips
+docs-only commits, so those SHAs were never built and cannot be rolled back to.
 
 Three places, cheapest first:
 

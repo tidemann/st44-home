@@ -149,11 +149,19 @@ jobs:
             echo "| move \`:latest\` | \`${ON_MAIN}\` |"
           } >> "$GITHUB_STEP_SUMMARY"
 
+          # A run that neither builds nor deploys is almost always a mistake --
+          # a rollback dispatched with the branch box left off main, or
+          # redeploy_tag and skip_deploy set together. It would otherwise go
+          # green having done nothing, which is the worst way to learn that the
+          # rollback you thought you ran did not happen. Warn loudly; don't fail,
+          # because the dispatcher may simply have changed their mind.
           if [ "${build}" = "false" ] && [ "${deploy}" = "false" ]; then
+            echo "::warning::This run does nothing: it neither builds nor deploys. A redeploy_tag run must be dispatched from main, and must not also set skip_deploy."
             {
               echo
-              echo '> This run does nothing: it neither builds nor deploys.'
-              echo '> A `redeploy_tag` run off `main` is build-skipped *and* deploy-blocked.'
+              echo '> **This run did nothing: it neither built nor deployed.**'
+              echo '> `redeploy_tag` only deploys when dispatched from `main`, and not'
+              echo '> when `skip_deploy` is also set. Nothing on the server changed.'
             } >> "$GITHUB_STEP_SUMMARY"
           fi
 
@@ -366,6 +374,38 @@ jobs:
           EOF
           chmod 600 ~/.ssh/config
 
+      # Only on a rollback, and only because the tag came from a human typing it
+      # into the Actions UI. `docker compose pull` would fail on a missing image
+      # anyway, and it fails *before* `up`, so the running stack survives either
+      # way -- this is about the error message, not about safety. Picking a
+      # docs-only commit out of `git log` is the easy mistake: the path filter
+      # skipped its build, so no images for that SHA were ever pushed.
+      #
+      # Runs on the server, not on the runner: the GHCR packages are private and
+      # the credential for them lives in the deploy user's docker config on the
+      # host. The runner has no way to read them.
+      - name: Check the images for this tag exist before touching the stack
+        if: needs.plan.outputs.build == 'false'
+        run: |
+          set -euo pipefail
+          ssh deploy-target IMAGE_PREFIX="${IMAGE_PREFIX}" IMAGE_TAG="${IMAGE_TAG}" bash -s <<'REMOTE'
+          set -uo pipefail
+          missing=''
+          for svc in frontend backend db; do
+            image="${IMAGE_PREFIX}-${svc}:${IMAGE_TAG}"
+            if docker manifest inspect "$image" >/dev/null 2>&1; then
+              echo "ok      $image"
+            else
+              echo "MISSING $image"
+              missing="${missing} ${svc}"
+            fi
+          done
+          if [ -n "$missing" ]; then
+            echo "::error::no images in GHCR for ${IMAGE_TAG}:${missing}. That commit's build was probably skipped (the deploy path filter ignores docs-only commits). Pick a SHA that has a successful Deploy run behind it. Nothing was changed on the server."
+            exit 1
+          fi
+          REMOTE
+
       # Rollback anchor: name the artifacts running now, before replacing them.
       # Recorded first, and into the run summary, so a later failure still leaves
       # the previous tags written down somewhere durable.
@@ -515,11 +555,24 @@ jobs:
 
       - name: Record the deployed tag
         if: always()
+        env:
+          # always(), so this also runs when the deploy failed. Then these images
+          # are what the run was *aiming* at, and the stack may still be on the
+          # previous ones -- say which, rather than captioning a failed run
+          # "Deployed artifact" and sending the next reader down the wrong path.
+          JOB_STATUS: ${{ job.status }}
         run: |
           set -euo pipefail
           {
             echo
-            echo '## Deployed artifact'
+            if [ "${JOB_STATUS}" = "success" ]; then
+              echo '## Deployed artifact'
+            else
+              echo '## Attempted artifact (this deploy did NOT succeed)'
+              echo
+              echo 'The stack may still be on the images in "Rollback anchor" above.'
+              echo 'Check `docker ps` on the host before assuming either way.'
+            fi
             echo
             echo '| service | image |'
             echo '| --- | --- |'
