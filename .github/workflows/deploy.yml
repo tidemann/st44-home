@@ -2,7 +2,9 @@ name: Deploy
 
 on:
   push:
-    branches: [main]
+    # TEMPORARY (ST-60 verification only, reverted before merge): proves the
+    # SHA tagging on a branch. Non-main refs never deploy and never move :latest.
+    branches: [main, ci/st-60-sha-image-tags]
   workflow_dispatch:
     inputs:
       redeploy_tag:
