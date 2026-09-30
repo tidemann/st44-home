@@ -380,13 +380,21 @@ Skipping this is how a rollback turns into an outage — a SHA whose images were
 never pushed (for example a commit that only touched docs, which the deploy path
 filter skips) will fail the pull and leave nothing running.
 
+Run this **on the server**. The GHCR packages are private and the credential for
+them lives in the deploy user's docker config on the host; a laptop or an agent gets
+401/403 (see ST-60 — the GitHub App token cannot read GHCR package versions either).
+
 ```bash
+ssh <deploy-user>@home.st44.no
 SHA=<previous-good-sha>
 for svc in frontend backend db; do
-  docker manifest inspect "ghcr.io/tidemann/st44-home-$svc:$SHA" > /dev/null \
+  docker manifest inspect "ghcr.io/tidemann/st44-home-$svc:$SHA" > /dev/null 2>&1 \
     && echo "$svc: ok" || echo "$svc: MISSING — pick another SHA"
 done
 ```
+
+If all three say MISSING, that SHA predates SHA tagging (anything before ST-59
+merged). Roll forward instead, or pick a later commit.
 
 #### Step 3: Start the stack on that tag
 
