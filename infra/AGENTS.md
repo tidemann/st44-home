@@ -264,8 +264,10 @@ different and worth knowing about:
 - The deploy does not edit either file. It generates a compose override with
   `generate-image-pin.sh` and merges it over the server's file, so the stack runs
   images tagged by commit SHA while the file keeps saying `:latest`.
-- That is what makes a rollback possible: pick an earlier SHA, merge the same
-  override by hand. See `docs/DEPLOYMENT.md` → "Rolling back to a previous image".
+- That is what makes a rollback possible: pick an earlier SHA and redeploy on it.
+  Actions → Deploy → Run workflow with `redeploy_tag=<40-char sha>` generates the
+  same override and skips the build jobs; merging it by hand on the server is the
+  fallback. See `docs/DEPLOYMENT.md` → "Rolling back to a previous image".
 
 ### Service-Specific
 See individual service sections above and:
