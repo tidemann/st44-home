@@ -30,8 +30,8 @@
     "db:test:down": "cd infra && docker compose -f docker-compose.test.yml down -v",
     "db:test:migrate": "pwsh -Command \"docker exec -i st44-db-test psql -U postgres -d st44_test < docker/postgres/init.sql\"",
     "i18n:extract": "cd apps/frontend && npm run extract-i18n",
-    "i18n:upload": "npx localazy upload",
-    "i18n:download": "npx localazy download",
+    "i18n:upload": "npx localazy upload --keys localazy.keys.json",
+    "i18n:download": "npx localazy download --keys localazy.keys.json",
     "prepare": "husky || true"
   },
   "packageManager": "npm@11.6.2",
