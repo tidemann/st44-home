@@ -5,6 +5,10 @@ on:
     branches: [main]
   push:
     branches: [main]
+  # CI only triggers on PRs into main, so a PR stacked on another branch gets no
+  # run at all. This makes the checks runnable on any ref on demand, which is also
+  # how a stacked change gets verified before its base merges.
+  workflow_dispatch:
 
 jobs:
   # A floating tag lets an action move under a live deploy with no commit here.
@@ -36,6 +40,60 @@ jobs:
               bad=1
             fi
           done < <(grep -rhE '^\s*-?\s*uses:' .github/workflows)
+          exit "$bad"
+
+  # The deploy pins its images with a generated compose override rather than by
+  # editing the server's compose file, which CI cannot write. If that merge ever
+  # stops working, the deploy goes green while quietly running `:latest` again --
+  # which is the same thing as having no rollback anchor. This job is where that
+  # merge is provable without a live deploy, using the same script the deploy runs.
+  compose:
+    name: Deploy pin overrides the server compose file
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+
+      - name: The pin wins, and the server's own settings survive it
+        run: |
+          set -euo pipefail
+          # An obviously-not-a-tag value, so a hardcoded `:latest` cannot pass by luck.
+          infra/generate-image-pin.sh ghcr.io/tidemann/st44-home st59-pin-probe > pin.yml
+          cat pin.yml
+
+          # Same merge order as the deploy: the server's file, then the pin.
+          # infra/docker-compose.prod.yml mirrors the host copy, tags and all.
+          resolved="$(docker compose -f infra/docker-compose.prod.yml -f pin.yml config)"
+
+          bad=0
+          for svc in frontend backend db; do
+            if ! printf '%s\n' "$resolved" \
+              | grep -qF "image: ghcr.io/tidemann/st44-home-${svc}:st59-pin-probe"; then
+              echo "::error::st44-home-${svc} did not take the pinned tag"
+              bad=1
+            fi
+          done
+
+          # No ghcr image may come out on anything else, whatever it is called.
+          if printf '%s\n' "$resolved" | grep -E 'image: ghcr\.io/' | grep -v ':st59-pin-probe'; then
+            echo "::error::the ghcr image above ignored the pin"
+            bad=1
+          fi
+
+          # The override must not cost the server its own configuration: the
+          # external proxy network, the frontend on 3100, the extra backend
+          # environment. Losing any of those takes the live site down.
+          for needle in 'st44_default' '"3100"' 'SENDGRID_API_KEY' 'APP_URL'; do
+            if ! printf '%s\n' "$resolved" | grep -qF -- "$needle"; then
+              echo "::error::the merged config lost ${needle}"
+              bad=1
+            fi
+          done
+
+          if [ "$bad" -eq 0 ]; then
+            echo "pin applied to all three images, server settings intact"
+          fi
           exit "$bad"
 
   frontend:

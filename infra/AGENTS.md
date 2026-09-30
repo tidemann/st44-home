@@ -252,6 +252,21 @@ GITHUB_REPOSITORY_OWNER=username
 GITHUB_REPOSITORY_NAME=repo-name
 ```
 
+### Which image the stack runs
+
+`docker-compose.yml` is the local stack and names `:latest`. Production is
+different and worth knowing about:
+
+- `docker-compose.prod.yml` mirrors the file on the server
+  (`/srv/st44-home/infra/docker-compose.yml`) — external proxy network, frontend on
+  3100, extra backend environment. It is a copy for reference and for CI to test
+  against; CI cannot write that directory.
+- The deploy does not edit either file. It generates a compose override with
+  `generate-image-pin.sh` and merges it over the server's file, so the stack runs
+  images tagged by commit SHA while the file keeps saying `:latest`.
+- That is what makes a rollback possible: pick an earlier SHA, merge the same
+  override by hand. See `docs/DEPLOYMENT.md` → "Rolling back to a previous image".
+
 ### Service-Specific
 See individual service sections above and:
 - `apps/backend/AGENTS.md` - Backend env vars

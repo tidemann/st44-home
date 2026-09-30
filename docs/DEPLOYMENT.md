@@ -328,9 +328,138 @@ curl -X POST https://home.st44.no/api/auth/register \
 
 ## Rollback Procedures
 
-### Important: We Roll Forward, Not Backward
+### Important: The Schema Rolls Forward, the Images Roll Back
 
-Database migrations are **additive and irreversible**. We don't rollback migrations; we create new migrations to undo changes.
+Two different things are being rolled back, and they have different answers:
+
+- **Database migrations** are additive and irreversible. We don't roll migrations
+  back; we write a new migration that undoes the change. That is the rest of this
+  section.
+- **Application images** are immutable and tagged by commit SHA, so they *can* be
+  rolled back to a named previous artifact. That is the section immediately below,
+  and it is the fast path when a deploy breaks the app but not the schema.
+
+### Rolling back to a previous image
+
+Every deploy pushes three images tagged with the commit SHA it was built from:
+
+```
+ghcr.io/tidemann/st44-home-frontend:<sha>
+ghcr.io/tidemann/st44-home-backend:<sha>
+ghcr.io/tidemann/st44-home-db:<sha>
+```
+
+The server's compose file still says `:latest` and is never edited by CI. Instead
+the deploy generates a small compose override naming those three tags and merges it
+over the server's file, which is why the running stack is identifiable. Rolling
+back is doing the same merge by hand with an earlier tag. `latest` also moves on
+every deploy: it is a convenience pointer, never the answer to "what is running?".
+
+#### Step 1: Find the previous good SHA
+
+Three places, cheapest first:
+
+```bash
+# a) The deploy run summary. Every Deploy run opens with a "Rollback anchor"
+#    block naming the images that were running before it, and closes with a
+#    "Deployed artifact" table naming the ones it installed.
+gh run list --workflow=deploy.yml --limit 10
+gh run view <run-id>
+
+# b) The host, if the previous containers are still around.
+ssh <deploy-user>@home.st44.no \
+  "docker ps -a --filter name=st44 --format '{{.Names}}\t{{.Image}}\t{{.CreatedAt}}'"
+
+# c) git. The tag *is* the commit, so the last good deploy is a commit on main.
+git log --oneline -20 main
+```
+
+#### Step 2: Confirm the images for that SHA exist in the registry
+
+Skipping this is how a rollback turns into an outage — a SHA whose images were
+never pushed (for example a commit that only touched docs, which the deploy path
+filter skips) will fail the pull and leave nothing running.
+
+Run this **on the server**. The GHCR packages are private and the credential for
+them lives in the deploy user's docker config on the host; a laptop or an agent gets
+401/403 (see ST-60 — the GitHub App token cannot read GHCR package versions either).
+
+```bash
+ssh <deploy-user>@home.st44.no
+SHA=<previous-good-sha>
+for svc in frontend backend db; do
+  docker manifest inspect "ghcr.io/tidemann/st44-home-$svc:$SHA" > /dev/null 2>&1 \
+    && echo "$svc: ok" || echo "$svc: MISSING — pick another SHA"
+done
+```
+
+If all three say MISSING, that SHA predates SHA tagging (anything before ST-59
+merged). Roll forward instead, or pick a later commit.
+
+#### Step 3: Start the stack on that tag
+
+Run on the server as the deploy user. This does not edit the server's compose file
+or `.env`, and it does not need a CI run — it writes the same override the deploy
+writes, with an older tag:
+
+```bash
+ssh <deploy-user>@home.st44.no
+SHA=<previous-good-sha>
+
+# The same file the deploy sends. Three services, one tag each.
+cat > ~/st44-home-image-pin.yml <<YAML
+services:
+  frontend:
+    image: ghcr.io/tidemann/st44-home-frontend:${SHA}
+  backend:
+    image: ghcr.io/tidemann/st44-home-backend:${SHA}
+  db:
+    image: ghcr.io/tidemann/st44-home-db:${SHA}
+YAML
+
+cd /srv/st44-home/infra
+export COMPOSE_FILE="docker-compose.yml:$HOME/st44-home-image-pin.yml"
+
+# Check the merge before acting on it: three images on $SHA, and the external
+# network and the frontend on 3100 still there.
+docker compose config | grep -E 'image:|3100|st44_default'
+
+docker compose pull
+docker compose up -d --force-recreate frontend backend
+
+# Only recreate db if the rollback is meant to change the database image too.
+# Rolling the db image back does NOT undo migrations that have already run.
+```
+
+`cd /srv/st44-home/infra` matters: compose takes the project directory from the
+first file, and that is where `.env` — `DB_PASSWORD`, `CORS_ORIGIN` — lives.
+
+#### Step 4: Verify, then record
+
+```bash
+# The containers are on the tag you asked for
+docker inspect -f '{{.Config.Image}}' st44-frontend st44-backend
+
+# The app answers
+curl -fsS http://localhost:3000/health
+curl -fsS -o /dev/null -w '%{http_code}\n' https://home.st44.no/health
+```
+
+Then make the rollback durable, because the next push to main deploys whatever is
+on `main`:
+
+- Revert the bad commit on `main` (`git revert <bad-sha>`, PR, merge). The next
+  deploy then rebuilds the reverted state and `IMAGE_TAG` catches up with the host.
+- Until that lands, **do not merge to main** — a deploy would overwrite the
+  rolled-back stack.
+
+#### What this does not cover
+
+- **Migrations that already ran.** The schema stays where it is; read the rest of
+  this section. A rolled-back backend must still be able to talk to the newer
+  schema, which is what the additive-migration rule buys.
+- **The Cloudflare cache.** Purge it after a rollback that changes frontend
+  assets, the same way the deploy workflow does.
 
 ### Scenario 1: Bad Migration Just Deployed
 
