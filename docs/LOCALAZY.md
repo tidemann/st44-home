@@ -24,13 +24,28 @@ npm install  # Installs @localazy/cli
 
 To use Localazy CLI, you need to set up API keys:
 
+> **The CLI does not read keys from the environment.** `LOCALAZY_READ_KEY` /
+> `LOCALAZY_WRITE_KEY` as plain env vars are ignored — the CLI only accepts a key
+> from `localazy.json`, from a key file (`--keys`), or on the command line
+> (`--read-key` / `--write-key`). Exporting the variable and running
+> `npx localazy download` fails with
+> `Please provide readKey in your configuration file`.
+
 #### For Local Development
 
-Create a `.env` file in the project root (not tracked in git):
+Create a `localazy.keys.json` file in the project root (not tracked in git):
+
+```json
+{
+  "readKey": "your_read_key_here",
+  "writeKey": "your_write_key_here"
+}
+```
+
+Then pass it to the CLI:
 
 ```bash
-LOCALAZY_READ_KEY=your_read_key_here
-LOCALAZY_WRITE_KEY=your_write_key_here
+npx localazy download --keys localazy.keys.json
 ```
 
 Get your API keys from [Localazy Dashboard → Settings → API Keys](https://localazy.com/p/st44-home/settings/keys)
@@ -48,10 +63,14 @@ Add the following secrets to GitHub repository settings:
 
 The `localazy.json` file in the project root defines:
 
-- **Source language**: Norwegian (`no`)
-- **Target languages**: English (`en`)
 - **Upload**: Norwegian source strings from `apps/frontend/src/locale/messages.xlf`
 - **Download**: Translated files to `apps/frontend/src/locale/messages.${lang}.xlf`
+
+Source and target languages are configured in the Localazy project itself, not in
+this file. The CLI rejects `version`, `description`, `sourceLanguage` and
+`languages` keys — adding them breaks every command with
+`Configuration file localazy.json cannot be read`. It also contains no keys; see
+**Configure API Keys** above.
 
 ## Workflow
 
@@ -71,10 +90,10 @@ The `localazy.json` file in the project root defines:
 3. **Upload to Localazy** (from project root)
 
    ```bash
-   npx localazy upload
+   npx localazy upload --keys localazy.keys.json
    ```
 
-   - Requires `LOCALAZY_WRITE_KEY`
+   - Requires a write key
    - Sends Norwegian source strings to Localazy
 
 4. **Translators work in Localazy Web UI**
@@ -85,10 +104,10 @@ The `localazy.json` file in the project root defines:
 5. **Download translations**
 
    ```bash
-   npx localazy download
+   npx localazy download --keys localazy.keys.json
    ```
 
-   - Requires `LOCALAZY_READ_KEY`
+   - Requires a read key
    - Downloads `messages.en.xlf` (English translations)
    - Updates existing translation files
 
@@ -100,31 +119,34 @@ The `localazy.json` file in the project root defines:
 
 ### CI/CD Workflow (Automated)
 
-GitHub Actions automatically downloads translations before each build:
+Translation files are committed to the repo, so **CI does not talk to Localazy**.
+`ci.yml` builds from `apps/frontend/src/locale/messages.en.xlf` as checked in. A
+Localazy outage therefore cannot block a pull request.
 
 **Workflows:**
 
 1. **`.github/workflows/localazy-sync.yml`** - Dedicated translation sync workflow
-   - Runs on push to main
-   - Runs on pull requests
    - Runs daily at 2 AM UTC (scheduled)
    - Can be triggered manually via workflow_dispatch
+   - Does _not_ run on push or pull request
+   - Skips with a notice when `LOCALAZY_READ_KEY` is not configured
    - Shows translation statistics
 
 2. **`.github/workflows/ci.yml`** - Main CI workflow
-   - Downloads translations before building frontend
-   - Ensures builds have latest translations
+   - Lint, tests and build only; no Localazy step
 
 **Translation Download Step:**
 
 ```yaml
-- name: Download Localazy translations
-  run: npx localazy download
+- name: Download translations from Localazy
   env:
     LOCALAZY_READ_KEY: ${{ secrets.LOCALAZY_READ_KEY }}
+  run: npx localazy download --read-key "$LOCALAZY_READ_KEY"
 ```
 
-This ensures production builds always have the latest translations from Localazy.
+The key is passed with `--read-key` because the CLI ignores the environment
+variable. Refreshed translations are published as a build artifact; committing
+them back to the repo is still a manual step.
 
 ## Commands Reference
 
@@ -187,7 +209,8 @@ st44-home/
 
 **Solution**:
 
-1. Check that `.env` file exists with `LOCALAZY_READ_KEY` and `LOCALAZY_WRITE_KEY`
+1. Check that `localazy.keys.json` exists and that you passed `--keys localazy.keys.json`
+   (the CLI ignores `LOCALAZY_READ_KEY`/`LOCALAZY_WRITE_KEY` environment variables)
 2. Verify keys are correct in [Localazy Dashboard](https://localazy.com/p/st44-home/settings/keys)
 3. Ensure keys have correct permissions (read/write)
 

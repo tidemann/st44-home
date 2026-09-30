@@ -1,14 +1,16 @@
 name: Localazy Sync
 
+# Translations are committed to the repo, so nothing here is needed to build or
+# test the app. This workflow only refreshes them from Localazy, which is why it
+# does not run on push or pull_request — see docs/LOCALAZY.md.
 on:
-  push:
-    branches: [main]
-  pull_request:
-    branches: [main]
   schedule:
     # Daily at 2 AM UTC to catch translation updates
     - cron: '0 2 * * *'
   workflow_dispatch: # Allow manual trigger
+
+permissions:
+  contents: read
 
 jobs:
   sync-translations:
@@ -18,21 +20,40 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      - name: Check Localazy credentials
+        id: creds
+        env:
+          LOCALAZY_READ_KEY: ${{ secrets.LOCALAZY_READ_KEY }}
+        run: |
+          if [ -z "$LOCALAZY_READ_KEY" ]; then
+            echo "configured=false" >> "$GITHUB_OUTPUT"
+            echo "::notice::LOCALAZY_READ_KEY is not set - skipping translation sync."
+          else
+            echo "configured=true" >> "$GITHUB_OUTPUT"
+          fi
+
       - name: Setup Node.js
+        if: steps.creds.outputs.configured == 'true'
         uses: actions/setup-node@v4
         with:
           node-version: '22'
           cache: 'npm'
 
       - name: Install dependencies
+        if: steps.creds.outputs.configured == 'true'
         run: npm ci
 
+      # The Localazy CLI does not read LOCALAZY_READ_KEY from the environment.
+      # The key must come from localazy.json, a key file, or --read-key. We keep
+      # it out of the repo, so it is passed on the command line from the secret.
       - name: Download translations from Localazy
-        run: npx localazy download
+        if: steps.creds.outputs.configured == 'true'
         env:
           LOCALAZY_READ_KEY: ${{ secrets.LOCALAZY_READ_KEY }}
+        run: npx localazy download --read-key "$LOCALAZY_READ_KEY"
 
       - name: Verify translation files exist
+        if: steps.creds.outputs.configured == 'true'
         run: |
           # Check that English translation file was downloaded
           if [ ! -f "apps/frontend/src/locale/messages.en.xlf" ]; then
@@ -43,12 +64,13 @@ jobs:
 
       - name: Check for translation changes
         id: check_changes
+        if: steps.creds.outputs.configured == 'true'
         run: |
           if git diff --quiet apps/frontend/src/locale/messages.en.xlf; then
-            echo "changes=false" >> $GITHUB_OUTPUT
+            echo "changes=false" >> "$GITHUB_OUTPUT"
             echo "No translation changes detected"
           else
-            echo "changes=true" >> $GITHUB_OUTPUT
+            echo "changes=true" >> "$GITHUB_OUTPUT"
             echo "Translation changes detected"
           fi
 
@@ -63,16 +85,17 @@ jobs:
           retention-days: 7
 
       - name: Show translation stats
+        if: steps.creds.outputs.configured == 'true'
         run: |
           echo "📊 Translation Statistics"
           echo "========================"
 
-          # Count translation units in Norwegian source
-          NO_COUNT=$(grep -c "<trans-unit" apps/frontend/src/locale/messages.xlf || echo "0")
+          # grep -c prints 0 and exits 1 when there are no matches, so swallow
+          # the exit status rather than appending a second count.
+          NO_COUNT=$(grep -c "<trans-unit" apps/frontend/src/locale/messages.xlf || true)
           echo "Norwegian source strings: $NO_COUNT"
 
-          # Count translation units in English
-          EN_COUNT=$(grep -c "<trans-unit" apps/frontend/src/locale/messages.en.xlf || echo "0")
+          EN_COUNT=$(grep -c "<trans-unit" apps/frontend/src/locale/messages.en.xlf || true)
           echo "English translated strings: $EN_COUNT"
 
           # Calculate percentage

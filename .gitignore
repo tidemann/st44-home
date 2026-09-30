@@ -64,3 +64,6 @@ apps/frontend/test-results.json
 MIGRATION.md
 NEXT_STEPS.md
 SERVER_DEPLOYMENT_GUIDE.md
+
+# Localazy API keys (never commit)
+localazy.keys.json
