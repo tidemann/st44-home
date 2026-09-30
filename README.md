@@ -383,10 +383,18 @@ The project uses GitHub Actions for CI/CD:
   - Runs Playwright E2E tests with PostgreSQL service
   - See [docs/E2E.md](docs/E2E.md) for details
 - **Deploy Workflow** (`.github/workflows/deploy.yml`): Runs on pushes to main
-  - Builds Docker images for frontend and backend
-  - Pushes images to GitHub Container Registry
-  - Deploys to server via SSH
-  - Purges Cloudflare cache
+  - Builds Docker images for frontend, backend and db
+  - Pushes each image to GitHub Container Registry tagged by commit SHA, and also
+    `latest` — which is a pointer only, never the record of what is deployed
+  - Ships `infra/docker-compose.yml` to the server and starts the stack with
+    `IMAGE_TAG` set to that SHA, so the running artifact is always nameable
+  - Records the previously deployed images in the run summary before replacing
+    them: that is the rollback anchor
+  - Runs database migrations, then polls the backend until it answers rather than
+    sleeping a fixed number of seconds
+  - Purges Cloudflare cache, then gates on `https://home.st44.no/health`
+  - To roll back, see
+    [Rolling back to a previous image](docs/DEPLOYMENT.md#rolling-back-to-a-previous-image)
 
 ## Docker
 
