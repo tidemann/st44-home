@@ -27,13 +27,20 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
         with:
           fetch-depth: 1
 
+      # This review is advisory: the findings arrive as a PR comment, so the
+      # check result only ever says whether the tooling ran. Letting an expired
+      # credential or an upstream outage turn every PR red teaches the team to
+      # ignore red checks, so infrastructure failures are reported as a warning
+      # instead (see the "Report review status" step below). A real review
+      # finding never fails this step.
       - name: Run Claude Code Review
         id: claude-review
-        uses: anthropics/claude-code-action@v1
+        continue-on-error: true
+        uses: anthropics/claude-code-action@fd1c128679612beff4ca259c78021c506e8aa7a7 # v1.0.237
         with:
           claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
           prompt: |
@@ -55,3 +62,26 @@ jobs:
           # or https://code.claude.com/docs/en/cli-reference for available options
           claude_args: '--allowed-tools "Bash(gh issue view:*),Bash(gh search:*),Bash(gh issue list:*),Bash(gh pr comment:*),Bash(gh pr diff:*),Bash(gh pr view:*),Bash(gh pr list:*)"'
 
+      # Without this the check would be silently green whenever the review did
+      # not actually run, which is the same trap as a permanently red check.
+      - name: Report review status
+        if: always()
+        run: |
+          if [ "${{ steps.claude-review.outcome }}" = "success" ]; then
+            echo "Claude Code Review ran. Findings, if any, are a comment on this PR." >> "$GITHUB_STEP_SUMMARY"
+            exit 0
+          fi
+          echo "::warning title=Claude Code Review did not run::The review step failed, so this PR has NOT been reviewed by Claude. The check is advisory and does not block the PR. Check the step log for the cause; a revoked CLAUDE_CODE_OAUTH_TOKEN is the usual one."
+          {
+            echo "## :warning: Claude Code Review did not run"
+            echo
+            echo "This PR has **not** been reviewed by Claude. The check is advisory, so it does not block the PR."
+            echo
+            echo "Most likely causes:"
+            echo "- \`CLAUDE_CODE_OAUTH_TOKEN\` is expired or revoked (the log shows \`401 OAuth access token has been revoked\`)."
+            echo "- An upstream outage in \`anthropics/claude-code-action\`."
+            echo
+            echo "Note: the action also skips itself, reporting success, on any PR that edits"
+            echo "\`.github/workflows/**\`, because it requires the workflow file to match the"
+            echo "default branch. Such a PR is never reviewed either."
+          } >> "$GITHUB_STEP_SUMMARY"
