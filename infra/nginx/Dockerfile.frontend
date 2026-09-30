@@ -16,16 +16,21 @@ COPY packages/types ./packages/types
 # Copy frontend package files
 COPY apps/frontend/package*.json ./apps/frontend/
 
-# Delete package-lock.json to force fresh install with correct platform binaries
-RUN rm -f package-lock.json
-
-# Install dependencies fresh (without lock file constraints)
-RUN npm install
+# Install dependencies from the lock file so the image matches the commit.
+#
+# This used to be `rm -f package-lock.json && npm install` (8db4f0d) to work around
+# the build failing on a missing lightningcss.linux-x64-musl.node. The actual cause
+# of that was fixed six minutes earlier in 7a92ee5: `COPY apps/frontend` was copying
+# the host's Windows node_modules over the installed Linux ones. We now copy only
+# source files, so the lock file no longer needs bypassing -- and the lock file does
+# contain lightningcss-linux-x64-musl, so Alpine resolves the right binary.
+RUN npm ci
 
 # Build shared types package
 RUN npm run build --workspace=packages/types
 
-# Copy frontend source files (node_modules already installed from npm install)
+# Copy frontend source files only -- never the host's node_modules, which would
+# overwrite the Linux binaries installed above with host-platform ones (7a92ee5).
 COPY apps/frontend/src ./apps/frontend/src
 COPY apps/frontend/public ./apps/frontend/public
 COPY apps/frontend/angular.json ./apps/frontend/angular.json
