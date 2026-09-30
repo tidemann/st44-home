@@ -1,5 +1,15 @@
 name: Deploy
 
+# This workflow is a twin of tidemann/deploy-workflows .github/workflows/
+# build-and-deploy.yml, which the rest of the estate calls instead of keeping a
+# copy. A fix here -- an action bump, a permissions tightening, an ssh change --
+# very probably belongs there too, and the other way round. Check before you
+# assume otherwise; ST-53 and ST-59 both had to be applied twice.
+#
+# The two have not been merged because that one builds a single image and this is a
+# three-image stack. ST-63 decided to extend the shared workflow "later", triggered
+# by the third fix that has to land in both places.
+
 on:
   push:
     branches: [main]
@@ -225,25 +235,24 @@ jobs:
             echo 'To roll back, see docs/DEPLOYMENT.md -> "Rolling back to a previous image".'
           } >> "$GITHUB_STEP_SUMMARY"
 
-      # The repository is the source of truth for the stack definition. Shipping
-      # the compose file is what lets IMAGE_TAG pin the deploy; the previous copy
-      # is kept beside it so a bad ship is one `mv` away from undone.
-      # docker-compose.override.yml on the host is untouched, and so is .env --
-      # it holds DB_PASSWORD, which CI never sees.
-      - name: Ship the compose file
+      # This deploy does not install the compose file. /srv/st44-home/infra is not
+      # writable by the deploy user, and that is the server's call to make, not
+      # CI's -- so `infra/docker-compose.prod.yml` in this repo is the reviewable
+      # record and Server Admin installs it. The step below checks the host copy
+      # actually takes its tag from IMAGE_TAG; without that, a host file still
+      # hardcoded to `:latest` would deploy green and silently ignore the pin.
+      # `.env` on the host holds DB_PASSWORD and is never read or written here.
+      - name: Check the host compose file honours IMAGE_TAG
         run: |
           set -euo pipefail
-          test -f infra/docker-compose.yml
-          scp infra/docker-compose.yml "deploy-target:${REMOTE_DIR}/docker-compose.yml.incoming"
           ssh deploy-target REMOTE_DIR="${REMOTE_DIR}" bash -s <<'REMOTE'
           set -euo pipefail
           cd "$REMOTE_DIR"
-          if [ -f docker-compose.yml ]; then
-            echo "diff of the compose file about to be installed (empty means no change):"
-            diff -u docker-compose.yml docker-compose.yml.incoming || true
-            cp docker-compose.yml docker-compose.yml.prev
+          if ! grep -q 'IMAGE_TAG' docker-compose.yml; then
+            echo "::error::$PWD/docker-compose.yml does not reference IMAGE_TAG -- it cannot be pinned, so this deploy would not be rollback-able. Install infra/docker-compose.prod.yml from the repository."
+            exit 1
           fi
-          mv docker-compose.yml.incoming docker-compose.yml
+          echo "host compose file references IMAGE_TAG"
           REMOTE
 
       - name: Deploy data services via SSH

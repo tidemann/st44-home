@@ -349,9 +349,11 @@ ghcr.io/tidemann/st44-home-backend:<sha>
 ghcr.io/tidemann/st44-home-db:<sha>
 ```
 
-`infra/docker-compose.yml` reads that tag from `IMAGE_TAG`, so rolling back is
-starting the same stack with an earlier tag. `latest` also moves on every deploy —
-it is a convenience pointer, never the answer to "what is running?".
+The server's compose file — `infra/docker-compose.prod.yml` in this repository,
+installed at `/srv/st44-home/infra/docker-compose.yml` — reads that tag from
+`IMAGE_TAG`, so rolling back is starting the same stack with an earlier tag.
+`latest` also moves on every deploy: it is a convenience pointer, never the answer
+to "what is running?".
 
 #### Step 1: Find the previous good SHA
 
@@ -388,8 +390,8 @@ done
 
 #### Step 3: Start the stack on that tag
 
-Run on the server, in the compose directory. This does not touch `.env` or
-`docker-compose.override.yml`, and it does not need a CI run:
+Run on the server, in the compose directory. This does not touch the compose file
+or `.env`, and it does not need a CI run:
 
 ```bash
 ssh <deploy-user>@home.st44.no

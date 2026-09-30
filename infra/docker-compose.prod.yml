@@ -1,0 +1,95 @@
+# Production stack for home.st44.no. This is the file that runs on the server, at
+# /srv/st44-home/infra/docker-compose.yml.
+#
+# It is a copy of what was already on the host -- external proxy network, frontend
+# on 3100, the extra backend environment -- with one change: the three ghcr images
+# take their tag from IMAGE_TAG instead of being hardcoded to `latest`. That is
+# what makes a deploy nameable and a rollback possible; see docs/DEPLOYMENT.md.
+#
+# It is NOT docker-compose.yml, because that one is the local development stack and
+# cannot carry `networks.default.external` -- an external network does not exist on
+# a laptop. Keep both in step when you change a service.
+#
+# The deploy workflow does not install this file: /srv/st44-home/infra is not
+# writable by the deploy user. Server Admin installs it, and the deploy's
+# "Verify the deployed images" step fails loudly if the host copy ever stops
+# honouring IMAGE_TAG.
+services:
+  redis:
+    image: redis:7-alpine
+    container_name: st44-redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    command: redis-server --appendonly yes
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  db:
+    image: ghcr.io/tidemann/st44-home-db:${IMAGE_TAG:-latest}
+    container_name: st44-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: st44
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-postgres}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  backend:
+    image: ghcr.io/tidemann/st44-home-backend:${IMAGE_TAG:-latest}
+    container_name: st44-backend
+    restart: unless-stopped
+    environment:
+      PORT: 3000
+      HOST: 0.0.0.0
+      DB_HOST: db
+      DB_PORT: 5432
+      DB_NAME: st44
+      DB_USER: postgres
+      DB_PASSWORD: ${DB_PASSWORD:-postgres}
+      CORS_ORIGIN: ${CORS_ORIGIN:-*}
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID}
+      SENDGRID_API_KEY: ${SENDGRID_API_KEY:-}
+      FROM_EMAIL: ${FROM_EMAIL:-noreply@diddit.com}
+      APP_URL: ${APP_URL:-http://localhost:4200}
+    ports:
+      - "3000:3000"
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
+  # 3100, not 80: the host's proxy terminates TLS for home.st44.no and forwards here.
+  frontend:
+    image: ghcr.io/tidemann/st44-home-frontend:${IMAGE_TAG:-latest}
+    container_name: st44-frontend
+    restart: unless-stopped
+    ports:
+      - "3100:80"
+    depends_on:
+      - backend
+
+volumes:
+  postgres_data:
+  redis_data:
+
+networks:
+  default:
+    external: true
+    name: st44_default
