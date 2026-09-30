@@ -5,6 +5,10 @@ on:
     branches: [main]
   push:
     branches: [main]
+  # CI only triggers on PRs into main, so a PR stacked on another branch gets no
+  # run at all. This makes the checks runnable on any ref on demand, which is also
+  # how a stacked change gets verified before its base merges.
+  workflow_dispatch:
 
 jobs:
   # A floating tag lets an action move under a live deploy with no commit here.
