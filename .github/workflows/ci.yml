@@ -56,27 +56,37 @@ jobs:
       - name: Every ghcr image resolves to IMAGE_TAG
         run: |
           set -euo pipefail
-          # An obviously-not-a-tag value, so a hardcoded tag cannot pass by luck.
-          resolved="$(IMAGE_TAG=st59-pin-probe docker compose -f infra/docker-compose.yml config)"
-
           bad=0
-          for svc in frontend backend db; do
-            if ! printf '%s\n' "$resolved" \
-              | grep -qF "image: ghcr.io/tidemann/st44-home-${svc}:st59-pin-probe"; then
-              echo "::error::st44-home-${svc} does not take its tag from IMAGE_TAG"
+
+          # Both files: docker-compose.yml is the local stack, .prod.yml is the one
+          # installed on the server. The pin has to hold in the production file or
+          # the deploy is not rollback-able; it has to hold in the local one so the
+          # two do not drift into different shapes.
+          for file in infra/docker-compose.yml infra/docker-compose.prod.yml; do
+            echo "== $file"
+            # An obviously-not-a-tag value, so a hardcoded tag cannot pass by luck.
+            # The prod file declares an external network that does not exist here,
+            # which `config` does not mind.
+            resolved="$(IMAGE_TAG=st59-pin-probe docker compose -f "$file" config)"
+
+            for svc in frontend backend db; do
+              if ! printf '%s\n' "$resolved" \
+                | grep -qF "image: ghcr.io/tidemann/st44-home-${svc}:st59-pin-probe"; then
+                echo "::error file=$file::st44-home-${svc} does not take its tag from IMAGE_TAG"
+                bad=1
+              fi
+            done
+
+            # Belt and braces: no ghcr image may carry a literal tag after
+            # interpolation, whatever its service happens to be called.
+            if printf '%s\n' "$resolved" | grep -E 'image: ghcr\.io/' | grep -v ':st59-pin-probe'; then
+              echo "::error file=$file::the ghcr image above is pinned to something other than IMAGE_TAG"
               bad=1
             fi
           done
 
-          # Belt and braces: no ghcr image may carry a literal tag after
-          # interpolation, whatever its service happens to be called.
-          if printf '%s\n' "$resolved" | grep -E 'image: ghcr\.io/' | grep -v ':st59-pin-probe'; then
-            echo "::error::the ghcr image above is pinned to something other than IMAGE_TAG"
-            bad=1
-          fi
-
           if [ "$bad" -eq 0 ]; then
-            echo "all ghcr images resolve to IMAGE_TAG"
+            echo "all ghcr images in both compose files resolve to IMAGE_TAG"
           fi
           exit "$bad"
 

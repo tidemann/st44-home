@@ -386,8 +386,11 @@ The project uses GitHub Actions for CI/CD:
   - Builds Docker images for frontend, backend and db
   - Pushes each image to GitHub Container Registry tagged by commit SHA, and also
     `latest` — which is a pointer only, never the record of what is deployed
-  - Ships `infra/docker-compose.yml` to the server and starts the stack with
-    `IMAGE_TAG` set to that SHA, so the running artifact is always nameable
+  - Starts the stack with `IMAGE_TAG` set to that SHA, so the running artifact is
+    always nameable. The server's compose file is
+    [infra/docker-compose.prod.yml](infra/docker-compose.prod.yml) — installed by
+    Server Admin, not by CI, because `/srv/st44-home/infra` is not writable by the
+    deploy user. The deploy fails if the host copy stops honouring `IMAGE_TAG`
   - Records the previously deployed images in the run summary before replacing
     them: that is the rollback anchor
   - Runs database migrations, then polls the backend until it answers rather than
@@ -414,7 +417,11 @@ The application is containerized with three services:
 - **backend**: Fastify API server
 - **db**: PostgreSQL database
 
-See [infra/docker-compose.yml](infra/docker-compose.yml) for configuration.
+See [infra/docker-compose.yml](infra/docker-compose.yml) for local configuration,
+and [infra/docker-compose.prod.yml](infra/docker-compose.prod.yml) for the stack
+that runs on the server — the production one carries the external proxy network,
+the frontend on port 3100 and the extra backend environment, which is why it is a
+separate file rather than an override.
 
 **Important**: When adding workspace dependencies, update Dockerfiles accordingly. See [docs/WORKSPACE_DEPENDENCIES.md](docs/WORKSPACE_DEPENDENCIES.md) for complete guide.
 
