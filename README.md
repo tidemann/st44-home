@@ -386,11 +386,11 @@ The project uses GitHub Actions for CI/CD:
   - Builds Docker images for frontend, backend and db
   - Pushes each image to GitHub Container Registry tagged by commit SHA, and also
     `latest` — which is a pointer only, never the record of what is deployed
-  - Starts the stack with `IMAGE_TAG` set to that SHA, so the running artifact is
-    always nameable. The server's compose file is
-    [infra/docker-compose.prod.yml](infra/docker-compose.prod.yml) — installed by
-    Server Admin, not by CI, because `/srv/st44-home/infra` is not writable by the
-    deploy user. The deploy fails if the host copy stops honouring `IMAGE_TAG`
+  - Pins the stack to that SHA with a generated compose override
+    ([infra/generate-image-pin.sh](infra/generate-image-pin.sh)) merged over the
+    server's compose file, which CI never edits — `/srv/st44-home/infra` belongs to
+    the server owner. A later step fails the run if the containers did not come up
+    on the tag this build produced
   - Records the previously deployed images in the run summary before replacing
     them: that is the rollback anchor
   - Runs database migrations, then polls the backend until it answers rather than
@@ -407,11 +407,10 @@ The application is containerized with three services:
 - **backend**: Fastify API server
 - **db**: PostgreSQL database
 
-See [infra/docker-compose.yml](infra/docker-compose.yml) for local configuration,
-and [infra/docker-compose.prod.yml](infra/docker-compose.prod.yml) for the stack
-that runs on the server — the production one carries the external proxy network,
-the frontend on port 3100 and the extra backend environment, which is why it is a
-separate file rather than an override.
+See [infra/docker-compose.yml](infra/docker-compose.yml) for local configuration.
+[infra/docker-compose.prod.yml](infra/docker-compose.prod.yml) is a copy of the
+stack that runs on the server — external proxy network, frontend on port 3100, extra
+backend environment. It is the record and the CI fixture, not the installed file.
 
 **Important**: When adding workspace dependencies, update Dockerfiles accordingly. See [docs/WORKSPACE_DEPENDENCIES.md](docs/WORKSPACE_DEPENDENCIES.md) for complete guide.
 
