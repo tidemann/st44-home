@@ -17,7 +17,9 @@ services:
 
   # PostgreSQL Database
   db:
-    image: ghcr.io/tidemann/st44-home-db:latest
+    # IMAGE_TAG is set by the Deploy workflow to the commit SHA it built, so a
+    # deploy pins an exact artifact. Falls back to :latest for local use.
+    image: ghcr.io/tidemann/st44-home-db:${IMAGE_TAG:-latest}
     container_name: st44-db
     restart: unless-stopped
     environment:
@@ -36,7 +38,7 @@ services:
 
   # Backend API
   backend:
-    image: ghcr.io/tidemann/st44-home-backend:latest
+    image: ghcr.io/tidemann/st44-home-backend:${IMAGE_TAG:-latest}
     container_name: st44-backend
     restart: unless-stopped
     environment:
@@ -60,7 +62,7 @@ services:
 
   # Frontend (Nginx)
   frontend:
-    image: ghcr.io/tidemann/st44-home-frontend:latest
+    image: ghcr.io/tidemann/st44-home-frontend:${IMAGE_TAG:-latest}
     container_name: st44-frontend
     restart: unless-stopped
     ports:

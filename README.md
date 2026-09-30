@@ -383,10 +383,49 @@ The project uses GitHub Actions for CI/CD:
   - Runs Playwright E2E tests with PostgreSQL service
   - See [docs/E2E.md](docs/E2E.md) for details
 - **Deploy Workflow** (`.github/workflows/deploy.yml`): Runs on pushes to main
-  - Builds Docker images for frontend and backend
-  - Pushes images to GitHub Container Registry
-  - Deploys to server via SSH
+  - Builds Docker images for frontend, backend and database
+  - Pushes each image to GitHub Container Registry tagged with the commit SHA,
+    and moves `:latest` to the same digest
+  - Deploys to server via SSH, pinned to the commit SHA tag
   - Purges Cloudflare cache
+  - See [Deploying and rolling back](#deploying-and-rolling-back)
+
+## Deploying and rolling back
+
+Every push to `main` that touches code builds three images and pushes each one
+with two tags pointing at the same digest:
+
+- `ghcr.io/tidemann/st44-home-{frontend,backend,db}:<commit-sha>` — the immutable
+  artifact, and the tag the deploy actually pulls
+- `...:latest` — a convenience pointer only, never the source of truth for a deploy
+
+The deploy passes `IMAGE_TAG=<commit-sha>` to `docker compose` on the server and
+`infra/docker-compose.yml` reads it (`${IMAGE_TAG:-latest}`), so the commit a
+running container came from is always identifiable.
+
+### Rolling back
+
+You do not need to rebuild. Pick the commit SHA you want to go back to — the
+"Rollback target" section of any Deploy run summary lists the images that were
+running before that deploy — then:
+
+**Actions → Deploy → Run workflow**, with `redeploy_tag` set to that 40-character
+commit SHA. The build jobs are skipped and the server is redeployed on the images
+that are already in GHCR.
+
+The equivalent by hand on the server:
+
+```bash
+cd /srv/st44-home/infra
+IMAGE_TAG=<commit-sha> docker compose pull
+IMAGE_TAG=<commit-sha> docker compose up -d --force-recreate
+```
+
+### Building without deploying
+
+**Actions → Deploy → Run workflow** with `skip_deploy` checked builds and pushes
+the SHA-tagged images for the selected branch and stops there. `:latest` is only
+ever moved by a run on `main`.
 
 ## Docker
 

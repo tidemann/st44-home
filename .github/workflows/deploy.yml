@@ -3,16 +3,92 @@ name: Deploy
 on:
   push:
     branches: [main]
+  workflow_dispatch:
+    inputs:
+      redeploy_tag:
+        description: "Roll back: full 40-character commit SHA of images already in GHCR. Leave empty to build this ref."
+        required: false
+        default: ''
+      skip_deploy:
+        description: "Build and push images only, do not touch the server."
+        type: boolean
+        default: false
 
 permissions:
   contents: read
   packages: write
 
 jobs:
+  # Decides the image tag everything else uses, so tagging policy lives in one place.
+  plan:
+    runs-on: ubuntu-latest
+    outputs:
+      image_tag: ${{ steps.plan.outputs.image_tag }}
+      image_prefix: ${{ steps.plan.outputs.image_prefix }}
+      build: ${{ steps.plan.outputs.build }}
+      deploy: ${{ steps.plan.outputs.deploy }}
+      tags_frontend: ${{ steps.plan.outputs.tags_frontend }}
+      tags_backend: ${{ steps.plan.outputs.tags_backend }}
+      tags_db: ${{ steps.plan.outputs.tags_db }}
+    steps:
+      - name: Work out what to build and deploy
+        id: plan
+        env:
+          # Read through env vars, never interpolated straight into the script.
+          REDEPLOY_TAG: ${{ inputs.redeploy_tag }}
+          SKIP_DEPLOY: ${{ inputs.skip_deploy }}
+          SHA: ${{ github.sha }}
+          IMAGE_PREFIX: ghcr.io/${{ github.repository }}
+          # ':latest' only ever moves, and the server is only ever touched, from main.
+          ON_MAIN: ${{ github.ref == 'refs/heads/main' }}
+        run: |
+          if [ -n "$REDEPLOY_TAG" ]; then
+            if ! printf '%s' "$REDEPLOY_TAG" | grep -Eq '^[0-9a-f]{40}$'; then
+              echo "redeploy_tag must be a full 40-character lowercase commit SHA" >&2
+              exit 1
+            fi
+            image_tag="$REDEPLOY_TAG"
+            build=false
+          else
+            image_tag="$SHA"
+            build=true
+          fi
+
+          if [ "$SKIP_DEPLOY" = "true" ] || [ "$ON_MAIN" != "true" ]; then
+            deploy=false
+          else
+            deploy=true
+          fi
+
+          {
+            echo "image_tag=$image_tag"
+            echo "image_prefix=$IMAGE_PREFIX"
+            echo "build=$build"
+            echo "deploy=$deploy"
+          } >> "$GITHUB_OUTPUT"
+
+          for service in frontend backend db; do
+            image="$IMAGE_PREFIX-$service"
+            tags="$image:$SHA"
+            if [ "$ON_MAIN" = "true" ]; then
+              tags="$tags,$image:latest"
+            fi
+            echo "tags_$service=$tags" >> "$GITHUB_OUTPUT"
+          done
+
+          {
+            echo "### Plan"
+            echo ""
+            echo "- image tag: \`$image_tag\`"
+            echo "- build images: \`$build\`"
+            echo "- deploy to server: \`$deploy\`"
+            echo "- move \`:latest\`: \`$ON_MAIN\`"
+          } >> "$GITHUB_STEP_SUMMARY"
+
   check-changes:
     runs-on: ubuntu-latest
     outputs:
-      should_deploy: ${{ steps.filter.outputs.code }}
+      should_deploy: ${{ steps.decide.outputs.should_deploy }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -20,10 +96,12 @@ jobs:
           fetch-depth: 0  # Fetch full history for proper change detection
 
       - name: Get previous commit SHA
+        if: github.event_name == 'push'
         id: prev-commit
         run: echo "sha=$(git rev-parse HEAD~1)" >> $GITHUB_OUTPUT
 
       - name: Check for code changes
+        if: github.event_name == 'push'
         uses: dorny/paths-filter@v3
         id: filter
         with:
@@ -40,9 +118,22 @@ jobs:
               - 'package.json'
               - 'package-lock.json'
 
+      - name: Decide
+        id: decide
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          CODE_CHANGED: ${{ steps.filter.outputs.code }}
+        run: |
+          # A manual run is an explicit "deploy now", so skip change detection.
+          if [ "$EVENT_NAME" = "push" ]; then
+            echo "should_deploy=$CODE_CHANGED" >> "$GITHUB_OUTPUT"
+          else
+            echo "should_deploy=true" >> "$GITHUB_OUTPUT"
+          fi
+
   build-and-push-frontend:
-    needs: check-changes
-    if: needs.check-changes.outputs.should_deploy == 'true'
+    needs: [plan, check-changes]
+    if: needs.plan.outputs.build == 'true' && needs.check-changes.outputs.should_deploy == 'true'
     runs-on: ubuntu-latest
 
     steps:
@@ -70,13 +161,18 @@ jobs:
           context: .
           file: ./infra/nginx/Dockerfile.frontend
           push: true
-          tags: ghcr.io/${{ github.repository_owner }}/${{ github.event.repository.name }}-frontend:latest
+          tags: ${{ needs.plan.outputs.tags_frontend }}
           build-args: |
             GOOGLE_CLIENT_ID=${{ secrets.GOOGLE_CLIENT_ID }}
 
+      - name: Verify the SHA tag resolves in GHCR
+        env:
+          IMAGE: ${{ needs.plan.outputs.image_prefix }}-frontend:${{ github.sha }}
+        run: docker buildx imagetools inspect "$IMAGE"
+
   build-and-push-backend:
-    needs: check-changes
-    if: needs.check-changes.outputs.should_deploy == 'true'
+    needs: [plan, check-changes]
+    if: needs.plan.outputs.build == 'true' && needs.check-changes.outputs.should_deploy == 'true'
     runs-on: ubuntu-latest
 
     steps:
@@ -99,11 +195,16 @@ jobs:
           context: .
           file: ./apps/backend/Dockerfile
           push: true
-          tags: ghcr.io/${{ github.repository_owner }}/${{ github.event.repository.name }}-backend:latest
+          tags: ${{ needs.plan.outputs.tags_backend }}
+
+      - name: Verify the SHA tag resolves in GHCR
+        env:
+          IMAGE: ${{ needs.plan.outputs.image_prefix }}-backend:${{ github.sha }}
+        run: docker buildx imagetools inspect "$IMAGE"
 
   build-and-push-database:
-    needs: check-changes
-    if: needs.check-changes.outputs.should_deploy == 'true'
+    needs: [plan, check-changes]
+    if: needs.plan.outputs.build == 'true' && needs.check-changes.outputs.should_deploy == 'true'
     runs-on: ubuntu-latest
 
     steps:
@@ -126,11 +227,28 @@ jobs:
           context: ./docker/postgres
           file: ./docker/postgres/Dockerfile
           push: true
-          tags: ghcr.io/${{ github.repository_owner }}/${{ github.event.repository.name }}-db:latest
+          tags: ${{ needs.plan.outputs.tags_db }}
+
+      - name: Verify the SHA tag resolves in GHCR
+        env:
+          IMAGE: ${{ needs.plan.outputs.image_prefix }}-db:${{ github.sha }}
+        run: docker buildx imagetools inspect "$IMAGE"
 
   deploy-to-server:
-    needs: [build-and-push-frontend, build-and-push-backend, build-and-push-database]
+    needs: [plan, build-and-push-frontend, build-and-push-backend, build-and-push-database]
+    # Runs after a successful build of all three images, or straight away when
+    # redeploying an existing tag (rollback), in which case the builds are skipped.
+    if: >-
+      !cancelled()
+      && needs.plan.result == 'success'
+      && needs.plan.outputs.deploy == 'true'
+      && (needs.plan.outputs.build == 'false'
+          || (needs.build-and-push-frontend.result == 'success'
+              && needs.build-and-push-backend.result == 'success'
+              && needs.build-and-push-database.result == 'success'))
     runs-on: ubuntu-latest
+    env:
+      IMAGE_TAG: ${{ needs.plan.outputs.image_tag }}
 
     steps:
       - name: Checkout code
@@ -145,11 +263,30 @@ jobs:
       - name: Add server host key to known_hosts
         run: ssh-keyscan -H ${{ secrets.SERVER_HOST }} >> ~/.ssh/known_hosts
 
+      - name: Record currently deployed images (rollback target)
+        run: |
+          ssh -i ~/.ssh/id_deploy -o StrictHostKeyChecking=yes \
+            ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} \
+            'docker inspect --format "{{.Config.Image}}" st44-frontend st44-backend st44-db' \
+            > previous-images.txt || true
+
+          {
+            echo "### Rollback target (images running before this deploy)"
+            echo ""
+            if [ -s previous-images.txt ]; then
+              while read -r image; do
+                echo "- \`$image\`"
+              done < previous-images.txt
+            else
+              echo "- could not read the running containers"
+            fi
+          } >> "$GITHUB_STEP_SUMMARY"
+
       - name: Deploy via SSH
         run: |
           ssh -i ~/.ssh/id_deploy -o StrictHostKeyChecking=yes \
             ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} \
-            "cd /srv/st44-home/infra && docker compose pull && docker compose up -d --force-recreate db redis"
+            "cd /srv/st44-home/infra && IMAGE_TAG=$IMAGE_TAG docker compose pull && IMAGE_TAG=$IMAGE_TAG docker compose up -d --force-recreate db redis"
 
       - name: Run Database Migrations
         run: |
@@ -162,7 +299,7 @@ jobs:
         run: |
           ssh -i ~/.ssh/id_deploy -o StrictHostKeyChecking=yes \
             ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} \
-            "cd /srv/st44-home/infra && docker compose up -d --force-recreate backend frontend"
+            "cd /srv/st44-home/infra && IMAGE_TAG=$IMAGE_TAG docker compose up -d --force-recreate backend frontend"
 
       - name: Verify Deployment Health
         run: |
@@ -190,3 +327,16 @@ jobs:
           -H "Authorization: Bearer ${{ secrets.CLOUDFLARE_API_TOKEN }}" \
           -H "Content-Type: application/json" \
           --data '{"purge_everything":true}'
+
+      - name: Record what was deployed
+        if: always()
+        run: |
+          {
+            echo "### Deployed"
+            echo ""
+            echo "- image tag: \`$IMAGE_TAG\`"
+            echo ""
+            echo "To roll back: Actions -> Deploy -> Run workflow, with \`redeploy_tag\`"
+            echo "set to a 40-character commit SHA listed under \"Rollback target\" above"
+            echo "(or from any earlier Deploy run). No rebuild happens."
+          } >> "$GITHUB_STEP_SUMMARY"
