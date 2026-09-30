@@ -38,6 +38,44 @@ jobs:
           done < <(grep -rhE '^\s*-?\s*uses:' .github/workflows)
           exit "$bad"
 
+  # A compose file that has drifted back to a hardcoded `:latest` deploys green
+  # and leaves nothing to roll back to. This job is the guard for that: it is the
+  # only place the IMAGE_TAG pin is provable without a live deploy.
+  compose:
+    name: Compose file pins the image tag
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+
+      - name: Every ghcr image resolves to IMAGE_TAG
+        run: |
+          set -euo pipefail
+          # An obviously-not-a-tag value, so a hardcoded tag cannot pass by luck.
+          resolved="$(IMAGE_TAG=st59-pin-probe docker compose -f infra/docker-compose.yml config)"
+
+          bad=0
+          for svc in frontend backend db; do
+            if ! printf '%s\n' "$resolved" \
+              | grep -qF "image: ghcr.io/tidemann/st44-home-${svc}:st59-pin-probe"; then
+              echo "::error::st44-home-${svc} does not take its tag from IMAGE_TAG"
+              bad=1
+            fi
+          done
+
+          # Belt and braces: no ghcr image may carry a literal tag after
+          # interpolation, whatever its service happens to be called.
+          if printf '%s\n' "$resolved" | grep -E 'image: ghcr\.io/' | grep -v ':st59-pin-probe'; then
+            echo "::error::the ghcr image above is pinned to something other than IMAGE_TAG"
+            bad=1
+          fi
+
+          if [ "$bad" -eq 0 ]; then
+            echo "all ghcr images resolve to IMAGE_TAG"
+          fi
+          exit "$bad"
+
   frontend:
     runs-on: ubuntu-latest
 
