@@ -82,15 +82,12 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
 
-      - name: Setup Node.js
-        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
-        with:
-          node-version: 24
-          # setup-node v5+ turns npm caching on by itself whenever package.json
-          # has a `packageManager` field, which ours does. This step never cached
-          # before, so keep it off here and change caching on its own commit.
-          package-manager-cache: false
-
+      # No Setup Node step here on purpose. This job runs no npm command on the
+      # runner -- Dockerfile.frontend does its own `npm ci` inside the build
+      # stage, from the lock file. An npm cache here would have nothing to feed,
+      # so ST-70 dropped the step instead of caching it. `test-frontend-build`
+      # in docker-build-test.yml builds this same Dockerfile with no Node on the
+      # runner, which is the standing proof that nothing needs it.
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@f87e5991a6d7451dcb8d9637bfbc97413f497069 # v4.4.1
 
