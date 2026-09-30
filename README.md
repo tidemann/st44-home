@@ -387,6 +387,16 @@ The project uses GitHub Actions for CI/CD:
   - Pushes images to GitHub Container Registry
   - Deploys to server via SSH
   - Purges Cloudflare cache
+- **Claude Code Review** (`.github/workflows/claude-code-review.yml`): Runs on PRs
+  - Posts an automated review as a PR comment
+  - **Advisory: it never blocks a PR.** The findings are the comment, so the
+    check result only reports whether the review tooling ran at all
+  - If it could not run, the check still passes but the job summary carries a
+    warning saying the PR was not reviewed. The usual cause is a revoked
+    `CLAUDE_CODE_OAUTH_TOKEN`
+  - It skips itself, reporting success, on any PR that edits
+    `.github/workflows/**` — the action requires the workflow file to match the
+    default branch. Such a PR is never reviewed, so review those by hand
 
 ## Docker
 
