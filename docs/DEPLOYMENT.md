@@ -352,10 +352,69 @@ ghcr.io/tidemann/st44-home-db:<sha>
 The server's compose file still says `:latest` and is never edited by CI. Instead
 the deploy generates a small compose override naming those three tags and merges it
 over the server's file, which is why the running stack is identifiable. Rolling
-back is doing the same merge by hand with an earlier tag. `latest` also moves on
+back is redoing that merge with an earlier tag. `latest` also moves on
 every deploy: it is a convenience pointer, never the answer to "what is running?".
 
+There are two ways to do it. **Use the first one.** The manual procedure is the
+fallback for when Actions itself is the thing that is broken.
+
+#### The fast path: Actions → Deploy → Run workflow
+
+1. Find the SHA you want to go back to — see [Finding the previous good
+   SHA](#finding-the-previous-good-sha) below.
+2. Go to **Actions → Deploy → Run workflow**, leave the branch on `main`, and put
+   that 40-character SHA in **`redeploy_tag`**. Run it.
+
+That is the whole rollback. The workflow **skips the three build jobs** and
+redeploys the images already in GHCR, then runs the same verification a normal
+deploy runs: the backend must answer, `https://home.st44.no/health` must return
+200, and the "Verify the deployed images are the ones this run built" step fails
+the run if the containers did not actually come up on the tag you asked for.
+
+Nothing is rebuilt, and that is deliberate. Rebuilding the same source is not the
+same as redeploying the same artifact — ST-57 was a rebuild of unchanged source
+that silently stopped working. A rollback must ship the bytes that were known good.
+
+Two things to know about the inputs:
+
+- `redeploy_tag` must be a **full 40-character lowercase commit SHA**. Anything
+  else fails the `plan` job before the workflow touches the server.
+- A dispatch from a branch other than `main` will **not** deploy and will not move
+  `:latest`. Only `main` may change what production runs. (`skip_deploy`, the other
+  input, builds and pushes images without touching the server — that is for
+  checking a build, not for rolling back.)
+
+You do not have to pre-check that the images exist (Step 2 below) on this path. A
+rollback run checks all three tags on the host before it touches anything and stops
+with a message naming what is missing. Even past that, `docker compose pull` fails
+before `docker compose up`, so the containers that are running stay running. You get
+a red run, not an outage — pick another SHA and dispatch again.
+
+**This rolls back the images, not the database.** Migrations that already ran stay
+applied, and the old backend has to cope with the newer schema — which is what the
+additive-migration rule buys. If the bad release included a migration that is *not*
+backward compatible, an image rollback alone will not save you; read
+[Important: The Schema Rolls Forward, the Images Roll
+Back](#important-the-schema-rolls-forward-the-images-roll-back) above and
+[What this does not cover](#what-this-does-not-cover) below first.
+
+Afterwards, still do the "make it durable" step at the end of this section: revert
+the bad commit on `main`, because the next push to `main` deploys whatever is there.
+
+#### The fallback: by hand on the server
+
+Use this when Actions is down, the runner cannot reach the host, or the deploy
+workflow itself is what broke. It does exactly what the workflow above does.
+
+<a id="finding-the-previous-good-sha"></a>
+
 #### Step 1: Find the previous good SHA
+
+(Also the first step of the fast path above.)
+
+**Pick a SHA that has a successful Deploy run behind it**, which is why (a) is
+first. Not every commit on `main` has images: the deploy path filter skips
+docs-only commits, so those SHAs were never built and cannot be rolled back to.
 
 Three places, cheapest first:
 

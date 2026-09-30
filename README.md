@@ -382,7 +382,8 @@ The project uses GitHub Actions for CI/CD:
   - Scheduled daily at 2 AM UTC
   - Runs Playwright E2E tests with PostgreSQL service
   - See [docs/E2E.md](docs/E2E.md) for details
-- **Deploy Workflow** (`.github/workflows/deploy.yml`): Runs on pushes to main
+- **Deploy Workflow** (`.github/workflows/deploy.yml`): Runs on pushes to main, and
+  manually from **Actions → Deploy → Run workflow**
   - Builds Docker images for frontend, backend and db
   - Pushes each image to GitHub Container Registry tagged by commit SHA, and also
     `latest` — which is a pointer only, never the record of what is deployed
@@ -396,8 +397,14 @@ The project uses GitHub Actions for CI/CD:
   - Runs database migrations, then polls the backend until it answers rather than
     sleeping a fixed number of seconds
   - Purges Cloudflare cache, then gates on `https://home.st44.no/health`
-  - To roll back, see
+  - **To roll back**: Actions → Deploy → Run workflow, with `redeploy_tag` set to
+    the 40-character commit SHA you want back. The build jobs are skipped and the
+    images already in GHCR are redeployed — no rebuild. Details and how to find the
+    SHA:
     [Rolling back to a previous image](docs/DEPLOYMENT.md#rolling-back-to-a-previous-image)
+  - The other manual input, `skip_deploy`, builds and pushes images without
+    touching the server. A dispatch from a branch other than `main` never deploys
+    and never moves `:latest`
 - **Claude Code Review** (`.github/workflows/claude-code-review.yml`): Runs on PRs
   - Posts an automated review as a PR comment
   - **Advisory: it never blocks a PR.** The findings are the comment, so the

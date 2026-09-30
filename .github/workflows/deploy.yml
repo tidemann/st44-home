@@ -9,10 +9,29 @@ name: Deploy
 # The two have not been merged because that one builds a single image and this is a
 # three-image stack. ST-63 decided to extend the shared workflow "later", triggered
 # by the third fix that has to land in both places.
+#
+# ST-69 (the workflow_dispatch rollback below) is deliberately NOT one of those, so
+# it does not count toward that third strike: build-and-deploy.yml is a reusable
+# `workflow_call` workflow, and `workflow_dispatch` inputs belong to the caller, not
+# to it. Giving the rest of the estate a rollback button is a change to each calling
+# workflow -- a separate piece of work, not a copy of this one.
 
 on:
   push:
     branches: [main]
+  # Manual runs exist so a rollback is a button, not an ssh session. The two
+  # inputs are deliberately the only knobs: what tag to run, and whether to
+  # touch the server at all.
+  workflow_dispatch:
+    inputs:
+      redeploy_tag:
+        description: "Roll back: full 40-character commit SHA whose images are already in GHCR. Empty = build this ref."
+        required: false
+        default: ''
+      skip_deploy:
+        description: "Build and push images only; leave the server alone."
+        type: boolean
+        default: false
 
 # Least privilege at the top; the three build jobs add packages:write for GHCR.
 permissions:
@@ -28,7 +47,10 @@ env:
   # The commit SHA is the deploy identity: every image this run pushes carries
   # it, the stack runs it, and a rollback names an earlier one. `latest` moves
   # with each deploy and is only a convenience pointer.
-  IMAGE_TAG: ${{ github.sha }}
+  #
+  # The tag this run *deploys* is not always this run's SHA -- a rollback deploys
+  # an older one -- so it is decided by the `plan` job below and read from
+  # `needs.plan.outputs.image_tag`, not from here.
   IMAGE_PREFIX: ghcr.io/${{ github.repository_owner }}/${{ github.event.repository.name }}
   REMOTE_DIR: /srv/st44-home/infra
   # The compose override carrying the pin. Lands in the deploy user's home, because
@@ -39,10 +61,114 @@ env:
   SITE_HOST: home.st44.no
 
 jobs:
+  # One place decides what this run builds, what tag it deploys, and whether it
+  # is allowed near the server. Every other job reads those answers instead of
+  # re-deriving them, so there is a single thing to read when a run did something
+  # surprising -- and its summary says what it decided before anything happens.
+  plan:
+    runs-on: ubuntu-latest
+    outputs:
+      image_tag: ${{ steps.plan.outputs.image_tag }}
+      build: ${{ steps.plan.outputs.build }}
+      deploy: ${{ steps.plan.outputs.deploy }}
+      tags_frontend: ${{ steps.plan.outputs.tags_frontend }}
+      tags_backend: ${{ steps.plan.outputs.tags_backend }}
+      tags_db: ${{ steps.plan.outputs.tags_db }}
+    steps:
+      - name: Decide the tag, the build and the deploy
+        id: plan
+        # Explicit, because the SHA check below is bash `=~`, not POSIX.
+        shell: bash
+        env:
+          # Both inputs arrive as env vars and are never interpolated into this
+          # script: `${{ inputs.redeploy_tag }}` inline would let a dispatch
+          # value run as shell. The regex below is the second half of that --
+          # nothing but a bare commit SHA gets past this step.
+          #
+          # The check is bash `=~` and not `grep -Eq`, on purpose. grep matches
+          # a *line*, so `<40 hex>\nid` satisfies `^[0-9a-f]{40}$` on its first
+          # line and passes -- and then `image_tag=<sha>\nid` written into
+          # $GITHUB_OUTPUT is a second output line the dispatcher chose. bash
+          # anchors `^`/`$` to the whole string, so an embedded newline fails.
+          REDEPLOY_TAG: ${{ inputs.redeploy_tag }}
+          SKIP_DEPLOY: ${{ inputs.skip_deploy }}
+          SHA: ${{ github.sha }}
+          # `workflow_dispatch` can be fired from any branch. Only main may move
+          # production's `:latest` or restart the live stack.
+          ON_MAIN: ${{ github.ref == 'refs/heads/main' }}
+        run: |
+          set -euo pipefail
+
+          if [ -n "${REDEPLOY_TAG}" ]; then
+            if [[ ! "${REDEPLOY_TAG}" =~ ^[0-9a-f]{40}$ ]]; then
+              echo "::error::redeploy_tag must be a full 40-character lowercase commit SHA"
+              exit 1
+            fi
+            # A rollback redeploys artifacts that already exist. Rebuilding them
+            # would defeat the point: ST-57 showed a rebuild of the same source
+            # can stop working, so the known-good digest is what gets deployed.
+            image_tag="${REDEPLOY_TAG}"
+            build=false
+          else
+            image_tag="${SHA}"
+            build=true
+          fi
+
+          if [ "${SKIP_DEPLOY}" = "true" ] || [ "${ON_MAIN}" != "true" ]; then
+            deploy=false
+          else
+            deploy=true
+          fi
+
+          {
+            echo "image_tag=${image_tag}"
+            echo "build=${build}"
+            echo "deploy=${deploy}"
+          } >> "$GITHUB_OUTPUT"
+
+          # Build tags always name this run's own SHA -- a build builds this ref.
+          # `:latest` only ever moves from main.
+          for svc in frontend backend db; do
+            image="${IMAGE_PREFIX}-${svc}"
+            tags="${image}:${SHA}"
+            if [ "${ON_MAIN}" = "true" ]; then
+              tags="${tags},${image}:latest"
+            fi
+            echo "tags_${svc}=${tags}" >> "$GITHUB_OUTPUT"
+          done
+
+          {
+            echo '## Plan'
+            echo
+            echo "| | |"
+            echo "| --- | --- |"
+            echo "| trigger | \`${GITHUB_EVENT_NAME}\` on \`${GITHUB_REF}\` |"
+            echo "| deploy tag | \`${image_tag}\` |"
+            echo "| build images | \`${build}\` |"
+            echo "| deploy to server | \`${deploy}\` |"
+            echo "| move \`:latest\` | \`${ON_MAIN}\` |"
+          } >> "$GITHUB_STEP_SUMMARY"
+
+          # A run that neither builds nor deploys is almost always a mistake --
+          # a rollback dispatched with the branch box left off main, or
+          # redeploy_tag and skip_deploy set together. It would otherwise go
+          # green having done nothing, which is the worst way to learn that the
+          # rollback you thought you ran did not happen. Warn loudly; don't fail,
+          # because the dispatcher may simply have changed their mind.
+          if [ "${build}" = "false" ] && [ "${deploy}" = "false" ]; then
+            echo "::warning::This run does nothing: it neither builds nor deploys. A redeploy_tag run must be dispatched from main, and must not also set skip_deploy."
+            {
+              echo
+              echo '> **This run did nothing: it neither built nor deployed.**'
+              echo '> `redeploy_tag` only deploys when dispatched from `main`, and not'
+              echo '> when `skip_deploy` is also set. Nothing on the server changed.'
+            } >> "$GITHUB_STEP_SUMMARY"
+          fi
+
   check-changes:
     runs-on: ubuntu-latest
     outputs:
-      should_deploy: ${{ steps.filter.outputs.code }}
+      should_deploy: ${{ steps.decide.outputs.should_deploy }}
     steps:
       - name: Checkout code
         uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
@@ -50,10 +176,12 @@ jobs:
           fetch-depth: 0  # Fetch full history for proper change detection
 
       - name: Get previous commit SHA
+        if: github.event_name == 'push'
         id: prev-commit
         run: echo "sha=$(git rev-parse HEAD~1)" >> "$GITHUB_OUTPUT"
 
       - name: Check for code changes
+        if: github.event_name == 'push'
         uses: dorny/paths-filter@ceb8a2b8f2d89434be7ff52d3de7ec3738c5cc9d # v4.0.3
         id: filter
         with:
@@ -70,9 +198,26 @@ jobs:
               - 'package.json'
               - 'package-lock.json'
 
+      # Change detection answers "did this push contain anything worth
+      # deploying?". A manual run has already answered that by being clicked, so
+      # it skips the filter rather than being silently no-op'd by a docs-only
+      # commit sitting at the head of main.
+      - name: Decide
+        id: decide
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          CODE_CHANGED: ${{ steps.filter.outputs.code }}
+        run: |
+          set -euo pipefail
+          if [ "${EVENT_NAME}" = "push" ]; then
+            echo "should_deploy=${CODE_CHANGED}" >> "$GITHUB_OUTPUT"
+          else
+            echo "should_deploy=true" >> "$GITHUB_OUTPUT"
+          fi
+
   build-and-push-frontend:
-    needs: check-changes
-    if: needs.check-changes.outputs.should_deploy == 'true'
+    needs: [plan, check-changes]
+    if: needs.plan.outputs.build == 'true' && needs.check-changes.outputs.should_deploy == 'true'
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -106,15 +251,13 @@ jobs:
           push: true
           # The SHA tag is the immutable one. `latest` is pushed from the same
           # build so a hand-started stack is not left on an ancient image.
-          tags: |
-            ${{ env.IMAGE_PREFIX }}-frontend:${{ env.IMAGE_TAG }}
-            ${{ env.IMAGE_PREFIX }}-frontend:latest
+          tags: ${{ needs.plan.outputs.tags_frontend }}
           build-args: |
             GOOGLE_CLIENT_ID=${{ secrets.GOOGLE_CLIENT_ID }}
 
   build-and-push-backend:
-    needs: check-changes
-    if: needs.check-changes.outputs.should_deploy == 'true'
+    needs: [plan, check-changes]
+    if: needs.plan.outputs.build == 'true' && needs.check-changes.outputs.should_deploy == 'true'
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -140,13 +283,11 @@ jobs:
           context: .
           file: ./apps/backend/Dockerfile
           push: true
-          tags: |
-            ${{ env.IMAGE_PREFIX }}-backend:${{ env.IMAGE_TAG }}
-            ${{ env.IMAGE_PREFIX }}-backend:latest
+          tags: ${{ needs.plan.outputs.tags_backend }}
 
   build-and-push-database:
-    needs: check-changes
-    if: needs.check-changes.outputs.should_deploy == 'true'
+    needs: [plan, check-changes]
+    if: needs.plan.outputs.build == 'true' && needs.check-changes.outputs.should_deploy == 'true'
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -172,13 +313,33 @@ jobs:
           context: ./docker/postgres
           file: ./docker/postgres/Dockerfile
           push: true
-          tags: |
-            ${{ env.IMAGE_PREFIX }}-db:${{ env.IMAGE_TAG }}
-            ${{ env.IMAGE_PREFIX }}-db:latest
+          tags: ${{ needs.plan.outputs.tags_db }}
 
   deploy-to-server:
-    needs: [build-and-push-frontend, build-and-push-backend, build-and-push-database]
+    needs: [plan, build-and-push-frontend, build-and-push-backend, build-and-push-database]
+    # `!cancelled()` instead of the default success() gate, because on a rollback
+    # the three build jobs are deliberately skipped and a skipped `needs` would
+    # otherwise skip this one too. The rest of the condition puts back everything
+    # success() was buying:
+    #   - plan must have succeeded (a bad redeploy_tag fails it, and nothing runs)
+    #   - plan must say deploy (not skip_deploy, and on main)
+    #   - either there was no build to do, or all three builds actually passed.
+    # So: builds skipped because a push changed no code -> build is still 'true'
+    # and no build reports success -> no deploy. Builds failed -> no deploy.
+    if: >-
+      !cancelled()
+      && needs.plan.result == 'success'
+      && needs.plan.outputs.deploy == 'true'
+      && (needs.plan.outputs.build == 'false'
+          || (needs.build-and-push-frontend.result == 'success'
+              && needs.build-and-push-backend.result == 'success'
+              && needs.build-and-push-database.result == 'success'))
     runs-on: ubuntu-latest
+    env:
+      # The tag being deployed: this run's SHA normally, an older one on a
+      # rollback. Every step below -- the pin, the summary, the image check --
+      # reads this one value.
+      IMAGE_TAG: ${{ needs.plan.outputs.image_tag }}
 
     steps:
       - name: Checkout code
@@ -209,6 +370,38 @@ jobs:
             BatchMode yes
           EOF
           chmod 600 ~/.ssh/config
+
+      # Only on a rollback, and only because the tag came from a human typing it
+      # into the Actions UI. `docker compose pull` would fail on a missing image
+      # anyway, and it fails *before* `up`, so the running stack survives either
+      # way -- this is about the error message, not about safety. Picking a
+      # docs-only commit out of `git log` is the easy mistake: the path filter
+      # skipped its build, so no images for that SHA were ever pushed.
+      #
+      # Runs on the server, not on the runner: the GHCR packages are private and
+      # the credential for them lives in the deploy user's docker config on the
+      # host. The runner has no way to read them.
+      - name: Check the images for this tag exist before touching the stack
+        if: needs.plan.outputs.build == 'false'
+        run: |
+          set -euo pipefail
+          ssh deploy-target IMAGE_PREFIX="${IMAGE_PREFIX}" IMAGE_TAG="${IMAGE_TAG}" bash -s <<'REMOTE'
+          set -uo pipefail
+          missing=''
+          for svc in frontend backend db; do
+            image="${IMAGE_PREFIX}-${svc}:${IMAGE_TAG}"
+            if docker manifest inspect "$image" >/dev/null 2>&1; then
+              echo "ok      $image"
+            else
+              echo "MISSING $image"
+              missing="${missing} ${svc}"
+            fi
+          done
+          if [ -n "$missing" ]; then
+            echo "::error::no images in GHCR for ${IMAGE_TAG}:${missing}. That commit's build was probably skipped (the deploy path filter ignores docs-only commits). Pick a SHA that has a successful Deploy run behind it. Nothing was changed on the server."
+            exit 1
+          fi
+          REMOTE
 
       # Rollback anchor: name the artifacts running now, before replacing them.
       # Recorded first, and into the run summary, so a later failure still leaves
@@ -359,11 +552,24 @@ jobs:
 
       - name: Record the deployed tag
         if: always()
+        env:
+          # always(), so this also runs when the deploy failed. Then these images
+          # are what the run was *aiming* at, and the stack may still be on the
+          # previous ones -- say which, rather than captioning a failed run
+          # "Deployed artifact" and sending the next reader down the wrong path.
+          JOB_STATUS: ${{ job.status }}
         run: |
           set -euo pipefail
           {
             echo
-            echo '## Deployed artifact'
+            if [ "${JOB_STATUS}" = "success" ]; then
+              echo '## Deployed artifact'
+            else
+              echo '## Attempted artifact (this deploy did NOT succeed)'
+              echo
+              echo 'The stack may still be on the images in "Rollback anchor" above.'
+              echo 'Check `docker ps` on the host before assuming either way.'
+            fi
             echo
             echo '| service | image |'
             echo '| --- | --- |'
