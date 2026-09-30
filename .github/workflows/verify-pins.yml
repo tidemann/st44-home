@@ -1,0 +1,71 @@
+name: TEMPORARY Verify pinned actions
+
+# Scaffolding for ST-53 only. paths-filter, login-action and upload-artifact are
+# only reachable from deploy.yml (push to main) or a failed e2e run, so there is
+# no way to prove the Node 24 bump works on them without first deploying the live
+# site. This runs exactly those three on a branch. Delete before merge.
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  packages: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+        with:
+          fetch-depth: 0
+
+      - name: Get previous commit SHA
+        id: prev-commit
+        run: echo "sha=$(git rev-parse HEAD~1)" >> $GITHUB_OUTPUT
+
+      # Same inputs and filters as deploy.yml's check-changes job.
+      - name: Check for code changes
+        uses: dorny/paths-filter@ceb8a2b8f2d89434be7ff52d3de7ec3738c5cc9d # v4.0.3
+        id: filter
+        with:
+          base: ${{ steps.prev-commit.outputs.sha }}
+          filters: |
+            code:
+              - 'apps/**'
+              - '!apps/**/e2e/**'
+              - '!apps/**/*.spec.ts'
+              - '!apps/**/*.test.ts'
+              - 'infra/**'
+              - 'docker/**'
+              - '.github/workflows/**'
+              - 'package.json'
+              - 'package-lock.json'
+
+      - name: paths-filter produced an output
+        run: |
+          set -euo pipefail
+          echo "code=${{ steps.filter.outputs.code }}"
+          test -n "${{ steps.filter.outputs.code }}"
+
+      # Same inputs as every login step in deploy.yml.
+      - name: Login to GHCR
+        uses: docker/login-action@dbcb813823bdd20940b903addbd779551569679f # v4.6.0
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Make a file to upload
+        run: |
+          set -euo pipefail
+          mkdir -p verify-out
+          git rev-parse HEAD > verify-out/sha.txt
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: verify-pins
+          path: verify-out/
+          retention-days: 1

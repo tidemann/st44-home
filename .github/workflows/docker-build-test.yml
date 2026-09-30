@@ -21,6 +21,10 @@ on:
       - 'apps/backend/Dockerfile'
       - 'package.json'
       - 'package-lock.json'
+  # The paths filter above means a workflow-only change cannot reach these image
+  # builds, so there was no way to exercise a build-push-action bump before it
+  # landed on main and deployed. This makes that possible on a branch.
+  workflow_dispatch:
 
 jobs:
   test-frontend-build:
