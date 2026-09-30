@@ -6,7 +6,10 @@ name: TEMPORARY Verify pinned actions
 # site. This runs exactly those three on a branch. Delete before merge.
 
 on:
-  workflow_dispatch:
+  # Not workflow_dispatch: GitHub only exposes that once the workflow file is on
+  # the default branch, and this one never gets there.
+  pull_request:
+    branches: [main]
 
 permissions:
   contents: read
