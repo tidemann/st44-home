@@ -250,6 +250,12 @@ DB_PASSWORD=secure_password
 CORS_ORIGIN=https://example.com
 GITHUB_REPOSITORY_OWNER=username
 GITHUB_REPOSITORY_NAME=repo-name
+
+# Which artifact the stack runs. The deploy workflow sets this to the commit SHA
+# it built; left unset it falls back to `latest`, which is fine locally and is
+# never the record of what production runs. Rolling back is starting the same
+# stack with an earlier SHA -- see docs/DEPLOYMENT.md.
+IMAGE_TAG=latest
 ```
 
 ### Service-Specific

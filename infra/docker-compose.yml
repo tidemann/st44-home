@@ -1,3 +1,7 @@
+# IMAGE_TAG names the artifact this stack runs. The deploy workflow sets it to
+# the commit SHA it built, so a deploy is identifiable and can be rolled back by
+# naming an earlier tag. `latest` is only the fallback for a hand-started stack;
+# never treat it as the source of truth for what is deployed.
 services:
   # Redis Cache (for rate limiting and sessions)
   redis:
@@ -17,7 +21,7 @@ services:
 
   # PostgreSQL Database
   db:
-    image: ghcr.io/tidemann/st44-home-db:latest
+    image: ghcr.io/tidemann/st44-home-db:${IMAGE_TAG:-latest}
     container_name: st44-db
     restart: unless-stopped
     environment:
@@ -36,7 +40,7 @@ services:
 
   # Backend API
   backend:
-    image: ghcr.io/tidemann/st44-home-backend:latest
+    image: ghcr.io/tidemann/st44-home-backend:${IMAGE_TAG:-latest}
     container_name: st44-backend
     restart: unless-stopped
     environment:
@@ -60,7 +64,7 @@ services:
 
   # Frontend (Nginx)
   frontend:
-    image: ghcr.io/tidemann/st44-home-frontend:latest
+    image: ghcr.io/tidemann/st44-home-frontend:${IMAGE_TAG:-latest}
     container_name: st44-frontend
     restart: unless-stopped
     ports:
