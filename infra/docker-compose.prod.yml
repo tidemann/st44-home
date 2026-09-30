@@ -1,19 +1,22 @@
-# Production stack for home.st44.no. This is the file that runs on the server, at
-# /srv/st44-home/infra/docker-compose.yml.
+# The stack that runs on the server, at /srv/st44-home/infra/docker-compose.yml.
 #
-# It is a copy of what was already on the host -- external proxy network, frontend
-# on 3100, the extra backend environment -- with one change: the three ghcr images
-# take their tag from IMAGE_TAG instead of being hardcoded to `latest`. That is
-# what makes a deploy nameable and a rollback possible; see docs/DEPLOYMENT.md.
+# This is a copy, not the installed file. CI does not write it: that directory
+# belongs to the server owner and the deploy user cannot write there. It is here
+# for two reasons.
 #
-# It is NOT docker-compose.yml, because that one is the local development stack and
-# cannot carry `networks.default.external` -- an external network does not exist on
-# a laptop. Keep both in step when you change a service.
+# 1. It is the record. Until ST-62 went and looked, nothing in git said that
+#    production runs an external proxy network, the frontend on 3100 rather than 80,
+#    or four backend environment variables the local stack does not set. A stack
+#    definition that exists only on one host is one lost host away from guesswork.
+# 2. It is the fixture for the CI job "Deploy pin overrides the server compose
+#    file", which merges the generated pin over this file and checks that the three
+#    images come out on the deploy's tag and that everything below survives the
+#    merge. That is how the pin is provable without a live deploy.
 #
-# The deploy workflow does not install this file: /srv/st44-home/infra is not
-# writable by the deploy user. Server Admin installs it, and the deploy's
-# "Verify the deployed images" step fails loudly if the host copy ever stops
-# honouring IMAGE_TAG.
+# So the image tags below are deliberately `latest`, exactly as on the host: the
+# deploy does not edit them, it overrides them with infra/generate-image-pin.sh.
+# If you change a service here, change it on the server too -- and the other way
+# round. If the two disagree, the server is the truth and this file is the bug.
 services:
   redis:
     image: redis:7-alpine
@@ -31,7 +34,7 @@ services:
       retries: 5
 
   db:
-    image: ghcr.io/tidemann/st44-home-db:${IMAGE_TAG:-latest}
+    image: ghcr.io/tidemann/st44-home-db:latest
     container_name: st44-db
     restart: unless-stopped
     environment:
@@ -49,7 +52,7 @@ services:
       retries: 5
 
   backend:
-    image: ghcr.io/tidemann/st44-home-backend:${IMAGE_TAG:-latest}
+    image: ghcr.io/tidemann/st44-home-backend:latest
     container_name: st44-backend
     restart: unless-stopped
     environment:
@@ -77,7 +80,7 @@ services:
 
   # 3100, not 80: the host's proxy terminates TLS for home.st44.no and forwards here.
   frontend:
-    image: ghcr.io/tidemann/st44-home-frontend:${IMAGE_TAG:-latest}
+    image: ghcr.io/tidemann/st44-home-frontend:latest
     container_name: st44-frontend
     restart: unless-stopped
     ports:

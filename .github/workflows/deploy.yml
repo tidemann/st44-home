@@ -31,6 +31,11 @@ env:
   IMAGE_TAG: ${{ github.sha }}
   IMAGE_PREFIX: ghcr.io/${{ github.repository_owner }}/${{ github.event.repository.name }}
   REMOTE_DIR: /srv/st44-home/infra
+  # The compose override carrying the pin. Lands in the deploy user's home, because
+  # REMOTE_DIR belongs to the server owner and CI cannot write there. A name, not a
+  # path: `$HOME` is resolved on the host, and /tmp is not used because anyone on
+  # the box can write there and this file decides what the site runs.
+  PIN_NAME: st44-home-image-pin.yml
   SITE_HOST: home.st44.no
 
 jobs:
@@ -235,33 +240,32 @@ jobs:
             echo 'To roll back, see docs/DEPLOYMENT.md -> "Rolling back to a previous image".'
           } >> "$GITHUB_STEP_SUMMARY"
 
-      # This deploy does not install the compose file. /srv/st44-home/infra is not
-      # writable by the deploy user, and that is the server's call to make, not
-      # CI's -- so `infra/docker-compose.prod.yml` in this repo is the reviewable
-      # record and Server Admin installs it. The step below checks the host copy
-      # actually takes its tag from IMAGE_TAG; without that, a host file still
-      # hardcoded to `:latest` would deploy green and silently ignore the pin.
-      # `.env` on the host holds DB_PASSWORD and is never read or written here.
-      - name: Check the host compose file honours IMAGE_TAG
+      # The pin arrives as a compose override, not as an edit to the host's compose
+      # file. /srv/st44-home/infra is owned by the server owner and is not writable
+      # by the deploy user, and who may write it is the server's call, not CI's --
+      # so this writes one small file into the deploy user's own home and lets
+      # compose merge it over the host's. `image:` in a later file wins, so the
+      # host copy can go on saying `:latest` and the stack still runs the SHA.
+      #
+      # `.env` beside the host compose file still supplies DB_PASSWORD and friends:
+      # the project directory is the first file's directory, which is why every
+      # compose call below runs from REMOTE_DIR. CI never reads or writes it.
+      - name: Send the image pin
         run: |
           set -euo pipefail
-          ssh deploy-target REMOTE_DIR="${REMOTE_DIR}" bash -s <<'REMOTE'
-          set -euo pipefail
-          cd "$REMOTE_DIR"
-          if ! grep -q 'IMAGE_TAG' docker-compose.yml; then
-            echo "::error::$PWD/docker-compose.yml does not reference IMAGE_TAG -- it cannot be pinned, so this deploy would not be rollback-able. Install infra/docker-compose.prod.yml from the repository."
-            exit 1
-          fi
-          echo "host compose file references IMAGE_TAG"
-          REMOTE
+          # Same script CI uses to prove the merge works -- see the compose job.
+          infra/generate-image-pin.sh "${IMAGE_PREFIX}" "${IMAGE_TAG}" > image-pin.yml
+          cat image-pin.yml
+          # No leading path: scp drops it in the deploy user's home directory.
+          scp image-pin.yml "deploy-target:${PIN_NAME}"
 
       - name: Deploy data services via SSH
         run: |
           set -euo pipefail
-          ssh deploy-target IMAGE_TAG="${IMAGE_TAG}" REMOTE_DIR="${REMOTE_DIR}" bash -s <<'REMOTE'
+          ssh deploy-target REMOTE_DIR="${REMOTE_DIR}" PIN_NAME="${PIN_NAME}" bash -s <<'REMOTE'
           set -euo pipefail
           cd "$REMOTE_DIR"
-          export IMAGE_TAG
+          export COMPOSE_FILE="docker-compose.yml:$HOME/$PIN_NAME"
           docker compose config --quiet
           docker compose pull
           docker compose up -d --force-recreate db redis
@@ -276,10 +280,10 @@ jobs:
       - name: Start Application Services
         run: |
           set -euo pipefail
-          ssh deploy-target IMAGE_TAG="${IMAGE_TAG}" REMOTE_DIR="${REMOTE_DIR}" bash -s <<'REMOTE'
+          ssh deploy-target REMOTE_DIR="${REMOTE_DIR}" PIN_NAME="${PIN_NAME}" bash -s <<'REMOTE'
           set -euo pipefail
           cd "$REMOTE_DIR"
-          export IMAGE_TAG
+          export COMPOSE_FILE="docker-compose.yml:$HOME/$PIN_NAME"
           docker compose up -d --force-recreate backend frontend
           REMOTE
 

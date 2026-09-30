@@ -349,11 +349,11 @@ ghcr.io/tidemann/st44-home-backend:<sha>
 ghcr.io/tidemann/st44-home-db:<sha>
 ```
 
-The server's compose file — `infra/docker-compose.prod.yml` in this repository,
-installed at `/srv/st44-home/infra/docker-compose.yml` — reads that tag from
-`IMAGE_TAG`, so rolling back is starting the same stack with an earlier tag.
-`latest` also moves on every deploy: it is a convenience pointer, never the answer
-to "what is running?".
+The server's compose file still says `:latest` and is never edited by CI. Instead
+the deploy generates a small compose override naming those three tags and merges it
+over the server's file, which is why the running stack is identifiable. Rolling
+back is doing the same merge by hand with an earlier tag. `latest` also moves on
+every deploy: it is a convenience pointer, never the answer to "what is running?".
 
 #### Step 1: Find the previous good SHA
 
@@ -390,20 +390,41 @@ done
 
 #### Step 3: Start the stack on that tag
 
-Run on the server, in the compose directory. This does not touch the compose file
-or `.env`, and it does not need a CI run:
+Run on the server as the deploy user. This does not edit the server's compose file
+or `.env`, and it does not need a CI run — it writes the same override the deploy
+writes, with an older tag:
 
 ```bash
 ssh <deploy-user>@home.st44.no
-cd /srv/st44-home/infra
+SHA=<previous-good-sha>
 
-export IMAGE_TAG=<previous-good-sha>
+# The same file the deploy sends. Three services, one tag each.
+cat > ~/st44-home-image-pin.yml <<YAML
+services:
+  frontend:
+    image: ghcr.io/tidemann/st44-home-frontend:${SHA}
+  backend:
+    image: ghcr.io/tidemann/st44-home-backend:${SHA}
+  db:
+    image: ghcr.io/tidemann/st44-home-db:${SHA}
+YAML
+
+cd /srv/st44-home/infra
+export COMPOSE_FILE="docker-compose.yml:$HOME/st44-home-image-pin.yml"
+
+# Check the merge before acting on it: three images on $SHA, and the external
+# network and the frontend on 3100 still there.
+docker compose config | grep -E 'image:|3100|st44_default'
+
 docker compose pull
 docker compose up -d --force-recreate frontend backend
 
-# Only include db if the rollback is meant to change the database image too.
+# Only recreate db if the rollback is meant to change the database image too.
 # Rolling the db image back does NOT undo migrations that have already run.
 ```
+
+`cd /srv/st44-home/infra` matters: compose takes the project directory from the
+first file, and that is where `.env` — `DB_PASSWORD`, `CORS_ORIGIN` — lives.
 
 #### Step 4: Verify, then record
 
