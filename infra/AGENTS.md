@@ -259,15 +259,17 @@ different and worth knowing about:
 
 - `docker-compose.prod.yml` mirrors the file on the server
   (`/srv/st44-home/infra/docker-compose.yml`) — external proxy network, frontend on
-  3100, extra backend environment. It is a copy for reference and for CI to test
-  against; CI cannot write that directory.
-- The deploy does not edit either file. It generates a compose override with
-  `generate-image-pin.sh` and merges it over the server's file, so the stack runs
-  images tagged by commit SHA while the file keeps saying `:latest`.
+  3100, extra backend environment. It is the record CI renders the deploy from.
+- The deploy does not edit either file on the host. CI renders one compose file
+  with `render-deploy-compose.sh` — the server's compose with the three images
+  pinned to a commit SHA — and ships it to `/srv/st44-home/deploy.sh` on stdin.
+  That script installs it, pulls, recreates, runs migrations and gates on backend
+  health. It is the forced command on the deploy key, so the key can run that one
+  script and nothing else.
 - That is what makes a rollback possible: pick an earlier SHA and redeploy on it.
-  Actions → Deploy → Run workflow with `redeploy_tag=<40-char sha>` generates the
-  same override and skips the build jobs; merging it by hand on the server is the
-  fallback. See `docs/DEPLOYMENT.md` → "Rolling back to a previous image".
+  Actions → Deploy → Run workflow with `redeploy_tag=<40-char sha>` renders the
+  same compose with the older tag and skips the build jobs. See
+  `docs/DEPLOYMENT.md` → "Rolling back to a previous image".
 
 ### Service-Specific
 See individual service sections above and:

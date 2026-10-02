@@ -10,6 +10,15 @@ name: Deploy
 # three-image stack. ST-63 decided to extend the shared workflow "later", triggered
 # by the third fix that has to land in both places.
 #
+# ST-173 moved the deploy to the forced-command stdin form, the same shape as the
+# shared workflow: CI renders one compose file (the server's compose with the
+# three images pinned to a commit SHA) and ships it to the host on stdin, where
+# /srv/st44-home/deploy.sh — the forced command on st44-home's deploy key —
+# installs it, pulls, recreates, runs migrations and gates on health. No scp, no
+# heredoc ssh, no `docker exec`/`docker compose` over ssh from CI: the key can
+# run that one script and nothing else, so a leaked DEPLOY_KEY can redeploy
+# st44-home and do nothing more on the host.
+#
 # ST-69 (the workflow_dispatch rollback below) is deliberately NOT one of those, so
 # it does not count toward that third strike: build-and-deploy.yml is a reusable
 # `workflow_call` workflow, and `workflow_dispatch` inputs belong to the caller, not
@@ -52,12 +61,9 @@ env:
   # an older one -- so it is decided by the `plan` job below and read from
   # `needs.plan.outputs.image_tag`, not from here.
   IMAGE_PREFIX: ghcr.io/${{ github.repository_owner }}/${{ github.event.repository.name }}
-  REMOTE_DIR: /srv/st44-home/infra
-  # The compose override carrying the pin. Lands in the deploy user's home, because
-  # REMOTE_DIR belongs to the server owner and CI cannot write there. A name, not a
-  # path: `$HOME` is resolved on the host, and /tmp is not used because anyone on
-  # the box can write there and this file decides what the site runs.
-  PIN_NAME: st44-home-image-pin.yml
+  # The forced command on the deploy key, and the one script the workflow may
+  # run on the host. It reads the deploy compose on stdin.
+  DEPLOY_SCRIPT: /srv/st44-home/deploy.sh
   SITE_HOST: home.st44.no
 
 jobs:
@@ -337,8 +343,8 @@ jobs:
     runs-on: ubuntu-latest
     env:
       # The tag being deployed: this run's SHA normally, an older one on a
-      # rollback. Every step below -- the pin, the summary, the image check --
-      # reads this one value.
+      # rollback. Every step below -- the render, the summary -- reads this one
+      # value.
       IMAGE_TAG: ${{ needs.plan.outputs.image_tag }}
 
     steps:
@@ -371,156 +377,41 @@ jobs:
           EOF
           chmod 600 ~/.ssh/config
 
-      # Only on a rollback, and only because the tag came from a human typing it
-      # into the Actions UI. `docker compose pull` would fail on a missing image
-      # anyway, and it fails *before* `up`, so the running stack survives either
-      # way -- this is about the error message, not about safety. Picking a
-      # docs-only commit out of `git log` is the easy mistake: the path filter
-      # skipped its build, so no images for that SHA were ever pushed.
-      #
-      # Runs on the server, not on the runner: the GHCR packages are private and
-      # the credential for them lives in the deploy user's docker config on the
-      # host. The runner has no way to read them.
-      - name: Check the images for this tag exist before touching the stack
-        if: needs.plan.outputs.build == 'false'
+      # The whole deploy is one rendered compose file: the server's compose
+      # (infra/docker-compose.prod.yml, the record of /srv/st44-home/infra/
+      # docker-compose.yml) with the three ghcr images pinned to IMAGE_TAG. On a
+      # rollback IMAGE_TAG is the dispatcher's older SHA and the same render
+      # produces the images to go back to. ${DB_PASSWORD} and friends stay
+      # literal so the host's own .env supplies them at runtime.
+      - name: Render the deploy compose file
         run: |
           set -euo pipefail
-          ssh deploy-target IMAGE_PREFIX="${IMAGE_PREFIX}" IMAGE_TAG="${IMAGE_TAG}" bash -s <<'REMOTE'
-          set -uo pipefail
-          missing=''
-          for svc in frontend backend db; do
-            image="${IMAGE_PREFIX}-${svc}:${IMAGE_TAG}"
-            if docker manifest inspect "$image" >/dev/null 2>&1; then
-              echo "ok      $image"
-            else
-              echo "MISSING $image"
-              missing="${missing} ${svc}"
-            fi
-          done
-          if [ -n "$missing" ]; then
-            echo "::error::no images in GHCR for ${IMAGE_TAG}:${missing}. That commit's build was probably skipped (the deploy path filter ignores docs-only commits). Pick a SHA that has a successful Deploy run behind it. Nothing was changed on the server."
+          infra/render-deploy-compose.sh "${IMAGE_PREFIX}" "${IMAGE_TAG}" > deploy-compose.yml
+          test -s deploy-compose.yml
+          grep -E '^[[:space:]]*image:' deploy-compose.yml || true
+
+      # Everything the host needs is in the compose file, so this is the whole
+      # deploy: ship it on stdin, and /srv/st44-home/deploy.sh installs it,
+      # keeps the previous one as docker-compose.yml.prev, pulls, brings up db
+      # and redis, runs migrations, brings up backend and frontend, prints the
+      # container state and gates on backend health. It exits non-zero if the
+      # backend does not answer or a container is not on the pinned tag, which
+      # fails this job. Its output names the images it replaced -- that is the
+      # rollback anchor.
+      #
+      # The command is named in the ssh line even though the forced command
+      # overrides it. That is deliberate: the same workflow works whether or not
+      # the key has been tightened yet, so the workflow and the key can be
+      # switched in either order without a broken deploy in between.
+      - name: Deploy
+        run: |
+          set -euo pipefail
+          # SC2029: the expansion is meant to happen here, on the runner.
+          # shellcheck disable=SC2029
+          if ! ssh deploy-target "${DEPLOY_SCRIPT}" < deploy-compose.yml | tee deploy.log; then
+            echo "::error::the deploy script on the host failed — see the log above"
             exit 1
           fi
-          REMOTE
-
-      # Rollback anchor: name the artifacts running now, before replacing them.
-      # Recorded first, and into the run summary, so a later failure still leaves
-      # the previous tags written down somewhere durable.
-      - name: Record the currently deployed images
-        run: |
-          set -euo pipefail
-          ssh deploy-target bash -s <<'REMOTE' | tee previous-images.txt
-          set -uo pipefail
-          for c in st44-frontend st44-backend st44-db; do
-            printf '%s\t%s\n' "$c" \
-              "$(docker inspect -f '{{.Config.Image}} {{.Image}}' "$c" 2>/dev/null || echo 'none (not running)')"
-          done
-          REMOTE
-
-          {
-            echo '## Rollback anchor'
-            echo
-            echo 'Images running *before* this deploy:'
-            echo
-            echo '```'
-            cat previous-images.txt
-            echo '```'
-            echo
-            echo "This deploy moves the stack to \`IMAGE_TAG=${IMAGE_TAG}\`."
-            echo 'To roll back, see docs/DEPLOYMENT.md -> "Rolling back to a previous image".'
-          } >> "$GITHUB_STEP_SUMMARY"
-
-      # The pin arrives as a compose override, not as an edit to the host's compose
-      # file. /srv/st44-home/infra is owned by the server owner and is not writable
-      # by the deploy user, and who may write it is the server's call, not CI's --
-      # so this writes one small file into the deploy user's own home and lets
-      # compose merge it over the host's. `image:` in a later file wins, so the
-      # host copy can go on saying `:latest` and the stack still runs the SHA.
-      #
-      # `.env` beside the host compose file still supplies DB_PASSWORD and friends:
-      # the project directory is the first file's directory, which is why every
-      # compose call below runs from REMOTE_DIR. CI never reads or writes it.
-      - name: Send the image pin
-        run: |
-          set -euo pipefail
-          # Same script CI uses to prove the merge works -- see the compose job.
-          infra/generate-image-pin.sh "${IMAGE_PREFIX}" "${IMAGE_TAG}" > image-pin.yml
-          cat image-pin.yml
-          # No leading path: scp drops it in the deploy user's home directory.
-          scp image-pin.yml "deploy-target:${PIN_NAME}"
-
-      - name: Deploy data services via SSH
-        run: |
-          set -euo pipefail
-          ssh deploy-target REMOTE_DIR="${REMOTE_DIR}" PIN_NAME="${PIN_NAME}" bash -s <<'REMOTE'
-          set -euo pipefail
-          cd "$REMOTE_DIR"
-          export COMPOSE_FILE="docker-compose.yml:$HOME/$PIN_NAME"
-          docker compose config --quiet
-          docker compose pull
-          docker compose up -d --force-recreate db redis
-          REMOTE
-
-      - name: Run Database Migrations
-        run: |
-          set -euo pipefail
-          echo "Running database migrations..."
-          ssh deploy-target "docker exec st44-db /usr/local/bin/run-migrations.sh"
-
-      - name: Start Application Services
-        run: |
-          set -euo pipefail
-          ssh deploy-target REMOTE_DIR="${REMOTE_DIR}" PIN_NAME="${PIN_NAME}" bash -s <<'REMOTE'
-          set -euo pipefail
-          cd "$REMOTE_DIR"
-          export COMPOSE_FILE="docker-compose.yml:$HOME/$PIN_NAME"
-          docker compose up -d --force-recreate backend frontend
-          REMOTE
-
-      - name: Show container state
-        run: |
-          set -euo pipefail
-          ssh deploy-target 'docker ps --filter "name=st44" --format "table {{.Names}}\t{{.Image}}\t{{.Status}}\t{{.Ports}}"'
-
-      # Readiness, not a stopwatch. The old `sleep 15` passed or failed on how
-      # fast the host happened to be that morning; this polls until the backend
-      # actually answers, and dumps logs when it never does.
-      - name: Verify the backend is ready
-        run: |
-          set -euo pipefail
-          ssh deploy-target bash -s <<'REMOTE'
-          set -uo pipefail
-          for i in $(seq 1 30); do
-            if curl -fsS http://localhost:3000/health >/dev/null 2>&1; then
-              echo "backend /health: ok after $i attempt(s)"
-              curl -sS http://localhost:3000/health/database | head -20 || true
-              exit 0
-            fi
-            sleep 2
-          done
-          echo "backend never answered http://localhost:3000/health"
-          docker logs --tail 50 st44-backend 2>&1 || true
-          exit 1
-          REMOTE
-
-      # Proves the pin took. Without this, a compose file that had drifted back
-      # to `:latest` would still pass every health check above.
-      - name: Verify the deployed images are the ones this run built
-        run: |
-          set -euo pipefail
-          ssh deploy-target IMAGE_TAG="${IMAGE_TAG}" bash -s <<'REMOTE'
-          set -uo pipefail
-          bad=0
-          for c in st44-frontend st44-backend st44-db; do
-            running="$(docker inspect -f '{{.Config.Image}}' "$c")"
-            echo "$c -> $running"
-            case "$running" in
-              *":${IMAGE_TAG}") ;;
-              *) echo "::error::$c is running $running, not the tag this deploy built"; bad=1 ;;
-            esac
-          done
-          exit "$bad"
-          REMOTE
 
       - name: Purge Cloudflare Cache
         run: |
@@ -550,6 +441,50 @@ jobs:
           echo "::error::https://${SITE_HOST}/health did not return 200"
           exit 1
 
+      # A forced command only buys anything if it bites. With the site's key in
+      # hand, prove the key cannot do anything but run deploy.sh: a shell
+      # command, a read of another site's compose file, and an scp must all be
+      # refused. If the key is still `restrict` without a forced command, these
+      # succeed and the run fails loudly here instead of a leak being discovered
+      # later. Opt-in via the VERIFY_FORCED_COMMAND repository variable, so the
+      # rollout order holds: workflow first, deploy green, then tighten the key,
+      # then set the variable to true.
+      - name: Prove the deploy key is forced to deploy.sh
+        if: vars.VERIFY_FORCED_COMMAND == 'true'
+        run: |
+          set -euo pipefail
+          # All three probes write their output to a log file and fail on the
+          # first one that is *not* refused, so the refusal is both asserted and
+          # visible in the run.
+          log=prove-forced.log
+          : > "$log"
+          refuse() { # name
+            local name="$1"
+            local out
+            if out="$("${@:2}" 2>&1)"; then
+              echo "::error::$name was NOT refused — the deploy key is not forced to ${DEPLOY_SCRIPT}"
+              printf '%s\n' "$out" >> "$log"
+              exit 1
+            fi
+            echo "[$name] refused (exit != 0)" >> "$log"
+            printf '%s\n' "$out" >> "$log"
+          }
+
+          # 1. A shell command must not run.
+          refuse "'id'" ssh deploy-target "id"
+
+          # 2. Reading another site's compose must not work. food-st44 is the
+          #    cross-site case a leaked st44-home key must not reach.
+          refuse "read of food-st44's compose" \
+            ssh deploy-target "cat /srv/apps/food-st44/infra/docker-compose.yml"
+
+          # 3. scp must fail outright: it needs a remote scp process, which a
+          #    forced command will not start.
+          refuse "scp" scp -o BatchMode=yes deploy-target:/etc/hostname /tmp/forced-proof.txt
+
+          echo "== the deploy key is forced to ${DEPLOY_SCRIPT} =="
+          cat "$log"
+
       - name: Record the deployed tag
         if: always()
         env:
@@ -567,7 +502,7 @@ jobs:
             else
               echo '## Attempted artifact (this deploy did NOT succeed)'
               echo
-              echo 'The stack may still be on the images in "Rollback anchor" above.'
+              echo 'The stack may still be on the images in "Rollback anchor" below.'
               echo 'Check `docker ps` on the host before assuming either way.'
             fi
             echo
@@ -576,4 +511,22 @@ jobs:
             for svc in frontend backend db; do
               echo "| $svc | \`${IMAGE_PREFIX}-${svc}:${IMAGE_TAG}\` |"
             done
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Rollback anchor
+        if: always()
+        run: |
+          set -euo pipefail
+          {
+            echo '## Rollback anchor'
+            echo
+            echo 'Images running *before* this deploy, as recorded by deploy.sh:'
+            echo
+            echo '```'
+            grep '^previous-image:' deploy.log 2>/dev/null || echo 'previous-image: unknown (the deploy did not get that far)'
+            echo '```'
+            echo
+            echo "This deploy moves the stack to \`IMAGE_TAG=${IMAGE_TAG}\`."
+            echo 'To roll back, run this workflow with `redeploy_tag` set to the'
+            echo 'previous-image SHA above.'
           } >> "$GITHUB_STEP_SUMMARY"

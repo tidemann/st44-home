@@ -387,15 +387,16 @@ The project uses GitHub Actions for CI/CD:
   - Builds Docker images for frontend, backend and db
   - Pushes each image to GitHub Container Registry tagged by commit SHA, and also
     `latest` — which is a pointer only, never the record of what is deployed
-  - Pins the stack to that SHA with a generated compose override
-    ([infra/generate-image-pin.sh](infra/generate-image-pin.sh)) merged over the
-    server's compose file, which CI never edits — `/srv/st44-home/infra` belongs to
-    the server owner. A later step fails the run if the containers did not come up
-    on the tag this build produced
-  - Records the previously deployed images in the run summary before replacing
-    them: that is the rollback anchor
-  - Runs database migrations, then polls the backend until it answers rather than
-    sleeping a fixed number of seconds
+  - Renders the deploy compose with
+    [infra/render-deploy-compose.sh](infra/render-deploy-compose.sh) — the
+    server's compose (infra/docker-compose.prod.yml) with the three images pinned
+    to this run's SHA — and ships it to the host on stdin, where
+    `/srv/st44-home/deploy.sh` (the forced command on the deploy key) installs
+    it, pulls, recreates, runs migrations and gates on backend health. The key
+    can run that one script and nothing else; a later step fails the run if a
+    shell command, a read of food-st44's compose, or an scp is *not* refused
+  - Records the previously deployed images in the deploy log and run summary
+    before replacing them: that is the rollback anchor
   - Purges Cloudflare cache, then gates on `https://home.st44.no/health`
   - **To roll back**: Actions → Deploy → Run workflow, with `redeploy_tag` set to
     the 40-character commit SHA you want back. The build jobs are skipped and the

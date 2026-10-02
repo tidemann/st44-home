@@ -349,11 +349,13 @@ ghcr.io/tidemann/st44-home-backend:<sha>
 ghcr.io/tidemann/st44-home-db:<sha>
 ```
 
-The server's compose file still says `:latest` and is never edited by CI. Instead
-the deploy generates a small compose override naming those three tags and merges it
-over the server's file, which is why the running stack is identifiable. Rolling
-back is redoing that merge with an earlier tag. `latest` also moves on
-every deploy: it is a convenience pointer, never the answer to "what is running?".
+The server's compose file still says `:latest` and is never edited by CI. The
+deploy renders one compose file — the server's compose with the three images
+pinned to this run's tag — and ships it to `/srv/st44-home/deploy.sh` on stdin,
+which installs it over `/srv/st44-home/infra/docker-compose.yml`. That is why the
+running stack is identifiable. Rolling back is redoing that render with an earlier
+tag. `latest` also moves on every deploy: it is a convenience pointer, never the
+answer to "what is running?".
 
 There are two ways to do it. **Use the first one.** The manual procedure is the
 fallback for when Actions itself is the thing that is broken.
@@ -368,8 +370,8 @@ fallback for when Actions itself is the thing that is broken.
 That is the whole rollback. The workflow **skips the three build jobs** and
 redeploys the images already in GHCR, then runs the same verification a normal
 deploy runs: the backend must answer, `https://home.st44.no/health` must return
-200, and the "Verify the deployed images are the ones this run built" step fails
-the run if the containers did not actually come up on the tag you asked for.
+200, and the deploy script fails the run if the containers did not actually come
+up on the tag you asked for.
 
 Nothing is rebuilt, and that is deliberate. Rebuilding the same source is not the
 same as redeploying the same artifact — ST-57 was a rebuild of unchanged source
@@ -457,41 +459,30 @@ merged). Roll forward instead, or pick a later commit.
 
 #### Step 3: Start the stack on that tag
 
-Run on the server as the deploy user. This does not edit the server's compose file
-or `.env`, and it does not need a CI run — it writes the same override the deploy
-writes, with an older tag:
+The deploy key is forced to `/srv/st44-home/deploy.sh`, so the manual fallback is
+the same route the workflow uses: render the compose with the older tag and ship
+it on stdin. On a machine with the repository checked out (or on the host itself):
 
 ```bash
-ssh <deploy-user>@home.st44.no
 SHA=<previous-good-sha>
 
-# The same file the deploy sends. Three services, one tag each.
-cat > ~/st44-home-image-pin.yml <<YAML
-services:
-  frontend:
-    image: ghcr.io/tidemann/st44-home-frontend:${SHA}
-  backend:
-    image: ghcr.io/tidemann/st44-home-backend:${SHA}
-  db:
-    image: ghcr.io/tidemann/st44-home-db:${SHA}
-YAML
+# Render the server's compose with the three images pinned to $SHA. The render
+# is textual: it keeps ${DB_PASSWORD} and friends literal so the host .env still
+# supplies them.
+infra/render-deploy-compose.sh ghcr.io/tidemann/st44-home "$SHA" > /tmp/deploy-compose.yml
 
-cd /srv/st44-home/infra
-export COMPOSE_FILE="docker-compose.yml:$HOME/st44-home-image-pin.yml"
-
-# Check the merge before acting on it: three images on $SHA, and the external
-# network and the frontend on 3100 still there.
-docker compose config | grep -E 'image:|3100|st44_default'
-
-docker compose pull
-docker compose up -d --force-recreate frontend backend
-
-# Only recreate db if the rollback is meant to change the database image too.
-# Rolling the db image back does NOT undo migrations that have already run.
+# Ship it through the same script CI ships it through. If you are not the deploy
+# user, ask the server administrator to run this line for you — under the forced
+# command it is the only thing the key can do.
+ssh <deploy-user>@home.st44.no "/srv/st44-home/deploy.sh" < /tmp/deploy-compose.yml
 ```
 
-`cd /srv/st44-home/infra` matters: compose takes the project directory from the
-first file, and that is where `.env` — `DB_PASSWORD`, `CORS_ORIGIN` — lives.
+`deploy.sh` installs the file over `/srv/st44-home/infra/docker-compose.yml`, keeps
+the previous one as `.prev`, checks the pinned images exist, pulls, recreates, runs
+migrations and gates on backend health.
+
+`docker-compose.yml`'s directory matters: compose takes the project directory from
+the first file, and that is where `.env` — `DB_PASSWORD`, `CORS_ORIGIN` — lives.
 
 #### Step 4: Verify, then record
 

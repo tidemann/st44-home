@@ -1,22 +1,23 @@
 # The stack that runs on the server, at /srv/st44-home/infra/docker-compose.yml.
 #
-# This is a copy, not the installed file. CI does not write it: that directory
-# belongs to the server owner and the deploy user cannot write there. It is here
-# for two reasons.
+# This is the deploy unit CI renders from. Every deploy, CI takes this file,
+# pins the three ghcr images to this run's commit SHA (infra/render-deploy-
+# compose.sh), and ships the result to /srv/st44-home/deploy.sh on stdin. That
+# script — the forced command on st44-home's deploy key — installs it over the
+# host file, keeps the previous one as docker-compose.yml.prev, pulls, recreates,
+# runs migrations and gates on backend health. The host file is no longer a
+# second source of truth; this file is what the server runs after every deploy.
 #
-# 1. It is the record. Until ST-62 went and looked, nothing in git said that
-#    production runs an external proxy network, the frontend on 3100 rather than 80,
-#    or four backend environment variables the local stack does not set. A stack
-#    definition that exists only on one host is one lost host away from guesswork.
-# 2. It is the fixture for the CI job "Deploy pin overrides the server compose
-#    file", which merges the generated pin over this file and checks that the three
-#    images come out on the deploy's tag and that everything below survives the
-#    merge. That is how the pin is provable without a live deploy.
+# So the image tags below are deliberately `latest`, the record of the host file:
+# the deploy does not edit them in place, it renders the pinned merge in CI.
+# ${DB_PASSWORD} and friends stay literal in the rendered file so the host's own
+# .env supplies them at runtime. If you change a service here, that is the change
+# the next deploy applies to the server — the two can no longer disagree.
 #
-# So the image tags below are deliberately `latest`, exactly as on the host: the
-# deploy does not edit them, it overrides them with infra/generate-image-pin.sh.
-# If you change a service here, change it on the server too -- and the other way
-# round. If the two disagree, the server is the truth and this file is the bug.
+# This file is also the fixture for the CI job "Deploy pin overrides the server
+# compose file", which runs the same render the deploy runs and checks that the
+# three images come out on the pinned tag and that everything below survives it.
+# That is how the pin is provable without a live deploy.
 services:
   redis:
     image: redis:7-alpine
