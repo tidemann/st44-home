@@ -15,6 +15,13 @@
       <p i18n="@@qrCodeScanner.allowCameraMessage">
         Vennligst tillat kameratilgang for å skanne QR-koder.
       </p>
+      @if (stillDenied()) {
+        <p class="still-denied" i18n="@@qrCodeScanner.stillDenied">Kameraet er fortsatt sperret.</p>
+      }
+      <p class="help-text" i18n="@@qrCodeScanner.settingsHint">
+        Har du sagt nei før? Slå på kamera for home.st44.no i innstillingene til nettleseren eller
+        telefonen, og trykk på knappen igjen. Du kan også logge inn med e-post og passord.
+      </p>
       <div class="actions">
         <button
           class="btn btn-primary"
@@ -47,8 +54,25 @@
     </div>
   }
 
+  <!-- Camera turned off for the whole site (Permissions-Policy). Retrying cannot help -->
+  @if (cameraBlocked() && !loading()) {
+    <div class="camera-blocked" role="alert" aria-live="assertive">
+      <div class="icon" aria-hidden="true">🚫</div>
+      <h3 i18n="@@qrCodeScanner.blockedTitle">QR-innlogging virker ikke akkurat nå</h3>
+      <p>{{ error() }}</p>
+      <p class="help-text" i18n="@@qrCodeScanner.blockedHelp">
+        Logg inn med e-post og passord i stedet, eller be en voksen om hjelp.
+      </p>
+      <button class="btn btn-secondary" (click)="cancel()" i18n="@@qrCodeScanner.backToLogin2">
+        Tilbake til innlogging
+      </button>
+    </div>
+  }
+
   <!-- Error State -->
-  @if (error() && !loading() && !cameraPermissionDenied() && !noCameraAvailable()) {
+  @if (
+    error() && !loading() && !cameraPermissionDenied() && !noCameraAvailable() && !cameraBlocked()
+  ) {
     <div class="error-state" role="alert" aria-live="assertive">
       <div class="error-icon" aria-hidden="true">⚠️</div>
       <p>{{ error() }}</p>
