@@ -161,14 +161,29 @@ describe('Home', () => {
   });
 
   describe('modal management', () => {
-    it('should open edit task modal with task data', () => {
+    // ST-691: the card hands over the assignment id, the template is under taskId
+    it('loads the task template of the tapped assignment and opens the modal', () => {
       const mockTask: Partial<Task> = { id: 'task-1', name: 'Test' };
       component['householdId'].set('household-1');
+      component['todayTasks'].set([{ id: 'assignment-1', taskId: 'task-1' } as Assignment]);
       mockTaskService.getTask.mockReturnValue(of(mockTask as Task));
 
-      component['onEditTask']('task-1');
+      component['onEditTask']('assignment-1');
 
       expect(mockTaskService.getTask).toHaveBeenCalledWith('household-1', 'task-1');
+      expect(component['editTaskOpen']()).toBe(true);
+      expect(component['selectedTask']()).toEqual(mockTask as Task);
+      expect(component['error']()).toBeNull();
+    });
+
+    it('finds assignments in "Kommende" too', () => {
+      component['householdId'].set('household-1');
+      component['upcomingTasks'].set([{ id: 'assignment-2', taskId: 'task-2' } as Assignment]);
+      mockTaskService.getTask.mockReturnValue(of({ id: 'task-2' } as Task));
+
+      component['onEditTask']('assignment-2');
+
+      expect(mockTaskService.getTask).toHaveBeenCalledWith('household-1', 'task-2');
     });
 
     it('should close edit task modal', () => {
@@ -245,15 +260,17 @@ describe('Home', () => {
       expect(component['remindMessage']()).toContain('har ikke slått på varsler');
     });
 
-    it('explains quiet hours', async () => {
+    // ST-691: a failed send must never read as "sendt"
+    it('says it could not send when the push service refused', async () => {
       mockPush.remind.mockRejectedValue(
         new HttpErrorResponse({
-          status: 409,
-          error: { message: 'quiet', details: { conflictField: 'quietHours' } },
+          status: 500,
+          error: { message: 'push', details: { reason: 'pushFailed', pushStatus: 403 } },
         }),
       );
       await component['onRemind']('a-1');
-      expect(component['remindMessage']()).toContain('mellom kl. 20 og 07');
+      expect(component['remindMessage']()).toBe('Kunne ikke sende påminnelsen. Prøv igjen.');
+      expect(component['remindMessage']()).not.toContain('sendt');
     });
   });
 });

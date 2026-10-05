@@ -3,7 +3,6 @@ import assert from 'node:assert';
 import {
   PushService,
   dueMessage,
-  isQuietTime,
   isReminderTime,
   readPushConfig,
   startReminderScheduler,
@@ -293,31 +292,56 @@ describe('Push Service', () => {
       assert.strictEqual(sent.length, 0);
     });
 
-    test('refuses unknown chores, non-parents, done chores and quiet hours', async () => {
-      const remind = (row: Row | null, time = '12:15') =>
-        new PushService(
-          CONFIG,
-          fakeDb([
-            ['FROM task_assignments ta', row ? [row] : []],
-            ['FROM push_subscriptions', [sub('phone')]],
-          ]),
-          fakeSender().sender,
-        ).remindAssignment('a1', 'u1', at(time));
+    const remind = (row: Row | null, time = '12:15', fail: Record<string, number> = {}) =>
+      new PushService(
+        CONFIG,
+        fakeDb([
+          ['FROM task_assignments ta', row ? [row] : []],
+          ['FROM push_subscriptions', [sub('phone'), sub('tablet')]],
+        ]),
+        fakeSender(fail).sender,
+      ).remindAssignment('a1', 'u1', at(time));
 
+    test('refuses unknown chores, non-parents and done chores', async () => {
       await assert.rejects(remind(null), { statusCode: 404 });
       await assert.rejects(remind({ ...open, is_parent: false }), { statusCode: 403 });
       await assert.rejects(remind({ ...open, status: 'completed' }), { statusCode: 409 });
-      await assert.rejects(remind(open, '20:00'), { statusCode: 409 });
-      await assert.rejects(remind(open, '06:59'), { statusCode: 409 });
-      assert.strictEqual(await remind(open, '07:00'), 1);
-      assert.strictEqual(await remind(open, '19:59'), 1);
     });
 
-    test('quiet hours are 20:00 to 07:00 Oslo time', () => {
-      assert.strictEqual(isQuietTime(at('19:59')), false);
-      assert.strictEqual(isQuietTime(at('20:00')), true);
-      assert.strictEqual(isQuietTime(at('03:00')), true);
-      assert.strictEqual(isQuietTime(at('07:00')), false);
+    // ST-691: Stig tapped it at 20:30 and nothing went out
+    test('reaches every phone at any hour, quiet hours included', async () => {
+      for (const time of ['20:00', '20:30', '23:59', '03:00', '06:59', '07:00', '12:15']) {
+        assert.strictEqual(await remind(open, time), 2, time);
+      }
+    });
+
+    test('reports a push service failure as its own 500, not the push status', async () => {
+      // 403 is what a VAPID key mismatch looks like; it must not become this route's 403
+      await assert.rejects(
+        remind(open, '12:15', {
+          'https://push.example/phone': 403,
+          'https://push.example/tablet': 403,
+        }),
+        (error: { statusCode: number; details: Row }) => {
+          assert.strictEqual(error.statusCode, 500);
+          assert.deepStrictEqual(error.details, { reason: 'pushFailed', pushStatus: 403 });
+          return true;
+        },
+      );
+    });
+
+    test('one phone failing still counts the other', async () => {
+      assert.strictEqual(await remind(open, '12:15', { 'https://push.example/phone': 500 }), 1);
+    });
+
+    test('phones that unsubscribed (404/410) mean nothing was sent, not an error', async () => {
+      assert.strictEqual(
+        await remind(open, '12:15', {
+          'https://push.example/phone': 410,
+          'https://push.example/tablet': 404,
+        }),
+        0,
+      );
     });
   });
 

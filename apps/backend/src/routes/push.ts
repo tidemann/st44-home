@@ -84,8 +84,9 @@ const testSchema = stripResponseValidation({
 const remindSchema = stripResponseValidation({
   summary: 'Remind a child of one open chore now',
   description:
-    'A parent sends the "due" reminder for one pending assignment to the child\'s phones. ' +
-    '409 in quiet hours (20:00-07:00 Oslo) or when the chore is not open.',
+    'A parent sends the "due" reminder for one pending assignment to the child\'s phones, ' +
+    'at any hour. sent = 0 when the child has no phone with notifications on. ' +
+    '409 when the chore is not open, 500 when the push service refused every phone.',
   tags: ['push'],
   security: [{ bearerAuth: [] }],
   response: {
@@ -156,6 +157,7 @@ export function createPushRoutes(service: PushService = pushService) {
           throw new ValidationError('Push notifications are not configured on the server', []);
         }
         const sent = await service.remindAssignment(assignmentId, userId);
+        request.log.info({ assignmentId, sent }, 'Manual reminder sent');
         return reply.send({ sent });
       },
     });
