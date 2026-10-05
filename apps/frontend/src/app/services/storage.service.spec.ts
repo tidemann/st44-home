@@ -5,6 +5,7 @@ import { StorageService } from './storage.service';
 
 describe('StorageService', () => {
   let service: StorageService;
+  const realLocalStorage = window.localStorage;
   let localStorageMock: {
     getItem: ReturnType<typeof vi.fn>;
     setItem: ReturnType<typeof vi.fn>;
@@ -36,6 +37,8 @@ describe('StorageService', () => {
 
   afterEach(() => {
     vi.clearAllMocks();
+    // Put the real localStorage back so the mock does not leak into other spec files
+    Object.defineProperty(window, 'localStorage', { value: realLocalStorage, writable: true });
   });
 
   describe('get', () => {
