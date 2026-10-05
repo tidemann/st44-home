@@ -1,32 +1,226 @@
 <app-page
   title="Belønninger"
   i18n-title="@@rewardsManagement.title"
-  subtitle="Opprett og styr belønninger for familien"
+  subtitle="Svar på ønsker og lag belønninger for familien"
   i18n-subtitle="@@rewardsManagement.subtitle"
   maxWidth="wide"
 >
   <!-- Tab Navigation -->
-  <div class="tabs">
-    <button [class.active]="selectedTab() === 'rewards'" (click)="switchTab('rewards')">
-      Rewards
-    </button>
-    <button [class.active]="selectedTab() === 'redemptions'" (click)="switchTab('redemptions')">
-      Redemptions
+  <div class="tabs" role="tablist">
+    <button
+      type="button"
+      role="tab"
+      [attr.aria-selected]="selectedTab() === 'requests'"
+      [class.active]="selectedTab() === 'requests'"
+      (click)="switchTab('requests')"
+    >
+      <span i18n="@@rewards.tabRequests">Ønsker</span>
       @if (pendingRedemptions().length > 0) {
         <span class="badge">{{ pendingRedemptions().length }}</span>
       }
     </button>
+    <button
+      type="button"
+      role="tab"
+      [attr.aria-selected]="selectedTab() === 'rewards'"
+      [class.active]="selectedTab() === 'rewards'"
+      (click)="switchTab('rewards')"
+      i18n="@@rewards.tabRewards"
+    >
+      Belønninger
+    </button>
   </div>
+
+  <!-- Requests Tab (sketch 06) -->
+  @if (selectedTab() === 'requests') {
+    <div class="requests-tab">
+      @if (actionError()) {
+        <div class="alert alert-danger" role="alert">{{ actionError() }}</div>
+      }
+
+      @if (redemptionsLoading()) {
+        <div class="state" role="status" i18n="@@rewards.loadingRequests">Henter ønsker…</div>
+      } @else if (waiting().length === 0 && toGive().length === 0 && history().length === 0) {
+        <div class="empty-state">
+          <p i18n="@@rewards.noRequests">Ingen ønsker ennå.</p>
+          <p class="empty-hint" i18n="@@rewards.noRequestsHint">
+            Når et barn ber om en belønning, kommer den her.
+          </p>
+        </div>
+      } @else {
+        <!-- Waiting, and fresh answers that can be undone -->
+        @if (waiting().length > 0) {
+          <section aria-labelledby="waiting-heading">
+            <h2 id="waiting-heading" i18n="@@rewards.waitingHeading">Venter på svar</h2>
+            <div class="request-list">
+              @for (redemption of waiting(); track redemption.id) {
+                @if (redemption.status === 'pending') {
+                  <article class="request-card">
+                    <p class="request-title" i18n="@@rewards.childAsks">
+                      {{ redemption.childName }} ber om
+                      <strong>{{ redemption.rewardName }}</strong>
+                    </p>
+                    <p class="request-meta" i18n="@@rewards.requestMeta">
+                      {{ redemption.pointsSpent }} poeng ·
+                      {{ redemption.redeemedAt | date: 'd. MMM HH:mm' }}
+                    </p>
+
+                    @if (rejectingId() === redemption.id) {
+                      <div class="reject-form">
+                        <label [for]="'reason-' + redemption.id" i18n="@@rewards.reasonLabel">
+                          Skriv hvorfor (barnet ser dette)
+                        </label>
+                        <textarea
+                          [id]="'reason-' + redemption.id"
+                          rows="2"
+                          maxlength="500"
+                          [ngModel]="rejectReason()"
+                          (ngModelChange)="rejectReason.set($event)"
+                          placeholder="For eksempel: Ikke i dag, vi har gjester."
+                          i18n-placeholder="@@rewards.reasonPlaceholder"
+                        ></textarea>
+                        <div class="request-actions">
+                          <button
+                            type="button"
+                            class="btn btn-danger"
+                            [disabled]="!rejectReason().trim() || busyId() === redemption.id"
+                            (click)="confirmReject(redemption)"
+                            i18n="@@rewards.sendNo"
+                          >
+                            Send nei
+                          </button>
+                          <button
+                            type="button"
+                            class="btn btn-secondary"
+                            (click)="cancelReject()"
+                            i18n="@@rewards.cancel"
+                          >
+                            Avbryt
+                          </button>
+                        </div>
+                      </div>
+                    } @else {
+                      <div class="request-actions">
+                        <button
+                          type="button"
+                          class="btn btn-success"
+                          [disabled]="busyId() === redemption.id"
+                          (click)="approve(redemption)"
+                          i18n="@@rewards.sayYes"
+                        >
+                          Si ja
+                        </button>
+                        <button
+                          type="button"
+                          class="btn btn-secondary"
+                          [disabled]="busyId() === redemption.id"
+                          (click)="startReject(redemption)"
+                          i18n="@@rewards.sayNo"
+                        >
+                          Si nei og skriv hvorfor
+                        </button>
+                      </div>
+                    }
+                  </article>
+                } @else {
+                  <!-- Receipt: the answer can be undone for 5 minutes -->
+                  <article
+                    class="request-card receipt"
+                    [class.receipt-yes]="redemption.status === 'approved'"
+                    [class.receipt-no]="redemption.status === 'rejected'"
+                    role="status"
+                  >
+                    @if (redemption.status === 'approved') {
+                      <p class="request-title" i18n="@@rewards.saidYes">
+                        Du sa ja til {{ redemption.rewardName }} for {{ redemption.childName }}.
+                      </p>
+                    } @else {
+                      <p class="request-title" i18n="@@rewards.saidNo">
+                        Du sa nei til {{ redemption.rewardName }} for {{ redemption.childName }}.
+                      </p>
+                      @if (redemption.rejectionReason) {
+                        <p class="request-meta">«{{ redemption.rejectionReason }}»</p>
+                      }
+                    }
+                    <div class="request-actions">
+                      <button
+                        type="button"
+                        class="btn btn-secondary"
+                        [disabled]="busyId() === redemption.id"
+                        (click)="undo(redemption)"
+                        i18n="@@rewards.undo"
+                      >
+                        Angre
+                      </button>
+                      <span class="undo-hint" i18n="@@rewards.undoHint"
+                        >Du kan angre i 5 minutter.</span
+                      >
+                    </div>
+                  </article>
+                }
+              }
+            </div>
+          </section>
+        }
+
+        <!-- Said yes, not given yet -->
+        @if (toGive().length > 0) {
+          <section aria-labelledby="give-heading">
+            <h2 id="give-heading" i18n="@@rewards.toGiveHeading">Skal gis</h2>
+            <div class="request-list">
+              @for (redemption of toGive(); track redemption.id) {
+                <article class="request-card">
+                  <p class="request-title" i18n="@@rewards.toGiveTitle">
+                    <strong>{{ redemption.rewardName }}</strong> til {{ redemption.childName }}
+                  </p>
+                  <div class="request-actions">
+                    <button
+                      type="button"
+                      class="btn btn-primary"
+                      [disabled]="busyId() === redemption.id"
+                      (click)="fulfill(redemption)"
+                      i18n="@@rewards.markGiven"
+                    >
+                      Gitt
+                    </button>
+                  </div>
+                </article>
+              }
+            </div>
+          </section>
+        }
+
+        <!-- Done -->
+        @if (history().length > 0) {
+          <section aria-labelledby="history-heading">
+            <h2 id="history-heading" i18n="@@rewards.historyHeading">Tidligere</h2>
+            <ul class="history-list">
+              @for (redemption of history(); track redemption.id) {
+                <li>
+                  <span>{{ redemption.childName }}: {{ redemption.rewardName }}</span>
+                  @if (redemption.status === 'fulfilled') {
+                    <span class="status status-given" i18n="@@rewards.statusGiven">Gitt</span>
+                  } @else {
+                    <span class="status status-no" i18n="@@rewards.statusNo">Nei</span>
+                  }
+                </li>
+              }
+            </ul>
+          </section>
+        }
+      }
+    </div>
+  }
 
   <!-- Rewards Tab -->
   @if (selectedTab() === 'rewards') {
     <div class="rewards-tab">
       <div class="header-actions">
-        <button class="btn-primary" (click)="toggleCreateForm()">
+        <button type="button" class="btn btn-primary" (click)="toggleCreateForm()">
           @if (showCreateForm()) {
-            Cancel
+            <span i18n="@@rewards.cancel">Avbryt</span>
           } @else {
-            Create Reward
+            <span i18n="@@rewards.newReward">Ny belønning</span>
           }
         </button>
       </div>
@@ -36,34 +230,35 @@
         <div class="reward-form">
           <h2>
             @if (editingReward()) {
-              Edit
+              <span i18n="@@rewards.editHeading">Endre belønning</span>
             } @else {
-              Create
+              <span i18n="@@rewards.createHeading">Ny belønning</span>
             }
-            Reward
           </h2>
           <div class="form-group">
-            <label for="name">Name *</label>
+            <label for="name" i18n="@@rewards.nameLabel">Navn *</label>
             <input
               id="name"
               type="text"
               [(ngModel)]="rewardForm().name"
-              placeholder="e.g., Extra Screen Time"
+              placeholder="For eksempel: Ekstra skjermtid"
+              i18n-placeholder="@@rewards.namePlaceholder"
               required
             />
           </div>
           <div class="form-group">
-            <label for="description">Description</label>
+            <label for="description" i18n="@@rewards.descriptionLabel">Beskrivelse</label>
             <textarea
               id="description"
               [(ngModel)]="rewardForm().description"
-              placeholder="Optional description"
+              placeholder="Valgfritt"
+              i18n-placeholder="@@rewards.optional"
               rows="3"
             >
             </textarea>
           </div>
           <div class="form-group">
-            <label for="points">Points Cost *</label>
+            <label for="points" i18n="@@rewards.pointsLabel">Koster poeng *</label>
             <input
               id="points"
               type="number"
@@ -73,21 +268,43 @@
             />
           </div>
           <div class="form-group">
-            <label for="quantity">Quantity (optional)</label>
+            <label for="quantity" i18n="@@rewards.quantityLabel">Antall (valgfritt)</label>
             <input
               id="quantity"
               type="number"
               [(ngModel)]="rewardForm().quantity"
               min="0"
-              placeholder="Leave empty for unlimited"
+              placeholder="Tomt betyr ubegrenset"
+              i18n-placeholder="@@rewards.quantityPlaceholder"
             />
           </div>
           <div class="form-actions">
             @if (editingReward()) {
-              <button class="btn-primary" (click)="saveEdit()">Save Changes</button>
-              <button class="btn-secondary" (click)="cancelEdit()">Cancel</button>
+              <button
+                type="button"
+                class="btn btn-primary"
+                (click)="saveEdit()"
+                i18n="@@rewards.save"
+              >
+                Lagre
+              </button>
+              <button
+                type="button"
+                class="btn btn-secondary"
+                (click)="cancelEdit()"
+                i18n="@@rewards.cancel"
+              >
+                Avbryt
+              </button>
             } @else {
-              <button class="btn-primary" (click)="createReward()">Create</button>
+              <button
+                type="button"
+                class="btn btn-primary"
+                (click)="createReward()"
+                i18n="@@rewards.create"
+              >
+                Lag belønning
+              </button>
             }
           </div>
         </div>
@@ -95,12 +312,14 @@
 
       <!-- Rewards List -->
       @if (loading()) {
-        <div class="loading">Loading rewards...</div>
+        <div class="state" role="status" i18n="@@rewards.loadingRewards">Henter belønninger…</div>
       } @else if (error()) {
-        <div class="error">{{ error() }}</div>
+        <div class="alert alert-danger" role="alert" i18n="@@rewards.loadFailed">
+          Vi fikk ikke hentet belønningene.
+        </div>
       } @else if (rewards().length === 0) {
         <div class="empty-state">
-          <p>No rewards yet. Create one to get started!</p>
+          <p i18n="@@rewards.noRewards">Ingen belønninger ennå. Lag den første!</p>
         </div>
       } @else {
         <div class="rewards-list">
@@ -108,76 +327,48 @@
             <div class="reward-card" [class.inactive]="!reward.active">
               <div class="reward-header">
                 <h3>{{ reward.name }}</h3>
-                <span class="points-badge">{{ reward.pointsCost }} pts</span>
+                <span class="points-badge" i18n="@@rewards.points"
+                  >{{ reward.pointsCost }} poeng</span
+                >
               </div>
               @if (reward.description) {
                 <p class="description">{{ reward.description }}</p>
               }
               @if (reward.quantity !== null) {
-                <p class="quantity">Available: {{ reward.quantity }}</p>
+                <p class="quantity" i18n="@@rewards.quantityLeft">Igjen: {{ reward.quantity }}</p>
+              }
+              @if (!reward.active) {
+                <p class="quantity" i18n="@@rewards.paused">På pause – barna ser den ikke.</p>
               }
               <div class="reward-actions">
-                <button (click)="startEdit(reward)" title="Edit">✏️</button>
                 <button
+                  type="button"
+                  class="btn btn-secondary btn-sm"
+                  (click)="startEdit(reward)"
+                  i18n="@@rewards.edit"
+                >
+                  Endre
+                </button>
+                <button
+                  type="button"
+                  class="btn btn-secondary btn-sm"
                   (click)="toggleActive(reward)"
-                  [title]="reward.active ? 'Deactivate' : 'Activate'"
                 >
                   @if (reward.active) {
-                    🟢
+                    <span i18n="@@rewards.pause">Sett på pause</span>
                   } @else {
-                    ⚫
+                    <span i18n="@@rewards.resume">Vis igjen</span>
                   }
                 </button>
-                <button (click)="deleteReward(reward)" title="Delete">🗑️</button>
+                <button
+                  type="button"
+                  class="btn btn-danger btn-sm"
+                  (click)="deleteReward(reward)"
+                  i18n="@@rewards.delete"
+                >
+                  Slett
+                </button>
               </div>
-            </div>
-          }
-        </div>
-      }
-    </div>
-  }
-
-  <!-- Redemptions Tab -->
-  @if (selectedTab() === 'redemptions') {
-    <div class="redemptions-tab">
-      @if (redemptionsLoading()) {
-        <div class="loading">Loading redemptions...</div>
-      } @else if (redemptions().length === 0) {
-        <div class="empty-state">
-          <p>No redemption requests yet.</p>
-        </div>
-      } @else {
-        <div class="redemptions-list">
-          @for (redemption of redemptions(); track redemption.id) {
-            <div class="redemption-card" [class]="'status-' + redemption.status">
-              <div class="redemption-header">
-                <h3>Redemption Request</h3>
-                <span class="status-badge">{{ redemption.status }}</span>
-              </div>
-              <p class="child-name">Child: {{ redemption.childName || redemption.childId }}</p>
-              <p class="reward-name">Reward: {{ redemption.rewardName || redemption.rewardId }}</p>
-              <p class="points">Points Spent: {{ redemption.pointsSpent }}</p>
-              <p class="date">Redeemed: {{ redemption.redeemedAt | date: 'short' }}</p>
-              @if (redemption.fulfilledAt) {
-                <p class="date">Fulfilled: {{ redemption.fulfilledAt | date: 'short' }}</p>
-              }
-
-              @if (redemption.status === 'pending') {
-                <div class="redemption-actions">
-                  <button class="btn-success" (click)="approveRedemption(redemption.id)">
-                    Approve
-                  </button>
-                  <button class="btn-danger" (click)="rejectRedemption(redemption.id)">
-                    Reject
-                  </button>
-                </div>
-              } @else if (redemption.status === 'approved') {
-                <div class="redemption-actions">
-                  <button class="btn-primary" (click)="fulfillRedemption(redemption.id)">
-                    Mark as Fulfilled
-                  </button>
-                </div>
-              }
             </div>
           }
         </div>

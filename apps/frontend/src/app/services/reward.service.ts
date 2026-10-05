@@ -10,6 +10,7 @@ import type {
   RewardRedemption,
   ChildRewardsResponse,
   RedeemRewardResponse,
+  ChildRedemptionsResponse,
 } from '@st44/types';
 
 // Extended reward type with availability info for child view
@@ -49,6 +50,7 @@ export class RewardService {
   private pointsBalanceSignal = signal<number>(0);
   private childRewardsLoadingSignal = signal<boolean>(false);
   private childRewardsErrorSignal = signal<string | null>(null);
+  private childRedemptionsSignal = signal<RewardRedemption[]>([]);
 
   // Public readonly signals for rewards
   public readonly rewards = this.rewardsSignal.asReadonly();
@@ -65,6 +67,7 @@ export class RewardService {
   public readonly pointsBalance = this.pointsBalanceSignal.asReadonly();
   public readonly childRewardsLoading = this.childRewardsLoadingSignal.asReadonly();
   public readonly childRewardsError = this.childRewardsErrorSignal.asReadonly();
+  public readonly childRedemptions = this.childRedemptionsSignal.asReadonly();
 
   // Computed signals for filtered reward lists
   public readonly activeRewards = computed(() => this.rewardsSignal().filter((r) => r.active));
@@ -208,86 +211,75 @@ export class RewardService {
   }
 
   /**
-   * Approve a redemption
+   * Approve a redemption ("Si ja")
    */
   approveRedemption(householdId: string, redemptionId: string): Observable<RewardRedemption> {
-    this.redemptionsLoadingSignal.set(true);
-    this.redemptionsErrorSignal.set(null);
-
-    return from(
-      this.apiService.post<RewardRedemption>(
-        `/households/${householdId}/redemptions/${redemptionId}/approve`,
-        {},
-      ),
-    ).pipe(
-      tap((updatedRedemption) => {
-        // Update in local state
-        this.redemptionsSignal.update((redemptions) =>
-          redemptions.map((r) => (r.id === redemptionId ? updatedRedemption : r)),
-        );
-        this.redemptionsLoadingSignal.set(false);
-      }),
-      catchError((error) => {
-        this.redemptionsErrorSignal.set(error.message || 'Failed to approve redemption');
-        this.redemptionsLoadingSignal.set(false);
-        return throwError(() => error);
-      }),
-    );
+    return this.answerRedemption(householdId, redemptionId, 'approve');
   }
 
   /**
-   * Fulfill a redemption
+   * Fulfill a redemption (the reward has been given)
    */
   fulfillRedemption(householdId: string, redemptionId: string): Observable<RewardRedemption> {
-    this.redemptionsLoadingSignal.set(true);
+    return this.answerRedemption(householdId, redemptionId, 'fulfill');
+  }
+
+  /**
+   * Reject a redemption ("Si nei"), with a reason the child sees
+   */
+  rejectRedemption(
+    householdId: string,
+    redemptionId: string,
+    reason?: string,
+  ): Observable<RewardRedemption> {
+    return this.answerRedemption(householdId, redemptionId, 'reject', reason ? { reason } : {});
+  }
+
+  /**
+   * Undo a yes or a no within REDEMPTION_UNDO_SECONDS; the request waits again
+   */
+  undoRedemption(householdId: string, redemptionId: string): Observable<RewardRedemption> {
+    return this.answerRedemption(householdId, redemptionId, 'undo');
+  }
+
+  /**
+   * Posts one answer and updates the request in place. The list does not go
+   * into its loading state, so the card the parent tapped stays on screen.
+   */
+  private answerRedemption(
+    householdId: string,
+    redemptionId: string,
+    action: 'approve' | 'fulfill' | 'reject' | 'undo',
+    body: object = {},
+  ): Observable<RewardRedemption> {
     this.redemptionsErrorSignal.set(null);
 
     return from(
       this.apiService.post<RewardRedemption>(
-        `/households/${householdId}/redemptions/${redemptionId}/fulfill`,
-        {},
+        `/households/${householdId}/redemptions/${redemptionId}/${action}`,
+        body,
       ),
     ).pipe(
       tap((updatedRedemption) => {
-        // Update in local state
+        // The answer has no names; keep the ones from the list
         this.redemptionsSignal.update((redemptions) =>
-          redemptions.map((r) => (r.id === redemptionId ? updatedRedemption : r)),
+          redemptions.map((r) => (r.id === redemptionId ? { ...r, ...updatedRedemption } : r)),
         );
-        this.redemptionsLoadingSignal.set(false);
       }),
       catchError((error) => {
-        this.redemptionsErrorSignal.set(error.message || 'Failed to fulfill redemption');
-        this.redemptionsLoadingSignal.set(false);
+        this.redemptionsErrorSignal.set(error.message || `Failed to ${action} redemption`);
         return throwError(() => error);
       }),
     );
   }
 
   /**
-   * Reject a redemption
+   * Load the child's own reward requests, newest first
    */
-  rejectRedemption(householdId: string, redemptionId: string): Observable<RewardRedemption> {
-    this.redemptionsLoadingSignal.set(true);
-    this.redemptionsErrorSignal.set(null);
-
-    return from(
-      this.apiService.post<RewardRedemption>(
-        `/households/${householdId}/redemptions/${redemptionId}/reject`,
-        {},
-      ),
-    ).pipe(
-      tap((updatedRedemption) => {
-        // Update in local state
-        this.redemptionsSignal.update((redemptions) =>
-          redemptions.map((r) => (r.id === redemptionId ? updatedRedemption : r)),
-        );
-        this.redemptionsLoadingSignal.set(false);
-      }),
-      catchError((error) => {
-        this.redemptionsErrorSignal.set(error.message || 'Failed to reject redemption');
-        this.redemptionsLoadingSignal.set(false);
-        return throwError(() => error);
-      }),
+  loadChildRedemptions(): Observable<RewardRedemption[]> {
+    return from(this.apiService.get<ChildRedemptionsResponse>('/children/me/redemptions')).pipe(
+      map((response) => response.redemptions),
+      tap((redemptions) => this.childRedemptionsSignal.set(redemptions)),
     );
   }
 
@@ -316,21 +308,15 @@ export class RewardService {
    * Redeem a reward (child)
    */
   redeemReward(rewardId: string): Observable<RedeemRewardResponse> {
-    this.childRewardsLoadingSignal.set(true);
-    this.childRewardsErrorSignal.set(null);
-
+    // No loading state and no page-wide error: the page stays as it is and the
+    // caller shows what went wrong next to the reward
     return from(
       this.apiService.post<RedeemRewardResponse>(`/children/me/rewards/${rewardId}/redeem`, {}),
     ).pipe(
       tap((response) => {
-        // Update points balance
+        // Update points balance and put the new request first
         this.pointsBalanceSignal.set(response.newBalance);
-        this.childRewardsLoadingSignal.set(false);
-      }),
-      catchError((error) => {
-        this.childRewardsErrorSignal.set(error.message || 'Failed to redeem reward');
-        this.childRewardsLoadingSignal.set(false);
-        return throwError(() => error);
+        this.childRedemptionsSignal.update((redemptions) => [response.redemption, ...redemptions]);
       }),
     );
   }
