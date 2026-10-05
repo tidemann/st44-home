@@ -185,12 +185,15 @@ export class QrCodeDisplayComponent implements OnInit {
       }
 
       const childName = this.childName() || $localize`:@@qrCodeDisplay.childFallback:barnet`;
-      const printTitle = $localize`:@@qrCodeDisplay.printTitle:QR-kode for innlogging – ${childName}:childName:`;
+      // The name is typed by a parent; escape it before it goes into the print HTML
+      const printTitle = escapeHtml(
+        $localize`:@@qrCodeDisplay.printTitle:QR-kode for innlogging – ${childName}:childName:`,
+      );
       printWindow.document.write(`
         <!DOCTYPE html>
         <html>
           <head>
-            <title>QR-kode – ${childName}</title>
+            <title>${printTitle}</title>
             <style>
               body {
                 display: flex;
@@ -258,4 +261,14 @@ export class QrCodeDisplayComponent implements OnInit {
       return $localize`:@@qrCodeDisplay.expiresOn:Utløper ${date.toLocaleDateString('nb-NO')}:date:`;
     }
   }
+}
+
+/** Escapes text for use inside HTML element content and quoted attributes */
+export function escapeHtml(text: string): string {
+  return text
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
 }

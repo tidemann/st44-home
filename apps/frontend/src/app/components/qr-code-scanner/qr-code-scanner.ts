@@ -41,12 +41,15 @@ export class QrCodeScannerComponent implements AfterViewInit, OnDestroy {
 
   private codeReader: BrowserMultiFormatReader | null = null;
   private isScanning = false;
+  /** Set on destroy; checked after every await so a closed scanner never starts the camera */
+  private destroyed = false;
 
   async ngAfterViewInit(): Promise<void> {
     await this.initializeScanner();
   }
 
   ngOnDestroy(): void {
+    this.destroyed = true;
     this.stopScanning();
   }
 
@@ -73,6 +76,7 @@ export class QrCodeScannerComponent implements AfterViewInit, OnDestroy {
       try {
         const stream = await navigator.mediaDevices.getUserMedia(CAMERA_CONSTRAINTS);
         stream.getTracks().forEach((track) => track.stop());
+        if (this.destroyed) return;
       } catch (err) {
         const name = err instanceof DOMException ? err.name : '';
         if (name === 'NotFoundError' || name === 'OverconstrainedError') {
@@ -132,6 +136,8 @@ export class QrCodeScannerComponent implements AfterViewInit, OnDestroy {
           }
         },
       );
+      // Closed while the camera was opening: release it again
+      if (this.destroyed) this.stopScanning();
     } catch (err) {
       console.error('Failed to start scanning:', err);
       this.error.set(

@@ -2749,84 +2749,84 @@
         <source>Kunne ikke lage QR-koden. Prøv igjen.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/qr-code-display/qr-code-display.ts</context>
-          <context context-type="linenumber">90</context>
+          <context context-type="linenumber">91</context>
         </context-group>
       </trans-unit>
       <trans-unit id="qrCodeDisplay.drawFailed" datatype="html">
         <source>Kunne ikke vise QR-koden.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/qr-code-display/qr-code-display.ts</context>
-          <context context-type="linenumber">112</context>
+          <context context-type="linenumber">114</context>
         </context-group>
       </trans-unit>
       <trans-unit id="qrCodeDisplay.regenerateFailed" datatype="html">
         <source>Kunne ikke lage ny QR-kode. Prøv igjen.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/qr-code-display/qr-code-display.ts</context>
-          <context context-type="linenumber">137</context>
+          <context context-type="linenumber">140</context>
         </context-group>
       </trans-unit>
       <trans-unit id="qrCodeDisplay.downloadFailed" datatype="html">
         <source>Kunne ikke laste ned QR-koden.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/qr-code-display/qr-code-display.ts</context>
-          <context context-type="linenumber">160</context>
+          <context context-type="linenumber">164</context>
         </context-group>
       </trans-unit>
       <trans-unit id="qrCodeDisplay.printBlocked" datatype="html">
         <source>Kunne ikke åpne utskriften. Tillat popup-vinduer.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/qr-code-display/qr-code-display.ts</context>
-          <context context-type="linenumber">177</context>
+          <context context-type="linenumber">182</context>
         </context-group>
       </trans-unit>
       <trans-unit id="qrCodeDisplay.childFallback" datatype="html">
         <source>barnet</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/qr-code-display/qr-code-display.ts</context>
-          <context context-type="linenumber">181</context>
+          <context context-type="linenumber">187</context>
         </context-group>
       </trans-unit>
       <trans-unit id="qrCodeDisplay.printTitle" datatype="html">
         <source>QR-kode for innlogging – <x id="childName" equiv-text="childName"/></source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/qr-code-display/qr-code-display.ts</context>
-          <context context-type="linenumber">182</context>
+          <context context-type="linenumber">190</context>
         </context-group>
       </trans-unit>
       <trans-unit id="qrCodeDisplay.printFailed" datatype="html">
         <source>Kunne ikke skrive ut QR-koden.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/qr-code-display/qr-code-display.ts</context>
-          <context context-type="linenumber">229</context>
+          <context context-type="linenumber">238</context>
         </context-group>
       </trans-unit>
       <trans-unit id="qrCodeDisplay.expired" datatype="html">
         <source>Utløpt</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/qr-code-display/qr-code-display.ts</context>
-          <context context-type="linenumber">246</context>
+          <context context-type="linenumber">255</context>
         </context-group>
       </trans-unit>
       <trans-unit id="qrCodeDisplay.expiresTomorrow" datatype="html">
         <source>Utløper i morgen</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/qr-code-display/qr-code-display.ts</context>
-          <context context-type="linenumber">248</context>
+          <context context-type="linenumber">257</context>
         </context-group>
       </trans-unit>
       <trans-unit id="qrCodeDisplay.expiresInDays" datatype="html">
         <source>Utløper om <x id="days" equiv-text="diffDays"/> dager</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/qr-code-display/qr-code-display.ts</context>
-          <context context-type="linenumber">250</context>
+          <context context-type="linenumber">259</context>
         </context-group>
       </trans-unit>
       <trans-unit id="qrCodeDisplay.expiresOn" datatype="html">
         <source>Utløper <x id="date" equiv-text="date.toLocaleDateString(&apos;nb-NO&apos;)"/></source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/qr-code-display/qr-code-display.ts</context>
-          <context context-type="linenumber">252</context>
+          <context context-type="linenumber">261</context>
         </context-group>
       </trans-unit>
       <trans-unit id="qrCodeScanner.initializing" datatype="html">
@@ -2924,35 +2924,35 @@
         <source>Denne enheten gir ikke tilgang til kameraet.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/qr-code-scanner/qr-code-scanner.ts</context>
-          <context context-type="linenumber">65</context>
+          <context context-type="linenumber">68</context>
         </context-group>
       </trans-unit>
       <trans-unit id="qrCodeScanner.noCamera" datatype="html">
         <source>Fant ikke noe kamera på enheten.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/qr-code-scanner/qr-code-scanner.ts</context>
-          <context context-type="linenumber">80</context>
+          <context context-type="linenumber">84</context>
         </context-group>
       </trans-unit>
       <trans-unit id="qrCodeScanner.permissionDenied" datatype="html">
         <source>Du må tillate kameraet for å skanne QR-koder.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/qr-code-scanner/qr-code-scanner.ts</context>
-          <context context-type="linenumber">84</context>
+          <context context-type="linenumber">88</context>
         </context-group>
       </trans-unit>
       <trans-unit id="qrCodeScanner.initFailed" datatype="html">
         <source>Kunne ikke starte kameraet. Prøv igjen.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/qr-code-scanner/qr-code-scanner.ts</context>
-          <context context-type="linenumber">97</context>
+          <context context-type="linenumber">101</context>
         </context-group>
       </trans-unit>
       <trans-unit id="qrCodeScanner.startFailed" datatype="html">
         <source>Kunne ikke starte kameraet. Prøv igjen.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/qr-code-scanner/qr-code-scanner.ts</context>
-          <context context-type="linenumber">138</context>
+          <context context-type="linenumber">144</context>
         </context-group>
       </trans-unit>
       <trans-unit id="streakCounter.daysLabel" datatype="html">

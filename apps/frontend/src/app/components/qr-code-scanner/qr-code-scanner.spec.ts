@@ -78,11 +78,44 @@ describe('QrCodeScannerComponent', () => {
     expect(text).toContain('for å skanne');
   });
 
-  it('shows the no-camera screen when the device has no camera', async () => {
+  it('shows only the no-camera screen when the device has no camera', async () => {
     getUserMedia.mockRejectedValue(new DOMException('none', 'NotFoundError'));
 
     await start();
 
     expect(fixture.nativeElement.querySelector('.no-camera')).not.toBeNull();
+    expect(fixture.nativeElement.querySelector('.error-state')).toBeNull();
+  });
+
+  it('never starts the camera when closed during the permission prompt', async () => {
+    let grant: (stream: unknown) => void = () => undefined;
+    getUserMedia.mockReturnValue(new Promise((resolve) => (grant = resolve)));
+    const decode = vi
+      .spyOn(BrowserMultiFormatReader.prototype, 'decodeFromConstraints')
+      .mockResolvedValue(undefined);
+
+    fixture = TestBed.createComponent(QrCodeScannerComponent);
+    fixture.detectChanges();
+    fixture.destroy();
+    grant({ getTracks: () => [{ stop: stopTrack }] });
+    await new Promise((resolve) => setTimeout(resolve));
+
+    expect(stopTrack).toHaveBeenCalled();
+    expect(decode).not.toHaveBeenCalled();
+  });
+
+  it('stops the camera and reports cancel', async () => {
+    vi.spyOn(BrowserMultiFormatReader.prototype, 'decodeFromConstraints').mockResolvedValue(
+      undefined,
+    );
+    const reset = vi.spyOn(BrowserMultiFormatReader.prototype, 'reset');
+    await start();
+    let cancelled = false;
+    fixture.componentInstance.scanCancelled.subscribe(() => (cancelled = true));
+
+    (fixture.nativeElement.querySelector('.btn-cancel') as HTMLButtonElement).click();
+
+    expect(reset).toHaveBeenCalled();
+    expect(cancelled).toBe(true);
   });
 });
