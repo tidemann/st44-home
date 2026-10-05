@@ -1,0 +1,181 @@
+@if (visible()) {
+  <section
+    class="push-card"
+    [class.card]="compact()"
+    [class.compact]="compact()"
+    aria-labelledby="push-title"
+    aria-live="polite"
+  >
+    @if (compact()) {
+      <h2 id="push-title" class="push-title" i18n="@@notificationSettings.childTitle">
+        Påminnelser
+      </h2>
+    } @else {
+      <h2 id="push-title" class="push-title" i18n="@@notificationSettings.title">Varsler</h2>
+    }
+
+    @switch (current()) {
+      @case ('checking') {
+        <p class="push-text" i18n="@@notificationSettings.checking">Sjekker varsler …</p>
+      }
+
+      @case ('on') {
+        <p class="push-status">
+          <span class="push-tick" aria-hidden="true">✓</span>
+          <span i18n="@@notificationSettings.onStatus">Varsler er på for denne telefonen.</span>
+        </p>
+        @if (audience() === 'child') {
+          <p class="push-text" i18n="@@notificationSettings.childPurpose">
+            Du får en påminnelse når du har oppgaver igjen i dag.
+          </p>
+        } @else {
+          <p class="push-text" i18n="@@notificationSettings.parentPurpose">
+            Du får beskjed når et barn er ferdig med en oppgave.
+          </p>
+        }
+        <div class="push-actions">
+          <button
+            type="button"
+            class="btn btn-secondary"
+            [disabled]="busy()"
+            (click)="disable()"
+            i18n="@@notificationSettings.turnOff"
+          >
+            Slå av
+          </button>
+          <button
+            type="button"
+            class="btn btn-secondary"
+            [disabled]="busy()"
+            (click)="sendTest()"
+            i18n="@@notificationSettings.sendTest"
+          >
+            Send et testvarsel
+          </button>
+        </div>
+        @switch (testResult()) {
+          @case ('sent') {
+            <p class="push-text" role="status" i18n="@@notificationSettings.testSent">
+              Testvarselet er sendt. Det kommer om noen sekunder.
+            </p>
+          }
+          @case ('none') {
+            <p class="push-text" role="status" i18n="@@notificationSettings.testNone">
+              Fant ingen telefon å sende til. Slå varsler av og på igjen.
+            </p>
+          }
+          @case ('failed') {
+            <p class="push-text" role="status" i18n="@@notificationSettings.testFailed">
+              Testvarselet kunne ikke sendes. Prøv igjen senere.
+            </p>
+          }
+        }
+      }
+
+      @case ('off') {
+        @if (audience() === 'child') {
+          <p class="push-text" i18n="@@notificationSettings.childOffText">
+            Få en påminnelse på telefonen når du har oppgaver igjen i dag.
+          </p>
+        } @else {
+          <p class="push-text" i18n="@@notificationSettings.parentOffText">
+            Få beskjed på telefonen når et barn er ferdig med en oppgave.
+          </p>
+        }
+        <div class="push-actions">
+          <button
+            type="button"
+            class="btn btn-primary"
+            [disabled]="busy()"
+            (click)="enable()"
+            i18n="@@notificationSettings.turnOn"
+          >
+            Slå på varsler
+          </button>
+        </div>
+      }
+
+      @case ('blocked') {
+        <div class="alert alert-warning push-blocked">
+          <p class="push-blocked-title">
+            <span aria-hidden="true">🔕</span>
+            <strong i18n="@@notificationSettings.blockedTitle">Varsler er blokkert</strong>
+          </p>
+          @if (audience() === 'child') {
+            <p i18n="@@notificationSettings.childBlockedText">
+              Du får ingen påminnelser om oppgavene dine. Resten av Diddit virker som før.
+            </p>
+          } @else {
+            <p i18n="@@notificationSettings.parentBlockedText">
+              Du får ikke beskjed når barna er ferdige. Resten av Diddit virker som før.
+            </p>
+          }
+        </div>
+        <p class="push-text" i18n="@@notificationSettings.howToUnblock">
+          Slik slår du dem på igjen:
+        </p>
+        @if (ios) {
+          <ol class="push-steps">
+            <li i18n="@@notificationSettings.iosStep1">Åpne Innstillinger på telefonen.</li>
+            <li i18n="@@notificationSettings.iosStep2">Velg Varslinger, og så Diddit.</li>
+            <li i18n="@@notificationSettings.iosStep3">Slå på «Tillat varslinger».</li>
+          </ol>
+        } @else {
+          <ol class="push-steps">
+            <li i18n="@@notificationSettings.browserStep1">
+              Trykk på hengelåsen eller innstillingsikonet ved siden av adressen.
+            </li>
+            <li i18n="@@notificationSettings.browserStep2">Velg Varsler, og så «Tillat».</li>
+          </ol>
+        }
+        <div class="push-actions">
+          <button
+            type="button"
+            class="btn btn-secondary"
+            [disabled]="busy()"
+            (click)="recheck()"
+            i18n="@@notificationSettings.recheck"
+          >
+            Sjekk igjen
+          </button>
+        </div>
+      }
+
+      @case ('needs-install') {
+        <p class="push-text" i18n="@@notificationSettings.needsInstall">
+          På iPhone kommer varsler bare når Diddit ligger på hjemskjermen. Trykk på Del-knappen,
+          velg «Legg til på Hjem-skjerm», og åpne Diddit derfra.
+        </p>
+      }
+
+      @case ('unsupported') {
+        <p class="push-text" i18n="@@notificationSettings.unsupported">
+          Denne nettleseren kan ikke vise varsler fra Diddit.
+        </p>
+      }
+
+      @case ('server-off') {
+        <p class="push-text" i18n="@@notificationSettings.serverOff">
+          Varsler er ikke klare ennå. Prøv igjen senere.
+        </p>
+      }
+
+      @case ('error') {
+        <p class="push-text" i18n="@@notificationSettings.error">
+          Fikk ikke kontakt med Diddit. Sjekk nettet og prøv igjen.
+        </p>
+        <div class="push-actions">
+          <button
+            type="button"
+            class="btn btn-secondary"
+            [disabled]="busy()"
+            (click)="recheck()"
+            i18n="@@notificationSettings.retry"
+          >
+            Prøv igjen
+          </button>
+        </div>
+      }
+    }
+  </section>
+}

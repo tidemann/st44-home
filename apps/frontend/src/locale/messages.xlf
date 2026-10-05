@@ -2735,6 +2735,209 @@
           <context context-type="linenumber">38,39</context>
         </context-group>
       </trans-unit>
+      <trans-unit id="notificationSettings.childTitle" datatype="html">
+        <source> Påminnelser </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/notification-settings/notification-settings.html</context>
+          <context context-type="linenumber">11,14</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="notificationSettings.title" datatype="html">
+        <source>Varsler</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/notification-settings/notification-settings.html</context>
+          <context context-type="linenumber">14,18</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="notificationSettings.checking" datatype="html">
+        <source>Sjekker varsler …</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/notification-settings/notification-settings.html</context>
+          <context context-type="linenumber">19,23</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="notificationSettings.onStatus" datatype="html">
+        <source>Varsler er på for denne telefonen.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/notification-settings/notification-settings.html</context>
+          <context context-type="linenumber">25,27</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="notificationSettings.childPurpose" datatype="html">
+        <source> Du får en påminnelse når du har oppgaver igjen i dag. </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/notification-settings/notification-settings.html</context>
+          <context context-type="linenumber">29,32</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="notificationSettings.parentPurpose" datatype="html">
+        <source> Du får beskjed når et barn er ferdig med en oppgave. </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/notification-settings/notification-settings.html</context>
+          <context context-type="linenumber">33,36</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="notificationSettings.turnOff" datatype="html">
+        <source> Slå av </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/notification-settings/notification-settings.html</context>
+          <context context-type="linenumber">44,46</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="notificationSettings.sendTest" datatype="html">
+        <source> Send et testvarsel </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/notification-settings/notification-settings.html</context>
+          <context context-type="linenumber">53,55</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="notificationSettings.testSent" datatype="html">
+        <source> Testvarselet er sendt. Det kommer om noen sekunder. </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/notification-settings/notification-settings.html</context>
+          <context context-type="linenumber">59,62</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="notificationSettings.testNone" datatype="html">
+        <source> Fant ingen telefon å sende til. Slå varsler av og på igjen. </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/notification-settings/notification-settings.html</context>
+          <context context-type="linenumber">64,67</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="notificationSettings.testFailed" datatype="html">
+        <source> Testvarselet kunne ikke sendes. Prøv igjen senere. </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/notification-settings/notification-settings.html</context>
+          <context context-type="linenumber">69,72</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="notificationSettings.childOffText" datatype="html">
+        <source> Få en påminnelse på telefonen når du har oppgaver igjen i dag. </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/notification-settings/notification-settings.html</context>
+          <context context-type="linenumber">78,81</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="notificationSettings.parentOffText" datatype="html">
+        <source> Få beskjed på telefonen når et barn er ferdig med en oppgave. </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/notification-settings/notification-settings.html</context>
+          <context context-type="linenumber">82,85</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="notificationSettings.turnOn" datatype="html">
+        <source> Slå på varsler </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/notification-settings/notification-settings.html</context>
+          <context context-type="linenumber">93,95</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="notificationSettings.blockedTitle" datatype="html">
+        <source>Varsler er blokkert</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/notification-settings/notification-settings.html</context>
+          <context context-type="linenumber">102,104</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="notificationSettings.childBlockedText" datatype="html">
+        <source> Du får ingen påminnelser om oppgavene dine. Resten av Diddit virker som før. </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/notification-settings/notification-settings.html</context>
+          <context context-type="linenumber">106,109</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="notificationSettings.parentBlockedText" datatype="html">
+        <source> Du får ikke beskjed når barna er ferdige. Resten av Diddit virker som før. </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/notification-settings/notification-settings.html</context>
+          <context context-type="linenumber">110,113</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="notificationSettings.howToUnblock" datatype="html">
+        <source> Slik slår du dem på igjen: </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/notification-settings/notification-settings.html</context>
+          <context context-type="linenumber">115,118</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="notificationSettings.iosStep1" datatype="html">
+        <source>Åpne Innstillinger på telefonen.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/notification-settings/notification-settings.html</context>
+          <context context-type="linenumber">119,120</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="notificationSettings.iosStep2" datatype="html">
+        <source>Velg Varslinger, og så Diddit.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/notification-settings/notification-settings.html</context>
+          <context context-type="linenumber">120,121</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="notificationSettings.iosStep3" datatype="html">
+        <source>Slå på «Tillat varslinger».</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/notification-settings/notification-settings.html</context>
+          <context context-type="linenumber">121,124</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="notificationSettings.browserStep1" datatype="html">
+        <source> Trykk på hengelåsen eller innstillingsikonet ved siden av adressen. </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/notification-settings/notification-settings.html</context>
+          <context context-type="linenumber">126,128</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="notificationSettings.browserStep2" datatype="html">
+        <source>Velg Varsler, og så «Tillat».</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/notification-settings/notification-settings.html</context>
+          <context context-type="linenumber">128,131</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="notificationSettings.recheck" datatype="html">
+        <source> Sjekk igjen </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/notification-settings/notification-settings.html</context>
+          <context context-type="linenumber">139,141</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="notificationSettings.needsInstall" datatype="html">
+        <source> På iPhone kommer varsler bare når Diddit ligger på hjemskjermen. Trykk på Del-knappen, velg «Legg til på Hjem-skjerm», og åpne Diddit derfra. </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/notification-settings/notification-settings.html</context>
+          <context context-type="linenumber">146,151</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="notificationSettings.unsupported" datatype="html">
+        <source> Denne nettleseren kan ikke vise varsler fra Diddit. </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/notification-settings/notification-settings.html</context>
+          <context context-type="linenumber">153,157</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="notificationSettings.serverOff" datatype="html">
+        <source> Varsler er ikke klare ennå. Prøv igjen senere. </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/notification-settings/notification-settings.html</context>
+          <context context-type="linenumber">159,163</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="notificationSettings.error" datatype="html">
+        <source> Fikk ikke kontakt med Diddit. Sjekk nettet og prøv igjen. </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/notification-settings/notification-settings.html</context>
+          <context context-type="linenumber">165,167</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="notificationSettings.retry" datatype="html">
+        <source> Prøv igjen </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/notification-settings/notification-settings.html</context>
+          <context context-type="linenumber">175,177</context>
+        </context-group>
+      </trans-unit>
       <trans-unit id="offlineBanner.title" datatype="html">
         <source>Ingen nett</source>
         <context-group purpose="location">
@@ -3235,21 +3438,21 @@
         <source>Denne uken</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/child-dashboard/child-dashboard.html</context>
-          <context context-type="linenumber">153,155</context>
+          <context context-type="linenumber">156,158</context>
         </context-group>
       </trans-unit>
       <trans-unit id="childDashboard.thisMonth" datatype="html">
         <source>Denne måneden</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/child-dashboard/child-dashboard.html</context>
-          <context context-type="linenumber">159,161</context>
+          <context context-type="linenumber">162,164</context>
         </context-group>
       </trans-unit>
       <trans-unit id="childDashboard.pointsThisWeek" datatype="html">
         <source>Poeng denne uken</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/child-dashboard/child-dashboard.html</context>
-          <context context-type="linenumber">170,174</context>
+          <context context-type="linenumber">173,177</context>
         </context-group>
       </trans-unit>
       <trans-unit id="family.loading" datatype="html">
@@ -3701,42 +3904,42 @@
         <source>Konto</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/settings/settings.html</context>
-          <context context-type="linenumber">206,208</context>
+          <context context-type="linenumber">211,213</context>
         </context-group>
       </trans-unit>
       <trans-unit id="settings.memberSinceLabel" datatype="html">
         <source>Medlem siden</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/settings/settings.html</context>
-          <context context-type="linenumber">210,211</context>
+          <context context-type="linenumber">215,216</context>
         </context-group>
       </trans-unit>
       <trans-unit id="settings.logOutButton" datatype="html">
         <source> Logg ut </source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/settings/settings.html</context>
-          <context context-type="linenumber">222,224</context>
+          <context context-type="linenumber">227,229</context>
         </context-group>
       </trans-unit>
       <trans-unit id="settings.aboutTitle" datatype="html">
         <source>Om</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/settings/settings.html</context>
-          <context context-type="linenumber">231</context>
+          <context context-type="linenumber">236</context>
         </context-group>
       </trans-unit>
       <trans-unit id="settings.versionLabel" datatype="html">
         <source>Versjon</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/settings/settings.html</context>
-          <context context-type="linenumber">233,234</context>
+          <context context-type="linenumber">238,239</context>
         </context-group>
       </trans-unit>
       <trans-unit id="settings.buildLabel" datatype="html">
         <source>Bygg</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/settings/settings.html</context>
-          <context context-type="linenumber">237,238</context>
+          <context context-type="linenumber">242,243</context>
         </context-group>
       </trans-unit>
       <trans-unit id="tasks.pageTitle" datatype="html">

@@ -15,6 +15,7 @@ import { AvailableTasksSectionComponent } from '../../components/available-tasks
 import { StreakCounter } from '../../components/streak-counter/streak-counter';
 import { ProgressSummary } from '../../components/progress-summary/progress-summary';
 import { DailyPointsChart } from '../../components/daily-points-chart/daily-points-chart';
+import { NotificationSettings } from '../../components/notification-settings/notification-settings';
 import type { ChildAnalytics } from '@st44/types';
 
 /**
@@ -30,7 +31,13 @@ import type { ChildAnalytics } from '@st44/types';
  */
 @Component({
   selector: 'app-child-dashboard',
-  imports: [AvailableTasksSectionComponent, StreakCounter, ProgressSummary, DailyPointsChart],
+  imports: [
+    AvailableTasksSectionComponent,
+    StreakCounter,
+    ProgressSummary,
+    DailyPointsChart,
+    NotificationSettings,
+  ],
   templateUrl: './child-dashboard.html',
   styleUrl: './child-dashboard.css',
   changeDetection: ChangeDetectionStrategy.OnPush,

@@ -1,0 +1,83 @@
+:host {
+  display: block;
+}
+
+.push-card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md, 16px);
+}
+
+.push-card.compact {
+  padding: var(--space-lg, 24px);
+  margin-top: var(--space-lg, 24px);
+}
+
+/* Same heading as the other settings sections */
+.push-title {
+  font-family: var(--font-heading);
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text-primary);
+  margin: 0;
+  padding-bottom: var(--space-sm);
+  border-bottom: 1px solid var(--color-border, #e5e7eb);
+}
+
+.compact .push-title {
+  padding-bottom: 0;
+  border-bottom: none;
+}
+
+.push-text,
+.push-status,
+.push-steps,
+.push-blocked p {
+  margin: 0;
+  font-size: 15px;
+  line-height: 1.5;
+  color: var(--color-text-primary, #1e293b);
+}
+
+/* Status is never colour alone: a tick plus the words */
+.push-status {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm, 8px);
+  font-weight: 600;
+}
+
+.push-tick {
+  font-size: 18px;
+}
+
+.push-blocked {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs, 4px);
+}
+
+.push-blocked-title {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm, 8px);
+}
+
+.push-steps {
+  padding-left: var(--space-lg, 24px);
+}
+
+.push-steps li + li {
+  margin-top: var(--space-xs, 4px);
+}
+
+.push-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-sm, 8px);
+}
+
+/* Touch targets at least 48 px (sketch 08) */
+.push-actions .btn {
+  min-height: 48px;
+}

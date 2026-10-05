@@ -7,6 +7,7 @@ import { AuthService } from '../../services/auth.service';
 import { HouseholdService, type HouseholdListItem } from '../../services/household.service';
 import { InvitationService } from '../../services/invitation.service';
 import { PageComponent } from '../../components/page/page';
+import { NotificationSettings } from '../../components/notification-settings/notification-settings';
 import { environment } from '../../../environments/environment';
 
 /**
@@ -22,7 +23,7 @@ import { environment } from '../../../environments/environment';
  */
 @Component({
   selector: 'app-settings',
-  imports: [FormsModule, DatePipe, RouterLink, PageComponent],
+  imports: [FormsModule, DatePipe, RouterLink, PageComponent, NotificationSettings],
   templateUrl: './settings.html',
   styleUrl: './settings.css',
   changeDetection: ChangeDetectionStrategy.OnPush,

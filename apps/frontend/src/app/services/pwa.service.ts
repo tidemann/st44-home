@@ -41,7 +41,8 @@ export class PwaService {
   private readonly installDismissed = signal(
     this.storage.get(STORAGE_KEYS.INSTALL_DISMISSED, z.boolean()) === true,
   );
-  private readonly ios = this.detectIos();
+  /** iPhone or iPad: push only works once Diddit is on the home screen */
+  readonly ios = this.detectIos();
 
   /** Which install card to show, or null for none */
   readonly installPlatform = computed<InstallPlatform>(() => {
@@ -112,6 +113,22 @@ export class PwaService {
       await caches.delete(API_CACHE_NAME);
     } catch {
       // Cache storage can be unavailable (private mode); nothing to clear then
+    }
+  }
+
+  /**
+   * Turn push off on this phone (on logout, so the next user never gets the
+   * last user's reminders). The server drops the subscription when the push
+   * service answers 410 for it.
+   */
+  async forgetPushSubscription(): Promise<void> {
+    if (typeof navigator === 'undefined' || !('serviceWorker' in navigator)) return;
+    try {
+      const registration = await navigator.serviceWorker.getRegistration();
+      const subscription = await registration?.pushManager?.getSubscription();
+      await subscription?.unsubscribe();
+    } catch {
+      // No service worker or no push support; nothing to forget
     }
   }
 
