@@ -2735,6 +2735,41 @@
           <context context-type="linenumber">38,39</context>
         </context-group>
       </trans-unit>
+      <trans-unit id="notificationOffer.title" datatype="html">
+        <source> Slå på varsler? </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/notification-offer/notification-offer.html</context>
+          <context context-type="linenumber">10,13</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="notificationOffer.childText" datatype="html">
+        <source> Da får du en påminnelse på telefonen når du har oppgaver igjen. </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/notification-offer/notification-offer.html</context>
+          <context context-type="linenumber">15,18</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="notificationOffer.parentText" datatype="html">
+        <source> Da får du beskjed når barna er ferdige, og barna kan få påminnelser fra deg. </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/notification-offer/notification-offer.html</context>
+          <context context-type="linenumber">19,22</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="notificationOffer.notNow" datatype="html">
+        <source> Ikke nå </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/notification-offer/notification-offer.html</context>
+          <context context-type="linenumber">29,32</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="notificationOffer.enable" datatype="html">
+        <source> Slå på varsler </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/notification-offer/notification-offer.html</context>
+          <context context-type="linenumber">38,41</context>
+        </context-group>
+      </trans-unit>
       <trans-unit id="notificationSettings.childTitle" datatype="html">
         <source> Påminnelser </source>
         <context-group purpose="location">
@@ -3304,11 +3339,18 @@
           <context context-type="linenumber">38,40</context>
         </context-group>
       </trans-unit>
+      <trans-unit id="taskCard.remindNow" datatype="html">
+        <source>Påminn nå</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/task-card/task-card.html</context>
+          <context context-type="linenumber">62,66</context>
+        </context-group>
+      </trans-unit>
       <trans-unit id="taskCard.reassignToAnotherChild" datatype="html">
         <source>Tilordne til et annet barn</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/task-card/task-card.html</context>
-          <context context-type="linenumber">59,61</context>
+          <context context-type="linenumber">74,76</context>
         </context-group>
       </trans-unit>
       <trans-unit id="weekComparison.title" datatype="html">
@@ -3620,21 +3662,70 @@
         <source>Ingen oppgaver i dag</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/home/home.html</context>
-          <context context-type="linenumber">92,93</context>
+          <context context-type="linenumber">96,97</context>
         </context-group>
       </trans-unit>
       <trans-unit id="home.noTasksTodayDescription" datatype="html">
         <source> Ingen oppgaver er planlagt for i dag. Opprett oppgaver i Oppgaver-seksjonen. </source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/home/home.html</context>
-          <context context-type="linenumber">94,96</context>
+          <context context-type="linenumber">98,100</context>
         </context-group>
       </trans-unit>
       <trans-unit id="home.comingUp" datatype="html">
         <source>Kommende</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/home/home.html</context>
-          <context context-type="linenumber">104,106</context>
+          <context context-type="linenumber">108,110</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="home.remindFallbackName" datatype="html">
+        <source>Barnet</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/pages/home/home.ts</context>
+          <context context-type="linenumber">271</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="home.remindSent" datatype="html">
+        <source>Påminnelse sendt til <x id="name" equiv-text="name"/>.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/pages/home/home.ts</context>
+          <context context-type="linenumber">278</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="home.remindNoPhone" datatype="html">
+        <source><x id="name" equiv-text="name"/> har ikke slått på varsler på telefonen ennå.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/pages/home/home.ts</context>
+          <context context-type="linenumber">279</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="home.remindQuietHours" datatype="html">
+        <source>Ingen påminnelser mellom kl. 20 og 07. Prøv igjen i morgen tidlig.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/pages/home/home.ts</context>
+          <context context-type="linenumber">381</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="home.remindNotOpen" datatype="html">
+        <source>Oppgaven er ikke åpen lenger.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/pages/home/home.ts</context>
+          <context context-type="linenumber">384</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="home.remindServerOff" datatype="html">
+        <source>Påminnelser er ikke slått på i Diddit ennå.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/pages/home/home.ts</context>
+          <context context-type="linenumber">387</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="home.remindFailed" datatype="html">
+        <source>Kunne ikke sende påminnelsen. Prøv igjen.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/pages/home/home.ts</context>
+          <context context-type="linenumber">390</context>
         </context-group>
       </trans-unit>
       <trans-unit id="progress.loading" datatype="html">

@@ -3,6 +3,7 @@ import assert from 'node:assert';
 import {
   PushService,
   dueMessage,
+  isQuietTime,
   isReminderTime,
   readPushConfig,
   startReminderScheduler,
@@ -248,6 +249,75 @@ describe('Push Service', () => {
         dueMessage(['A', 'B', 'C'], '2026-10-05').body,
         'Du har 3 oppgaver igjen i dag: A, B og C',
       );
+    });
+  });
+
+  describe('remindAssignment ("Påminn nå")', () => {
+    const open = {
+      status: 'pending',
+      child_user_id: 'emma',
+      task_name: 'Gå på do',
+      is_parent: true,
+    };
+
+    test('sends the due reminder for one chore to the child now', async () => {
+      const db = fakeDb([
+        ['FROM task_assignments ta', [open]],
+        ['FROM push_subscriptions', [sub('emma-phone')]],
+      ]);
+      const { sent, sender } = fakeSender();
+      const service = new PushService(CONFIG, db, sender);
+
+      assert.strictEqual(await service.remindAssignment('a1', 'dad', at('12:15')), 1);
+
+      assert.deepStrictEqual(db.calls[0].values, ['a1', 'dad']);
+      const lookup = db.calls.find((c) => c.text.includes('FROM push_subscriptions'));
+      assert.deepStrictEqual(lookup?.values, [['emma']]);
+      assert.deepStrictEqual(sent[0].payload, {
+        title: 'Påminnelse',
+        body: 'Husk: Gå på do',
+        url: 'my-tasks',
+        tag: 'due-2026-10-05',
+      });
+      // The 16:30 job still runs for this chore
+      assert.ok(!db.calls.some((c) => c.text.includes('reminder_sent_at')));
+    });
+
+    test('returns 0 when the child has no login to send to', async () => {
+      const db = fakeDb([['FROM task_assignments ta', [{ ...open, child_user_id: null }]]]);
+      const { sent, sender } = fakeSender();
+      assert.strictEqual(
+        await new PushService(CONFIG, db, sender).remindAssignment('a1', 'dad', at('12:15')),
+        0,
+      );
+      assert.strictEqual(sent.length, 0);
+    });
+
+    test('refuses unknown chores, non-parents, done chores and quiet hours', async () => {
+      const remind = (row: Row | null, time = '12:15') =>
+        new PushService(
+          CONFIG,
+          fakeDb([
+            ['FROM task_assignments ta', row ? [row] : []],
+            ['FROM push_subscriptions', [sub('phone')]],
+          ]),
+          fakeSender().sender,
+        ).remindAssignment('a1', 'u1', at(time));
+
+      await assert.rejects(remind(null), { statusCode: 404 });
+      await assert.rejects(remind({ ...open, is_parent: false }), { statusCode: 403 });
+      await assert.rejects(remind({ ...open, status: 'completed' }), { statusCode: 409 });
+      await assert.rejects(remind(open, '20:00'), { statusCode: 409 });
+      await assert.rejects(remind(open, '06:59'), { statusCode: 409 });
+      assert.strictEqual(await remind(open, '07:00'), 1);
+      assert.strictEqual(await remind(open, '19:59'), 1);
+    });
+
+    test('quiet hours are 20:00 to 07:00 Oslo time', () => {
+      assert.strictEqual(isQuietTime(at('19:59')), false);
+      assert.strictEqual(isQuietTime(at('20:00')), true);
+      assert.strictEqual(isQuietTime(at('03:00')), true);
+      assert.strictEqual(isQuietTime(at('07:00')), false);
     });
   });
 

@@ -159,4 +159,10 @@ describe('PushNotificationService', () => {
     expect(await create().sendTest()).toBe(2);
     expect(api.post).toHaveBeenCalledWith('/push/test', {}, { skipLoading: true });
   });
+
+  it('sends "Påminn nå" for one chore and returns how many phones got it', async () => {
+    api.post.mockResolvedValue({ sent: 1 });
+    expect(await create().remind('a-1')).toBe(1);
+    expect(api.post).toHaveBeenCalledWith('/assignments/a-1/remind', {}, { skipLoading: true });
+  });
 });

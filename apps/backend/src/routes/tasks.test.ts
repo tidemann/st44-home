@@ -193,6 +193,44 @@ describe('Tasks API', () => {
       assert.strictEqual(body.points, 10); // Default points
     });
 
+    test('creates a one-time chore with a deadline (ST-686: was 500 on the live site)', async () => {
+      // The exact body the app sent; only the child id is this test's own
+      const response = await app.inject({
+        method: 'POST',
+        url: `/api/households/${householdId}/tasks`,
+        headers: { Authorization: `Bearer ${parentToken}` },
+        payload: {
+          name: 'Gå på do',
+          points: 5,
+          ruleType: 'single',
+          ruleConfig: {
+            assignedChildren: [childId1],
+            deadline: '2026-10-05T18:00:00.000Z',
+          },
+        },
+      });
+
+      assert.strictEqual(
+        response.statusCode,
+        201,
+        `Expected 201, got ${response.statusCode}: ${response.body}`,
+      );
+      const body = JSON.parse(response.body);
+      assert.strictEqual(body.name, 'Gå på do');
+      assert.strictEqual(body.ruleType, 'single');
+      assert.strictEqual(body.deadline, '2026-10-05T18:00:00.000Z');
+      assert.deepStrictEqual(body.ruleConfig.assignedChildren, [childId1]);
+
+      const candidates = await pool.query(
+        'SELECT child_id FROM task_candidates WHERE task_id = $1',
+        [body.id],
+      );
+      assert.deepStrictEqual(
+        candidates.rows.map((r) => r.child_id),
+        [childId1],
+      );
+    });
+
     test('should reject weekly_rotation without rotation_type', async () => {
       const response = await app.inject({
         method: 'POST',

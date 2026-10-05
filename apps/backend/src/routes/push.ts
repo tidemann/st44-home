@@ -7,7 +7,9 @@ import {
 } from '@st44/types';
 import { zodToOpenAPI, CommonErrors } from '@st44/types/generators';
 import { authenticateUser } from '../middleware/auth.js';
-import { validateRequest } from '../utils/validation.js';
+import { z } from 'zod';
+import { validateParams, validateRequest } from '../utils/validation.js';
+import { uuidSchema } from '../schemas/validation.js';
 import { stripResponseValidation } from '../schemas/common.js';
 import { AuthenticationError, ValidationError } from '../errors/index.js';
 import { pushService, type PushService } from '../services/push.service.js';
@@ -19,6 +21,7 @@ import { pushService, type PushService } from '../services/push.service.js';
  * POST   /api/push/subscriptions  - save this browser's subscription
  * DELETE /api/push/subscriptions  - remove this browser's subscription
  * POST   /api/push/test           - send a test notification to my browsers
+ * POST   /api/assignments/:assignmentId/remind - parent sends "Påminn nå" (ST-686)
  */
 
 function requireUserId(request: FastifyRequest): string {
@@ -78,6 +81,26 @@ const testSchema = stripResponseValidation({
   },
 });
 
+const remindSchema = stripResponseValidation({
+  summary: 'Remind a child of one open chore now',
+  description:
+    'A parent sends the "due" reminder for one pending assignment to the child\'s phones. ' +
+    '409 in quiet hours (20:00-07:00 Oslo) or when the chore is not open.',
+  tags: ['push'],
+  security: [{ bearerAuth: [] }],
+  response: {
+    200: { description: 'Number of phones reached', ...zodToOpenAPI(PushTestResponseSchema) },
+    ...CommonErrors.BadRequest,
+    ...CommonErrors.Unauthorized,
+    ...CommonErrors.Forbidden,
+    ...CommonErrors.NotFound,
+    ...CommonErrors.Conflict,
+    ...CommonErrors.InternalServerError,
+  },
+});
+
+const assignmentParamsSchema = z.object({ assignmentId: uuidSchema });
+
 export function createPushRoutes(service: PushService = pushService) {
   return async function pushRoutes(fastify: FastifyInstance): Promise<void> {
     fastify.get('/api/push/config', {
@@ -119,6 +142,20 @@ export function createPushRoutes(service: PushService = pushService) {
           throw new ValidationError('Push notifications are not configured on the server', []);
         }
         const sent = await service.sendTest(userId);
+        return reply.send({ sent });
+      },
+    });
+
+    fastify.post('/api/assignments/:assignmentId/remind', {
+      preHandler: [authenticateUser],
+      schema: remindSchema,
+      handler: async (request: FastifyRequest, reply: FastifyReply) => {
+        const userId = requireUserId(request);
+        const { assignmentId } = validateParams(assignmentParamsSchema, request);
+        if (!service.enabled) {
+          throw new ValidationError('Push notifications are not configured on the server', []);
+        }
+        const sent = await service.remindAssignment(assignmentId, userId);
         return reply.send({ sent });
       },
     });

@@ -23,6 +23,8 @@ import { HouseholdService } from '../../services/household.service';
 import { HouseholdStore } from '../../stores/household.store';
 import { DashboardService } from '../../services/dashboard.service';
 import { AnalyticsService } from '../../services/analytics.service';
+import { PushNotificationService } from '../../services/push-notification.service';
+import { HttpErrorResponse } from '@angular/common/http';
 import type { Task, Assignment, Child, HouseholdAnalytics } from '@st44/types';
 
 /**
@@ -68,6 +70,7 @@ export class Home implements OnInit {
   private readonly householdStore = inject(HouseholdStore);
   private readonly dashboardService = inject(DashboardService);
   private readonly analyticsService = inject(AnalyticsService);
+  private readonly push = inject(PushNotificationService);
 
   // State signals
   protected readonly loading = signal(false);
@@ -91,6 +94,11 @@ export class Home implements OnInit {
 
   // Celebration state
   protected readonly showCelebrationAnimation = signal(false);
+
+  // "Påminn nå" (ST-686): parents push a reminder for one of today's chores
+  protected readonly canRemind = computed(() => !this.authService.hasRole('child'));
+  protected readonly remindingId = signal<string | null>(null);
+  protected readonly remindMessage = signal<string | null>(null);
 
   // Computed values
   protected readonly greeting = computed(() => {
@@ -256,6 +264,28 @@ export class Home implements OnInit {
   }
 
   /**
+   * "Påminn nå": send the reminder for one open chore to the child's phone now
+   */
+  protected async onRemind(assignmentId: string): Promise<void> {
+    const assignment = this.todayTasks().find((t) => t.id === assignmentId);
+    const name = assignment?.childName || $localize`:@@home.remindFallbackName:Barnet`;
+    this.remindingId.set(assignmentId);
+    this.remindMessage.set(null);
+    try {
+      const sent = await this.push.remind(assignmentId);
+      this.remindMessage.set(
+        sent > 0
+          ? $localize`:@@home.remindSent:Påminnelse sendt til ${name}:name:.`
+          : $localize`:@@home.remindNoPhone:${name}:name: har ikke slått på varsler på telefonen ennå.`,
+      );
+    } catch (err) {
+      this.remindMessage.set(remindError(err));
+    } finally {
+      this.remindingId.set(null);
+    }
+  }
+
+  /**
    * Handle task edit - open edit modal with task data
    */
   protected async onEditTask(taskId: string): Promise<void> {
@@ -340,4 +370,22 @@ export class Home implements OnInit {
     this.editTaskOpen.set(false);
     this.selectedTask.set(null);
   }
+}
+
+/** Why "Påminn nå" did not go out, in words a parent understands */
+function remindError(err: unknown): string {
+  if (err instanceof HttpErrorResponse) {
+    const conflict = (err.error as { details?: { conflictField?: string } } | null)?.details
+      ?.conflictField;
+    if (conflict === 'quietHours') {
+      return $localize`:@@home.remindQuietHours:Ingen påminnelser mellom kl. 20 og 07. Prøv igjen i morgen tidlig.`;
+    }
+    if (conflict === 'status') {
+      return $localize`:@@home.remindNotOpen:Oppgaven er ikke åpen lenger.`;
+    }
+    if (err.status === 400) {
+      return $localize`:@@home.remindServerOff:Påminnelser er ikke slått på i Diddit ennå.`;
+    }
+  }
+  return $localize`:@@home.remindFailed:Kunne ikke sende påminnelsen. Prøv igjen.`;
 }

@@ -48,6 +48,21 @@
     </div>
   }
 
+  <!-- "Påminn nå": push the reminder to the child's phone now (ST-686) -->
+  @if (showRemindButton() && canRemind()) {
+    <button
+      class="task-remind-btn"
+      type="button"
+      (click)="onRemindClick($event)"
+      (keydown)="$event.stopPropagation()"
+      [disabled]="reminding()"
+      [attr.aria-label]="'Påminn ' + childName() + ' om ' + taskName() + ' nå'"
+    >
+      <span class="remind-icon" aria-hidden="true">🔔</span>
+      <span i18n="@@taskCard.remindNow">Påminn nå</span>
+    </button>
+  }
+
   <!-- Reassign Button (for assignments only) -->
   @if (showReassignButton() && isAssignment() && !completed()) {
     <button

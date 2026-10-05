@@ -1,5 +1,6 @@
 import webpush from 'web-push';
 import { db } from '../database.js';
+import { AuthorizationError, ConflictError, NotFoundError } from '../errors/index.js';
 import { ASSIGNMENT_TIME_ZONE, todayInTimeZone } from './assignment-scheduler.js';
 
 /**
@@ -52,6 +53,8 @@ interface PushLogger {
 export const REMINDER_FROM = { hour: 16, minute: 30 };
 /** ...and never from this Oslo time on (quiet hours 20:00-07:00) */
 export const QUIET_FROM = { hour: 20, minute: 0 };
+/** Quiet hours end at this Oslo time; a parent's "Påminn nå" works from then */
+export const QUIET_UNTIL = { hour: 7, minute: 0 };
 
 /** How long a push service keeps trying to deliver */
 const DUE_TTL_SECONDS = 3 * 60 * 60;
@@ -268,6 +271,56 @@ export class PushService {
     return { children: byChild.size, sent };
   }
 
+  /**
+   * "Påminn nå" (ST-686): a parent sends the "due" reminder for one open chore
+   * to the child's phones right away. Not in quiet hours (20:00-07:00 Oslo).
+   * Returns how many phones got it -- 0 when the child has not turned
+   * notifications on. Does not mark the chore as reminded, so the 16:30 job
+   * still runs.
+   */
+  async remindAssignment(
+    assignmentId: string,
+    parentUserId: string,
+    now: Date = new Date(),
+  ): Promise<number> {
+    const { rows } = await this.database.query<{
+      status: string;
+      child_user_id: string | null;
+      task_name: string;
+      is_parent: boolean;
+    }>(
+      `SELECT ta.status,
+              c.user_id AS child_user_id,
+              t.name AS task_name,
+              EXISTS (
+                SELECT 1 FROM household_members hm
+                WHERE hm.household_id = ta.household_id
+                  AND hm.user_id = $2
+                  AND hm.role IN ('admin', 'parent')
+              ) AS is_parent
+       FROM task_assignments ta
+       JOIN tasks t ON t.id = ta.task_id
+       LEFT JOIN children c ON c.id = ta.child_id
+       WHERE ta.id = $1`,
+      [assignmentId, parentUserId],
+    );
+    const row = rows[0];
+    if (!row) throw new NotFoundError('Assignment not found', 'assignment', assignmentId);
+    if (!row.is_parent) throw new AuthorizationError('Only parents can send reminders');
+    if (row.status !== 'pending')
+      throw new ConflictError('Only open chores can be reminded', 'status');
+    if (isQuietTime(now))
+      throw new ConflictError('No reminders in quiet hours (20:00-07:00)', 'quietHours');
+    if (!row.child_user_id) return 0;
+
+    const today = todayInTimeZone(now).toISOString().slice(0, 10);
+    return this.sendToUsers(
+      [row.child_user_id],
+      dueMessage([row.task_name], today),
+      DUE_TTL_SECONDS,
+    );
+  }
+
   /** A test message to the user's own browsers (settings screen) */
   async sendTest(userId: string): Promise<number> {
     return this.sendToUsers(
@@ -315,6 +368,16 @@ export function isReminderTime(now: Date): boolean {
   return (
     minutes >= REMINDER_FROM.hour * 60 + REMINDER_FROM.minute &&
     minutes < QUIET_FROM.hour * 60 + QUIET_FROM.minute
+  );
+}
+
+/** 20:00-07:00 Oslo: no reminder goes out, automatic or manual */
+export function isQuietTime(now: Date): boolean {
+  const { hour, minute } = osloClock(now);
+  const minutes = hour * 60 + minute;
+  return (
+    minutes >= QUIET_FROM.hour * 60 + QUIET_FROM.minute ||
+    minutes < QUIET_UNTIL.hour * 60 + QUIET_UNTIL.minute
   );
 }
 

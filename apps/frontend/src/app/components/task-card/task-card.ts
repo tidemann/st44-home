@@ -128,6 +128,42 @@ export class TaskCardComponent {
   reassign = output<string>();
 
   /**
+   * Whether to show "Påminn nå" (parents, open assignments with a child; ST-686)
+   */
+  showRemindButton = input<boolean>(false);
+
+  /**
+   * True while the reminder for this card is being sent
+   */
+  reminding = input<boolean>(false);
+
+  /**
+   * Event emitted when the parent taps "Påminn nå"
+   */
+  remind = output<string>();
+
+  /**
+   * Computed: open assignment with a child to remind
+   */
+  canRemind = computed(() => {
+    const t = this.task();
+    return 'status' in t && t.status === 'pending' && 'childId' in t && !!t.childId;
+  });
+
+  /**
+   * Computed: the child's name, when the card shows an assignment
+   */
+  childName = computed(() => {
+    const t = this.task();
+    return 'childName' in t ? (t.childName ?? '') : '';
+  });
+
+  onRemindClick(event: Event): void {
+    event.stopPropagation();
+    this.remind.emit(this.task().id);
+  }
+
+  /**
    * Handle completion button click
    */
   onCompleteClick(event: Event): void {

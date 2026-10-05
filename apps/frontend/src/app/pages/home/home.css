@@ -273,3 +273,14 @@
 .stats-grid app-stat-card:nth-child(3) {
   animation-delay: 0.3s;
 }
+
+/* "Påminn nå" result line (ST-686) */
+.remind-status {
+  margin: var(--space-sm, 8px) 0 0;
+  font-size: 15px;
+  color: var(--color-text-primary, #1e293b);
+}
+
+.remind-status:empty {
+  display: none;
+}

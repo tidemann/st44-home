@@ -31,6 +31,11 @@ export const STORAGE_KEYS = {
   INSTALL_DISMISSED: 'installDismissed',
 
   /**
+   * Set (with a 14-day TTL) when the user taps "Ikke nå" on the notifications offer
+   */
+  NOTIFY_OFFER_DISMISSED: 'notifyOfferDismissed',
+
+  /**
    * Time (ms) of the last API answer that came from the network, for the offline strip
    */
   LAST_SYNC_AT: 'lastSyncAt',
