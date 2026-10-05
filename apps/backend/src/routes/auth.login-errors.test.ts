@@ -22,6 +22,11 @@ describe('POST /api/auth/login with response schemas', () => {
   let userId: string | undefined;
 
   before(async () => {
+    // If the runner ever shares a process across files, the schemas may already be
+    // stripped; fail here rather than quietly testing without them.
+    const { loginSchema } = await import('../schemas/auth.ts');
+    assert.ok('response' in loginSchema, 'login response schema was stripped');
+
     const { build } = await import('../server.ts');
     app = await build();
     await app.ready();
