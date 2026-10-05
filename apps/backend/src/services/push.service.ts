@@ -135,7 +135,8 @@ export class PushService {
 
   /**
    * Sends to every browser of the given users. Subscriptions the push service
-   * says are gone (404/410) are deleted. Returns how many messages were accepted.
+   * says are gone (404/410) are deleted; other failures skip that browser. Returns
+   * how many messages were accepted, and throws only when none got through.
    */
   async sendToUsers(userIds: string[], payload: PushPayload, ttl: number): Promise<number> {
     if (!this.sender || userIds.length === 0) return 0;
@@ -149,6 +150,7 @@ export class PushService {
 
     const body = JSON.stringify(payload);
     let sent = 0;
+    let failure: unknown = null;
     for (const subscription of rows) {
       try {
         await this.sender(subscription, body, { TTL: ttl });
@@ -164,10 +166,13 @@ export class PushService {
             subscription.id,
           ]);
         } else {
-          throw error;
+          // One phone failing (push service down, bad key) must not stop the others
+          failure = error;
         }
       }
     }
+    // Report it when nothing got through, so the caller logs it
+    if (sent === 0 && failure !== null) throw failure;
     return sent;
   }
 
@@ -251,9 +256,15 @@ export class PushService {
     }
 
     let sent = 0;
+    let failure: unknown = null;
     for (const [userId, tasks] of byChild) {
-      sent += await this.sendToUsers([userId], dueMessage(tasks, today), DUE_TTL_SECONDS);
+      try {
+        sent += await this.sendToUsers([userId], dueMessage(tasks, today), DUE_TTL_SECONDS);
+      } catch (error) {
+        failure = error;
+      }
     }
+    if (sent === 0 && failure !== null) throw failure;
     return { children: byChild.size, sent };
   }
 

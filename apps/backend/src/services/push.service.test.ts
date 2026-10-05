@@ -124,7 +124,22 @@ describe('Push Service', () => {
       assert.deepStrictEqual(deleted?.values, ['b']);
     });
 
-    test('other push errors are thrown, not swallowed', async () => {
+    test('one failing phone does not stop the others, and is kept', async () => {
+      const db = fakeDb([['FROM push_subscriptions', [sub('a'), sub('b')]]]);
+      const { sent, sender } = fakeSender({ 'https://push.example/a': 500 });
+      const service = new PushService(CONFIG, db, sender);
+
+      const count = await service.sendToUsers(['u1'], { title: 't', body: 'b', url: 'home' }, 60);
+
+      assert.strictEqual(count, 1);
+      assert.deepStrictEqual(
+        sent.map((s) => s.endpoint),
+        ['https://push.example/b'],
+      );
+      assert.ok(!db.calls.some((c) => c.text.startsWith('DELETE')));
+    });
+
+    test('throws when nothing got through, so the caller logs it', async () => {
       const db = fakeDb([['FROM push_subscriptions', [sub('a')]]]);
       const service = new PushService(
         CONFIG,
