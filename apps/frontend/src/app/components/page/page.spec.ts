@@ -49,6 +49,24 @@ describe('PageComponent', () => {
       const subtitle = fixture.debugElement.query(By.css('.page-subtitle'));
       expect(subtitle).toBeNull();
     });
+
+    it('should render subtitle on the page surface, not in the gradient header', () => {
+      fixture.componentRef.setInput('title', 'Title');
+      fixture.componentRef.setInput('subtitle', 'Subtitle text');
+      fixture.detectChanges();
+
+      expect(fixture.debugElement.query(By.css('.page-content .page-subtitle'))).toBeTruthy();
+      expect(fixture.debugElement.query(By.css('.page-header .page-subtitle'))).toBeNull();
+    });
+
+    it('should not render subtitle when header is hidden', () => {
+      fixture.componentRef.setInput('title', 'Title');
+      fixture.componentRef.setInput('subtitle', 'Subtitle text');
+      fixture.componentRef.setInput('showHeader', false);
+      fixture.detectChanges();
+
+      expect(fixture.debugElement.query(By.css('.page-subtitle'))).toBeNull();
+    });
   });
 
   describe('showGradient input', () => {
