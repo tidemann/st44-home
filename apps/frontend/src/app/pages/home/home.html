@@ -24,7 +24,6 @@
       <div class="header-content">
         <div class="greeting-section">
           <h2 class="greeting">{{ greeting() }}, {{ userName() }}!</h2>
-          <p class="subtitle" i18n="@@home.subtitle">La oss få gjort oppgavene i dag</p>
         </div>
       </div>
     </header>
@@ -57,6 +56,9 @@
           [label]="'Poeng'"
         />
       </div>
+
+      <!-- Below the stats grid: it is pulled up over the header with a negative margin -->
+      <p class="subtitle" i18n="@@home.subtitle">La oss få gjort oppgavene i dag</p>
 
       <!-- Analytics Section -->
       @if (analytics()) {

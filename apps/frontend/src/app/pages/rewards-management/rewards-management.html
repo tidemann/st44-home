@@ -1,4 +1,10 @@
-<app-page title="Rewards" subtitle="Create and manage rewards for your family" maxWidth="wide">
+<app-page
+  title="Belønninger"
+  i18n-title="@@rewardsManagement.title"
+  subtitle="Opprett og styr belønninger for familien"
+  i18n-subtitle="@@rewardsManagement.subtitle"
+  maxWidth="wide"
+>
   <!-- Tab Navigation -->
   <div class="tabs">
     <button [class.active]="selectedTab() === 'rewards'" (click)="switchTab('rewards')">
