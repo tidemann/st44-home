@@ -35,7 +35,7 @@
 }
 
 .filter-tab.active {
-  background: var(--gradient-primary);
+  background: var(--gradient-primary-button);
   color: white;
   border-color: transparent;
   box-shadow: var(--shadow-md);
@@ -78,7 +78,7 @@
 }
 
 .person-tab.active {
-  background: var(--gradient-secondary, var(--gradient-primary));
+  background: var(--gradient-primary-button);
   color: white;
   border-color: transparent;
   box-shadow: var(--shadow-md);
@@ -155,7 +155,7 @@
 
 .retry-button {
   padding: var(--space-sm) var(--space-lg);
-  background: var(--gradient-primary);
+  background: var(--gradient-primary-button);
   border: none;
   border-radius: var(--radius-full);
   font-family: var(--font-body);
