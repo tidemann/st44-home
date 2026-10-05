@@ -1,0 +1,71 @@
+/* Bottom sheet above the bottom nav (z-index 1000) */
+.install-card {
+  position: fixed;
+  left: var(--space-md, 16px);
+  right: var(--space-md, 16px);
+  bottom: calc(var(--space-md, 16px) + env(safe-area-inset-bottom, 0px));
+  z-index: 1100;
+  max-width: 480px;
+  margin: 0 auto;
+  padding: var(--space-lg, 24px);
+  box-shadow: var(--shadow-lg, 0 8px 32px rgba(0, 0, 0, 0.12));
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md, 16px);
+}
+
+.install-head {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md, 16px);
+}
+
+.install-icon {
+  flex-shrink: 0;
+  border-radius: 12px;
+}
+
+.install-title {
+  margin: 0;
+  font-family: var(--font-heading, 'Fredoka', sans-serif);
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--color-text-primary, #1e293b);
+}
+
+.install-text,
+.install-steps {
+  margin: 0;
+  font-size: 15px;
+  line-height: 1.5;
+  color: var(--color-text-primary, #1e293b);
+}
+
+.install-steps {
+  margin-top: var(--space-sm, 8px);
+  padding-left: var(--space-lg, 24px);
+}
+
+.install-steps li + li {
+  margin-top: var(--space-xs, 4px);
+}
+
+.share-icon {
+  display: inline-block;
+  padding: 0 4px;
+  border: 1px solid var(--color-border, #e2e8f0);
+  border-radius: 6px;
+  font-size: 13px;
+}
+
+/* "Ikke nå" and "Installer" share the row with equal weight */
+.install-actions {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: 1fr;
+  gap: var(--space-sm, 8px);
+}
+
+.install-actions .btn {
+  min-height: 48px;
+}

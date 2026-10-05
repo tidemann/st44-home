@@ -1491,6 +1491,59 @@
           <context context-type="linenumber">26,30</context>
         </context-group>
       </trans-unit>
+      <trans-unit id="installPrompt.title" datatype="html">
+        <source> Legg Diddit på hjemskjermen </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/install-prompt/install-prompt.html</context>
+          <context context-type="linenumber">10,14</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="installPrompt.iosIntro" datatype="html">
+        <source> Da åpner Diddit som en app, og du kan få påminnelser. </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/install-prompt/install-prompt.html</context>
+          <context context-type="linenumber">17,19</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="installPrompt.iosStep1" datatype="html">
+        <source> Trykk på Del-knappen <x id="START_TAG_SPAN" ctype="x-span" equiv-text="&lt;span class=&quot;share-icon&quot; aria-hidden=&quot;true&quot;&gt;"/>⬆︎<x id="CLOSE_TAG_SPAN" ctype="x-span" equiv-text="&lt;/span&gt;"/> nederst i Safari. </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/install-prompt/install-prompt.html</context>
+          <context context-type="linenumber">21,23</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="installPrompt.iosStep2" datatype="html">
+        <source>Velg «Legg til på Hjem-skjerm».</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/install-prompt/install-prompt.html</context>
+          <context context-type="linenumber">24,27</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="installPrompt.notNow" datatype="html">
+        <source> Ikke nå </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/install-prompt/install-prompt.html</context>
+          <context context-type="linenumber">34,36</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/install-prompt/install-prompt.html</context>
+          <context context-type="linenumber">48,50</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="installPrompt.androidIntro" datatype="html">
+        <source> Diddit åpner som en app, uten nettleser, og du kan få påminnelser. </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/install-prompt/install-prompt.html</context>
+          <context context-type="linenumber">39,41</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="installPrompt.install" datatype="html">
+        <source> Installer </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/install-prompt/install-prompt.html</context>
+          <context context-type="linenumber">56,58</context>
+        </context-group>
+      </trans-unit>
       <trans-unit id="invitationInbox.region" datatype="html">
         <source>Innboks for invitasjoner</source>
         <context-group purpose="location">
@@ -2680,6 +2733,27 @@
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/navigation/sidebar-nav/sidebar-nav.html</context>
           <context context-type="linenumber">38,39</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="offlineBanner.title" datatype="html">
+        <source>Ingen nett</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/offline-banner/offline-banner.html</context>
+          <context context-type="linenumber">5,6</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="offlineBanner.lastSeen" datatype="html">
+        <source>Du ser det som var her sist (kl. <x id="INTERPOLATION" equiv-text="{{ time }}"/>). Endringer kan ikke lagres før nettet er tilbake.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/offline-banner/offline-banner.html</context>
+          <context context-type="linenumber">8,10</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="offlineBanner.noData" datatype="html">
+        <source>Endringer kan ikke lagres før nettet er tilbake.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/offline-banner/offline-banner.html</context>
+          <context context-type="linenumber">12,15</context>
         </context-group>
       </trans-unit>
       <trans-unit id="progressSummary.ofTasks" datatype="html">

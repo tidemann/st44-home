@@ -24,6 +24,16 @@ export const STORAGE_KEYS = {
    * Persisted task filter selection (all | mine | person | completed)
    */
   TASKS_FILTER: 'tasksFilter',
+
+  /**
+   * Set (with a 14-day TTL) when the user taps "Ikke nå" on the install card
+   */
+  INSTALL_DISMISSED: 'installDismissed',
+
+  /**
+   * Time (ms) of the last API answer that came from the network, for the offline strip
+   */
+  LAST_SYNC_AT: 'lastSyncAt',
 } as const;
 
 /**

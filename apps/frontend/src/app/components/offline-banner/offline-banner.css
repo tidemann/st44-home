@@ -1,0 +1,14 @@
+/* Sits at the top of the page, under the iPhone status bar */
+.offline-banner {
+  position: sticky;
+  top: 0;
+  z-index: 1050;
+  border-radius: 0;
+  border-width: 0 0 1px;
+  padding-top: calc(var(--space-sm, 8px) + env(safe-area-inset-top, 0px));
+  line-height: 1.4;
+}
+
+.alert-content strong {
+  display: block;
+}
