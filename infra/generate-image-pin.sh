@@ -37,6 +37,15 @@ for svc in frontend backend db; do
     # only the fallback goes, and compose refuses instead of using it.
     # shellcheck disable=SC2016 # literal: compose interpolates this, not bash
     printf '      DB_PASSWORD: ${DB_PASSWORD:?DB_PASSWORD must be set in the host .env}\n'
+    # Web push keys (ST-623), from the VAPID_* GitHub secrets via the deploy's ssh
+    # session, like JWT_SECRET. Optional: without them the backend runs with push
+    # off, so a missing secret never stops a deploy.
+    # shellcheck disable=SC2016 # literal: compose interpolates this, not bash
+    printf '      VAPID_PUBLIC_KEY: ${VAPID_PUBLIC_KEY:-}\n'
+    # shellcheck disable=SC2016 # literal: compose interpolates this, not bash
+    printf '      VAPID_PRIVATE_KEY: ${VAPID_PRIVATE_KEY:-}\n'
+    # shellcheck disable=SC2016 # literal: compose interpolates this, not bash
+    printf '      VAPID_SUBJECT: ${VAPID_SUBJECT:-https://home.st44.no}\n'
   fi
   if [ "$svc" = db ]; then
     # shellcheck disable=SC2016 # literal: compose interpolates this, not bash

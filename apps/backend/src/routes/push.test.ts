@@ -1,0 +1,153 @@
+import { test, describe, before, after } from 'node:test';
+import assert from 'node:assert';
+import { build } from '../server.js';
+import type { FastifyInstance } from 'fastify';
+import pg from 'pg';
+import { registerAndLogin } from '../test-helpers/auth.js';
+
+/**
+ * Push API Integration Tests (ST-623)
+ *
+ * The test environment has no VAPID keys, so push is off: subscriptions are
+ * stored but nothing is sent.
+ */
+
+describe('Push API', () => {
+  let app: FastifyInstance;
+  let pool: pg.Pool;
+  let tokenA: string;
+  let tokenB: string;
+  let userA: string;
+
+  const endpoint = `https://push.example.com/send/${Date.now()}`;
+  const subscription = { endpoint, keys: { p256dh: 'BOr8kLp256dh', auth: 'authsecret' } };
+
+  before(async () => {
+    app = await build();
+    await app.ready();
+
+    pool = new pg.Pool({
+      host: process.env.TEST_DB_HOST || process.env.DB_HOST || 'localhost',
+      port: parseInt(process.env.TEST_DB_PORT || '55432'),
+      database: process.env.TEST_DB_NAME || 'st44_test',
+      user: process.env.TEST_DB_USER || process.env.DB_USER || 'postgres',
+      password: process.env.TEST_DB_PASSWORD || process.env.DB_PASSWORD || 'postgres',
+    });
+
+    const timestamp = Date.now();
+    const emailA = `test-push-a-${timestamp}@example.com`;
+    const emailB = `test-push-b-${timestamp}@example.com`;
+    tokenA = (await registerAndLogin(app, emailA, 'TestPass123!')).accessToken;
+    tokenB = (await registerAndLogin(app, emailB, 'TestPass123!')).accessToken;
+    userA = (await pool.query('SELECT id FROM users WHERE email = $1', [emailA])).rows[0].id;
+  });
+
+  after(async () => {
+    await pool.query(`DELETE FROM users WHERE email LIKE 'test-push-%@example.com'`);
+    await pool.end();
+    await app.close();
+  });
+
+  const auth = (token: string) => ({ Authorization: `Bearer ${token}` });
+
+  test('GET /api/push/config needs a login', async () => {
+    const response = await app.inject({ method: 'GET', url: '/api/push/config' });
+    assert.strictEqual(response.statusCode, 401);
+  });
+
+  test('GET /api/push/config says push is off without VAPID keys', async () => {
+    const response = await app.inject({
+      method: 'GET',
+      url: '/api/push/config',
+      headers: auth(tokenA),
+    });
+    assert.strictEqual(response.statusCode, 200);
+    assert.deepStrictEqual(JSON.parse(response.body), { enabled: false, publicKey: null });
+  });
+
+  test('POST /api/push/subscriptions stores the subscription for the user', async () => {
+    const response = await app.inject({
+      method: 'POST',
+      url: '/api/push/subscriptions',
+      headers: { ...auth(tokenA), 'user-agent': 'Safari test' },
+      payload: subscription,
+    });
+    assert.strictEqual(response.statusCode, 201);
+
+    const rows = (
+      await pool.query(
+        'SELECT user_id, p256dh, auth, user_agent FROM push_subscriptions WHERE endpoint = $1',
+        [endpoint],
+      )
+    ).rows;
+    assert.deepStrictEqual(rows, [
+      { user_id: userA, p256dh: 'BOr8kLp256dh', auth: 'authsecret', user_agent: 'Safari test' },
+    ]);
+  });
+
+  test('subscribing the same browser again keeps one row', async () => {
+    await app.inject({
+      method: 'POST',
+      url: '/api/push/subscriptions',
+      headers: auth(tokenA),
+      payload: subscription,
+    });
+    const count = (
+      await pool.query('SELECT count(*)::int AS n FROM push_subscriptions WHERE endpoint = $1', [
+        endpoint,
+      ])
+    ).rows[0].n;
+    assert.strictEqual(count, 1);
+  });
+
+  test('POST /api/push/subscriptions rejects a non-https endpoint', async () => {
+    const response = await app.inject({
+      method: 'POST',
+      url: '/api/push/subscriptions',
+      headers: auth(tokenA),
+      payload: { ...subscription, endpoint: 'http://push.example.com/x' },
+    });
+    assert.strictEqual(response.statusCode, 400);
+  });
+
+  test('another user cannot remove my subscription', async () => {
+    const response = await app.inject({
+      method: 'DELETE',
+      url: '/api/push/subscriptions',
+      headers: auth(tokenB),
+      payload: { endpoint },
+    });
+    assert.strictEqual(response.statusCode, 204);
+    const count = (
+      await pool.query('SELECT count(*)::int AS n FROM push_subscriptions WHERE endpoint = $1', [
+        endpoint,
+      ])
+    ).rows[0].n;
+    assert.strictEqual(count, 1);
+  });
+
+  test('POST /api/push/test is refused while push is off', async () => {
+    const response = await app.inject({
+      method: 'POST',
+      url: '/api/push/test',
+      headers: auth(tokenA),
+    });
+    assert.strictEqual(response.statusCode, 400);
+  });
+
+  test('DELETE /api/push/subscriptions removes my subscription', async () => {
+    const response = await app.inject({
+      method: 'DELETE',
+      url: '/api/push/subscriptions',
+      headers: auth(tokenA),
+      payload: { endpoint },
+    });
+    assert.strictEqual(response.statusCode, 204);
+    const count = (
+      await pool.query('SELECT count(*)::int AS n FROM push_subscriptions WHERE endpoint = $1', [
+        endpoint,
+      ])
+    ).rows[0].n;
+    assert.strictEqual(count, 0);
+  });
+});

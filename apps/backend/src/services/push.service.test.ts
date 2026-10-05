@@ -1,0 +1,256 @@
+import { test, describe } from 'node:test';
+import assert from 'node:assert';
+import {
+  PushService,
+  dueMessage,
+  isReminderTime,
+  readPushConfig,
+  startReminderScheduler,
+  type PushConfig,
+  type PushSender,
+  type StoredSubscription,
+} from './push.service.js';
+
+/**
+ * Push Service Unit Tests (no database, no push service)
+ */
+
+const CONFIG: PushConfig = { publicKey: 'pub', privateKey: 'priv', subject: 'mailto:x@y.no' };
+
+type Row = Record<string, unknown>;
+
+/** Answers queries by the first matching SQL fragment and records every call */
+function fakeDb(answers: Array<[string, Row[]]> = []) {
+  const calls: { text: string; values?: unknown[] }[] = [];
+  return {
+    calls,
+    async query<T>(text: string, values?: unknown[]): Promise<{ rows: T[] }> {
+      calls.push({ text, values });
+      const match = answers.find(([fragment]) => text.includes(fragment));
+      return { rows: (match ? match[1] : []) as T[] };
+    },
+  };
+}
+
+function fakeSender(fail: Record<string, number> = {}) {
+  const sent: { endpoint: string; payload: Row; ttl: number }[] = [];
+  const sender: PushSender = async (subscription: StoredSubscription, payload, options) => {
+    const status = fail[subscription.endpoint];
+    if (status) throw Object.assign(new Error('push failed'), { statusCode: status });
+    sent.push({ endpoint: subscription.endpoint, payload: JSON.parse(payload), ttl: options.TTL });
+  };
+  return { sent, sender };
+}
+
+const sub = (id: string): StoredSubscription => ({
+  id,
+  endpoint: `https://push.example/${id}`,
+  p256dh: 'k',
+  auth: 'a',
+});
+
+// 2026-10-05 is CEST (UTC+2)
+const at = (osloTime: string) => new Date(`2026-10-05T${osloTime}:00+02:00`);
+
+describe('Push Service', () => {
+  describe('readPushConfig', () => {
+    test('is off without both VAPID keys', () => {
+      assert.strictEqual(readPushConfig({}), null);
+      assert.strictEqual(readPushConfig({ VAPID_PUBLIC_KEY: 'p' }), null);
+      assert.strictEqual(readPushConfig({ VAPID_PUBLIC_KEY: ' ', VAPID_PRIVATE_KEY: 'x' }), null);
+    });
+
+    test('reads the keys and defaults the subject to the site', () => {
+      assert.deepStrictEqual(readPushConfig({ VAPID_PUBLIC_KEY: 'p', VAPID_PRIVATE_KEY: 's' }), {
+        publicKey: 'p',
+        privateKey: 's',
+        subject: 'https://home.st44.no',
+      });
+    });
+  });
+
+  describe('enabled', () => {
+    test('a service without config sends nothing', async () => {
+      const db = fakeDb();
+      const service = new PushService(null, db);
+      assert.strictEqual(service.enabled, false);
+      assert.strictEqual(service.publicKey, null);
+      assert.strictEqual(await service.notifyAssignmentDone('a1'), 0);
+      assert.deepStrictEqual(await service.sendDueReminders(at('17:00')), { children: 0, sent: 0 });
+      assert.strictEqual(db.calls.length, 0);
+    });
+  });
+
+  describe('saveSubscription / deleteSubscription', () => {
+    test('upserts on the endpoint, so a phone moves to the user who turned push on', async () => {
+      const db = fakeDb();
+      const service = new PushService(CONFIG, db, fakeSender().sender);
+      await service.saveSubscription(
+        'u1',
+        { endpoint: 'https://push.example/1', keys: { p256dh: 'k', auth: 'a' } },
+        'Safari',
+      );
+      assert.match(db.calls[0].text, /ON CONFLICT \(endpoint\) DO UPDATE/);
+      assert.deepStrictEqual(db.calls[0].values, [
+        'u1',
+        'https://push.example/1',
+        'k',
+        'a',
+        'Safari',
+      ]);
+    });
+
+    test('only deletes the caller’s own subscription', async () => {
+      const db = fakeDb();
+      await new PushService(CONFIG, db).deleteSubscription('u1', 'https://push.example/1');
+      assert.match(db.calls[0].text, /WHERE user_id = \$1 AND endpoint = \$2/);
+    });
+  });
+
+  describe('sendToUsers', () => {
+    test('sends to every browser and drops subscriptions that are gone', async () => {
+      const db = fakeDb([['FROM push_subscriptions', [sub('a'), sub('b'), sub('c')]]]);
+      const { sent, sender } = fakeSender({ 'https://push.example/b': 410 });
+      const service = new PushService(CONFIG, db, sender);
+
+      const count = await service.sendToUsers(['u1'], { title: 't', body: 'b', url: 'home' }, 60);
+
+      assert.strictEqual(count, 2);
+      assert.deepStrictEqual(
+        sent.map((s) => s.endpoint),
+        ['https://push.example/a', 'https://push.example/c'],
+      );
+      const deleted = db.calls.find((c) => c.text.startsWith('DELETE FROM push_subscriptions'));
+      assert.deepStrictEqual(deleted?.values, ['b']);
+    });
+
+    test('other push errors are thrown, not swallowed', async () => {
+      const db = fakeDb([['FROM push_subscriptions', [sub('a')]]]);
+      const service = new PushService(
+        CONFIG,
+        db,
+        fakeSender({ 'https://push.example/a': 500 }).sender,
+      );
+      await assert.rejects(service.sendToUsers(['u1'], { title: 't', body: 'b', url: 'home' }, 60));
+    });
+  });
+
+  describe('notifyAssignmentDone', () => {
+    test('tells the parents, but not the parent who ticked it off', async () => {
+      const db = fakeDb([
+        [
+          'FROM task_assignments ta',
+          [
+            {
+              child_name: 'Emma',
+              task_name: 'Tøm oppvaskmaskinen',
+              points: 10,
+              parent_ids: ['mum', 'dad'],
+            },
+          ],
+        ],
+        ['FROM push_subscriptions', [sub('mum-phone')]],
+      ]);
+      const { sent, sender } = fakeSender();
+      const service = new PushService(CONFIG, db, sender);
+
+      await service.notifyAssignmentDone('a1', 'dad');
+
+      const lookup = db.calls.find((c) => c.text.includes('FROM push_subscriptions'));
+      assert.deepStrictEqual(lookup?.values, [['mum']]);
+      assert.deepStrictEqual(sent[0].payload, {
+        title: 'Emma er ferdig',
+        body: 'Tøm oppvaskmaskinen, 10 poeng',
+        url: 'home',
+        tag: 'done-a1',
+      });
+    });
+
+    test('does nothing for an unknown assignment', async () => {
+      const { sent, sender } = fakeSender();
+      assert.strictEqual(
+        await new PushService(CONFIG, fakeDb(), sender).notifyAssignmentDone('x'),
+        0,
+      );
+      assert.strictEqual(sent.length, 0);
+    });
+  });
+
+  describe('due reminders', () => {
+    test('reminder window is 16:30 to 20:00 Oslo time', () => {
+      assert.strictEqual(isReminderTime(at('16:29')), false);
+      assert.strictEqual(isReminderTime(at('16:30')), true);
+      assert.strictEqual(isReminderTime(at('19:59')), true);
+      assert.strictEqual(isReminderTime(at('20:00')), false);
+      assert.strictEqual(isReminderTime(at('07:30')), false);
+    });
+
+    test('follows Oslo winter time too (CET, UTC+1)', () => {
+      // 2026-12-01 15:45 UTC = 16:45 in Oslo
+      assert.strictEqual(isReminderTime(new Date('2026-12-01T15:45:00Z')), true);
+      assert.strictEqual(isReminderTime(new Date('2026-12-01T15:15:00Z')), false);
+    });
+
+    test('outside the window nothing is claimed', async () => {
+      const db = fakeDb();
+      await new PushService(CONFIG, db, fakeSender().sender).sendDueReminders(at('12:00'));
+      assert.strictEqual(db.calls.length, 0);
+    });
+
+    test('claims today’s open chores once and sends one message per child', async () => {
+      const db = fakeDb([
+        [
+          'UPDATE task_assignments',
+          [
+            { user_id: 'emma', task_name: 'Tøm oppvaskmaskinen', points: 10 },
+            { user_id: 'emma', task_name: 'Re opp sengen', points: 5 },
+            { user_id: 'ola', task_name: 'Mat katten', points: 5 },
+          ],
+        ],
+        ['FROM push_subscriptions', [sub('phone')]],
+      ]);
+      const { sent, sender } = fakeSender();
+      const service = new PushService(CONFIG, db, sender);
+
+      const result = await service.sendDueReminders(at('16:35'));
+
+      const claim = db.calls[0];
+      assert.match(claim.text, /reminder_sent_at IS NULL/);
+      assert.match(claim.text, /ta.status = 'pending'/);
+      assert.deepStrictEqual(claim.values, ['2026-10-05']);
+      assert.deepStrictEqual(result, { children: 2, sent: 2 });
+      assert.deepStrictEqual(sent[0].payload, {
+        title: 'Påminnelse',
+        body: 'Du har 2 oppgaver igjen i dag: Tøm oppvaskmaskinen og Re opp sengen',
+        url: 'my-tasks',
+        tag: 'due-2026-10-05',
+      });
+      assert.strictEqual(sent[1].payload.body, 'Husk: Mat katten');
+    });
+
+    test('Norwegian list joining', () => {
+      assert.strictEqual(
+        dueMessage(['A', 'B', 'C'], '2026-10-05').body,
+        'Du har 3 oppgaver igjen i dag: A, B og C',
+      );
+    });
+  });
+
+  describe('startReminderScheduler', () => {
+    test('logs failures and keeps going', async () => {
+      const lines: string[] = [];
+      const logger = {
+        info: (_o: object, msg: string) => lines.push(`info ${msg}`),
+        error: (_o: object, msg: string) => lines.push(`error ${msg}`),
+      };
+      const service = new PushService(CONFIG, fakeDb(), fakeSender().sender);
+      service.sendDueReminders = async () => {
+        throw new Error('db down');
+      };
+      const scheduler = startReminderScheduler(logger, service, 60_000);
+      await scheduler.tick();
+      scheduler.stop();
+      assert.deepStrictEqual(lines, ['error Due reminders failed']);
+    });
+  });
+});

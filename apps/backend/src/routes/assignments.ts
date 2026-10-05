@@ -4,6 +4,7 @@ import { authenticateUser } from '../middleware/auth.js';
 import { validateHouseholdMembership } from '../middleware/household-membership.js';
 import { pool } from '../database.js';
 import { generateAssignments } from '../services/assignment-generator.js';
+import { pushService } from '../services/push.service.js';
 import { withTransaction, validateBody, validateParams, validateQuery } from '../utils/index.js';
 import {
   getChildTasksSchema,
@@ -85,6 +86,20 @@ interface Assignment {
   date: string;
   status: string;
   created_at: string;
+}
+
+/**
+ * Tells the household's parents a chore is done (web push, ST-623). Runs after
+ * the response is decided and never fails the request.
+ */
+function notifyParentsDone(
+  fastify: FastifyInstance,
+  assignmentId: string,
+  completedByUserId: string | undefined,
+): void {
+  pushService
+    .notifyAssignmentDone(assignmentId, completedByUserId)
+    .catch((err) => fastify.log.error({ err, assignmentId }, 'Done notification failed'));
 }
 
 export default async function assignmentRoutes(fastify: FastifyInstance) {
@@ -723,6 +738,7 @@ export default async function assignmentRoutes(fastify: FastifyInstance) {
         }
 
         const completedAssignment = updateResult.rows[0];
+        notifyParentsDone(fastify, assignmentId, request.user?.userId);
 
         return reply.code(200).send({
           id: completedAssignment.id,
@@ -907,6 +923,7 @@ export default async function assignmentRoutes(fastify: FastifyInstance) {
           };
         });
 
+        notifyParentsDone(fastify, assignmentId, request.user?.userId);
         return reply.code(200).send(result);
       } catch (error) {
         if (error instanceof z.ZodError) {

@@ -52,6 +52,9 @@ services:
       REDIS_PORT: 6379
       # Required: the backend will not start without it (see infra/.env.example).
       JWT_SECRET: ${JWT_SECRET:?set JWT_SECRET in infra/.env}
+      # Optional web push keys (ST-623); push is off without them
+      VAPID_PUBLIC_KEY: ${VAPID_PUBLIC_KEY:-}
+      VAPID_PRIVATE_KEY: ${VAPID_PRIVATE_KEY:-}
     ports:
       - "3000:3000"
     depends_on:
