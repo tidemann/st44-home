@@ -131,7 +131,7 @@
   font-size: var(--font-size-base);
   /* On the page surface, not the gradient: 7.21:1 on --color-background (WCAG AA) */
   color: #475569;
-  margin: 0 0 var(--space-lg);
+  margin: 0 0 var(--space-xl);
 }
 
 /* ===== CONTENT ===== */
@@ -155,7 +155,7 @@
   grid-template-columns: repeat(3, 1fr);
   gap: var(--space-sm);
   margin-top: calc(var(--space-xl) * -1.5); /* Pull up over header */
-  margin-bottom: var(--space-xl);
+  margin-bottom: var(--space-md);
 }
 
 @media (min-width: 768px) {
