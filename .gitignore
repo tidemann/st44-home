@@ -67,3 +67,6 @@ SERVER_DEPLOYMENT_GUIDE.md
 
 # Localazy API keys (never commit)
 localazy.keys.json
+
+# Local test run output
+test-output*.txt

@@ -65,6 +65,8 @@ jobs:
           # Same merge order as the deploy: the server's file, then the pin.
           # infra/docker-compose.prod.yml mirrors the host copy, tags and all.
           # The deploy exports JWT_SECRET in its ssh session; a probe stands in here.
+          # DB_PASSWORD comes from the host .env there; a probe stands in for that too.
+          export DB_PASSWORD=st621-db-probe
           resolved="$(JWT_SECRET=st627-secret-probe docker compose -f infra/docker-compose.prod.yml -f pin.yml config)"
 
           bad=0
@@ -77,6 +79,16 @@ jobs:
           # ...and without one compose refuses, rather than starting a backend with none.
           if env -u JWT_SECRET docker compose -f infra/docker-compose.prod.yml -f pin.yml config --quiet 2>/dev/null; then
             echo "::error::compose accepted the pin with JWT_SECRET unset"
+            bad=1
+          fi
+          # The database password has no `postgres` fallback either (ST-621): the
+          # backend and the db both get the host's value, and none means no start.
+          if [ "$(printf '%s\n' "$resolved" | grep -cE '(DB_PASSWORD|POSTGRES_PASSWORD): st621-db-probe')" -ne 2 ]; then
+            echo "::error::backend and db did not both get DB_PASSWORD from the host environment"
+            bad=1
+          fi
+          if env -u DB_PASSWORD JWT_SECRET=st627-secret-probe docker compose -f infra/docker-compose.prod.yml -f pin.yml config --quiet 2>/dev/null; then
+            echo "::error::compose accepted the stack with DB_PASSWORD unset"
             bad=1
           fi
           for svc in frontend backend db; do
