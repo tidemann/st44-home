@@ -1124,6 +1124,59 @@ describe('Assignment Generator Service', () => {
       assert.deepStrictEqual(rows, [{ date: '2025-01-06', child_id: testChildIds[0] }]);
     });
 
+    test('deleted child is dropped from the rotation; other tasks still generate', async () => {
+      const dishesId = await createTask('Dishes', 'daily', {
+        assignedChildren: [testChildIds[0], testChildIds[1]],
+      });
+      const vacuumId = await createTask('Vacuum', 'weekly_rotation', {
+        rotationType: 'alternating',
+        assignedChildren: [testChildIds[1], testChildIds[2]],
+      });
+      const trashId = await createTask('Trash', 'daily', {});
+
+      // Parent removes Bob; his id stays in both tasks' rule_config
+      await pool.query('DELETE FROM children WHERE id = $1', [testChildIds[1]]);
+
+      const result = await generateAssignments(testHouseholdId, new Date('2025-01-06'), 7);
+      assert.deepStrictEqual(result.errors, []);
+      assert.strictEqual(result.created, 21);
+
+      const rows = await pool.query(
+        `SELECT task_id, child_id FROM task_assignments WHERE household_id = $1`,
+        [testHouseholdId],
+      );
+      const childrenFor = (taskId: string) =>
+        new Set(rows.rows.filter((r) => r.task_id === taskId).map((r) => r.child_id));
+      assert.deepStrictEqual(childrenFor(dishesId), new Set([testChildIds[0]]));
+      assert.deepStrictEqual(childrenFor(vacuumId), new Set([testChildIds[2]]));
+      assert.deepStrictEqual(childrenFor(trashId), new Set([null]));
+    });
+
+    test('task whose assigned children are all deleted is skipped with an error', async () => {
+      const goneId = await createTask('Feed cat', 'repeating', {
+        repeatDays: [1, 3, 5],
+        assignedChildren: [testChildIds[1]],
+      });
+      const otherId = await createTask('Dishes', 'daily', {
+        assignedChildren: [testChildIds[0]],
+      });
+      await pool.query('DELETE FROM children WHERE id = $1', [testChildIds[1]]);
+
+      const result = await generateAssignments(testHouseholdId, new Date('2025-01-06'), 7);
+      assert.strictEqual(result.errors.length, 1);
+      assert.ok(result.errors[0].includes('Feed cat'));
+      assert.ok(!result.errors[0].startsWith('Transaction failed'));
+      assert.strictEqual(result.created, 7);
+
+      const counts = await pool.query(
+        `SELECT task_id, count(*)::int AS n FROM task_assignments
+         WHERE household_id = $1 GROUP BY task_id`,
+        [testHouseholdId],
+      );
+      assert.deepStrictEqual(counts.rows, [{ task_id: otherId, n: 7 }]);
+      assert.ok(!counts.rows.some((r) => r.task_id === goneId));
+    });
+
     test('ignores single tasks', async () => {
       await createTask('One-off', 'single', { assignedChildren: [testChildIds[0]] });
 

@@ -126,11 +126,30 @@ export async function generateAssignments(
       existingSet.add(`${row.task_id}:${row.date}`);
     }
 
+    // Children can be deleted without their ids being removed from rule_config. Inserting
+    // a deleted id breaks the foreign key and rolls back the whole household, so keep
+    // only children that still exist.
+    const childrenResult = await client.query<{ id: string }>(
+      'SELECT id FROM children WHERE household_id = $1',
+      [householdId],
+    );
+    const currentChildIds = new Set(childrenResult.rows.map((row) => row.id));
+
     // 4. Generate new assignments
     const pendingAssignments: PendingAssignment[] = [];
 
     for (const task of tasks) {
       try {
+        const assignedChildren = task.rule_config.assignedChildren;
+        if (assignedChildren && assignedChildren.length > 0) {
+          const remaining = assignedChildren.filter((id) => currentChildIds.has(id));
+          // Not household-wide: the parent picked children, so skip until the task is edited
+          if (remaining.length === 0) {
+            throw new Error('none of the assigned children exist any more');
+          }
+          task.rule_config.assignedChildren = remaining;
+        }
+
         const assignments = await generateAssignmentsForTask(task, dates, householdId, client);
         pendingAssignments.push(...assignments);
       } catch (error) {
@@ -345,7 +364,10 @@ async function generateWeeklyRotationAssignments(
     };
   } else if (rotationType === 'alternating') {
     // Continue from the last child assigned BEFORE the first week in range, so a
-    // rerun later in the same week computes the same child for that week
+    // rerun later in the same week computes the same child for that week.
+    // Known edge case: if a parent reassigns the last day of a week whose following
+    // Monday is already generated, the rest of that following week follows the new
+    // child, so the week can be split between two children.
     const firstWeek = weeksSinceAnchor(dates[0]);
     const firstWeekStart = new Date(ROTATION_ANCHOR_MS + firstWeek * 7 * DAY_MS);
 
