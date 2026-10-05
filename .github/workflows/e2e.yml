@@ -75,6 +75,8 @@ jobs:
           DB_PASSWORD: postgres
           PORT: 3000
           HOST: 0.0.0.0
+          # Throwaway value for the test stack; the backend refuses to start without one.
+          JWT_SECRET: e2e-test-jwt-secret
         run: |
           npm start &
           echo $! > backend.pid

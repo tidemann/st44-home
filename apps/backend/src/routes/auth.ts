@@ -24,10 +24,8 @@ import { getEmailService } from '../services/email.service.js';
 import {
   generateAccessToken as generateAccessTokenUtil,
   generateRefreshToken as generateRefreshTokenUtil,
+  JWT_SECRET,
 } from '../utils/jwt.js';
-
-// JWT Configuration
-const JWT_SECRET = process.env.JWT_SECRET || 'dev-secret-change-in-production';
 
 // Google OAuth Configuration
 const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID || '';

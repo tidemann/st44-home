@@ -64,9 +64,21 @@ jobs:
 
           # Same merge order as the deploy: the server's file, then the pin.
           # infra/docker-compose.prod.yml mirrors the host copy, tags and all.
-          resolved="$(docker compose -f infra/docker-compose.prod.yml -f pin.yml config)"
+          # The deploy exports JWT_SECRET in its ssh session; a probe stands in here.
+          resolved="$(JWT_SECRET=st627-secret-probe docker compose -f infra/docker-compose.prod.yml -f pin.yml config)"
 
           bad=0
+
+          # The backend gets the secret from the session (ST-627)...
+          if ! printf '%s\n' "$resolved" | grep -qF 'JWT_SECRET: st627-secret-probe'; then
+            echo "::error::the backend did not get JWT_SECRET from the deploy session"
+            bad=1
+          fi
+          # ...and without one compose refuses, rather than starting a backend with none.
+          if env -u JWT_SECRET docker compose -f infra/docker-compose.prod.yml -f pin.yml config --quiet 2>/dev/null; then
+            echo "::error::compose accepted the pin with JWT_SECRET unset"
+            bad=1
+          fi
           for svc in frontend backend db; do
             if ! printf '%s\n' "$resolved" \
               | grep -qF "image: ghcr.io/tidemann/st44-home-${svc}:st59-pin-probe"; then
@@ -92,7 +104,7 @@ jobs:
           done
 
           if [ "$bad" -eq 0 ]; then
-            echo "pin applied to all three images, server settings intact"
+            echo "pin applied to all three images, JWT_SECRET passed through, server settings intact"
           fi
           exit "$bad"
 

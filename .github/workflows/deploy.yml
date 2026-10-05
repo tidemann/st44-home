@@ -449,10 +449,21 @@ jobs:
           # No leading path: scp drops it in the deploy user's home directory.
           scp image-pin.yml "deploy-target:${PIN_NAME}"
 
+      # JWT_SECRET (ST-627) reaches the backend through the pin file's
+      # `${JWT_SECRET:?}`, so every compose call needs it exported. It travels on
+      # ssh's stdin as the first line of the remote script: not on a command line
+      # (visible in `ps` on the host), not in a file, and not via SendEnv (which
+      # would need the owner to change sshd). Both compose steps do the same.
       - name: Deploy data services via SSH
+        env:
+          JWT_SECRET: ${{ secrets.JWT_SECRET }}
         run: |
           set -euo pipefail
-          ssh deploy-target REMOTE_DIR="${REMOTE_DIR}" PIN_NAME="${PIN_NAME}" bash -s <<'REMOTE'
+          if [ -z "${JWT_SECRET}" ]; then
+            echo "::error::the JWT_SECRET repository secret is empty or missing. No service was restarted."
+            exit 1
+          fi
+          { printf 'export JWT_SECRET=%q\n' "${JWT_SECRET}"; cat <<'REMOTE'
           set -euo pipefail
           cd "$REMOTE_DIR"
           export COMPOSE_FILE="docker-compose.yml:$HOME/$PIN_NAME"
@@ -460,6 +471,7 @@ jobs:
           docker compose pull
           docker compose up -d --force-recreate db redis
           REMOTE
+          } | ssh deploy-target REMOTE_DIR="${REMOTE_DIR}" PIN_NAME="${PIN_NAME}" bash -s
 
       - name: Run Database Migrations
         run: |
@@ -468,14 +480,21 @@ jobs:
           ssh deploy-target "docker exec st44-db /usr/local/bin/run-migrations.sh"
 
       - name: Start Application Services
+        env:
+          JWT_SECRET: ${{ secrets.JWT_SECRET }}
         run: |
           set -euo pipefail
-          ssh deploy-target REMOTE_DIR="${REMOTE_DIR}" PIN_NAME="${PIN_NAME}" bash -s <<'REMOTE'
+          if [ -z "${JWT_SECRET}" ]; then
+            echo "::error::the JWT_SECRET repository secret is empty or missing. Backend and frontend were not restarted."
+            exit 1
+          fi
+          { printf 'export JWT_SECRET=%q\n' "${JWT_SECRET}"; cat <<'REMOTE'
           set -euo pipefail
           cd "$REMOTE_DIR"
           export COMPOSE_FILE="docker-compose.yml:$HOME/$PIN_NAME"
           docker compose up -d --force-recreate backend frontend
           REMOTE
+          } | ssh deploy-target REMOTE_DIR="${REMOTE_DIR}" PIN_NAME="${PIN_NAME}" bash -s
 
       - name: Show container state
         run: |
