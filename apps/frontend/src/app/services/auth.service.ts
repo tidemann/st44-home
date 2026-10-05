@@ -146,6 +146,9 @@ export class AuthService {
     // Drop API answers the service worker kept for offline use
     void this.pwa.clearApiCache();
 
+    // No reminders for a user who logged out of this phone
+    void this.pwa.forgetPushSubscription();
+
     // Reset household store (clears all cached data)
     this.householdStore.reset();
 

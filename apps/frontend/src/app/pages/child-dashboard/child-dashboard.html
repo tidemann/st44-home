@@ -137,6 +137,9 @@
       }
     </section>
 
+    <!-- Reminder card: only while push is off or blocked on this phone -->
+    <app-notification-settings audience="child" [compact]="true" />
+
     <!-- Streak and Progress Section -->
     @if (analytics()) {
       <section class="analytics-section">

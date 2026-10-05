@@ -28,6 +28,13 @@ export interface ApiRequestOptions {
   skipLoading?: boolean;
 }
 
+/**
+ * Options for DELETE requests, which may carry a JSON body
+ */
+export interface ApiDeleteOptions extends ApiRequestOptions {
+  body?: unknown;
+}
+
 @Injectable({
   providedIn: 'root',
 })
@@ -85,7 +92,7 @@ export class ApiService {
   /**
    * DELETE request (Promise)
    */
-  async delete<T>(endpoint: string, options?: ApiRequestOptions): Promise<T> {
+  async delete<T>(endpoint: string, options?: ApiDeleteOptions): Promise<T> {
     return firstValueFrom(this.delete$<T>(endpoint, options));
   }
 
@@ -145,11 +152,13 @@ export class ApiService {
    * DELETE request (Observable)
    * @returns Observable that emits the response
    */
-  delete$<T>(endpoint: string, options?: ApiRequestOptions): Observable<T> {
+  delete$<T>(endpoint: string, options?: ApiDeleteOptions): Observable<T> {
     const url = `${this.baseUrl}${endpoint}`;
+    const hasBody = options?.body !== undefined;
     return this.http.delete<T>(url, {
-      headers: this.getHeaders(false),
+      headers: this.getHeaders(hasBody),
       context: this.getContext(options),
+      ...(hasBody ? { body: options.body } : {}),
     });
   }
 }
