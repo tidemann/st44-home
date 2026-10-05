@@ -27,7 +27,7 @@
 
   @if (!isLoading() && !hasProblemTasks()) {
     <div class="empty-state">
-      <p i18n="@@failedTasks.allOnTrack">✓ Alle oppgaver er pa sporet!</p>
+      <p i18n="@@failedTasks.allOnTrack">✓ Alle oppgaver er på sporet!</p>
       <p class="empty-state-hint" i18n="@@failedTasks.noDeclinedOrExpired">
         Ingen oppgaver har blitt avvist eller utlopt.
       </p>
@@ -111,7 +111,7 @@
 
                 <div class="task-meta">
                   <span class="meta-item overdue" i18n="@@failedTasks.daysOverdue">
-                    {{ getDaysOverdue(task) }} dager pa overtid
+                    {{ getDaysOverdue(task) }} dager på overtid
                   </span>
                   @if (task.candidateCount > 0) {
                     <span class="meta-item" i18n="@@failedTasks.declineCount">

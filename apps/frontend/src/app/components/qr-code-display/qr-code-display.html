@@ -13,7 +13,7 @@
       <div class="error-icon" aria-hidden="true">⚠️</div>
       <p>{{ error() }}</p>
       <button class="btn btn-secondary" (click)="loadQrToken()" i18n="@@qrCodeDisplay.tryAgain">
-        Prov igjen
+        Prøv igjen
       </button>
     </div>
   }
@@ -37,7 +37,7 @@
 
       <div class="qr-instructions">
         <p i18n="@@qrCodeDisplay.instructions">
-          Skann denne QR-koden med Diddit-appen for a logge inn raskt.
+          Skann denne QR-koden med Diddit-appen for å logge inn raskt.
         </p>
       </div>
 
@@ -61,11 +61,11 @@
         <button
           class="btn btn-secondary"
           (click)="regenerate()"
-          aria-label="Generer QR-kode pa nytt"
+          aria-label="Generer QR-kode på nytt"
           [disabled]="loading()"
           i18n="@@qrCodeDisplay.regenerate"
         >
-          🔄 Generer pa nytt
+          🔄 Generer på nytt
         </button>
       </div>
     </div>

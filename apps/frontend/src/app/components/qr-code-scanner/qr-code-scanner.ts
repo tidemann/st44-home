@@ -2,7 +2,7 @@ import {
   Component,
   ChangeDetectionStrategy,
   signal,
-  OnInit,
+  AfterViewInit,
   OnDestroy,
   output,
   ElementRef,
@@ -11,6 +11,11 @@ import {
 import { CommonModule } from '@angular/common';
 import { BrowserMultiFormatReader, NotFoundException } from '@zxing/library';
 
+/** Ask for the back camera; phones without one (and laptops) fall back to any camera */
+const CAMERA_CONSTRAINTS: MediaStreamConstraints = {
+  video: { facingMode: { ideal: 'environment' } },
+};
+
 @Component({
   selector: 'app-qr-code-scanner',
   imports: [CommonModule],
@@ -18,12 +23,13 @@ import { BrowserMultiFormatReader, NotFoundException } from '@zxing/library';
   styleUrl: './qr-code-scanner.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class QrCodeScannerComponent implements OnInit, OnDestroy {
+export class QrCodeScannerComponent implements AfterViewInit, OnDestroy {
   // Outputs
   readonly tokenScanned = output<string>();
   readonly scanCancelled = output<void>();
 
-  // Video element reference
+  // Video element reference. The element is always rendered (hidden until the
+  // camera runs), so it exists when scanning starts.
   readonly video = viewChild<ElementRef<HTMLVideoElement>>('videoElement');
 
   // State
@@ -35,12 +41,15 @@ export class QrCodeScannerComponent implements OnInit, OnDestroy {
 
   private codeReader: BrowserMultiFormatReader | null = null;
   private isScanning = false;
+  /** Set on destroy; checked after every await so a closed scanner never starts the camera */
+  private destroyed = false;
 
-  async ngOnInit(): Promise<void> {
+  async ngAfterViewInit(): Promise<void> {
     await this.initializeScanner();
   }
 
   ngOnDestroy(): void {
+    this.destroyed = true;
     this.stopScanning();
   }
 
@@ -55,17 +64,30 @@ export class QrCodeScannerComponent implements OnInit, OnDestroy {
       // Check if getUserMedia is supported
       if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
         this.noCameraAvailable.set(true);
-        this.error.set('Camera access is not supported on this device.');
+        this.error.set(
+          $localize`:@@qrCodeScanner.notSupported:Denne enheten gir ikke tilgang til kameraet.`,
+        );
         this.loading.set(false);
         return;
       }
 
-      // Request camera permission
+      // Ask for camera permission, then release the camera again so the reader
+      // can open it (iOS does not share one camera between two streams)
       try {
-        await navigator.mediaDevices.getUserMedia({ video: true });
-      } catch {
-        this.cameraPermissionDenied.set(true);
-        this.error.set('Camera permission denied. Please allow camera access to scan QR codes.');
+        const stream = await navigator.mediaDevices.getUserMedia(CAMERA_CONSTRAINTS);
+        stream.getTracks().forEach((track) => track.stop());
+        if (this.destroyed) return;
+      } catch (err) {
+        const name = err instanceof DOMException ? err.name : '';
+        if (name === 'NotFoundError' || name === 'OverconstrainedError') {
+          this.noCameraAvailable.set(true);
+          this.error.set($localize`:@@qrCodeScanner.noCamera:Fant ikke noe kamera på enheten.`);
+        } else {
+          this.cameraPermissionDenied.set(true);
+          this.error.set(
+            $localize`:@@qrCodeScanner.permissionDenied:Du må tillate kameraet for å skanne QR-koder.`,
+          );
+        }
         this.loading.set(false);
         return;
       }
@@ -75,7 +97,9 @@ export class QrCodeScannerComponent implements OnInit, OnDestroy {
       await this.startScanning();
     } catch (err) {
       console.error('Failed to initialize scanner:', err);
-      this.error.set('Failed to initialize camera. Please try again.');
+      this.error.set(
+        $localize`:@@qrCodeScanner.initFailed:Kunne ikke starte kameraet. Prøv igjen.`,
+      );
       this.loading.set(false);
     }
   }
@@ -94,34 +118,31 @@ export class QrCodeScannerComponent implements OnInit, OnDestroy {
       this.scanning.set(true);
       this.loading.set(false);
 
-      // Get available video devices
-      const videoDevices = await this.codeReader.listVideoInputDevices();
-
-      if (videoDevices.length === 0) {
-        this.noCameraAvailable.set(true);
-        this.error.set('No camera found on this device.');
-        return;
-      }
-
-      // Prefer back camera on mobile devices
-      const backCamera = videoDevices.find((device) => device.label.toLowerCase().includes('back'));
-      const deviceId = backCamera?.deviceId || videoDevices[0].deviceId;
-
-      // Start continuous scanning
-      this.codeReader.decodeFromVideoDevice(deviceId, videoElement.nativeElement, (result, err) => {
-        if (result) {
-          // Successfully scanned a QR code
-          const token = result.getText();
-          this.tokenScanned.emit(token);
-          this.stopScanning();
-        } else if (err && !(err instanceof NotFoundException)) {
-          // Log errors that aren't just "no QR code found"
-          console.error('Scan error:', err);
-        }
-      });
+      // Continuous scanning with the back camera. Choosing the camera by
+      // facingMode works on every platform; device labels are localized
+      // ("Bakre kamera" on a Norwegian iPhone) and empty before permission.
+      await this.codeReader.decodeFromConstraints(
+        CAMERA_CONSTRAINTS,
+        videoElement.nativeElement,
+        (result, err) => {
+          if (result) {
+            // Successfully scanned a QR code
+            const token = result.getText();
+            this.tokenScanned.emit(token);
+            this.stopScanning();
+          } else if (err && !(err instanceof NotFoundException)) {
+            // Log errors that aren't just "no QR code found"
+            console.error('Scan error:', err);
+          }
+        },
+      );
+      // Closed while the camera was opening: release it again
+      if (this.destroyed) this.stopScanning();
     } catch (err) {
       console.error('Failed to start scanning:', err);
-      this.error.set('Failed to start camera. Please try again.');
+      this.error.set(
+        $localize`:@@qrCodeScanner.startFailed:Kunne ikke starte kameraet. Prøv igjen.`,
+      );
       this.isScanning = false;
       this.scanning.set(false);
     }

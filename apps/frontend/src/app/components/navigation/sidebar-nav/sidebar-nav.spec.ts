@@ -56,7 +56,7 @@ describe('SidebarNav', () => {
       (btn as HTMLElement).querySelector('.sidebar-icon')?.textContent?.trim(),
     );
 
-    expect(icons).toEqual(['🏠', '✓', '👥', '🏆', '🎁']);
+    expect(icons).toEqual(['🏠', '📋', '👥', '🏆', '🎁']);
 
     // Test against component's navItems directly to avoid encoding issues in test DOM
     expect(component.navItems.map((item) => item.label)).toEqual([
