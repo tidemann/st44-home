@@ -30,7 +30,9 @@ export const errorResponseSchema = {
     statusCode: { type: 'number', description: 'HTTP status code' },
     details: { type: 'object', description: 'Optional error details', additionalProperties: true },
   },
-  required: ['error', 'message', 'statusCode'],
+  // Most routes reply with only { error }. Requiring message/statusCode made the
+  // serializer throw on those replies, so a 401 or 404 went out as a 500 (ST-636).
+  required: ['error'],
 } as const;
 
 export const uuidSchema = {
