@@ -3700,13 +3700,6 @@
           <context context-type="linenumber">279</context>
         </context-group>
       </trans-unit>
-      <trans-unit id="home.remindQuietHours" datatype="html">
-        <source>Ingen påminnelser mellom kl. 20 og 07. Prøv igjen i morgen tidlig.</source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/pages/home/home.ts</context>
-          <context context-type="linenumber">381</context>
-        </context-group>
-      </trans-unit>
       <trans-unit id="home.remindNotOpen" datatype="html">
         <source>Oppgaven er ikke åpen lenger.</source>
         <context-group purpose="location">

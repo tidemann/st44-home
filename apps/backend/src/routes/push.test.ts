@@ -243,6 +243,14 @@ describe('Push API', () => {
       assert.strictEqual(sent[0].payload.body, 'Husk: Gå på do');
     });
 
+    // ST-691: the retest was at 20:30 and the old quiet-hours rule refused it
+    test('a parent reminds at 20:30, and it still goes out', async () => {
+      const { sent, service } = serviceWithFakePhones();
+      const evening = new Date('2026-10-05T20:30:00+02:00');
+      assert.strictEqual(await service.remindAssignment(assignmentId, userA, evening), 1);
+      assert.strictEqual(sent[0].payload.body, 'Husk: Gå på do');
+    });
+
     test('the child (not a parent) cannot send it', async () => {
       const { service } = serviceWithFakePhones();
       await assert.rejects(service.remindAssignment(assignmentId, userB, noon), {

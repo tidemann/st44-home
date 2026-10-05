@@ -287,13 +287,21 @@ export class Home implements OnInit {
 
   /**
    * Handle task edit - open edit modal with task data
+   *
+   * The cards on this page are assignments, so the card hands us the
+   * assignment id; the task template lives under the assignment's taskId
+   * (ST-691: asking for the assignment id gave a 404).
    */
-  protected async onEditTask(taskId: string): Promise<void> {
+  protected async onEditTask(assignmentId: string): Promise<void> {
     const householdIdValue = this.householdId();
     if (!householdIdValue) return;
 
-    // Find task from assignments and load full task template
-    this.taskService.getTask(householdIdValue, taskId).subscribe({
+    const assignment = [...this.todayTasks(), ...this.upcomingTasks()].find(
+      (a) => a.id === assignmentId,
+    );
+    if (!assignment) return;
+
+    this.taskService.getTask(householdIdValue, assignment.taskId).subscribe({
       next: (task) => {
         this.selectedTask.set(task);
         this.editTaskOpen.set(true);
@@ -377,9 +385,6 @@ function remindError(err: unknown): string {
   if (err instanceof HttpErrorResponse) {
     const conflict = (err.error as { details?: { conflictField?: string } } | null)?.details
       ?.conflictField;
-    if (conflict === 'quietHours') {
-      return $localize`:@@home.remindQuietHours:Ingen påminnelser mellom kl. 20 og 07. Prøv igjen i morgen tidlig.`;
-    }
     if (conflict === 'status') {
       return $localize`:@@home.remindNotOpen:Oppgaven er ikke åpen lenger.`;
     }
