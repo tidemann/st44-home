@@ -278,6 +278,9 @@ export interface RewardRedemptionRow {
   status: RedemptionStatus;
   redeemed_at: Date;
   fulfilled_at: Date | null;
+  decided_at?: Date | null;
+  decided_by?: string | null;
+  rejection_reason?: string | null;
 }
 
 /**

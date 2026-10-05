@@ -7,6 +7,9 @@ import {
   ChildRewardsResponseSchema,
   RedeemRewardResponseSchema,
   UpdateRedemptionStatusRequestSchema,
+  RejectRedemptionRequestSchema,
+  ChildRedemptionsResponseSchema,
+  REDEMPTION_UNDO_SECONDS,
   type Reward,
   type RewardRedemption,
   type ChildPointsBalance,
@@ -28,6 +31,7 @@ import {
 } from '../utils/index.js';
 import { householdRewardParamsSchema, uuidSchema } from '../schemas/validation.js';
 import { stripResponseValidation } from '../schemas/common.js';
+import { pushService } from '../services/push.service.js';
 import type {
   RewardRow,
   RewardRedemptionRow,
@@ -99,6 +103,8 @@ function mapRedemptionRowToRedemption(row: RewardRedemptionRow): RewardRedemptio
     status: row.status,
     redeemedAt: toDateTimeString(row.redeemed_at),
     fulfilledAt: row.fulfilled_at ? toDateTimeString(row.fulfilled_at) : null,
+    decidedAt: row.decided_at ? toDateTimeString(row.decided_at) : null,
+    rejectionReason: row.rejection_reason ?? null,
   };
 }
 
@@ -368,7 +374,7 @@ async function getChildRewards(request: FastifyRequest, reply: FastifyReply) {
 
     // Get points balance
     const balanceResult = await db.query(
-      'SELECT points_balance FROM child_points_balance WHERE child_id = $1',
+      'SELECT points_balance::int AS points_balance FROM child_points_balance WHERE child_id = $1',
       [childId],
     );
 
@@ -471,7 +477,7 @@ async function redeemReward(
 
       // Get points balance
       const balanceResult = await client.query(
-        'SELECT points_balance FROM child_points_balance WHERE child_id = $1',
+        'SELECT points_balance::int AS points_balance FROM child_points_balance WHERE child_id = $1',
         [childId],
       );
 
@@ -503,11 +509,18 @@ async function redeemReward(
 
     // Get new balance (outside transaction, read-only)
     const newBalanceResult = await db.query(
-      'SELECT points_balance FROM child_points_balance WHERE child_id = $1',
+      'SELECT points_balance::int AS points_balance FROM child_points_balance WHERE child_id = $1',
       [childId],
     );
 
     const newBalance = newBalanceResult.rows[0]?.points_balance || 0;
+
+    // Tell the parents there is a request waiting; never fails the request
+    pushService
+      .notifyRewardRequested(redemptionData.id)
+      .catch((err) =>
+        request.log.error({ err, redemptionId: redemptionData.id }, 'Reward notification failed'),
+      );
 
     return reply.status(201).send({
       redemption: mapRedemptionRowToRedemption(redemptionData),
@@ -533,6 +546,49 @@ async function redeemReward(
       statusCode: 500,
       error: 'Internal Server Error',
       message: 'Failed to redeem reward',
+    });
+  }
+}
+
+/**
+ * GET /api/children/me/redemptions - The child's own reward requests (ST-624)
+ * Newest first, so the child sees what is waiting and why a parent said no
+ */
+async function getChildRedemptions(request: FastifyRequest, reply: FastifyReply) {
+  try {
+    const userId = request.user?.userId;
+    if (!userId) {
+      return reply.status(401).send({
+        statusCode: 401,
+        error: 'Unauthorized',
+        message: 'User not authenticated',
+      });
+    }
+
+    const result = await db.query(
+      `SELECT rr.*, r.name AS reward_name, c.name AS child_name
+       FROM reward_redemptions rr
+       JOIN children c ON rr.child_id = c.id
+       JOIN rewards r ON rr.reward_id = r.id
+       WHERE c.user_id = $1
+       ORDER BY rr.redeemed_at DESC
+       LIMIT 50`,
+      [userId],
+    );
+
+    const redemptions = result.rows.map((row) => ({
+      ...mapRedemptionRowToRedemption(row),
+      rewardName: row.reward_name,
+      childName: row.child_name,
+    }));
+
+    return reply.send({ redemptions });
+  } catch (error) {
+    request.log.error(error, 'Failed to get child redemptions');
+    return reply.status(500).send({
+      statusCode: 500,
+      error: 'Internal Server Error',
+      message: 'Failed to retrieve reward requests',
     });
   }
 }
@@ -611,28 +667,60 @@ async function fulfillRedemption(
  * POST /api/households/:householdId/redemptions/:redemptionId/reject - Reject redemption
  */
 async function rejectRedemption(
-  request: FastifyRequest<{ Params: RedemptionParams }>,
+  request: FastifyRequest<{ Params: RedemptionParams; Body: { reason?: string } }>,
   reply: FastifyReply,
 ) {
   return updateRedemptionStatus(request, reply, 'rejected');
 }
 
 /**
+ * POST /api/households/:householdId/redemptions/:redemptionId/undo - Undo a yes or a no
+ * Puts the request back to "waiting" within REDEMPTION_UNDO_SECONDS of the answer (ST-624)
+ */
+async function undoRedemption(
+  request: FastifyRequest<{ Params: RedemptionParams }>,
+  reply: FastifyReply,
+) {
+  return updateRedemptionStatus(request, reply, 'pending');
+}
+
+/**
+ * Which status a redemption may move to from which (ST-624). Asking again for
+ * the status it already has is answered with the redemption as it is, so a
+ * double tap does no harm.
+ */
+const ALLOWED_FROM: Record<'approved' | 'fulfilled' | 'rejected' | 'pending', string[]> = {
+  approved: ['pending'],
+  rejected: ['pending'],
+  fulfilled: ['approved'],
+  pending: ['approved', 'rejected'], // undo
+};
+
+/**
  * Helper to update redemption status
  */
 async function updateRedemptionStatus(
-  request: FastifyRequest<{ Params: RedemptionParams }>,
+  request: FastifyRequest<{ Params: RedemptionParams; Body?: { reason?: string } }>,
   reply: FastifyReply,
-  status: 'approved' | 'fulfilled' | 'rejected',
+  status: 'approved' | 'fulfilled' | 'rejected' | 'pending',
 ) {
   try {
     // Validate params with Zod schema
     const { householdId, redemptionId } = validateParams(householdRedemptionParamsSchema, request);
+    const reason =
+      status === 'rejected'
+        ? validateRequest(RejectRedemptionRequestSchema, request.body ?? {}).reason || null
+        : null;
+    const decidedBy = request.user?.userId ?? null;
+
     const updatedRedemption = await withTransaction(pool, async (client) => {
-      // Get current redemption
+      // Get current redemption, and whether a yes or no can still be undone
       const currentResult = await client.query(
-        'SELECT * FROM reward_redemptions WHERE id = $1 AND household_id = $2 FOR UPDATE',
-        [redemptionId, householdId],
+        `SELECT *,
+                decided_at IS NOT NULL
+                  AND decided_at > NOW() - make_interval(secs => $3) AS can_undo
+         FROM reward_redemptions WHERE id = $1 AND household_id = $2 FOR UPDATE`,
+        [redemptionId, householdId, REDEMPTION_UNDO_SECONDS],
       );
 
       if (currentResult.rows.length === 0) {
@@ -641,22 +729,78 @@ async function updateRedemptionStatus(
 
       const current = currentResult.rows[0];
 
-      // If rejecting, restore quantity and refund points
-      if (status === 'rejected' && current.status !== 'rejected') {
-        // Restore reward quantity
+      if (current.status === status) {
+        return current;
+      }
+      if (!ALLOWED_FROM[status].includes(current.status)) {
+        throw new TransactionValidationError(
+          409,
+          'Conflict',
+          `Cannot change a ${current.status} redemption to ${status}`,
+        );
+      }
+
+      if (status === 'pending') {
+        if (!current.can_undo) {
+          throw new TransactionValidationError(409, 'Conflict', 'Too late to undo this answer');
+        }
+        if (current.status === 'rejected') {
+          // A no gave the points and the item back; take them again, if they are still there
+          const stock = await client.query(
+            'SELECT quantity FROM rewards WHERE id = $1 FOR UPDATE',
+            [current.reward_id],
+          );
+          const quantity = stock.rows[0]?.quantity ?? null;
+          if (quantity !== null && quantity <= 0) {
+            throw new TransactionValidationError(409, 'Conflict', 'Reward is out of stock');
+          }
+          const balance = await client.query(
+            'SELECT points_balance::int AS points_balance FROM child_points_balance WHERE child_id = $1',
+            [current.child_id],
+          );
+          if ((balance.rows[0]?.points_balance ?? 0) < current.points_spent) {
+            throw new TransactionValidationError(409, 'Conflict', 'Insufficient points', {
+              required: current.points_spent,
+              available: balance.rows[0]?.points_balance ?? 0,
+            });
+          }
+          if (quantity !== null) {
+            await client.query('UPDATE rewards SET quantity = quantity - 1 WHERE id = $1', [
+              current.reward_id,
+            ]);
+          }
+        }
+        const result = await client.query(
+          `UPDATE reward_redemptions
+           SET status = 'pending', decided_at = NULL, decided_by = NULL, rejection_reason = NULL
+           WHERE id = $1 AND household_id = $2 RETURNING *`,
+          [redemptionId, householdId],
+        );
+        return result.rows[0];
+      }
+
+      // A no gives the item back (the points come back by themselves: the
+      // balance view leaves out rejected redemptions)
+      if (status === 'rejected') {
         await client.query(
-          'UPDATE rewards SET quantity = COALESCE(quantity, 0) + 1 WHERE id = $1 AND quantity IS NOT NULL',
+          'UPDATE rewards SET quantity = quantity + 1 WHERE id = $1 AND quantity IS NOT NULL',
           [current.reward_id],
         );
       }
 
-      // Update status
       const updateQuery =
         status === 'fulfilled'
-          ? 'UPDATE reward_redemptions SET status = $1, fulfilled_at = NOW() WHERE id = $2 AND household_id = $3 RETURNING *'
-          : 'UPDATE reward_redemptions SET status = $1 WHERE id = $2 AND household_id = $3 RETURNING *';
+          ? `UPDATE reward_redemptions SET status = $1, fulfilled_at = NOW()
+             WHERE id = $2 AND household_id = $3 RETURNING *`
+          : `UPDATE reward_redemptions
+             SET status = $1, decided_at = NOW(), decided_by = $4, rejection_reason = $5
+             WHERE id = $2 AND household_id = $3 RETURNING *`;
+      const values =
+        status === 'fulfilled'
+          ? [status, redemptionId, householdId]
+          : [status, redemptionId, householdId, decidedBy, reason];
 
-      const result = await client.query(updateQuery, [status, redemptionId, householdId]);
+      const result = await client.query(updateQuery, values);
 
       return result.rows[0];
     });
@@ -671,6 +815,7 @@ async function updateRedemptionStatus(
         statusCode: error.statusCode,
         error: error.error,
         message: error.message,
+        ...(error.details ? { details: error.details } : {}),
       });
     }
     request.log.error(error, 'Failed to update redemption status');
@@ -918,7 +1063,31 @@ export default async function rewardRoutes(server: FastifyInstance) {
   server.post('/api/households/:householdId/redemptions/:redemptionId/reject', {
     schema: stripResponseValidation({
       summary: 'Reject redemption',
-      description: 'Reject a redemption (refunds points to child)',
+      description:
+        'Reject a pending redemption (refunds points to child), optionally with a reason the child sees',
+      tags: ['rewards'],
+      security: [{ bearerAuth: [] }],
+      params: zodToOpenAPI(RedemptionParamsSchema),
+      // The body ({ reason }) is optional and checked in the handler, so an
+      // empty POST from an older app still works
+      response: {
+        200: zodToOpenAPI(RewardRedemptionSchema),
+        ...CommonErrors.BadRequest,
+        ...CommonErrors.Unauthorized,
+        ...CommonErrors.Forbidden,
+        ...CommonErrors.NotFound,
+        ...CommonErrors.Conflict,
+        ...CommonErrors.InternalServerError,
+      },
+    }),
+    preHandler: [authenticateUser, validateHouseholdMembership, requireHouseholdParent],
+    handler: rejectRedemption,
+  });
+
+  server.post('/api/households/:householdId/redemptions/:redemptionId/undo', {
+    schema: stripResponseValidation({
+      summary: 'Undo a yes or a no',
+      description: `Put an approved or rejected redemption back to pending, within ${REDEMPTION_UNDO_SECONDS} seconds of the answer`,
       tags: ['rewards'],
       security: [{ bearerAuth: [] }],
       params: zodToOpenAPI(RedemptionParamsSchema),
@@ -928,10 +1097,27 @@ export default async function rewardRoutes(server: FastifyInstance) {
         ...CommonErrors.Unauthorized,
         ...CommonErrors.Forbidden,
         ...CommonErrors.NotFound,
+        ...CommonErrors.Conflict,
         ...CommonErrors.InternalServerError,
       },
     }),
     preHandler: [authenticateUser, validateHouseholdMembership, requireHouseholdParent],
-    handler: rejectRedemption,
+    handler: undoRedemption,
+  });
+
+  server.get('/api/children/me/redemptions', {
+    schema: stripResponseValidation({
+      summary: "The child's own reward requests",
+      description: 'Newest first, with the status and the reason when a parent said no',
+      tags: ['rewards', 'children'],
+      security: [{ bearerAuth: [] }],
+      response: {
+        200: zodToOpenAPI(ChildRedemptionsResponseSchema),
+        ...CommonErrors.Unauthorized,
+        ...CommonErrors.InternalServerError,
+      },
+    }),
+    preHandler: [authenticateUser],
+    handler: getChildRedemptions,
   });
 }

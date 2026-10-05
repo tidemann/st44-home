@@ -47,6 +47,10 @@ export const RewardRedemptionSchema = z.object({
   status: RewardRedemptionStatusSchema,
   redeemedAt: z.string().datetime(),
   fulfilledAt: z.string().datetime().nullable(),
+  // When a parent said yes or no; starts the undo window (ST-624)
+  decidedAt: z.string().datetime().nullable().optional(),
+  // Why a parent said no, shown to the child (ST-624)
+  rejectionReason: z.string().nullable().optional(),
   // Added by list endpoint for display purposes
   rewardName: z.string().optional(),
   childName: z.string().optional(),
@@ -120,6 +124,21 @@ export const UpdateRedemptionStatusRequestSchema = z.object({
 export type UpdateRedemptionStatusRequest = z.infer<typeof UpdateRedemptionStatusRequestSchema>;
 
 /**
+ * Reject Redemption Request
+ * A parent who says no writes one sentence why; the child sees it (ST-624)
+ */
+export const RejectRedemptionRequestSchema = z.object({
+  reason: z.string().trim().max(500).optional(),
+});
+
+export type RejectRedemptionRequest = z.infer<typeof RejectRedemptionRequestSchema>;
+
+/**
+ * How long a parent can undo a yes or a no, in seconds (ST-624)
+ */
+export const REDEMPTION_UNDO_SECONDS = 300;
+
+/**
  * Response Schemas
  */
 
@@ -149,3 +168,13 @@ export const RedeemRewardResponseSchema = z.object({
 });
 
 export type RedeemRewardResponse = z.infer<typeof RedeemRewardResponseSchema>;
+
+/**
+ * Child Redemptions Response
+ * The child's own reward requests, newest first, with the reward name (ST-624)
+ */
+export const ChildRedemptionsResponseSchema = z.object({
+  redemptions: z.array(RewardRedemptionSchema),
+});
+
+export type ChildRedemptionsResponse = z.infer<typeof ChildRedemptionsResponseSchema>;

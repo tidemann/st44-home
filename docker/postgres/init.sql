@@ -38,7 +38,8 @@ VALUES
   ('049', 'cleanup_orphaned_child_memberships', NOW()),
   ('051', 'add_qr_token_to_children', NOW()),
   ('052', 'create_push_subscriptions', NOW()),
-  ('053', 'reapply_single_task_and_expired_checks', NOW())
+  ('053', 'reapply_single_task_and_expired_checks', NOW()),
+  ('054', 'add_redemption_decision', NOW())
 ON CONFLICT (version) DO NOTHING;
 
 -- Users table for authentication (supports email/password and OAuth)
@@ -262,7 +263,10 @@ CREATE TABLE IF NOT EXISTS reward_redemptions (
   points_spent INTEGER NOT NULL,
   status VARCHAR(50) DEFAULT 'pending' CHECK (status IN ('pending', 'approved', 'fulfilled', 'rejected')),
   redeemed_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-  fulfilled_at TIMESTAMP WITH TIME ZONE
+  fulfilled_at TIMESTAMP WITH TIME ZONE,
+  decided_at TIMESTAMP WITH TIME ZONE, -- Added in migration 054: when a parent said yes or no (starts the undo window)
+  decided_by UUID REFERENCES users(id) ON DELETE SET NULL, -- Added in migration 054
+  rejection_reason TEXT -- Added in migration 054: why a parent said no
 );
 
 CREATE INDEX IF NOT EXISTS idx_reward_redemptions_child ON reward_redemptions(child_id);

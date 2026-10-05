@@ -227,6 +227,51 @@ export class PushService {
   }
 
   /**
+   * "Emma ber om en belønning" to the household's parents (ST-624), with what
+   * they need to decide: the reward, the price and the child's balance after it
+   */
+  async notifyRewardRequested(redemptionId: string): Promise<number> {
+    if (!this.enabled) return 0;
+
+    const { rows } = await this.database.query<{
+      child_name: string | null;
+      reward_name: string;
+      points_spent: number;
+      points_balance: number | null;
+      parent_ids: string[] | null;
+    }>(
+      `SELECT c.name AS child_name,
+              r.name AS reward_name,
+              rr.points_spent,
+              cpb.points_balance,
+              ARRAY(
+                SELECT hm.user_id FROM household_members hm
+                WHERE hm.household_id = rr.household_id AND hm.role IN ('admin', 'parent')
+              ) AS parent_ids
+       FROM reward_redemptions rr
+       JOIN rewards r ON r.id = rr.reward_id
+       JOIN children c ON c.id = rr.child_id
+       LEFT JOIN child_points_balance cpb ON cpb.child_id = rr.child_id
+       WHERE rr.id = $1`,
+      [redemptionId],
+    );
+    const row = rows[0];
+    if (!row) return 0;
+
+    const who = row.child_name ?? 'Et barn';
+    return this.sendToUsers(
+      row.parent_ids ?? [],
+      {
+        title: `${who} ber om en belønning`,
+        body: `${row.reward_name}, ${row.points_spent} poeng. Igjen etterpå: ${row.points_balance ?? 0} poeng`,
+        url: 'rewards',
+        tag: `reward-${redemptionId}`,
+      },
+      DONE_TTL_SECONDS,
+    );
+  }
+
+  /**
    * "Due" reminders for today's open chores, once per chore, sent between 16:30
    * and 20:00 Oslo time. Each child gets one message listing their open chores.
    * Only children who have a phone with notifications on are claimed, so a child
