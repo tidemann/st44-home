@@ -479,16 +479,26 @@ jobs:
           echo "Running database migrations..."
           ssh deploy-target "docker exec st44-db /usr/local/bin/run-migrations.sh"
 
+      # The web push keys (ST-623) travel the same way as JWT_SECRET. They are
+      # optional: without them the backend starts with push off.
       - name: Start Application Services
         env:
           JWT_SECRET: ${{ secrets.JWT_SECRET }}
+          VAPID_PUBLIC_KEY: ${{ secrets.VAPID_PUBLIC_KEY }}
+          VAPID_PRIVATE_KEY: ${{ secrets.VAPID_PRIVATE_KEY }}
         run: |
           set -euo pipefail
           if [ -z "${JWT_SECRET}" ]; then
             echo "::error::the JWT_SECRET repository secret is empty or missing. Backend and frontend were not restarted."
             exit 1
           fi
-          { printf 'export JWT_SECRET=%q\n' "${JWT_SECRET}"; cat <<'REMOTE'
+          if [ -z "${VAPID_PUBLIC_KEY}" ] || [ -z "${VAPID_PRIVATE_KEY}" ]; then
+            echo "::warning::VAPID_PUBLIC_KEY / VAPID_PRIVATE_KEY secrets are not set: push notifications stay off."
+          fi
+          { printf 'export JWT_SECRET=%q\n' "${JWT_SECRET}"
+            printf 'export VAPID_PUBLIC_KEY=%q\n' "${VAPID_PUBLIC_KEY}"
+            printf 'export VAPID_PRIVATE_KEY=%q\n' "${VAPID_PRIVATE_KEY}"
+            cat <<'REMOTE'
           set -euo pipefail
           cd "$REMOTE_DIR"
           export COMPOSE_FILE="docker-compose.yml:$HOME/$PIN_NAME"

@@ -30,3 +30,6 @@ export * from './analytics.schema.js';
 
 // Pagination schemas
 export * from './pagination.schema.js';
+
+// Push notification schemas
+export * from './push.schema.js';

@@ -16,6 +16,7 @@ import analyticsRoutes from './routes/analytics.js';
 import rewardRoutes from './routes/rewards.js';
 import statsRoutes from './routes/stats.js';
 import userRoutes from './routes/user.js';
+import pushRoutes from './routes/push.js';
 import { healthCheckSchema } from './schemas/auth.js';
 import { isBaseError, InternalError } from './errors/index.js';
 import type { ErrorResponse } from './types/error-response.js';
@@ -24,6 +25,7 @@ import { requestLoggerPlugin, getRequestContext } from './middleware/request-log
 import { connectRedis, isRedisReady, disconnectRedis } from './core/redis.js';
 import { initI18n, createI18nHook } from './core/i18n.js';
 import { startAssignmentScheduler } from './services/assignment-scheduler.js';
+import { pushService, startReminderScheduler } from './services/push.service.js';
 
 // Extend FastifyRequest type to include user info
 declare module 'fastify' {
@@ -236,6 +238,7 @@ async function buildApp() {
   await fastify.register(analyticsRoutes);
   await fastify.register(statsRoutes);
   await fastify.register(userRoutes);
+  await fastify.register(pushRoutes);
 
   // Example items endpoint - demonstrates new error handling pattern
   interface Item {
@@ -430,10 +433,20 @@ const start = async () => {
     const assignmentScheduler =
       process.env.ASSIGNMENT_SCHEDULER === 'off' ? null : startAssignmentScheduler(fastify.log);
 
+    // "Due" push reminders to children, 16:30-20:00 Oslo time (ST-623). Off without VAPID keys.
+    const reminderScheduler =
+      process.env.ASSIGNMENT_SCHEDULER === 'off' || !pushService.enabled
+        ? null
+        : startReminderScheduler(fastify.log);
+    if (!pushService.enabled) {
+      fastify.log.info('Push notifications off: VAPID_PUBLIC_KEY / VAPID_PRIVATE_KEY not set');
+    }
+
     // Graceful shutdown
     const shutdown = async (signal: string) => {
       console.log(`${signal} received, shutting down gracefully...`);
       assignmentScheduler?.stop();
+      reminderScheduler?.stop();
       await fastify.close();
       await disconnectRedis();
       process.exit(0);

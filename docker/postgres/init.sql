@@ -36,7 +36,8 @@ VALUES
   ('047', 'add_child_household_consistency_check', NOW()),
   ('048', 'fix_multi_household_child_assignments', NOW()),
   ('049', 'cleanup_orphaned_child_memberships', NOW()),
-  ('051', 'add_qr_token_to_children', NOW())
+  ('051', 'add_qr_token_to_children', NOW()),
+  ('052', 'create_push_subscriptions', NOW())
 ON CONFLICT (version) DO NOTHING;
 
 -- Users table for authentication (supports email/password and OAuth)
@@ -194,6 +195,7 @@ CREATE TABLE IF NOT EXISTS task_assignments (
   child_id UUID REFERENCES children(id) ON DELETE CASCADE, -- Nullable for household-wide tasks
   date DATE NOT NULL, -- Renamed from due_date (migration 021)
   status VARCHAR(50) DEFAULT 'pending' CHECK (status IN ('pending', 'completed', 'overdue')),
+  reminder_sent_at TIMESTAMP WITH TIME ZONE, -- Added in migration 052: "due" push reminder sent
   created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
@@ -219,6 +221,20 @@ CREATE TABLE IF NOT EXISTS task_completions (
 
 CREATE INDEX IF NOT EXISTS idx_task_completions_household ON task_completions(household_id);
 CREATE INDEX IF NOT EXISTS idx_task_completions_child ON task_completions(child_id);
+
+-- Push subscriptions (migration 052): one row per phone/browser with notifications on
+CREATE TABLE IF NOT EXISTS push_subscriptions (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  endpoint TEXT NOT NULL UNIQUE,
+  p256dh TEXT NOT NULL,
+  auth TEXT NOT NULL,
+  user_agent TEXT,
+  created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  last_success_at TIMESTAMP WITH TIME ZONE
+);
+
+CREATE INDEX IF NOT EXISTS idx_push_subscriptions_user ON push_subscriptions(user_id);
 
 -- Rewards table (parents create rewards for household)
 CREATE TABLE IF NOT EXISTS rewards (
