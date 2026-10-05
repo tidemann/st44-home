@@ -484,6 +484,10 @@ jobs:
           JWT_SECRET: ${{ secrets.JWT_SECRET }}
         run: |
           set -euo pipefail
+          if [ -z "${JWT_SECRET}" ]; then
+            echo "::error::the JWT_SECRET repository secret is empty or missing. Backend and frontend were not restarted."
+            exit 1
+          fi
           { printf 'export JWT_SECRET=%q\n' "${JWT_SECRET}"; cat <<'REMOTE'
           set -euo pipefail
           cd "$REMOTE_DIR"
