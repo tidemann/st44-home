@@ -16,17 +16,43 @@ function fakeInstallEvent(outcome: 'accepted' | 'dismissed'): BeforeInstallPromp
   return event;
 }
 
+// Other spec files swap window.localStorage for mocks and do not all put it back,
+// so this spec brings its own working storage instead of trusting test order.
+function memoryStorage(): Storage {
+  const items = new Map<string, string>();
+  return {
+    get length() {
+      return items.size;
+    },
+    key: (index: number) => [...items.keys()][index] ?? null,
+    getItem: (key: string) => items.get(key) ?? null,
+    setItem: (key: string, value: string) => void items.set(key, String(value)),
+    removeItem: (key: string) => void items.delete(key),
+    clear: () => items.clear(),
+  };
+}
+
 describe('PwaService', () => {
   const originalUa = navigator.userAgent;
+  let previousStorage: Storage;
 
   beforeEach(() => {
-    localStorage.clear();
+    previousStorage = window.localStorage;
+    Object.defineProperty(window, 'localStorage', {
+      value: memoryStorage(),
+      writable: true,
+      configurable: true,
+    });
     setUserAgent('Mozilla/5.0 (X11; Linux x86_64) Chrome/130.0');
   });
 
   afterEach(() => {
     setUserAgent(originalUa);
-    localStorage.clear();
+    Object.defineProperty(window, 'localStorage', {
+      value: previousStorage,
+      writable: true,
+      configurable: true,
+    });
     vi.useRealTimers();
   });
 
