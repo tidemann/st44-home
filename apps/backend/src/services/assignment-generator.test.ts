@@ -2,6 +2,7 @@ import { test, describe, before, after, beforeEach, afterEach } from 'node:test'
 import assert from 'node:assert';
 import pg from 'pg';
 import { generateAssignments } from './assignment-generator.js';
+import { runDailyAssignmentGeneration } from './assignment-scheduler.js';
 import { addDays, getISOWeek } from 'date-fns';
 
 /**
@@ -410,8 +411,8 @@ describe('Assignment Generator Service', () => {
       const weekNum = getISOWeek(startDate);
       assert.strictEqual(weekNum % 2, 1, 'Should be odd week');
 
-      const result = await generateAssignments(testHouseholdId, startDate, 7);
-      assert.strictEqual(result.created, 7);
+      const result = await generateAssignments(testHouseholdId, startDate, 5); // Wed-Sun of week 1
+      assert.strictEqual(result.created, 5);
 
       const assignments = await pool.query(
         `SELECT DISTINCT child_id FROM task_assignments WHERE task_id = $1`,
@@ -442,7 +443,7 @@ describe('Assignment Generator Service', () => {
 
       // Odd week (week 1)
       const startDate = new Date('2025-01-01');
-      const result = await generateAssignments(testHouseholdId, startDate, 7);
+      const result = await generateAssignments(testHouseholdId, startDate, 5); // Wed-Sun of week 1
 
       const assignments = await pool.query(
         `SELECT DISTINCT child_id FROM task_assignments WHERE task_id = $1`,
@@ -548,7 +549,7 @@ describe('Assignment Generator Service', () => {
       );
 
       // Generate new assignments
-      const startDate = new Date('2025-01-01');
+      const startDate = new Date('2025-01-06');
       const result = await generateAssignments(testHouseholdId, startDate, 7);
 
       assert.strictEqual(result.created, 7);
@@ -581,7 +582,7 @@ describe('Assignment Generator Service', () => {
       );
       const taskId = taskResult.rows[0].id;
 
-      const startDate = new Date('2025-01-01');
+      const startDate = new Date('2025-01-06');
       const result = await generateAssignments(testHouseholdId, startDate, 7);
 
       assert.strictEqual(result.created, 7);
@@ -619,7 +620,7 @@ describe('Assignment Generator Service', () => {
         [testHouseholdId, taskId, testChildIds[2], '2024-12-01', 'completed'],
       );
 
-      const startDate = new Date('2025-01-01');
+      const startDate = new Date('2025-01-06');
       const result = await generateAssignments(testHouseholdId, startDate, 7);
 
       const assignments = await pool.query(
@@ -688,7 +689,7 @@ describe('Assignment Generator Service', () => {
       );
 
       // Generate for household 1
-      const result = await generateAssignments(testHouseholdId, new Date('2025-01-01'), 7);
+      const result = await generateAssignments(testHouseholdId, new Date('2025-01-06'), 7);
 
       assert.strictEqual(result.created, 7);
 
@@ -754,7 +755,7 @@ describe('Assignment Generator Service', () => {
         [testHouseholdId, task2Id, testChildIds[1], '2024-12-01', 'completed'],
       );
 
-      const result = await generateAssignments(testHouseholdId, new Date('2025-01-01'), 7);
+      const result = await generateAssignments(testHouseholdId, new Date('2025-01-06'), 7);
 
       assert.strictEqual(result.created, 14); // 7 days × 2 tasks
 
@@ -970,6 +971,195 @@ describe('Assignment Generator Service', () => {
       const result3 = await generateAssignments(testHouseholdId, new Date('2025-01-01'), 400);
       assert.strictEqual(result3.errors.length, 1);
       assert.ok(result3.errors[0].includes('days must be between'));
+    });
+  });
+
+  // ==================== Test Suite 7: Daily Job Reruns ====================
+
+  describe('Daily Job Reruns', () => {
+    /**
+     * Simulates the daily job: one 7-day run per day for `runs` days from startDate.
+     * Returns all rows for the task ordered by date.
+     */
+    async function runDailyFor(taskId: string, startDate: string, runs: number) {
+      for (let i = 0; i < runs; i++) {
+        const result = await generateAssignments(
+          testHouseholdId,
+          addDays(new Date(startDate), i),
+          7,
+        );
+        assert.deepStrictEqual(result.errors, []);
+      }
+      const rows = await pool.query(
+        `SELECT date::text, child_id FROM task_assignments WHERE task_id = $1 ORDER BY date`,
+        [taskId],
+      );
+      return rows.rows as { date: string; child_id: string | null }[];
+    }
+
+    async function createTask(name: string, ruleType: string, ruleConfig: object) {
+      const taskResult = await pool.query(
+        `INSERT INTO tasks (household_id, name, rule_type, rule_config, active)
+         VALUES ($1, $2, $3, $4, true) RETURNING id`,
+        [testHouseholdId, name, ruleType, ruleConfig],
+      );
+      return taskResult.rows[0].id as string;
+    }
+
+    function assertOnePerDate(rows: { date: string }[]) {
+      const dates = rows.map((r) => r.date);
+      assert.strictEqual(new Set(dates).size, dates.length, 'one assignment per task per date');
+    }
+
+    test('daily rotation: reruns on following days create no duplicates', async () => {
+      const taskId = await createTask('Dishes', 'daily', {
+        assignedChildren: [testChildIds[0], testChildIds[1]],
+      });
+
+      // Mon 2025-01-06 .. Sun 2025-01-12, each run covering 7 days
+      const rows = await runDailyFor(taskId, '2025-01-06', 7);
+
+      assert.strictEqual(rows.length, 13, 'Mon 6th to Sat 18th, once each');
+      assertOnePerDate(rows);
+      for (let i = 1; i < rows.length; i++) {
+        assert.notStrictEqual(rows[i].child_id, rows[i - 1].child_id, 'alternates every day');
+      }
+    });
+
+    test('repeating rotation: reruns keep alternating per occurrence', async () => {
+      const taskId = await createTask('Trash', 'repeating', {
+        repeatDays: [1, 4], // Monday, Thursday
+        assignedChildren: [testChildIds[0], testChildIds[1]],
+      });
+
+      const rows = await runDailyFor(taskId, '2025-01-06', 7);
+
+      // Mon 6, Thu 9, Mon 13, Thu 16
+      assert.deepStrictEqual(
+        rows.map((r) => r.date),
+        ['2025-01-06', '2025-01-09', '2025-01-13', '2025-01-16'],
+      );
+      assertOnePerDate(rows);
+      assert.strictEqual(rows[0].child_id, rows[2].child_id);
+      assert.strictEqual(rows[1].child_id, rows[3].child_id);
+      assert.notStrictEqual(rows[0].child_id, rows[1].child_id);
+    });
+
+    test('odd/even weekly rotation: each week keeps one child across reruns', async () => {
+      const taskId = await createTask('Vacuum', 'weekly_rotation', {
+        rotationType: 'odd_even_week',
+        assignedChildren: [testChildIds[0], testChildIds[1]],
+      });
+
+      // Start Wednesday of week 2; runs cover Wed 8th .. Mon 20th (weeks 2, 3 and 4)
+      const rows = await runDailyFor(taskId, '2025-01-08', 7);
+
+      assertOnePerDate(rows);
+      assert.strictEqual(rows.length, 13);
+      for (const row of rows) {
+        const oddWeek = row.date >= '2025-01-13' && row.date <= '2025-01-19'; // week 3
+        const expected = oddWeek ? testChildIds[0] : testChildIds[1];
+        assert.strictEqual(row.child_id, expected, `week parity for ${row.date}`);
+      }
+    });
+
+    test('alternating weekly rotation: reruns mid-week do not switch child', async () => {
+      const taskId = await createTask('Bathroom', 'weekly_rotation', {
+        rotationType: 'alternating',
+        assignedChildren: [testChildIds[0], testChildIds[1]],
+      });
+      // Last week's child was Alice
+      await pool.query(
+        `INSERT INTO task_assignments (household_id, task_id, child_id, date, status)
+         VALUES ($1, $2, $3, '2025-01-05', 'completed')`,
+        [testHouseholdId, taskId, testChildIds[0]],
+      );
+
+      const rows = (await runDailyFor(taskId, '2025-01-06', 8)).filter(
+        (r) => r.date >= '2025-01-06',
+      );
+
+      assertOnePerDate(rows);
+      // Mon 6 .. Sun 12 is Bob's week, Mon 13 .. Sun 19 is Alice's
+      for (const row of rows) {
+        const expected = row.date <= '2025-01-12' ? testChildIds[1] : testChildIds[0];
+        assert.strictEqual(row.child_id, expected, `child for ${row.date}`);
+      }
+      assert.strictEqual(rows[rows.length - 1].date, '2025-01-19');
+    });
+
+    test('keeps a parent reassignment on rerun', async () => {
+      const taskId = await createTask('Laundry', 'daily', {
+        assignedChildren: [testChildIds[0], testChildIds[1]],
+      });
+      await generateAssignments(testHouseholdId, new Date('2025-01-06'), 7);
+
+      // Parent moves Monday's chore to Charlie
+      await pool.query(
+        `UPDATE task_assignments SET child_id = $1 WHERE task_id = $2 AND date = '2025-01-06'`,
+        [testChildIds[2], taskId],
+      );
+
+      const rerun = await generateAssignments(testHouseholdId, new Date('2025-01-06'), 7);
+      assert.strictEqual(rerun.created, 0);
+      assert.strictEqual(rerun.skipped, 7);
+
+      const monday = await pool.query(
+        `SELECT child_id FROM task_assignments WHERE task_id = $1 AND date = '2025-01-06'`,
+        [taskId],
+      );
+      assert.deepStrictEqual(
+        monday.rows.map((r) => r.child_id),
+        [testChildIds[2]],
+      );
+    });
+
+    test('reads legacy snake_case rule_config too', async () => {
+      const taskId = await createTask('Legacy', 'repeating', {
+        repeat_days: [1],
+        assigned_children: [testChildIds[0]],
+      });
+
+      const rows = await runDailyFor(taskId, '2025-01-06', 1);
+      assert.deepStrictEqual(rows, [{ date: '2025-01-06', child_id: testChildIds[0] }]);
+    });
+
+    test('ignores single tasks', async () => {
+      await createTask('One-off', 'single', { assignedChildren: [testChildIds[0]] });
+
+      const result = await generateAssignments(testHouseholdId, new Date('2025-01-06'), 7);
+      assert.strictEqual(result.created, 0);
+      assert.deepStrictEqual(result.errors, []);
+    });
+
+    test('daily job: Monday 00:05 in Oslo creates the whole week, rerun adds nothing', async () => {
+      const taskId = await createTask('Make bed', 'daily', {});
+      // Sunday 22:05 UTC = Monday 2026-10-05 00:05 in Oslo (CEST)
+      const now = new Date('2026-10-04T22:05:00Z');
+
+      const first = await runDailyAssignmentGeneration({ now });
+      assert.strictEqual(first.date, '2026-10-05');
+      assert.deepStrictEqual(first.failedHouseholds, []);
+
+      const second = await runDailyAssignmentGeneration({ now });
+      assert.deepStrictEqual(second.failedHouseholds, []);
+
+      const rows = await pool.query(
+        `SELECT date::text FROM task_assignments WHERE task_id = $1 ORDER BY date`,
+        [taskId],
+      );
+      assert.deepStrictEqual(
+        rows.rows.map((r) => r.date),
+        [
+          '2026-10-05',
+          '2026-10-06',
+          '2026-10-07',
+          '2026-10-08',
+          '2026-10-09',
+          '2026-10-10',
+          '2026-10-11',
+        ],
+      );
     });
   });
 });
