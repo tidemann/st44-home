@@ -16,6 +16,26 @@ const CAMERA_CONSTRAINTS: MediaStreamConstraints = {
   video: { facingMode: { ideal: 'environment' } },
 };
 
+interface FeaturePolicy {
+  allowsFeature(feature: string): boolean;
+}
+
+/**
+ * False when the page's Permissions-Policy header turns the camera off
+ * (`camera=()`). The browser then refuses getUserMedia at once, without asking
+ * the user, and no retry or setting on the phone can change that (ST-679).
+ * Browsers without the policy API (Safari) report true; their refusal shows up
+ * as a NotAllowedError instead.
+ */
+export function cameraAllowedByPolicy(doc: Document = document): boolean {
+  const { permissionsPolicy, featurePolicy } = doc as Document & {
+    permissionsPolicy?: FeaturePolicy;
+    featurePolicy?: FeaturePolicy;
+  };
+  const policy = permissionsPolicy ?? featurePolicy;
+  return policy ? policy.allowsFeature('camera') : true;
+}
+
 @Component({
   selector: 'app-qr-code-scanner',
   imports: [CommonModule],
@@ -38,6 +58,10 @@ export class QrCodeScannerComponent implements AfterViewInit, OnDestroy {
   protected readonly scanning = signal(false);
   protected readonly cameraPermissionDenied = signal(false);
   protected readonly noCameraAvailable = signal(false);
+  /** The site itself does not allow the camera; only e-mail login works */
+  protected readonly cameraBlocked = signal(false);
+  /** "Tillat kameratilgang" was pressed and the camera was refused again */
+  protected readonly stillDenied = signal(false);
 
   private codeReader: BrowserMultiFormatReader | null = null;
   private isScanning = false;
@@ -71,6 +95,15 @@ export class QrCodeScannerComponent implements AfterViewInit, OnDestroy {
         return;
       }
 
+      if (!cameraAllowedByPolicy()) {
+        this.cameraBlocked.set(true);
+        this.error.set(
+          $localize`:@@qrCodeScanner.blockedBySite:Kameraet er slått av for denne nettsiden.`,
+        );
+        this.loading.set(false);
+        return;
+      }
+
       // Ask for camera permission, then release the camera again so the reader
       // can open it (iOS does not share one camera between two streams)
       try {
@@ -82,6 +115,10 @@ export class QrCodeScannerComponent implements AfterViewInit, OnDestroy {
         if (name === 'NotFoundError' || name === 'OverconstrainedError') {
           this.noCameraAvailable.set(true);
           this.error.set($localize`:@@qrCodeScanner.noCamera:Fant ikke noe kamera på enheten.`);
+        } else if (name === 'NotReadableError' || name === 'AbortError') {
+          this.error.set(
+            $localize`:@@qrCodeScanner.cameraBusy:Kameraet brukes av en annen app. Lukk den og prøv igjen.`,
+          );
         } else {
           this.cameraPermissionDenied.set(true);
           this.error.set(
@@ -165,6 +202,7 @@ export class QrCodeScannerComponent implements AfterViewInit, OnDestroy {
   protected async retry(): Promise<void> {
     this.cameraPermissionDenied.set(false);
     this.noCameraAvailable.set(false);
+    this.stillDenied.set(false);
     this.error.set(null);
     await this.initializeScanner();
   }
@@ -182,7 +220,10 @@ export class QrCodeScannerComponent implements AfterViewInit, OnDestroy {
    */
   protected async requestPermission(): Promise<void> {
     this.cameraPermissionDenied.set(false);
+    this.stillDenied.set(false);
     this.error.set(null);
     await this.initializeScanner();
+    // Refused again: say so, otherwise the screen only flashes (ST-679)
+    if (this.cameraPermissionDenied()) this.stillDenied.set(true);
   }
 }

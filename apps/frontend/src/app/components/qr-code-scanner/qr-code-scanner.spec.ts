@@ -78,6 +78,57 @@ describe('QrCodeScannerComponent', () => {
     expect(text).toContain('for å skanne');
   });
 
+  // ST-679: the live site sent `Permissions-Policy: camera=()`. The browser then
+  // refused at once, and "Tillat kameratilgang" only made the screen flash.
+  it('says the camera is off for the site, and never asks, when the page policy blocks it', async () => {
+    Object.defineProperty(document, 'permissionsPolicy', {
+      value: { allowsFeature: (feature: string) => feature !== 'camera' },
+      configurable: true,
+    });
+    try {
+      await start();
+    } finally {
+      delete (document as { permissionsPolicy?: unknown }).permissionsPolicy;
+    }
+
+    expect(getUserMedia).not.toHaveBeenCalled();
+    const blocked = fixture.nativeElement.querySelector('.camera-blocked') as HTMLElement;
+    expect(blocked).not.toBeNull();
+    expect(blocked.getAttribute('role')).toBe('alert');
+    expect(blocked.textContent).toContain('Kameraet er slått av for denne nettsiden');
+    expect(blocked.textContent).toContain('e-post og passord');
+    expect(fixture.nativeElement.querySelector('.permission-denied')).toBeNull();
+    expect(fixture.nativeElement.querySelector('.error-state')).toBeNull();
+  });
+
+  it('says the camera is still refused after "Tillat kameratilgang" fails again', async () => {
+    getUserMedia.mockRejectedValue(new DOMException('denied', 'NotAllowedError'));
+    await start();
+    expect(fixture.nativeElement.querySelector('.still-denied')).toBeNull();
+
+    const allow = fixture.nativeElement.querySelector(
+      '.permission-denied .btn-primary',
+    ) as HTMLButtonElement;
+    allow.click();
+    await fixture.whenStable();
+    fixture.detectChanges();
+
+    expect(getUserMedia).toHaveBeenCalledTimes(2);
+    const text = fixture.nativeElement.querySelector('.permission-denied').textContent as string;
+    expect(text).toContain('Kameraet er fortsatt sperret');
+    expect(text).toContain('innstillingene');
+  });
+
+  it('says another app is using the camera', async () => {
+    getUserMedia.mockRejectedValue(new DOMException('busy', 'NotReadableError'));
+
+    await start();
+
+    const error = fixture.nativeElement.querySelector('.error-state') as HTMLElement;
+    expect(error.textContent).toContain('brukes av en annen app');
+    expect(fixture.nativeElement.querySelector('.permission-denied')).toBeNull();
+  });
+
   it('shows only the no-camera screen when the device has no camera', async () => {
     getUserMedia.mockRejectedValue(new DOMException('none', 'NotFoundError'));
 

@@ -3127,109 +3127,158 @@
           <context context-type="linenumber">16,19</context>
         </context-group>
       </trans-unit>
+      <trans-unit id="qrCodeScanner.stillDenied" datatype="html">
+        <source>Kameraet er fortsatt sperret.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/qr-code-scanner/qr-code-scanner.html</context>
+          <context context-type="linenumber">19,21</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="qrCodeScanner.settingsHint" datatype="html">
+        <source> Har du sagt nei før? Slå på kamera for home.st44.no i innstillingene til nettleseren eller telefonen, og trykk på knappen igjen. Du kan også logge inn med e-post og passord. </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/qr-code-scanner/qr-code-scanner.html</context>
+          <context context-type="linenumber">22,25</context>
+        </context-group>
+      </trans-unit>
       <trans-unit id="qrCodeScanner.allowCameraButton" datatype="html">
         <source> Tillat kameratilgang </source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/qr-code-scanner/qr-code-scanner.html</context>
-          <context context-type="linenumber">24,26</context>
+          <context context-type="linenumber">31,33</context>
         </context-group>
       </trans-unit>
       <trans-unit id="qrCodeScanner.cancelButton" datatype="html">
         <source> Avbryt </source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/qr-code-scanner/qr-code-scanner.html</context>
-          <context context-type="linenumber">27,30</context>
+          <context context-type="linenumber">34,37</context>
         </context-group>
       </trans-unit>
       <trans-unit id="qrCodeScanner.noCameraFound" datatype="html">
         <source>Ingen kamera funnet</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/qr-code-scanner/qr-code-scanner.html</context>
-          <context context-type="linenumber">37,38</context>
+          <context context-type="linenumber">44,45</context>
         </context-group>
       </trans-unit>
       <trans-unit id="qrCodeScanner.noCameraMessage" datatype="html">
         <source> Enheten din har ikke et kamera eller det er ikke tilgjengelig. </source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/qr-code-scanner/qr-code-scanner.html</context>
-          <context context-type="linenumber">39,41</context>
+          <context context-type="linenumber">46,48</context>
         </context-group>
       </trans-unit>
       <trans-unit id="qrCodeScanner.alternativeLogin" datatype="html">
         <source> Du kan bruke passord/PIN-innlogging i stedet, eller prøve å skanne fra en annen enhet. </source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/qr-code-scanner/qr-code-scanner.html</context>
-          <context context-type="linenumber">42,44</context>
+          <context context-type="linenumber">49,51</context>
         </context-group>
       </trans-unit>
       <trans-unit id="qrCodeScanner.backToLogin" datatype="html">
         <source> Tilbake til innlogging </source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/qr-code-scanner/qr-code-scanner.html</context>
-          <context context-type="linenumber">45,50</context>
+          <context context-type="linenumber">52,57</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="qrCodeScanner.blockedTitle" datatype="html">
+        <source>QR-innlogging virker ikke akkurat nå</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/qr-code-scanner/qr-code-scanner.html</context>
+          <context context-type="linenumber">61,63</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="qrCodeScanner.blockedHelp" datatype="html">
+        <source> Logg inn med e-post og passord i stedet, eller be en voksen om hjelp. </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/qr-code-scanner/qr-code-scanner.html</context>
+          <context context-type="linenumber">64,66</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="qrCodeScanner.backToLogin2" datatype="html">
+        <source> Tilbake til innlogging </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/qr-code-scanner/qr-code-scanner.html</context>
+          <context context-type="linenumber">67,72</context>
         </context-group>
       </trans-unit>
       <trans-unit id="qrCodeScanner.tryAgainButton" datatype="html">
         <source> Prøv igjen </source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/qr-code-scanner/qr-code-scanner.html</context>
-          <context context-type="linenumber">57,59</context>
+          <context context-type="linenumber">81,83</context>
         </context-group>
       </trans-unit>
       <trans-unit id="qrCodeScanner.cancelButton2" datatype="html">
         <source> Avbryt </source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/qr-code-scanner/qr-code-scanner.html</context>
-          <context context-type="linenumber">60,63</context>
+          <context context-type="linenumber">84,87</context>
         </context-group>
       </trans-unit>
       <trans-unit id="qrCodeScanner.positionQrCode" datatype="html">
         <source>Plasser QR-koden innenfor rammen</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/qr-code-scanner/qr-code-scanner.html</context>
-          <context context-type="linenumber">77,80</context>
+          <context context-type="linenumber">101,104</context>
         </context-group>
       </trans-unit>
       <trans-unit id="qrCodeScanner.cancelScanning" datatype="html">
         <source> Avbryt skanning </source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/qr-code-scanner/qr-code-scanner.html</context>
-          <context context-type="linenumber">81,85</context>
+          <context context-type="linenumber">105,109</context>
         </context-group>
       </trans-unit>
       <trans-unit id="qrCodeScanner.notSupported" datatype="html">
         <source>Denne enheten gir ikke tilgang til kameraet.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/qr-code-scanner/qr-code-scanner.ts</context>
-          <context context-type="linenumber">68</context>
+          <context context-type="linenumber">92</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="qrCodeScanner.blockedBySite" datatype="html">
+        <source>Kameraet er slått av for denne nettsiden.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/qr-code-scanner/qr-code-scanner.ts</context>
+          <context context-type="linenumber">101</context>
         </context-group>
       </trans-unit>
       <trans-unit id="qrCodeScanner.noCamera" datatype="html">
         <source>Fant ikke noe kamera på enheten.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/qr-code-scanner/qr-code-scanner.ts</context>
-          <context context-type="linenumber">84</context>
+          <context context-type="linenumber">117</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="qrCodeScanner.cameraBusy" datatype="html">
+        <source>Kameraet brukes av en annen app. Lukk den og prøv igjen.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/qr-code-scanner/qr-code-scanner.ts</context>
+          <context context-type="linenumber">120</context>
         </context-group>
       </trans-unit>
       <trans-unit id="qrCodeScanner.permissionDenied" datatype="html">
         <source>Du må tillate kameraet for å skanne QR-koder.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/qr-code-scanner/qr-code-scanner.ts</context>
-          <context context-type="linenumber">88</context>
+          <context context-type="linenumber">125</context>
         </context-group>
       </trans-unit>
       <trans-unit id="qrCodeScanner.initFailed" datatype="html">
         <source>Kunne ikke starte kameraet. Prøv igjen.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/qr-code-scanner/qr-code-scanner.ts</context>
-          <context context-type="linenumber">101</context>
+          <context context-type="linenumber">138</context>
         </context-group>
       </trans-unit>
       <trans-unit id="qrCodeScanner.startFailed" datatype="html">
         <source>Kunne ikke starte kameraet. Prøv igjen.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/qr-code-scanner/qr-code-scanner.ts</context>
-          <context context-type="linenumber">144</context>
+          <context context-type="linenumber">181</context>
         </context-group>
       </trans-unit>
       <trans-unit id="streakCounter.daysLabel" datatype="html">
