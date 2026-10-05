@@ -32,7 +32,7 @@ export class SidebarNav {
    */
   readonly navItems: NavItem[] = [
     { id: 'home', icon: '🏠', label: $localize`:@@nav.home:Hjem` },
-    { id: 'tasks', icon: '✓', label: $localize`:@@nav.tasks:Oppgaver` },
+    { id: 'tasks', icon: '📋', label: $localize`:@@nav.tasks:Oppgaver` },
     { id: 'family', icon: '👥', label: $localize`:@@nav.family:Familie` },
     { id: 'progress', icon: '🏆', label: $localize`:@@nav.progress:Fremgang` },
     { id: 'rewards', icon: '🎁', label: $localize`:@@nav.rewards:Belønninger` },

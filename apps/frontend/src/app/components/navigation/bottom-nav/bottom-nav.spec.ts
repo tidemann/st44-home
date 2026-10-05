@@ -41,7 +41,7 @@ describe('BottomNav', () => {
       (btn as HTMLElement).querySelector('.nav-label')?.textContent?.trim(),
     );
 
-    expect(icons).toEqual(['🏠', '✓', '👥', '🏆', '🎁']);
+    expect(icons).toEqual(['🏠', '📋', '👥', '🏆', '🎁']);
     // Norwegian is the source language
     expect(labels).toEqual(['Hjem', 'Oppgaver', 'Familie', 'Fremgang', 'Belønninger']);
   });

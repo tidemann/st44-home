@@ -11,9 +11,9 @@
   @if (cameraPermissionDenied() && !loading()) {
     <div class="permission-denied" role="alert" aria-live="assertive">
       <div class="icon" aria-hidden="true">📷</div>
-      <h3 i18n="@@qrCodeScanner.cameraAccessRequired">Kameratilgang pakrevd</h3>
+      <h3 i18n="@@qrCodeScanner.cameraAccessRequired">Kameratilgang påkrevd</h3>
       <p i18n="@@qrCodeScanner.allowCameraMessage">
-        Vennligst tillat kameratilgang for a skanne QR-koder.
+        Vennligst tillat kameratilgang for å skanne QR-koder.
       </p>
       <div class="actions">
         <button
@@ -39,7 +39,7 @@
         Enheten din har ikke et kamera eller det er ikke tilgjengelig.
       </p>
       <p class="help-text" i18n="@@qrCodeScanner.alternativeLogin">
-        Du kan bruke passord/PIN-innlogging i stedet, eller prove a skanne fra en annen enhet.
+        Du kan bruke passord/PIN-innlogging i stedet, eller prøve å skanne fra en annen enhet.
       </p>
       <button class="btn btn-secondary" (click)="cancel()" i18n="@@qrCodeScanner.backToLogin">
         Tilbake til innlogging
@@ -54,7 +54,7 @@
       <p>{{ error() }}</p>
       <div class="actions">
         <button class="btn btn-primary" (click)="retry()" i18n="@@qrCodeScanner.tryAgainButton">
-          Prov igjen
+          Prøv igjen
         </button>
         <button class="btn btn-secondary" (click)="cancel()" i18n="@@qrCodeScanner.cancelButton2">
           Avbryt
@@ -63,23 +63,22 @@
     </div>
   }
 
-  <!-- Scanner Active -->
-  @if (scanning() && !error()) {
-    <div class="scanner-active">
-      <div class="video-wrapper">
-        <video #videoElement autoplay playsinline></video>
-        <div class="scan-overlay">
-          <div class="scan-frame"></div>
-        </div>
+  <!-- Scanner Active. Always rendered so the video element exists before the
+       camera starts; hidden until then -->
+  <div class="scanner-active" [class.is-hidden]="!scanning() || !!error()">
+    <div class="video-wrapper">
+      <video #videoElement autoplay muted playsinline></video>
+      <div class="scan-overlay">
+        <div class="scan-frame"></div>
       </div>
-
-      <div class="scanner-instructions">
-        <p i18n="@@qrCodeScanner.positionQrCode">Plasser QR-koden innenfor rammen</p>
-      </div>
-
-      <button class="btn btn-cancel" (click)="cancel()" i18n="@@qrCodeScanner.cancelScanning">
-        Avbryt skanning
-      </button>
     </div>
-  }
+
+    <div class="scanner-instructions">
+      <p i18n="@@qrCodeScanner.positionQrCode">Plasser QR-koden innenfor rammen</p>
+    </div>
+
+    <button class="btn btn-cancel" (click)="cancel()" i18n="@@qrCodeScanner.cancelScanning">
+      Avbryt skanning
+    </button>
+  </div>
 </div>

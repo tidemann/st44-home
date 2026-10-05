@@ -87,7 +87,9 @@ export class QrCodeDisplayComponent implements OnInit {
         this.expiresAt.set(response.expiresAt);
       } catch (genErr) {
         console.error('Failed to generate QR token:', genErr);
-        this.error.set('Failed to generate QR code. Please try again.');
+        this.error.set(
+          $localize`:@@qrCodeDisplay.generateFailed:Kunne ikke lage QR-koden. Prøv igjen.`,
+        );
       }
     } finally {
       this.loading.set(false);
@@ -109,7 +111,7 @@ export class QrCodeDisplayComponent implements OnInit {
       });
     } catch (err) {
       console.error('Failed to generate QR code:', err);
-      this.error.set('Failed to generate QR code display.');
+      this.error.set($localize`:@@qrCodeDisplay.drawFailed:Kunne ikke vise QR-koden.`);
     }
   }
 
@@ -134,7 +136,9 @@ export class QrCodeDisplayComponent implements OnInit {
       this.expiresAt.set(response.expiresAt);
     } catch (err) {
       console.error('Failed to regenerate QR token:', err);
-      this.error.set('Failed to regenerate QR code. Please try again.');
+      this.error.set(
+        $localize`:@@qrCodeDisplay.regenerateFailed:Kunne ikke lage ny QR-kode. Prøv igjen.`,
+      );
     } finally {
       this.loading.set(false);
     }
@@ -157,7 +161,7 @@ export class QrCodeDisplayComponent implements OnInit {
       link.click();
     } catch (err) {
       console.error('Failed to download QR code:', err);
-      this.error.set('Failed to download QR code.');
+      this.error.set($localize`:@@qrCodeDisplay.downloadFailed:Kunne ikke laste ned QR-koden.`);
     }
   }
 
@@ -174,16 +178,19 @@ export class QrCodeDisplayComponent implements OnInit {
       const printWindow = window.open('', '_blank');
 
       if (!printWindow) {
-        this.error.set('Failed to open print window. Please allow popups.');
+        this.error.set(
+          $localize`:@@qrCodeDisplay.printBlocked:Kunne ikke åpne utskriften. Tillat popup-vinduer.`,
+        );
         return;
       }
 
-      const childName = this.childName() || 'Child';
+      const childName = this.childName() || $localize`:@@qrCodeDisplay.childFallback:barnet`;
+      const printTitle = $localize`:@@qrCodeDisplay.printTitle:QR-kode for innlogging – ${childName}:childName:`;
       printWindow.document.write(`
         <!DOCTYPE html>
         <html>
           <head>
-            <title>QR Code - ${childName}</title>
+            <title>QR-kode – ${childName}</title>
             <style>
               body {
                 display: flex;
@@ -211,8 +218,8 @@ export class QrCodeDisplayComponent implements OnInit {
             </style>
           </head>
           <body>
-            <h1>Login QR Code for ${childName}</h1>
-            <img src="${url}" alt="QR Code for ${childName}" />
+            <h1>${printTitle}</h1>
+            <img src="${url}" alt="${printTitle}" />
             <script>
               window.onload = () => {
                 window.print();
@@ -225,7 +232,7 @@ export class QrCodeDisplayComponent implements OnInit {
       printWindow.document.close();
     } catch (err) {
       console.error('Failed to print QR code:', err);
-      this.error.set('Failed to print QR code.');
+      this.error.set($localize`:@@qrCodeDisplay.printFailed:Kunne ikke skrive ut QR-koden.`);
     }
   }
 
@@ -242,13 +249,13 @@ export class QrCodeDisplayComponent implements OnInit {
     const diffDays = Math.ceil(diffMs / (1000 * 60 * 60 * 24));
 
     if (diffDays <= 0) {
-      return 'Expired';
+      return $localize`:@@qrCodeDisplay.expired:Utløpt`;
     } else if (diffDays === 1) {
-      return 'Expires tomorrow';
+      return $localize`:@@qrCodeDisplay.expiresTomorrow:Utløper i morgen`;
     } else if (diffDays <= 7) {
-      return `Expires in ${diffDays} days`;
+      return $localize`:@@qrCodeDisplay.expiresInDays:Utløper om ${diffDays}:days: dager`;
     } else {
-      return `Expires ${date.toLocaleDateString()}`;
+      return $localize`:@@qrCodeDisplay.expiresOn:Utløper ${date.toLocaleDateString('nb-NO')}:date:`;
     }
   }
 }

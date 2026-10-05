@@ -71,6 +71,10 @@ p {
   justify-content: center;
 }
 
+.scanner-active.is-hidden {
+  display: none;
+}
+
 .scanner-active {
   display: flex;
   flex-direction: column;
