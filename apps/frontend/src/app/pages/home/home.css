@@ -63,7 +63,7 @@
 
 .btn-retry {
   padding: var(--space-sm) var(--space-lg);
-  background: var(--gradient-primary);
+  background: var(--gradient-primary-button);
   color: white;
   border: none;
   border-radius: var(--radius-sm);

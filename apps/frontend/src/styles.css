@@ -101,8 +101,13 @@
 
   /* ===== GRADIENTS ===== */
 
-  /* Primary gradient (indigo → pink) */
+  /* Primary gradient (indigo → pink) — masthead, headers, avatars, decorative surfaces */
   --gradient-primary: linear-gradient(135deg, var(--color-primary) 0%, var(--color-secondary) 100%);
+
+  /* Button gradient (ST-618) — the only surface that may carry white button text.
+     White on #4f46e5 = 6,29:1, white on #be185d = 6,04:1 (WCAG 2.1, AA needs 4,5:1).
+     Do not use --gradient-primary behind white body text. */
+  --gradient-primary-button: linear-gradient(135deg, #4f46e5 0%, #be185d 100%);
 
   /* Success gradient (green → yellow) */
   --gradient-success: linear-gradient(135deg, var(--color-success) 0%, var(--color-accent) 100%);
@@ -450,14 +455,14 @@ h6 {
 
 /* Primary Button - Gradient style */
 .btn-primary {
-  background: var(--gradient-primary);
+  background: var(--gradient-primary-button);
   color: white;
-  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+  box-shadow: 0 4px 12px rgba(79, 70, 229, 0.28);
 }
 
 .btn-primary:hover:not(:disabled) {
   transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(99, 102, 241, 0.4);
+  box-shadow: 0 6px 20px rgba(79, 70, 229, 0.38);
 }
 
 .btn-primary:active:not(:disabled) {
