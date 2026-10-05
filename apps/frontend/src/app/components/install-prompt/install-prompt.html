@@ -1,0 +1,61 @@
+@if (variant(); as platform) {
+  <section
+    class="install-card card"
+    aria-labelledby="install-title"
+    aria-describedby="install-text"
+  >
+    <div class="install-head">
+      <img class="install-icon" src="icons/icon-192.png" alt="" width="48" height="48" />
+      <h2 id="install-title" class="install-title" i18n="@@installPrompt.title">
+        Legg Diddit på hjemskjermen
+      </h2>
+    </div>
+
+    @if (platform === 'ios') {
+      <div id="install-text">
+        <p class="install-text" i18n="@@installPrompt.iosIntro">
+          Da åpner Diddit som en app, og du kan få påminnelser.
+        </p>
+        <ol class="install-steps">
+          <li i18n="@@installPrompt.iosStep1">
+            Trykk på Del-knappen <span class="share-icon" aria-hidden="true">⬆︎</span> nederst i
+            Safari.
+          </li>
+          <li i18n="@@installPrompt.iosStep2">Velg «Legg til på Hjem-skjerm».</li>
+        </ol>
+      </div>
+      <div class="install-actions">
+        <button
+          type="button"
+          class="btn btn-secondary"
+          (click)="dismiss()"
+          i18n="@@installPrompt.notNow"
+        >
+          Ikke nå
+        </button>
+      </div>
+    } @else {
+      <p id="install-text" class="install-text" i18n="@@installPrompt.androidIntro">
+        Diddit åpner som en app, uten nettleser, og du kan få påminnelser.
+      </p>
+      <div class="install-actions">
+        <button
+          type="button"
+          class="btn btn-secondary"
+          (click)="dismiss()"
+          i18n="@@installPrompt.notNow"
+        >
+          Ikke nå
+        </button>
+        <button
+          type="button"
+          class="btn btn-primary"
+          (click)="install()"
+          i18n="@@installPrompt.install"
+        >
+          Installer
+        </button>
+      </div>
+    }
+  </section>
+}

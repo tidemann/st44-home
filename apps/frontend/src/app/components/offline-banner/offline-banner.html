@@ -1,0 +1,16 @@
+@if (visible()) {
+  <div class="offline-banner alert alert-warning" role="status">
+    <span class="alert-icon" aria-hidden="true">📡</span>
+    <div class="alert-content">
+      <strong i18n="@@offlineBanner.title">Ingen nett</strong>
+      @if (lastSyncTime(); as time) {
+        <span i18n="@@offlineBanner.lastSeen"
+          >Du ser det som var her sist (kl. {{ time }}). Endringer kan ikke lagres før nettet er
+          tilbake.</span
+        >
+      } @else {
+        <span i18n="@@offlineBanner.noData">Endringer kan ikke lagres før nettet er tilbake.</span>
+      }
+    </div>
+  </div>
+}

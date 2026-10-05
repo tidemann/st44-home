@@ -19,3 +19,4 @@
 export { authInterceptor } from './auth.interceptor';
 export { errorInterceptor } from './error.interceptor';
 export { loadingInterceptor, LoadingService, SKIP_LOADING } from './loading.interceptor';
+export { offlineSyncInterceptor, OFFLINE_HEADER } from './offline-sync.interceptor';

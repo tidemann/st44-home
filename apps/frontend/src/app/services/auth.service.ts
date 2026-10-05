@@ -4,6 +4,7 @@ import { Router } from '@angular/router';
 import { Observable, tap } from 'rxjs';
 import { environment } from '../../environments/environment';
 import { TokenService } from './token.service';
+import { PwaService } from './pwa.service';
 import { HouseholdStore } from '../stores/household.store';
 
 export interface RegisterRequest {
@@ -43,6 +44,7 @@ export class AuthService {
   private readonly router = inject(Router);
   private readonly tokenService = inject(TokenService);
   private readonly householdStore = inject(HouseholdStore);
+  private readonly pwa = inject(PwaService);
   private readonly apiUrl = `${environment.apiUrl}/api/auth`;
 
   // Signals for reactive state
@@ -140,6 +142,9 @@ export class AuthService {
   logout(): void {
     // Clear tokens using TokenService
     this.tokenService.clearTokens();
+
+    // Drop API answers the service worker kept for offline use
+    void this.pwa.clearApiCache();
 
     // Reset household store (clears all cached data)
     this.householdStore.reset();

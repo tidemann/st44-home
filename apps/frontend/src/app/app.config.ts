@@ -3,12 +3,24 @@ import { provideRouter } from '@angular/router';
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
 
 import { routes } from './app.routes';
-import { authInterceptor, errorInterceptor, loadingInterceptor } from './interceptors';
+import {
+  authInterceptor,
+  errorInterceptor,
+  loadingInterceptor,
+  offlineSyncInterceptor,
+} from './interceptors';
 
 export const appConfig: ApplicationConfig = {
   providers: [
     provideBrowserGlobalErrorListeners(),
     provideRouter(routes),
-    provideHttpClient(withInterceptors([authInterceptor, errorInterceptor, loadingInterceptor])),
+    provideHttpClient(
+      withInterceptors([
+        authInterceptor,
+        errorInterceptor,
+        loadingInterceptor,
+        offlineSyncInterceptor,
+      ]),
+    ),
   ],
 };
