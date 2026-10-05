@@ -5,9 +5,6 @@
       <div class="page-header-content">
         <div class="page-header-text">
           <h1 class="page-title">{{ title() }}</h1>
-          @if (subtitle()) {
-            <p class="page-subtitle">{{ subtitle() }}</p>
-          }
         </div>
         <div class="page-header-actions">
           <ng-content select="[page-actions]" />
@@ -21,6 +18,10 @@
 
   <!-- Main Content -->
   <main class="page-content">
+    <!-- Subtitle sits on the page surface: white body text on the gradient fails WCAG AA -->
+    @if (showHeader() && subtitle()) {
+      <p class="page-subtitle">{{ subtitle() }}</p>
+    }
     <ng-content />
   </main>
 </div>
