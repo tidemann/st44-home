@@ -23,6 +23,7 @@ import { requestIdPlugin } from './middleware/request-id.js';
 import { requestLoggerPlugin, getRequestContext } from './middleware/request-logger.js';
 import { connectRedis, isRedisReady, disconnectRedis } from './core/redis.js';
 import { initI18n, createI18nHook } from './core/i18n.js';
+import { startAssignmentScheduler } from './services/assignment-scheduler.js';
 
 // Extend FastifyRequest type to include user info
 declare module 'fastify' {
@@ -425,9 +426,14 @@ const start = async () => {
     await fastify.listen({ port, host });
     console.log(`Server listening on ${host}:${port}`);
 
+    // Create recurring chore assignments once per day (Europe/Oslo), without anyone opening the app
+    const assignmentScheduler =
+      process.env.ASSIGNMENT_SCHEDULER === 'off' ? null : startAssignmentScheduler(fastify.log);
+
     // Graceful shutdown
     const shutdown = async (signal: string) => {
       console.log(`${signal} received, shutting down gracefully...`);
+      assignmentScheduler?.stop();
       await fastify.close();
       await disconnectRedis();
       process.exit(0);

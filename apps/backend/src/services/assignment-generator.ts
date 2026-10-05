@@ -13,12 +13,22 @@ interface Task {
   household_id: string;
   name: string;
   rule_type: 'weekly_rotation' | 'repeating' | 'daily';
-  rule_config: {
-    rotation_type?: 'odd_even_week' | 'alternating';
-    repeat_days?: number[];
-    assigned_children?: string[];
-  };
+  rule_config: RuleConfig;
 }
+
+interface RuleConfig {
+  rotationType?: 'odd_even_week' | 'alternating';
+  repeatDays?: number[];
+  assignedChildren?: string[];
+}
+
+const DAY_MS = 24 * 60 * 60 * 1000;
+
+/**
+ * Fixed Monday that rotations count from, so a given date always maps to the same
+ * child no matter which day the generator runs (daily reruns stay idempotent).
+ */
+const ROTATION_ANCHOR_MS = Date.UTC(2024, 0, 1);
 
 interface ExistingAssignment {
   task_id: string;
@@ -68,16 +78,20 @@ export async function generateAssignments(
   try {
     await client.query('BEGIN');
 
-    // 1. Load all active tasks for household
-    const tasksResult = await client.query<Task>(
+    // 1. Load all active recurring tasks for household (single tasks are not generated)
+    const tasksResult = await client.query<Omit<Task, 'rule_config'> & { rule_config: unknown }>(
       `SELECT id, household_id, name, rule_type, rule_config
        FROM tasks
        WHERE household_id = $1 AND active = true
+         AND rule_type IN ('daily', 'repeating', 'weekly_rotation')
        ORDER BY name`,
       [householdId],
     );
 
-    const tasks = tasksResult.rows;
+    const tasks: Task[] = tasksResult.rows.map((row) => ({
+      ...row,
+      rule_config: readRuleConfig(row.rule_config),
+    }));
 
     if (tasks.length === 0) {
       await client.query('COMMIT');
@@ -104,11 +118,12 @@ export async function generateAssignments(
       [householdId, formatDate(startDate), formatDate(endDate)],
     );
 
-    // Create lookup set for existing assignments
+    // Create lookup set for existing assignments. Keyed by task and date only: once a
+    // task has an assignment on a date (even if a parent moved it to another child),
+    // reruns leave that date alone.
     const existingSet = new Set<string>();
     for (const row of existingResult.rows) {
-      const key = `${row.task_id}:${row.date}:${row.child_id || 'null'}`;
-      existingSet.add(key);
+      existingSet.add(`${row.task_id}:${row.date}`);
     }
 
     // 4. Generate new assignments
@@ -125,10 +140,9 @@ export async function generateAssignments(
     }
 
     // 5. Filter out existing assignments (idempotency)
-    const newAssignments = pendingAssignments.filter((assignment) => {
-      const key = `${assignment.task_id}:${assignment.date}:${assignment.child_id || 'null'}`;
-      return !existingSet.has(key);
-    });
+    const newAssignments = pendingAssignments.filter(
+      (assignment) => !existingSet.has(`${assignment.task_id}:${assignment.date}`),
+    );
 
     result.skipped = pendingAssignments.length - newAssignments.length;
 
@@ -242,29 +256,54 @@ async function generateAssignmentsForTask(
 }
 
 /**
- * Daily rule: Generate every day, rotate children
+ * Daily rule: Generate every day, rotate children by day
  */
 function generateDailyAssignments(
   task: Task,
   dates: Date[],
   householdId: string,
 ): PendingAssignment[] {
+  const assignedChildren = task.rule_config.assignedChildren || [];
+
+  return dates.map((date) => ({
+    task_id: task.id,
+    child_id: pickChild(assignedChildren, daysSinceAnchor(date)),
+    date: formatDate(date),
+    household_id: householdId,
+  }));
+}
+
+/**
+ * Repeating rule: Check repeatDays array, rotate children per occurrence
+ */
+function generateRepeatingAssignments(
+  task: Task,
+  dates: Date[],
+  householdId: string,
+): PendingAssignment[] {
   const assignments: PendingAssignment[] = [];
-  const assignedChildren = task.rule_config.assigned_children || [];
+  const assignedChildren = task.rule_config.assignedChildren || [];
+  // Order the repeat days Monday-first so occurrences count in week order
+  const repeatDays = [...new Set(task.rule_config.repeatDays || [])].sort(
+    (a, b) => isoWeekday(a) - isoWeekday(b),
+  );
 
-  for (let i = 0; i < dates.length; i++) {
-    const date = dates[i];
-    let childId: string | null = null;
+  if (repeatDays.length === 0) {
+    throw new Error('repeatDays is required for repeating tasks');
+  }
 
-    // If assigned_children specified, rotate daily
-    if (assignedChildren.length > 0) {
-      const childIndex = i % assignedChildren.length;
-      childId = assignedChildren[childIndex];
-    }
+  for (const date of dates) {
+    const dayOfWeek = date.getUTCDay(); // 0=Sunday, 6=Saturday (use UTC)
+    const positionInWeek = repeatDays.indexOf(dayOfWeek);
+
+    if (positionInWeek === -1) continue;
+
+    // Occurrence number since the anchor week, so rotation does not depend on the run date
+    const occurrence = weeksSinceAnchor(date) * repeatDays.length + positionInWeek;
 
     assignments.push({
       task_id: task.id,
-      child_id: childId,
+      child_id: pickChild(assignedChildren, occurrence),
       date: formatDate(date),
       household_id: householdId,
     });
@@ -274,52 +313,7 @@ function generateDailyAssignments(
 }
 
 /**
- * Repeating rule: Check repeat_days array, rotate on repeat days
- */
-function generateRepeatingAssignments(
-  task: Task,
-  dates: Date[],
-  householdId: string,
-): PendingAssignment[] {
-  const assignments: PendingAssignment[] = [];
-  const repeatDays = task.rule_config.repeat_days || [];
-  const assignedChildren = task.rule_config.assigned_children || [];
-
-  if (repeatDays.length === 0) {
-    throw new Error('repeat_days is required for repeating tasks');
-  }
-
-  let occurrenceCount = 0;
-
-  for (const date of dates) {
-    const dayOfWeek = date.getUTCDay(); // 0=Sunday, 6=Saturday (use UTC)
-
-    // Check if this date is a repeat day
-    if (repeatDays.includes(dayOfWeek)) {
-      let childId: string | null = null;
-
-      // If assigned_children specified, rotate based on occurrence count
-      if (assignedChildren.length > 0) {
-        const childIndex = occurrenceCount % assignedChildren.length;
-        childId = assignedChildren[childIndex];
-      }
-
-      assignments.push({
-        task_id: task.id,
-        child_id: childId,
-        date: formatDate(date),
-        household_id: householdId,
-      });
-
-      occurrenceCount++;
-    }
-  }
-
-  return assignments;
-}
-
-/**
- * Weekly rotation rule: Uses ISO week or alternating logic
+ * Weekly rotation rule: one child per ISO week (Monday-Sunday)
  */
 async function generateWeeklyRotationAssignments(
   task: Task,
@@ -327,79 +321,126 @@ async function generateWeeklyRotationAssignments(
   householdId: string,
   client: PoolClient,
 ): Promise<PendingAssignment[]> {
-  const assignments: PendingAssignment[] = [];
-  const rotationType = task.rule_config.rotation_type;
-  const assignedChildren = task.rule_config.assigned_children || [];
+  const rotationType = task.rule_config.rotationType;
+  const assignedChildren = task.rule_config.assignedChildren || [];
 
   if (assignedChildren.length === 0) {
-    throw new Error('assigned_children is required for weekly_rotation tasks');
+    throw new Error('assignedChildren is required for weekly_rotation tasks');
   }
 
   if (!rotationType) {
-    throw new Error('rotation_type is required for weekly_rotation tasks');
+    throw new Error('rotationType is required for weekly_rotation tasks');
   }
+
+  let childForDate: (date: Date) => string;
 
   if (rotationType === 'odd_even_week') {
-    // Use ISO week number of the START date to determine which child for ALL dates
-    // This ensures consistent assignment within a generation batch
-    const startWeekNum = getISOWeek(dates[0]);
-    // Odd weeks (1, 3, 5...): index 0
-    // Even weeks (2, 4, 6...): index 1
-    // For 3+ children: use (weekNum - 1) % length to cycle through
-    const childIndex = (startWeekNum - 1) % assignedChildren.length;
-    const childId = assignedChildren[childIndex];
-
-    // All dates get the same child (determined by start week)
-    for (const date of dates) {
-      assignments.push({
-        task_id: task.id,
-        child_id: childId,
-        date: formatDate(date),
-        household_id: householdId,
-      });
-    }
+    // ISO week of each date: odd weeks (1, 3, 5...) index 0, even weeks index 1,
+    // 3+ children cycle with (weekNum - 1) % length
+    childForDate = (date) => {
+      const weekNum = getISOWeek(
+        new Date(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate()),
+      );
+      return assignedChildren[(weekNum - 1) % assignedChildren.length];
+    };
   } else if (rotationType === 'alternating') {
-    // Query most recent assignment to determine next child
-    const lastAssignmentResult = await client.query(
-      `SELECT child_id, date
+    // Continue from the last child assigned BEFORE the first week in range, so a
+    // rerun later in the same week computes the same child for that week
+    const firstWeek = weeksSinceAnchor(dates[0]);
+    const firstWeekStart = new Date(ROTATION_ANCHOR_MS + firstWeek * 7 * DAY_MS);
+
+    const lastAssignmentResult = await client.query<{ child_id: string }>(
+      `SELECT child_id
        FROM task_assignments
-       WHERE task_id = $1
+       WHERE task_id = $1 AND date < $2 AND child_id IS NOT NULL
        ORDER BY date DESC
        LIMIT 1`,
-      [task.id],
+      [task.id, formatDate(firstWeekStart)],
     );
 
-    let nextChildIndex = 0; // Default to first child if no history
+    let firstChildIndex = 0; // Default to first child if no history
 
     if (lastAssignmentResult.rows.length > 0) {
-      const lastChildId = lastAssignmentResult.rows[0].child_id;
-      const lastChildIndex = assignedChildren.indexOf(lastChildId);
-
-      if (lastChildIndex !== -1) {
-        // Found last child in current assigned_children list - rotate to next
-        nextChildIndex = (lastChildIndex + 1) % assignedChildren.length;
-      } else {
-        // Last child not in current assigned_children list, start from beginning
-        nextChildIndex = 0;
-      }
+      const lastChildIndex = assignedChildren.indexOf(lastAssignmentResult.rows[0].child_id);
+      // If the last child is no longer assigned, start from the beginning
+      firstChildIndex = lastChildIndex === -1 ? 0 : lastChildIndex + 1;
     }
 
-    // All dates in the range get the same child (weekly rotation)
-    const childId = assignedChildren[nextChildIndex];
-
-    for (const date of dates) {
-      assignments.push({
-        task_id: task.id,
-        child_id: childId,
-        date: formatDate(date),
-        household_id: householdId,
-      });
-    }
+    childForDate = (date) =>
+      assignedChildren[
+        mod(firstChildIndex + weeksSinceAnchor(date) - firstWeek, assignedChildren.length)
+      ];
   } else {
-    throw new Error(`Unknown rotation_type: ${rotationType}`);
+    throw new Error(`Unknown rotationType: ${rotationType}`);
   }
 
-  return assignments;
+  return dates.map((date) => ({
+    task_id: task.id,
+    child_id: childForDate(date),
+    date: formatDate(date),
+    household_id: householdId,
+  }));
+}
+
+/**
+ * Reads rule_config as stored (camelCase); older rows may use snake_case keys
+ */
+export function readRuleConfig(raw: unknown): RuleConfig {
+  let value = raw;
+  if (typeof value === 'string') {
+    try {
+      value = JSON.parse(value);
+    } catch {
+      return {};
+    }
+  }
+  if (typeof value !== 'object' || value === null) return {};
+
+  const obj = value as Record<string, unknown>;
+  const rotationType = obj.rotationType ?? obj.rotation_type;
+  const repeatDays = obj.repeatDays ?? obj.repeat_days;
+  const assignedChildren = obj.assignedChildren ?? obj.assigned_children;
+
+  const config: RuleConfig = {};
+  if (rotationType === 'odd_even_week' || rotationType === 'alternating') {
+    config.rotationType = rotationType;
+  }
+  if (Array.isArray(repeatDays)) {
+    config.repeatDays = repeatDays.filter(
+      (d): d is number => Number.isInteger(d) && d >= 0 && d <= 6,
+    );
+  }
+  if (Array.isArray(assignedChildren)) {
+    config.assignedChildren = assignedChildren.filter(
+      (c): c is string => typeof c === 'string' && c.length > 0,
+    );
+  }
+  return config;
+}
+
+/**
+ * Picks the child for a rotation step, or null for household-wide tasks
+ */
+function pickChild(children: string[], step: number): string | null {
+  return children.length === 0 ? null : children[mod(step, children.length)];
+}
+
+function mod(n: number, m: number): number {
+  return ((n % m) + m) % m;
+}
+
+/** Monday=0 ... Sunday=6 */
+function isoWeekday(dayOfWeek: number): number {
+  return (dayOfWeek + 6) % 7;
+}
+
+function daysSinceAnchor(date: Date): number {
+  const utcMidnight = Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate());
+  return Math.round((utcMidnight - ROTATION_ANCHOR_MS) / DAY_MS);
+}
+
+function weeksSinceAnchor(date: Date): number {
+  return Math.floor(daysSinceAnchor(date) / 7);
 }
 
 /**
