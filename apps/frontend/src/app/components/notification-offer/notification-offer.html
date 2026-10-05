@@ -1,0 +1,42 @@
+@if (visible()) {
+  <section
+    class="notify-card card"
+    aria-labelledby="notify-offer-title"
+    aria-describedby="notify-offer-text"
+  >
+    <div class="notify-head">
+      <span class="notify-icon" aria-hidden="true">🔔</span>
+      <h2 id="notify-offer-title" class="notify-title" i18n="@@notificationOffer.title">
+        Slå på varsler?
+      </h2>
+    </div>
+    @if (forChild()) {
+      <p id="notify-offer-text" class="notify-text" i18n="@@notificationOffer.childText">
+        Da får du en påminnelse på telefonen når du har oppgaver igjen.
+      </p>
+    } @else {
+      <p id="notify-offer-text" class="notify-text" i18n="@@notificationOffer.parentText">
+        Da får du beskjed når barna er ferdige, og barna kan få påminnelser fra deg.
+      </p>
+    }
+    <div class="notify-actions">
+      <button
+        type="button"
+        class="btn btn-secondary"
+        (click)="dismiss()"
+        i18n="@@notificationOffer.notNow"
+      >
+        Ikke nå
+      </button>
+      <button
+        type="button"
+        class="btn btn-primary"
+        [disabled]="busy()"
+        (click)="enable()"
+        i18n="@@notificationOffer.enable"
+      >
+        Slå på varsler
+      </button>
+    </div>
+  </section>
+}

@@ -1,12 +1,13 @@
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { InstallPrompt } from './components/install-prompt/install-prompt';
+import { NotificationOffer } from './components/notification-offer/notification-offer';
 import { OfflineBanner } from './components/offline-banner/offline-banner';
 import { PwaService } from './services/pwa.service';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet, InstallPrompt, OfflineBanner],
+  imports: [RouterOutlet, InstallPrompt, NotificationOffer, OfflineBanner],
   templateUrl: './app.html',
   styleUrl: './app.css',
   changeDetection: ChangeDetectionStrategy.OnPush,

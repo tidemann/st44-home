@@ -118,6 +118,20 @@ export class PushNotificationService {
     return result.sent;
   }
 
+  /**
+   * "Påminn nå" (ST-686): a parent sends the reminder for one open chore to the
+   * child's phones. Returns how many phones got it (0: the child has no phone
+   * with notifications on). Fails with 409 in quiet hours (20:00-07:00).
+   */
+  async remind(assignmentId: string): Promise<number> {
+    const result = await this.api.post<PushTestResponse>(
+      `/assignments/${assignmentId}/remind`,
+      {},
+      { skipLoading: true },
+    );
+    return result.sent;
+  }
+
   private async detect(): Promise<PushState> {
     if (!this.browser.supported()) {
       return this.pwa.ios && !this.pwa.standalone() ? 'needs-install' : 'unsupported';

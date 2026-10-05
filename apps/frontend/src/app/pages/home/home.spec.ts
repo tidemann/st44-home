@@ -7,6 +7,8 @@ import { ChildrenService } from '../../services/children.service';
 import { AuthService } from '../../services/auth.service';
 import { HouseholdService } from '../../services/household.service';
 import { HouseholdStore } from '../../stores/household.store';
+import { PushNotificationService } from '../../services/push-notification.service';
+import { HttpErrorResponse } from '@angular/common/http';
 import type { Assignment, Task } from '@st44/types';
 
 describe('Home', () => {
@@ -21,7 +23,11 @@ describe('Home', () => {
     createTask: ReturnType<typeof vi.fn>;
   };
   let mockChildrenService: { listChildren: ReturnType<typeof vi.fn> };
-  let mockAuthService: { currentUser: ReturnType<typeof vi.fn> };
+  let mockAuthService: {
+    currentUser: ReturnType<typeof vi.fn>;
+    hasRole: ReturnType<typeof vi.fn>;
+  };
+  let mockPush: { remind: ReturnType<typeof vi.fn> };
   let mockHouseholdService: { listHouseholds: ReturnType<typeof vi.fn> };
   let mockHouseholdStore: {
     activeHouseholdId: ReturnType<typeof vi.fn>;
@@ -41,7 +47,9 @@ describe('Home', () => {
     mockChildrenService = { listChildren: vi.fn() };
     mockAuthService = {
       currentUser: vi.fn().mockReturnValue({ id: '1', email: 'test@example.com' }),
+      hasRole: vi.fn().mockReturnValue(false),
     };
+    mockPush = { remind: vi.fn().mockResolvedValue(1) };
     mockHouseholdService = { listHouseholds: vi.fn() };
 
     // Default mock returns
@@ -64,6 +72,7 @@ describe('Home', () => {
         { provide: AuthService, useValue: mockAuthService },
         { provide: HouseholdService, useValue: mockHouseholdService },
         { provide: HouseholdStore, useValue: mockHouseholdStore },
+        { provide: PushNotificationService, useValue: mockPush },
       ],
     }).compileComponents();
 
@@ -189,6 +198,62 @@ describe('Home', () => {
       const mockTask: Partial<Assignment> = { id: '1' };
       component['upcomingTasks'].set([mockTask as Assignment]);
       expect(component['hasUpcomingTasks']()).toBe(true);
+    });
+  });
+
+  describe('"Påminn nå" (ST-686)', () => {
+    const open = {
+      id: 'a-1',
+      title: 'Gå på do',
+      childId: 'c-1',
+      childName: 'Emma',
+      status: 'pending',
+      date: '2026-10-05',
+    } as Assignment;
+
+    function remindButton(): HTMLButtonElement | null {
+      fixture.detectChanges(); // first render starts the (mocked) load
+      component['loading'].set(false);
+      component['todayTasks'].set([open]);
+      fixture.detectChanges();
+      return (fixture.nativeElement as HTMLElement).querySelector<HTMLButtonElement>(
+        '.task-remind-btn',
+      );
+    }
+
+    it('shows the button to parents on today’s open chores', () => {
+      expect(remindButton()?.textContent).toContain('Påminn nå');
+    });
+
+    it('does not show it to a child', () => {
+      mockAuthService.hasRole.mockImplementation((role: string) => role === 'child');
+      expect(remindButton()).toBeNull();
+    });
+
+    it('says the reminder went to the child', async () => {
+      component['todayTasks'].set([open]);
+      await component['onRemind']('a-1');
+      expect(mockPush.remind).toHaveBeenCalledWith('a-1');
+      expect(component['remindMessage']()).toBe('Påminnelse sendt til Emma.');
+      expect(component['remindingId']()).toBeNull();
+    });
+
+    it('says when the child has no phone with notifications on', async () => {
+      component['todayTasks'].set([open]);
+      mockPush.remind.mockResolvedValue(0);
+      await component['onRemind']('a-1');
+      expect(component['remindMessage']()).toContain('har ikke slått på varsler');
+    });
+
+    it('explains quiet hours', async () => {
+      mockPush.remind.mockRejectedValue(
+        new HttpErrorResponse({
+          status: 409,
+          error: { message: 'quiet', details: { conflictField: 'quietHours' } },
+        }),
+      );
+      await component['onRemind']('a-1');
+      expect(component['remindMessage']()).toContain('mellom kl. 20 og 07');
     });
   });
 });

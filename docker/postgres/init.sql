@@ -37,7 +37,8 @@ VALUES
   ('048', 'fix_multi_household_child_assignments', NOW()),
   ('049', 'cleanup_orphaned_child_memberships', NOW()),
   ('051', 'add_qr_token_to_children', NOW()),
-  ('052', 'create_push_subscriptions', NOW())
+  ('052', 'create_push_subscriptions', NOW()),
+  ('053', 'reapply_single_task_and_expired_checks', NOW())
 ON CONFLICT (version) DO NOTHING;
 
 -- Users table for authentication (supports email/password and OAuth)
@@ -194,7 +195,7 @@ CREATE TABLE IF NOT EXISTS task_assignments (
   task_id UUID NOT NULL REFERENCES tasks(id) ON DELETE CASCADE,
   child_id UUID REFERENCES children(id) ON DELETE CASCADE, -- Nullable for household-wide tasks
   date DATE NOT NULL, -- Renamed from due_date (migration 021)
-  status VARCHAR(50) DEFAULT 'pending' CHECK (status IN ('pending', 'completed', 'overdue')),
+  status VARCHAR(50) DEFAULT 'pending' CHECK (status IN ('pending', 'completed', 'overdue', 'expired')),
   reminder_sent_at TIMESTAMP WITH TIME ZONE, -- Added in migration 052: "due" push reminder sent
   created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );

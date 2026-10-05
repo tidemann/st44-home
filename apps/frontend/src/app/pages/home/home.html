@@ -81,11 +81,15 @@
                 [task]="task"
                 [showCompleteButton]="true"
                 [clickable]="true"
+                [showRemindButton]="canRemind()"
+                [reminding]="remindingId() === task.id"
                 (complete)="onCompleteTask($event)"
                 (edit)="onEditTask($event)"
+                (remind)="onRemind($event)"
               />
             }
           </div>
+          <p class="remind-status" role="status" aria-live="polite">{{ remindMessage() }}</p>
         } @else {
           <div class="empty-state" role="status">
             <div class="empty-icon" aria-hidden="true">📋</div>

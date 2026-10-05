@@ -4,6 +4,7 @@ import { build } from '../server.js';
 import type { FastifyInstance } from 'fastify';
 import pg from 'pg';
 import { registerAndLogin } from '../test-helpers/auth.js';
+import { PushService } from '../services/push.service.js';
 
 /**
  * Push API Integration Tests (ST-623)
@@ -149,5 +150,104 @@ describe('Push API', () => {
       ])
     ).rows[0].n;
     assert.strictEqual(count, 0);
+  });
+
+  describe('"Påminn nå" (ST-686)', () => {
+    let householdId: string;
+    let userB: string;
+    let assignmentId: string;
+
+    before(async () => {
+      // A is the parent; B is the child's login, with a phone that has push on
+      const household = await app.inject({
+        method: 'POST',
+        url: '/api/households',
+        headers: auth(tokenA),
+        payload: { name: `Push remind ${Date.now()}` },
+      });
+      householdId = JSON.parse(household.body).id;
+      userB = (
+        await pool.query('SELECT id FROM users WHERE email LIKE $1', ['test-push-b-%@example.com'])
+      ).rows[0].id;
+      await pool.query(
+        `INSERT INTO household_members (household_id, user_id, role) VALUES ($1, $2, 'child')`,
+        [householdId, userB],
+      );
+      const childId = (
+        await pool.query(
+          `INSERT INTO children (household_id, user_id, name) VALUES ($1, $2, 'Emma') RETURNING id`,
+          [householdId, userB],
+        )
+      ).rows[0].id;
+      const taskId = (
+        await pool.query(
+          `INSERT INTO tasks (household_id, name, points, rule_type)
+           VALUES ($1, 'Gå på do', 5, 'daily') RETURNING id`,
+          [householdId],
+        )
+      ).rows[0].id;
+      assignmentId = (
+        await pool.query(
+          `INSERT INTO task_assignments (household_id, task_id, child_id, date, status)
+           VALUES ($1, $2, $3, CURRENT_DATE, 'pending') RETURNING id`,
+          [householdId, taskId, childId],
+        )
+      ).rows[0].id;
+      await pool.query(
+        `INSERT INTO push_subscriptions (user_id, endpoint, p256dh, auth) VALUES ($1, $2, 'k', 'a')`,
+        [userB, `https://push.example.com/emma/${Date.now()}`],
+      );
+    });
+
+    after(async () => {
+      await pool.query('DELETE FROM households WHERE id = $1', [householdId]);
+    });
+
+    const noon = new Date('2026-10-05T12:00:00+02:00');
+
+    /** The real service and SQL, with fake phones instead of a push service */
+    function serviceWithFakePhones() {
+      const sent: { endpoint: string; payload: Record<string, unknown> }[] = [];
+      const service = new PushService(
+        { publicKey: 'pub', privateKey: 'priv', subject: 'mailto:x@y.no' },
+        pool,
+        async (subscription, payload) => {
+          sent.push({ endpoint: subscription.endpoint, payload: JSON.parse(payload) });
+        },
+      );
+      return { sent, service };
+    }
+
+    test('the route needs a login', async () => {
+      const response = await app.inject({
+        method: 'POST',
+        url: `/api/assignments/${assignmentId}/remind`,
+      });
+      assert.strictEqual(response.statusCode, 401);
+    });
+
+    test('the route is refused while push is off', async () => {
+      const response = await app.inject({
+        method: 'POST',
+        url: `/api/assignments/${assignmentId}/remind`,
+        headers: auth(tokenA),
+      });
+      assert.strictEqual(response.statusCode, 400);
+    });
+
+    test('a parent reminds the child, whose phone gets "Påminnelse"', async () => {
+      const { sent, service } = serviceWithFakePhones();
+      assert.strictEqual(await service.remindAssignment(assignmentId, userA, noon), 1);
+      assert.match(sent[0].endpoint, /\/emma\//);
+      assert.strictEqual(sent[0].payload.title, 'Påminnelse');
+      assert.strictEqual(sent[0].payload.body, 'Husk: Gå på do');
+    });
+
+    test('the child (not a parent) cannot send it', async () => {
+      const { service } = serviceWithFakePhones();
+      await assert.rejects(service.remindAssignment(assignmentId, userB, noon), {
+        statusCode: 403,
+      });
+    });
   });
 });
