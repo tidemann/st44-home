@@ -12,18 +12,26 @@ import jwt from 'jsonwebtoken';
 // stops the server at start-up instead of quietly accepting forged logins.
 const PUBLIC_FALLBACK_SECRET = 'dev-secret-change-in-production';
 
-function requireJwtSecret(): string {
-  const secret = process.env.JWT_SECRET;
+// A short secret can be brute-forced offline from any token. `openssl rand -base64 48`
+// gives 64 characters.
+export const JWT_SECRET_MIN_LENGTH = 32;
+
+export function requireJwtSecret(secret: string | undefined): string {
   if (!secret || secret === PUBLIC_FALLBACK_SECRET) {
     throw new Error(
       'JWT_SECRET is not set (or is the old public default). Set it to a long random value before starting the backend.',
+    );
+  }
+  if (secret.length < JWT_SECRET_MIN_LENGTH) {
+    throw new Error(
+      `JWT_SECRET is shorter than ${JWT_SECRET_MIN_LENGTH} characters. Generate one with \`openssl rand -base64 48\`.`,
     );
   }
   return secret;
 }
 
 // JWT Configuration
-export const JWT_SECRET = requireJwtSecret();
+export const JWT_SECRET = requireJwtSecret(process.env.JWT_SECRET);
 const JWT_ACCESS_EXPIRY = '1h';
 const JWT_REFRESH_EXPIRY = '7d';
 

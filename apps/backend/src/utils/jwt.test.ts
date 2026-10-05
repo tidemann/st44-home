@@ -12,6 +12,8 @@ import {
   decodeToken,
   isTokenExpired,
   getJwtSecret,
+  requireJwtSecret,
+  JWT_SECRET_MIN_LENGTH,
 } from './jwt.ts';
 
 describe('JWT Utilities', () => {
@@ -235,6 +237,30 @@ describe('JWT Utilities', () => {
       const secret = getJwtSecret();
       assert.ok(typeof secret === 'string');
       assert.ok(secret.length > 0);
+    });
+  });
+
+  describe('requireJwtSecret (start-up guard)', () => {
+    const longSecret = 'x'.repeat(JWT_SECRET_MIN_LENGTH);
+
+    test('rejects a missing secret', () => {
+      assert.throws(() => requireJwtSecret(undefined), /JWT_SECRET is not set/);
+      assert.throws(() => requireJwtSecret(''), /JWT_SECRET is not set/);
+    });
+
+    test('rejects the old public default', () => {
+      assert.throws(
+        () => requireJwtSecret('dev-secret-change-in-production'),
+        /JWT_SECRET is not set/,
+      );
+    });
+
+    test('rejects a secret shorter than the minimum', () => {
+      assert.throws(() => requireJwtSecret(longSecret.slice(1)), /shorter than 32 characters/);
+    });
+
+    test('accepts a secret of the minimum length', () => {
+      assert.strictEqual(requireJwtSecret(longSecret), longSecret);
     });
   });
 });

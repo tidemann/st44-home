@@ -76,7 +76,7 @@ jobs:
           PORT: 3000
           HOST: 0.0.0.0
           # Throwaway value for the test stack; the backend refuses to start without one.
-          JWT_SECRET: e2e-test-jwt-secret
+          JWT_SECRET: e2e-test-jwt-secret-at-least-32-characters
         run: |
           npm start &
           echo $! > backend.pid

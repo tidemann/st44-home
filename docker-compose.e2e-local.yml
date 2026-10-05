@@ -47,7 +47,7 @@ services:
       DB_USER: postgres
       DB_PASSWORD: postgres
       CORS_ORIGIN: "*"
-      JWT_SECRET: test-secret-key-local
+      JWT_SECRET: test-secret-key-local-at-least-32-characters
       JWT_REFRESH_SECRET: test-refresh-secret-key-local
     ports:
       - "3001:3000"

@@ -87,7 +87,7 @@ npm run test:backend             # Backend tests (tsx --test)
 npm run test:frontend            # Frontend tests (karma)
 
 # Single test file (backend) -- the backend will not load without JWT_SECRET
-cd apps/backend && JWT_SECRET=test-jwt-secret npx tsx --test src/routes/tasks.test.ts
+cd apps/backend && JWT_SECRET=test-jwt-secret-at-least-32-characters npx tsx --test src/routes/tasks.test.ts
 
 # Single test file (types package)
 cd packages/types && npx vitest run src/schemas/task.schema.test.ts

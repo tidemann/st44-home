@@ -1008,7 +1008,7 @@ CI=true
    - Built from `apps/backend/Dockerfile`
    - Container: `st44-backend-test-local`
    - Port: `3001:3000`
-   - Environment: `NODE_ENV=test`, `JWT_SECRET=test-secret-key-local`
+   - Environment: `NODE_ENV=test`, `JWT_SECRET=test-secret-key-local-at-least-32-characters`
    - Depends on: postgres-test (healthy)
    - Health check: `wget` to `/health` endpoint
 
