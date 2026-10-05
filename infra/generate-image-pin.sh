@@ -32,5 +32,14 @@ for svc in frontend backend db; do
     # compose refuse to start the stack rather than run the backend without it.
     # shellcheck disable=SC2016 # literal: compose interpolates this, not bash
     printf '    environment:\n      JWT_SECRET: ${JWT_SECRET:?JWT_SECRET must be exported by the deploy}\n'
+    # The host file falls back to `postgres` when DB_PASSWORD is missing (ST-621).
+    # Same variable, same source (the host .env), so the value does not change;
+    # only the fallback goes, and compose refuses instead of using it.
+    # shellcheck disable=SC2016 # literal: compose interpolates this, not bash
+    printf '      DB_PASSWORD: ${DB_PASSWORD:?DB_PASSWORD must be set in the host .env}\n'
+  fi
+  if [ "$svc" = db ]; then
+    # shellcheck disable=SC2016 # literal: compose interpolates this, not bash
+    printf '    environment:\n      POSTGRES_PASSWORD: ${DB_PASSWORD:?DB_PASSWORD must be set in the host .env}\n'
   fi
 done

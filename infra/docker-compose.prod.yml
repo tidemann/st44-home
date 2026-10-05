@@ -40,7 +40,7 @@ services:
     environment:
       POSTGRES_DB: st44
       POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: ${DB_PASSWORD:-postgres}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:?DB_PASSWORD must be set}
     volumes:
       - postgres_data:/var/lib/postgresql/data
     ports:
@@ -62,7 +62,7 @@ services:
       DB_PORT: 5432
       DB_NAME: st44
       DB_USER: postgres
-      DB_PASSWORD: ${DB_PASSWORD:-postgres}
+      DB_PASSWORD: ${DB_PASSWORD:?DB_PASSWORD must be set}
       CORS_ORIGIN: ${CORS_ORIGIN:-*}
       REDIS_HOST: redis
       REDIS_PORT: 6379
