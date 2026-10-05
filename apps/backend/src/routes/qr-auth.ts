@@ -19,9 +19,7 @@ import {
   validateQrToken,
   getQrToken,
 } from '../services/qr-token.service.js';
-
-// JWT Configuration
-const JWT_SECRET = process.env.JWT_SECRET || 'dev-secret-change-in-production';
+import { JWT_SECRET } from '../utils/jwt.js';
 
 // QR login rate limiter: 20 attempts per hour per IP (more restrictive than normal login)
 const qrLoginRateLimiter = createIpRateLimiter('ratelimit:qr-login:', 20, 3600);

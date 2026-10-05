@@ -6,8 +6,24 @@
 
 import jwt from 'jsonwebtoken';
 
+// The old fallback secret lived in this public repo, so anyone could sign a token
+// for any user with it. Refuse it, and refuse to run with no secret at all: every
+// module that signs or verifies tokens imports this one, so a missing JWT_SECRET
+// stops the server at start-up instead of quietly accepting forged logins.
+const PUBLIC_FALLBACK_SECRET = 'dev-secret-change-in-production';
+
+function requireJwtSecret(): string {
+  const secret = process.env.JWT_SECRET;
+  if (!secret || secret === PUBLIC_FALLBACK_SECRET) {
+    throw new Error(
+      'JWT_SECRET is not set (or is the old public default). Set it to a long random value before starting the backend.',
+    );
+  }
+  return secret;
+}
+
 // JWT Configuration
-const JWT_SECRET = process.env.JWT_SECRET || 'dev-secret-change-in-production';
+export const JWT_SECRET = requireJwtSecret();
 const JWT_ACCESS_EXPIRY = '1h';
 const JWT_REFRESH_EXPIRY = '7d';
 

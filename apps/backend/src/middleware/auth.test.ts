@@ -2,12 +2,11 @@ import { test, describe } from 'node:test';
 import assert from 'node:assert';
 import jwt from 'jsonwebtoken';
 import { authenticateUser } from './auth.ts';
+import { JWT_SECRET } from '../utils/jwt.ts';
 
 /**
  * Authentication Middleware Unit Tests
  */
-
-const JWT_SECRET = process.env.JWT_SECRET || 'dev-secret-change-in-production';
 
 function createMockRequest(authHeader?: string) {
   return {

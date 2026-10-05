@@ -50,6 +50,8 @@ services:
       CORS_ORIGIN: ${CORS_ORIGIN:-*}
       REDIS_HOST: redis
       REDIS_PORT: 6379
+      # Required: the backend will not start without it (see infra/.env.example).
+      JWT_SECRET: ${JWT_SECRET:?set JWT_SECRET in infra/.env}
     ports:
       - "3000:3000"
     depends_on:
