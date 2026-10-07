@@ -260,13 +260,18 @@ export class SetupWizard implements OnInit {
   private async resume(): Promise<void> {
     const saved = this.storage.get(STORAGE_KEYS.SETUP_IN_PROGRESS, SetupInProgressSchema);
     if (!saved) return;
-    this.householdId.set(saved.householdId);
-    this.familyName.set(saved.name);
-    this.step.set(2);
+    // No save on step 1 until we know whether the household is still ours
+    this.busy.set(true);
     try {
       this.children.set(await this.childrenService.listChildren(saved.householdId));
+      this.householdId.set(saved.householdId);
+      this.familyName.set(saved.name);
+      this.step.set(2);
     } catch {
-      // The list stays empty; children added now are still saved
+      // Deleted, or another parent signed in on this browser: start fresh
+      this.storage.remove(STORAGE_KEYS.SETUP_IN_PROGRESS);
+    } finally {
+      this.busy.set(false);
     }
   }
 

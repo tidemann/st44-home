@@ -348,6 +348,18 @@ describe('SetupWizard', () => {
     expect(household.createHousehold).toHaveBeenCalledTimes(1);
   });
 
+  it('starts fresh when the saved household cannot be read any more', async () => {
+    stored[STORAGE_KEYS.SETUP_IN_PROGRESS] = { householdId: 'gone', name: 'Familien Dahl' };
+    children.listChildren.mockRejectedValue(new Error('403'));
+
+    await create();
+
+    expect(component.step()).toBe(1);
+    expect(component.householdId()).toBeNull();
+    expect(component.busy()).toBe(false);
+    expect(stored[STORAGE_KEYS.SETUP_IN_PROGRESS]).toBeUndefined();
+  });
+
   it('says the parent is offline when a save fails without a connection', async () => {
     household.createHousehold.mockRejectedValue(new Error('network'));
     Object.defineProperty(navigator, 'onLine', { configurable: true, get: () => false });
