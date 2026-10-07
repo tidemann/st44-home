@@ -1,0 +1,269 @@
+/**
+ * First-time setup (sketch 07 v2): one card, a progress line, one question per
+ * step, and the big button anchored at the bottom of the card.
+ */
+:host {
+  display: block;
+}
+
+.wizard {
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  padding: var(--space-lg) var(--space-md);
+  background: var(--color-background);
+}
+
+.wizard-card {
+  width: 100%;
+  max-width: 480px;
+  min-height: min(720px, calc(100vh - 2 * var(--space-lg)));
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-lg);
+  padding: var(--space-lg);
+  background: var(--color-surface);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-md);
+}
+
+/* ===== Progress line ===== */
+.progress-label {
+  margin: 0 0 var(--space-xs);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-secondary);
+}
+
+.progress-line {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--space-xs);
+}
+
+.progress-step {
+  height: 6px;
+  border-radius: var(--radius-full);
+  background: var(--color-border);
+}
+
+.progress-step.done {
+  background: var(--color-primary);
+}
+
+/* ===== Step layout: content on top, actions at the bottom ===== */
+.step {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-lg);
+}
+
+.step-body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+}
+
+.step-title {
+  margin: 0;
+  font-family: var(--font-heading);
+  font-size: var(--font-size-3xl);
+  line-height: var(--line-height-tight);
+  color: var(--color-text-primary);
+}
+
+.step-lead {
+  margin: 0;
+  font-size: var(--font-size-md);
+  line-height: var(--line-height-relaxed);
+  color: var(--color-text-secondary);
+}
+
+.step-icon {
+  font-size: var(--font-size-5xl);
+}
+
+.step-actions {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-sm);
+}
+
+.btn-block {
+  width: 100%;
+}
+
+.link-button {
+  padding: var(--space-xs) var(--space-md);
+  background: none;
+  border: none;
+  font-family: var(--font-body);
+  font-size: var(--font-size-md);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-primary);
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.link-button:focus-visible {
+  outline: 3px solid var(--color-primary);
+  outline-offset: 2px;
+  border-radius: var(--radius-sm);
+}
+
+.hint {
+  margin: 0;
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+}
+
+/* ===== Step 2: children ===== */
+.child-form {
+  display: grid;
+  grid-template-columns: 1fr 5.5rem;
+  gap: var(--space-sm);
+  align-items: end;
+}
+
+.child-form .form-group {
+  margin: 0;
+}
+
+.add-child {
+  grid-column: 1 / -1;
+}
+
+.child-card {
+  padding: var(--space-md);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+}
+
+.child-card-name {
+  margin: 0 0 var(--space-xs);
+  font-family: var(--font-heading);
+  font-size: var(--font-size-xl);
+  color: var(--color-text-primary);
+}
+
+/* ===== Step 3: chores ===== */
+.chore-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.chore {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  min-height: 52px;
+  padding: var(--space-sm) var(--space-md);
+  border: 2px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+}
+
+.chore.chosen {
+  border-color: var(--color-primary);
+  background: #eef2ff;
+}
+
+.chore input {
+  width: 1.25rem;
+  height: 1.25rem;
+  accent-color: var(--color-primary);
+}
+
+.chore-name {
+  flex: 1;
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-primary);
+}
+
+.chore-points {
+  padding: 2px var(--space-xs);
+  border-radius: var(--radius-full);
+  background: var(--color-warning-light);
+  color: var(--color-warning-dark);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+}
+
+.own-chore-row {
+  display: flex;
+  gap: var(--space-xs);
+}
+
+.own-chore-row .form-input {
+  flex: 1;
+}
+
+/* ===== Step 4b: summary ===== */
+.ready {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  padding: var(--space-md);
+  border: 1px solid #047857;
+  border-radius: var(--radius-sm);
+  background: var(--color-success-light);
+  color: var(--color-success-dark);
+}
+
+.ready-icon {
+  display: grid;
+  place-items: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  flex-shrink: 0;
+  border-radius: var(--radius-full);
+  background: #047857;
+  color: #ffffff;
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-bold);
+}
+
+.ready-title {
+  margin: 0;
+  font-family: var(--font-heading);
+  font-size: var(--font-size-2xl);
+  line-height: var(--line-height-tight);
+}
+
+.summary {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.summary li {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding-bottom: var(--space-sm);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.summary-label {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-secondary);
+}
+
+.summary-value {
+  color: var(--color-text-primary);
+}
+
+.alert {
+  margin: 0;
+}

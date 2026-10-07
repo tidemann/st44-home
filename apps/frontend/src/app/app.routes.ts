@@ -74,10 +74,7 @@ export const routes: Routes = [
       {
         path: 'household/create',
         title: 'Create Household - Diddit!',
-        loadComponent: () =>
-          import('./components/household-create/household-create').then(
-            (m) => m.HouseholdCreateComponent,
-          ),
+        loadComponent: () => import('./pages/setup-wizard/setup-wizard').then((m) => m.SetupWizard),
       },
       {
         path: 'household/settings',

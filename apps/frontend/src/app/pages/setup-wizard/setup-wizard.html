@@ -1,0 +1,332 @@
+<main class="wizard">
+  <div class="wizard-card">
+    <!-- Progress line -->
+    <div class="progress">
+      <p class="progress-label" i18n="@@setupWizard.progress">Steg {{ progressStep() }} av 4</p>
+      <div
+        class="progress-line"
+        role="progressbar"
+        aria-valuemin="1"
+        aria-valuemax="4"
+        [attr.aria-valuenow]="progressStep()"
+        i18n-aria-label="@@setupWizard.progressLabel"
+        aria-label="Oppsett av familien"
+      >
+        @for (n of [1, 2, 3, 4]; track n) {
+          <span class="progress-step" [class.done]="n <= progressStep()"></span>
+        }
+      </div>
+    </div>
+
+    @switch (step()) {
+      <!-- Step 1: family name -->
+      @case (1) {
+        <form class="step" (submit)="$event.preventDefault(); saveFamily()">
+          <div class="step-body">
+            <h1 class="step-title" i18n="@@setupWizard.familyTitle">Hva heter familien?</h1>
+            <p class="step-lead" i18n="@@setupWizard.familyLead">
+              Som forelder lager du oppgaver, ser hva barna har gjort og svarer når de ønsker seg en
+              belønning.
+            </p>
+            <div class="form-group">
+              <label for="family-name" class="form-label" i18n="@@setupWizard.familyLabel"
+                >Navn på familien</label
+              >
+              <input
+                id="family-name"
+                name="familyName"
+                type="text"
+                class="form-input"
+                maxlength="100"
+                autocomplete="off"
+                i18n-placeholder="@@setupWizard.familyPlaceholder"
+                placeholder="f.eks. Familien Dahl"
+                [value]="familyName()"
+                (input)="familyName.set($any($event.target).value)"
+              />
+            </div>
+          </div>
+          <div class="step-actions">
+            <button
+              type="submit"
+              class="btn btn-primary btn-lg btn-block"
+              [disabled]="!familyName().trim() || busy()"
+              [attr.aria-busy]="busy()"
+              i18n="@@setupWizard.next"
+            >
+              Neste
+            </button>
+          </div>
+        </form>
+      }
+
+      <!-- Step 2: children -->
+      @case (2) {
+        <div class="step">
+          <div class="step-body">
+            <h1 class="step-title" i18n="@@setupWizard.childrenTitle">Legg til barna</h1>
+            <p class="step-lead" i18n="@@setupWizard.childrenLead">
+              Hvert barn får sin egen QR-kode. Barnet åpner home.st44.no på sin telefon eller sitt
+              nettbrett, trykker «Skann QR-kode for å logge inn» og holder kameraet mot koden.
+            </p>
+
+            <form class="child-form" (submit)="$event.preventDefault(); addChild()">
+              <div class="form-group child-name">
+                <label for="child-name" class="form-label" i18n="@@setupWizard.childNameLabel"
+                  >Navn</label
+                >
+                <input
+                  id="child-name"
+                  name="childName"
+                  type="text"
+                  class="form-input"
+                  maxlength="255"
+                  autocomplete="off"
+                  [value]="childName()"
+                  (input)="childName.set($any($event.target).value)"
+                />
+              </div>
+              <div class="form-group child-age">
+                <label for="child-age" class="form-label" i18n="@@setupWizard.childAgeLabel"
+                  >Alder</label
+                >
+                <input
+                  id="child-age"
+                  name="childAge"
+                  type="number"
+                  inputmode="numeric"
+                  min="0"
+                  max="25"
+                  class="form-input"
+                  [value]="childAge()"
+                  (input)="childAge.set($any($event.target).value)"
+                />
+              </div>
+              <button
+                type="submit"
+                class="btn btn-secondary add-child"
+                [disabled]="!childName().trim() || busy()"
+                i18n="@@setupWizard.addChild"
+              >
+                Legg til
+              </button>
+            </form>
+
+            @for (child of children(); track child.id) {
+              <section class="child-card" [attr.aria-label]="child.name">
+                <h2 class="child-card-name">{{ child.name }}</h2>
+                <app-qr-code-display [childId]="child.id" [childName]="child.name" />
+              </section>
+            } @empty {
+              <p class="hint" i18n="@@setupWizard.childrenLater">
+                Du kan også legge til barn senere under «Familie».
+              </p>
+            }
+          </div>
+          <div class="step-actions">
+            <button
+              type="button"
+              class="btn btn-primary btn-lg btn-block"
+              [disabled]="busy()"
+              (click)="step.set(3)"
+              i18n="@@setupWizard.next"
+            >
+              Neste
+            </button>
+            <button type="button" class="link-button" (click)="back()" i18n="@@setupWizard.back">
+              Tilbake
+            </button>
+          </div>
+        </div>
+      }
+
+      <!-- Step 3: first chores -->
+      @case (3) {
+        <div class="step">
+          <div class="step-body">
+            <h1 class="step-title" i18n="@@setupWizard.choresTitle">Velg de første oppgavene</h1>
+            <p class="step-lead" i18n="@@setupWizard.choresLead">
+              Oppgavene kommer hver dag og går på rundgang mellom barna. Du kan endre dem når som
+              helst under «Oppgaver».
+            </p>
+
+            <ul class="chore-list">
+              @for (chore of chores(); track $index) {
+                <li>
+                  <label class="chore" [class.chosen]="chore.chosen">
+                    <input
+                      type="checkbox"
+                      [checked]="chore.chosen"
+                      (change)="toggleChore($index)"
+                    />
+                    <span class="chore-name">{{ chore.name }}</span>
+                    <span class="chore-points" i18n="@@setupWizard.chorePoints"
+                      >{{ chore.points }} poeng</span
+                    >
+                  </label>
+                </li>
+              }
+            </ul>
+
+            <form class="own-chore" (submit)="$event.preventDefault(); addOwnChore()">
+              <label for="own-chore" class="form-label" i18n="@@setupWizard.ownChoreLabel"
+                >Lag en egen oppgave</label
+              >
+              <div class="own-chore-row">
+                <input
+                  id="own-chore"
+                  name="ownChore"
+                  type="text"
+                  class="form-input"
+                  maxlength="255"
+                  autocomplete="off"
+                  i18n-placeholder="@@setupWizard.ownChorePlaceholder"
+                  placeholder="f.eks. Gå tur med hunden"
+                  [value]="ownChore()"
+                  (input)="ownChore.set($any($event.target).value)"
+                />
+                <button
+                  type="submit"
+                  class="btn btn-secondary"
+                  [disabled]="!ownChore().trim()"
+                  i18n="@@setupWizard.addChore"
+                >
+                  Legg til
+                </button>
+              </div>
+            </form>
+          </div>
+          <div class="step-actions">
+            <button
+              type="button"
+              class="btn btn-primary btn-lg btn-block"
+              [disabled]="busy()"
+              [attr.aria-busy]="busy()"
+              (click)="saveChores()"
+            >
+              @if (chosenCount() === 0) {
+                <span i18n="@@setupWizard.next">Neste</span>
+              } @else {
+                <span i18n="@@setupWizard.saveChores">Lag {{ chosenCount() }} oppgaver</span>
+              }
+            </button>
+            <button type="button" class="link-button" (click)="back()" i18n="@@setupWizard.back">
+              Tilbake
+            </button>
+          </div>
+        </div>
+      }
+
+      <!-- Step 4a: reminders -->
+      @case (4) {
+        <div class="step">
+          <div class="step-body">
+            <div class="step-icon" aria-hidden="true">🔔</div>
+            <h1 class="step-title" i18n="@@setupWizard.remindersTitle">Slå på påminnelser</h1>
+            <p class="step-lead" i18n="@@setupWizard.remindersLead">
+              Du får beskjed når et barn er ferdig med en oppgave eller ønsker seg en belønning.
+              Telefonen spør deg om lov én gang.
+            </p>
+            @if (pushUnavailable()) {
+              <p class="alert alert-info" role="status" i18n="@@setupWizard.remindersUnavailable">
+                Påminnelser kan ikke slås på her akkurat nå. Du kan gjøre det senere under
+                «Innstillinger».
+              </p>
+            }
+          </div>
+          <div class="step-actions">
+            @if (pushUnavailable() || remindersOn()) {
+              <button
+                type="button"
+                class="btn btn-primary btn-lg btn-block"
+                (click)="skipReminders()"
+                i18n="@@setupWizard.next"
+              >
+                Neste
+              </button>
+            } @else {
+              <button
+                type="button"
+                class="btn btn-primary btn-lg btn-block"
+                [disabled]="busy()"
+                [attr.aria-busy]="busy()"
+                (click)="turnOnReminders()"
+                i18n="@@setupWizard.turnOnReminders"
+              >
+                Slå på påminnelser
+              </button>
+              <button
+                type="button"
+                class="link-button"
+                (click)="skipReminders()"
+                i18n="@@setupWizard.skip"
+              >
+                Hopp over
+              </button>
+            }
+          </div>
+        </div>
+      }
+
+      <!-- Step 4b: summary -->
+      @case (5) {
+        <div class="step">
+          <div class="step-body">
+            <div class="ready" role="status">
+              <span class="ready-icon" aria-hidden="true">✓</span>
+              <h1 class="ready-title" i18n="@@setupWizard.readyTitle">
+                {{ familyName().trim() }} er klar
+              </h1>
+            </div>
+            <ul class="summary">
+              <li>
+                <span class="summary-label" i18n="@@setupWizard.summaryChildren">Barn</span>
+                <span class="summary-value">
+                  @for (child of children(); track child.id; let last = $last) {
+                    {{ child.name }}{{ last ? '' : ', ' }}
+                  } @empty {
+                    <span i18n="@@setupWizard.summaryNone">Ingen ennå</span>
+                  }
+                </span>
+              </li>
+              <li>
+                <span class="summary-label" i18n="@@setupWizard.summaryChores">Oppgaver</span>
+                <span class="summary-value">
+                  @if (createdChores().length > 0) {
+                    {{ createdChores().join(', ') }}
+                  } @else {
+                    <span i18n="@@setupWizard.summaryNone">Ingen ennå</span>
+                  }
+                </span>
+              </li>
+              <li>
+                <span class="summary-label" i18n="@@setupWizard.summaryReminders">Påminnelser</span>
+                <span class="summary-value">
+                  @if (remindersOn()) {
+                    <span i18n="@@setupWizard.remindersOn">På</span>
+                  } @else {
+                    <span i18n="@@setupWizard.remindersOff">Av – slå på under «Innstillinger»</span>
+                  }
+                </span>
+              </li>
+            </ul>
+          </div>
+          <div class="step-actions">
+            <button
+              type="button"
+              class="btn btn-primary btn-lg btn-block"
+              (click)="finish()"
+              i18n="@@setupWizard.goHome"
+            >
+              Gå til Hjem
+            </button>
+          </div>
+        </div>
+      }
+    }
+
+    @if (error()) {
+      <p class="alert alert-error" role="alert">{{ error() }}</p>
+    }
+  </div>
+</main>
