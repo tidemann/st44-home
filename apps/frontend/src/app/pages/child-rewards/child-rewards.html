@@ -1,92 +1,171 @@
-<div class="child-rewards-container">
-  <!-- Header with balance -->
-  <header class="rewards-header">
-    <button class="back-button" (click)="goBack()" aria-label="Go back">
-      <span aria-hidden="true">&larr;</span> Back
-    </button>
-    <h1>Rewards Store</h1>
-    <div class="points-balance" aria-live="polite">
-      <span class="balance-label">Your Points</span>
-      <span class="balance-value">{{ pointsBalance() }}</span>
-    </div>
-  </header>
+<div class="child-rewards">
+  <h1 class="page-title" i18n="@@childRewards.title">Mine belønninger</h1>
 
-  <!-- Success Message -->
+  <!-- Balance -->
+  <section class="balance-card" aria-live="polite">
+    <span class="balance-label" i18n="@@childRewards.balanceLabel">Poengene dine</span>
+    <span class="balance-value">{{ pointsBalance() }}</span>
+  </section>
+
   @if (successMessage()) {
-    <div class="success-message" role="status" aria-live="polite">
-      {{ successMessage() }}
-    </div>
+    <div class="alert alert-success" role="status">{{ successMessage() }}</div>
   }
 
-  <!-- Loading State -->
   @if (loading()) {
-    <div class="loading" role="status" aria-live="polite">
+    <div class="state" role="status" aria-live="polite">
       <span class="spinner" aria-hidden="true"></span>
-      Loading rewards...
+      <span i18n="@@childRewards.loading">Henter belønninger…</span>
     </div>
-  }
-
-  <!-- Error State -->
-  @if (error()) {
-    <div class="error" role="alert">
-      {{ error() }}
+  } @else if (error()) {
+    <div class="alert alert-danger" role="alert">
+      <span i18n="@@childRewards.loadFailed">Vi fikk ikke hentet belønningene.</span>
+      <button type="button" class="link-button" (click)="load()" i18n="@@childRewards.tryAgain">
+        Prøv igjen
+      </button>
     </div>
-  }
-
-  <!-- Rewards Grid -->
-  @if (!loading() && !error()) {
-    @if (childRewards().length === 0) {
-      <div class="empty-state">
-        <div class="empty-icon" aria-hidden="true"></div>
-        <p>No rewards available yet!</p>
-        <p class="empty-hint">Ask your parents to set up some rewards for you.</p>
-      </div>
-    } @else {
-      <div class="rewards-grid">
-        @for (reward of childRewards(); track reward.id) {
-          <article
-            class="reward-card"
-            [class.cannot-afford]="!reward.canAfford"
-            [class.unavailable]="!reward.available"
-            [class.redeeming]="redeemingRewardId() === reward.id"
-          >
-            <div class="reward-content">
-              <h2 class="reward-name">{{ reward.name }}</h2>
-              @if (reward.description) {
-                <p class="reward-description">{{ reward.description }}</p>
-              }
-              <div class="reward-cost">
-                <span class="cost-value">{{ reward.pointsCost }}</span>
-                <span class="cost-label">points</span>
-              </div>
-            </div>
-            <div class="reward-actions">
-              @if (!reward.available) {
-                <span class="status-badge out-of-stock">Out of Stock</span>
-              } @else if (!reward.canAfford) {
-                <span class="status-badge need-more"
-                  >Need {{ reward.pointsCost - pointsBalance() }} more</span
-                >
-              } @else if (redeemingRewardId() === reward.id) {
-                <button class="redeem-button" disabled>
-                  <span class="spinner-small" aria-hidden="true"></span>
-                  Redeeming...
-                </button>
-              } @else {
-                <button
-                  class="redeem-button"
-                  (click)="redeemReward(reward)"
-                  [attr.aria-label]="
-                    'Redeem ' + reward.name + ' for ' + reward.pointsCost + ' points'
-                  "
-                >
-                  Redeem
-                </button>
-              }
-            </div>
+  } @else {
+    <!-- Requests waiting for an answer -->
+    @if (waiting().length > 0) {
+      <section class="requests" aria-labelledby="waiting-heading">
+        <h2 id="waiting-heading" i18n="@@childRewards.waitingHeading">Venter på svar</h2>
+        @for (request of waiting(); track request.id) {
+          <article class="request-card">
+            <span class="request-name">{{ rewardName(request) }}</span>
+            <span class="badge badge-waiting" i18n="@@childRewards.statusWaiting">Venter</span>
           </article>
         }
-      </div>
+      </section>
+    }
+
+    <!-- Rewards -->
+    <section aria-labelledby="rewards-heading">
+      <h2 id="rewards-heading" i18n="@@childRewards.rewardsHeading">Dette kan du be om</h2>
+      @if (childRewards().length === 0) {
+        <div class="empty-state">
+          <p i18n="@@childRewards.empty">Ingen belønninger ennå!</p>
+          <p class="empty-hint" i18n="@@childRewards.emptyHint">
+            Spør en voksen om å lage noen til deg.
+          </p>
+        </div>
+      } @else {
+        <div class="rewards-list">
+          @for (reward of childRewards(); track reward.id) {
+            <article class="reward-card" [class.dimmed]="!reward.canAfford || !reward.available">
+              <div class="reward-content">
+                <h3 class="reward-name">{{ reward.name }}</h3>
+                @if (reward.description) {
+                  <p class="reward-description">{{ reward.description }}</p>
+                }
+                <span class="points-pill" i18n="@@childRewards.points"
+                  >{{ reward.pointsCost }} poeng</span
+                >
+              </div>
+              <div class="reward-action">
+                @if (!reward.available) {
+                  <span class="status-text" i18n="@@childRewards.soldOut">Tomt nå</span>
+                } @else if (!reward.canAfford) {
+                  <span class="status-text" i18n="@@childRewards.missing"
+                    >Mangler {{ missing(reward) }}</span
+                  >
+                } @else {
+                  <button
+                    type="button"
+                    class="btn btn-primary ask-button"
+                    (click)="ask(reward)"
+                    i18n-aria-label="@@childRewards.askAria"
+                    aria-label="Be om {{ reward.name }} for {{ reward.pointsCost }} poeng"
+                    i18n="@@childRewards.ask"
+                  >
+                    Be om
+                  </button>
+                }
+              </div>
+            </article>
+          }
+        </div>
+        <p class="hint" i18n="@@childRewards.earnHint">
+          Gjør oppgavene dine for å tjene flere poeng.
+        </p>
+      }
+    </section>
+
+    <!-- Answered requests -->
+    @if (answered().length > 0) {
+      <section class="requests" aria-labelledby="answered-heading">
+        <h2 id="answered-heading" i18n="@@childRewards.answeredHeading">Svar du har fått</h2>
+        @for (request of answered(); track request.id) {
+          <article class="request-card">
+            <div class="request-text">
+              <span class="request-name">{{ rewardName(request) }}</span>
+              @if (request.status === 'rejected' && request.rejectionReason) {
+                <span class="request-reason">«{{ request.rejectionReason }}»</span>
+              }
+            </div>
+            @switch (request.status) {
+              @case ('approved') {
+                <span class="badge badge-yes" i18n="@@childRewards.statusYes">Ja! ✓</span>
+              }
+              @case ('fulfilled') {
+                <span class="badge badge-yes" i18n="@@childRewards.statusGiven">Fått ✓</span>
+              }
+              @case ('rejected') {
+                <span class="badge badge-no" i18n="@@childRewards.statusNo">Nei denne gangen</span>
+              }
+            }
+          </article>
+        }
+      </section>
     }
   }
 </div>
+
+<!-- Confirmation before asking -->
+<app-modal
+  [open]="confirming() !== null"
+  (closeModal)="closeSheet()"
+  i18n-title="@@childRewards.confirmTitle"
+  title="Vil du be om dette?"
+>
+  @if (confirming(); as reward) {
+    <div class="confirm">
+      <p class="confirm-name">{{ reward.name }}</p>
+      <dl class="confirm-numbers">
+        <div>
+          <dt i18n="@@childRewards.confirmCost">Det koster</dt>
+          <dd i18n="@@childRewards.confirmPoints">{{ reward.pointsCost }} poeng</dd>
+        </div>
+        <div>
+          <dt i18n="@@childRewards.confirmLeft">Igjen etterpå</dt>
+          <dd i18n="@@childRewards.confirmLeftPoints">
+            {{ pointsBalance() - reward.pointsCost }} poeng
+          </dd>
+        </div>
+      </dl>
+      <p class="confirm-note" i18n="@@childRewards.confirmNote">
+        En voksen må si ja først. Poengene holdes av mens du venter, og du får dem tilbake hvis
+        svaret er nei.
+      </p>
+      @if (askError()) {
+        <p class="alert alert-danger" role="alert">{{ askError() }}</p>
+      }
+    </div>
+  }
+  <div class="modal-actions" modal-actions>
+    <button
+      type="button"
+      class="btn btn-secondary"
+      (click)="closeSheet()"
+      [disabled]="asking()"
+      i18n="@@childRewards.cancel"
+    >
+      Avbryt
+    </button>
+    <button type="button" class="btn btn-primary" (click)="confirmAsk()" [disabled]="asking()">
+      @if (asking()) {
+        <span i18n="@@childRewards.sending">Sender…</span>
+      } @else {
+        <span i18n="@@childRewards.confirmAsk">Be om</span>
+      }
+    </button>
+  </div>
+</app-modal>
