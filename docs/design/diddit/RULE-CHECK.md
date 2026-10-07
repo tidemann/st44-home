@@ -24,6 +24,53 @@ Crops used as evidence below:
 
 ---
 
+## Revision 3 — what changed and why (2026-10-07)
+
+Astrid's re-check of revision 2 confirmed every correction in it and found one more token that had
+been written rather than measured.
+
+| #   | Finding                                                                  | Status                                                                  |
+| --- | ------------------------------------------------------------------------ | ----------------------------------------------------------------------- |
+| 1   | `button-row-action` documented at 44 px; every instance is 36 px.        | Confirmed and fixed — 36 px drawn, 44 px padded target.                 |
+| 2   | The hit-area line exempted only the chips, implying 44 px row buttons.   | Fixed — the line now names all three sub-44 controls.                   |
+| 3   | The font caveat lived only in this file, not in the guide.               | Fixed — the caveat is now a block quote under the two font names.       |
+| 4   | "Points meter … spanning the content column" overstates screen 5.        | Fixed — width follows the space given; only height and gap are fixed.   |
+| 5   | Row-button and tick-badge radii still unmeasured (found while fixing 1). | Fixed — both measured: 10 px and 16 px. The badge was documented at 18. |
+
+### Finding 1, verified independently
+
+![Hak av, Spør mor and the primary button at the same scale](reference/button-heights.png)
+
+Flood-filled every `#F6B93B` region on all five frames and took the bounding boxes. Five row-action
+buttons, none of them 44 px:
+
+| Button     | Screen | Board box                | CSS size    |
+| ---------- | ------ | ------------------------ | ----------- |
+| "Hak av"   | 3      | x 2328–2467, y 912–983   | 70 × **36** |
+| "Hak av"   | 3      | x 2328–2467, y 1146–1217 | 70 × **36** |
+| "Spør mor" | 5      | x 3964–4137, y 702–773   | 87 × **36** |
+| "Spør mor" | 5      | x 3964–4137, y 902–973   | 87 × **36** |
+| "Spør mor" | 5      | x 3964–4137, y 1104–1175 | 87 × **36** |
+
+The same sweep returns 346 × 49 for the primary button on screen 2 and a 166 × 49 ghost interior on
+screen 4, both exactly as documented — so the 49 was measured and the 44 was not. The widths differ
+between the two labels, which is why the token now carries a height and no width.
+
+### Finding 5, in detail
+
+The radii were the last values in the guide marked "not measured". They are measurable with the same
+bounding boxes: walk down the left edge and find the first scanline where the fill reaches the box,
+which lands one board px short of the radius. Calibrated against the primary button, where it
+returns the 13 px that was measured by hand (first zero at dy = 25 → 26 board px).
+
+| Shape          | First zero | Radius    | Was documented as      |
+| -------------- | ---------- | --------- | ---------------------- |
+| Primary button | dy = 25    | 13 px     | 13 px ✅ (calibration) |
+| Row action     | dy = 19    | **10 px** | 12 px, "not measured"  |
+| Tick badge     | dy = 30    | **16 px** | ~18 px, "not measured" |
+
+Both new values are ±1 px and the guide says so.
+
 ## Revision 2 — what changed and why (2026-10-07)
 
 Astrid reviewed revision 1 against the picture and found two rules that, followed literally, would
@@ -117,6 +164,7 @@ luminance thresholds.
 | Family screen: three cards across, 109 px wide, 9 px apart | Screen 1, y = 620: white at 132–349, 368–587, 606–823, with `#F6F6F4` gaps at 350–367 and 588–605.                          |
 | Primary button 346 × 49 px                                 | Screen 2, "Ny oppgave": x 968–1659, y 1616–1713 → 692 × 98 board px.                                                        |
 | On-yellow buttons 49 px tall                               | Screen 4, "Angre" and "Ferdig" both y 1744–1841 → 98 board px.                                                              |
+| Row-action buttons 36 px tall; width follows the label     | Five instances, all 72 board px tall: "Hak av" 140 board px wide (screen 3), "Spør mor" 174 (screen 5).                     |
 | Points meter 14 px tall, 4 px gaps                         | Screen 5 y 1308–1335 (28 board px), gaps 8 board px. Screen 4 y 968–995, same.                                              |
 | Chore meter 7 px tall, 3 px gaps                           | Screen 1 y 652–665 (14 board px), gaps 6 board px. **Exactly half the points meter.**                                       |
 | Meter segments divide the width; they are not fixed        | Screen 1: 2 segments at 82 board px. Screen 5: 10 segments at 44–46 board px. Screen 4: 10 segments at 60–62 board px.      |
@@ -124,6 +172,7 @@ luminance thresholds.
 | Checkbox 22 × 22 px, 2 px outline                          | Screen 2, `#DFDFD9` bbox x 996–1039, y 1028–1071 → 44 × 44 board px.                                                        |
 | Tick badge 54 × 54 px                                      | Screen 4, `#17120A` bbox x 2644–2751, y 356–463 → 108 × 108 board px.                                                       |
 | Card radius 12 px, button radius 13 px                     | Card corner insets fit a 24 board px circle; the primary button fits a 26 board px circle.                                  |
+| Row-action radius 10 px, tick-badge radius 16 px           | Corner arcs close at dy = 19 and dy = 30 board px; the same fit returns the primary's measured 13 px.                       |
 | **The Flat Rule** — no shadows                             | The pixel immediately left of every card edge is exactly `#F6F6F4`. There is no gradient, so there is no shadow.            |
 | **The Borders Mean Something Rule** — three strokes        | State: 2 px `#A43A16` overdue border. Control boundary: 2 px `#DFDFD9` checkbox. Divider: 1 px `#DFDFD9`. Nothing else.     |
 | Nav divider: 1 px `#DFDFD9`, full 390 px bleed             | y = 1738–1739 (2 board px), spanning x 88–867 on screen 1 — the **entire** frame width — and the same y on screens 2, 3, 5. |
@@ -144,18 +193,18 @@ luminance thresholds.
 
 ## Rules the picture does **not** support — dropped
 
-| Candidate rule                                       | Why it was not written                                                                                     |
-| ---------------------------------------------------- | ---------------------------------------------------------------------------------------------------------- |
-| "Yellow only as a surface" (from the ST-729 guide)   | Contradicted: yellow fills buttons and meters on screens 2, 3 and 5.                                       |
-| "One yellow area per screen" (from the ST-729 guide) | Contradicted: screen 5 has five.                                                                           |
-| "The tick moment goes dark" (from the ST-729 guide)  | Contradicted: screen 4 is full-bleed yellow.                                                               |
-| "The only stroke is the overdue border" (revision 1) | Contradicted: a `#DFDFD9` divider runs above the nav on all four light screens.                            |
-| "Meters are yellow" (revision 1)                     | Contradicted: the family-screen chore meters are green, rust and track. Yellow is for points meters only.  |
-| "Every button is at least 44 px" (revision 1)        | Contradicted: filter chips are 33 px. Still AA-conformant; documented with a padded target instead.        |
-| "Points chips sit on a sunk grey background"         | The picture shows "5 p" as plain amber type on white, no chip background. Sampled `#FFFFFF` behind it.     |
-| "Overdue rows get a pink fill"                       | The picture shows a **white** fill with a rust border. See [`row-overdue.png`](reference/row-overdue.png). |
-| "Primary buttons carry a darker gold border"         | The picture's primary button goes straight from `#F6F6F4` to `#F6B93B` with no border line.                |
-| Any dark-mode token set                              | The picture is "lys modus" only. A dark mode is a new sign-off, not a rule.                                |
+| Candidate rule                                       | Why it was not written                                                                                                                        |
+| ---------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------- |
+| "Yellow only as a surface" (from the ST-729 guide)   | Contradicted: yellow fills buttons and meters on screens 2, 3 and 5.                                                                          |
+| "One yellow area per screen" (from the ST-729 guide) | Contradicted: screen 5 has five.                                                                                                              |
+| "The tick moment goes dark" (from the ST-729 guide)  | Contradicted: screen 4 is full-bleed yellow.                                                                                                  |
+| "The only stroke is the overdue border" (revision 1) | Contradicted: a `#DFDFD9` divider runs above the nav on all four light screens.                                                               |
+| "Meters are yellow" (revision 1)                     | Contradicted: the family-screen chore meters are green, rust and track. Yellow is for points meters only.                                     |
+| "Every button is at least 44 px" (revisions 1–2)     | Contradicted: the row-action buttons are 36 px and the filter chips 33 px. Still AA-conformant; both documented with a padded target instead. |
+| "Points chips sit on a sunk grey background"         | The picture shows "5 p" as plain amber type on white, no chip background. Sampled `#FFFFFF` behind it.                                        |
+| "Overdue rows get a pink fill"                       | The picture shows a **white** fill with a rust border. See [`row-overdue.png`](reference/row-overdue.png).                                    |
+| "Primary buttons carry a darker gold border"         | The picture's primary button goes straight from `#F6F6F4` to `#F6B93B` with no border line.                                                   |
+| Any dark-mode token set                              | The picture is "lys modus" only. A dark mode is a new sign-off, not a rule.                                                                   |
 
 The last four are differences from the **earlier ST-729 CSS**, not from the picture. The ST-729
 sources use `--bg: #EDEFEC`, `--text: #101316`, a pink `--late-bg`, a grey points chip, a bordered
@@ -183,6 +232,7 @@ must be labelled as additions when they are designed:
   ~3%"; that claim does not reproduce at the corrected scale and has been withdrawn. **Treat the
   two faces as the best available match, not as fact**, and confirm against the source HTML if it
   turns up. The derived sizes do not depend on this: ink height is what was measured.
-- **Radii for the row-level action buttons and the tick badge** were not measured directly.
+- ~~Radii for the row-level action buttons and the tick badge were not measured directly.~~
+  Measured in revision 3: 10 px and 16 px, ±1 px, by the corner-arc fit described above.
 - **Line heights and letter-spacing** are carried over from revision 1 and were not re-measured;
   only font sizes were.

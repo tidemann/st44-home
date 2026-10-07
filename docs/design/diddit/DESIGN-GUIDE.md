@@ -64,8 +64,9 @@ rounded:
   sm: '9px'
   md: '12px'
   lg: '13px'
-  xl: '18px'
+  xl: '16px'
   pill: '999px'
+  rowAction: '10px'
 spacing:
   xs: '4px'
   sm: '8px'
@@ -103,8 +104,9 @@ components:
   button-row-action:
     backgroundColor: '{colors.yellow}'
     textColor: '{colors.ink}'
-    rounded: '{rounded.md}'
-    height: '44px'
+    rounded: '{rounded.rowAction}'
+    height: '36px'
+    minTouchTarget: '44px'
     typography: '{typography.body}'
   card:
     backgroundColor: '{colors.surface}'
@@ -139,12 +141,14 @@ components:
     textColor: '{colors.surface}'
     rounded: '{rounded.sm}'
     height: '33px'
+    minTouchTarget: '44px'
     typography: '{typography.meta}'
   chip-filter:
     backgroundColor: '{colors.surface}'
     textColor: '{colors.text}'
     rounded: '{rounded.sm}'
     height: '33px'
+    minTouchTarget: '44px'
     typography: '{typography.meta}'
   divider:
     backgroundColor: '{colors.hairline}'
@@ -155,6 +159,7 @@ components:
     rounded: '{rounded.sm}'
     height: '22px'
     width: '22px'
+    minTouchTarget: '44px'
   meter-points:
     backgroundColor: '{colors.yellow}'
     rounded: '{rounded.pill}'
@@ -329,6 +334,14 @@ neutral one to pass a check. Black on yellow is the system's answer; it already 
 **Display Font:** Bricolage Grotesque (fallback `system-ui, sans-serif`) — weight 800 only.
 **Body Font:** Hanken Grotesk (fallback `system-ui, sans-serif`) — weights 500 and 600.
 
+> **These two names are the best available match, not a documented fact.** Both faces ship with the
+> earlier Diddit design sources and their ink heights fit the picture well, but their ink widths do
+> not fit as cleanly: at the sizes below, "Dekke bord" renders about 8% wider than the picture shows
+> and "340" about 5% wider. If you set type from these names and it runs wide, that is why — try
+> about −0.04em tracking before you change a size, and confirm the faces against the source HTML if
+> it turns up. The sizes themselves do not depend on the font identity; ink height is what was
+> measured. Full detail in [RULE-CHECK.md](RULE-CHECK.md#unverified-in-this-pass).
+
 **Character:** A tight, heavy grotesque for every number and screen title, and a calm humanist
 grotesque for everything a person reads as a sentence. The pairing does the hierarchy on its own:
 there is no third font, no italic, and no uppercase tracking anywhere in the picture.
@@ -424,40 +437,52 @@ Softly rounded rectangles throughout; nothing is a circle except the person badg
 
 - **Cards and rows:** 12 px (measured on screen 2's chore card).
 - **Buttons:** 13 px for the full-width primary and the on-yellow pair.
+- **Row-level action buttons:** 10 px — smaller than the card they sit on.
 - **Filter chips:** 9 px.
 - **Meter segments:** fully rounded (pill).
-- **The tick badge** on the yellow screen: a 54 × 54 px rounded square at roughly 18 px radius —
-  the one piece of geometry that is allowed to look like a stamp.
+- **The tick badge** on the yellow screen: a 54 × 54 px rounded square at 16 px radius — the one
+  piece of geometry that is allowed to look like a stamp.
 
-Radii for the row-level action buttons and the tick badge were not measured directly; use 12 px and
-~18 px respectively and check against the picture if you are drawing them large.
+All radii are now fitted from the corner arcs rather than guessed. The method: walk down the left
+edge of the shape and find the first scanline where the fill reaches the shape's own bounding box,
+which lands one board px short of the radius. Calibrated on the primary button, where it returns the
+13 px measured by hand. On the row buttons it returns 10 px (19 board px), on the tick badge 16 px
+(30 board px). Treat the row button and badge values as ±1 px.
 
 ## Components
 
 ### Buttons
 
-- **Shape:** gently rounded (13 px primary and on-yellow, 12 px row-level).
+- **Shape:** gently rounded (13 px primary and on-yellow, 10 px row-level).
 - **Primary** (`button-primary`): Diddit Yellow fill, Ink label, **no border**, 346 × 49 px,
   Body 20 px / 600. Used for the one creating action on a screen ("+ Ny oppgave").
 - **Row action** (`button-row-action`): the same yellow fill and ink label at row scale — "Hak av"
-  on an overdue or due chore, "Spør mor" on a reward. **Several per screen is correct**: the
-  rewards screen has three.
+  on an overdue or due chore, "Spør mor" on a reward. **36 px tall** in every instance in the
+  picture; the width follows the label (70 px for "Hak av", 87 px for "Spør mor"), so set padding,
+  not a width. Do **not** grow it to 44 px: the reward card's layout is built around a short button
+  sitting beside a line of text, and a 44 px button is 22% taller than the one Stig signed off.
+  Reach 44 px with a padded hit area instead — see **Hit area** below.
+  **Several per screen is correct**: the rewards screen has three.
 - **Solid dark** (`button-solid`): Ink fill, white label — only for the confirming action inside
   the yellow moment ("Ferdig"), where a yellow button would disappear into the background.
 - **Ghost on yellow** (`button-ghost-on-yellow`): transparent on the yellow with a 2 px outlined
   edge and Ink label — the escape hatch ("Angre"). Draw the outline in **Ink**, not in the darker
   gold the picture uses: the sampled gold line (`#A87E29`) is 2.10:1 against the yellow and misses
   the 3:1 a control boundary needs.
-- **Hit area:** the primary, on-yellow and row-level buttons are all ≥44 px tall. The filter chips
-  are not — see below.
+- **Hit area:** the primary and on-yellow buttons are 49 px. The row-level buttons (36 px), the
+  filter chips (33 px) and the checkbox (22 px) are drawn below 44 px and need a **padded target** —
+  transparent padding or a pseudo-element that brings the pressable area to 44 × 44 px without
+  changing the drawn height. Every control in this picture that looks small is small on purpose;
+  the target grows, the drawing does not.
 
 ### Chips
 
 - **Filter chips** ("Alle / Emma / Jonas / Mathea"): **33 px tall**, 9 px radius, 7 px apart,
   Meta 15 px. Selected is a `#15181C` fill with a white label; unselected is a white fill with
   `#15181C` label. Selection is a fill change, not a colour-only tint.
-- 33 px is below the 44 px used elsewhere. It still passes WCAG 2.2 AA (2.5.8 asks for 24 px), but
-  give each chip a padded target so the touch area reaches 44 px without changing the drawn height.
+- 33 px is below 44 px, as the row buttons are. It still passes WCAG 2.2 AA (2.5.8 asks for 24 px),
+  but give each chip a padded target so the touch area reaches 44 px without changing the drawn
+  height.
 
 ### Cards and rows
 
@@ -492,8 +517,9 @@ There are **two different meters** in this picture. They are not the same compon
 the same colour. Using the points meter on a family card is the most likely way to get screen 1
 wrong.
 
-**1. Points meter** — "how close am I to this reward". Segmented pills, **14 px tall, 4 px apart**,
-spanning the content column.
+**1. Points meter** — "how close am I to this reward". Segmented pills, **14 px tall, 4 px apart**.
+Width follows the space it is given: the full 346 px content column on screen 3, inset on a reward
+card on screen 5 where it shares the row with "… igjen". Only the height and the gap are fixed.
 
 - On white (screens 3 and 5): Diddit Yellow filled, `#ECECE8` empty.
 - On the yellow screen (screen 4): Ink filled, `#C59430` empty.
@@ -518,7 +544,8 @@ Jonas green + track + rust, Mathea green + track.
 - A **1 px `#DFDFD9` divider runs the full 390 px width** directly above the bar, on all four light
   screens. The yellow tick-off screen has no nav and no divider.
 - Active is Amber Ink with the heavier weight; inactive is Muted Text. Two signals, not one.
-- Each target is at least 44 px tall.
+- Each target fills the nav band — 71 px from the divider to the bottom edge of the frame — so these
+  are the one set of controls that needs no padding to clear 44 px.
 
 ### The tick-off moment (signature)
 
@@ -668,8 +695,9 @@ Also required of any build of these screens:
 
 - Focus visible on every control, drawn outside the element (`outline: 2.5px solid #17120A;
 outline-offset: 2px`) so it reads on white and on yellow alike.
-- Touch targets ≥44 × 44 px — the checkbox's visible box is 22 px and the filter chips are 33 px
-  tall; both need a padded target.
+- Touch targets ≥44 × 44 px. Three controls are drawn smaller than that and all three need a padded
+  target, not a bigger drawing: the checkbox (22 px), the filter chips (33 px) and the row-level
+  action buttons (36 px).
 - Respect `prefers-reduced-motion` on the tick-off moment: the award can appear without animating.
 - Norwegian `lang="nb"`; the points number needs an accessible label ("215 poeng"), not just a
   numeral.
