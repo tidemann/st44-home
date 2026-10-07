@@ -9,12 +9,20 @@ import {
 } from '@angular/core';
 import { Router } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
+import { z } from 'zod';
 import type { Child } from '@st44/types';
 import { HouseholdService } from '../../services/household.service';
 import { ChildrenService } from '../../services/children.service';
 import { TaskService } from '../../services/task.service';
 import { PushNotificationService } from '../../services/push-notification.service';
+import { StorageService } from '../../services/storage.service';
+import { STORAGE_KEYS } from '../../services/storage-keys';
 import { QrCodeDisplayComponent } from '../../components/qr-code-display/qr-code-display';
+
+/** A setup left halfway can be picked up again for a day */
+const SETUP_RESUME_MS = 24 * 60 * 60 * 1000;
+
+const SetupInProgressSchema = z.object({ householdId: z.string(), name: z.string() });
 
 /** 1 family name, 2 children, 3 first chores, 4 reminders (4a ask, 4b summary) */
 export type SetupStep = 1 | 2 | 3 | 4 | 5;
@@ -66,8 +74,9 @@ export class SetupWizard implements OnInit {
   private readonly childrenService = inject(ChildrenService);
   private readonly taskService = inject(TaskService);
   private readonly push = inject(PushNotificationService);
+  private readonly storage = inject(StorageService);
 
-  /** Start on a given step (Storybook) */
+  /** Start on a given step (Storybook only; the app always starts on 1) */
   readonly startStep = input<SetupStep>(1);
 
   readonly step = signal<SetupStep>(1);
@@ -105,6 +114,7 @@ export class SetupWizard implements OnInit {
 
   ngOnInit(): void {
     this.step.set(this.startStep());
+    if (this.startStep() === 1) void this.resume();
   }
 
   // ===== Step 1: family name =====
@@ -122,6 +132,11 @@ export class SetupWizard implements OnInit {
           const household = await this.householdService.createHousehold(name);
           // Set first, so a retry renames this household instead of making a second
           this.householdId.set(household.id);
+          this.storage.setWithTTL(
+            STORAGE_KEYS.SETUP_IN_PROGRESS,
+            { householdId: household.id, name },
+            SETUP_RESUME_MS,
+          );
           this.householdService.setActiveHousehold(household.id);
         }
         this.step.set(2);
@@ -237,17 +252,39 @@ export class SetupWizard implements OnInit {
   }
 
   async finish(): Promise<void> {
+    this.storage.remove(STORAGE_KEYS.SETUP_IN_PROGRESS);
     await this.router.navigate(['/home']);
   }
 
-  /** Run one save; on failure show the message and stay on the step */
+  /** After a reload mid-setup: go on with the household already made, on step 2 */
+  private async resume(): Promise<void> {
+    const saved = this.storage.get(STORAGE_KEYS.SETUP_IN_PROGRESS, SetupInProgressSchema);
+    if (!saved) return;
+    this.householdId.set(saved.householdId);
+    this.familyName.set(saved.name);
+    this.step.set(2);
+    try {
+      this.children.set(await this.childrenService.listChildren(saved.householdId));
+    } catch {
+      // The list stays empty; children added now are still saved
+    }
+  }
+
+  /**
+   * Run one save; on failure show the message and stay on the step.
+   * A 401 is sent to the login page by the error interceptor.
+   */
   private async run(work: () => Promise<void>, failure: string): Promise<void> {
     this.busy.set(true);
     this.error.set(null);
     try {
       await work();
     } catch {
-      this.error.set(failure);
+      this.error.set(
+        navigator.onLine
+          ? failure
+          : $localize`:@@setupWizard.offline:Du er ikke på nett. Sjekk forbindelsen og prøv igjen.`,
+      );
     } finally {
       this.busy.set(false);
     }

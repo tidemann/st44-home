@@ -36,6 +36,12 @@ export const STORAGE_KEYS = {
   NOTIFY_OFFER_DISMISSED: 'notifyOfferDismissed',
 
   /**
+   * The household the setup wizard made (1-day TTL), so a reload mid-setup goes
+   * on with it instead of making a second one; removed at "Gå til Hjem"
+   */
+  SETUP_IN_PROGRESS: 'setupInProgress',
+
+  /**
    * Time (ms) of the last API answer that came from the network, for the offline strip
    */
   LAST_SYNC_AT: 'lastSyncAt',

@@ -10,6 +10,8 @@ import { ChildrenService } from '../../services/children.service';
 import { TaskService } from '../../services/task.service';
 import { PushNotificationService, type PushState } from '../../services/push-notification.service';
 import { QrCodeDisplayComponent } from '../../components/qr-code-display/qr-code-display';
+import { StorageService } from '../../services/storage.service';
+import { STORAGE_KEYS } from '../../services/storage-keys';
 
 @Component({ selector: 'app-qr-code-display', template: '' })
 class FakeQrCode {
@@ -26,7 +28,10 @@ describe('SetupWizard', () => {
     updateHousehold: ReturnType<typeof vi.fn>;
     setActiveHousehold: ReturnType<typeof vi.fn>;
   };
-  let children: { createChild: ReturnType<typeof vi.fn> };
+  let children: {
+    createChild: ReturnType<typeof vi.fn>;
+    listChildren: ReturnType<typeof vi.fn>;
+  };
   let tasks: { createTask: ReturnType<typeof vi.fn> };
   let push: {
     state: typeof pushState;
@@ -34,6 +39,20 @@ describe('SetupWizard', () => {
     enable: ReturnType<typeof vi.fn>;
   };
   let router: { navigate: ReturnType<typeof vi.fn> };
+  let stored: Record<string, unknown>;
+  let storage: {
+    get: ReturnType<typeof vi.fn>;
+    setWithTTL: ReturnType<typeof vi.fn>;
+    remove: ReturnType<typeof vi.fn>;
+  };
+
+  async function create(): Promise<void> {
+    fixture = TestBed.createComponent(SetupWizard);
+    component = fixture.componentInstance;
+    fixture.detectChanges();
+    // Let resume() load the children
+    await new Promise((resolve) => setTimeout(resolve));
+  }
 
   const child = (id: string, name: string): Child =>
     ({ id, householdId: 'h-1', name, birthYear: 2018 }) as Child;
@@ -51,6 +70,7 @@ describe('SetupWizard', () => {
         .mockImplementation((_h: string, data: { name: string }) =>
           Promise.resolve(child(`c-${data.name}`, data.name)),
         ),
+      listChildren: vi.fn().mockResolvedValue([]),
     };
     tasks = { createTask: vi.fn().mockImplementation(() => of({ id: 't' })) };
     push = {
@@ -62,6 +82,16 @@ describe('SetupWizard', () => {
       }),
     };
     router = { navigate: vi.fn().mockResolvedValue(true) };
+    stored = {};
+    storage = {
+      get: vi.fn((key: string) => stored[key] ?? null),
+      setWithTTL: vi.fn((key: string, value: unknown) => {
+        stored[key] = value;
+      }),
+      remove: vi.fn((key: string) => {
+        delete stored[key];
+      }),
+    };
 
     await TestBed.configureTestingModule({
       imports: [SetupWizard],
@@ -71,6 +101,7 @@ describe('SetupWizard', () => {
         { provide: TaskService, useValue: tasks },
         { provide: PushNotificationService, useValue: push },
         { provide: Router, useValue: router },
+        { provide: StorageService, useValue: storage },
       ],
     })
       .overrideComponent(SetupWizard, {
@@ -293,5 +324,41 @@ describe('SetupWizard', () => {
   it('counts steps 4a and 4b as step 4 on the progress line', () => {
     component.step.set(5);
     expect(component.progressStep()).toBe(4);
+  });
+
+  it('goes on with the same household after a reload, and forgets it at "Gå til Hjem"', async () => {
+    component.familyName.set('Familien Dahl');
+    await component.saveFamily();
+    expect(stored[STORAGE_KEYS.SETUP_IN_PROGRESS]).toEqual({
+      householdId: 'h-1',
+      name: 'Familien Dahl',
+    });
+
+    // Reload: a new wizard picks up the household and its children
+    children.listChildren.mockResolvedValue([child('c-1', 'Emma')]);
+    await create();
+
+    expect(component.step()).toBe(2);
+    expect(component.householdId()).toBe('h-1');
+    expect(component.familyName()).toBe('Familien Dahl');
+    expect(component.children().map((c) => c.name)).toEqual(['Emma']);
+
+    await component.finish();
+    expect(stored[STORAGE_KEYS.SETUP_IN_PROGRESS]).toBeUndefined();
+    expect(household.createHousehold).toHaveBeenCalledTimes(1);
+  });
+
+  it('says the parent is offline when a save fails without a connection', async () => {
+    household.createHousehold.mockRejectedValue(new Error('network'));
+    Object.defineProperty(navigator, 'onLine', { configurable: true, get: () => false });
+    component.familyName.set('Familien Dahl');
+
+    try {
+      await component.saveFamily();
+      expect(component.error()).toContain('ikke på nett');
+    } finally {
+      // Back to the prototype's getter
+      delete (navigator as { onLine?: boolean }).onLine;
+    }
   });
 });
