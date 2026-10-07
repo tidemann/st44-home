@@ -52,6 +52,8 @@ export class RewardsManagementComponent implements OnInit {
 
   /** Ticks so the undo button disappears when the 5 minutes are over */
   now = signal(Date.now());
+  /** Server clock minus this device's clock, learned from the last answer's decidedAt */
+  clockOffset = signal(0);
 
   // Form state
   rewardForm = signal<CreateRewardRequest>({
@@ -102,7 +104,7 @@ export class RewardsManagementComponent implements OnInit {
   canUndo(redemption: RewardRedemption): boolean {
     if (redemption.status !== 'approved' && redemption.status !== 'rejected') return false;
     if (!redemption.decidedAt) return false;
-    const age = this.now() - Date.parse(redemption.decidedAt);
+    const age = this.now() + this.clockOffset() - Date.parse(redemption.decidedAt);
     return age < REDEMPTION_UNDO_SECONDS * 1000;
   }
 
@@ -157,11 +159,15 @@ export class RewardsManagementComponent implements OnInit {
     this.now.set(Date.now());
 
     call(householdId).subscribe({
-      next: () => {
+      next: (answered) => {
         this.busyId.set(null);
         this.rejectingId.set(null);
         this.rejectReason.set('');
         this.now.set(Date.now());
+        // The server just set decidedAt, so the difference is the clock skew
+        if (answered?.decidedAt) {
+          this.clockOffset.set(Date.parse(answered.decidedAt) - this.now());
+        }
       },
       error: () => {
         this.busyId.set(null);

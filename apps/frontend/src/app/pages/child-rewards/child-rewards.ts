@@ -5,6 +5,7 @@ import {
   computed,
   inject,
   ChangeDetectionStrategy,
+  DestroyRef,
 } from '@angular/core';
 import type { RewardRedemption } from '@st44/types';
 import { RewardService, ChildReward } from '../../services/reward.service';
@@ -28,6 +29,11 @@ import { Modal } from '../../components/modals/modal/modal';
 })
 export class ChildRewards implements OnInit {
   private rewardService = inject(RewardService);
+  private successTimer: ReturnType<typeof setTimeout> | undefined;
+
+  constructor() {
+    inject(DestroyRef).onDestroy(() => clearTimeout(this.successTimer));
+  }
 
   // Local component state
   confirming = signal<ChildReward | null>(null);
@@ -108,7 +114,9 @@ export class ChildRewards implements OnInit {
         );
         // canAfford changes for the other rewards
         this.rewardService.loadChildRewards().subscribe();
-        setTimeout(() => this.successMessage.set(null), 6000);
+        // A second ask restarts the 6 seconds for its own message
+        clearTimeout(this.successTimer);
+        this.successTimer = setTimeout(() => this.successMessage.set(null), 6000);
       },
       error: () => {
         this.asking.set(false);

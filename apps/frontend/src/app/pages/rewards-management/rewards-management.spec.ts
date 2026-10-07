@@ -91,6 +91,21 @@ describe('RewardsManagementComponent', () => {
     expect(component.canUndo(redemption({ status: 'approved', decidedAt: null }))).toBe(false);
   });
 
+  it('measures the undo window on the server clock when this device is behind', () => {
+    // The server is 10 minutes ahead of this device
+    const serverNow = new Date(Date.now() + 10 * 60_000).toISOString();
+    const answered = redemption({ status: 'approved', decidedAt: serverNow });
+    mockRewardService.approveRedemption.mockReturnValue(of(answered));
+
+    component.approve(redemption({}));
+
+    expect(component.canUndo(answered)).toBe(true);
+    const sixMinutesBefore = new Date(Date.parse(serverNow) - 6 * 60_000).toISOString();
+    expect(component.canUndo(redemption({ status: 'approved', decidedAt: sixMinutesBefore }))).toBe(
+      false,
+    );
+  });
+
   it('says no only with a reason, and sends the reason', () => {
     const request = redemption({});
     component.startReject(request);
