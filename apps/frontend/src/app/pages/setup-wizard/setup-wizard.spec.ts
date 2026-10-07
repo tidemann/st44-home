@@ -178,6 +178,7 @@ describe('SetupWizard', () => {
     tasks.createTask
       .mockReturnValueOnce(of({ id: 't1' }))
       .mockReturnValueOnce(throwError(() => new Error('500')));
+    component.step.set(3);
 
     await component.saveChores();
     expect(component.step()).toBe(3);
@@ -187,6 +188,71 @@ describe('SetupWizard', () => {
     expect(tasks.createTask).toHaveBeenCalledTimes(4);
     expect(component.createdChores().length).toBe(3);
     expect(component.step()).toBe(4);
+  });
+
+  it('makes an own chore even when it has the same name as a suggestion', async () => {
+    component.familyName.set('Familien Dahl');
+    await component.saveFamily();
+    component.ownChore.set('Re opp sengen');
+    component.addOwnChore();
+
+    await component.saveChores();
+
+    expect(tasks.createTask).toHaveBeenCalledTimes(4);
+    expect(component.createdChores().length).toBe(4);
+  });
+
+  it('sends nothing again and says "Neste" when the parent comes back to step 3', async () => {
+    component.familyName.set('Familien Dahl');
+    await component.saveFamily();
+    await component.saveChores();
+    component.back();
+    fixture.detectChanges();
+
+    expect(component.chosenCount()).toBe(0);
+    component.toggleChore(0);
+    expect(component.chores()[0].chosen).toBe(true);
+
+    await component.saveChores();
+    expect(tasks.createTask).toHaveBeenCalledTimes(3);
+    expect(component.step()).toBe(4);
+  });
+
+  it('adds a typed child on "Neste" instead of dropping the name', async () => {
+    component.familyName.set('Familien Dahl');
+    await component.saveFamily();
+    component.childName.set('Emma');
+
+    await component.childrenDone();
+
+    expect(children.createChild).toHaveBeenCalledWith('h-1', {
+      name: 'Emma',
+      birthYear: undefined,
+    });
+    expect(component.step()).toBe(3);
+  });
+
+  it('stays on step 2 when the typed child cannot be added', async () => {
+    component.familyName.set('Familien Dahl');
+    await component.saveFamily();
+    children.createChild.mockRejectedValue(new Error('500'));
+    component.childName.set('Emma');
+
+    await component.childrenDone();
+
+    expect(component.step()).toBe(2);
+    expect(component.childName()).toBe('Emma');
+  });
+
+  it('goes to the summary with reminders off when turning them on fails', async () => {
+    push.enable.mockRejectedValue(new Error('push failed'));
+    component.step.set(4);
+
+    await component.turnOnReminders();
+
+    expect(component.busy()).toBe(false);
+    expect(component.step()).toBe(5);
+    expect(component.remindersOn()).toBe(false);
   });
 
   it('turns reminders on, then shows the summary and goes home', async () => {

@@ -42,7 +42,7 @@
                 i18n-placeholder="@@setupWizard.familyPlaceholder"
                 placeholder="f.eks. Familien Dahl"
                 [value]="familyName()"
-                (input)="familyName.set($any($event.target).value)"
+                (input)="familyName.set(inputValue($event))"
               />
             </div>
           </div>
@@ -83,7 +83,7 @@
                   maxlength="255"
                   autocomplete="off"
                   [value]="childName()"
-                  (input)="childName.set($any($event.target).value)"
+                  (input)="childName.set(inputValue($event))"
                 />
               </div>
               <div class="form-group child-age">
@@ -99,7 +99,7 @@
                   max="25"
                   class="form-input"
                   [value]="childAge()"
-                  (input)="childAge.set($any($event.target).value)"
+                  (input)="childAge.set(inputValue($event))"
                 />
               </div>
               <button
@@ -128,7 +128,7 @@
               type="button"
               class="btn btn-primary btn-lg btn-block"
               [disabled]="busy()"
-              (click)="step.set(3)"
+              (click)="childrenDone()"
               i18n="@@setupWizard.next"
             >
               Neste
@@ -157,9 +157,13 @@
                     <input
                       type="checkbox"
                       [checked]="chore.chosen"
+                      [disabled]="chore.created"
                       (change)="toggleChore($index)"
                     />
                     <span class="chore-name">{{ chore.name }}</span>
+                    @if (chore.created) {
+                      <span class="chore-made" i18n="@@setupWizard.choreMade">Laget</span>
+                    }
                     <span class="chore-points" i18n="@@setupWizard.chorePoints"
                       >{{ chore.points }} poeng</span
                     >
@@ -183,7 +187,7 @@
                   i18n-placeholder="@@setupWizard.ownChorePlaceholder"
                   placeholder="f.eks. Gå tur med hunden"
                   [value]="ownChore()"
-                  (input)="ownChore.set($any($event.target).value)"
+                  (input)="ownChore.set(inputValue($event))"
                 />
                 <button
                   type="submit"
@@ -292,9 +296,9 @@
               <li>
                 <span class="summary-label" i18n="@@setupWizard.summaryChores">Oppgaver</span>
                 <span class="summary-value">
-                  @if (createdChores().length > 0) {
-                    {{ createdChores().join(', ') }}
-                  } @else {
+                  @for (chore of createdChores(); track $index; let last = $last) {
+                    {{ chore.name }}{{ last ? '' : ', ' }}
+                  } @empty {
                     <span i18n="@@setupWizard.summaryNone">Ingen ennå</span>
                   }
                 </span>

@@ -23,6 +23,13 @@ export interface ChoreChoice {
   name: string;
   points: number;
   chosen: boolean;
+  /** Saved as a task; a retry or a return to step 3 does not send it again */
+  created?: boolean;
+}
+
+/** The text of the input an event came from */
+export function inputValue(event: Event): string {
+  return (event.target as HTMLInputElement).value;
 }
 
 /** Five suggestions, three already ticked (sketch 07) */
@@ -79,7 +86,7 @@ export class SetupWizard implements OnInit {
   // Step 3
   readonly chores = signal<ChoreChoice[]>(choreSuggestions());
   readonly ownChore = signal('');
-  readonly createdChores = signal<string[]>([]);
+  readonly createdChores = computed(() => this.chores().filter((c) => c.created));
 
   // Step 4
   readonly pushState = this.push.state;
@@ -91,7 +98,10 @@ export class SetupWizard implements OnInit {
 
   /** The progress line counts 4a and 4b as step 4 */
   readonly progressStep = computed(() => Math.min(this.step(), 4));
-  readonly chosenCount = computed(() => this.chores().filter((c) => c.chosen).length);
+  /** Chores the step 3 button will make now (not the ones already made) */
+  readonly chosenCount = computed(() => this.chores().filter((c) => c.chosen && !c.created).length);
+
+  protected readonly inputValue = inputValue;
 
   ngOnInit(): void {
     this.step.set(this.startStep());
@@ -110,8 +120,9 @@ export class SetupWizard implements OnInit {
           await this.householdService.updateHousehold(existing, name);
         } else {
           const household = await this.householdService.createHousehold(name);
-          this.householdService.setActiveHousehold(household.id);
+          // Set first, so a retry renames this household instead of making a second
           this.householdId.set(household.id);
+          this.householdService.setActiveHousehold(household.id);
         }
         this.step.set(2);
       },
@@ -141,11 +152,23 @@ export class SetupWizard implements OnInit {
     );
   }
 
+  /** A name typed but not added yet is added before going on */
+  async childrenDone(): Promise<void> {
+    if (this.busy()) return;
+    if (this.childName().trim()) {
+      await this.addChild();
+      if (this.error()) return;
+    }
+    this.step.set(3);
+  }
+
   // ===== Step 3: first chores =====
 
   toggleChore(index: number): void {
     this.chores.update((list) =>
-      list.map((chore, i) => (i === index ? { ...chore, chosen: !chore.chosen } : chore)),
+      list.map((chore, i) =>
+        i === index && !chore.created ? { ...chore, chosen: !chore.chosen } : chore,
+      ),
     );
   }
 
@@ -162,11 +185,13 @@ export class SetupWizard implements OnInit {
 
     const childIds = this.children().map((c) => c.id);
     // Chores saved before a failed try are not sent twice
-    const todo = this.chores().filter((c) => c.chosen && !this.createdChores().includes(c.name));
+    const todo = this.chores()
+      .map((chore, index) => ({ chore, index }))
+      .filter(({ chore }) => chore.chosen && !chore.created);
 
     await this.run(
       async () => {
-        for (const chore of todo) {
+        for (const { chore, index } of todo) {
           await firstValueFrom(
             this.taskService.createTask(householdId, {
               name: chore.name,
@@ -175,7 +200,9 @@ export class SetupWizard implements OnInit {
               ruleConfig: childIds.length > 0 ? { assignedChildren: childIds } : null,
             }),
           );
-          this.createdChores.update((list) => [...list, chore.name]);
+          this.chores.update((list) =>
+            list.map((c, i) => (i === index ? { ...c, created: true } : c)),
+          );
         }
         void this.push.refresh();
         this.step.set(4);
@@ -189,9 +216,14 @@ export class SetupWizard implements OnInit {
   async turnOnReminders(): Promise<void> {
     if (this.busy()) return;
     this.busy.set(true);
-    await this.push.enable();
-    this.busy.set(false);
-    this.step.set(5);
+    try {
+      await this.push.enable();
+    } catch {
+      // The summary says reminders are off; Innstillinger can turn them on later
+    } finally {
+      this.busy.set(false);
+      this.step.set(5);
+    }
   }
 
   skipReminders(): void {

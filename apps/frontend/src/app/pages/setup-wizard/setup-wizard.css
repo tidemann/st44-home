@@ -187,6 +187,12 @@
   color: var(--color-text-primary);
 }
 
+.chore-made {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-success-dark);
+}
+
 .chore-points {
   padding: 2px var(--space-xs);
   border-radius: var(--radius-full);
