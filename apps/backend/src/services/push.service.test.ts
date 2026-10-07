@@ -191,6 +191,48 @@ describe('Push Service', () => {
     });
   });
 
+  describe('notifyRewardRequested', () => {
+    test('tells every parent what the child asks for, the price and what is left', async () => {
+      const db = fakeDb([
+        [
+          'FROM reward_redemptions rr',
+          [
+            {
+              child_name: 'Emma',
+              reward_name: 'Kino med pappa',
+              points_spent: 50,
+              points_balance: 20,
+              parent_ids: ['mum', 'dad'],
+            },
+          ],
+        ],
+        ['FROM push_subscriptions', [sub('mum-phone'), sub('dad-phone')]],
+      ]);
+      const { sent, sender } = fakeSender();
+      const service = new PushService(CONFIG, db, sender);
+
+      assert.strictEqual(await service.notifyRewardRequested('r1'), 2);
+
+      const lookup = db.calls.find((c) => c.text.includes('FROM push_subscriptions'));
+      assert.deepStrictEqual(lookup?.values, [['mum', 'dad']]);
+      assert.deepStrictEqual(sent[0].payload, {
+        title: 'Emma ber om en belønning',
+        body: 'Kino med pappa, 50 poeng. Igjen etterpå: 20 poeng',
+        url: 'rewards',
+        tag: 'reward-r1',
+      });
+    });
+
+    test('does nothing for an unknown request', async () => {
+      const { sent, sender } = fakeSender();
+      assert.strictEqual(
+        await new PushService(CONFIG, fakeDb(), sender).notifyRewardRequested('x'),
+        0,
+      );
+      assert.strictEqual(sent.length, 0);
+    });
+  });
+
   describe('due reminders', () => {
     test('reminder window is 16:30 to 20:00 Oslo time', () => {
       assert.strictEqual(isReminderTime(at('16:29')), false);
