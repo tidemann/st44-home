@@ -24,6 +24,35 @@ Crops used as evidence below:
 
 ---
 
+## Revision 4 — what the redraw found (2026-10-09, ST-756)
+
+Revision 3 was checked by reading the reference board. Revision 4 was checked by **building the five
+screens and measuring the renders against the board** (ST-740) — which is a stronger test, and it
+found ten lines of the guide wrong. Maria approved every correction below. All are in the guide now.
+
+| #   | Guide line in revision 3                       | What the picture measures                                    | Depends on the font? |
+| --- | ---------------------------------------------- | ------------------------------------------------------------ | -------------------- |
+| 1   | "Display sm 83 px — '215', '225'"              | Two sizes: «215» **83 px**, «225» **59 px** (ratio 0.71)     | no                   |
+| 2   | "Display 100 px"                               | **94 px** — «+10» ink is 133 board px, not 137               | no                   |
+| 3   | «poeng» beside «+10» — no size given           | **23 px**, display type, ink 60 px wide                      | no                   |
+| 4   | "Screen gutter 22 px / 346 px column"          | True on 1, 2, 3, 5; screen 4 is **24 px / 342 px**           | no                   |
+| 5   | Bottom nav — no pitch given                    | **92 px pitch**, ≈11 px edge padding; not four quarters      | no                   |
+| 6   | Initial badge — absent from the guide          | **38 px circle**, `#ECECE8`, `#15181C` initial, 44 px target | no                   |
+| 7   | "Body 20 px"                                   | **16 px** — «Dekke bord» ink is 80.0 px wide                 | **yes**              |
+| 8   | "Meta 15 px"                                   | 15 px outside a card; **13 px inside** one                   | **yes**              |
+| 9   | "Row action … Body 20 px", "Primary … Body 20" | **16 px** and **16.5 px**                                    | **yes**              |
+| 10  | "Label 13 px", "Title 27 px"                   | Both check out — unchanged                                   | —                    |
+
+Items 1–6 are wrong regardless of which face the picture used: they are ratios and geometry inside
+the picture. Items 7–9 all point the same way and the likeliest single cause is the one this file
+already flags — **the two font names are a guess.** The guide now carries a note that those four
+sizes must be re-derived if the real face turns up.
+
+Also recorded in the guide on ST-756: the **two accessibility exceptions** Maria approved — the
+"Angre" outline in Ink `#17120A` (the picture's gold is 2.10:1) and the unchecked checkbox outline in
+Muted `#555E64` (the picture's `#DFDFD9` is 1.34:1). They are the only two places a build may draw a
+colour the picture does not show, and both keep the shape, the width and the surface unchanged.
+
 ## Revision 3 — what changed and why (2026-10-07)
 
 Astrid's re-check of revision 2 confirmed every correction in it and found one more token that had
@@ -135,51 +164,71 @@ Each size was derived as: ink height in board px ÷ 2 ÷ the glyph run's ink-hei
 the actual font file (`bricolage800.ttf`, `hanken500/600.ttf`). Measurements were stable across two
 luminance thresholds.
 
-| Rule             | Measured from                    | Ink height   | Em ratio | Derived |
-| ---------------- | -------------------------------- | ------------ | -------- | ------- |
-| Display 100 px   | "+10", screen 4                  | 137 board px | 0.687    | 99.7 px |
-| Display sm 83 px | "215", screen 3                  | 115 board px | 0.691    | 83.2 px |
-| Number 30 px     | "340" on a family card, screen 1 | 41 board px  | 0.687    | 29.8 px |
-| Title 27 px      | "Oppgaver", screen 2             | 46 board px  | 0.859    | 26.8 px |
-| Body 20 px       | "Dekke bord", screen 2           | 29 board px  | 0.706    | 20.5 px |
-| Meta 15 px       | "Mathea – kl. 16.30", screen 2   | 22 board px  | 0.716    | 15.4 px |
-| Label 13 px      | "Forfalt" group label, screen 2  | 18 board px  | 0.705    | 12.8 px |
-| Caption 12 px    | bottom-nav labels, screen 1      | 22 board px  | 0.925    | 11.9 px |
+| Rule                        | Measured from                    | Ink height   | Em ratio | Derived |
+| --------------------------- | -------------------------------- | ------------ | -------- | ------- |
+| ~~Display 100 px~~ → 94 px  | "+10", screen 4                  | 137 board px | 0.687    | 99.7 px |
+| Display sm 83 px            | "215", screen 3                  | 115 board px | 0.691    | 83.2 px |
+| Number 30 px                | "340" on a family card, screen 1 | 41 board px  | 0.687    | 29.8 px |
+| Title 27 px                 | "Oppgaver", screen 2             | 46 board px  | 0.859    | 26.8 px |
+| ~~Body 20 px~~ → 16 px      | "Dekke bord", screen 2           | 29 board px  | 0.706    | 20.5 px |
+| Meta 15 px (outside a card) | "Mathea – kl. 16.30", screen 2   | 22 board px  | 0.716    | 15.4 px |
+| Label 13 px                 | "Forfalt" group label, screen 2  | 18 board px  | 0.705    | 12.8 px |
+| Caption 12 px               | bottom-nav labels, screen 1      | 22 board px  | 0.925    | 11.9 px |
+
+> **Two rows in this table were re-measured and corrected on ST-756 (2026-10-09).** Drawing the
+> screens against the picture (ST-740) and measuring the renders found both:
+>
+> - **Display is 94 px, not 100.** The 137 board px above included the word «poeng». Isolated,
+>   «+10» ink runs x 27.5…170 and is **133 board px** tall; «poeng» runs x 174.5…234.5 and is its
+>   own size, **23 px**.
+> - **Body is 16 px, not 20.** The ink-height route is unreliable at text sizes — a 1 board px
+>   threshold error is 3.5 % of a 29 px measurement. Ink _width_ is not: the picture's «Dekke bord»
+>   is **80.0 px** wide, and Hanken Grotesk needs 16 px to reach it, where 20 px renders 100.5 px.
+>   The same re-measure splits Meta in two — 15 px outside a card, **13 px inside one** — and puts
+>   row-button labels at 16 px and the primary label at 16.5 px.
+>
+> **Measure text sizes by ink width from now on, and display sizes by ink height.** Both corrections
+> are font-dependent and must be re-derived if the real source face is identified. The four display
+> sizes («215» 83, «225» 59, «+10» 94, «poeng» 23) are ratio-consistent at 0.703–0.707 ink-height-
+> per-em, which is the cross-check that they are one family and one measurement method.
 
 | Rule                                                               | Where the picture shows it                                                                                                       |
 | ------------------------------------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------- |
 | Two faces only: a heavy display grotesque and a humanist text face | No third face, no italic and no uppercase tracking appears anywhere in the five screens. (Which faces exactly — see Unverified.) |
 | **The Tabular Numbers Rule**                                       | "215" renders 7.7% wider than proportional figures of the same height would — that extra width is the tabular `1`.               |
-| **The One Hero Rule**                                              | Screen 3 has one 83 px number; screen 4 has one 100 px number; screen 5 has one 83 px number. Never two.                         |
+| **The One Hero Rule**                                              | Screen 3 has one 83 px number; screen 4 has one 94 px number; screen 5 has one **59 px** number. Never two — but not one size.   |
 | Label is _smaller_ than Meta                                       | Group label 13 px vs row meta 15 px, both on screen 2. Counter-intuitive, but that is what the picture does.                     |
 
 ## Layout, depth and shape rules
 
-| Rule                                                       | Where the picture shows it                                                                                                  |
-| ---------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------- |
-| Viewport 390 × 844 at DPR 2                                | Frame content is 780 × 1688 board px on all five screens (x 88–867 etc., y 194–1881).                                       |
-| Screen gutter 22 px; content column 346 px                 | Screen 2's chore card spans x 969–1658 inside a frame at 924–1703 → 45 board px each side; 690 board px wide.               |
-| 8 px between cards                                         | Screen 2 row gaps measured 16 board px (964–979, 1118–1133, 1504–1519).                                                     |
-| Chore row 68 px tall; 15 px padding                        | Screen 2 rows 980–1117, 1134–1269: 136 board px. First ink 27 board px in from the card edge.                               |
-| Family screen: three cards across, 109 px wide, 9 px apart | Screen 1, y = 620: white at 132–349, 368–587, 606–823, with `#F6F6F4` gaps at 350–367 and 588–605.                          |
-| Primary button 346 × 49 px                                 | Screen 2, "Ny oppgave": x 968–1659, y 1616–1713 → 692 × 98 board px.                                                        |
-| On-yellow buttons 49 px tall                               | Screen 4, "Angre" and "Ferdig" both y 1744–1841 → 98 board px.                                                              |
-| Row-action buttons 36 px tall; width follows the label     | Five instances, all 72 board px tall: "Hak av" 140 board px wide (screen 3), "Spør mor" 174 (screen 5).                     |
-| Points meter 14 px tall, 4 px gaps                         | Screen 5 y 1308–1335 (28 board px), gaps 8 board px. Screen 4 y 968–995, same.                                              |
-| Chore meter 7 px tall, 3 px gaps                           | Screen 1 y 652–665 (14 board px), gaps 6 board px. **Exactly half the points meter.**                                       |
-| Meter segments divide the width; they are not fixed        | Screen 1: 2 segments at 82 board px. Screen 5: 10 segments at 44–46 board px. Screen 4: 10 segments at 60–62 board px.      |
-| Filter chips 33 px tall, 9 px radius                       | Screen 2, chip band y 430–495 → 66 board px. Corner insets 18, 12, 10, 8 … → R = 18 board px.                               |
-| Checkbox 22 × 22 px, 2 px outline                          | Screen 2, `#DFDFD9` bbox x 996–1039, y 1028–1071 → 44 × 44 board px.                                                        |
-| Tick badge 54 × 54 px                                      | Screen 4, `#17120A` bbox x 2644–2751, y 356–463 → 108 × 108 board px.                                                       |
-| Card radius 12 px, button radius 13 px                     | Card corner insets fit a 24 board px circle; the primary button fits a 26 board px circle.                                  |
-| Row-action radius 10 px, tick-badge radius 16 px           | Corner arcs close at dy = 19 and dy = 30 board px; the same fit returns the primary's measured 13 px.                       |
-| **The Flat Rule** — no shadows                             | The pixel immediately left of every card edge is exactly `#F6F6F4`. There is no gradient, so there is no shadow.            |
-| **The Borders Mean Something Rule** — three strokes        | State: 2 px `#A43A16` overdue border. Control boundary: 2 px `#DFDFD9` checkbox. Divider: 1 px `#DFDFD9`. Nothing else.     |
-| Nav divider: 1 px `#DFDFD9`, full 390 px bleed             | y = 1738–1739 (2 board px), spanning x 88–867 on screen 1 — the **entire** frame width — and the same y on screens 2, 3, 5. |
-| The yellow screen has no nav and no divider                | Screen 4 at y 1730–1748 is `#F6B93B` throughout.                                                                            |
-| "Hentet før" divider: 1 px `#DFDFD9`, inset to the column  | Screen 5, y = 1628, x 3476–4167 → 692 board px, exactly the content column.                                                 |
-| Bottom nav sits on the background, not a white bar         | Column samples through the nav band read `#F6F6F4`, not `#FFFFFF`.                                                          |
-| Active nav = colour **and** weight                         | "Hjem" is Amber Ink and heavier; "Oppgaver" is Muted Text.                                                                  |
+| Rule                                                          | Where the picture shows it                                                                                                                   |
+| ------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
+| Viewport 390 × 844 at DPR 2                                   | Frame content is 780 × 1688 board px on all five screens (x 88–867 etc., y 194–1881).                                                        |
+| Screen gutter 22 px; content column 346 px                    | Screen 2's chore card spans x 969–1658 inside a frame at 924–1703 → 45 board px each side; 690 board px wide.                                |
+| **Screen 4 is the exception: 24 px gutter, 342 px column**    | Badge, meter, inset card and both buttons all run x 24–366 in CSS. Corrected on ST-756; the 22 px line held for screens 1, 2, 3, 5 only.     |
+| **Bottom nav: 92 px pitch, not four equal quarters**          | Icon ink runs x 47.5–341.5 → 92 px between items, ≈11 px padding at each frame edge. Four quarters of 390 would pitch 97.5. Added on ST-756. |
+| **Initial badge: 38 px circle, `#ECECE8`, `#15181C` initial** | Title row y 49–87, right edge on the gutter, on all four light screens. Missing from revision 3 of the guide entirely; added on ST-756.      |
+| 8 px between cards                                            | Screen 2 row gaps measured 16 board px (964–979, 1118–1133, 1504–1519).                                                                      |
+| Chore row 68 px tall; 15 px padding                           | Screen 2 rows 980–1117, 1134–1269: 136 board px. First ink 27 board px in from the card edge.                                                |
+| Family screen: three cards across, 109 px wide, 9 px apart    | Screen 1, y = 620: white at 132–349, 368–587, 606–823, with `#F6F6F4` gaps at 350–367 and 588–605.                                           |
+| Primary button 346 × 49 px                                    | Screen 2, "Ny oppgave": x 968–1659, y 1616–1713 → 692 × 98 board px.                                                                         |
+| On-yellow buttons 49 px tall                                  | Screen 4, "Angre" and "Ferdig" both y 1744–1841 → 98 board px.                                                                               |
+| Row-action buttons 36 px tall; width follows the label        | Five instances, all 72 board px tall: "Hak av" 140 board px wide (screen 3), "Spør mor" 174 (screen 5).                                      |
+| Points meter 14 px tall, 4 px gaps                            | Screen 5 y 1308–1335 (28 board px), gaps 8 board px. Screen 4 y 968–995, same.                                                               |
+| Chore meter 7 px tall, 3 px gaps                              | Screen 1 y 652–665 (14 board px), gaps 6 board px. **Exactly half the points meter.**                                                        |
+| Meter segments divide the width; they are not fixed           | Screen 1: 2 segments at 82 board px. Screen 5: 10 segments at 44–46 board px. Screen 4: 10 segments at 60–62 board px.                       |
+| Filter chips 33 px tall, 9 px radius                          | Screen 2, chip band y 430–495 → 66 board px. Corner insets 18, 12, 10, 8 … → R = 18 board px.                                                |
+| Checkbox 22 × 22 px, 2 px outline                             | Screen 2, `#DFDFD9` bbox x 996–1039, y 1028–1071 → 44 × 44 board px.                                                                         |
+| Tick badge 54 × 54 px                                         | Screen 4, `#17120A` bbox x 2644–2751, y 356–463 → 108 × 108 board px.                                                                        |
+| Card radius 12 px, button radius 13 px                        | Card corner insets fit a 24 board px circle; the primary button fits a 26 board px circle.                                                   |
+| Row-action radius 10 px, tick-badge radius 16 px              | Corner arcs close at dy = 19 and dy = 30 board px; the same fit returns the primary's measured 13 px.                                        |
+| **The Flat Rule** — no shadows                                | The pixel immediately left of every card edge is exactly `#F6F6F4`. There is no gradient, so there is no shadow.                             |
+| **The Borders Mean Something Rule** — three strokes           | State: 2 px `#A43A16` overdue border. Control boundary: 2 px `#DFDFD9` checkbox. Divider: 1 px `#DFDFD9`. Nothing else.                      |
+| Nav divider: 1 px `#DFDFD9`, full 390 px bleed                | y = 1738–1739 (2 board px), spanning x 88–867 on screen 1 — the **entire** frame width — and the same y on screens 2, 3, 5.                  |
+| The yellow screen has no nav and no divider                   | Screen 4 at y 1730–1748 is `#F6B93B` throughout.                                                                                             |
+| "Hentet før" divider: 1 px `#DFDFD9`, inset to the column     | Screen 5, y = 1628, x 3476–4167 → 692 board px, exactly the content column.                                                                  |
+| Bottom nav sits on the background, not a white bar            | Column samples through the nav band read `#F6F6F4`, not `#FFFFFF`.                                                                           |
+| Active nav = colour **and** weight                            | "Hjem" is Amber Ink and heavier; "Oppgaver" is Muted Text.                                                                                   |
 
 ## The tick-off moment
 
@@ -231,7 +280,15 @@ must be labelled as additions when they are designed:
   gap, but so would a slightly narrower face. Revision 1 claimed the faces were "confirmed … within
   ~3%"; that claim does not reproduce at the corrected scale and has been withdrawn. **Treat the
   two faces as the best available match, not as fact**, and confirm against the source HTML if it
-  turns up. The derived sizes do not depend on this: ink height is what was measured.
+  turns up. ~~The derived sizes do not depend on this: ink height is what was measured.~~
+  **Withdrawn on ST-756: four of them do.** Button label, Body, Meta and Meta sm are now fitted by
+  ink width against Hanken Grotesk and will move if the face changes; the display and Number sizes
+  are fitted by ink height and move much less. The ink measurements are the picture's and stand
+  either way — the px sizes are what to re-derive. Re-derive them before changing anything else if
+  the real face is identified.
+- **The size of the initial inside the 38 px badge.** The circle, its fill and its ink colour were
+  all measured; a single letter at this scale is too small to size from ink width with confidence.
+  The guide carries Meta 15 px as a fit to the circle and flags it as unverified.
 - ~~Radii for the row-level action buttons and the tick badge were not measured directly.~~
   Measured in revision 3: 10 px and 16 px, ±1 px, by the corner-arc fit described above.
 - **Line heights and letter-spacing** are carried over from revision 1 and were not re-measured;
