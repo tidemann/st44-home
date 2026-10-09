@@ -191,7 +191,9 @@ luminance thresholds.
 > the 83 px anchor; «225» and «+10» are 0.709 × and 1.137 × its ink, giving 59 and 94. «poeng» came
 > from ink width (60 px) like the text sizes. The three ratio-derived sizes are consistent at
 > 0.703–0.707 ink height per em, against Bricolage's own 0.687–0.691 — so running them back through
-> the font file returns 85 and 97 instead of 83 and 94.
+> the font file returns **97, 85 and 60** where the picture's own ratios give **94, 83 and 59**. All
+> three are wrong in the same direction by the same ~2 %, which is the signature of the guessed face,
+> not of three bad measurements. The guide's numbers are the ratio ones.
 >
 > **The lever is one measurement:** «215» ink reads 117 board px at ST-740's threshold and 115 at
 > revision 3's. 94 is the value that reproduced the picture in a render measured against the board,
