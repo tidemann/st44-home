@@ -187,10 +187,17 @@ luminance thresholds.
 >   The same re-measure splits Meta in two — 15 px outside a card, **13 px inside one** — and puts
 >   row-button labels at 16 px and the primary label at 16.5 px.
 >
-> **Measure text sizes by ink width from now on, and display sizes by ink height.** Both corrections
-> are font-dependent and must be re-derived if the real source face is identified. The four display
-> sizes («215» 83, «225» 59, «+10» 94, «poeng» 23) are ratio-consistent at 0.703–0.707 ink-height-
-> per-em, which is the cross-check that they are one family and one measurement method.
+> **Measure text sizes by ink width, and the display sizes by their ratio to «215».** «215» stays
+> the 83 px anchor; «225» and «+10» are 0.709 × and 1.137 × its ink, giving 59 and 94. «poeng» came
+> from ink width (60 px) like the text sizes. The three ratio-derived sizes are consistent at
+> 0.703–0.707 ink height per em, against Bricolage's own 0.687–0.691 — so running them back through
+> the font file returns 85 and 97 instead of 83 and 94.
+>
+> **The lever is one measurement:** «215» ink reads 117 board px at ST-740's threshold and 115 at
+> revision 3's. 94 is the value that reproduced the picture in a render measured against the board,
+> so it stands, but Display, Display xs and Display unit are **±1 px** and the guide says so. Only
+> re-measure them from a render, never from a font file — and re-derive all of them if the real
+> source face is identified.
 
 | Rule                                                               | Where the picture shows it                                                                                                       |
 | ------------------------------------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------- |

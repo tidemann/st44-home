@@ -412,26 +412,43 @@ there is no third font, no italic, and no uppercase tracking anywhere in the pic
 
 ### Hierarchy
 
-Every size was derived from one string in the picture. For the display sizes that means ink height in
-board px ÷ 2 ÷ the glyph's ink-height-per-em, read from the actual font file; for the text sizes it
-means the size at which the string's **ink width** reproduces the picture's. The source string is
-given so you can re-check, and the measured ink is given so you can re-derive it against a different
-font.
+Every size was derived from one string in the picture, and the string is named so you can re-check
+it. **Three different methods, and it matters which one you re-run:**
 
-| Style            | Size   | Measured from                          | Measured ink in the picture |
-| ---------------- | ------ | -------------------------------------- | --------------------------- |
-| **Display**      | 94px   | "+10", screen 4                        | 133 board px high (66.5 px) |
-| **Display sm**   | 83px   | "215", screen 3                        | 117 board px high (58.5 px) |
-| **Display xs**   | 59px   | "225", screen 5                        | 83 board px high (41.5 px)  |
-| **Display unit** | 23px   | "poeng" beside "+10", screen 4         | 60 px wide                  |
-| **Number**       | 30px   | "340" on a family card, screen 1       | 41 board px high            |
-| **Title**        | 27px   | "Oppgaver", screen 2                   | 46 board px high            |
-| **Button label** | 16.5px | "+ Ny oppgave" primary label, screen 2 | 105.5 px wide               |
-| **Body**         | 16px   | "Dekke bord" chore title, screen 2     | 80.0 px wide                |
-| **Meta**         | 15px   | "Haket av 16.48", screen 4             | 98.0 px wide                |
-| **Meta sm**      | 13px   | "Mathea – I dag 16.30" in a card, s. 2 | 115.0 px wide               |
-| **Label**        | 13px   | "Forfalt" group label, screen 2        | 18 board px high            |
-| **Caption**      | 12px   | bottom-nav labels, screen 1            | 22 board px high            |
+- **Display sizes — ratio against "215".** «215» is the anchor at 83 px. The other three are fixed
+  by the ratio of their ink to its ink: that is a measurement _inside_ the picture and it does not
+  depend on which font the picture used. Re-derive them this way, not from a font's em ratio.
+- **Number, Title, Label, Caption — ink height ÷ the font's ink-height-per-em**, read from the font
+  file. These are unchanged from the first pass and still check out.
+- **Text sizes — ink width.** The size at which the string's drawn width reproduces the picture's.
+  Ink height is too coarse at these sizes: a 1 board px threshold error is 3.5 % of a 29 px
+  measurement, which is how "Body 20 px" survived a pass.
+
+| Style            | Size   | Measured from                          | Measured ink in the picture          |
+| ---------------- | ------ | -------------------------------------- | ------------------------------------ |
+| **Display**      | 94px   | "+10", screen 4                        | 66.5 px high → 1.137 × «215»         |
+| **Display sm**   | 83px   | "215", screen 3                        | 58.5 px high, 136.0 px wide — anchor |
+| **Display xs**   | 59px   | "225", screen 5                        | 41.5 px high → 0.709 × «215»         |
+| **Display unit** | 23px   | "poeng" beside "+10", screen 4         | 60 px wide                           |
+| **Number**       | 30px   | "340" on a family card, screen 1       | 41 board px high                     |
+| **Title**        | 27px   | "Oppgaver", screen 2                   | 46 board px high                     |
+| **Button label** | 16.5px | "+ Ny oppgave" primary label, screen 2 | 105.5 px wide                        |
+| **Body**         | 16px   | "Dekke bord" chore title, screen 2     | 80.0 px wide                         |
+| **Meta**         | 15px   | "Haket av 16.48", screen 4             | 98.0 px wide                         |
+| **Meta sm**      | 13px   | "Mathea – I dag 16.30" in a card, s. 2 | 115.0 px wide                        |
+| **Label**        | 13px   | "Forfalt" group label, screen 2        | 18 board px high                     |
+| **Caption**      | 12px   | bottom-nav labels, screen 1            | 22 board px high                     |
+
+> **Do not re-derive the display sizes from Bricolage's em ratio, and know where the uncertainty
+> sits.** Running «+10» through the font file's own 0.687 returns 97 px where the picture's ratio
+> against «215» returns 94 px. The whole 3 px hangs on one measurement: «215» ink reads **117 board
+> px** at the threshold ST-740 used and 115 at the threshold revision 3 used, and the anchor is
+> 83 px either way. 94 is the value that **reproduced the picture in a render measured against the
+> board**, which is the stronger evidence, and it is the approved value. Treat Display, Display xs
+> and Display unit as **±1 px** and leave them alone unless you are re-measuring from a render, not
+> from a font file. The three ratio-derived sizes are internally consistent at 0.703–0.707 ink
+> height per em against Bricolage's own 0.687–0.691 — a 2 % gap in the same direction as the text
+> sizes, from the same cause: the face is a guess.
 
 - **Display** (Bricolage 800, 0.95, −0.02em, tabular): the points won in the tick-off moment.
   The single largest thing in the product.
