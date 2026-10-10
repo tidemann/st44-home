@@ -55,7 +55,8 @@
 
   --gutter: 22px;
   --r-chip: 9px;
-  --r-card: 12px;
+  --r-card: 13px;
+  --r-card-tile: 14px; /* reward and child points cards */
   --r-button: 13px;
   --r-row-action: 10px;
   --r-badge: 16px;
