@@ -19,7 +19,7 @@
 
   @if (showStats()) {
     <div class="member-stats">
-      <div class="member-points">{{ member().points || 0 }} pts</div>
+      <div class="member-points" i18n="@@memberCard.points">{{ member().points || 0 }} poeng</div>
       <div class="member-tasks">
         {{ member().tasksCompleted || 0 }}/{{ member().totalTasks || 0 }} tasks
       </div>
