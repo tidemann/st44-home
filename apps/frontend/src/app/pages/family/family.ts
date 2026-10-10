@@ -181,9 +181,10 @@ export class Family implements OnInit {
         const isChild = member.role === 'child';
         // Handle null email for unlinked children
         const emailUsername = member.email ? member.email.split('@')[0] : null;
+        const name = member.displayName || emailUsername;
         const displayName = isCurrentUser
-          ? `${member.displayName || emailUsername || 'Unknown'} (You)`
-          : member.displayName || emailUsername || 'Child';
+          ? $localize`:@@family.memberYou:${name || $localize`:@@family.memberUnknown:Ukjent`}:name: (deg)`
+          : name || $localize`:@@family.memberChildFallback:Barn`;
 
         // For children, use child:childId format for consistent lookup
         // For linked children: look up childId from userIdToChildId
