@@ -475,6 +475,9 @@ async function redeemReward(
         throw new TransactionValidationError(400, 'Bad Request', 'Reward is out of stock');
       }
 
+      // Lock the child so two spends (or an undo) cannot both pass the balance check
+      await client.query('SELECT id FROM children WHERE id = $1 FOR UPDATE', [childId]);
+
       // Get points balance
       const balanceResult = await client.query(
         'SELECT points_balance::int AS points_balance FROM child_points_balance WHERE child_id = $1',
@@ -760,6 +763,9 @@ async function updateRedemptionStatus(
           if (quantity !== null && quantity <= 0) {
             throw new TransactionValidationError(409, 'Conflict', 'Reward is out of stock');
           }
+          await client.query('SELECT id FROM children WHERE id = $1 FOR UPDATE', [
+            current.child_id,
+          ]);
           const balance = await client.query(
             'SELECT points_balance::int AS points_balance FROM child_points_balance WHERE child_id = $1',
             [current.child_id],

@@ -10,6 +10,7 @@ import {
   errorResponseSchema,
   stripResponseValidation,
 } from './common.js';
+import { UNDO_COMPLETE_SECONDS } from '@st44/types';
 
 const taskAssignmentSchemaBase = {
   type: 'object',
@@ -244,8 +245,7 @@ const postCompleteAssignmentSchemaBase = {
 // POST /api/assignments/:assignmentId/uncomplete (ST-777)
 const uncompleteAssignmentSchemaBase = {
   summary: 'Undo a completed chore',
-  description:
-    'Put a completed assignment back to pending and remove the points it earned. Only within 300 seconds of completion, and only if the child has not spent those points.',
+  description: `Put a completed assignment back to pending and remove the points it earned. Only within ${UNDO_COMPLETE_SECONDS} seconds of completion, and only if the child has not spent those points.`,
   tags: ['assignments'],
   security: [{ bearerAuth: [] }],
   params: {

@@ -1064,6 +1064,8 @@ export default async function assignmentRoutes(fastify: FastifyInstance) {
           }
 
           for (const [childId, points] of pointsByChild) {
+            // Lock the child so a reward cannot spend these points between check and delete
+            await client.query('SELECT id FROM children WHERE id = $1 FOR UPDATE', [childId]);
             const balanceResult = await client.query<{ points_balance: string | number }>(
               'SELECT points_balance FROM child_points_balance WHERE child_id = $1',
               [childId],
