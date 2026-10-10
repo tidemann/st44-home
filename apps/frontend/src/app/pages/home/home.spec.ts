@@ -225,18 +225,37 @@ describe('Home', () => {
       date: '2026-10-05',
     } as Assignment;
 
-    function remindButton(): HTMLButtonElement | null {
+    function render(overdue: Assignment[], today: Assignment[]): HTMLElement {
       fixture.detectChanges(); // first render starts the (mocked) load
       component['loading'].set(false);
-      component['todayTasks'].set([open]);
+      component['overdueTasks'].set(overdue);
+      component['todayTasks'].set(today);
       fixture.detectChanges();
-      return (fixture.nativeElement as HTMLElement).querySelector<HTMLButtonElement>(
-        'app-chore-row .rbtn',
-      );
+      return fixture.nativeElement as HTMLElement;
     }
 
-    it('shows the button to parents on today’s open chores', () => {
+    function remindButton(): HTMLButtonElement | null {
+      return render([open], []).querySelector<HTMLButtonElement>('app-chore-row .rbtn');
+    }
+
+    it('shows the button to parents on overdue chores', () => {
       expect(remindButton()?.textContent).toContain('Minn på');
+    });
+
+    // ST-800: as in the signed-off picture, only Forfalt rows get «Minn på»
+    it('shows points, not the button, on today’s open chores', () => {
+      const el = render([], [{ ...open, points: 10 } as Assignment]);
+      expect(el.querySelector('app-chore-row .rbtn')).toBeNull();
+      expect(el.querySelector('app-chore-row')?.textContent).toContain('10');
+    });
+
+    it('puts one button on each overdue row and none on today’s rows', () => {
+      const el = render(
+        [open, { ...open, id: 'a-2' }],
+        [{ ...open, id: 'a-3' }, { ...open, id: 'a-4' }],
+      );
+      expect(el.querySelectorAll('app-chore-row').length).toBe(4);
+      expect(el.querySelectorAll('app-chore-row .rbtn').length).toBe(2);
     });
 
     it('does not show it to a child', () => {

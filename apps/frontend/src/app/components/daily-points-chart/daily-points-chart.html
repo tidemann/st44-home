@@ -2,9 +2,7 @@
   <!-- Header -->
   <div class="chart-header">
     <h3 class="chart-title">{{ title() }}</h3>
-    <span class="total-points" [attr.aria-label]="totalPoints() + ' total points'">
-      {{ totalPoints() }} pts
-    </span>
+    <span class="total-points" i18n="@@dailyPointsChart.total">{{ totalPoints() }} poeng</span>
   </div>
 
   <!-- Chart -->
@@ -12,7 +10,7 @@
     <app-bar-chart [data]="chartData()" [barColor]="barColor()" [height]="height()" />
   } @else {
     <div class="empty-state">
-      <p>No data available</p>
+      <p i18n="@@dailyPointsChart.empty">Ingen data ennå</p>
     </div>
   }
 </div>

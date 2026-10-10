@@ -159,11 +159,11 @@ export class ChildDashboardComponent implements OnInit {
         await this.router.navigate(['/child-login']);
         return;
       } else if (httpError?.status === 403) {
-        this.errorMessage.set('Oops! It looks like you need to be a child to see this page.');
+        this.errorMessage.set($localize`:@@childDashboard.errNotChild:Denne siden er bare for barn.`);
       } else if (httpError?.status === 404) {
-        this.errorMessage.set("We couldn't find your profile. Please ask a parent for help.");
+        this.errorMessage.set($localize`:@@childDashboard.errNoProfile:Vi fant ikke profilen din. Spør en voksen om hjelp.`);
       } else {
-        this.errorMessage.set("We couldn't load your tasks right now. Please try again!");
+        this.errorMessage.set($localize`:@@childDashboard.errLoad:Vi fikk ikke hentet oppgavene dine nå. Prøv igjen!`);
       }
     }
   }
@@ -197,7 +197,7 @@ export class ChildDashboardComponent implements OnInit {
       this.refreshBalance();
     } catch (error) {
       console.error('Failed to complete task:', error);
-      this.errorMessage.set('Failed to mark task as done. Please try again.');
+      this.errorMessage.set($localize`:@@childDashboard.errMarkDone:Kunne ikke hake av oppgaven. Prøv igjen.`);
     } finally {
       // Remove from completing set
       this.completingTasks.update((set) => {

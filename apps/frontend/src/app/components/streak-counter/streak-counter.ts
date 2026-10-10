@@ -31,13 +31,13 @@ export class StreakCounter {
   /** Get an encouraging message based on streak length */
   streakMessage = computed(() => {
     const streak = this.currentStreak();
-    if (streak === 0) return 'Start your streak today!';
-    if (streak === 1) return 'Great start! Keep it going!';
-    if (streak < 3) return "You're on a roll!";
-    if (streak < 7) return 'Amazing consistency!';
-    if (streak < 14) return "You're unstoppable!";
-    if (streak < 30) return 'Incredible dedication!';
-    return 'Legendary streak!';
+    if (streak === 0) return $localize`:@@streakCounter.msgStart:Start rekka di i dag!`;
+    if (streak === 1) return $localize`:@@streakCounter.msgOne:God start! Hold det gående!`;
+    if (streak < 3) return $localize`:@@streakCounter.msgRoll:Du er i siget!`;
+    if (streak < 7) return $localize`:@@streakCounter.msgSteady:For en jevnhet!`;
+    if (streak < 14) return $localize`:@@streakCounter.msgUnstoppable:Du er ustoppelig!`;
+    if (streak < 30) return $localize`:@@streakCounter.msgDedication:Imponerende innsats!`;
+    return $localize`:@@streakCounter.msgLegend:Legendarisk rekke!`;
   });
 
   /** Get the number of fire emojis to show (max 5) */
