@@ -46,7 +46,7 @@ Everything below is measured from the PNGs at 390 × 844, `deviceScaleFactor: 2`
 | The band is full-bleed `#F6B93B`                         | `brand-07` and `brand-08`: columns at css x 5 and x 380 both read `#F6B93B` through the band. No gutter, no radius.          |
 | It starts at y 35, under the status-bar band             | Both: `#F6F6F4` from y 0 to 35, `#F6B93B` from 35.                                                                           |
 | It has no fixed height; it ends ~17 px under its content | `brand-07` ends at **275**, child cards end at 257 → 18. `brand-08` ends at **305**, meter ends at 288 → 17.                 |
-| Inside it, the gutter is the ordinary 22 px              | `brand-08`: the reward meter runs x **22 … 367.5** — the 346 px column. (`brand-07`'s cards do not; see the finding below.)  |
+| Inside it, the gutter is the ordinary 22 px              | `brand-08`: the reward meter runs x **22 … 367.5** — the 346 px column. `brand-07`: the child cards run x **21.9 … 367.1**.  |
 | Title, sub-line and hero number are Ink on the band      | Darkest pixel in each is `#17120A`, not `#15181C` and not `#555E64`.                                                         |
 | The points meter in the band is Ink on `#C59430`         | `brand-08` y 281: nine `#17120A` segments and one `#C59430`, 30.5 px wide at 35 px pitch — 14 px tall, 4 px gaps.            |
 | The initial badge in the band is `#DBA434` with Ink      | `brand-07`: disc fill `#DBA434`, y 45 … 83 → **38 px**, the signed-off diameter. The initial is `#17120A`.                   |
@@ -55,25 +55,29 @@ Everything below is measured from the PNGs at 390 × 844, `deviceScaleFactor: 2`
 | The tick screen is still the only fully yellow screen    | Both A screens are yellow for 240 / 270 px of 844 and keep paper, cards and nav below. Screen 4 is yellow to the frame edge. |
 | Hero sizes are unchanged by the band                     | `brand-08`: «215» ink y 128 … 185 against the signed-off 128.5 … 185. "poeng" 211 … 222 against 211.5 … 221.5.               |
 
-### Finding — `brand-07` draws the child cards at the wrong width
+### Withdrawn finding — `brand-07`'s child cards are **not** the wrong width
 
-The one place an approved picture contradicts the signed-off picture about something the signed-off
-picture already settles.
+This revision first reported that `brand-07` drew the child cards 106 px wide, 12 px apart, in a
+24 px gutter, and called it the one place an approved picture contradicts the signed-off picture.
+**That was a measuring error, found by Astrid in her review of PR #639 and confirmed on the pixels
+here.** `brand-07` draws 109 / 9 / 22 — the signed-off values. The approved pictures and the
+signed-off picture agree, and no "they disagree" rule survives into the guide.
 
-| Measurement       | Signed-off screen 1     | `brand-07`                  |
-| ----------------- | ----------------------- | --------------------------- |
-| Child card width  | **109 px** (x 22 … 131) | **106 px** (x 23.5 … 129.5) |
-| Gap between cards | **9 px**                | **12 px**                   |
-| Gutter / column   | **22 / 346**            | **24 / 342**                |
+| Measurement       | Signed-off screen 1   | `brand-07` at css y 112 (in the arc) | `brand-07` at mid-height   |
+| ----------------- | --------------------- | ------------------------------------ | -------------------------- |
+| Child card width  | **109** (x 22 … 131)  | 106.3 (x 23.4 … 129.6)               | **109.1** (x 21.9 … 131.1) |
+| Gap between cards | **9**                 | 11.7                                 | **8.9**                    |
+| Gutter / column   | **22 / 346**          | 23.4 / 343                           | **21.9 / 345.2**           |
+| Card height       | **154** (y 104 … 258) | —                                    | **154** (y 104 … 258)      |
 
-Three reasons it is read as a drawing slip and not a decision:
+The card's top edge is y 104 and its radius is 14, so a scanline at y 112 crosses the corner arc and
+is inset `14 − √(14² − 6²)` = 1.35 px on each side — 109 becomes 106.3, to the tenth. The first
+reading measured the arc and named it the card.
 
-1. Astrid's own option document says of A: "Kort, rader, knapper, meny: helt urørt."
-2. `brand-08`'s meter, inside the same band, uses the 22 px gutter — so the 24 is not a band rule.
-3. `brand-07`'s own overdue card below the band also uses 22.
-
-**Resolution: build the signed-off 109 × 154 at 9 px in the 22 px gutter.** Recorded in the guide
-under "Where the approved pictures disagree with the signed-off picture" rather than fixed silently.
+**The build value never changed: 109 × 154 at 9 px in the 22 px gutter.** What changed is the guide,
+which now carries the method note — _measure a card at mid-height, never within one radius of a
+corner_ — in place of the withdrawn disagreement section, with
+`reference/child-card-measure-method.png` as its evidence.
 
 ### The login
 
@@ -119,8 +123,11 @@ Measured as a fraction of a 54 px square, corner arcs excluded:
 
 The mark is the login one — five of the six approved pictures draw it that way, and it is the one
 on the screen being built. The tick badge keeps its own smaller tick; it is a UI element, not a
-logo. The brand sheet's app icon is a drawing slip, flagged to Astrid. Written into the guide so
-nobody normalises one into another.
+logo. The brand sheet's app icon is read as a drawing slip; `brand-06` is approved material, so
+**redrawing it needs Maria before anyone touches it**. Nothing in the build depends on the sheet —
+Eirik builds from `diddit-mark.svg`. The middle number (22.4) is this revision's own measurement and
+has not been independently checked; it is not load-bearing either way. Written into the guide so
+nobody normalises one tick into another.
 
 ### Rules deliberately **not** written in this revision
 
@@ -140,7 +147,7 @@ nobody normalises one into another.
 - **Nothing is drawn at 360 px.** ST-801 came back for exactly that. The guide says to check the
   login and both A screens at 360 with the keyboard up.
 - **`brand-06`'s app-icon tick** should be redrawn to match `diddit-mark.svg` the next time the
-  sheet is touched.
+  sheet is touched — **Maria's call, since `brand-06` is approved material.**
 
 ---
 

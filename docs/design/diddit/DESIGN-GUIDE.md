@@ -359,7 +359,10 @@ spec for those three things, on the same terms: they outrank the text below, and
 **Order of precedence.** `poeng-signed-off.png` → the approved pictures above → this guide → generic
 rules. Where an approved picture and the signed-off picture disagree about something the signed-off
 picture already settles (a card width, a gutter, a row), the signed-off picture wins and the
-difference is recorded as a drawing slip — see **Where the approved pictures disagree** below.
+difference is recorded as a drawing slip rather than fixed silently. **Nothing in the approved set
+disagrees with the signed-off picture today** — the one case this guide first recorded turned out to
+be a measuring error, kept as a method note in **Measuring a card: never inside the corner radius**
+below.
 
 **Rejected, so nobody brings them back:**
 
@@ -927,18 +930,38 @@ no divider. A working screen is yellow for its title area only, and the paper, t
 are all still there below it. **No second screen becomes fully yellow**, and the tick screen never
 becomes a band.
 
-### Where the approved pictures disagree with the signed-off picture
+### Measuring a card: never inside the corner radius
 
-Measured on pixels, `brand-07` draws the three child cards at **106 px wide, 12 px apart, inside a
-24 px gutter (342 px column)**. The signed-off picture draws them at **109 px wide, 9 px apart,
-inside the 22 px gutter (346 px column)**, and `brand-08`'s own reward meter in the same band runs
-x 22…368 — the 22 px gutter. Astrid's option document says of A: "Kort, rader, knapper, meny: helt
-urørt" (cards, rows, buttons, menu: completely untouched).
+`brand-07` draws the three child cards at **109 px wide, 9 px apart, in the ordinary 22 px gutter**
+— exactly as the signed-off picture does. The cards are untouched by the band, which is what
+Astrid's option document promised of A: "Kort, rader, knapper, meny: helt urørt" (cards, rows,
+buttons, menu: completely untouched).
 
-So this is a slip in the drawing, not a decision: **build the child cards at the signed-off
-109 × 154 px, 9 px apart, in the 22 px gutter.** Recorded here rather than silently fixed, because a
-difference with no reason is a fault — and because the next person to measure `brand-07` will find
-it again.
+This section exists because the first draft of it said otherwise. It read 106 / 12 / 24 off
+`brand-07` and built a "the pictures disagree" section around it; Astrid's review of PR #639 caught
+it, and the pixels confirm her. **There is no disagreement.** The reading was taken at css y 112 — 8 px below the card's top edge at y 104, still
+inside the 14 px corner radius — so it measured the arc, not the card.
+
+![brand-07's card block with rules at css x 22 and x 131, and the top-left corner at ×16](reference/child-card-measure-method.png)
+
+White runs across the card block, `brand-07`, css px at 390 × 844:
+
+| css y         | distance below the card's top edge | white run        | w         | gap     |
+| ------------- | ---------------------------------- | ---------------- | --------- | ------- |
+| 106           | 2 px — in the arc                  | 28.7 … 124.3     | 95.5      | 22.5    |
+| 112           | 8 px — in the arc                  | 23.4 … 129.6     | 106.3     | 11.7    |
+| 115           | 11 px — in the arc                 | 22.4 … 130.6     | 108.3     | 9.7     |
+| **118 … 250** | **below the arc**                  | **21.9 … 131.1** | **109.1** | **8.9** |
+
+A 14 px radius predicts every one of those rows to a tenth of a pixel: the inset at 8 px below the
+top is `14 − √(14² − 6²)` = 1.35 px on each side, which turns 109 into 106.3. The card block runs
+y 104 … 258 (**h 154**), and the signed-off screen 1 gives 22.0 … 131.0 / 140.0 … 250.0 /
+259.0 … 368.0 at the same 154 — the same card.
+
+**The rule: measure a card at mid-height, never within one radius of a corner.** It is the same
+family of error as the 1.846 board-px scale slip recorded in revision 2 — a method that quietly
+measures something other than what it names. Nothing Eirik builds changes: the child cards were
+always **109 × 154 px, 9 px apart, in the 22 px gutter**.
 
 ## The login screen (approved 2026-10-10)
 
@@ -1096,8 +1119,10 @@ fraction of a 54 px square, excluding the corner arcs:
   the screen being built.
 - **The tick badge keeps its own, smaller tick.** It is a UI element on a chore, not a logo. Do not
   "fix" either into the other.
-- The brand sheet's app icon sits between the two. That is a drawing slip; the mark file is right,
-  and the sheet should be redrawn to match it the next time it is touched. Flagged to Astrid.
+- The brand sheet's app icon sits between the two. Read as a drawing slip; the mark file is right,
+  and the sheet should be redrawn to match it the next time it is touched. **`brand-06` is approved
+  material, so redrawing it needs Maria first** — it is not a free fix, and nothing in the build
+  depends on it. Build from `diddit-mark.svg`, not from the sheet.
 
 ## Do's and Don'ts
 
