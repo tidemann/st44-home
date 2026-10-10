@@ -159,11 +159,17 @@ export class ChildDashboardComponent implements OnInit {
         await this.router.navigate(['/child-login']);
         return;
       } else if (httpError?.status === 403) {
-        this.errorMessage.set($localize`:@@childDashboard.errNotChild:Denne siden er bare for barn.`);
+        this.errorMessage.set(
+          $localize`:@@childDashboard.errNotChild:Denne siden er bare for barn.`,
+        );
       } else if (httpError?.status === 404) {
-        this.errorMessage.set($localize`:@@childDashboard.errNoProfile:Vi fant ikke profilen din. Spør en voksen om hjelp.`);
+        this.errorMessage.set(
+          $localize`:@@childDashboard.errNoProfile:Vi fant ikke profilen din. Spør en voksen om hjelp.`,
+        );
       } else {
-        this.errorMessage.set($localize`:@@childDashboard.errLoad:Vi fikk ikke hentet oppgavene dine nå. Prøv igjen!`);
+        this.errorMessage.set(
+          $localize`:@@childDashboard.errLoad:Vi fikk ikke hentet oppgavene dine nå. Prøv igjen!`,
+        );
       }
     }
   }
@@ -197,7 +203,9 @@ export class ChildDashboardComponent implements OnInit {
       this.refreshBalance();
     } catch (error) {
       console.error('Failed to complete task:', error);
-      this.errorMessage.set($localize`:@@childDashboard.errMarkDone:Kunne ikke hake av oppgaven. Prøv igjen.`);
+      this.errorMessage.set(
+        $localize`:@@childDashboard.errMarkDone:Kunne ikke hake av oppgaven. Prøv igjen.`,
+      );
     } finally {
       // Remove from completing set
       this.completingTasks.update((set) => {

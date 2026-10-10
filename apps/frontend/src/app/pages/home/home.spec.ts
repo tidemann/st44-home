@@ -252,7 +252,10 @@ describe('Home', () => {
     it('puts one button on each overdue row and none on today’s rows', () => {
       const el = render(
         [open, { ...open, id: 'a-2' }],
-        [{ ...open, id: 'a-3' }, { ...open, id: 'a-4' }],
+        [
+          { ...open, id: 'a-3' },
+          { ...open, id: 'a-4' },
+        ],
       );
       expect(el.querySelectorAll('app-chore-row').length).toBe(4);
       expect(el.querySelectorAll('app-chore-row .rbtn').length).toBe(2);
