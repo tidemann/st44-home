@@ -75,11 +75,13 @@ is inset `14 − √(14² − 6²)` = 1.35 px on each side — 109 becomes 106.3
 reading measured the arc and named it the card.
 
 The same error then recurred one row over: the method note's own table first gave the full-width
-band as y 118 … **250**, and 250 is 8 px above the bottom edge — the exact mirror of the y 112
-reading the note is about. Astrid caught that too. The card's edges are hard (white from y 104.0 to
-y 258.0, no antialiased row), so with r = 14 the band is **y 118 … 244**; y 245 is already short.
-Both bound rows sit on the tangent, so the row to actually use is **mid-height, y 181**, which reads
-the same at every edge threshold from 240 to 252.
+band as y 118 … **250**, and 250 is 8 px above the bottom edge — the mirror of the y 112 reading the
+note is about. Astrid caught that too. The card's edges are hard (white from y 104.0 to y 258.0, no
+antialiased row), so with r = 14 the band is **y 118 … 244**; y 245 is already short.
+y 250 reads **106.1 / 11.9**, not the 106.3 / 11.7 of y 112: a row index counts downward from the top
+in both corners, so y 250 sits 7.75 px into its arc against y 112's 8.25, and reads 0.2 px narrower.
+Row 244 still dips a quarter of a pixel into the arc and its width moves half a pixel across edge
+thresholds 240 … 252, so the row to actually use is **mid-height, y 181**, which barely moves at all.
 
 **The build value never changed: 109 × 154 at 9 px in the 22 px gutter.** What changed is the guide,
 which now carries the method note — _measure a card at mid-height, never within one radius of a
