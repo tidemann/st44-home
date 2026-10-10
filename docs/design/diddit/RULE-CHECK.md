@@ -24,6 +24,65 @@ Crops used as evidence below:
 
 ---
 
+## Revision 5 — the last stale radius, and two more it turned up (2026-10-10)
+
+Astrid's review of revision 3 (ST-744, 2026-10-07 06:46) accepted every number in it except one:
+`rounded.md: 12px`, the only radius still carrying its revision-1 hand value while the guide claimed
+all radii were fitted. Revision 4 did not touch it — the redraw corrected type sizes and geometry,
+not radii — so it was still open. She asked me to check it against my own scan rather than take her
+fit.
+
+I rebuilt the measurement instead of reusing the revision-3 dy-scan, because that scan is what
+produced the wrong value. The new one takes the sub-pixel edge of every scanline by integrating
+pixel coverage, takes the shape's own straight edges the same way, and least-squares an arc through
+each of the four corners. It uses no calibration constant, so the primary button is a control rather
+than an input: it returns 13.10 css there, against a true 13.
+
+| #   | Finding                                                                    | Status                                                                                       |
+| --- | -------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------- |
+| 1   | `rounded.md: 12px`; the chore card measures 13.                            | Confirmed and fixed — 26.21 board px over four corners, rms ≤ 0.11. `md` is now 13 px.       |
+| 2   | Reward and child cards are **14 px**, not 13 — a disagreement with the review. | Fixed — new `rounded.cardTile`. See below.                                                   |
+| 3   | Chip radius 9 px, unresolvable in revision 3.                              | Now measured — 18.15 board px on four corners of three chips, rms ≤ 0.08. The 9 px stands.   |
+| 4   | Child-card radius, unresolvable in revision 3.                             | Now measured — 28.42 board px → 14 px.                                                       |
+| 5   | Row action and tick badge carried ±1 px from the dy-scan.                  | Re-measured: 19.97 and 32.27 board px → 10 and 16 px exactly. The ± is gone.                 |
+
+### Finding 2: where this revision departs from the review
+
+![Four corners at 8×: the fitted arc in green, the guide's old 12 px in red](reference/card-radius-evidence-ida.png)
+
+Astrid's table read every card as 13 and concluded that `rounded.md` and `rounded.lg` are the same
+value "across five card components". Three of the five are: the chore card (26.21 board px), the
+overdue card (26.22) and the inset card on the yellow screen (26.16). The other two are not.
+
+| Shape                      | Four-corner fit | rms    | Reads as  |
+| -------------------------- | --------------- | ------ | --------- |
+| Primary button (control)   | 26.20 board px  | ≤ 0.11 | 13 px ✅  |
+| Chore card                 | 26.21           | ≤ 0.11 | **13 px** |
+| Overdue card               | 26.22           | ≤ 0.11 | 13 px     |
+| Inset card on yellow       | 26.16           | ≤ 0.10 | 13 px     |
+| Reward card, screen 5 (×3) | 28.43           | ≤ 0.16 | **14 px** |
+| Child card, screen 1 (×3)  | 28.42           | ≤ 0.10 | **14 px** |
+| Filter chip (×3)           | 18.15           | ≤ 0.08 | 9 px      |
+| Row action (×3)            | 19.97           | ≤ 0.10 | 10 px     |
+| Tick badge                 | 32.27           | ≤ 0.16 | 16 px     |
+
+The 14 does not depend on trusting the fit. The reward card, the child card and the chore card are
+all white on the same `#F6F6F4` ground, rendered with the same anti-aliasing, so their corners can
+be compared pixel for pixel with no model at all. Measured from each shape's own top-left origin,
+the row where the fill first reaches full white runs u = 25 on the chore card and u = 27 on the
+reward and child cards; the next rows are 19/21, then 16/18. The two families differ by exactly
+2 board px — 1 css px — at every scanline of the arc. The chore card equals the button, which is 13.
+So the others are 14.
+
+Why the fit's 14.21 is read as 14 and not 15: on the three shapes whose value is independently
+known the fit reads high by 0.00–0.14 css (9.99 against 10, 13.10 against 13, 16.14 against 16).
+Correcting 14.21 by that same small bias lands on 14.1.
+
+**This is not a change to the look and does not go to Maria.** It is the same class as the 12 → 13
+correction Astrid cleared in her section 5: a 1–2 px radius move *toward* what the picture shows. It
+removes nothing, switches no mode, drains no yellow and makes no button plain. The five screens stay
+locked.
+
 ## Revision 4 — what the redraw found (2026-10-09, ST-756)
 
 Revision 3 was checked by reading the reference board. Revision 4 was checked by **building the five
@@ -86,6 +145,10 @@ screen 4, both exactly as documented — so the 49 was measured and the 44 was n
 between the two labels, which is why the token now carries a height and no width.
 
 ### Finding 5, in detail
+
+> **Superseded by revision 5.** The dy-scan described here is accurate to ±1 board px and is what
+> left `rounded.md` at 12. The radii in the guide are now fitted sub-pixel on four corners; this
+> section is kept as the record of revision 3, not as the current method.
 
 The radii were the last values in the guide marked "not measured". They are measurable with the same
 bounding boxes: walk down the left edge and find the first scanline where the fill reaches the box,
@@ -226,11 +289,13 @@ luminance thresholds.
 | Points meter 14 px tall, 4 px gaps                            | Screen 5 y 1308–1335 (28 board px), gaps 8 board px. Screen 4 y 968–995, same.                                                               |
 | Chore meter 7 px tall, 3 px gaps                              | Screen 1 y 652–665 (14 board px), gaps 6 board px. **Exactly half the points meter.**                                                        |
 | Meter segments divide the width; they are not fixed           | Screen 1: 2 segments at 82 board px. Screen 5: 10 segments at 44–46 board px. Screen 4: 10 segments at 60–62 board px.                       |
-| Filter chips 33 px tall, 9 px radius                          | Screen 2, chip band y 430–495 → 66 board px. Corner insets 18, 12, 10, 8 … → R = 18 board px.                                                |
+| Filter chips 33 px tall, 9 px radius                          | Screen 2, chip band y 430–495 → 66 board px. Radius fits 18.15 board px on all four corners of three chips (rms ≤ 0.08) → 9 px.             |
 | Checkbox 22 × 22 px, 2 px outline                             | Screen 2, `#DFDFD9` bbox x 996–1039, y 1028–1071 → 44 × 44 board px.                                                                         |
 | Tick badge 54 × 54 px                                         | Screen 4, `#17120A` bbox x 2644–2751, y 356–463 → 108 × 108 board px.                                                                        |
-| Card radius 12 px, button radius 13 px                        | Card corner insets fit a 24 board px circle; the primary button fits a 26 board px circle.                                                   |
-| Row-action radius 10 px, tick-badge radius 16 px              | Corner arcs close at dy = 19 and dy = 30 board px; the same fit returns the primary's measured 13 px.                                        |
+| Row radius 13 px — chore, overdue and inset-on-yellow cards   | Four-corner sub-pixel arc fit: 26.21, 26.22 and 26.16 board px (rms ≤ 0.11). Astrid's independent fit returns 13.00 css on the chore card.   |
+| Button radius 13 px — the same corner as a row                | 26.20 board px over four corners (rms ≤ 0.11), fitted with no calibration constant, so it no longer rests on the old hand measurement.       |
+| Reward-card and child-card radius 14 px                       | Both fit 28.43 board px (rms ≤ 0.16). Independent of any fit: their arcs run exactly 2 board px wider than the chore card's, scanline by scanline. |
+| Row-action radius 10 px, tick-badge radius 16 px              | 19.97 and 32.27 board px, four corners each (rms ≤ 0.16) — replacing the ±1 dy-scan values of revision 3.                                    |
 | **The Flat Rule** — no shadows                                | The pixel immediately left of every card edge is exactly `#F6F6F4`. There is no gradient, so there is no shadow.                             |
 | **The Borders Mean Something Rule** — three strokes           | State: 2 px `#A43A16` overdue border. Control boundary: 2 px `#DFDFD9` checkbox. Divider: 1 px `#DFDFD9`. Nothing else.                      |
 | Nav divider: 1 px `#DFDFD9`, full 390 px bleed                | y = 1738–1739 (2 board px), spanning x 88–867 on screen 1 — the **entire** frame width — and the same y on screens 2, 3, 5.                  |
@@ -299,6 +364,9 @@ must be labelled as additions when they are designed:
   all measured; a single letter at this scale is too small to size from ink width with confidence.
   The guide carries Meta 15 px as a fit to the circle and flags it as unverified.
 - ~~Radii for the row-level action buttons and the tick badge were not measured directly.~~
-  Measured in revision 3: 10 px and 16 px, ±1 px, by the corner-arc fit described above.
+  ~~Measured in revision 3: 10 px and 16 px, ±1 px, by the corner-arc fit described above.~~
+  **Closed in revision 5.** Every radius in the guide is now fitted on all four corners by the
+  sub-pixel method, including the chip and the child card that revision 3 could not resolve. No
+  radius is ±1 any more, and none is left stated flat.
 - **Line heights and letter-spacing** are carried over from revision 1 and were not re-measured;
   only font sizes were.

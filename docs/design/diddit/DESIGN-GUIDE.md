@@ -83,8 +83,9 @@ typography:
     lineHeight: 1.3
 rounded:
   sm: '9px'
-  md: '12px'
+  md: '13px'
   lg: '13px'
+  cardTile: '14px'
   xl: '16px'
   pill: '999px'
   rowAction: '10px'
@@ -148,13 +149,13 @@ components:
   card-child:
     backgroundColor: '{colors.surface}'
     textColor: '{colors.text}'
-    rounded: '{rounded.md}'
+    rounded: '{rounded.cardTile}'
     padding: '12px'
     width: '109px'
   card-reward:
     backgroundColor: '{colors.surface}'
     textColor: '{colors.text}'
-    rounded: '{rounded.md}'
+    rounded: '{rounded.cardTile}'
     padding: '15px'
   card-inset-on-yellow:
     backgroundColor: '{colors.yellow-inset}'
@@ -555,19 +556,31 @@ step the tone — do not lift it.
 
 Softly rounded rectangles throughout; nothing is a circle except the person badges.
 
-- **Cards and rows:** 12 px (measured on screen 2's chore card).
-- **Buttons:** 13 px for the full-width primary and the on-yellow pair.
+- **Rows and the cards that behave like rows:** 13 px — the chore card, the overdue card and the
+  inset card on the yellow screen.
+- **Buttons:** 13 px for the full-width primary and the on-yellow pair — **the same radius as the
+  card**. The picture draws no card/button distinction here, so `rounded.md` and `rounded.lg` hold
+  the same value on purpose; they are kept apart only so a later change to one does not move the
+  other.
+- **Reward cards and child cards:** 14 px (`rounded.cardTile`) — one px softer than a row. The two
+  stand-alone card shapes are the only things in the picture carrying this value.
 - **Row-level action buttons:** 10 px — smaller than the card they sit on.
 - **Filter chips:** 9 px.
 - **Meter segments:** fully rounded (pill).
 - **The tick badge** on the yellow screen: a 54 × 54 px rounded square at 16 px radius — the one
   piece of geometry that is allowed to look like a stamp.
 
-All radii are now fitted from the corner arcs rather than guessed. The method: walk down the left
-edge of the shape and find the first scanline where the fill reaches the shape's own bounding box,
-which lands one board px short of the radius. Calibrated on the primary button, where it returns the
-13 px measured by hand. On the row buttons it returns 10 px (19 board px), on the tick badge 16 px
-(30 board px). Treat the row button and badge values as ±1 px.
+Every radius above is fitted from the corner arcs, on all four corners of each shape, with no
+calibration constant. The method: for each scanline, take the sub-pixel edge of the fill by
+integrating the uncovered fraction of each pixel (coverage read by projecting the pixel onto the
+background→fill colour vector), take the shape's own straight edges the same way, then least-squares
+an arc through the corner. Nothing in it is anchored to a hand-measured value, so the primary
+button's 13 px is a check on the method rather than an input to it: the fit returns 13.10 css there.
+
+Residuals are 0.16 board px or better on every shape, and the four corners of a shape agree to
+within 0.15 board px, so each value is good to well under half a px. The fit reads very slightly
+high (it returns 9.99 where the true value is 10, 13.10 where it is 13, 16.14 where it is 16), which
+is why 14.21 on the reward and child cards is read as 14 and not 15. No value here is ±1 any more.
 
 ## Components
 
@@ -622,7 +635,7 @@ altogether. It is the only circle in the system.
 
 ### Cards and rows
 
-- **Chore row** (`card`): white, 12 px radius, 15 px padding, 68 px tall. Left to right: a checkbox
+- **Chore row** (`card`): white, 13 px radius, 15 px padding, 68 px tall. Left to right: a checkbox
   (22 × 22 px, 2 px outline, inside a ≥44 px target — see the approved outline exception under
   Accessibility), the chore title (Body **16**), the who-and-when line (Meta sm **13**, muted),
   then the points at the right in Amber Ink ("5 p", Meta sm 13) — plain type, **no chip
@@ -632,12 +645,14 @@ altogether. It is the only circle in the system.
   not a pink block.
 - **Done row:** white card, a filled Done Green square with a white tick, and the time it was done
   ("Gjort 16.10") — never a tick on its own.
-- **Child card** (`card-child`, family screen): 109 px wide, three across. Name in Meta **15** —
-  a name keeps the larger size even inside a card — total in Number 30, the word "poeng", then the
-  **chore meter** (green/rust — see Meters) and "1 av 2 gjort" (Meta sm 13) underneath.
-- **Reward card** (`card-reward`, screen 5): white, full content column. Title in Body **16** on the
-  left, cost in **Muted Text** on the right ("60 p", Meta sm 13) — note this is muted, not the Amber
-  Ink used for points on a chore row. Then one of two second lines:
+- **Child card** (`card-child`, family screen): a 109 × 109 px square, three across, **14 px
+  radius**. Name in Meta **15** — a name keeps the larger size even inside a card — total in
+  Number 30, the word "poeng", then the **chore meter** (green/rust — see Meters) and
+  "1 av 2 gjort" (Meta sm 13) underneath.
+- **Reward card** (`card-reward`, screen 5): white, full content column, 92 px tall, **14 px
+  radius** — the same slightly softer corner as the child card. Title in Body **16** on the left,
+  cost in **Muted Text** on the right ("60 p", Meta sm 13) — note this is muted, not the Amber Ink
+  used for points on a chore row. Then one of two second lines:
   - _affordable_ — a Done Green check and "Du har nok poeng" (Meta sm 13) on the left, and a yellow
     "Spør mor" button on the right;
   - _not yet affordable_ — a yellow **points meter** across the left, and "… igjen" (Meta sm 13) on
