@@ -91,7 +91,7 @@ describe('MemberCard', () => {
     expect(statsElement).toBeTruthy();
 
     const pointsElement = fixture.nativeElement.querySelector('.member-points');
-    expect(pointsElement?.textContent).toContain('450 pts');
+    expect(pointsElement?.textContent).toContain('450 poeng');
 
     const tasksElement = fixture.nativeElement.querySelector('.member-tasks');
     expect(tasksElement?.textContent).toContain('12/15 tasks');
@@ -117,7 +117,7 @@ describe('MemberCard', () => {
     fixture.detectChanges();
 
     const pointsElement = fixture.nativeElement.querySelector('.member-points');
-    expect(pointsElement?.textContent).toContain('0 pts');
+    expect(pointsElement?.textContent).toContain('0 poeng');
 
     const tasksElement = fixture.nativeElement.querySelector('.member-tasks');
     expect(tasksElement?.textContent).toContain('0/0 tasks');
@@ -135,7 +135,7 @@ describe('MemberCard', () => {
     fixture.detectChanges();
 
     const pointsElement = fixture.nativeElement.querySelector('.member-points');
-    expect(pointsElement?.textContent).toContain('0 pts');
+    expect(pointsElement?.textContent).toContain('0 poeng');
 
     const tasksElement = fixture.nativeElement.querySelector('.member-tasks');
     expect(tasksElement?.textContent).toContain('0/0 tasks');
