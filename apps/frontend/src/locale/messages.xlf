@@ -1134,7 +1134,7 @@
         <source>Poeng opptjent</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/daily-points-chart/daily-points-chart.ts</context>
-          <context context-type="linenumber">31</context>
+          <context context-type="linenumber">41</context>
         </context-group>
       </trans-unit>
       <trans-unit id="failedTasks.title" datatype="html">
@@ -3655,77 +3655,77 @@
         <source>Denne siden er bare for barn.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/child-dashboard/child-dashboard.ts</context>
-          <context context-type="linenumber">162</context>
+          <context context-type="linenumber">163</context>
         </context-group>
       </trans-unit>
       <trans-unit id="childDashboard.errNoProfile" datatype="html">
         <source>Vi fant ikke profilen din. Spør en voksen om hjelp.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/child-dashboard/child-dashboard.ts</context>
-          <context context-type="linenumber">164</context>
+          <context context-type="linenumber">167</context>
         </context-group>
       </trans-unit>
       <trans-unit id="childDashboard.errLoad" datatype="html">
         <source>Vi fikk ikke hentet oppgavene dine nå. Prøv igjen!</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/child-dashboard/child-dashboard.ts</context>
-          <context context-type="linenumber">166</context>
+          <context context-type="linenumber">171</context>
         </context-group>
       </trans-unit>
       <trans-unit id="childDashboard.errMarkDone" datatype="html">
         <source>Kunne ikke hake av oppgaven. Prøv igjen.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/child-dashboard/child-dashboard.ts</context>
-          <context context-type="linenumber">200</context>
+          <context context-type="linenumber">207</context>
         </context-group>
       </trans-unit>
       <trans-unit id="childDashboard.overdueMeta" datatype="html">
         <source>Forfalt <x id="day" equiv-text="dayWord(task.date)"/></source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/child-dashboard/child-dashboard.ts</context>
-          <context context-type="linenumber">242</context>
+          <context context-type="linenumber">250</context>
         </context-group>
       </trans-unit>
       <trans-unit id="childDashboard.openMeta" datatype="html">
         <source><x id="day" equiv-text="capitalize(dayWord(task.date))"/> – <x id="points" equiv-text="task.points"/> poeng</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/child-dashboard/child-dashboard.ts</context>
-          <context context-type="linenumber">247</context>
+          <context context-type="linenumber">255</context>
         </context-group>
       </trans-unit>
       <trans-unit id="childDashboard.doneMeta" datatype="html">
         <source>Gjort<x id="at" equiv-text="at"/> – <x id="points" equiv-text="task.points"/> poeng</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/child-dashboard/child-dashboard.ts</context>
-          <context context-type="linenumber">253</context>
+          <context context-type="linenumber">261</context>
         </context-group>
       </trans-unit>
       <trans-unit id="childDashboard.hakAvAria" datatype="html">
         <source>Hak av <x id="title" equiv-text="task.taskName"/></source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/child-dashboard/child-dashboard.ts</context>
-          <context context-type="linenumber">257</context>
+          <context context-type="linenumber">265</context>
         </context-group>
       </trans-unit>
       <trans-unit id="childDashboard.undoSpent" datatype="html">
         <source>Poengene er alt brukt, så denne kan ikke angres.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/child-dashboard/child-dashboard.ts</context>
-          <context context-type="linenumber">273</context>
+          <context context-type="linenumber">281</context>
         </context-group>
       </trans-unit>
       <trans-unit id="childDashboard.undoTooLate" datatype="html">
         <source>Det er for sent å angre denne nå.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/child-dashboard/child-dashboard.ts</context>
-          <context context-type="linenumber">275</context>
+          <context context-type="linenumber">283</context>
         </context-group>
       </trans-unit>
       <trans-unit id="childDashboard.undoFailed" datatype="html">
         <source>Det gikk ikke å angre. Prøv igjen.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/child-dashboard/child-dashboard.ts</context>
-          <context context-type="linenumber">277</context>
+          <context context-type="linenumber">285</context>
         </context-group>
       </trans-unit>
       <trans-unit id="childRewards.title" datatype="html">
