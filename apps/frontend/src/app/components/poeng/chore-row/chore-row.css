@@ -39,7 +39,7 @@ button.cb {
 button.cb::after {
   content: '';
   position: absolute;
-  inset: -11px;
+  inset: -13px; /* padding box is 18 px (22 − 2 × 2 border); 18 + 26 = 44 */
 }
 
 button.cb:hover:not(:disabled) {
