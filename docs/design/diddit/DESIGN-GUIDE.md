@@ -152,6 +152,7 @@ components:
     rounded: '{rounded.cardTile}'
     padding: '12px'
     width: '109px'
+    height: '154px'
   card-reward:
     backgroundColor: '{colors.surface}'
     textColor: '{colors.text}'
@@ -514,8 +515,10 @@ A 390 × 844 phone, single column, content scrolling between a fixed title area 
 - **Chore row: 68 px tall.**
 - **Primary button:** 346 × **49 px**, pinned to the bottom of the scroll area above the nav.
   The two on-yellow buttons ("Angre", "Ferdig") are the same 49 px.
-- **Family screen: three child cards across**, each **109 px wide** with **9 px** between them —
-  not a stack of full-width cards. This is the first screen of the app; get it right.
+- **Family screen: three child cards across**, each **109 px wide × 154 px tall** with **9 px**
+  between them — not a stack of full-width cards, and **not a square**: the card is half again as
+  tall as it is wide, because it carries name, total, the word "poeng", the chore meter and
+  "1 av 2 gjort". This is the first screen of the app; get it right.
 - **Title row: y 49…87**, with the **initial badge** right-aligned to the gutter — see Components.
 - **Bottom nav: four items at 92 px pitch**, which leaves ≈11 px of padding at each edge of the
   390 px frame. Not four equal quarters: that would pitch them 97.5 px apart and run 7 px too wide.
@@ -645,8 +648,10 @@ altogether. It is the only circle in the system.
   not a pink block.
 - **Done row:** white card, a filled Done Green square with a white tick, and the time it was done
   ("Gjort 16.10") — never a tick on its own.
-- **Child card** (`card-child`, family screen): a 109 × 109 px square, three across, **14 px
-  radius**. Name in Meta **15** — a name keeps the larger size even inside a card — total in
+- **Child card** (`card-child`, family screen): **109 px wide × 154 px tall** — a portrait tile,
+  not a square — three across, **14 px radius**. Everything below is inside those 154 px; a 109 px
+  box clips the meter and the "1 av 2 gjort" line off the bottom.
+  Name in Meta **15** — a name keeps the larger size even inside a card — total in
   Number 30, the word "poeng", then the **chore meter** (green/rust — see Meters) and
   "1 av 2 gjort" (Meta sm 13) underneath.
 - **Reward card** (`card-reward`, screen 5): white, full content column, 92 px tall, **14 px

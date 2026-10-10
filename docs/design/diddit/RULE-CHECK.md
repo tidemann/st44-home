@@ -38,13 +38,14 @@ pixel coverage, takes the shape's own straight edges the same way, and least-squ
 each of the four corners. It uses no calibration constant, so the primary button is a control rather
 than an input: it returns 13.10 css there, against a true 13.
 
-| #   | Finding                                                                    | Status                                                                                       |
-| --- | -------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------- |
-| 1   | `rounded.md: 12px`; the chore card measures 13.                            | Confirmed and fixed — 26.21 board px over four corners, rms ≤ 0.11. `md` is now 13 px.       |
-| 2   | Reward and child cards are **14 px**, not 13 — a disagreement with the review. | Fixed — new `rounded.cardTile`. See below.                                                   |
-| 3   | Chip radius 9 px, unresolvable in revision 3.                              | Now measured — 18.15 board px on four corners of three chips, rms ≤ 0.08. The 9 px stands.   |
-| 4   | Child-card radius, unresolvable in revision 3.                             | Now measured — 28.42 board px → 14 px.                                                       |
-| 5   | Row action and tick badge carried ±1 px from the dy-scan.                  | Re-measured: 19.97 and 32.27 board px → 10 and 16 px exactly. The ± is gone.                 |
+| #   | Finding                                                                                 | Status                                                                                     |
+| --- | --------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------ |
+| 1   | `rounded.md: 12px`; the chore card measures 13.                                         | Confirmed and fixed — 26.21 board px over four corners, rms ≤ 0.11. `md` is now 13 px.     |
+| 2   | Reward and child cards are **14 px**, not 13 — a disagreement with the review.          | Fixed — new `rounded.cardTile`. See below.                                                 |
+| 3   | Chip radius 9 px, unresolvable in revision 3.                                           | Now measured — 18.15 board px on four corners of three chips, rms ≤ 0.08. The 9 px stands. |
+| 4   | Child-card radius, unresolvable in revision 3.                                          | Now measured — 28.43 board px on four corners of all three cards, rms ≤ 0.16 → 14 px.      |
+| 5   | Row action and tick badge carried ±1 px from the dy-scan.                               | Re-measured: 19.97 and 32.27 board px → 10 and 16 px exactly. The ± is gone.               |
+| 6   | The child card is **109 × 154 px**, not the 109 × 109 square this revision first wrote. | Fixed — Astrid's review, 2026-10-10. See below.                                            |
 
 ### Finding 2: where this revision departs from the review
 
@@ -61,7 +62,7 @@ overdue card (26.22) and the inset card on the yellow screen (26.16). The other 
 | Overdue card               | 26.22           | ≤ 0.11 | 13 px     |
 | Inset card on yellow       | 26.16           | ≤ 0.10 | 13 px     |
 | Reward card, screen 5 (×3) | 28.43           | ≤ 0.16 | **14 px** |
-| Child card, screen 1 (×3)  | 28.42           | ≤ 0.10 | **14 px** |
+| Child card, screen 1 (×3)  | 28.43           | ≤ 0.16 | **14 px** |
 | Filter chip (×3)           | 18.15           | ≤ 0.08 | 9 px      |
 | Row action (×3)            | 19.97           | ≤ 0.10 | 10 px     |
 | Tick badge                 | 32.27           | ≤ 0.16 | 16 px     |
@@ -79,9 +80,38 @@ known the fit reads high by 0.00–0.14 css (9.99 against 10, 13.10 against 13, 
 Correcting 14.21 by that same small bias lands on 14.1.
 
 **This is not a change to the look and does not go to Maria.** It is the same class as the 12 → 13
-correction Astrid cleared in her section 5: a 1–2 px radius move *toward* what the picture shows. It
+correction Astrid cleared in her section 5: a 1–2 px radius move _toward_ what the picture shows. It
 removes nothing, switches no mode, drains no yellow and makes no button plain. The five screens stay
 locked.
+
+### Finding 6: the child card is 109 × 154, and why the bad box mattered
+
+![The card as the picture draws it, against the 109 × 109 square](reference/child-card-height-astrid.png)
+
+The first draft of this revision wrote the child card as "a 109 × 109 px square". The width was
+never in doubt; the height was asserted, not measured, and it is wrong by 45 px. Sub-pixel edges on
+all four sides of child card 1: L 132.00, T 434.00, R 350.00, B 742.00 → **218 × 308 board px =
+109 × 154 css**. All three cards measure 154 tall; the three widths come out 109, 110, 109 with 9 px
+gaps, which is the 346 px content column divided three ways.
+
+The crop shows the cost of the error: at 109 tall the card ends above its own chore meter, so the
+meter and the "1 av 2 gjort" line — both of which this guide _requires_ on that card — fall outside
+it. A build that followed the guide would clip them.
+
+The same assumed box is why the child card's bottom corners would not resolve: the fit was handed
+`yB: 651`, which is 217 board px below the top and lands in the middle of the card, so BL and BR
+came back at rms 3.12 while every other shape resolved on four corners. With `yB: 741` all four
+resolve — **28.40 / 28.44 / 28.41 / 28.45, spread 0.05** — on each of the three cards, and they are
+identical to the reward card's four to 0.01 board px, which is the cleanest proof that the two are
+one shape. Same 14. The guide's claim that every radius is fitted "on all four corners of each
+shape" is true as written only after this fix.
+
+`card-child` now carries `height: '154px'` next to its `width: '109px'`: a width-only token is what
+let the square through. Checked the revision's other new size the same way — the reward card is
+L 3476.00, T 614.00, R 4168.00, B 798.00 → **346 × 92 css**, so "92 px tall" is right.
+
+Also not a change to the look: a height corrected _toward_ what the picture draws removes nothing
+and tones nothing down.
 
 ## Revision 4 — what the redraw found (2026-10-09, ST-756)
 
@@ -273,36 +303,36 @@ luminance thresholds.
 
 ## Layout, depth and shape rules
 
-| Rule                                                          | Where the picture shows it                                                                                                                   |
-| ------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
-| Viewport 390 × 844 at DPR 2                                   | Frame content is 780 × 1688 board px on all five screens (x 88–867 etc., y 194–1881).                                                        |
-| Screen gutter 22 px; content column 346 px                    | Screen 2's chore card spans x 969–1658 inside a frame at 924–1703 → 45 board px each side; 690 board px wide.                                |
-| **Screen 4 is the exception: 24 px gutter, 342 px column**    | Badge, meter, inset card and both buttons all run x 24–366 in CSS. Corrected on ST-756; the 22 px line held for screens 1, 2, 3, 5 only.     |
-| **Bottom nav: 92 px pitch, not four equal quarters**          | Icon ink runs x 47.5–341.5 → 92 px between items, ≈11 px padding at each frame edge. Four quarters of 390 would pitch 97.5. Added on ST-756. |
-| **Initial badge: 38 px circle, `#ECECE8`, `#15181C` initial** | Title row y 49–87, right edge on the gutter, on all four light screens. Missing from revision 3 of the guide entirely; added on ST-756.      |
-| 8 px between cards                                            | Screen 2 row gaps measured 16 board px (964–979, 1118–1133, 1504–1519).                                                                      |
-| Chore row 68 px tall; 15 px padding                           | Screen 2 rows 980–1117, 1134–1269: 136 board px. First ink 27 board px in from the card edge.                                                |
-| Family screen: three cards across, 109 px wide, 9 px apart    | Screen 1, y = 620: white at 132–349, 368–587, 606–823, with `#F6F6F4` gaps at 350–367 and 588–605.                                           |
-| Primary button 346 × 49 px                                    | Screen 2, "Ny oppgave": x 968–1659, y 1616–1713 → 692 × 98 board px.                                                                         |
-| On-yellow buttons 49 px tall                                  | Screen 4, "Angre" and "Ferdig" both y 1744–1841 → 98 board px.                                                                               |
-| Row-action buttons 36 px tall; width follows the label        | Five instances, all 72 board px tall: "Hak av" 140 board px wide (screen 3), "Spør mor" 174 (screen 5).                                      |
-| Points meter 14 px tall, 4 px gaps                            | Screen 5 y 1308–1335 (28 board px), gaps 8 board px. Screen 4 y 968–995, same.                                                               |
-| Chore meter 7 px tall, 3 px gaps                              | Screen 1 y 652–665 (14 board px), gaps 6 board px. **Exactly half the points meter.**                                                        |
-| Meter segments divide the width; they are not fixed           | Screen 1: 2 segments at 82 board px. Screen 5: 10 segments at 44–46 board px. Screen 4: 10 segments at 60–62 board px.                       |
-| Filter chips 33 px tall, 9 px radius                          | Screen 2, chip band y 430–495 → 66 board px. Radius fits 18.15 board px on all four corners of three chips (rms ≤ 0.08) → 9 px.             |
-| Checkbox 22 × 22 px, 2 px outline                             | Screen 2, `#DFDFD9` bbox x 996–1039, y 1028–1071 → 44 × 44 board px.                                                                         |
-| Tick badge 54 × 54 px                                         | Screen 4, `#17120A` bbox x 2644–2751, y 356–463 → 108 × 108 board px.                                                                        |
-| Row radius 13 px — chore, overdue and inset-on-yellow cards   | Four-corner sub-pixel arc fit: 26.21, 26.22 and 26.16 board px (rms ≤ 0.11). Astrid's independent fit returns 13.00 css on the chore card.   |
-| Button radius 13 px — the same corner as a row                | 26.20 board px over four corners (rms ≤ 0.11), fitted with no calibration constant, so it no longer rests on the old hand measurement.       |
+| Rule                                                          | Where the picture shows it                                                                                                                         |
+| ------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Viewport 390 × 844 at DPR 2                                   | Frame content is 780 × 1688 board px on all five screens (x 88–867 etc., y 194–1881).                                                              |
+| Screen gutter 22 px; content column 346 px                    | Screen 2's chore card spans x 969–1658 inside a frame at 924–1703 → 45 board px each side; 690 board px wide.                                      |
+| **Screen 4 is the exception: 24 px gutter, 342 px column**    | Badge, meter, inset card and both buttons all run x 24–366 in CSS. Corrected on ST-756; the 22 px line held for screens 1, 2, 3, 5 only.           |
+| **Bottom nav: 92 px pitch, not four equal quarters**          | Icon ink runs x 47.5–341.5 → 92 px between items, ≈11 px padding at each frame edge. Four quarters of 390 would pitch 97.5. Added on ST-756.       |
+| **Initial badge: 38 px circle, `#ECECE8`, `#15181C` initial** | Title row y 49–87, right edge on the gutter, on all four light screens. Missing from revision 3 of the guide entirely; added on ST-756.            |
+| 8 px between cards                                            | Screen 2 row gaps measured 16 board px (964–979, 1118–1133, 1504–1519).                                                                            |
+| Chore row 68 px tall; 15 px padding                           | Screen 2 rows 980–1117, 1134–1269: 136 board px. First ink 27 board px in from the card edge.                                                      |
+| Family screen: three cards across, 109 px wide, 9 px apart    | Screen 1, y = 620: white at 132–349, 368–587, 606–823, with `#F6F6F4` gaps at 350–367 and 588–605.                                                 |
+| Primary button 346 × 49 px                                    | Screen 2, "Ny oppgave": x 968–1659, y 1616–1713 → 692 × 98 board px.                                                                               |
+| On-yellow buttons 49 px tall                                  | Screen 4, "Angre" and "Ferdig" both y 1744–1841 → 98 board px.                                                                                     |
+| Row-action buttons 36 px tall; width follows the label        | Five instances, all 72 board px tall: "Hak av" 140 board px wide (screen 3), "Spør mor" 174 (screen 5).                                            |
+| Points meter 14 px tall, 4 px gaps                            | Screen 5 y 1308–1335 (28 board px), gaps 8 board px. Screen 4 y 968–995, same.                                                                     |
+| Chore meter 7 px tall, 3 px gaps                              | Screen 1 y 652–665 (14 board px), gaps 6 board px. **Exactly half the points meter.**                                                              |
+| Meter segments divide the width; they are not fixed           | Screen 1: 2 segments at 82 board px. Screen 5: 10 segments at 44–46 board px. Screen 4: 10 segments at 60–62 board px.                             |
+| Filter chips 33 px tall, 9 px radius                          | Screen 2, chip band y 430–495 → 66 board px. Radius fits 18.15 board px on all four corners of three chips (rms ≤ 0.08) → 9 px.                    |
+| Checkbox 22 × 22 px, 2 px outline                             | Screen 2, `#DFDFD9` bbox x 996–1039, y 1028–1071 → 44 × 44 board px.                                                                               |
+| Tick badge 54 × 54 px                                         | Screen 4, `#17120A` bbox x 2644–2751, y 356–463 → 108 × 108 board px.                                                                              |
+| Row radius 13 px — chore, overdue and inset-on-yellow cards   | Four-corner sub-pixel arc fit: 26.21, 26.22 and 26.16 board px (rms ≤ 0.11). Astrid's independent fit returns 13.00 css on the chore card.         |
+| Button radius 13 px — the same corner as a row                | 26.20 board px over four corners (rms ≤ 0.11), fitted with no calibration constant, so it no longer rests on the old hand measurement.             |
 | Reward-card and child-card radius 14 px                       | Both fit 28.43 board px (rms ≤ 0.16). Independent of any fit: their arcs run exactly 2 board px wider than the chore card's, scanline by scanline. |
-| Row-action radius 10 px, tick-badge radius 16 px              | 19.97 and 32.27 board px, four corners each (rms ≤ 0.16) — replacing the ±1 dy-scan values of revision 3.                                    |
-| **The Flat Rule** — no shadows                                | The pixel immediately left of every card edge is exactly `#F6F6F4`. There is no gradient, so there is no shadow.                             |
-| **The Borders Mean Something Rule** — three strokes           | State: 2 px `#A43A16` overdue border. Control boundary: 2 px `#DFDFD9` checkbox. Divider: 1 px `#DFDFD9`. Nothing else.                      |
-| Nav divider: 1 px `#DFDFD9`, full 390 px bleed                | y = 1738–1739 (2 board px), spanning x 88–867 on screen 1 — the **entire** frame width — and the same y on screens 2, 3, 5.                  |
-| The yellow screen has no nav and no divider                   | Screen 4 at y 1730–1748 is `#F6B93B` throughout.                                                                                             |
-| "Hentet før" divider: 1 px `#DFDFD9`, inset to the column     | Screen 5, y = 1628, x 3476–4167 → 692 board px, exactly the content column.                                                                  |
-| Bottom nav sits on the background, not a white bar            | Column samples through the nav band read `#F6F6F4`, not `#FFFFFF`.                                                                           |
-| Active nav = colour **and** weight                            | "Hjem" is Amber Ink and heavier; "Oppgaver" is Muted Text.                                                                                   |
+| Row-action radius 10 px, tick-badge radius 16 px              | 19.97 and 32.27 board px, four corners each (rms ≤ 0.16) — replacing the ±1 dy-scan values of revision 3.                                          |
+| **The Flat Rule** — no shadows                                | The pixel immediately left of every card edge is exactly `#F6F6F4`. There is no gradient, so there is no shadow.                                   |
+| **The Borders Mean Something Rule** — three strokes           | State: 2 px `#A43A16` overdue border. Control boundary: 2 px `#DFDFD9` checkbox. Divider: 1 px `#DFDFD9`. Nothing else.                            |
+| Nav divider: 1 px `#DFDFD9`, full 390 px bleed                | y = 1738–1739 (2 board px), spanning x 88–867 on screen 1 — the **entire** frame width — and the same y on screens 2, 3, 5.                        |
+| The yellow screen has no nav and no divider                   | Screen 4 at y 1730–1748 is `#F6B93B` throughout.                                                                                                   |
+| "Hentet før" divider: 1 px `#DFDFD9`, inset to the column     | Screen 5, y = 1628, x 3476–4167 → 692 board px, exactly the content column.                                                                        |
+| Bottom nav sits on the background, not a white bar            | Column samples through the nav band read `#F6F6F4`, not `#FFFFFF`.                                                                                 |
+| Active nav = colour **and** weight                            | "Hjem" is Amber Ink and heavier; "Oppgaver" is Muted Text.                                                                                         |
 
 ## The tick-off moment
 
