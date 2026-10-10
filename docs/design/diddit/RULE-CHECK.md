@@ -74,10 +74,18 @@ The card's top edge is y 104 and its radius is 14, so a scanline at y 112 crosse
 is inset `14 − √(14² − 6²)` = 1.35 px on each side — 109 becomes 106.3, to the tenth. The first
 reading measured the arc and named it the card.
 
+The same error then recurred one row over: the method note's own table first gave the full-width
+band as y 118 … **250**, and 250 is 8 px above the bottom edge — the exact mirror of the y 112
+reading the note is about. Astrid caught that too. The card's edges are hard (white from y 104.0 to
+y 258.0, no antialiased row), so with r = 14 the band is **y 118 … 244**; y 245 is already short.
+Both bound rows sit on the tangent, so the row to actually use is **mid-height, y 181**, which reads
+the same at every edge threshold from 240 to 252.
+
 **The build value never changed: 109 × 154 at 9 px in the 22 px gutter.** What changed is the guide,
 which now carries the method note — _measure a card at mid-height, never within one radius of a
 corner_ — in place of the withdrawn disagreement section, with
-`reference/child-card-measure-method.png` as its evidence.
+`reference/child-card-measure-method.png` (top corner) and `reference/child-card-bottom-arc.png`
+(both bottom corners, y 244 · 250 · 258 marked) as its evidence.
 
 ### The login
 

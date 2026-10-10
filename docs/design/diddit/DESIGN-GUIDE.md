@@ -946,22 +946,41 @@ inside the 14 px corner radius — so it measured the arc, not the card.
 
 White runs across the card block, `brand-07`, css px at 390 × 844:
 
-| css y         | distance below the card's top edge | white run        | w         | gap     |
-| ------------- | ---------------------------------- | ---------------- | --------- | ------- |
-| 106           | 2 px — in the arc                  | 28.7 … 124.3     | 95.5      | 22.5    |
-| 112           | 8 px — in the arc                  | 23.4 … 129.6     | 106.3     | 11.7    |
-| 115           | 11 px — in the arc                 | 22.4 … 130.6     | 108.3     | 9.7     |
-| **118 … 250** | **below the arc**                  | **21.9 … 131.1** | **109.1** | **8.9** |
+| css y         | distance from the nearest card edge    | white run        | w         | gap     |
+| ------------- | -------------------------------------- | ---------------- | --------- | ------- |
+| 106           | 2 px below the top — in the arc        | 28.7 … 124.3     | 95.5      | 22.5    |
+| 112           | 8 px below the top — in the arc        | 23.4 … 129.6     | 106.3     | 11.7    |
+| 115           | 11 px below the top — in the arc       | 22.4 … 130.6     | 108.3     | 9.7     |
+| **118 … 244** | **14 px or more — clear of both arcs** | **21.9 … 131.1** | **109.1** | **8.9** |
+| 250           | 8 px above the bottom — in the arc     | 23.4 … 129.6     | 106.3     | 11.7    |
 
-A 14 px radius predicts every one of those rows to a tenth of a pixel: the inset at 8 px below the
-top is `14 − √(14² − 6²)` = 1.35 px on each side, which turns 109 into 106.3. The card block runs
+A 14 px radius predicts every one of those rows to a tenth of a pixel: the inset at 8 px from an edge
+is `14 − √(14² − 6²)` = 1.35 px on each side, which turns 109 into 106.3. The card block runs
 y 104 … 258 (**h 154**), and the signed-off screen 1 gives 22.0 … 131.0 / 140.0 … 250.0 /
 259.0 … 368.0 at the same 154 — the same card.
 
-**The rule: measure a card at mid-height, never within one radius of a corner.** It is the same
-family of error as the 1.846 board-px scale slip recorded in revision 2 — a method that quietly
-measures something other than what it names. Nothing Eirik builds changes: the child cards were
-always **109 × 154 px, 9 px apart, in the 22 px gutter**.
+**The last row of that table is the same error, caught a second time.** This table first ended its
+full-width row at `118 … 250`, and Astrid's second review of PR #639 found it: y 250 is 8 px above
+the bottom edge, the exact mirror of the y 112 reading the section is about, and it reads 106.3 / 11.7
+— not 109 / 9. A section whose rule is _never measure within one radius of a corner_ had demonstrated
+it with a range that ended 6 px inside a corner. The band is one radius in from each edge, and the
+edges are hard: a vertical profile through the middle of the card shows no antialiased row at all,
+white from y 104.0 to y 258.0. With r = 14 that gives **y 118 … 244** — and the pixels agree, with
+y 244 reading the same width as mid-height while y 245 is already 0.5 px short.
+
+![brand-07's card block and both bottom corners of Emma's card at ×16: green y 244, cyan y 250, red y 258, magenta the card edges at x 22 and x 131](reference/child-card-bottom-arc.png)
+
+Green is y 244, the last row that still reaches the card's edges; cyan is y 250, visibly inside both
+arcs; red is the bottom edge at y 258. The first picture in this section shows the same thing at the
+top corner — and the table was wrong at the bottom for as long as only the top had a picture.
+
+**The rule: measure a card at mid-height — y 181 on this card — and never within one radius of a
+corner.** Not even at the bounds of the band: rows 118 and 244 sit exactly on the tangent, where the
+inset is under a hundredth of a pixel and the width you read depends on your edge threshold rather
+than on the card. Mid-height has no such sensitivity — every threshold from 240 to 252 returns the
+same run there. This is the same family of error as the 1.846 board-px scale slip recorded in
+revision 2: a method that quietly measures something other than what it names. Nothing Eirik builds
+changes: the child cards were always **109 × 154 px, 9 px apart, in the 22 px gutter**.
 
 ## The login screen (approved 2026-10-10)
 
