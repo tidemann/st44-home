@@ -33,13 +33,22 @@ export function isoDay(offset = 0, now: Date = new Date()): string {
   return day.toISOString().split('T')[0];
 }
 
-/** "i dag", "i går", or the weekday ("lørdag") for an older YYYY-MM-DD */
+/**
+ * "i dag", "i går", or the weekday ("lørdag") for an older YYYY-MM-DD.
+ *
+ * Also takes a full ISO timestamp (a DATE column sent without `::text` arrives as
+ * "2026-10-10T00:00:00.000Z") and never throws: it runs inside template bindings,
+ * and a throw there stops change detection, which left every chore row with only
+ * its projected «Hak av» (ST-808).
+ */
 export function dayWord(day: string, today: string = isoDay()): string {
-  if (day === today) return $localize`:@@poeng.today:i dag`;
-  if (day === isoDay(-1, new Date(`${today}T12:00:00Z`))) {
+  const key = String(day ?? '').slice(0, 10);
+  if (key === today) return $localize`:@@poeng.today:i dag`;
+  if (key === isoDay(-1, new Date(`${today}T12:00:00Z`))) {
     return $localize`:@@poeng.yesterday:i går`;
   }
-  return WEEKDAY.format(new Date(`${day}T12:00:00Z`));
+  const date = new Date(`${key}T12:00:00Z`);
+  return isNaN(date.getTime()) ? '' : WEEKDAY.format(date);
 }
 
 /** Upper-case the first letter: "i går" → "I går" */
