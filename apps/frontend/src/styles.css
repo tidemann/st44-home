@@ -11,7 +11,7 @@
 
 @font-face {
   font-family: 'Bricolage Grotesque';
-  src: url('/fonts/bricolage-var.woff2') format('woff2');
+  src: url('./fonts/bricolage-var.woff2') format('woff2');
   font-weight: 200 800;
   font-stretch: 75% 100%;
   font-style: normal;
@@ -20,7 +20,7 @@
 
 @font-face {
   font-family: 'Hanken Grotesk';
-  src: url('/fonts/hanken-500.ttf') format('truetype');
+  src: url('./fonts/hanken-500.ttf') format('truetype');
   font-weight: 400 500;
   font-style: normal;
   font-display: swap;
@@ -28,7 +28,7 @@
 
 @font-face {
   font-family: 'Hanken Grotesk';
-  src: url('/fonts/hanken-600.ttf') format('truetype');
+  src: url('./fonts/hanken-600.ttf') format('truetype');
   font-weight: 600 800;
   font-style: normal;
   font-display: swap;

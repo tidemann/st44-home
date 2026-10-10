@@ -28,8 +28,9 @@ export class PointsMeter {
   protected readonly cells = computed(() => {
     const n = Math.max(1, Math.round(this.segments()));
     const v = Math.min(Math.max(this.value(), 0), 1);
-    // A meter that is not full never looks full: 99 % still leaves the last cell empty
-    const filled = v >= 1 ? n : Math.min(Math.floor(v * n), n - 1);
+    // Nearest cell, as drawn (215 of 250 fills 9 of 10). A meter that is not full
+    // never looks full: 99 % still leaves the last cell empty
+    const filled = v >= 1 ? n : Math.min(Math.round(v * n), n - 1);
     return Array.from({ length: n }, (_, i) => i < filled);
   });
 }
