@@ -1,6 +1,6 @@
-import { Component, ChangeDetectionStrategy, input, computed, inject } from '@angular/core';
+import '@angular/localize/init';
+import { Component, ChangeDetectionStrategy, input, computed, inject, signal } from '@angular/core';
 import { Router } from '@angular/router';
-import { UserButton, type UserButtonData } from '../user-button/user-button';
 import { AuthService } from '../../services/auth.service';
 
 /**
@@ -47,7 +47,7 @@ export type PageWidth = 'narrow' | 'medium' | 'wide';
  */
 @Component({
   selector: 'app-page',
-  imports: [UserButton],
+  imports: [],
   templateUrl: './page.html',
   styleUrl: './page.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -105,36 +105,42 @@ export class PageComponent {
   });
 
   /**
-   * Computed CSS class for header style
+   * Computed CSS class for header style. Poeng has no gradient header, so both
+   * classes render the same flat title row; the input stays for existing callers.
    */
   protected headerClass = computed(() => {
     return this.showGradient() ? 'page-header--gradient' : 'page-header--plain';
   });
 
-  /**
-   * Get user data for the user button
-   */
-  protected userData = computed<UserButtonData | null>(() => {
+  /** The child's badge opens a one-item menu (log out); a parent's goes to settings */
+  protected readonly isChild = computed(() => this.authService.currentUser()?.role === 'child');
+  protected readonly menuOpen = signal(false);
+
+  /** The person's single initial, drawn in the 38 px badge */
+  protected readonly initial = computed(() => {
     const user = this.authService.currentUser();
     if (!user) return null;
-
-    const firstName = user.firstName || null;
-    const lastName = user.lastName || null;
-    // Use first name if available, otherwise fall back to email prefix
-    const displayName = firstName || user.email?.split('@')[0] || 'User';
-
-    return {
-      name: displayName,
-      firstName,
-      lastName,
-      email: user.email || null,
-    };
+    const name = user.firstName || user.email?.split('@')[0] || '';
+    return name.charAt(0).toUpperCase() || null;
   });
 
-  /**
-   * Handle user button click - navigate to settings
-   */
-  protected handleUserButtonClick() {
+  protected readonly badgeLabel = computed(() =>
+    this.isChild()
+      ? $localize`:@@page.badge.childMenu:Meny`
+      : $localize`:@@page.badge.settings:Innstillinger`,
+  );
+
+  protected onBadgeClick(): void {
+    if (this.isChild()) {
+      this.menuOpen.update((open) => !open);
+      return;
+    }
     void this.router.navigate(['/settings']);
+  }
+
+  protected onLogout(): void {
+    this.menuOpen.set(false);
+    this.authService.logout();
+    void this.router.navigate(['/child-login']);
   }
 }

@@ -3,54 +3,106 @@
 @import 'tailwindcss';
 
 /**
- * Diddit! Design System
- * Based on Proposal 5 (Playful & Modern)
- * Issue: #184, #185
+ * Diddit design system: Poeng, light mode (ST-777)
+ * Spec: docs/design/diddit/DESIGN-GUIDE.md and the signed-off picture (ST-744).
+ * The picture outranks the guide. Yellow is one hex and is never lightened;
+ * anything on the yellow is ink. No shadows: depth is a tonal step.
  */
 
+@font-face {
+  font-family: 'Bricolage Grotesque';
+  src: url('/fonts/bricolage-var.woff2') format('woff2');
+  font-weight: 200 800;
+  font-stretch: 75% 100%;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Hanken Grotesk';
+  src: url('/fonts/hanken-500.ttf') format('truetype');
+  font-weight: 400 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Hanken Grotesk';
+  src: url('/fonts/hanken-600.ttf') format('truetype');
+  font-weight: 600 800;
+  font-style: normal;
+  font-display: swap;
+}
+
 :root {
-  /* ===== COLOR PALETTE ===== */
+  /* ===== POENG TOKENS (guide: colors) ===== */
+  --yellow: #f6b93b; /* surfaces and fills only, never text on white (1.76:1) */
+  --ink: #17120a; /* everything on the yellow, 10.57:1 */
+  --text: #15181c; /* 17.81:1 on white */
+  --text-muted: #555e64; /* 6.62:1 on white, 6.12:1 on --bg */
+  --amber-ink: #8a5a00; /* points on white, 5.93:1; never on the yellow */
+  --overdue: #a43a16; /* 6.57:1 on white */
+  --done: #0f7a54; /* 5.34:1 on white */
+  --surface: #ffffff;
+  --bg: #f6f6f4;
+  --track: #ecece8;
+  --hairline: #dfdfd9; /* structural dividers only, carries no state */
+  --yellow-inset: #dba434;
+  --yellow-track: #c59430;
+
+  --font-display: 'Bricolage Grotesque', system-ui, sans-serif;
+  --font-text: 'Hanken Grotesk', system-ui, sans-serif;
+
+  --gutter: 22px;
+  --r-chip: 9px;
+  --r-card: 12px;
+  --r-button: 13px;
+  --r-row-action: 10px;
+  --r-badge: 16px;
+  --focus-ring: 2.5px solid var(--ink);
+
+  /* ===== LEGACY NAMES, mapped onto Poeng so older screens match ===== */
 
   /* Primary Colors */
-  --color-primary: #6366f1; /* Indigo - main brand color */
-  --color-secondary: #ec4899; /* Pink - accent brand color */
-  --color-accent: #fbbf24; /* Yellow - highlights and rewards */
+  --color-primary: var(--ink); /* text, links, fills under white text */
+  --color-secondary: var(--amber-ink);
+  --color-accent: var(--yellow);
 
   /* Semantic Colors */
-  --color-success: #10b981; /* Green - success states, completions */
-  --color-success-light: #dcfce7; /* Light green background */
-  --color-success-dark: #166534; /* Dark green text */
-  --color-danger: #ef4444; /* Red - error states, destructive actions */
-  --color-danger-light: #fef2f2; /* Light red background */
-  --color-danger-dark: #991b1b; /* Dark red text */
-  --color-warning: #f59e0b; /* Amber - warning states */
-  --color-warning-light: #fef3c7; /* Light amber background */
-  --color-warning-dark: #92400e; /* Dark amber text */
-  --color-info: #3b82f6; /* Blue - informational states */
-  --color-info-light: #dbeafe; /* Light blue background */
-  --color-info-dark: #1e40af; /* Dark blue text */
-  --color-purple: #a855f7; /* Purple - secondary accent */
-  --color-orange: #f97316; /* Orange - warm accent */
+  --color-success: var(--done);
+  --color-success-light: #e3f1ea;
+  --color-success-dark: #0b5c3f;
+  --color-danger: var(--overdue);
+  --color-danger-light: #f8e9e3;
+  --color-danger-dark: #7f2c10;
+  --color-warning: var(--yellow);
+  --color-warning-light: #fdf1d8;
+  --color-warning-dark: var(--amber-ink);
+  --color-info: var(--text);
+  --color-info-light: var(--track);
+  --color-info-dark: var(--text);
+  --color-purple: var(--text-muted);
+  --color-orange: var(--amber-ink);
 
   /* Border Colors */
-  --color-border: #e2e8f0; /* Default border color */
-  --color-border-hover: #cbd5e0; /* Border on hover */
-  --color-border-focus: var(--color-primary); /* Border on focus */
+  --color-border: var(--hairline);
+  --color-border-hover: #c9c9c2;
+  --color-border-focus: var(--ink);
 
   /* Surface Colors */
-  --color-background: #f8f9ff; /* Light background */
-  --color-surface: #ffffff; /* Card/component backgrounds */
+  --color-background: var(--bg);
+  --color-surface: var(--surface);
 
   /* Text Colors */
-  --color-text-primary: #1e293b; /* Main text */
-  --color-text-secondary: #64748b; /* Secondary text */
-  --color-text-tertiary: #94a3b8; /* Tertiary text, placeholders */
+  --color-text-primary: var(--text);
+  --color-text-secondary: var(--text-muted);
+  --color-text-tertiary: #6b7378; /* placeholders; 4.75:1 on white */
 
   /* ===== TYPOGRAPHY ===== */
 
   /* Font Families */
-  --font-heading: 'Fredoka', sans-serif; /* Playful, rounded headings */
-  --font-body: 'Outfit', sans-serif; /* Modern, clean body text */
+  --font-heading: var(--font-display);
+  --font-body: var(--font-text);
 
   /* Font Sizes */
   --font-size-xs: 0.75rem; /* 12px */
@@ -86,37 +138,39 @@
 
   /* ===== BORDER RADIUS ===== */
 
-  --radius-sm: 16px; /* Small cards, buttons */
-  --radius-md: 24px; /* Medium cards */
-  --radius-lg: 32px; /* Large containers */
-  --radius-xl: 48px; /* Hero sections, modals */
+  --radius-sm: var(--r-card); /* cards, inputs */
+  --radius-md: var(--r-card);
+  --radius-lg: var(--r-badge);
+  --radius-xl: var(--r-badge);
   --radius-full: 9999px; /* Circles, pills */
 
   /* ===== SHADOWS ===== */
+  /* The Flat Rule: no shadows. Depth is white on --bg, or a darker yellow on the yellow. */
 
-  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.06);
-  --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.08);
-  --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.12);
-  --shadow-xl: 0 20px 60px rgba(0, 0, 0, 0.3);
+  --shadow-sm: none;
+  --shadow-md: none;
+  --shadow-lg: none;
+  --shadow-xl: none;
 
   /* ===== GRADIENTS ===== */
+  /* Poeng has no gradients. The old names resolve to flat Poeng surfaces so older
+     screens keep working. Each one keeps the text colour it had legal: the two that
+     carried white text are dark ink, the rest are light. */
 
-  /* Primary gradient (indigo → pink) — masthead, headers, avatars, decorative surfaces */
-  --gradient-primary: linear-gradient(135deg, var(--color-primary) 0%, var(--color-secondary) 100%);
+  /* Was indigo → pink behind white titles: now an ink surface (white 18.63:1) */
+  --gradient-primary: linear-gradient(var(--ink), var(--ink));
 
-  /* Button gradient (ST-618) — the only surface that may carry white button text.
-     White on #4f46e5 = 6,29:1, white on #be185d = 6,04:1 (WCAG 2.1, AA needs 4,5:1).
-     Do not use --gradient-primary behind white body text. */
-  --gradient-primary-button: linear-gradient(135deg, #4f46e5 0%, #be185d 100%);
+  /* Was the white-text button gradient: now ink (white 18.63:1). Yellow buttons use .btn-primary */
+  --gradient-primary-button: linear-gradient(var(--ink), var(--ink));
 
-  /* Success gradient (green → yellow) */
-  --gradient-success: linear-gradient(135deg, var(--color-success) 0%, var(--color-accent) 100%);
+  /* Was green → yellow behind white text: now Done green (white 5.34:1) */
+  --gradient-success: linear-gradient(var(--done), var(--done));
 
-  /* Accent gradient (yellow → orange) */
-  --gradient-accent: linear-gradient(135deg, var(--color-accent) 0%, var(--color-orange) 100%);
+  /* Was yellow → orange: now the yellow; ink text only */
+  --gradient-accent: linear-gradient(var(--yellow), var(--yellow));
 
-  /* Purple gradient (purple → pink) */
-  --gradient-purple: linear-gradient(135deg, var(--color-purple) 0%, var(--color-secondary) 100%);
+  /* Was purple → pink: now ink */
+  --gradient-purple: linear-gradient(var(--ink), var(--ink));
 
   /* ===== Z-INDEX SCALE ===== */
 
@@ -149,6 +203,8 @@ body {
   line-height: var(--line-height-relaxed);
   color: var(--color-text-primary);
   background: var(--color-background);
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
@@ -162,7 +218,7 @@ h4,
 h5,
 h6 {
   font-family: var(--font-heading);
-  font-weight: var(--font-weight-bold);
+  font-weight: 800; /* Bricolage is used at 800 only */
   line-height: var(--line-height-tight);
 }
 
@@ -322,7 +378,7 @@ h6 {
  * Focus visible styles for better keyboard navigation visibility
  */
 :focus-visible {
-  outline: 3px solid var(--color-primary);
+  outline: var(--focus-ring);
   outline-offset: 2px;
 }
 
@@ -426,25 +482,29 @@ h6 {
 }
 
 /* ===== BUTTON STYLES ===== */
+/* Guide: primary = yellow fill, ink label, 13 px radius, no border, no shadow. */
 
 .btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: var(--space-xs);
+  min-height: 44px;
   padding: var(--space-sm) var(--space-lg);
   font-family: var(--font-body);
-  font-size: var(--font-size-base);
+  font-size: 16.5px;
   font-weight: var(--font-weight-semibold);
   border: none;
-  border-radius: var(--radius-sm);
+  border-radius: var(--r-button);
   cursor: pointer;
-  transition: all var(--transition-fast);
+  transition:
+    background-color var(--transition-fast),
+    border-color var(--transition-fast);
   text-decoration: none;
 }
 
 .btn:focus-visible {
-  outline: 3px solid var(--color-primary);
+  outline: var(--focus-ring);
   outline-offset: 2px;
 }
 
@@ -453,70 +513,55 @@ h6 {
   cursor: not-allowed;
 }
 
-/* Primary Button - Gradient style */
+/* Primary: the one yellow creating action. Ink on yellow, 10.57:1 */
 .btn-primary {
-  background: var(--gradient-primary-button);
-  color: white;
-  box-shadow: 0 4px 12px rgba(79, 70, 229, 0.28);
+  background: var(--yellow);
+  color: var(--ink);
 }
 
 .btn-primary:hover:not(:disabled) {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(79, 70, 229, 0.38);
+  background: var(--yellow-inset);
 }
 
-.btn-primary:active:not(:disabled) {
-  transform: translateY(0);
-}
-
-/* Secondary Button - Outline style */
+/* Secondary: white surface, ink label, a control boundary in muted (6.62:1) */
 .btn-secondary {
-  background: transparent;
-  color: var(--color-text-secondary);
-  border: 2px solid #e2e8f0;
+  background: var(--surface);
+  color: var(--text);
+  border: 2px solid var(--text-muted);
 }
 
 .btn-secondary:hover:not(:disabled) {
-  background: var(--color-background);
-  border-color: #cbd5e0;
+  background: var(--track);
 }
 
-/* Success Button */
+/* Success: done green, white 5.34:1 */
 .btn-success {
-  background: var(--gradient-success);
-  color: white;
-  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+  background: var(--done);
+  color: #ffffff;
 }
 
 .btn-success:hover:not(:disabled) {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4);
+  background: var(--color-success-dark);
 }
 
-/* Danger Button */
+/* Danger: overdue rust, white 6.57:1 */
 .btn-danger {
   background: var(--color-danger);
-  color: white;
-  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+  color: #ffffff;
 }
 
 .btn-danger:hover:not(:disabled) {
   background: var(--color-danger-dark);
-  transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(239, 68, 68, 0.4);
 }
 
-/* Warning Button */
+/* Warning: yellow, so ink (white on yellow is 1.76:1 and banned) */
 .btn-warning {
-  background: var(--color-warning);
-  color: white;
-  box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3);
+  background: var(--yellow);
+  color: var(--ink);
 }
 
 .btn-warning:hover:not(:disabled) {
-  background: var(--color-warning-dark);
-  transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(245, 158, 11, 0.4);
+  background: var(--yellow-inset);
 }
 
 /* Button Sizes */
@@ -728,4 +773,87 @@ h6 {
   max-width: 400px;
   margin-left: auto;
   margin-right: auto;
+}
+
+/* ===== POENG SHARED CONTROLS ===== */
+
+/* Row action ("Hak av", "Spør mor", "Minn på"): 36 px drawn, 44 px pressed
+   (guide: button-row-action). Yellow fill, ink label 10.57:1. */
+.rbtn {
+  position: relative;
+  flex: none;
+  height: 36px;
+  padding: 0 11px;
+  border: 0;
+  border-radius: var(--r-row-action);
+  background: var(--yellow);
+  color: var(--ink);
+  font-family: var(--font-text);
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 1;
+  letter-spacing: -0.02em;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.rbtn::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: -4px;
+  bottom: -4px;
+}
+
+.rbtn:hover:not(:disabled) {
+  background: var(--yellow-inset);
+}
+
+.rbtn:focus-visible {
+  outline: var(--focus-ring);
+  outline-offset: 2px;
+}
+
+.rbtn:disabled {
+  cursor: default;
+  opacity: 0.6;
+}
+
+/* Full-width primary ("+ Ny oppgave"): 346 x 49, 13 px radius, 16.5/600 */
+.poeng-primary {
+  width: 100%;
+  height: 49px;
+  border: 0;
+  border-radius: var(--r-button);
+  background: var(--yellow);
+  color: var(--ink);
+  font-family: var(--font-text);
+  font-size: 16.5px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  cursor: pointer;
+}
+
+.poeng-primary:hover {
+  background: var(--yellow-inset);
+}
+
+.poeng-primary:focus-visible {
+  outline: var(--focus-ring);
+  outline-offset: 2px;
+}
+
+/* Poeng rows and reward cards sit 8 px apart. Set here because a component
+   cannot see its sibling hosts under emulated encapsulation. */
+app-chore-row + app-chore-row,
+app-reward-card + app-reward-card {
+  margin-top: 8px;
 }

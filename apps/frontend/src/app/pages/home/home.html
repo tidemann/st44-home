@@ -1,140 +1,128 @@
-<!-- Loading State -->
-@if (loading()) {
-  <div class="loading-container" role="status" aria-live="polite">
-    <div class="spinner" aria-hidden="true"></div>
-    <p i18n="@@home.loading">Laster dashboardet ditt...</p>
-  </div>
-}
-
-<!-- Error State -->
-@if (error() && !loading()) {
-  <div class="error-container" role="alert" aria-live="assertive">
-    <div class="error-icon" aria-hidden="true">!</div>
-    <h2 i18n="@@home.errorTitle">Oops!</h2>
-    <p>{{ error() }}</p>
-    <button class="btn-retry" (click)="loadData()" i18n="@@home.tryAgain">Prøv igjen</button>
-  </div>
-}
-
-<!-- Main Content -->
-@if (!loading() && !error()) {
-  <div class="home-page">
-    <!-- Header with Gradient -->
-    <header class="header">
-      <div class="header-content">
-        <div class="greeting-section">
-          <h2 class="greeting">{{ greeting() }}, {{ userName() }}!</h2>
-        </div>
-      </div>
-    </header>
-
-    <!-- Content -->
-    <div class="content">
-      <!-- Failed/Expired Tasks Alert -->
-      @if (householdId()) {
-        <app-failed-tasks-section [householdId]="householdId()!" />
-      }
-
-      <!-- Stats Grid -->
-      <div class="stats-grid">
-        <app-stat-card
-          [icon]="'🎯'"
-          [value]="stats().activeCount"
-          i18n-label="@@home.stats.active"
-          [label]="'Aktive'"
-        />
-        <app-stat-card
-          [icon]="'📊'"
-          [value]="stats().weekProgress + '%'"
-          i18n-label="@@home.stats.week"
-          [label]="'Uke'"
-        />
-        <app-stat-card
-          [icon]="'⭐'"
-          [value]="stats().totalPoints"
-          i18n-label="@@home.stats.points"
-          [label]="'Poeng'"
-        />
-      </div>
-
-      <!-- Below the stats grid: it is pulled up over the header with a negative margin -->
-      <p class="subtitle" i18n="@@home.subtitle">La oss få gjort oppgavene i dag</p>
-
-      <!-- Analytics Section -->
-      @if (analytics()) {
-        <div class="analytics-section">
-          <app-week-comparison [comparison]="analytics()!.periodComparison" />
-          @if (analytics()!.childrenProgress.length > 0) {
-            <app-children-trends [childrenProgress]="analytics()!.childrenProgress" />
-          }
-        </div>
-      }
-
-      <!-- Today's Tasks Section -->
-      <section class="tasks-section">
-        <div class="section-header">
-          <h2 i18n="@@home.todaysTasks">Dagens oppgaver</h2>
-        </div>
-
-        @if (hasTodayTasks()) {
-          <div class="task-list">
-            @for (task of todayTasks(); track task.id) {
-              <app-task-card
-                [task]="task"
-                [showCompleteButton]="true"
-                [clickable]="true"
-                [showRemindButton]="canRemind()"
-                [reminding]="remindingId() === task.id"
-                (complete)="onCompleteTask($event)"
-                (edit)="onEditTask($event)"
-                (remind)="onRemind($event)"
-              />
-            }
-          </div>
-          <p class="remind-status" role="status" aria-live="polite">{{ remindMessage() }}</p>
-        } @else {
-          <div class="empty-state" role="status">
-            <div class="empty-icon" aria-hidden="true">📋</div>
-            <h3 i18n="@@home.noTasksToday">Ingen oppgaver i dag</h3>
-            <p i18n="@@home.noTasksTodayDescription">
-              Ingen oppgaver er planlagt for i dag. Opprett oppgaver i Oppgaver-seksjonen.
-            </p>
-          </div>
-        }
-      </section>
-
-      <!-- Coming Up Section -->
-      @if (hasUpcomingTasks()) {
-        <section class="tasks-section">
-          <div class="section-header">
-            <h2 i18n="@@home.comingUp">Kommende</h2>
-          </div>
-          <div class="task-list">
-            @for (task of upcomingTasks(); track task.id) {
-              <app-task-card
-                [task]="task"
-                [showCompleteButton]="false"
-                [clickable]="true"
-                (edit)="onEditTask($event)"
-              />
-            }
-          </div>
-        </section>
-      }
+<app-page i18n-title="@@home.title" title="Hjemme" [subtitle]="subtitle()" maxWidth="medium">
+  @if (loading()) {
+    <div class="state" role="status" aria-live="polite">
+      <span class="spinner" aria-hidden="true"></span>
+      <p i18n="@@home.loading">Laster dashboardet ditt...</p>
     </div>
+  }
 
-    <!-- Edit Task Modal -->
-    <app-task-form-modal
-      [open]="editTaskOpen()"
-      mode="edit"
-      [task]="selectedTask()"
-      [children]="children()"
-      (closeRequested)="closeEditTask()"
-      (formSubmitted)="onTaskUpdated($event)"
-      (taskDeleted)="onTaskDeleted()"
-    />
+  @if (error() && !loading()) {
+    <div class="state" role="alert" aria-live="assertive">
+      <p class="error-text">{{ error() }}</p>
+      <button class="btn btn-primary" (click)="loadData()" i18n="@@home.tryAgain">
+        Prøv igjen
+      </button>
+    </div>
+  }
 
-    <!-- Celebration Animation -->
-    <app-celebration [show]="showCelebrationAnimation()" (dismissed)="onCelebrationDismissed()" />
-  </div>
-}
+  @if (!loading() && !error()) {
+    <!-- Each child's points: three across -->
+    @if (childSummaries().length > 0) {
+      <div class="kids">
+        @for (kid of childSummaries(); track kid.id) {
+          <app-child-points-card [name]="kid.name" [points]="kid.points" [chores]="kid.chores" />
+        }
+      </div>
+    }
+
+    @if (overdueTasks().length > 0) {
+      <app-group-label i18n-label="@@home.overdue" label="Forfalt" [overdue]="true" />
+      @for (task of overdueTasks(); track task.id) {
+        <app-chore-row
+          [title]="task.title"
+          [meta]="rowMeta(task, true)"
+          [overdue]="true"
+          [points]="canRemind() ? '' : pointsText(task)"
+          [checkable]="true"
+          [busy]="completingId() === task.id"
+          [openable]="true"
+          (check)="onCompleteTask(task.id)"
+          (open)="onEditTask(task.id)"
+        >
+          @if (canRemind()) {
+            <button
+              row-action
+              type="button"
+              class="rbtn"
+              [disabled]="remindingId() === task.id"
+              [attr.aria-label]="remindLabel(task)"
+              (click)="onRemind(task.id)"
+              i18n="@@home.remind"
+            >
+              Minn på
+            </button>
+          }
+        </app-chore-row>
+      }
+    }
+
+    <app-group-label i18n-label="@@home.leftTodayLabel" label="Igjen i dag" [right]="leftToday()" />
+    @if (hasTodayTasks()) {
+      @for (task of todayTasks(); track task.id) {
+        <app-chore-row
+          [title]="task.title"
+          [meta]="rowMeta(task)"
+          [points]="canRemind() ? '' : pointsText(task)"
+          [checkable]="true"
+          [busy]="completingId() === task.id"
+          [openable]="true"
+          (check)="onCompleteTask(task.id)"
+          (open)="onEditTask(task.id)"
+        >
+          @if (canRemind()) {
+            <button
+              row-action
+              type="button"
+              class="rbtn"
+              [disabled]="remindingId() === task.id"
+              [attr.aria-label]="remindLabel(task)"
+              (click)="onRemind(task.id)"
+              i18n="@@home.remind"
+            >
+              Minn på
+            </button>
+          }
+        </app-chore-row>
+      }
+    } @else {
+      <div class="empty" role="status">
+        <p class="empty-title" i18n="@@home.noTasksToday">Ingen oppgaver igjen i dag</p>
+        <p class="empty-sub" i18n="@@home.noTasksTodayDescription">
+          Nye oppgaver lager du under Oppgaver.
+        </p>
+      </div>
+    }
+    <p class="remind-status" role="status" aria-live="polite">{{ remindMessage() }}</p>
+
+    <!-- Below the picture: kept so nothing the family uses today goes away -->
+    @if (householdId()) {
+      <app-failed-tasks-section [householdId]="householdId()!" [quietWhenEmpty]="true" />
+    }
+
+    @if (hasUpcomingTasks()) {
+      <app-group-label i18n-label="@@home.comingUp" label="Kommende" />
+      @for (task of upcomingTasks(); track task.id) {
+        <app-chore-row
+          [title]="task.title"
+          [meta]="upcomingMeta(task)"
+          [points]="pointsText(task)"
+          [openable]="true"
+          (open)="onEditTask(task.id)"
+        />
+      }
+    }
+
+    <a class="more" routerLink="/progress" i18n="@@home.toProgress">Se fremgang for uken</a>
+  }
+
+  <!-- Edit Task Modal -->
+  <app-task-form-modal
+    [open]="editTaskOpen()"
+    mode="edit"
+    [task]="selectedTask()"
+    [children]="children()"
+    (closeRequested)="closeEditTask()"
+    (formSubmitted)="onTaskUpdated($event)"
+    (taskDeleted)="onTaskDeleted()"
+  />
+</app-page>

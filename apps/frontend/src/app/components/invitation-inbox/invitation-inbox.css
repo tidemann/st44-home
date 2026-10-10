@@ -27,7 +27,7 @@
   padding: 0 0.5rem;
   font-size: 0.875rem;
   font-weight: 600;
-  background: #007bff;
+  background: var(--color-primary);
   color: white;
   border-radius: 999px;
 }
@@ -39,20 +39,20 @@
 }
 
 .alert-success {
-  background-color: #d4edda;
-  color: #155724;
+  background-color: var(--color-success-light);
+  color: var(--color-success-dark);
 }
 
 .alert-error {
-  background-color: #f8d7da;
-  color: #721c24;
+  background-color: var(--color-danger-light);
+  color: var(--color-danger-dark);
 }
 
 .loading,
 .empty-state {
   text-align: center;
   padding: 2rem;
-  color: #666;
+  color: var(--text-muted);
 }
 
 .empty-state p {
@@ -74,18 +74,13 @@
   align-items: center;
   padding: 1.25rem;
   background: white;
-  border: 1px solid #dee2e6;
+  border: 1px solid var(--hairline);
   border-radius: 8px;
-  transition: box-shadow 0.2s ease;
-}
-
-.invitation-card:hover {
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
 .invitation-card.expired {
   opacity: 0.7;
-  background: #f8f9fa;
+  background: var(--bg);
 }
 
 .invitation-details {
@@ -95,7 +90,7 @@
 .household-name {
   margin: 0 0 0.5rem;
   font-size: 1.25rem;
-  color: #212529;
+  color: var(--text);
 }
 
 .inviter,
@@ -103,20 +98,20 @@
 .dates {
   margin: 0.25rem 0;
   font-size: 0.9rem;
-  color: #666;
+  color: var(--text-muted);
 }
 
 .role strong {
-  color: #495057;
+  color: var(--text-muted);
 }
 
 .separator {
   margin: 0 0.5rem;
-  color: #adb5bd;
+  color: var(--color-text-tertiary);
 }
 
 .text-danger {
-  color: #dc3545;
+  color: var(--color-danger);
   font-weight: 500;
 }
 
@@ -144,26 +139,27 @@
 }
 
 .btn:focus {
-  outline: 2px solid #007bff;
+  outline: 2px solid var(--ink);
   outline-offset: 2px;
 }
 
 .btn-primary {
-  background: #28a745;
-  color: white;
+  background: var(--yellow);
+  color: var(--ink);
 }
 
 .btn-primary:hover:not(:disabled) {
-  background: #218838;
+  background: var(--yellow-inset);
 }
 
 .btn-secondary {
-  background: #6c757d;
-  color: white;
+  background: var(--surface);
+  border: 2px solid var(--text-muted);
+  color: var(--text);
 }
 
 .btn-secondary:hover:not(:disabled) {
-  background: #5a6268;
+  background: var(--track);
 }
 
 .btn:disabled {
@@ -173,8 +169,8 @@
 
 .expired-badge {
   padding: 0.5rem 1rem;
-  background: #e2e3e5;
-  color: #6c757d;
+  background: var(--track);
+  color: var(--text-muted);
   border-radius: 4px;
   font-size: 0.875rem;
 }

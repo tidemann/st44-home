@@ -1,112 +1,201 @@
-<app-page i18n-title="@@tasks.pageTitle" title="Oppgaver" maxWidth="wide">
-  <!-- Filter Tabs -->
-  <div class="filter-tabs">
-    @for (tab of filterTabs(); track tab.id) {
+<app-page i18n-title="@@tasks.pageTitle" title="Oppgaver" [subtitle]="subtitle()" maxWidth="medium">
+  <!-- Child chips: «Alle / Emma / Jonas / Mathea» -->
+  @if (children().length > 0) {
+    <div
+      class="chips"
+      role="group"
+      i18n-aria-label="@@tasks.filterByPerson"
+      aria-label="Vis oppgaver for"
+    >
       <button
         type="button"
-        class="filter-tab"
-        [class.active]="activeFilter() === tab.id"
-        (click)="onFilterClick(tab.id)"
-        [attr.aria-pressed]="activeFilter() === tab.id"
-        [attr.aria-label]="'Filter by ' + tab.label"
+        class="chip"
+        [class.on]="selectedChildId() === null"
+        [attr.aria-pressed]="selectedChildId() === null"
+        (click)="onSelectChild(null)"
+        i18n="@@tasks.chipAll"
       >
-        {{ tab.label }}
+        Alle
       </button>
-    }
-  </div>
-
-  <!-- Person Filter Tabs (only shown when filter = 'person') -->
-  @if (activeFilter() === 'person') {
-    <div
-      class="person-tabs"
-      role="tablist"
-      i18n-aria-label="@@tasks.filterByPerson"
-      aria-label="Filtrer etter person"
-    >
-      @for (member of members(); track member.id) {
+      @for (child of children(); track child.id) {
         <button
           type="button"
-          role="tab"
-          class="person-tab"
-          [class.active]="selectedPersonId() === member.id"
-          [attr.aria-selected]="selectedPersonId() === member.id"
-          [attr.aria-label]="'View tasks for ' + member.name"
-          (click)="onPersonSelect(member.id)"
+          class="chip"
+          [class.on]="selectedChildId() === child.id"
+          [attr.aria-pressed]="selectedChildId() === child.id"
+          (click)="onSelectChild(child.id)"
         >
-          {{ member.name }}
+          {{ child.name }}
         </button>
       }
-      @if (members().length === 0) {
-        <p class="no-members-message" i18n="@@tasks.noChildrenInHousehold">
-          Ingen barn i denne husstanden.
-        </p>
-      }
     </div>
   }
 
-  <!-- Loading State -->
   @if (loading()) {
-    <div class="loading-state" role="status" aria-live="polite">
-      <div class="loading-spinner" aria-hidden="true"></div>
-      <p class="loading-text" i18n="@@tasks.loading">Laster oppgaver...</p>
+    <div class="state" role="status" aria-live="polite">
+      <span class="spinner" aria-hidden="true"></span>
+      <p i18n="@@tasks.loading">Laster oppgaver...</p>
     </div>
   }
 
-  <!-- Error State -->
   @if (error() && !loading()) {
-    <div class="error-state" role="alert" aria-live="assertive">
-      <div class="error-icon" aria-hidden="true">!</div>
+    <div class="state" role="alert" aria-live="assertive">
       <p class="error-text">{{ error() }}</p>
-      <button type="button" class="retry-button" (click)="loadTasks()" i18n="@@tasks.retry">
+      <button type="button" class="rbtn" (click)="loadTasks()" i18n="@@tasks.retry">
         Prøv igjen
       </button>
     </div>
   }
 
-  <!-- Task List -->
   @if (!loading() && !error()) {
-    <div class="task-list">
-      @if (filteredTasks().length === 0) {
-        <!-- Empty State -->
-        <div class="empty-state" role="status">
-          <div class="empty-icon" aria-hidden="true">📋</div>
-          <p class="empty-text">{{ emptyMessage() }}</p>
-        </div>
-      } @else {
-        <!-- Task Cards -->
-        @for (task of filteredTasks(); track task.id) {
-          <app-task-card
-            [task]="task"
-            [showCompleteButton]="!isParentOrAdmin()"
-            [clickable]="true"
-            [showReassignButton]="activeFilter() !== 'all'"
-            (complete)="onTaskComplete($event)"
-            (edit)="onTaskEdit($event)"
-            (reassign)="onTaskReassign($event)"
-          />
-        }
+    @if (overdueRows().length > 0) {
+      <app-group-label
+        i18n-label="@@tasks.overdueGroup"
+        label="Forfalt"
+        [right]="'' + overdueRows().length"
+        [overdue]="true"
+      />
+      @for (a of overdueRows(); track a.id) {
+        <app-chore-row
+          [title]="a.title"
+          [meta]="overdueMeta(a)"
+          [overdue]="true"
+          [points]="canReassign() ? '' : points(a.points)"
+          [checkable]="true"
+          [busy]="completingId() === a.id"
+          [openable]="true"
+          (check)="onComplete(a)"
+          (open)="onEdit(a.taskId)"
+        >
+          @if (canReassign()) {
+            <button
+              row-action
+              type="button"
+              class="rbtn"
+              (click)="onReassign(a)"
+              i18n="@@tasks.reassign"
+            >
+              Bytt
+            </button>
+          }
+        </app-chore-row>
       }
+    }
+
+    @if (openRows().length > 0) {
+      <app-group-label
+        i18n-label="@@tasks.todayGroup"
+        label="I dag"
+        [right]="'' + openRows().length"
+      />
+      @for (a of openRows(); track a.id) {
+        <app-chore-row
+          [title]="a.title"
+          [meta]="openMeta(a)"
+          [points]="canReassign() ? '' : points(a.points)"
+          [checkable]="true"
+          [busy]="completingId() === a.id"
+          [openable]="true"
+          (check)="onComplete(a)"
+          (open)="onEdit(a.taskId)"
+        >
+          @if (canReassign()) {
+            <button
+              row-action
+              type="button"
+              class="rbtn"
+              (click)="onReassign(a)"
+              i18n="@@tasks.reassign"
+            >
+              Bytt
+            </button>
+          }
+        </app-chore-row>
+      }
+    }
+
+    @if (doneRows().length > 0) {
+      <app-group-label
+        i18n-label="@@tasks.doneGroup"
+        label="Gjort i dag"
+        [right]="'' + doneRows().length"
+      />
+      @for (a of doneRows(); track a.id) {
+        <app-chore-row
+          [title]="a.title"
+          [meta]="doneMeta(a)"
+          [done]="true"
+          [points]="points(a.points)"
+          [openable]="true"
+          (open)="onEdit(a.taskId)"
+        />
+      }
+    }
+
+    @if (!hasDay()) {
+      <div class="empty" role="status">
+        <p class="empty-title" i18n="@@tasks.emptyDay">Ingen oppgaver i dag</p>
+      </div>
+    }
+
+    <!-- Below the picture: every template, so chores not due today can still be edited -->
+    @if (templates().length > 0) {
+      <app-group-label
+        i18n-label="@@tasks.allGroup"
+        label="Alle oppgaver"
+        [right]="'' + templates().length"
+      />
+      @for (t of templates(); track t.id) {
+        <app-chore-row
+          [title]="t.name"
+          [meta]="templateMeta(t)"
+          [points]="points(t.points)"
+          [openable]="true"
+          (open)="onEdit(t.id)"
+        />
+      }
+    }
+
+    <div class="new-slot">
+      <button type="button" class="poeng-primary" (click)="createOpen.set(true)">
+        <svg width="17" height="17" viewBox="0 0 17 17" fill="none" aria-hidden="true">
+          <path
+            d="M8.5 1.5v14M1.5 8.5h14"
+            stroke="currentColor"
+            stroke-width="2.2"
+            stroke-linecap="round"
+          />
+        </svg>
+        <span i18n="@@tasks.newTask">Ny oppgave</span>
+      </button>
     </div>
   }
 
-  <!-- Edit Task Modal -->
   <app-task-form-modal
-    [open]="editModalOpen()"
+    [open]="createOpen()"
+    mode="create"
+    [householdId]="householdId()"
+    [children]="children()"
+    (closeRequested)="createOpen.set(false)"
+    (formSubmitted)="onCreate($event)"
+  />
+
+  <app-task-form-modal
+    [open]="editOpen()"
     mode="edit"
     [task]="editingTask()"
-    [children]="members()"
-    (closeRequested)="onModalClose()"
+    [children]="children()"
+    (closeRequested)="closeEdit()"
     (formSubmitted)="onTaskUpdate($event)"
     (taskDeleted)="onTaskDelete()"
   />
 
-  <!-- Reassign Task Modal -->
   <app-reassign-task-modal
-    [open]="reassignModalOpen()"
-    [taskName]="reassigningAssignment()?.title ?? ''"
-    [currentChildId]="reassigningAssignment()?.childId ?? null"
-    [children]="members()"
-    (closeRequested)="onReassignModalClose()"
+    [open]="reassignOpen()"
+    [taskName]="reassigning()?.title ?? ''"
+    [currentChildId]="reassigning()?.childId ?? null"
+    [children]="children()"
+    (closeRequested)="closeReassign()"
     (reassigned)="onReassignConfirm($event)"
   />
 </app-page>

@@ -2,8 +2,9 @@ import { Component, input, computed, ChangeDetectionStrategy } from '@angular/co
 import { LineChart, type LineChartSeries } from '../charts/line-chart/line-chart';
 import type { ChildProgressHistory } from '@st44/types';
 
-// Colors for different children
-const CHILD_COLORS = ['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#ec4899'];
+// Series colours for different children (Poeng tokens; canvas needs hex).
+// --text, --done, --amber-ink, --overdue, --text-muted, then --yellow (fill only).
+const CHILD_COLORS = ['#15181c', '#0f7a54', '#8a5a00', '#a43a16', '#555e64', '#f6b93b'];
 
 /**
  * Children Trends Component

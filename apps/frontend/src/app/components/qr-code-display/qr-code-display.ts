@@ -206,10 +206,10 @@ export class QrCodeDisplayComponent implements OnInit {
               }
               h1 {
                 margin-bottom: 1rem;
-                color: #333;
+                color: #15181c;
               }
               img {
-                border: 2px solid #ddd;
+                border: 2px solid #dfdfd9;
                 border-radius: 8px;
                 padding: 1rem;
               }

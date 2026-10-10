@@ -53,10 +53,10 @@ describe('SidebarNav', () => {
 
     const navButtons = fixture.nativeElement.querySelectorAll('.sidebar-btn');
     const icons = Array.from(navButtons).map((btn) =>
-      (btn as HTMLElement).querySelector('.sidebar-icon')?.textContent?.trim(),
+      (btn as HTMLElement).querySelector('.sidebar-icon')?.getAttribute('data-icon'),
     );
 
-    expect(icons).toEqual(['🏠', '📋', '👥', '🏆', '🎁']);
+    expect(icons).toEqual(['home', 'tasks', 'family', 'progress', 'rewards']);
 
     // Test against component's navItems directly to avoid encoding issues in test DOM
     expect(component.navItems.map((item) => item.label)).toEqual([

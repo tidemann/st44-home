@@ -14,15 +14,15 @@ const meta: Meta<BottomNav> = {
   argTypes: {
     activeScreen: {
       control: 'select',
-      options: ['home', 'tasks', 'family', 'progress'],
+      options: ['home', 'tasks', 'rewards', 'family'],
       description: 'Currently active screen',
     },
   },
   decorators: [
     () => ({
       template: `
-        <div style="position: relative; height: 400px; background: #f9fafb; padding: 20px;">
-          <div style="text-align: center; margin-bottom: 20px; color: #6b7280;">
+        <div style="position: relative; height: 400px; background: #f6f6f4; padding: 20px;">
+          <div style="text-align: center; margin-bottom: 20px; color: #555e64;">
             <p>Mobile/Tablet Navigation (< 1024px)</p>
             <p style="font-size: 12px;">Visible only on smaller screens</p>
           </div>
@@ -63,11 +63,11 @@ export const Family: StoryObj<BottomNav> = {
 };
 
 /**
- * Progress screen active
+ * Rewards screen active
  */
-export const Progress: StoryObj<BottomNav> = {
+export const Rewards: StoryObj<BottomNav> = {
   args: {
-    activeScreen: 'progress',
+    activeScreen: 'rewards',
   },
 };
 
@@ -87,7 +87,7 @@ export const Interactive: StoryObj<BottomNav> = {
     template: `
       <div style="position: relative; height: 400px; background: #f9fafb; padding: 20px;">
         <div style="text-align: center; margin-bottom: 20px;">
-          <h3 style="margin: 0; color: #1f2937;">Current Screen: {{ currentScreen }}</h3>
+          <h3 style="margin: 0; color: #15181c;">Current Screen: {{ currentScreen }}</h3>
           <p style="color: #6b7280; font-size: 14px; margin-top: 8px;">Click navigation items to switch screens</p>
         </div>
         <app-bottom-nav

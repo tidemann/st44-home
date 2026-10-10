@@ -31,7 +31,7 @@ export interface LineChartSeries {
  * ```html
  * <app-line-chart
  *   [labels]="['Mon', 'Tue', 'Wed', 'Thu', 'Fri']"
- *   [series]="[{ label: 'Points', data: [10, 20, 15, 25, 30], color: '#3b82f6' }]"
+ *   [series]="[{ label: 'Points', data: [10, 20, 15, 25, 30], color: '#15181c' }]"
  *   [height]="200"
  * />
  * ```
@@ -142,7 +142,7 @@ export class LineChart implements OnDestroy {
             },
           },
           tooltip: {
-            backgroundColor: 'rgba(0, 0, 0, 0.8)',
+            backgroundColor: '#17120a', // --ink
             titleFont: { size: 12 },
             bodyFont: { size: 14, weight: 'bold' },
             padding: 10,
@@ -161,7 +161,7 @@ export class LineChart implements OnDestroy {
           y: {
             beginAtZero: true,
             grid: {
-              color: 'rgba(0, 0, 0, 0.05)',
+              color: '#ecece8', // --track
             },
             title: {
               display: !!yLabel,

@@ -2,8 +2,8 @@
 
 /* Error Banner */
 .form-error-banner {
-  background: #fef2f2;
-  color: #dc2626;
+  background: var(--color-danger-light);
+  color: var(--color-danger);
   padding: var(--space-md);
   border-radius: var(--radius-sm);
   margin-bottom: var(--space-lg);
@@ -26,7 +26,7 @@
 .day-pill {
   padding: var(--space-sm) var(--space-md);
   background: var(--color-surface);
-  border: 2px solid #e2e8f0;
+  border: 2px solid var(--hairline);
   border-radius: var(--radius-full);
   font-size: var(--font-size-sm);
   font-weight: var(--font-weight-medium);
@@ -60,7 +60,7 @@
   gap: var(--space-sm);
   padding: var(--space-sm) var(--space-md);
   background: var(--color-surface);
-  border: 1px solid #e2e8f0;
+  border: 1px solid var(--hairline);
   border-radius: var(--radius-sm);
   cursor: pointer;
   transition: all 0.2s ease;
@@ -68,11 +68,11 @@
 
 .child-checkbox:hover {
   border-color: var(--color-primary);
-  background: #f8fafc;
+  background: var(--bg);
 }
 
 .child-checkbox:has(input:checked) {
-  background: var(--color-primary-light, #dbeafe);
+  background: var(--track);
   border-color: var(--color-primary);
 }
 
@@ -89,7 +89,7 @@
 }
 
 .no-children {
-  color: var(--color-text-muted);
+  color: var(--text-muted);
   font-style: italic;
   font-size: var(--font-size-sm);
   margin: 0;
@@ -99,13 +99,13 @@
 /* Form Hints */
 .form-hint {
   font-size: var(--font-size-sm);
-  color: var(--color-text-muted);
+  color: var(--text-muted);
   margin-top: var(--space-xs);
 }
 
 .form-hint-top {
   font-size: var(--font-size-sm);
-  color: var(--color-text-muted);
+  color: var(--text-muted);
   margin-bottom: var(--space-xs);
 }
 
@@ -113,7 +113,7 @@
 .form-textarea {
   width: 100%;
   padding: var(--space-sm) var(--space-md);
-  border: 2px solid #e2e8f0;
+  border: 2px solid var(--hairline);
   border-radius: var(--radius-sm);
   font-family: var(--font-body);
   font-size: var(--font-size-base);
@@ -125,13 +125,12 @@
 }
 
 .form-textarea:focus {
-  outline: none;
+  outline: var(--focus-ring);
   border-color: var(--color-primary);
-  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
 }
 
 .form-textarea::placeholder {
-  color: var(--color-text-muted);
+  color: var(--text-muted);
 }
 
 /* Help Text */

@@ -1,0 +1,64 @@
+/* screens-v2: 109 x 154, padding 14/12/12, 12 px radius */
+
+:host {
+  display: block;
+  min-width: 0;
+}
+
+.kid {
+  height: 100%;
+  min-height: 154px;
+  padding: 14px 12px 12px;
+  background: var(--surface);
+  border-radius: var(--r-card);
+  letter-spacing: -0.02em;
+}
+
+.n {
+  font-family: var(--font-text);
+  font-size: 15px;
+  font-weight: 600;
+  line-height: 1.4;
+  color: var(--text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.v {
+  margin-top: 8px;
+  font-family: var(--font-display);
+  font-size: 30px;
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: -0.04em;
+  font-variant-numeric: tabular-nums;
+  color: var(--text);
+}
+
+.p {
+  margin-top: 8.5px;
+  font-family: var(--font-text);
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 1.4;
+  color: var(--text-muted);
+}
+
+.cm {
+  margin-top: 9.5px;
+}
+
+.d {
+  margin-top: 8px;
+  font-family: var(--font-text);
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 1.4;
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+
+.d.rust {
+  color: var(--overdue);
+}

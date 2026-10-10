@@ -1,7 +1,6 @@
 <div class="household-switcher">
-  @if (isLoading()) {
-    <div class="switcher-loading" i18n="@@householdSwitcher.loading">Laster...</div>
-  } @else if (households().length > 1) {
+  <!-- Nothing while loading: the switcher only appears for 2+ households -->
+  @if (!isLoading() && households().length > 1) {
     <button
       type="button"
       class="switcher-toggle"

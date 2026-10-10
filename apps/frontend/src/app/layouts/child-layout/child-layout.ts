@@ -9,13 +9,12 @@ import {
 import { Router, RouterOutlet, NavigationEnd } from '@angular/router';
 import { filter, Subscription } from 'rxjs';
 import { ChildNav, type ChildNavScreen } from '../../components/navigation/child-nav/child-nav';
-import { AuthService } from '../../services/auth.service';
 
 /**
  * Child Layout Component
  *
  * Layout wrapper for child user pages with:
- * - Header with greeting and logout
+ * - Screens draw their own title row (log out is behind the initial badge)
  * - Bottom navigation (Tasks / Rewards)
  * - Child-friendly interface
  */
@@ -28,7 +27,6 @@ import { AuthService } from '../../services/auth.service';
 })
 export class ChildLayout implements OnInit, OnDestroy {
   private readonly router = inject(Router);
-  private readonly authService = inject(AuthService);
   private routerSubscription: Subscription | null = null;
 
   // State
@@ -73,13 +71,5 @@ export class ChildLayout implements OnInit, OnDestroy {
     if (route) {
       void this.router.navigate([route]);
     }
-  }
-
-  /**
-   * Handle logout
-   */
-  protected onLogout(): void {
-    this.authService.logout();
-    void this.router.navigate(['/child-login']);
   }
 }

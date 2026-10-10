@@ -1,6 +1,6 @@
 /**
  * Login Component Styles
- * Diddit! Design System (Proposal 5)
+ * Diddit design system: Poeng, light mode
  */
 
 /* ===== AUTH CONTAINER ===== */
@@ -14,43 +14,18 @@
   align-items: center;
   justify-content: center;
   padding: 0;
-  background: var(--gradient-primary);
+  background: var(--bg);
   position: relative;
   overflow: hidden;
-}
-
-.auth-container::before {
-  content: '';
-  position: absolute;
-  width: 800px;
-  height: 800px;
-  background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, transparent 70%);
-  border-radius: 50%;
-  top: -200px;
-  right: -200px;
-  pointer-events: none;
-}
-
-.auth-container::after {
-  content: '';
-  position: absolute;
-  width: 600px;
-  height: 600px;
-  background: radial-gradient(circle, rgba(255, 255, 255, 0.08) 0%, transparent 70%);
-  border-radius: 50%;
-  bottom: -150px;
-  left: -150px;
-  pointer-events: none;
 }
 
 /* ===== AUTH CARD ===== */
 .auth-card {
   background: var(--color-surface);
-  border-radius: var(--radius-xl);
+  border-radius: var(--r-card);
   padding: var(--space-xxl);
   max-width: 480px;
   width: 100%;
-  box-shadow: var(--shadow-xl);
   position: relative;
   z-index: 1;
   animation: slideUp var(--transition-slow) ease-out;
@@ -59,7 +34,7 @@
 @media (max-width: 480px) {
   .auth-card {
     padding: var(--space-xl);
-    border-radius: var(--radius-lg);
+    border-radius: var(--r-card);
     margin: var(--space-md);
   }
 }
@@ -73,18 +48,16 @@
 .auth-logo-text {
   font-family: var(--font-heading);
   font-size: 2.5rem;
-  font-weight: var(--font-weight-bold);
-  background: var(--gradient-primary);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+  font-weight: 800;
+  color: var(--text);
+  letter-spacing: -0.02em;
 }
 
 /* ===== AUTH TITLE & SUBTITLE ===== */
 .auth-title {
   font-family: var(--font-heading);
   font-size: var(--font-size-3xl);
-  font-weight: var(--font-weight-bold);
+  font-weight: 800;
   margin-bottom: var(--space-sm);
   text-align: center;
   color: var(--color-text-primary);
@@ -128,19 +101,19 @@
 }
 
 .form-input:focus {
-  outline: none;
+  outline: var(--focus-ring);
   border-color: var(--color-primary);
   background: var(--color-surface);
-  box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.15);
 }
 
 .form-input[aria-invalid='true'] {
-  border-color: #ef4444;
-  background: #fef2f2;
+  border-color: var(--color-danger);
+  background: var(--color-danger-light);
 }
 
 .form-input[aria-invalid='true']:focus {
-  box-shadow: 0 0 0 4px rgba(239, 68, 68, 0.15);
+  outline: var(--focus-ring);
+  outline-offset: 2px;
 }
 
 /* ===== PASSWORD INPUT ===== */
@@ -207,7 +180,7 @@
 
 /* ===== ERROR MESSAGES ===== */
 .error {
-  color: #ef4444;
+  color: var(--color-danger);
   font-size: var(--font-size-sm);
   margin-top: var(--space-xs);
   display: flex;
@@ -217,8 +190,8 @@
 
 .server-error {
   padding: var(--space-md);
-  background: #fef2f2;
-  border: 1px solid #fecaca;
+  background: var(--color-danger-light);
+  border: 1px solid var(--color-danger);
   border-radius: var(--radius-sm);
   margin-bottom: var(--space-lg);
 }
@@ -226,10 +199,10 @@
 /* ===== SUCCESS MESSAGE ===== */
 .success-message {
   padding: var(--space-md);
-  background: linear-gradient(135deg, rgba(16, 185, 129, 0.1) 0%, rgba(251, 191, 36, 0.1) 100%);
-  border: 1px solid rgba(16, 185, 129, 0.3);
+  background: var(--color-success-light);
+  border: 1px solid var(--color-success);
   border-radius: var(--radius-sm);
-  color: #059669;
+  color: var(--color-success-dark);
   margin-bottom: var(--space-lg);
   text-align: center;
   font-weight: var(--font-weight-medium);
@@ -244,7 +217,8 @@
   font-family: var(--font-body);
   font-size: var(--font-size-base);
   font-weight: var(--font-weight-semibold);
-  border-radius: var(--radius-sm);
+  min-height: 49px;
+  border-radius: var(--r-button);
   border: none;
   cursor: pointer;
   transition: all var(--transition-fast);
@@ -252,25 +226,17 @@
 }
 
 .btn-primary {
-  background: var(--gradient-primary-button);
-  color: white;
-  box-shadow: 0 4px 15px rgba(99, 102, 241, 0.4);
+  background: var(--yellow);
+  color: var(--ink);
 }
 
 .btn-primary:hover:not(:disabled) {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(99, 102, 241, 0.5);
+  background: var(--yellow-inset);
 }
 
-.btn-primary:active:not(:disabled) {
-  transform: translateY(0);
-}
-
-.btn-primary:focus {
-  outline: none;
-  box-shadow:
-    0 4px 15px rgba(99, 102, 241, 0.4),
-    0 0 0 4px rgba(99, 102, 241, 0.3);
+.btn-primary:focus-visible {
+  outline: var(--focus-ring);
+  outline-offset: 2px;
 }
 
 .btn-primary:disabled {
@@ -298,8 +264,7 @@
   content: '';
   flex: 1;
   height: 1px;
-  background: linear-gradient(90deg, transparent, var(--color-text-tertiary), transparent);
-  opacity: 0.3;
+  background: var(--hairline);
 }
 
 /* ===== AUTH LINKS ===== */
@@ -347,11 +312,12 @@
 
 .btn-qr-login {
   width: 100%;
+  min-height: 49px;
   padding: 0.75rem;
-  background: #f3f4f6;
-  color: #374151;
-  border: 2px solid #d1d5db;
-  border-radius: 8px;
+  background: var(--surface);
+  color: var(--text);
+  border: 2px solid var(--text-muted);
+  border-radius: var(--r-button);
   font-size: 1rem;
   font-weight: 500;
   cursor: pointer;
@@ -363,9 +329,7 @@
 }
 
 .btn-qr-login:hover {
-  background: #e5e7eb;
-  border-color: #9ca3af;
-  transform: translateY(-1px);
+  background: var(--track);
 }
 
 /* ===== ANIMATIONS ===== */

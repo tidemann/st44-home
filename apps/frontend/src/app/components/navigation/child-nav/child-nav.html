@@ -10,11 +10,10 @@
       class="child-nav-btn"
       [class.active]="isActive(item.id)"
       (click)="handleNavClick(item.id)"
-      [attr.aria-label]="item.label"
       [attr.aria-current]="isActive(item.id) ? 'page' : null"
     >
-      <div class="child-nav-icon">{{ item.icon }}</div>
-      <div class="child-nav-label">{{ item.label }}</div>
+      <app-nav-icon class="child-nav-icon" [name]="item.icon" />
+      <span class="child-nav-label">{{ item.label }}</span>
     </button>
   }
 </nav>

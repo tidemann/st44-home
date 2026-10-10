@@ -6,80 +6,76 @@
 .reassign-form {
   display: flex;
   flex-direction: column;
-  gap: var(--space-lg, 20px);
+  gap: var(--space-lg);
 }
 
 .reassign-description {
-  font-family: var(--font-body, 'Outfit', sans-serif);
-  font-size: var(--font-size-base, 16px);
-  color: var(--color-text-secondary, #6b7280);
+  font-family: var(--font-body);
+  font-size: var(--font-size-base);
+  color: var(--color-text-secondary);
   margin: 0;
 }
 
 .reassign-description strong {
-  color: var(--color-text-primary, #1f2937);
+  color: var(--color-text-primary);
 }
 
 .error-message {
-  padding: var(--space-sm, 8px) var(--space-md, 16px);
-  background: var(--color-danger-light, #fef2f2);
-  color: var(--color-danger-dark, #991b1b);
-  border: 1px solid var(--color-danger, #ef4444);
-  border-radius: var(--radius-sm, 8px);
-  font-size: var(--font-size-sm, 14px);
+  padding: var(--space-sm) var(--space-md);
+  background: var(--color-danger-light);
+  color: var(--color-danger-dark);
+  border: 1px solid var(--color-danger);
+  border-radius: var(--radius-sm);
+  font-size: var(--font-size-sm);
 }
 
 .form-group {
   display: flex;
   flex-direction: column;
-  gap: var(--space-xs, 4px);
+  gap: var(--space-xs);
 }
 
 .form-group label {
-  font-family: var(--font-body, 'Outfit', sans-serif);
-  font-size: var(--font-size-sm, 14px);
-  font-weight: var(--font-weight-semibold, 600);
-  color: var(--color-text-primary, #1f2937);
+  font-family: var(--font-body);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-primary);
 }
 
 .form-group select {
-  padding: var(--space-sm, 8px) var(--space-md, 16px);
-  border: 1px solid var(--color-border, #d1d5db);
-  border-radius: var(--radius-sm, 8px);
-  font-family: var(--font-body, 'Outfit', sans-serif);
-  font-size: var(--font-size-base, 16px);
-  color: var(--color-text-primary, #1f2937);
+  padding: var(--space-sm) var(--space-md);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  font-family: var(--font-body);
+  font-size: var(--font-size-base);
+  color: var(--color-text-primary);
   background: white;
   cursor: pointer;
-  transition:
-    border-color 0.2s,
-    box-shadow 0.2s;
+  transition: border-color 0.2s;
 }
 
 .form-group select:focus {
-  outline: none;
-  border-color: var(--color-primary, #6366f1);
-  box-shadow: 0 0 0 3px var(--color-primary-light, rgba(99, 102, 241, 0.2));
+  outline: var(--focus-ring);
+  border-color: var(--color-primary);
 }
 
 .form-actions {
   display: flex;
   justify-content: flex-end;
-  gap: var(--space-sm, 8px);
-  padding-top: var(--space-md, 16px);
-  border-top: 1px solid var(--color-border, #e5e7eb);
+  gap: var(--space-sm);
+  padding-top: var(--space-md);
+  border-top: 1px solid var(--color-border);
 }
 
 .btn {
-  padding: var(--space-sm, 8px) var(--space-lg, 20px);
-  border-radius: var(--radius-sm, 8px);
-  font-family: var(--font-body, 'Outfit', sans-serif);
-  font-size: var(--font-size-sm, 14px);
-  font-weight: var(--font-weight-semibold, 600);
+  padding: var(--space-sm) var(--space-lg);
+  border-radius: var(--radius-sm);
+  font-family: var(--font-body);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
   cursor: pointer;
   transition:
     transform 0.2s,
-    box-shadow 0.2s,
     opacity 0.2s;
   border: none;
 }
@@ -90,22 +86,20 @@
 }
 
 .btn-secondary {
-  background: var(--color-surface, #f9fafb);
-  color: var(--color-text-secondary, #6b7280);
-  border: 1px solid var(--color-border, #d1d5db);
+  background: var(--color-surface);
+  color: var(--color-text-secondary);
+  border: 1px solid var(--color-border);
 }
 
 .btn-secondary:hover:not(:disabled) {
-  background: var(--color-background, #f3f4f6);
+  background: var(--color-background);
 }
 
 .btn-primary {
-  background: var(--gradient-primary-button, linear-gradient(135deg, #4f46e5 0%, #be185d 100%));
-  color: white;
-  box-shadow: var(--shadow-sm, 0 1px 2px rgba(0, 0, 0, 0.05));
+  background: var(--yellow);
+  color: var(--ink);
 }
 
 .btn-primary:hover:not(:disabled) {
   transform: translateY(-1px);
-  box-shadow: var(--shadow-md, 0 4px 6px rgba(0, 0, 0, 0.1));
 }

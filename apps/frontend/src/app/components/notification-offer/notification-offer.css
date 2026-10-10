@@ -1,23 +1,22 @@
 /* Bottom sheet above the bottom nav (z-index 1000), like the install card */
 .notify-card {
   position: fixed;
-  left: var(--space-md, 16px);
-  right: var(--space-md, 16px);
-  bottom: calc(var(--space-md, 16px) + env(safe-area-inset-bottom, 0px));
+  left: var(--space-md);
+  right: var(--space-md);
+  bottom: calc(var(--space-md) + env(safe-area-inset-bottom, 0px));
   z-index: 1100;
   max-width: 480px;
   margin: 0 auto;
-  padding: var(--space-lg, 24px);
-  box-shadow: var(--shadow-lg, 0 8px 32px rgba(0, 0, 0, 0.12));
+  padding: var(--space-lg);
   display: flex;
   flex-direction: column;
-  gap: var(--space-md, 16px);
+  gap: var(--space-md);
 }
 
 .notify-head {
   display: flex;
   align-items: center;
-  gap: var(--space-md, 16px);
+  gap: var(--space-md);
 }
 
 .notify-icon {
@@ -27,17 +26,17 @@
 
 .notify-title {
   margin: 0;
-  font-family: var(--font-heading, 'Fredoka', sans-serif);
+  font-family: var(--font-heading);
   font-size: 20px;
-  font-weight: 600;
-  color: var(--color-text-primary, #1e293b);
+  font-weight: 800;
+  color: var(--color-text-primary);
 }
 
 .notify-text {
   margin: 0;
   font-size: 15px;
   line-height: 1.5;
-  color: var(--color-text-primary, #1e293b);
+  color: var(--color-text-primary);
 }
 
 /* "Ikke nå" and "Slå på varsler" share the row with equal weight */
@@ -45,7 +44,7 @@
   display: grid;
   grid-auto-flow: column;
   grid-auto-columns: 1fr;
-  gap: var(--space-sm, 8px);
+  gap: var(--space-sm);
 }
 
 .notify-actions .btn {

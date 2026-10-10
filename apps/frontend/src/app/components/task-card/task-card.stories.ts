@@ -11,7 +11,7 @@ import type { AssignmentWithPoints, Task } from '@st44/types';
  * ## Features
  * - Shows task name/title and metadata (recurrence or status)
  * - Displays points badge for tasks with point values
- * - Mark complete button with gradient styling
+ * - Mark complete button (flat Done green)
  * - Click to edit functionality with keyboard support
  * - Responsive layout (optimized for mobile)
  * - Visual states for completed and overdue tasks
@@ -52,7 +52,7 @@ const meta: Meta<TaskCardComponent> = {
     backgrounds: {
       default: 'light',
       values: [
-        { name: 'light', value: '#F8F9FF' },
+        { name: 'light', value: '#F6F6F4' },
         { name: 'white', value: '#FFFFFF' },
       ],
     },
@@ -268,8 +268,8 @@ export const TaskList: Story = {
       task4: taskWithoutDescription,
     },
     template: `
-      <div style="max-width: 800px; background: #F8F9FF; padding: 1.5rem; border-radius: 8px;">
-        <h2 style="margin-top: 0; margin-bottom: 1rem; font-size: 1.5rem; font-weight: 600;">My Tasks</h2>
+      <div style="max-width: 800px; background: var(--bg); padding: 1.5rem; border-radius: var(--r-card);">
+        <h2 style="font-family: var(--font-display); margin-top: 0; margin-bottom: 1rem; font-size: 1.5rem; font-weight: 800;">My Tasks</h2>
         <app-task-card [task]="task1"></app-task-card>
         <app-task-card [task]="task2"></app-task-card>
         <app-task-card [task]="task3"></app-task-card>
@@ -446,11 +446,11 @@ export const MixedTaskTypes: Story = {
       completedAssignment: completedTask,
     },
     template: `
-      <div style="max-width: 800px; background: #F8F9FF; padding: 1.5rem; border-radius: 8px;">
-        <h2 style="font-family: var(--font-heading, 'Fredoka', sans-serif); margin-top: 0; margin-bottom: 1rem; font-size: 1.5rem; font-weight: 600;">Task Templates</h2>
+      <div style="max-width: 800px; background: var(--bg); padding: 1.5rem; border-radius: var(--r-card);">
+        <h2 style="font-family: var(--font-display); margin-top: 0; margin-bottom: 1rem; font-size: 1.5rem; font-weight: 800;">Task Templates</h2>
         <app-task-card [task]="taskTemplate" [showCompleteButton]="false" [clickable]="true"></app-task-card>
 
-        <h2 style="font-family: var(--font-heading, 'Fredoka', sans-serif); margin-top: 2rem; margin-bottom: 1rem; font-size: 1.5rem; font-weight: 600;">My Assignments</h2>
+        <h2 style="font-family: var(--font-display); margin-top: 2rem; margin-bottom: 1rem; font-size: 1.5rem; font-weight: 800;">My Assignments</h2>
         <app-task-card [task]="assignment" [showCompleteButton]="true" [clickable]="true"></app-task-card>
         <app-task-card [task]="completedAssignment" [showCompleteButton]="true" [clickable]="true"></app-task-card>
       </div>

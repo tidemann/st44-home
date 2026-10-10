@@ -24,7 +24,6 @@
   padding: var(--space-lg);
   background: var(--color-surface);
   border-radius: var(--radius-md);
-  box-shadow: var(--shadow-md);
 }
 
 /* ===== Progress line ===== */
@@ -172,7 +171,7 @@
 
 .chore.chosen {
   border-color: var(--color-primary);
-  background: #eef2ff;
+  background: var(--track);
 }
 
 .chore input {
@@ -217,7 +216,7 @@
   align-items: center;
   gap: var(--space-sm);
   padding: var(--space-md);
-  border: 1px solid #047857;
+  border: 1px solid var(--color-success);
   border-radius: var(--radius-sm);
   background: var(--color-success-light);
   color: var(--color-success-dark);
@@ -230,7 +229,7 @@
   height: 2.5rem;
   flex-shrink: 0;
   border-radius: var(--radius-full);
-  background: #047857;
+  background: var(--color-success);
   color: #ffffff;
   font-size: var(--font-size-xl);
   font-weight: var(--font-weight-bold);

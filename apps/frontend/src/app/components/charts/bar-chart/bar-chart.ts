@@ -30,7 +30,7 @@ export interface BarChartDataPoint {
  * ```html
  * <app-bar-chart
  *   [data]="dailyPoints"
- *   [barColor]="'#3b82f6'"
+ *   [barColor]="'#15181c'"
  *   [height]="200"
  * />
  * ```
@@ -47,7 +47,7 @@ export class BarChart implements OnDestroy {
   data = input.required<BarChartDataPoint[]>();
 
   /** Bar color (CSS color value) */
-  barColor = input<string>('#3b82f6');
+  barColor = input<string>('#15181c');
 
   /** Chart height in pixels */
   height = input<number>(200);
@@ -117,7 +117,7 @@ export class BarChart implements OnDestroy {
             display: false,
           },
           tooltip: {
-            backgroundColor: 'rgba(0, 0, 0, 0.8)',
+            backgroundColor: '#17120a', // --ink
             titleFont: { size: 12 },
             bodyFont: { size: 14, weight: 'bold' },
             padding: 10,
@@ -137,7 +137,7 @@ export class BarChart implements OnDestroy {
             beginAtZero: true,
             grid: {
               display: showGrid,
-              color: 'rgba(0, 0, 0, 0.05)',
+              color: '#ecece8', // --track
             },
             title: {
               display: !!yLabel,

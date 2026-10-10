@@ -1,218 +1,102 @@
-/**
- * Tasks Page Styles
- * Based on Diddit! Design System (Proposal 5)
- */
+/* Poeng screen 2 (screens-v2 #s2) */
 
-/* Filter Tabs */
-.filter-tabs {
+/* Child chips: 33 px drawn, 9 px radius, 7 px apart, Meta 15; 44 px pressed */
+.chips {
   display: flex;
-  gap: var(--space-sm);
-  margin-bottom: var(--space-lg);
+  gap: 7px;
+  margin-top: 16px;
   overflow-x: auto;
-  -webkit-overflow-scrolling: touch;
-  padding-bottom: var(--space-xs);
+  /* Room for the padded targets, so the scroller does not clip them */
+  padding: 6px 0;
+  margin-bottom: -6px;
 }
 
-.filter-tab {
-  flex-shrink: 0;
-  padding: var(--space-sm) var(--space-lg);
-  background: var(--color-surface);
-  border: 2px solid transparent;
-  border-radius: var(--radius-full);
-  font-family: var(--font-body);
-  font-size: var(--font-size-base);
-  font-weight: var(--font-weight-medium);
-  color: var(--color-text-secondary);
+.chip {
+  position: relative;
+  flex: none;
+  height: 33px;
+  padding: 0 12px;
+  border: 0;
+  border-radius: var(--r-chip);
+  background: var(--surface);
+  color: var(--text);
+  font-family: var(--font-text);
+  font-size: 15px;
+  font-weight: 500;
+  letter-spacing: -0.02em;
   cursor: pointer;
-  transition: all 0.2s ease;
-  box-shadow: var(--shadow-sm);
 }
 
-.filter-tab:hover {
-  background: #f1f5f9;
-  transform: translateY(-2px);
-  box-shadow: var(--shadow-md);
+.chip::after {
+  content: '';
+  position: absolute;
+  inset: -6px 0;
 }
 
-.filter-tab.active {
-  background: var(--gradient-primary-button);
-  color: white;
-  border-color: transparent;
-  box-shadow: var(--shadow-md);
+.chip.on {
+  background: var(--text);
+  color: var(--surface);
 }
 
-.filter-tab:focus {
-  outline: 2px solid var(--color-primary);
+.chip:focus-visible {
+  outline: var(--focus-ring);
   outline-offset: 2px;
 }
 
-/* Person Filter Tabs */
-.person-tabs {
-  display: flex;
-  gap: var(--space-sm);
-  margin-bottom: var(--space-lg);
-  overflow-x: auto;
-  -webkit-overflow-scrolling: touch;
-  padding-bottom: var(--space-xs);
+/* «+ Ny oppgave» pinned above the bottom nav, on the page colour so rows pass under it */
+.new-slot {
+  position: sticky;
+  bottom: calc(72px + env(safe-area-inset-bottom, 0px));
+  z-index: 5;
+  margin-top: 16px;
+  padding: 10px 0 12px;
+  background: var(--bg);
 }
 
-.person-tab {
-  flex-shrink: 0;
-  padding: var(--space-sm) var(--space-lg);
-  background: var(--color-surface);
-  border: 2px solid transparent;
-  border-radius: var(--radius-full);
-  font-family: var(--font-body);
-  font-size: var(--font-size-base);
-  font-weight: var(--font-weight-medium);
-  color: var(--color-text-secondary);
-  cursor: pointer;
-  transition: all 0.2s ease;
-  box-shadow: var(--shadow-sm);
+@media (min-width: 1024px) {
+  .new-slot {
+    bottom: 0;
+  }
 }
 
-.person-tab:hover {
-  background: #f1f5f9;
-  transform: translateY(-2px);
-  box-shadow: var(--shadow-md);
-}
-
-.person-tab.active {
-  background: var(--gradient-primary-button);
-  color: white;
-  border-color: transparent;
-  box-shadow: var(--shadow-md);
-}
-
-.person-tab:focus {
-  outline: 2px solid var(--color-primary);
-  outline-offset: 2px;
-}
-
-.no-members-message {
-  font-family: var(--font-body);
-  font-size: var(--font-size-base);
-  color: var(--color-text-secondary);
-  padding: var(--space-md);
-}
-
-/* Loading State */
-.loading-state {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: var(--space-xxl) var(--space-lg);
+.empty {
+  padding: 20px 15px;
+  background: var(--surface);
+  border-radius: var(--r-card);
   text-align: center;
 }
 
-.loading-spinner {
-  width: 48px;
-  height: 48px;
-  border: 4px solid #e2e8f0;
-  border-top-color: var(--color-primary);
+.empty-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  padding: 48px 0;
+  color: var(--text-muted);
+  text-align: center;
+}
+
+.error-text {
+  color: var(--text);
+}
+
+.spinner {
+  width: 32px;
+  height: 32px;
+  border: 3px solid var(--track);
+  border-top-color: var(--ink);
   border-radius: 50%;
-  animation: spin 0.8s linear infinite;
+  animation: spin 0.9s linear infinite;
 }
 
 @keyframes spin {
   to {
     transform: rotate(360deg);
-  }
-}
-
-.loading-text {
-  margin-top: var(--space-md);
-  font-family: var(--font-body);
-  font-size: var(--font-size-base);
-  color: var(--color-text-secondary);
-}
-
-/* Error State */
-.error-state {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: var(--space-xxl) var(--space-lg);
-  text-align: center;
-  background: var(--color-surface);
-  border-radius: var(--radius-md);
-  box-shadow: var(--shadow-sm);
-}
-
-.error-icon {
-  font-size: var(--font-size-5xl);
-  margin-bottom: var(--space-md);
-}
-
-.error-text {
-  font-family: var(--font-body);
-  font-size: var(--font-size-base);
-  color: var(--color-text-primary);
-  margin-bottom: var(--space-lg);
-}
-
-.retry-button {
-  padding: var(--space-sm) var(--space-lg);
-  background: var(--gradient-primary-button);
-  border: none;
-  border-radius: var(--radius-full);
-  font-family: var(--font-body);
-  font-size: var(--font-size-base);
-  font-weight: var(--font-weight-semibold);
-  color: white;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  box-shadow: var(--shadow-sm);
-}
-
-.retry-button:hover {
-  transform: translateY(-2px);
-  box-shadow: var(--shadow-md);
-}
-
-.retry-button:active {
-  transform: translateY(0);
-}
-
-/* Empty State */
-.empty-state {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: var(--space-xxl) var(--space-lg);
-  text-align: center;
-  background: var(--color-surface);
-  border-radius: var(--radius-md);
-  box-shadow: var(--shadow-sm);
-}
-
-.empty-icon {
-  font-size: var(--font-size-5xl);
-  margin-bottom: var(--space-md);
-  opacity: 0.5;
-}
-
-.empty-text {
-  font-family: var(--font-body);
-  font-size: var(--font-size-base);
-  color: var(--color-text-secondary);
-  max-width: 400px;
-  line-height: var(--line-height-relaxed);
-}
-
-/* Task List */
-.task-list {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-md);
-}
-
-/* Responsive Styles */
-@media (min-width: 768px) {
-  .filter-tabs {
-    gap: var(--space-md);
   }
 }

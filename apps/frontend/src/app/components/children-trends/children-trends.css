@@ -1,14 +1,14 @@
 .children-trends {
   padding: var(--space-4, 1rem);
-  border-radius: var(--radius-lg, 0.75rem);
-  background: var(--surface-secondary, #f8f9fa);
+  border-radius: var(--r-card);
+  background: var(--bg);
 }
 
 .trends-title {
   margin: 0 0 var(--space-4, 1rem) 0;
   font-size: 1rem;
   font-weight: 600;
-  color: var(--text-primary, #212529);
+  color: var(--text);
 }
 
 /* Summary Cards */
@@ -26,7 +26,7 @@
   padding: var(--space-2, 0.5rem) var(--space-3, 0.75rem);
   border-left: 3px solid;
   background: white;
-  border-radius: var(--radius-md, 0.5rem);
+  border-radius: var(--radius-md);
   flex: 1;
   min-width: 100px;
 }
@@ -34,7 +34,7 @@
 .child-name {
   font-size: 0.875rem;
   font-weight: 600;
-  color: var(--text-primary, #212529);
+  color: var(--text);
 }
 
 .child-stats {
@@ -51,14 +51,13 @@
 .stat-value {
   font-size: 1rem;
   font-weight: 700;
-  color: var(--text-primary, #212529);
+  color: var(--text);
 }
 
 .stat-label {
   font-size: 0.625rem;
   font-weight: 500;
-  color: var(--text-secondary, #6c757d);
-  text-transform: uppercase;
+  color: var(--text-muted);
 }
 
 /* Empty State */
@@ -67,7 +66,7 @@
   align-items: center;
   justify-content: center;
   padding: var(--space-6, 1.5rem);
-  color: var(--text-secondary, #6c757d);
+  color: var(--text-muted);
 }
 
 /* Responsive */

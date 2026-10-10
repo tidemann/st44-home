@@ -46,26 +46,31 @@ export const routes: Routes = [
       {
         path: 'home',
         title: 'Home - Diddit!',
+        data: { ownHead: true },
         loadComponent: () => import('./pages/home/home').then((m) => m.Home),
       },
       {
         path: 'tasks',
         title: 'Tasks - Diddit!',
+        data: { ownHead: true },
         loadComponent: () => import('./pages/tasks/tasks').then((m) => m.Tasks),
       },
       {
         path: 'family',
         title: 'Family - Diddit!',
+        data: { ownHead: true },
         loadComponent: () => import('./pages/family/family').then((m) => m.Family),
       },
       {
         path: 'progress',
         title: 'Progress - Diddit!',
+        data: { ownHead: true },
         loadComponent: () => import('./pages/progress/progress').then((m) => m.Progress),
       },
       {
         path: 'rewards',
         title: 'Rewards - Diddit!',
+        data: { ownHead: true },
         loadComponent: () =>
           import('./pages/rewards-management/rewards-management').then(
             (m) => m.RewardsManagementComponent,
@@ -95,11 +100,13 @@ export const routes: Routes = [
       {
         path: 'settings',
         title: 'Settings - Diddit!',
+        data: { ownHead: true },
         loadComponent: () => import('./pages/settings/settings').then((m) => m.Settings),
       },
       {
         path: 'households',
         title: 'Manage Households - Diddit!',
+        data: { ownHead: true },
         loadComponent: () =>
           import('./pages/manage-households/manage-households').then((m) => m.ManageHouseholds),
       },

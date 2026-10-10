@@ -2,10 +2,11 @@ import '@angular/localize/init';
 import { Component, ChangeDetectionStrategy, input, output } from '@angular/core';
 import type { NavScreen, NavItem } from '../bottom-nav/bottom-nav';
 import { HouseholdSwitcherComponent } from '../../household-switcher/household-switcher';
+import { NavIcon } from '../nav-icon';
 
 @Component({
   selector: 'app-sidebar-nav',
-  imports: [HouseholdSwitcherComponent],
+  imports: [HouseholdSwitcherComponent, NavIcon],
   templateUrl: './sidebar-nav.html',
   styleUrl: './sidebar-nav.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -31,11 +32,11 @@ export class SidebarNav {
    * Norwegian is the source language - translations handled via @angular/localize
    */
   readonly navItems: NavItem[] = [
-    { id: 'home', icon: '🏠', label: $localize`:@@nav.home:Hjem` },
-    { id: 'tasks', icon: '📋', label: $localize`:@@nav.tasks:Oppgaver` },
-    { id: 'family', icon: '👥', label: $localize`:@@nav.family:Familie` },
-    { id: 'progress', icon: '🏆', label: $localize`:@@nav.progress:Fremgang` },
-    { id: 'rewards', icon: '🎁', label: $localize`:@@nav.rewards:Belønninger` },
+    { id: 'home', icon: 'home', label: $localize`:@@nav.home:Hjem` },
+    { id: 'tasks', icon: 'tasks', label: $localize`:@@nav.tasks:Oppgaver` },
+    { id: 'family', icon: 'family', label: $localize`:@@nav.family:Familie` },
+    { id: 'progress', icon: 'progress', label: $localize`:@@nav.progress:Fremgang` },
+    { id: 'rewards', icon: 'rewards', label: $localize`:@@nav.rewards:Belønninger` },
   ];
 
   /**

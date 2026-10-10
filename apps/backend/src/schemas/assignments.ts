@@ -10,6 +10,7 @@ import {
   errorResponseSchema,
   stripResponseValidation,
 } from './common.js';
+import { UNDO_COMPLETE_SECONDS } from '@st44/types';
 
 const taskAssignmentSchemaBase = {
   type: 'object',
@@ -29,6 +30,7 @@ const taskAssignmentSchemaBase = {
       enum: ['pending', 'completed', 'overdue'],
     },
     completedAt: { ...timestampSchema, nullable: true },
+    points: { type: 'integer', minimum: 0, description: 'Points the chore is worth' },
   },
   required: ['id', 'taskId', 'childId', 'title', 'ruleType', 'date', 'status'],
 } as const;
@@ -144,6 +146,7 @@ const getHouseholdAssignmentsSchemaBase = {
               },
               completedAt: { ...timestampSchema, nullable: true },
               createdAt: timestampSchema,
+              points: { type: 'integer', minimum: 0, description: 'Points the chore is worth' },
             },
           },
         },
@@ -235,6 +238,49 @@ const postCompleteAssignmentSchemaBase = {
     401: errorResponseSchema,
     403: errorResponseSchema,
     404: errorResponseSchema,
+    500: errorResponseSchema,
+  },
+} as const;
+
+// POST /api/assignments/:assignmentId/uncomplete (ST-777)
+const uncompleteAssignmentSchemaBase = {
+  summary: 'Undo a completed chore',
+  description: `Put a completed assignment back to pending and remove the points it earned. Only within ${UNDO_COMPLETE_SECONDS} seconds of completion, and only if the child has not spent those points.`,
+  tags: ['assignments'],
+  security: [{ bearerAuth: [] }],
+  params: {
+    type: 'object',
+    properties: {
+      assignmentId: uuidSchema,
+    },
+    required: ['assignmentId'],
+  },
+  response: {
+    200: {
+      description: 'Assignment is pending again',
+      type: 'object',
+      properties: {
+        taskAssignment: {
+          type: 'object',
+          properties: {
+            id: uuidSchema,
+            status: { type: 'string', enum: ['pending'] },
+            completedAt: { type: 'null' },
+          },
+          required: ['id', 'status', 'completedAt'],
+        },
+        pointsRemoved: { type: 'integer', minimum: 0 },
+      },
+      required: ['taskAssignment', 'pointsRemoved'],
+    },
+    400: errorResponseSchema,
+    401: errorResponseSchema,
+    403: errorResponseSchema,
+    404: errorResponseSchema,
+    409: {
+      description: 'Conflict - not completed, undo window passed, or points already spent',
+      ...errorResponseSchema,
+    },
     500: errorResponseSchema,
   },
 } as const;
@@ -440,6 +486,7 @@ export const completeAssignmentSchema = stripResponseValidation(completeAssignme
 export const postCompleteAssignmentSchema = stripResponseValidation(
   postCompleteAssignmentSchemaBase,
 );
+export const uncompleteAssignmentSchema = stripResponseValidation(uncompleteAssignmentSchemaBase);
 export const reassignTaskSchema = stripResponseValidation(reassignTaskSchemaBase);
 export const generateAssignmentsSchema = stripResponseValidation(generateAssignmentsSchemaBase);
 export const generateHouseholdAssignmentsSchema = stripResponseValidation(

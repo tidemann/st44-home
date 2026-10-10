@@ -33,8 +33,8 @@ export class DailyPointsChart {
   /** Chart height in pixels */
   height = input<number>(180);
 
-  /** Bar color */
-  barColor = input<string>('#fbbf24');
+  /** Bar color (canvas needs hex, so the token value) */
+  barColor = input<string>('#8a5a00'); // --amber-ink: points on white, 5.93:1
 
   /** Transform daily data into chart data points */
   chartData = computed<BarChartDataPoint[]>(() => {

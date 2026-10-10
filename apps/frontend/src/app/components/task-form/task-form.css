@@ -26,8 +26,8 @@ h2 {
 }
 
 .error {
-  background: #fee;
-  color: #c00;
+  background: var(--color-danger-light);
+  color: var(--color-danger);
   padding: 0.75rem;
   border-radius: 4px;
   margin-bottom: 1rem;
@@ -48,7 +48,7 @@ h2 {
 .form-field select {
   width: 100%;
   padding: 0.5rem;
-  border: 1px solid #ccc;
+  border: 1px solid var(--hairline);
   border-radius: 4px;
   font-size: 1rem;
 }
@@ -56,7 +56,7 @@ h2 {
 .form-field input:invalid,
 .form-field textarea:invalid,
 .form-field select:invalid {
-  border-color: #c00;
+  border-color: var(--color-danger);
 }
 
 .day-selection {
@@ -92,13 +92,13 @@ h2 {
 }
 
 .form-actions button[type='button'] {
-  background: #e0e0e0;
-  color: #333;
+  background: var(--track);
+  color: var(--text);
 }
 
 .form-actions button[type='submit'] {
-  background: #007bff;
-  color: white;
+  background: var(--yellow);
+  color: var(--ink);
 }
 
 .form-actions button:disabled {
@@ -107,13 +107,13 @@ h2 {
 }
 
 .form-actions button[type='submit']:hover:not(:disabled) {
-  background: #0056b3;
+  background: var(--yellow-inset);
 }
 
 .help-text {
   display: block;
   font-size: 0.875rem;
-  color: #666;
+  color: var(--text-muted);
   margin-top: 0.25rem;
 }
 
@@ -136,6 +136,6 @@ h2 {
 }
 
 .no-children {
-  color: #666;
+  color: var(--text-muted);
   font-style: italic;
 }

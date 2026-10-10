@@ -1,6 +1,7 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { of } from 'rxjs';
+import { provideRouter } from '@angular/router';
 import { Home } from './home';
 import { TaskService } from '../../services/task.service';
 import { ChildrenService } from '../../services/children.service';
@@ -8,6 +9,8 @@ import { AuthService } from '../../services/auth.service';
 import { HouseholdService } from '../../services/household.service';
 import { HouseholdStore } from '../../stores/household.store';
 import { PushNotificationService } from '../../services/push-notification.service';
+import { HouseholdDayService } from '../../services/household-day.service';
+import { isoDay } from '../../utils/poeng-format';
 import { HttpErrorResponse } from '@angular/common/http';
 import type { Assignment, Task } from '@st44/types';
 
@@ -28,7 +31,11 @@ describe('Home', () => {
     hasRole: ReturnType<typeof vi.fn>;
   };
   let mockPush: { remind: ReturnType<typeof vi.fn> };
-  let mockHouseholdService: { listHouseholds: ReturnType<typeof vi.fn> };
+  let mockHouseholdService: {
+    listHouseholds: ReturnType<typeof vi.fn>;
+    getHouseholdMembers: ReturnType<typeof vi.fn>;
+  };
+  let mockDay: { load: ReturnType<typeof vi.fn> };
   let mockHouseholdStore: {
     activeHouseholdId: ReturnType<typeof vi.fn>;
     autoActivateHousehold: ReturnType<typeof vi.fn>;
@@ -50,7 +57,11 @@ describe('Home', () => {
       hasRole: vi.fn().mockReturnValue(false),
     };
     mockPush = { remind: vi.fn().mockResolvedValue(1) };
-    mockHouseholdService = { listHouseholds: vi.fn() };
+    mockHouseholdService = {
+      listHouseholds: vi.fn(),
+      getHouseholdMembers: vi.fn().mockResolvedValue([]),
+    };
+    mockDay = { load: vi.fn().mockResolvedValue({ today: [], overdue: [] }) };
 
     // Default mock returns
     mockHouseholdService.listHouseholds.mockResolvedValue([
@@ -73,6 +84,8 @@ describe('Home', () => {
         { provide: HouseholdService, useValue: mockHouseholdService },
         { provide: HouseholdStore, useValue: mockHouseholdStore },
         { provide: PushNotificationService, useValue: mockPush },
+        { provide: HouseholdDayService, useValue: mockDay },
+        provideRouter([]),
       ],
     }).compileComponents();
 
@@ -84,26 +97,14 @@ describe('Home', () => {
     expect(component).toBeTruthy();
   });
 
-  describe('greeting', () => {
-    it('should return appropriate greeting based on time', () => {
-      // Just verify greeting is one of the three options
-      const greeting = component['greeting']();
-      expect(['Good morning', 'Good afternoon', 'Good evening']).toContain(greeting);
-    });
-  });
-
   describe('loadData', () => {
     it('should load household, children, and tasks on init', async () => {
-      const mockAssignments: Partial<Assignment>[] = [
-        { id: '1', status: 'pending', date: new Date().toISOString() },
-      ];
-
-      mockTaskService.getHouseholdAssignments.mockReturnValue(of(mockAssignments as Assignment[]));
-
       await component.ngOnInit();
 
       expect(mockHouseholdService.listHouseholds).toHaveBeenCalled();
       expect(mockChildrenService.listChildren).toHaveBeenCalledWith('household-1');
+      expect(mockDay.load).toHaveBeenCalledWith('household-1');
+      expect(mockHouseholdService.getHouseholdMembers).toHaveBeenCalledWith('household-1');
       expect(component['loading']()).toBe(false);
     });
 
@@ -131,7 +132,6 @@ describe('Home', () => {
       const taskId = 'task-1';
       const mockTask: Partial<Assignment> = { id: taskId, status: 'pending' };
       component['todayTasks'].set([mockTask as Assignment]);
-      component['stats'].set({ activeCount: 1, weekProgress: 0, totalPoints: 0 });
 
       mockTaskService.completeTask.mockResolvedValue({
         taskAssignment: {
@@ -146,8 +146,7 @@ describe('Home', () => {
 
       expect(mockTaskService.completeTask).toHaveBeenCalledWith(taskId);
       expect(component['todayTasks']().length).toBe(0);
-      expect(component['stats']().activeCount).toBe(0);
-      expect(component['stats']().totalPoints).toBe(10);
+      expect(mockHouseholdService.getHouseholdMembers).not.toHaveBeenCalled(); // no household set in this test
     });
 
     it('should handle completion error', async () => {
@@ -216,7 +215,7 @@ describe('Home', () => {
     });
   });
 
-  describe('"Påminn nå" (ST-686)', () => {
+  describe('«Minn på» (ST-686)', () => {
     const open = {
       id: 'a-1',
       title: 'Gå på do',
@@ -232,12 +231,12 @@ describe('Home', () => {
       component['todayTasks'].set([open]);
       fixture.detectChanges();
       return (fixture.nativeElement as HTMLElement).querySelector<HTMLButtonElement>(
-        '.task-remind-btn',
+        'app-chore-row .rbtn',
       );
     }
 
     it('shows the button to parents on today’s open chores', () => {
-      expect(remindButton()?.textContent).toContain('Påminn nå');
+      expect(remindButton()?.textContent).toContain('Minn på');
     });
 
     it('does not show it to a child', () => {
@@ -271,6 +270,64 @@ describe('Home', () => {
       await component['onRemind']('a-1');
       expect(component['remindMessage']()).toBe('Kunne ikke sende påminnelsen. Prøv igjen.');
       expect(component['remindMessage']()).not.toContain('sendt');
+    });
+  });
+
+  describe('Poeng home (ST-777)', () => {
+    const chore = (partial: Partial<Assignment>) =>
+      ({
+        id: crypto.randomUUID(),
+        taskId: 't',
+        title: 'Dekke bord',
+        childId: 'c-jonas',
+        childName: 'Jonas',
+        status: 'pending',
+        date: isoDay(),
+        points: 10,
+        ...partial,
+      }) as Assignment;
+
+    beforeEach(() => {
+      mockHouseholdService.getHouseholdMembers.mockResolvedValue([
+        { userId: 'c-emma', displayName: 'Emma', role: 'child', points: 340 },
+        { userId: 'c-jonas', displayName: 'Jonas', role: 'child', points: 215 },
+        { userId: 'p-1', displayName: 'Kari', role: 'parent', points: 0 },
+      ]);
+      mockDay.load.mockResolvedValue({
+        today: [
+          chore({ status: 'completed' }),
+          chore({ points: 5 }),
+          chore({ childId: 'c-emma', childName: 'Emma', status: 'completed' }),
+          chore({ childId: 'c-emma', childName: 'Emma', points: 15 }),
+        ],
+        overdue: [chore({ title: 'Søppel og pant ut', date: isoDay(-1) })],
+      });
+    });
+
+    it('draws one card per child with a done, open and late meter', async () => {
+      await component.ngOnInit();
+
+      const kids = component['childSummaries']();
+      expect(kids.map((k) => [k.name, k.points])).toEqual([
+        ['Emma', 340],
+        ['Jonas', 215],
+      ]);
+      expect(kids[1].chores).toEqual(['done', 'open', 'late']);
+    });
+
+    it('counts the day in the sub-line and sums what is left', async () => {
+      await component.ngOnInit();
+
+      expect(component['subtitle']()).toMatch(/– 2 av 5 gjort$/);
+      expect(component['leftToday']()).toBe('2 oppgaver – 20 poeng');
+    });
+
+    it('puts left-over chores under Forfalt, saying when they were due', async () => {
+      await component.ngOnInit();
+
+      const overdue = component['overdueTasks']();
+      expect(overdue.map((a) => a.title)).toEqual(['Søppel og pant ut']);
+      expect(component['rowMeta'](overdue[0], true)).toBe('Jonas – forfalt i går');
     });
   });
 });

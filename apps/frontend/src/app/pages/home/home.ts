@@ -1,3 +1,4 @@
+import '@angular/localize/init';
 import {
   Component,
   ChangeDetectionStrategy,
@@ -6,57 +7,53 @@ import {
   inject,
   OnInit,
 } from '@angular/core';
-import { TaskCardComponent } from '../../components/task-card/task-card';
-import { StatCard } from '../../components/stat-card/stat-card';
+import { RouterLink } from '@angular/router';
+import { firstValueFrom } from 'rxjs';
 import {
   TaskFormModal,
   type TaskFormData,
 } from '../../components/modals/task-form-modal/task-form-modal';
-import { CelebrationComponent } from '../../components/celebration/celebration';
 import { FailedTasksSectionComponent } from '../../components/failed-tasks-section/failed-tasks-section';
-import { WeekComparison } from '../../components/week-comparison/week-comparison';
-import { ChildrenTrends } from '../../components/children-trends/children-trends';
+import { PageComponent } from '../../components/page/page';
+import { ChoreRow } from '../../components/poeng/chore-row/chore-row';
+import { GroupLabel } from '../../components/poeng/group-label/group-label';
+import { ChildPointsCard } from '../../components/poeng/child-points-card/child-points-card';
+import type { ChoreState } from '../../components/poeng/chore-meter/chore-meter';
 import { TaskService } from '../../services/task.service';
 import { ChildrenService } from '../../services/children.service';
 import { AuthService } from '../../services/auth.service';
 import { HouseholdService } from '../../services/household.service';
 import { HouseholdStore } from '../../stores/household.store';
-import { DashboardService } from '../../services/dashboard.service';
-import { AnalyticsService } from '../../services/analytics.service';
+import { HouseholdDayService } from '../../services/household-day.service';
 import { PushNotificationService } from '../../services/push-notification.service';
 import { HttpErrorResponse } from '@angular/common/http';
-import type { Task, Assignment, Child, HouseholdAnalytics } from '@st44/types';
+import { capitalize, dayWord, isoDay, longDate } from '../../utils/poeng-format';
+import type { Task, Assignment, Child, HouseholdMemberResponse } from '@st44/types';
 
-/**
- * Dashboard stats for home screen
- */
-interface DashboardStats {
-  activeCount: number;
-  weekProgress: number;
-  totalPoints: number;
+/** One child card on the family home */
+interface ChildSummary {
+  id: string;
+  name: string;
+  points: number;
+  chores: ChoreState[];
 }
 
 /**
- * Home/Dashboard Screen
+ * "Hjemme" — the family's home (Poeng screen 1, ST-777)
  *
- * Default view showing:
- * - Personalized greeting based on time of day
- * - Quick stats (active tasks, week progress, points)
- * - Today's tasks filtered from assignments
- * - Coming up tasks (next 3 days)
- *
- * Navigation is handled by the parent MainLayout component.
+ * Each child's points across the top, then what is overdue (with «Minn på»),
+ * then what is left today. Navigation is handled by the parent MainLayout.
  */
 @Component({
   selector: 'app-home',
   imports: [
-    TaskCardComponent,
-    StatCard,
+    RouterLink,
+    PageComponent,
+    ChoreRow,
+    GroupLabel,
+    ChildPointsCard,
     TaskFormModal,
-    CelebrationComponent,
     FailedTasksSectionComponent,
-    WeekComparison,
-    ChildrenTrends,
   ],
   templateUrl: './home.html',
   styleUrl: './home.css',
@@ -68,55 +65,83 @@ export class Home implements OnInit {
   private readonly authService = inject(AuthService);
   private readonly householdService = inject(HouseholdService);
   private readonly householdStore = inject(HouseholdStore);
-  private readonly dashboardService = inject(DashboardService);
-  private readonly analyticsService = inject(AnalyticsService);
+  private readonly householdDay = inject(HouseholdDayService);
   private readonly push = inject(PushNotificationService);
 
   // State signals
   protected readonly loading = signal(false);
   protected readonly error = signal<string | null>(null);
+  /** Today's open chores ("Igjen i dag") */
   protected readonly todayTasks = signal<Assignment[]>([]);
+  /** Today's chores already done */
+  protected readonly doneToday = signal<Assignment[]>([]);
+  /** Open chores from earlier days ("Forfalt") */
+  protected readonly overdueTasks = signal<Assignment[]>([]);
   protected readonly upcomingTasks = signal<Assignment[]>([]);
-  protected readonly stats = signal<DashboardStats>({
-    activeCount: 0,
-    weekProgress: 0,
-    totalPoints: 0,
-  });
+  protected readonly members = signal<HouseholdMemberResponse[]>([]);
   protected readonly children = signal<Child[]>([]);
-  protected readonly userName = signal<string>('there');
   protected readonly householdId = signal<string | null>(null);
-  protected readonly householdName = signal<string>('My Family');
-  protected readonly analytics = signal<HouseholdAnalytics | null>(null);
+  protected readonly completingId = signal<string | null>(null);
 
   // Modal state
   protected readonly editTaskOpen = signal(false);
   protected readonly selectedTask = signal<Task | null>(null);
 
-  // Celebration state
-  protected readonly showCelebrationAnimation = signal(false);
-
-  // "Påminn nå" (ST-686): parents push a reminder for one of today's chores
+  // «Minn på» (ST-686): parents push a reminder for one open chore
   protected readonly canRemind = computed(() => !this.authService.hasRole('child'));
   protected readonly remindingId = signal<string | null>(null);
   protected readonly remindMessage = signal<string | null>(null);
 
-  // Computed values
-  protected readonly greeting = computed(() => {
-    const hour = new Date().getHours();
-    if (hour >= 5 && hour < 12) return 'Good morning';
-    if (hour >= 12 && hour < 18) return 'Good afternoon';
-    return 'Good evening';
-  });
-
   protected readonly hasTodayTasks = computed(() => this.todayTasks().length > 0);
   protected readonly hasUpcomingTasks = computed(() => this.upcomingTasks().length > 0);
+
+  /** "tirsdag 6. oktober – 3 av 7 gjort" */
+  protected readonly subtitle = computed(() => {
+    const done = this.doneToday().length;
+    const total = done + this.todayTasks().length + this.overdueTasks().length;
+    const date = longDate();
+    return total > 0
+      ? $localize`:@@home.subtitle:${date}:date: – ${done}:done: av ${total}:total: gjort`
+      : date;
+  });
+
+  /** "4 oppgaver – 40 poeng" */
+  protected readonly leftToday = computed(() => {
+    const open = this.todayTasks();
+    const points = open.reduce((sum, a) => sum + (a.points ?? 0), 0);
+    return $localize`:@@home.leftToday:${open.length}:count: oppgaver – ${points}:points: poeng`;
+  });
+
+  /** One card per child: points total and a chore meter (done, open, late) */
+  protected readonly childSummaries = computed<ChildSummary[]>(() => {
+    const all = [
+      ...this.doneToday().map((a) => [a, 'done'] as const),
+      ...this.todayTasks().map((a) => [a, 'open'] as const),
+      ...this.overdueTasks().map((a) => [a, 'late'] as const),
+    ];
+    return (
+      this.members()
+        .filter((m) => m.role === 'child')
+        // One card per name, even if a child shows up both as a login and as a profile
+        .filter((m, i, list) => list.findIndex((x) => x.displayName === m.displayName) === i)
+        .map((m) => ({
+          id: m.userId,
+          name: m.displayName || '',
+          points: m.points,
+          chores: all
+            // A child with a login is listed under the user id, so the name is the safe match
+            .filter(([a]) => a.childId === m.userId || a.childName === m.displayName)
+            .map(([, state]) => state),
+        }))
+    );
+  });
 
   async ngOnInit(): Promise<void> {
     await this.loadData();
   }
 
   /**
-   * Load all data for the dashboard
+   * Load all data for the home screen
    */
   protected async loadData(): Promise<void> {
     try {
@@ -147,22 +172,14 @@ export class Home implements OnInit {
 
       // Find the active household in the list (fallback to first if not found)
       const household = households.find((h) => h.id === activeHouseholdId) || households[0];
-
       this.householdId.set(household.id);
-      this.householdName.set(household.name);
-      // Use firstName if available, fallback to email username
-      this.userName.set(user.firstName || user.email.split('@')[0]);
 
-      // Active household is already set - don't overwrite it
-      // (either from switcher or from autoActivateHousehold above)
-
-      // Load children, tasks, stats, and analytics in parallel
+      // Children (for the edit modal), the day, the points and tomorrow, in parallel
       const [childrenData] = await Promise.all([
         this.childrenService.listChildren(household.id),
-        this.loadTodayTasks(household.id),
+        this.loadDay(household.id),
+        this.loadMembers(household.id),
         this.loadUpcomingTasks(household.id),
-        this.loadStats(household.id),
-        this.loadAnalytics(household.id),
       ]);
 
       this.children.set(childrenData);
@@ -174,100 +191,98 @@ export class Home implements OnInit {
     }
   }
 
-  /**
-   * Load today's task assignments
-   */
-  private async loadTodayTasks(householdId: string): Promise<void> {
-    const today = new Date().toISOString().split('T')[0];
-    this.taskService
-      .getHouseholdAssignments(householdId, { date: today, status: 'pending' })
-      .subscribe({
-        next: (assignments) => this.todayTasks.set(assignments),
-        error: (err) => console.error('Failed to load today tasks:', err),
-      });
+  /** Today's chores and what is left over from the week */
+  private async loadDay(householdId: string): Promise<void> {
+    const day = await this.householdDay.load(householdId);
+    this.todayTasks.set(day.today.filter((a) => a.status === 'pending'));
+    this.doneToday.set(day.today.filter((a) => a.status === 'completed'));
+    this.overdueTasks.set(day.overdue);
+  }
+
+  /** Each child's points total; the cards stay empty if this fails */
+  private async loadMembers(householdId: string): Promise<void> {
+    try {
+      this.members.set(await this.householdService.getHouseholdMembers(householdId));
+    } catch (err) {
+      console.error('Failed to load points:', err);
+    }
   }
 
   /**
-   * Load upcoming task assignments (next 3 days)
+   * Load tomorrow's open chores ("Kommende")
    */
   private async loadUpcomingTasks(householdId: string): Promise<void> {
-    const tomorrow = new Date();
-    tomorrow.setDate(tomorrow.getDate() + 1);
-    const tomorrowStr = tomorrow.toISOString().split('T')[0];
-
-    this.taskService
-      .getHouseholdAssignments(householdId, { date: tomorrowStr, status: 'pending' })
-      .subscribe({
-        next: (assignments) => this.upcomingTasks.set(assignments.slice(0, 3)),
-        error: (err) => console.error('Failed to load upcoming tasks:', err),
-      });
-  }
-
-  /**
-   * Load dashboard statistics from dedicated endpoint
-   */
-  private async loadStats(householdId: string): Promise<void> {
     try {
-      const dashboard = await this.dashboardService.getDashboard(householdId);
-      const weekSummary = dashboard?.weekSummary;
-      const children = dashboard?.children ?? [];
-
-      this.stats.set({
-        activeCount: weekSummary?.pending ?? 0,
-        weekProgress: weekSummary?.completionRate ?? 0,
-        totalPoints: children.reduce((sum, c) => {
-          const tasks = Number(c.tasksCompleted) || 0;
-          return sum + tasks * 10;
-        }, 0),
-      });
+      const assignments = await firstValueFrom(
+        this.taskService.getHouseholdAssignments(householdId, {
+          date: isoDay(1),
+          days: 1,
+          status: 'pending',
+        }),
+      );
+      this.upcomingTasks.set(assignments.slice(0, 3));
     } catch (err) {
-      console.error('Failed to load stats:', err);
+      console.error('Failed to load upcoming tasks:', err);
     }
   }
 
-  /**
-   * Load household analytics for trends and comparison
-   */
-  private async loadAnalytics(householdId: string): Promise<void> {
-    try {
-      const analytics = await this.analyticsService.getHouseholdAnalytics(householdId, 'week');
-      this.analytics.set(analytics);
-    } catch (err) {
-      console.error('Failed to load analytics:', err);
-      // Analytics is optional - don't show error to user
-    }
+  /** "Mathea – i dag" / "Jonas – forfalt i går" */
+  protected rowMeta(a: Assignment, overdue = false): string {
+    const who = a.childName || $localize`:@@home.anyone:Alle`;
+    return overdue
+      ? $localize`:@@home.overdueMeta:${who}:who: – forfalt ${dayWord(a.date)}:day:`
+      : $localize`:@@home.openMeta:${who}:who: – ${dayWord(a.date)}:day:`;
+  }
+
+  /** "Mathea – i morgen" for "Kommende" */
+  protected upcomingMeta(a: Assignment): string {
+    const who = a.childName || $localize`:@@home.anyone:Alle`;
+    return $localize`:@@home.upcomingMeta:${who}:who: – i morgen`;
+  }
+
+  protected pointsText(a: Assignment): string {
+    return a.points != null ? $localize`:@@home.points:${a.points}:points: p` : '';
+  }
+
+  protected remindLabel(a: Assignment): string {
+    return $localize`:@@home.remindAria:Minn ${a.childName ?? ''}:name: på ${a.title}:title:`;
   }
 
   /**
-   * Handle task completion
+   * Handle task completion (a parent may still tick a chore off here)
    */
   protected async onCompleteTask(taskId: string): Promise<void> {
+    this.completingId.set(taskId);
     try {
       await this.taskService.completeTask(taskId);
 
-      // Remove from today's tasks
+      const done =
+        this.todayTasks().find((t) => t.id === taskId) ??
+        this.overdueTasks().find((t) => t.id === taskId);
       this.todayTasks.update((tasks) => tasks.filter((t) => t.id !== taskId));
+      this.overdueTasks.update((tasks) => tasks.filter((t) => t.id !== taskId));
+      if (done && done.date === isoDay()) {
+        this.doneToday.update((tasks) => [...tasks, { ...done, status: 'completed' }]);
+      }
 
-      // Update stats
-      this.stats.update((current) => ({
-        ...current,
-        activeCount: current.activeCount - 1,
-        totalPoints: current.totalPoints + 10,
-      }));
-
-      // TODO: Add celebration animation
-      this.showCelebration();
+      // The child's points total moved
+      const household = this.householdId();
+      if (household) void this.loadMembers(household);
     } catch (err) {
       console.error('Failed to complete task:', err);
       this.error.set('Failed to complete task. Please try again.');
+    } finally {
+      this.completingId.set(null);
     }
   }
 
   /**
-   * "Påminn nå": send the reminder for one open chore to the child's phone now
+   * «Minn på»: send the reminder for one open chore to the child's phone now
    */
   protected async onRemind(assignmentId: string): Promise<void> {
-    const assignment = this.todayTasks().find((t) => t.id === assignmentId);
+    const assignment = [...this.overdueTasks(), ...this.todayTasks()].find(
+      (t) => t.id === assignmentId,
+    );
     const name = assignment?.childName || $localize`:@@home.remindFallbackName:Barnet`;
     this.remindingId.set(assignmentId);
     this.remindMessage.set(null);
@@ -288,17 +303,20 @@ export class Home implements OnInit {
   /**
    * Handle task edit - open edit modal with task data
    *
-   * The cards on this page are assignments, so the card hands us the
+   * The rows on this page are assignments, so the row hands us the
    * assignment id; the task template lives under the assignment's taskId
    * (ST-691: asking for the assignment id gave a 404).
    */
-  protected async onEditTask(assignmentId: string): Promise<void> {
+  protected onEditTask(assignmentId: string): void {
     const householdIdValue = this.householdId();
     if (!householdIdValue) return;
 
-    const assignment = [...this.todayTasks(), ...this.upcomingTasks()].find(
-      (a) => a.id === assignmentId,
-    );
+    const assignment = [
+      ...this.overdueTasks(),
+      ...this.todayTasks(),
+      ...this.doneToday(),
+      ...this.upcomingTasks(),
+    ].find((a) => a.id === assignmentId);
     if (!assignment) return;
 
     this.taskService.getTask(householdIdValue, assignment.taskId).subscribe({
@@ -358,29 +376,17 @@ export class Home implements OnInit {
   }
 
   /**
-   * Show celebration animation when task is completed
-   */
-  private showCelebration(): void {
-    this.showCelebrationAnimation.set(true);
-  }
-
-  /**
-   * Handle celebration animation completion
-   */
-  protected onCelebrationDismissed(): void {
-    this.showCelebrationAnimation.set(false);
-  }
-
-  /**
    * Close edit task modal
    */
   protected closeEditTask(): void {
     this.editTaskOpen.set(false);
     this.selectedTask.set(null);
   }
+
+  protected readonly capitalize = capitalize;
 }
 
-/** Why "Påminn nå" did not go out, in words a parent understands */
+/** Why «Minn på» did not go out, in words a parent understands */
 function remindError(err: unknown): string {
   if (err instanceof HttpErrorResponse) {
     const conflict = (err.error as { details?: { conflictField?: string } } | null)?.details

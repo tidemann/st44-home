@@ -1,56 +1,51 @@
 /* ===== PAGE CONTAINER ===== */
+/* Poeng title row (guide: Layout, Initial badge). Measured from screens-v2:
+   title row 38 px high, title Bricolage 800, sub Meta 15/500 muted, badge 38 px. */
 
 .page {
   min-height: 100%;
-  background: var(--color-background);
-  animation: pageEnter var(--transition-base) ease-out;
+  background: var(--bg);
 }
 
 /* ===== WIDTH VARIANTS ===== */
 
-/* Narrow: 600px - Forms, settings */
 .page-container--narrow .page-header-content,
 .page-container--narrow .page-content {
   max-width: 600px;
 }
 
-/* Medium: 800px - Default for most pages */
 .page-container--medium .page-header-content,
 .page-container--medium .page-content {
   max-width: 800px;
 }
 
-/* Wide: 1200px - Dashboards, family */
 .page-container--wide .page-header-content,
 .page-container--wide .page-content {
   max-width: 1200px;
 }
 
-/* ===== HEADER SECTION ===== */
+/* ===== TITLE ROW ===== */
 
 .page-header {
-  padding: var(--space-xl) var(--space-md) var(--space-lg);
+  padding: calc(env(safe-area-inset-top, 0px) + 14px) var(--gutter) 0;
+  background: var(--bg);
+  color: var(--text);
 }
 
-/* Gradient header style (default) */
-.page-header--gradient {
-  background: var(--gradient-primary);
-  color: white;
-}
-
-/* Plain header style */
+/* Both variants are the same flat row: Poeng has no gradient masthead */
+.page-header--gradient,
 .page-header--plain {
-  background: var(--color-surface);
-  color: var(--color-text-primary);
-  border-bottom: 1px solid var(--color-border);
+  background: var(--bg);
+  color: var(--text);
 }
 
 .page-header-content {
   margin: 0 auto;
+  min-height: 38px;
   display: flex;
   justify-content: space-between;
-  align-items: flex-start;
-  gap: var(--space-md);
+  align-items: center;
+  gap: 12px;
   width: 100%;
 }
 
@@ -59,109 +54,122 @@
   min-width: 0;
 }
 
-/* ===== TITLE STYLES ===== */
-
 .page-title {
-  font-family: var(--font-heading);
-  font-size: var(--font-size-2xl);
-  font-weight: var(--font-weight-bold);
-  line-height: var(--line-height-tight);
+  font-family: var(--font-display);
+  font-size: 26px;
+  font-weight: 800;
+  line-height: 1.15;
+  letter-spacing: -0.01em;
+  color: var(--text);
   margin: 0;
 }
-
-/* Gradient header: white title */
-.page-header--gradient .page-title {
-  color: white;
-}
-
-/* Plain header: primary text color */
-.page-header--plain .page-title {
-  color: var(--color-text-primary);
-}
-
-/* ===== SUBTITLE STYLES ===== */
-
-.page-subtitle {
-  font-family: var(--font-body);
-  font-size: var(--font-size-base);
-  line-height: var(--line-height-normal);
-  margin: 0 0 var(--space-md) 0;
-  /* 7.58:1 on --color-surface, 7.21:1 on --color-background (WCAG AA) */
-  color: #475569;
-}
-
-/* ===== HEADER ACTIONS ===== */
 
 .page-header-actions {
   flex-shrink: 0;
   display: flex;
   align-items: center;
-  gap: var(--space-sm);
+  gap: 8px;
 }
 
-/* Hide user button on mobile (shown in mobile header instead) */
-.page-header-actions app-user-button {
-  display: none;
+/* ===== INITIAL BADGE: 38 px drawn, 44 px pressed ===== */
+
+.badge-wrap {
+  position: relative;
 }
 
-@media (min-width: 768px) {
-  .page-header-actions app-user-button {
-    display: block;
-  }
+.initial-badge {
+  position: relative;
+  width: 38px;
+  height: 38px;
+  border: 0;
+  border-radius: 999px;
+  background: var(--track);
+  color: var(--text);
+  font-family: var(--font-text);
+  font-size: 15px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
 }
 
-/* ===== CONTENT SECTION ===== */
+.initial-badge::after {
+  content: '';
+  position: absolute;
+  inset: -3px;
+}
+
+.initial-badge:focus-visible {
+  outline: var(--focus-ring);
+  outline-offset: 2px;
+}
+
+.badge-menu {
+  position: absolute;
+  right: 0;
+  top: calc(100% + 6px);
+  z-index: var(--z-index-dropdown);
+  background: var(--surface);
+  border: 1px solid var(--hairline);
+  border-radius: var(--r-card);
+  padding: 4px;
+  min-width: 140px;
+}
+
+.badge-menu-item {
+  width: 100%;
+  min-height: 44px;
+  padding: 0 12px;
+  border: 0;
+  border-radius: 9px;
+  background: transparent;
+  color: var(--text);
+  font-family: var(--font-text);
+  font-size: 16px;
+  font-weight: 600;
+  text-align: left;
+  cursor: pointer;
+}
+
+.badge-menu-item:hover {
+  background: var(--track);
+}
+
+.badge-menu-item:focus-visible {
+  outline: var(--focus-ring);
+  outline-offset: -2px;
+}
+
+/* ===== SUB-LINE (Meta 15/500, muted 6.12:1 on --bg) ===== */
+
+.page-subtitle {
+  font-family: var(--font-text);
+  font-size: 15px;
+  font-weight: 500;
+  line-height: 1.4;
+  color: var(--text-muted);
+  margin: -4px 0 0;
+}
+
+/* ===== CONTENT ===== */
 
 .page-content {
   margin: 0 auto;
-  padding: var(--space-md);
+  padding: 0 var(--gutter) 24px;
   width: 100%;
 }
 
-/* ===== RESPONSIVE: TABLET (768px+) ===== */
-
 @media (min-width: 768px) {
   .page-header {
-    padding: var(--space-xl) var(--space-xl) var(--space-lg);
-  }
-
-  .page-title {
-    font-size: var(--font-size-3xl);
+    padding: 32px 32px 0;
   }
 
   .page-content {
-    padding: var(--space-lg) var(--space-xl);
+    padding: 0 32px 32px;
   }
-}
 
-/* ===== RESPONSIVE: DESKTOP (1024px+) ===== */
-
-@media (min-width: 1024px) {
   .page-title {
-    font-size: var(--font-size-4xl);
-  }
-
-  .page-content {
-    padding: var(--space-xl);
-  }
-}
-
-/* ===== ANIMATIONS ===== */
-
-@keyframes pageEnter {
-  from {
-    opacity: 0;
-    transform: translateY(8px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-/* Respect reduced motion preference */
-@media (prefers-reduced-motion: reduce) {
-  .page {
-    animation: none;
+    font-size: 30px;
   }
 }

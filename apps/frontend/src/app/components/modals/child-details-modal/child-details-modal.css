@@ -8,8 +8,8 @@
 
 /* Error Banner */
 .error-banner {
-  background: #fef2f2;
-  color: #dc2626;
+  background: var(--color-danger-light);
+  color: var(--color-danger);
   padding: var(--space-md);
   border-radius: var(--radius-sm);
   font-size: var(--font-size-sm);
@@ -29,7 +29,7 @@
   width: 64px;
   height: 64px;
   border-radius: var(--radius-full);
-  background: var(--gradient-primary);
+  background: var(--track);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -47,7 +47,7 @@
 .child-name {
   font-family: var(--font-heading);
   font-size: var(--font-size-xl);
-  font-weight: var(--font-weight-bold);
+  font-weight: 800;
   color: var(--color-text-primary);
   margin: 0 0 var(--space-xs) 0;
 }
@@ -97,7 +97,7 @@
 
 .form-input {
   padding: var(--space-sm) var(--space-md);
-  border: 2px solid #e2e8f0;
+  border: 2px solid var(--hairline);
   border-radius: var(--radius-sm);
   font-size: var(--font-size-base);
   color: var(--color-text-primary);
@@ -106,18 +106,17 @@
 }
 
 .form-input:focus {
-  outline: none;
+  outline: var(--focus-ring);
   border-color: var(--color-primary);
-  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
 }
 
 .form-input.error {
-  border-color: #dc2626;
+  border-color: var(--color-danger);
 }
 
 .form-error {
   font-size: var(--font-size-xs);
-  color: #dc2626;
+  color: var(--color-danger);
 }
 
 .birth-year-input {
@@ -134,11 +133,11 @@
 .section-title {
   font-family: var(--font-heading);
   font-size: var(--font-size-base);
-  font-weight: var(--font-weight-semibold);
+  font-weight: 800;
   color: var(--color-text-primary);
   margin: 0 0 var(--space-sm) 0;
   padding-bottom: var(--space-xs);
-  border-bottom: 1px solid var(--color-border, #e5e7eb);
+  border-bottom: 1px solid var(--color-border);
 }
 
 /* Account Section */
@@ -146,7 +145,7 @@
   padding: var(--space-md);
   background: var(--color-surface);
   border-radius: var(--radius-md);
-  border: 1px solid var(--color-border, #e5e7eb);
+  border: 1px solid var(--color-border);
 }
 
 .account-status {
@@ -159,11 +158,11 @@
 }
 
 .account-status.has-account {
-  background: var(--color-success-light, #dcfce7);
+  background: var(--color-success-light);
 }
 
 .account-status.no-account {
-  background: var(--color-warning-light, #fef3c7);
+  background: var(--color-warning-light);
 }
 
 .status-icon {
@@ -173,11 +172,11 @@
 }
 
 .has-account .status-icon {
-  color: var(--color-success, #22c55e);
+  color: var(--color-success);
 }
 
 .no-account .status-icon {
-  color: var(--color-warning, #f59e0b);
+  color: var(--amber-ink);
 }
 
 .status-info {
@@ -205,7 +204,7 @@
   padding: var(--space-md);
   background: var(--color-surface);
   border-radius: var(--radius-md);
-  border: 1px solid var(--color-border, #e5e7eb);
+  border: 1px solid var(--color-border);
   opacity: 0.7;
 }
 
@@ -217,7 +216,7 @@
   padding: var(--space-lg);
   background: var(--color-background);
   border-radius: var(--radius-sm);
-  border: 2px dashed var(--color-border, #d1d5db);
+  border: 2px dashed var(--color-border);
 }
 
 .qr-icon {
@@ -233,7 +232,7 @@
 
 .qr-description {
   font-size: var(--font-size-sm);
-  color: var(--color-text-muted);
+  color: var(--text-muted);
   margin: 0;
   text-align: center;
 }
@@ -241,19 +240,19 @@
 /* Danger Zone */
 .danger-zone {
   padding: var(--space-md);
-  background: #fef2f2;
+  background: var(--color-danger-light);
   border-radius: var(--radius-md);
-  border: 1px solid #fecaca;
+  border: 1px solid var(--color-danger);
 }
 
 .danger-title {
-  color: #dc2626;
-  border-bottom-color: #fecaca;
+  color: var(--color-danger);
+  border-bottom-color: var(--color-danger);
 }
 
 .danger-description {
   font-size: var(--font-size-sm);
-  color: #b91c1c;
+  color: var(--color-danger-dark);
   margin: 0 0 var(--space-md) 0;
 }
 
@@ -271,7 +270,7 @@
 .confirm-title {
   font-family: var(--font-heading);
   font-size: var(--font-size-xl);
-  font-weight: var(--font-weight-bold);
+  font-weight: 800;
   color: var(--color-text-primary);
   margin: 0 0 var(--space-sm) 0;
 }
@@ -295,7 +294,7 @@
   gap: var(--space-sm);
   padding-top: var(--space-md);
   margin-top: var(--space-md);
-  border-top: 1px solid var(--color-border, #e5e7eb);
+  border-top: 1px solid var(--color-border);
 }
 
 /* Button styles */
@@ -306,9 +305,7 @@
   font-size: var(--font-size-sm);
   font-weight: var(--font-weight-semibold);
   cursor: pointer;
-  transition:
-    transform 0.2s,
-    box-shadow 0.2s;
+  transition: transform 0.2s;
   border: none;
 }
 
@@ -323,19 +320,18 @@
 }
 
 .btn-primary {
-  background: var(--gradient-primary-button);
-  color: white;
+  background: var(--yellow);
+  color: var(--ink);
 }
 
 .btn-primary:hover:not(:disabled) {
   transform: translateY(-2px);
-  box-shadow: var(--shadow-md);
 }
 
 .btn-secondary {
   background: var(--color-surface);
   color: var(--color-text-primary);
-  border: 1px solid var(--color-border, #d1d5db);
+  border: 1px solid var(--color-border);
 }
 
 .btn-secondary:hover:not(:disabled) {
@@ -343,20 +339,20 @@
 }
 
 .btn-danger {
-  background: #dc2626;
+  background: var(--color-danger);
   color: white;
 }
 
 .btn-danger:hover:not(:disabled) {
-  background: #b91c1c;
+  background: var(--color-danger-dark);
 }
 
 .btn-danger-outline {
   background: transparent;
-  color: #dc2626;
-  border: 1px solid #dc2626;
+  color: var(--color-danger);
+  border: 1px solid var(--color-danger);
 }
 
 .btn-danger-outline:hover:not(:disabled) {
-  background: #fef2f2;
+  background: var(--color-danger-light);
 }

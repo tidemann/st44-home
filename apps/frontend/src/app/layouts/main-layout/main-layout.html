@@ -10,16 +10,21 @@
 
   <!-- Main Content Area -->
   <div class="main-content">
-    <!-- Mobile Header (Mobile only) -->
-    <header class="mobile-header">
-      <div class="mobile-header-content">
-        <div class="mobile-logo">Diddit!</div>
-        <div class="mobile-header-actions">
-          <app-household-switcher />
-          <app-user-button [user]="userData()" (clicked)="onSettings()" />
+    <!-- Mobile Header: only on screens without their own Poeng title row -->
+    @if (!ownHead()) {
+      <header class="mobile-header">
+        <div class="mobile-header-content">
+          <div class="mobile-logo">Diddit!</div>
+          <div class="mobile-header-actions">
+            <app-household-switcher />
+            <app-user-button [user]="userData()" (clicked)="onSettings()" />
+          </div>
         </div>
-      </div>
-    </header>
+      </header>
+    } @else {
+      <!-- Renders nothing unless the parent belongs to more than one household -->
+      <app-household-switcher class="switcher-slot" />
+    }
 
     <!-- Router Outlet for Page Content -->
     <router-outlet />
@@ -28,16 +33,6 @@
     <div class="bottom-nav-container">
       <app-bottom-nav [activeScreen]="activeScreen()" (navigate)="onNavigate($event)" />
     </div>
-
-    <!-- FAB Button (Mobile only) -->
-    <button
-      class="fab"
-      (click)="openCreateTask()"
-      i18n-aria-label="@@mainLayout.fab.ariaLabel"
-      aria-label="Legg til ny oppgave"
-    >
-      +
-    </button>
   </div>
 
   <!-- Task Form Modal (Create mode) -->

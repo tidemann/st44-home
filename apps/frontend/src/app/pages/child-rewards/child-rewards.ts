@@ -10,9 +10,13 @@ import {
 import type { RewardRedemption } from '@st44/types';
 import { RewardService, ChildReward } from '../../services/reward.service';
 import { Modal } from '../../components/modals/modal/modal';
+import { PageComponent } from '../../components/page/page';
+import { RewardCard } from '../../components/poeng/reward-card/reward-card';
+import { GroupLabel } from '../../components/poeng/group-label/group-label';
+import { capitalize, dayWord, isoDay } from '../../utils/poeng-format';
 
 /**
- * Child Rewards Component ("Mine belønninger", sketch 05)
+ * Child Rewards Component (Poeng screen 5, ST-777; first built as sketch 05)
  *
  * Allows children to:
  * - See their points balance
@@ -22,7 +26,7 @@ import { Modal } from '../../components/modals/modal/modal';
  */
 @Component({
   selector: 'app-child-rewards',
-  imports: [Modal],
+  imports: [Modal, PageComponent, RewardCard, GroupLabel],
   templateUrl: './child-rewards.html',
   styleUrls: ['./child-rewards.css'],
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -68,6 +72,43 @@ export class ChildRewards implements OnInit {
     this.rewardService.loadChildRedemptions().subscribe({
       error: (err) => console.error('Failed to load reward requests:', err),
     });
+  }
+
+  /** Rewards with a request waiting for an answer: their card says so instead of «Spør mor» */
+  waitingRewardIds = computed(() => new Set(this.waiting().map((r) => r.rewardId)));
+
+  /** "3 av 5 kan hentes nå" */
+  subtitle = computed(() => {
+    const rewards = this.childRewards();
+    const ready = rewards.filter((r) => r.available && r.canAfford).length;
+    return $localize`:@@childRewards.subtitle:${ready}:ready: av ${rewards.length}:total: kan hentes nå`;
+  });
+
+  balanceLabel = computed(
+    () => $localize`:@@childRewards.balanceAria:${this.pointsBalance()}:points: poeng å bruke`,
+  );
+
+  /** "Hentet før": requests a parent said yes to */
+  collected = computed(() =>
+    this.answered().filter((r) => r.status === 'approved' || r.status === 'fulfilled'),
+  );
+
+  /** Requests a parent said no to, with the reason */
+  refused = computed(() => this.answered().filter((r) => r.status === 'rejected'));
+
+  /** "Lørdag – Mor sa ja" */
+  historyMeta(redemption: RewardRedemption): string {
+    const at = redemption.decidedAt ?? redemption.redeemedAt;
+    const day = capitalize(dayWord(isoDay(0, new Date(at))));
+    const who = redemption.decidedByName;
+    if (redemption.status === 'rejected') {
+      return who
+        ? $localize`:@@childRewards.historyNoBy:${day}:day: – ${who}:who: sa nei`
+        : $localize`:@@childRewards.historyNo:${day}:day: – Nei denne gangen`;
+    }
+    return who
+      ? $localize`:@@childRewards.historyYesBy:${day}:day: – ${who}:who: sa ja`
+      : $localize`:@@childRewards.historyYes:${day}:day: – Ja`;
   }
 
   /** Points the child still needs for this reward */

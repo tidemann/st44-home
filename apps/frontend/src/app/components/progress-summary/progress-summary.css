@@ -3,8 +3,8 @@
   flex-direction: column;
   gap: var(--space-3, 0.75rem);
   padding: var(--space-4, 1rem);
-  border-radius: var(--radius-lg, 0.75rem);
-  background: var(--surface-secondary, #f8f9fa);
+  border-radius: var(--r-card);
+  background: var(--bg);
 }
 
 /* Header */
@@ -23,44 +23,44 @@
   flex: 1;
   font-size: 1rem;
   font-weight: 600;
-  color: var(--text-primary, #212529);
+  color: var(--text);
 }
 
 .progress-percent {
   font-size: 1.25rem;
   font-weight: 700;
-  color: var(--text-primary, #212529);
+  color: var(--text);
 }
 
 /* Progress Bar */
 .progress-bar-wrapper {
   height: 0.75rem;
-  border-radius: var(--radius-full, 9999px);
-  background: var(--surface-tertiary, #e9ecef);
+  border-radius: var(--radius-full);
+  background: var(--track);
   overflow: hidden;
 }
 
 .progress-bar {
   height: 100%;
-  border-radius: var(--radius-full, 9999px);
+  border-radius: var(--radius-full);
   transition: width 0.5s ease-out;
   min-width: 0;
 }
 
 .progress-bar.progress-excellent {
-  background: linear-gradient(90deg, #28a745 0%, #20c997 100%);
+  background: var(--done);
 }
 
 .progress-bar.progress-good {
-  background: linear-gradient(90deg, #17a2b8 0%, #20c997 100%);
+  background: var(--done);
 }
 
 .progress-bar.progress-fair {
-  background: linear-gradient(90deg, #ffc107 0%, #fd7e14 100%);
+  background: var(--yellow);
 }
 
 .progress-bar.progress-low {
-  background: linear-gradient(90deg, #dc3545 0%, #fd7e14 100%);
+  background: var(--overdue);
 }
 
 /* Stats */
@@ -79,13 +79,13 @@
 .stat-value {
   font-size: 1.25rem;
   font-weight: 700;
-  color: var(--text-primary, #212529);
+  color: var(--text);
 }
 
 .stat-label {
   font-size: 0.75rem;
   font-weight: 500;
-  color: var(--text-secondary, #6c757d);
+  color: var(--text-muted);
 }
 
 /* Message */
@@ -97,19 +97,19 @@
 }
 
 .progress-message.progress-excellent {
-  color: #28a745;
+  color: var(--color-success);
 }
 
 .progress-message.progress-good {
-  color: #17a2b8;
+  color: var(--color-primary);
 }
 
 .progress-message.progress-fair {
-  color: #fd7e14;
+  color: var(--amber-ink);
 }
 
 .progress-message.progress-low {
-  color: #dc3545;
+  color: var(--color-danger);
 }
 
 /* Responsive */

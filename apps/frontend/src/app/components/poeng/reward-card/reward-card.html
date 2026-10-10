@@ -1,0 +1,44 @@
+<article class="reward">
+  <div class="top">
+    <h3 class="rname">{{ name() }}</h3>
+    <span class="cost" i18n="@@rewardCard.cost">{{ cost() }} p</span>
+  </div>
+  @if (!available()) {
+    <div class="bot">
+      <span class="left" i18n="@@rewardCard.soldOut">Tomt nå</span>
+    </div>
+  } @else if (waiting()) {
+    <div class="bot">
+      <span class="left" i18n="@@rewardCard.waiting">Venter på svar</span>
+    </div>
+  } @else if (affordable()) {
+    <div class="bot">
+      <span class="ok">
+        <svg width="14" height="11" viewBox="0 0 14 11" fill="none" aria-hidden="true">
+          <path
+            d="M1.5 5.6 5.1 9.2 12.5 1.8"
+            stroke="#0F7A54"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          />
+        </svg>
+        <ng-container i18n="@@rewardCard.enough">Du har nok poeng</ng-container>
+      </span>
+      <button
+        type="button"
+        class="rbtn"
+        (click)="ask.emit()"
+        [attr.aria-label]="askLabel()"
+        i18n="@@rewardCard.ask"
+      >
+        Spør mor
+      </button>
+    </div>
+  } @else {
+    <div class="botm">
+      <app-points-meter class="meter" [value]="share()" />
+      <span class="left" i18n="@@rewardCard.missing">{{ missing() }} igjen</span>
+    </div>
+  }
+</article>

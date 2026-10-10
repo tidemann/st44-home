@@ -475,6 +475,9 @@ async function redeemReward(
         throw new TransactionValidationError(400, 'Bad Request', 'Reward is out of stock');
       }
 
+      // Lock the child so two spends (or an undo) cannot both pass the balance check
+      await client.query('SELECT id FROM children WHERE id = $1 FOR UPDATE', [childId]);
+
       // Get points balance
       const balanceResult = await client.query(
         'SELECT points_balance::int AS points_balance FROM child_points_balance WHERE child_id = $1',
@@ -566,10 +569,12 @@ async function getChildRedemptions(request: FastifyRequest, reply: FastifyReply)
     }
 
     const result = await db.query(
-      `SELECT rr.*, r.name AS reward_name, c.name AS child_name
+      `SELECT rr.*, r.name AS reward_name, c.name AS child_name,
+              u.first_name AS decided_by_name
        FROM reward_redemptions rr
        JOIN children c ON rr.child_id = c.id
        JOIN rewards r ON rr.reward_id = r.id
+       LEFT JOIN users u ON rr.decided_by = u.id
        WHERE c.user_id = $1
        ORDER BY rr.redeemed_at DESC
        LIMIT 50`,
@@ -580,6 +585,7 @@ async function getChildRedemptions(request: FastifyRequest, reply: FastifyReply)
       ...mapRedemptionRowToRedemption(row),
       rewardName: row.reward_name,
       childName: row.child_name,
+      decidedByName: row.decided_by_name ?? null,
     }));
 
     return reply.send({ redemptions });
@@ -609,10 +615,12 @@ async function listRedemptions(
 
   try {
     let query = `
-      SELECT rr.*, r.name as reward_name, c.name as child_name
+      SELECT rr.*, r.name as reward_name, c.name as child_name,
+             u.first_name as decided_by_name
       FROM reward_redemptions rr
       JOIN rewards r ON rr.reward_id = r.id
       JOIN children c ON rr.child_id = c.id
+      LEFT JOIN users u ON rr.decided_by = u.id
       WHERE rr.household_id = $1
     `;
     const params: string[] = [householdId];
@@ -630,6 +638,7 @@ async function listRedemptions(
       ...mapRedemptionRowToRedemption(row),
       rewardName: row.reward_name,
       childName: row.child_name,
+      decidedByName: row.decided_by_name ?? null,
     }));
 
     return reply.send({ redemptions });
@@ -754,6 +763,9 @@ async function updateRedemptionStatus(
           if (quantity !== null && quantity <= 0) {
             throw new TransactionValidationError(409, 'Conflict', 'Reward is out of stock');
           }
+          await client.query('SELECT id FROM children WHERE id = $1 FOR UPDATE', [
+            current.child_id,
+          ]);
           const balance = await client.query(
             'SELECT points_balance::int AS points_balance FROM child_points_balance WHERE child_id = $1',
             [current.child_id],

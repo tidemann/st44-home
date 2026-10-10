@@ -320,6 +320,7 @@ export class TaskService {
     let endpoint = `/households/${householdId}/assignments`;
     const params: string[] = [];
     if (filters?.date) params.push(`date=${filters.date}`);
+    if (filters?.days) params.push(`days=${filters.days}`);
     if (filters?.childId) params.push(`childId=${filters.childId}`);
     if (filters?.status) params.push(`status=${filters.status}`);
     if (params.length > 0) endpoint += `?${params.join('&')}`;
@@ -443,6 +444,41 @@ export class TaskService {
       this.assignmentsErrorSignal.set('Failed to complete task');
       throw err;
     }
+  }
+
+  /**
+   * Undo a completion within the server's 5 minutes ("Angre" on the tick screen)
+   *
+   * Not optimistic: the server refuses after 5 minutes or when the points are
+   * already spent, and the chore must not flip back unless it really did.
+   *
+   * @param assignmentId - ID of the task assignment
+   * @returns Promise of the points taken back
+   */
+  async uncompleteTask(assignmentId: string): Promise<number> {
+    const result = await this.apiService.post<{
+      taskAssignment: { id: string; status: 'pending'; completedAt: null };
+      pointsRemoved: number;
+    }>(`/assignments/${assignmentId}/uncomplete`, {});
+
+    this.assignmentsSignal.update((assignments) =>
+      assignments.map((a) =>
+        a.id === assignmentId ? { ...a, status: 'pending' as const, completedAt: null } : a,
+      ),
+    );
+
+    this.myTasksResponseSignal.update((response) => {
+      if (!response) return response;
+      return {
+        ...response,
+        tasks: response.tasks.map((t) =>
+          t.id === assignmentId ? { ...t, status: 'pending' as const, completedAt: null } : t,
+        ),
+        completedPoints: Math.max(response.completedPoints - result.pointsRemoved, 0),
+      };
+    });
+
+    return result.pointsRemoved;
   }
 
   /**

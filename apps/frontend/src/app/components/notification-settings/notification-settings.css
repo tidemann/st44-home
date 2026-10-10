@@ -5,23 +5,23 @@
 .push-card {
   display: flex;
   flex-direction: column;
-  gap: var(--space-md, 16px);
+  gap: var(--space-md);
 }
 
 .push-card.compact {
-  padding: var(--space-lg, 24px);
-  margin-top: var(--space-lg, 24px);
+  padding: var(--space-lg);
+  margin-top: var(--space-lg);
 }
 
 /* Same heading as the other settings sections */
 .push-title {
   font-family: var(--font-heading);
   font-size: var(--font-size-xl);
-  font-weight: var(--font-weight-bold);
+  font-weight: 800;
   color: var(--color-text-primary);
   margin: 0;
   padding-bottom: var(--space-sm);
-  border-bottom: 1px solid var(--color-border, #e5e7eb);
+  border-bottom: 1px solid var(--color-border);
 }
 
 .compact .push-title {
@@ -36,14 +36,14 @@
   margin: 0;
   font-size: 15px;
   line-height: 1.5;
-  color: var(--color-text-primary, #1e293b);
+  color: var(--color-text-primary);
 }
 
 /* Status is never colour alone: a tick plus the words */
 .push-status {
   display: flex;
   align-items: center;
-  gap: var(--space-sm, 8px);
+  gap: var(--space-sm);
   font-weight: 600;
 }
 
@@ -54,27 +54,27 @@
 .push-blocked {
   display: flex;
   flex-direction: column;
-  gap: var(--space-xs, 4px);
+  gap: var(--space-xs);
 }
 
 .push-blocked-title {
   display: flex;
   align-items: center;
-  gap: var(--space-sm, 8px);
+  gap: var(--space-sm);
 }
 
 .push-steps {
-  padding-left: var(--space-lg, 24px);
+  padding-left: var(--space-lg);
 }
 
 .push-steps li + li {
-  margin-top: var(--space-xs, 4px);
+  margin-top: var(--space-xs);
 }
 
 .push-actions {
   display: flex;
   flex-wrap: wrap;
-  gap: var(--space-sm, 8px);
+  gap: var(--space-sm);
 }
 
 /* Touch targets at least 48 px (sketch 08) */

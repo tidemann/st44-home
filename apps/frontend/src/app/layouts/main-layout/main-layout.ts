@@ -64,6 +64,8 @@ export class MainLayout implements OnInit, OnDestroy {
 
   // State signals
   protected readonly activeScreen = signal<NavScreen>('home');
+  /** The screen draws its own Poeng title row, so the logo bar steps aside (route data ownHead) */
+  protected readonly ownHead = signal(false);
   protected readonly householdId = signal<string | null>(null);
   protected readonly householdName = signal<string>('My Family');
   protected readonly children = signal<Child[]>([]);
@@ -89,12 +91,14 @@ export class MainLayout implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.loadHouseholdData();
     this.updateActiveScreenFromUrl(this.router.url);
+    this.updateOwnHead();
 
     // Listen for route changes to update active screen
     this.routerSubscription = this.router.events
       .pipe(filter((event): event is NavigationEnd => event instanceof NavigationEnd))
       .subscribe((event) => {
         this.updateActiveScreenFromUrl(event.urlAfterRedirects);
+        this.updateOwnHead();
       });
   }
 
@@ -150,6 +154,17 @@ export class MainLayout implements OnInit, OnDestroy {
     } catch (err) {
       console.error('Failed to load children:', err);
     }
+  }
+
+  /**
+   * Read ownHead from the deepest active route
+   */
+  private updateOwnHead(): void {
+    let route = this.router.routerState.snapshot.root;
+    while (route.firstChild) {
+      route = route.firstChild;
+    }
+    this.ownHead.set(route.data['ownHead'] === true);
   }
 
   /**

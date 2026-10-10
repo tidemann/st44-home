@@ -3,14 +3,13 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: var(--bg);
   padding: 1.5rem;
 }
 
 .login-card {
-  background: white;
-  border-radius: 2rem;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  background: var(--surface);
+  border-radius: var(--r-card);
   padding: 3rem 2rem;
   max-width: 480px;
   width: 100%;
@@ -35,15 +34,15 @@
 
 .title {
   font-size: 2.5rem;
+  font-family: var(--font-display);
   font-weight: 800;
-  color: #667eea;
+  color: var(--text);
   margin: 0 0 0.5rem 0;
-  text-shadow: 2px 2px 4px rgba(102, 126, 234, 0.2);
 }
 
 .subtitle {
   font-size: 1.25rem;
-  color: #666;
+  color: var(--text-muted);
   margin: 0;
   font-weight: 500;
 }
@@ -63,7 +62,7 @@
 .form-label {
   font-size: 1.125rem;
   font-weight: 700;
-  color: #333;
+  color: var(--text);
   display: flex;
   align-items: center;
   gap: 0.5rem;
@@ -76,26 +75,25 @@
 .form-input {
   padding: 1rem 1.25rem;
   font-size: 1.125rem;
-  border: 3px solid #e0e0e0;
-  border-radius: 1rem;
+  border: 3px solid var(--hairline);
+  border-radius: var(--r-card);
   transition: all 0.3s ease;
   font-family: inherit;
-  background: white;
+  background: var(--surface);
 }
 
 .form-input:focus {
-  outline: none;
-  border-color: #667eea;
-  box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+  outline: var(--focus-ring);
+  border-color: var(--ink);
   transform: translateY(-2px);
 }
 
 .form-input.error {
-  border-color: #ef4444;
+  border-color: var(--color-danger);
 }
 
 .form-input::placeholder {
-  color: #999;
+  color: var(--color-text-tertiary);
 }
 
 .password-input-wrapper {
@@ -126,29 +124,29 @@
 }
 
 .toggle-password:focus {
-  outline: 2px solid #667eea;
+  outline: 2px solid var(--ink);
   outline-offset: 2px;
   border-radius: 0.5rem;
 }
 
 .error-text {
-  color: #ef4444;
+  color: var(--color-danger);
   font-size: 0.95rem;
   font-weight: 600;
   margin-top: 0.25rem;
 }
 
 .error-message {
-  background: #fee2e2;
-  color: #991b1b;
+  background: var(--color-danger-light);
+  color: var(--color-danger-dark);
   padding: 1rem 1.25rem;
-  border-radius: 1rem;
+  border-radius: var(--r-card);
   display: flex;
   align-items: center;
   gap: 0.75rem;
   font-weight: 600;
   font-size: 1.05rem;
-  border: 2px solid #fecaca;
+  border: 2px solid var(--color-danger);
 }
 
 .error-icon {
@@ -157,16 +155,15 @@
 }
 
 .submit-button {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
+  background: var(--yellow);
+  color: var(--ink);
   font-size: 1.5rem;
   font-weight: 800;
   padding: 1.25rem 2rem;
   border: none;
-  border-radius: 1.25rem;
+  border-radius: var(--r-button);
   cursor: pointer;
   transition: all 0.3s ease;
-  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -176,12 +173,7 @@
 }
 
 .submit-button:hover:not(:disabled) {
-  transform: translateY(-3px);
-  box-shadow: 0 8px 25px rgba(102, 126, 234, 0.5);
-}
-
-.submit-button:active:not(:disabled) {
-  transform: translateY(-1px);
+  background: var(--yellow-inset);
 }
 
 .submit-button:disabled {
@@ -192,8 +184,8 @@
 .spinner {
   width: 1.5rem;
   height: 1.5rem;
-  border: 3px solid rgba(255, 255, 255, 0.3);
-  border-top-color: white;
+  border: 3px solid var(--yellow-track);
+  border-top-color: var(--ink);
   border-radius: 50%;
   animation: spin 0.8s linear infinite;
 }
@@ -208,30 +200,30 @@
   margin-top: 2rem;
   text-align: center;
   padding-top: 1.5rem;
-  border-top: 2px solid #f0f0f0;
+  border-top: 2px solid var(--hairline);
 }
 
 .help-text {
   font-size: 1.1rem;
-  color: #666;
+  color: var(--text-muted);
   margin: 0;
   font-weight: 500;
 }
 
 .help-link {
-  color: #667eea;
+  color: var(--color-primary);
   font-weight: 700;
   text-decoration: none;
   transition: all 0.2s ease;
 }
 
 .help-link:hover {
-  color: #764ba2;
+  color: var(--color-primary);
   text-decoration: underline;
 }
 
 .help-link:focus {
-  outline: 2px solid #667eea;
+  outline: 2px solid var(--ink);
   outline-offset: 2px;
   border-radius: 0.25rem;
 }
@@ -244,7 +236,7 @@
 
   .login-card {
     padding: 2rem 1.5rem;
-    border-radius: 1.5rem;
+    border-radius: var(--r-card);
   }
 
   .title {

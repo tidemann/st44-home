@@ -1,0 +1,79 @@
+/* screens-v2 .reward: white, padding 15/15/11, 12 px radius, 8 px apart */
+
+:host {
+  display: block;
+}
+
+.reward {
+  padding: 15px 15px 11px;
+  background: var(--surface);
+  border-radius: var(--r-card);
+  letter-spacing: -0.02em;
+}
+
+.top {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.rname {
+  margin: 0;
+  font-family: var(--font-text);
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 1.1;
+  letter-spacing: -0.005em;
+  color: var(--text);
+}
+
+.cost {
+  flex: none;
+  font-family: var(--font-text);
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-muted);
+}
+
+.bot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  min-height: 36px;
+  margin-top: 12px;
+}
+
+.ok {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-family: var(--font-text);
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--done);
+}
+
+.botm {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  height: 14px;
+  margin-top: 13px;
+  margin-bottom: 3px;
+  line-height: 1;
+}
+
+.meter {
+  flex: 1;
+}
+
+.left {
+  flex: none;
+  font-family: var(--font-text);
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-muted);
+}

@@ -34,16 +34,17 @@ describe('ChildNav', () => {
     fixture.detectChanges();
 
     const navButtons = fixture.nativeElement.querySelectorAll('.child-nav-btn');
-    const icons = Array.from(navButtons).map((btn) =>
-      (btn as HTMLElement).querySelector('.child-nav-icon')?.textContent?.trim(),
-    );
     const labels = Array.from(navButtons).map((btn) =>
       (btn as HTMLElement).querySelector('.child-nav-label')?.textContent?.trim(),
     );
 
-    expect(icons).toEqual(['📋', '🎁']);
+    expect(
+      Array.from(navButtons).every((btn) =>
+        (btn as HTMLElement).querySelector('.child-nav-icon svg'),
+      ),
+    ).toBe(true);
     // Norwegian is the source language
-    expect(labels).toEqual(['Mine oppgaver', 'Mine belønninger']);
+    expect(labels).toEqual(['Hjem', 'Belønninger']);
   });
 
   it('should apply active class to current screen', () => {
@@ -130,17 +131,14 @@ describe('ChildNav', () => {
     expect(rewardsButton.getAttribute('aria-current')).toBeNull();
   });
 
-  it('should have aria-label for each navigation item', () => {
+  it('should name each navigation item by its visible label', () => {
     componentRef.setInput('activeScreen', 'tasks');
     fixture.detectChanges();
 
     const navButtons = fixture.nativeElement.querySelectorAll('.child-nav-btn');
-    const labels = Array.from(navButtons).map((btn) =>
-      (btn as HTMLElement).getAttribute('aria-label'),
-    );
+    const labels = Array.from(navButtons).map((btn) => (btn as HTMLElement).textContent?.trim());
 
-    // Norwegian is the source language
-    expect(labels).toEqual(['Mine oppgaver', 'Mine belønninger']);
+    expect(labels).toEqual(['Hjem', 'Belønninger']);
   });
 
   it('should update active state when activeScreen changes', () => {
