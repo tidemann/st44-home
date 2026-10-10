@@ -156,7 +156,7 @@ describe('Family', () => {
       const members = component['members']();
       expect(members[0]).toMatchObject({
         id: 'user-1',
-        name: 'Test User (You)',
+        name: 'Test User (deg)',
         email: 'test@example.com',
         role: 'parent',
       });
@@ -181,18 +181,32 @@ describe('Family', () => {
       await component.ngOnInit();
 
       const members = component['members']();
-      expect(members[0].name).toBe('test (You)');
+      expect(members[0].name).toBe('test (deg)');
     });
 
-    it('should mark current user with (You) suffix', async () => {
+    it('should mark current user with (deg) suffix', async () => {
       await component.ngOnInit();
 
       const currentUserMember = component['members']().find((m) => m.id === 'user-1');
-      expect(currentUserMember?.name).toContain('(You)');
+      expect(currentUserMember?.name).toContain('(deg)');
 
       // Children with accounts use child:childId format
       const otherMember = component['members']().find((m) => m.id === 'child:child-1');
-      expect(otherMember?.name).not.toContain('(You)');
+      expect(otherMember?.name).not.toContain('(deg)');
+    });
+
+    it('should use Norwegian fallbacks when name and email are missing', async () => {
+      mockHouseholdService.getHouseholdMembers.mockResolvedValue([
+        { ...mockMembers[0], displayName: null, email: null },
+        { ...mockMembers[1], displayName: null, email: null },
+      ]);
+
+      await component.ngOnInit();
+
+      const names = component['members']().map((m) => m.name);
+      expect(names).toContain('Ukjent (deg)');
+      expect(names).toContain('Barn');
+      expect(names.join(' ')).not.toMatch(/You|Unknown|Child/);
     });
 
     it('should pass through task stats and points from backend', async () => {
