@@ -1927,11 +1927,39 @@
           <context context-type="linenumber">98</context>
         </context-group>
       </trans-unit>
+      <trans-unit id="memberCard.roleParent" datatype="html">
+        <source>Forelder</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/member-card/member-card.html</context>
+          <context context-type="linenumber">17,19</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="memberCard.roleChild" datatype="html">
+        <source>Barn</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/member-card/member-card.html</context>
+          <context context-type="linenumber">19,22</context>
+        </context-group>
+      </trans-unit>
       <trans-unit id="memberCard.points" datatype="html">
         <source><x id="INTERPOLATION" equiv-text="{{ member().points || 0 }}"/> poeng</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/member-card/member-card.html</context>
-          <context context-type="linenumber">22,23</context>
+          <context context-type="linenumber">26,27</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="memberCard.tasks" datatype="html">
+        <source> <x id="INTERPOLATION" equiv-text="{{ member().tasksCompleted || 0 }}"/>/<x id="INTERPOLATION_1" equiv-text="{{ member().totalTasks || 0 }}"/> oppgaver </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/member-card/member-card.html</context>
+          <context context-type="linenumber">28,30</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="memberCard.viewDetails" datatype="html">
+        <source>Vis detaljer for <x id="name" equiv-text="this.member().name"/></source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/member-card/member-card.ts</context>
+          <context context-type="linenumber">69</context>
         </context-group>
       </trans-unit>
       <trans-unit id="addChildModal.title" datatype="html">

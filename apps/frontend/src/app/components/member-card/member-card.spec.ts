@@ -69,7 +69,7 @@ describe('MemberCard', () => {
     fixture.detectChanges();
 
     const roleElement = fixture.nativeElement.querySelector('.member-role');
-    expect(roleElement?.textContent).toContain('Parent');
+    expect(roleElement?.textContent).toContain('Forelder');
     expect(roleElement?.classList.contains('role-parent')).toBe(true);
   });
 
@@ -78,7 +78,7 @@ describe('MemberCard', () => {
     fixture.detectChanges();
 
     const roleElement = fixture.nativeElement.querySelector('.member-role');
-    expect(roleElement?.textContent).toContain('Child');
+    expect(roleElement?.textContent).toContain('Barn');
     expect(roleElement?.classList.contains('role-child')).toBe(true);
   });
 
@@ -94,7 +94,7 @@ describe('MemberCard', () => {
     expect(pointsElement?.textContent).toContain('450 poeng');
 
     const tasksElement = fixture.nativeElement.querySelector('.member-tasks');
-    expect(tasksElement?.textContent).toContain('12/15 tasks');
+    expect(tasksElement?.textContent).toContain('12/15 oppgaver');
   });
 
   it('should hide stats when showStats is false', () => {
@@ -120,7 +120,7 @@ describe('MemberCard', () => {
     expect(pointsElement?.textContent).toContain('0 poeng');
 
     const tasksElement = fixture.nativeElement.querySelector('.member-tasks');
-    expect(tasksElement?.textContent).toContain('0/0 tasks');
+    expect(tasksElement?.textContent).toContain('0/0 oppgaver');
   });
 
   it('should display default values for missing stats', () => {
@@ -138,7 +138,7 @@ describe('MemberCard', () => {
     expect(pointsElement?.textContent).toContain('0 poeng');
 
     const tasksElement = fixture.nativeElement.querySelector('.member-tasks');
-    expect(tasksElement?.textContent).toContain('0/0 tasks');
+    expect(tasksElement?.textContent).toContain('0/0 oppgaver');
   });
 
   it('should apply clickable class when clickable is true', () => {
@@ -195,6 +195,9 @@ describe('MemberCard', () => {
     const cardElement = fixture.nativeElement.querySelector('.member-card');
     expect(cardElement?.getAttribute('role')).toBe('button');
     expect(cardElement?.getAttribute('tabindex')).toBe('0');
+    expect(cardElement?.getAttribute('aria-label')).toBe(
+      `Vis detaljer for ${mockParentMember.name}`,
+    );
   });
 
   it('should not have button role when not clickable', () => {

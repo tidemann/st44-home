@@ -63,6 +63,13 @@ export class MemberCard {
   });
 
   /**
+   * Screen reader label when the card is clickable
+   */
+  ariaLabel = computed(
+    () => $localize`:@@memberCard.viewDetails:Vis detaljer for ${this.member().name}:name:`,
+  );
+
+  /**
    * Handle card click
    */
   handleClick() {
