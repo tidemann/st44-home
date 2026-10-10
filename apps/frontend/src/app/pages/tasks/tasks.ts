@@ -1,526 +1,306 @@
+import '@angular/localize/init';
 import {
   Component,
   ChangeDetectionStrategy,
-  ChangeDetectorRef,
   signal,
   computed,
   inject,
   OnInit,
 } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
-import { TaskService, type MyTaskAssignment } from '../../services/task.service';
-import { AuthService } from '../../services/auth.service';
-import { TaskCardComponent } from '../../components/task-card/task-card';
+import { firstValueFrom } from 'rxjs';
+import { TaskService } from '../../services/task.service';
+import { ChildrenService } from '../../services/children.service';
+import { HouseholdDayService } from '../../services/household-day.service';
+import { StorageService } from '../../services/storage.service';
+import { STORAGE_KEYS } from '../../services/storage-keys';
 import {
   TaskFormModal,
   type TaskFormData,
 } from '../../components/modals/task-form-modal/task-form-modal';
 import { ReassignTaskModal } from '../../components/modals/reassign-task-modal/reassign-task-modal';
 import { PageComponent } from '../../components/page/page';
+import { ChoreRow } from '../../components/poeng/chore-row/chore-row';
+import { GroupLabel } from '../../components/poeng/group-label/group-label';
+import { capitalize, clockTime, dayWord } from '../../utils/poeng-format';
 import type { Task, Child, Assignment } from '@st44/types';
-import { ApiService } from '../../services/api.service';
-import { StorageService } from '../../services/storage.service';
-import { STORAGE_KEYS } from '../../services/storage-keys';
 
 /**
- * Filter types for task display
- */
-export type TaskFilter = 'all' | 'mine' | 'person' | 'completed';
-
-/**
- * Tasks Screen Component
+ * "Oppgaver" — the parent's task list (Poeng screen 2, ST-777)
  *
- * Comprehensive task management interface with filtering:
- * - All Tasks: Display all household tasks
- * - My Tasks: Filter by current user's assignments
- * - By Person: Filter by selected person
- * - Completed: Show only completed tasks
+ * Child chips, then the day in three groups: «Forfalt», «I dag», «Gjort i dag».
+ * Below the picture, «Alle oppgaver» keeps every task template reachable for
+ * editing, also the ones not due today. «+ Ny oppgave» is pinned above the nav.
  *
- * Features:
- * - Filter tabs with localStorage persistence
- * - URL query params for shareability
- * - Task completion inline
- * - Task editing via TaskFormModal
- *
- * Navigation is handled by the parent MainLayout component.
+ * With one child selected, open rows offer «Bytt» (reassign), as the old
+ * "By person" view did. Navigation is handled by the parent MainLayout.
  */
 @Component({
   selector: 'app-tasks',
-  imports: [TaskCardComponent, TaskFormModal, ReassignTaskModal, PageComponent],
+  imports: [TaskFormModal, ReassignTaskModal, PageComponent, ChoreRow, GroupLabel],
   templateUrl: './tasks.html',
   styleUrl: './tasks.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class Tasks implements OnInit {
   private readonly taskService = inject(TaskService);
-  private readonly authService = inject(AuthService);
-  private readonly apiService = inject(ApiService);
+  private readonly childrenService = inject(ChildrenService);
+  private readonly householdDay = inject(HouseholdDayService);
   private readonly storage = inject(StorageService);
   private readonly router = inject(Router);
   private readonly route = inject(ActivatedRoute);
-  private readonly cdr = inject(ChangeDetectorRef);
 
-  /**
-   * Active filter selection
-   */
-  protected readonly activeFilter = signal<TaskFilter>('all');
-
-  /**
-   * Selected person ID (when filter = 'person')
-   */
-  protected readonly selectedPersonId = signal<string | null>(null);
-
-  /**
-   * All tasks from service
-   */
-  protected readonly tasks = this.taskService.tasks;
-
-  /**
-   * Task assignments from service
-   */
-  protected readonly assignments = this.taskService.assignments;
-
-  /**
-   * My tasks from service (for 'mine' filter)
-   */
-  protected readonly myTasks = this.taskService.myTasks;
-
-  /**
-   * Loading state
-   */
-  protected readonly loading = signal<boolean>(false);
-
-  /**
-   * Error state
-   */
+  protected readonly loading = signal(false);
   protected readonly error = signal<string | null>(null);
 
-  /**
-   * Household members for person filter
-   */
-  protected readonly members = signal<Child[]>([]);
+  /** Every chore for today, open and done */
+  private readonly today = signal<Assignment[]>([]);
+  /** Open chores from earlier days */
+  private readonly overdue = signal<Assignment[]>([]);
+  protected readonly children = signal<Child[]>([]);
+  /** Active task templates («Alle oppgaver») */
+  protected readonly templates = computed(() => this.taskService.tasks().filter((t) => t.active));
 
-  /**
-   * Edit task modal state
-   */
-  protected readonly editModalOpen = signal(false);
+  /** The selected child chip; null is «Alle» */
+  protected readonly selectedChildId = signal<string | null>(null);
+  protected readonly completingId = signal<string | null>(null);
 
-  /**
-   * Task being edited
-   */
+  // Modals
+  protected readonly createOpen = signal(false);
+  protected readonly editOpen = signal(false);
   protected readonly editingTask = signal<Task | null>(null);
+  protected readonly reassignOpen = signal(false);
+  protected readonly reassigning = signal<Assignment | null>(null);
 
-  /**
-   * Reassign task modal state
-   */
-  protected readonly reassignModalOpen = signal(false);
-
-  /**
-   * Assignment being reassigned
-   */
-  protected readonly reassigningAssignment = signal<Assignment | null>(null);
-
-  /**
-   * Current user ID
-   */
-  protected readonly currentUserId = computed(() => this.authService.currentUser()?.id);
-
-  /**
-   * Active household ID from localStorage
-   */
-  protected readonly householdId = computed(() => {
-    return this.storage.getString(STORAGE_KEYS.ACTIVE_HOUSEHOLD_ID) || '';
-  });
-
-  /**
-   * Check if current user is a parent or admin (not a child)
-   * Parents and admins don't complete tasks, only children do
-   */
-  protected readonly isParentOrAdmin = computed(() =>
-    this.authService.hasAnyRole(['parent', 'admin']),
+  protected readonly householdId = computed(
+    () => this.storage.getString(STORAGE_KEYS.ACTIVE_HOUSEHOLD_ID) || '',
   );
 
-  /**
-   * Filter tabs configuration - excludes 'My Tasks' for parents/admins
-   */
-  protected readonly filterTabs = computed(() => {
-    const allTabs: { id: TaskFilter; label: string }[] = [
-      { id: 'all', label: 'All' },
-      { id: 'mine', label: 'My Tasks' },
-      { id: 'person', label: 'By Person' },
-      { id: 'completed', label: 'Completed' },
-    ];
+  private readonly selectedChild = computed(
+    () => this.children().find((c) => c.id === this.selectedChildId()) ?? null,
+  );
 
-    // Parents/admins don't have tasks assigned to them, so hide "My Tasks"
-    if (this.isParentOrAdmin()) {
-      return allTabs.filter((tab) => tab.id !== 'mine');
-    }
+  /** Keep only the selected child's chores (all of them under «Alle») */
+  private readonly forChild = (list: Assignment[]): Assignment[] => {
+    const child = this.selectedChild();
+    if (!child) return list;
+    // A child with a login can be listed under the user id, so the name is the safe match
+    return list.filter((a) => a.childId === child.id || a.childName === child.name);
+  };
 
-    return allTabs;
+  protected readonly overdueRows = computed(() => this.forChild(this.overdue()));
+  protected readonly openRows = computed(() =>
+    this.forChild(this.today()).filter((a) => a.status === 'pending'),
+  );
+  protected readonly doneRows = computed(() =>
+    this.forChild(this.today()).filter((a) => a.status === 'completed'),
+  );
+
+  /** "7 i dag – 1 forfalt" */
+  protected readonly subtitle = computed(() => {
+    const late = this.overdueRows().length;
+    const total = late + this.openRows().length + this.doneRows().length;
+    return late > 0
+      ? $localize`:@@tasks.subtitleLate:${total}:total: i dag – ${late}:late: forfalt`
+      : $localize`:@@tasks.subtitle:${total}:total: i dag`;
   });
 
-  /**
-   * Filtered tasks based on active filter
-   * Returns Task[] for 'all', MyTaskAssignment[] for 'mine', Assignment[] for others
-   */
-  protected readonly filteredTasks = computed((): (Task | Assignment | MyTaskAssignment)[] => {
-    const filter = this.activeFilter();
-    const allTasks = this.tasks();
-    const allAssignments = this.assignments();
-    const myTasksList = this.myTasks();
-    const personId = this.selectedPersonId();
+  protected readonly hasDay = computed(
+    () => this.overdueRows().length + this.openRows().length + this.doneRows().length > 0,
+  );
 
-    switch (filter) {
-      case 'all':
-        // Return all active task templates
-        return allTasks.filter((t) => t.active);
-
-      case 'mine':
-        // Return my tasks from /children/me/tasks endpoint
-        // Only show pending tasks for "My Tasks" filter
-        return myTasksList.filter((t) => t.status === 'pending');
-
-      case 'person':
-        // Return assignments for selected person
-        if (!personId) return [];
-        return allAssignments.filter((a) => a.childId === personId);
-
-      case 'completed':
-        // Return completed assignments
-        return allAssignments.filter((a) => a.status === 'completed');
-
-      default:
-        return allTasks.filter((t) => t.active);
-    }
-  });
-
-  /**
-   * Empty state message based on active filter
-   */
-  protected readonly emptyMessage = computed(() => {
-    const filter = this.activeFilter();
-    switch (filter) {
-      case 'all':
-        return 'No tasks found. Create your first task to get started!';
-      case 'mine':
-        return 'No tasks assigned to you right now. Great job staying on top of things!';
-      case 'person':
-        return this.selectedPersonId()
-          ? 'No tasks assigned to this person.'
-          : 'Select a person to view their tasks.';
-      case 'completed':
-        return 'No completed tasks yet. Complete some tasks to see them here!';
-      default:
-        return 'No tasks found.';
-    }
-  });
+  /** With one child selected, open rows offer «Bytt» */
+  protected readonly canReassign = computed(() => this.selectedChildId() !== null);
 
   ngOnInit(): void {
-    // Load filter from URL query params or localStorage on init
-    const queryFilter = this.route.snapshot.queryParams['filter'] as TaskFilter | undefined;
-    const queryChild = this.route.snapshot.queryParams['child'] as string | undefined;
-    const savedFilter = this.storage.getString(STORAGE_KEYS.TASKS_FILTER) as TaskFilter | undefined;
-    const initialFilter = queryFilter || savedFilter || 'all';
-
-    if (initialFilter && ['all', 'mine', 'person', 'completed'].includes(initialFilter)) {
-      this.activeFilter.set(initialFilter);
-    }
-
-    // Load child selection from URL if present
-    if (queryChild) {
-      this.selectedPersonId.set(queryChild);
-    }
-
-    // Load initial data
-    this.loadTasks();
+    const child = this.route.snapshot.queryParams['child'] as string | undefined;
+    if (child) this.selectedChildId.set(child);
+    void this.loadTasks();
   }
 
-  /**
-   * Load tasks based on active filter
-   */
-  protected loadTasks(): void {
-    const filter = this.activeFilter();
+  /** The day, the children for the chips and every template, in parallel */
+  protected async loadTasks(): Promise<void> {
     const household = this.householdId();
-
     if (!household) {
-      this.error.set('No household selected');
+      this.error.set($localize`:@@tasks.noHousehold:Ingen husstand valgt`);
       return;
     }
 
     this.loading.set(true);
     this.error.set(null);
-
-    // For 'mine' filter, use the /children/me/tasks endpoint
-    if (filter === 'mine') {
-      this.taskService.getMyTasks(household).subscribe({
-        next: () => {
-          this.loading.set(false);
-        },
-        error: (err) => {
-          this.error.set('Failed to load my tasks');
-          this.loading.set(false);
-          console.error('Load my tasks error:', err);
-        },
-      });
-      return;
-    }
-
-    // Track pending requests to avoid race conditions
-    let tasksCompleted = false;
-    let assignmentsCompleted = filter === 'all'; // No assignments needed for 'all' filter
-
-    const checkLoadingComplete = (): void => {
-      if (tasksCompleted && assignmentsCompleted) {
-        this.loading.set(false);
-      }
-    };
-
-    // Load task templates
-    this.taskService.getTasks(household, true).subscribe({
-      next: () => {
-        tasksCompleted = true;
-        checkLoadingComplete();
-      },
-      error: (err) => {
-        this.error.set('Failed to load tasks');
-        tasksCompleted = true;
-        checkLoadingComplete();
-        console.error('Load tasks error:', err);
-      },
-    });
-
-    // Load assignments if needed for person or completed filters
-    if (filter === 'person' || filter === 'completed') {
-      const personId = this.selectedPersonId();
-
-      const assignmentFilters: {
-        status?: 'pending' | 'completed';
-        childId?: string;
-      } = {};
-
-      if (filter === 'person' && personId) {
-        assignmentFilters.childId = personId;
-      } else if (filter === 'completed') {
-        assignmentFilters.status = 'completed';
-      }
-
-      this.taskService.getHouseholdAssignments(household, assignmentFilters).subscribe({
-        next: () => {
-          assignmentsCompleted = true;
-          checkLoadingComplete();
-        },
-        error: (err) => {
-          this.error.set('Failed to load assignments');
-          assignmentsCompleted = true;
-          checkLoadingComplete();
-          console.error('Load assignments error:', err);
-        },
-      });
-    }
-
-    // Load household members for person filter dropdown
-    if (filter === 'person') {
-      this.loadMembers();
-    }
-  }
-
-  /**
-   * Load household members
-   */
-  private loadMembers(): void {
-    const household = this.householdId();
-    if (!household) return;
-
-    this.apiService
-      .get<{ children: Child[] }>(`/households/${household}/children`)
-      .then((response) => {
-        this.members.set(response.children);
-      })
-      .catch((err) => {
-        console.error('Load members error:', err);
-      });
-  }
-
-  /**
-   * Handle filter tab click
-   */
-  protected onFilterClick(filter: TaskFilter): void {
-    if (this.activeFilter() === filter) {
-      return;
-    }
-
-    // Update filter state
-    this.activeFilter.set(filter);
-
-    // Clear person selection when switching away from 'person' filter
-    if (filter !== 'person') {
-      this.selectedPersonId.set(null);
-    }
-
-    // Persist to localStorage
-    this.storage.set(STORAGE_KEYS.TASKS_FILTER, filter);
-
-    // Update URL query params (remove child param when not on person filter)
-    const queryParams: { filter: TaskFilter; child?: string | null } = { filter };
-    if (filter !== 'person') {
-      queryParams.child = null; // This removes the param from URL
-    }
-    this.router.navigate([], {
-      relativeTo: this.route,
-      queryParams,
-      queryParamsHandling: 'merge',
-      replaceUrl: true,
-    });
-
-    // Trigger change detection for OnPush
-    this.cdr.markForCheck();
-
-    // Load tasks for the new filter
-    this.loadTasks();
-  }
-
-  /**
-   * Handle person tab selection
-   */
-  protected onPersonSelect(childId: string): void {
-    if (this.selectedPersonId() === childId) {
-      return;
-    }
-
-    this.selectedPersonId.set(childId);
-
-    // Update URL query params to include child selection
-    this.router.navigate([], {
-      relativeTo: this.route,
-      queryParams: { filter: this.activeFilter(), child: childId },
-      queryParamsHandling: 'merge',
-      replaceUrl: true,
-    });
-
-    this.loadTasks();
-  }
-
-  /**
-   * Handle task completion
-   */
-  protected async onTaskComplete(taskId: string): Promise<void> {
     try {
-      await this.taskService.completeTask(taskId);
-      // Reload tasks to reflect completion
-      this.loadTasks();
+      const [day, children] = await Promise.all([
+        this.householdDay.load(household),
+        this.childrenService.listChildren(household),
+        firstValueFrom(this.taskService.getTasks(household, true)),
+      ]);
+      this.today.set(day.today);
+      this.overdue.set(day.overdue);
+      this.children.set(children);
     } catch (err) {
-      this.error.set('Failed to complete task');
+      console.error('Load tasks error:', err);
+      this.error.set($localize`:@@tasks.loadFailed:Kunne ikke laste oppgavene`);
+    } finally {
+      this.loading.set(false);
+    }
+  }
+
+  /** Chip tap: «Alle» (null) or one child; kept in the URL so it survives a reload */
+  protected onSelectChild(childId: string | null): void {
+    if (this.selectedChildId() === childId) return;
+    this.selectedChildId.set(childId);
+    void this.router.navigate([], {
+      relativeTo: this.route,
+      queryParams: { child: childId, filter: null },
+      queryParamsHandling: 'merge',
+      replaceUrl: true,
+    });
+  }
+
+  /** "Jonas – Forfalt i går" */
+  protected overdueMeta(a: Assignment): string {
+    return $localize`:@@tasks.overdueMeta:${this.who(a)}:who: – Forfalt ${dayWord(a.date)}:day:`;
+  }
+
+  /** "Mathea – I dag" */
+  protected openMeta(a: Assignment): string {
+    return $localize`:@@tasks.openMeta:${this.who(a)}:who: – ${capitalize(dayWord(a.date))}:day:`;
+  }
+
+  /** "Emma – Gjort 16.10" */
+  protected doneMeta(a: Assignment): string {
+    const at = a.completedAt ? ` ${clockTime(a.completedAt)}` : '';
+    return $localize`:@@tasks.doneMeta:${this.who(a)}:who: – Gjort${at}:at:`;
+  }
+
+  /** "Gjentas" / "Én gang" for a template row */
+  protected templateMeta(t: Task): string {
+    return t.ruleType === 'single'
+      ? $localize`:@@tasks.ruleOnce:Én gang`
+      : $localize`:@@tasks.ruleRepeat:Gjentas`;
+  }
+
+  protected points(value: number | undefined): string {
+    return value != null ? $localize`:@@tasks.points:${value}:points: p` : '';
+  }
+
+  private who(a: Assignment): string {
+    return a.childName || $localize`:@@tasks.anyone:Alle`;
+  }
+
+  /** A parent may tick a chore off for the child */
+  protected async onComplete(a: Assignment): Promise<void> {
+    this.completingId.set(a.id);
+    try {
+      await this.taskService.completeTask(a.id);
+      const done = { ...a, status: 'completed' as const, completedAt: new Date().toISOString() };
+      this.overdue.update((list) => list.filter((x) => x.id !== a.id));
+      this.today.update((list) =>
+        list.some((x) => x.id === a.id) ? list.map((x) => (x.id === a.id ? done : x)) : list,
+      );
+    } catch (err) {
       console.error('Complete task error:', err);
+      this.error.set($localize`:@@tasks.completeFailed:Kunne ikke hake av oppgaven`);
+    } finally {
+      this.completingId.set(null);
     }
   }
 
-  /**
-   * Handle task edit click
-   */
-  protected onTaskEdit(taskId: string): void {
-    const task = this.tasks().find((t) => t.id === taskId);
+  /** Row tap: edit the task template behind the chore */
+  protected onEdit(taskId: string): void {
+    const task = this.taskService.tasks().find((t) => t.id === taskId);
     if (task) {
-      // Ensure children are loaded for the edit modal
-      if (this.members().length === 0) {
-        this.loadMembers();
-      }
       this.editingTask.set(task);
-      this.editModalOpen.set(true);
+      this.editOpen.set(true);
+      return;
     }
+    // Not in the active list (e.g. switched off since): fetch it
+    this.taskService.getTask(this.householdId(), taskId).subscribe({
+      next: (t) => {
+        this.editingTask.set(t);
+        this.editOpen.set(true);
+      },
+      error: (err) => console.error('Load task error:', err),
+    });
   }
 
-  /**
-   * Handle task update from modal
-   */
   protected onTaskUpdate(data: TaskFormData): void {
     const task = this.editingTask();
-    const household = this.householdId();
-
-    if (!task || !household) return;
-
-    this.taskService.updateTask(household, task.id, data).subscribe({
+    if (!task) return;
+    this.taskService.updateTask(this.householdId(), task.id, data).subscribe({
       next: () => {
-        this.editModalOpen.set(false);
-        this.editingTask.set(null);
-        this.loadTasks();
+        this.closeEdit();
+        void this.loadTasks();
       },
       error: (err) => {
-        this.error.set('Failed to update task');
         console.error('Update task error:', err);
+        this.error.set($localize`:@@tasks.updateFailed:Kunne ikke lagre oppgaven`);
       },
     });
   }
 
-  /**
-   * Handle task delete from modal
-   */
   protected onTaskDelete(): void {
     const task = this.editingTask();
-    const household = this.householdId();
-
-    if (!task || !household) return;
-
-    this.taskService.deleteTask(household, task.id).subscribe({
+    if (!task) return;
+    this.taskService.deleteTask(this.householdId(), task.id).subscribe({
       next: () => {
-        this.editModalOpen.set(false);
-        this.editingTask.set(null);
-        this.loadTasks();
+        this.closeEdit();
+        void this.loadTasks();
       },
       error: (err) => {
-        this.error.set('Failed to delete task');
         console.error('Delete task error:', err);
+        this.error.set($localize`:@@tasks.deleteFailed:Kunne ikke slette oppgaven`);
       },
     });
   }
 
-  /**
-   * Handle modal close
-   */
-  protected onModalClose(): void {
-    this.editModalOpen.set(false);
+  protected closeEdit(): void {
+    this.editOpen.set(false);
     this.editingTask.set(null);
   }
 
-  /**
-   * Handle task reassign click
-   */
-  protected onTaskReassign(assignmentId: string): void {
-    const assignment = this.assignments().find((a) => a.id === assignmentId);
-    if (assignment) {
-      // Load members if not already loaded
-      if (this.members().length === 0) {
-        this.loadMembers();
-      }
-      this.reassigningAssignment.set(assignment);
-      this.reassignModalOpen.set(true);
-    }
+  /** «+ Ny oppgave» */
+  protected onCreate(data: TaskFormData): void {
+    this.taskService
+      .createTask(this.householdId(), {
+        name: data.name,
+        description: data.description,
+        points: data.points,
+        ruleType: data.ruleType,
+        ruleConfig: data.ruleConfig,
+      })
+      .subscribe({
+        next: () => {
+          this.createOpen.set(false);
+          void this.loadTasks();
+        },
+        error: (err) => console.error('Create task error:', err),
+      });
   }
 
-  /**
-   * Handle reassignment confirmation
-   */
-  protected onReassignConfirm(newChildId: string): void {
-    const assignment = this.reassigningAssignment();
-    if (!assignment) return;
+  /** «Bytt»: give an open chore to another child */
+  protected onReassign(a: Assignment): void {
+    this.reassigning.set(a);
+    this.reassignOpen.set(true);
+  }
 
-    this.taskService.reassignTask(assignment.id, newChildId).subscribe({
+  protected onReassignConfirm(newChildId: string): void {
+    const a = this.reassigning();
+    if (!a) return;
+    this.taskService.reassignTask(a.id, newChildId).subscribe({
       next: () => {
-        this.reassignModalOpen.set(false);
-        this.reassigningAssignment.set(null);
-        this.loadTasks();
+        this.closeReassign();
+        void this.loadTasks();
       },
       error: (err) => {
-        this.error.set('Failed to reassign task');
         console.error('Reassign task error:', err);
+        this.error.set($localize`:@@tasks.reassignFailed:Kunne ikke bytte hvem som har oppgaven`);
       },
     });
   }
 
-  /**
-   * Handle reassign modal close
-   */
-  protected onReassignModalClose(): void {
-    this.reassignModalOpen.set(false);
-    this.reassigningAssignment.set(null);
+  protected closeReassign(): void {
+    this.reassignOpen.set(false);
+    this.reassigning.set(null);
   }
 }

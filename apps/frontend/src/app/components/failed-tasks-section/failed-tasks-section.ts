@@ -23,6 +23,9 @@ export class FailedTasksSectionComponent implements OnInit {
   // Input
   householdId = input.required<string>();
 
+  /** Show nothing at all (no header, no "all on track") until a task needs attention */
+  quietWhenEmpty = input<boolean>(false);
+
   // Service signals
   protected failedTasks = this.singleTaskService.failedTasks;
   protected expiredTasks = this.singleTaskService.expiredTasks;

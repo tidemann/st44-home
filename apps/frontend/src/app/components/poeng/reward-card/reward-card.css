@@ -4,10 +4,6 @@
   display: block;
 }
 
-:host + :host {
-  margin-top: 8px;
-}
-
 .reward {
   padding: 15px 15px 11px;
   background: var(--surface);

@@ -4,10 +4,6 @@
   display: block;
 }
 
-:host + :host {
-  margin-top: 8px;
-}
-
 .row {
   height: 68px;
   display: flex;

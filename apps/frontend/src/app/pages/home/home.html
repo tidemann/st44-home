@@ -96,7 +96,7 @@
 
     <!-- Below the picture: kept so nothing the family uses today goes away -->
     @if (householdId()) {
-      <app-failed-tasks-section [householdId]="householdId()!" />
+      <app-failed-tasks-section [householdId]="householdId()!" [quietWhenEmpty]="true" />
     }
 
     @if (hasUpcomingTasks()) {

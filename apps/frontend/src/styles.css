@@ -850,3 +850,10 @@ h6 {
   outline: var(--focus-ring);
   outline-offset: 2px;
 }
+
+/* Poeng rows and reward cards sit 8 px apart. Set here because a component
+   cannot see its sibling hosts under emulated encapsulation. */
+app-chore-row + app-chore-row,
+app-reward-card + app-reward-card {
+  margin-top: 8px;
+}
