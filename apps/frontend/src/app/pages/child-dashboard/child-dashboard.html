@@ -1,155 +1,106 @@
-<div class="child-dashboard">
+<app-page [title]="childName() || ''" [subtitle]="today" maxWidth="narrow">
   <!-- Loading State -->
   @if (isLoading()) {
-    <div class="loading-container">
-      <div class="loading-spinner"></div>
+    <div class="state" role="status" aria-live="polite">
+      <span class="spinner" aria-hidden="true"></span>
       <p i18n="@@childDashboard.loading">Laster oppgavene dine...</p>
     </div>
   }
 
   <!-- Error State -->
   @if (!isLoading() && errorMessage()) {
-    <div class="error-container">
-      <div class="error-icon">⚠️</div>
+    <div class="state" role="alert">
       <p class="error-message">{{ errorMessage() }}</p>
-      <button class="retry-button" (click)="loadMyTasks()" i18n="@@childDashboard.tryAgain">
+      <button class="btn btn-primary" (click)="loadMyTasks()" i18n="@@childDashboard.tryAgain">
         Prøv igjen
       </button>
     </div>
   }
 
-  <!-- Main Content -->
   @if (!isLoading() && !errorMessage()) {
-    <!-- Greeting -->
-    <header class="greeting-section">
-      <h1 class="greeting" i18n="@@childDashboard.greeting">Hei {{ childName() }}! 👋</h1>
-    </header>
+    <!-- The hero: the child's points, the largest thing on the screen -->
+    <p class="hero" [attr.aria-label]="pointsLabel()">{{ balance() }}</p>
+    <p class="herolab" aria-hidden="true" i18n="@@childDashboard.pointsWord">poeng</p>
 
-    <!-- Tasks List -->
-    <section class="tasks-section">
-      <h2 i18n="@@childDashboard.todaysTasks">Dagens oppgaver</h2>
-
-      @if (!hasTasks()) {
-        <!-- Empty State -->
-        <div class="empty-state">
-          <div class="empty-icon">🎉</div>
-          <p class="empty-message" i18n="@@childDashboard.noTasksToday">Ingen oppgaver i dag!</p>
-          <p class="empty-subtitle" i18n="@@childDashboard.enjoyFreeTime">Nyt fritiden din!</p>
-        </div>
-      } @else {
-        <!-- Pending Tasks -->
-        @if (pendingTasks().length > 0) {
-          <div class="task-group">
-            <h3 class="task-group-title" i18n="@@childDashboard.toDo">Å gjøre</h3>
-            @for (task of pendingTasks(); track task.id) {
-              <div
-                class="task-card pending"
-                role="article"
-                [attr.aria-label]="'Task: ' + task.taskName"
-              >
-                <div class="task-header">
-                  <h4 class="task-name">{{ task.taskName }}</h4>
-                  <span class="task-points" [attr.aria-label]="task.points + ' points'">
-                    {{ task.points }} <ng-container i18n="@@childDashboard.pts">poeng</ng-container>
-                  </span>
-                </div>
-                @if (task.taskDescription) {
-                  <p class="task-description">{{ task.taskDescription }}</p>
-                }
-                <button
-                  class="mark-done-button"
-                  (click)="onMarkDone(task)"
-                  [disabled]="isCompleting(task.id)"
-                  [attr.aria-label]="'Mark ' + task.taskName + ' as done'"
-                >
-                  @if (isCompleting(task.id)) {
-                    <span class="button-spinner"></span>
-                    <span i18n="@@childDashboard.marking">Markerer...</span>
-                  } @else {
-                    <span i18n="@@childDashboard.markDone">✓ Merk som ferdig</span>
-                  }
-                </button>
-              </div>
-            }
-          </div>
-        }
-
-        <!-- Completed Tasks -->
-        @if (completedTasks().length > 0) {
-          <div class="task-group">
-            <h3 class="task-group-title" i18n="@@childDashboard.completed">Fullført</h3>
-            @for (task of completedTasks(); track task.id) {
-              <div
-                class="task-card completed"
-                role="article"
-                [attr.aria-label]="'Completed task: ' + task.taskName"
-              >
-                <div class="task-header">
-                  <h4 class="task-name">{{ task.taskName }}</h4>
-                  <span class="task-points" [attr.aria-label]="task.points + ' points earned'">
-                    {{ task.points }} <ng-container i18n="@@childDashboard.pts">poeng</ng-container>
-                  </span>
-                </div>
-                @if (task.taskDescription) {
-                  <p class="task-description">{{ task.taskDescription }}</p>
-                }
-                <div class="completed-badge">
-                  <span class="checkmark">✓</span>
-                  <span i18n="@@childDashboard.done">Ferdig!</span>
-                </div>
-              </div>
-            }
-          </div>
-        }
-      }
-    </section>
-
-    <!-- Available Single Tasks -->
-    @if (hasAvailableTasks()) {
-      <app-available-tasks-section />
+    @if (goal(); as g) {
+      <div class="meterlabel">
+        <span class="l">{{ g.name }}</span>
+        <span i18n="@@childDashboard.goalLeft">{{ g.pointsCost - balance() }} igjen</span>
+      </div>
+      <app-points-meter class="pmeter" [value]="goalShare()" />
     }
 
-    <!-- Points Progress -->
-    <section class="points-section">
-      <div class="points-header">
-        <h2 i18n="@@childDashboard.todaysPoints">Dagens poeng</h2>
-        <div class="points-display">
-          <span class="completed-points">{{ completedPoints() }}</span>
-          <span class="points-separator">/</span>
-          <span class="total-points">{{ totalPoints() }}</span>
-        </div>
+    @if (!hasTasks()) {
+      <div class="empty" role="status">
+        <p class="empty-title" i18n="@@childDashboard.noTasksToday">Ingen oppgaver i dag!</p>
+        <p class="empty-sub" i18n="@@childDashboard.enjoyFreeTime">Nyt fritiden din!</p>
       </div>
-      <div class="progress-bar-container">
-        <div
-          class="progress-bar"
-          [class]="getProgressClass()"
-          [style.width.%]="progressPercent()"
-          role="progressbar"
-          [attr.aria-valuenow]="progressPercent()"
-          [attr.aria-valuemin]="0"
-          [attr.aria-valuemax]="100"
-        ></div>
-      </div>
-      @if (allCompleted() && hasTasks()) {
-        <div class="celebration" i18n="@@childDashboard.allComplete">
-          🎉 Alle oppgaver fullført! Bra jobba!
-        </div>
+    }
+
+    @if (overdueTasks().length > 0) {
+      <app-group-label i18n-label="@@childDashboard.overdue" label="Forfalt" [overdue]="true" />
+      @for (task of overdueTasks(); track task.id) {
+        <app-chore-row [title]="task.taskName" [meta]="overdueMeta(task)" [overdue]="true">
+          <button
+            row-action
+            type="button"
+            class="rbtn"
+            [disabled]="isCompleting(task.id)"
+            [attr.aria-label]="hakAvLabel(task)"
+            (click)="onMarkDone(task)"
+            i18n="@@childDashboard.hakAv"
+          >
+            Hak av
+          </button>
+        </app-chore-row>
       }
-    </section>
+    }
 
-    <!-- Reminder card: only while push is off or blocked on this phone -->
-    <app-notification-settings audience="child" [compact]="true" />
+    @if (tasks().length > 0) {
+      <app-group-label i18n-label="@@childDashboard.today" label="I dag" />
+      @for (task of pendingTasks(); track task.id) {
+        <app-chore-row [title]="task.taskName" [meta]="openMeta(task)">
+          <button
+            row-action
+            type="button"
+            class="rbtn"
+            [disabled]="isCompleting(task.id)"
+            [attr.aria-label]="hakAvLabel(task)"
+            (click)="onMarkDone(task)"
+            i18n="@@childDashboard.hakAv"
+          >
+            Hak av
+          </button>
+        </app-chore-row>
+      }
+      @for (task of completedTasks(); track task.id) {
+        <app-chore-row
+          [title]="task.taskName"
+          [meta]="doneMeta(task)"
+          [done]="true"
+          [points]="'+' + task.points"
+        />
+      }
+    }
 
-    <!-- Streak and Progress Section -->
+    <!-- Not in the signed-off picture: kept so nothing the family uses today goes away -->
+    @if (hasAvailableTasks()) {
+      <div class="extra">
+        <app-available-tasks-section />
+      </div>
+    }
+
+    <div class="extra">
+      <app-notification-settings audience="child" [compact]="true" />
+    </div>
+
     @if (analytics()) {
-      <section class="analytics-section">
-        <!-- Streak Counter -->
+      <section class="extra analytics-section">
+        <app-group-label i18n-label="@@childDashboard.thisWeekGroup" label="Denne uken" />
         <app-streak-counter
           [currentStreak]="analytics()!.currentStreak"
           [longestStreak]="analytics()!.longestStreak"
         />
-
-        <!-- Week/Month Progress -->
         <div class="progress-cards">
           <app-progress-summary
             i18n-title="@@childDashboard.thisWeek"
@@ -164,8 +115,6 @@
             [progress]="analytics()!.monthProgress"
           />
         </div>
-
-        <!-- Daily Points Chart -->
         @if (analytics()!.dailyPoints.length > 0) {
           <app-daily-points-chart
             [dailyData]="analytics()!.dailyPoints"
@@ -176,4 +125,19 @@
       </section>
     }
   }
-</div>
+</app-page>
+
+@if (tick(); as t) {
+  <app-tick-moment
+    [title]="t.title"
+    [doneAt]="t.doneAt"
+    [points]="t.points"
+    [childName]="childName()"
+    [goal]="tickGoal()"
+    [next]="tickNext()"
+    [undoBusy]="undoBusy()"
+    [undoError]="undoError()"
+    (undo)="onUndo()"
+    (closed)="onTickClosed()"
+  />
+}

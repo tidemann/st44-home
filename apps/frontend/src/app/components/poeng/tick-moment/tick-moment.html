@@ -1,0 +1,78 @@
+<div class="y" role="dialog" aria-modal="true" aria-labelledby="tick-title">
+  <div class="tickbadge" aria-hidden="true">
+    <svg width="27" height="20" viewBox="0 0 27 20" fill="none">
+      <path
+        d="M2.4 10.4 9.6 17.6 24.6 2.6"
+        stroke="#fff"
+        stroke-width="3.6"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      />
+    </svg>
+  </div>
+  <h2 class="ytitle" id="tick-title">{{ title() }}</h2>
+  <p class="ymeta" i18n="@@tick.doneAt">Haket av {{ doneAt() }}</p>
+
+  <p class="award" [attr.aria-label]="pointsLabel()">
+    <span class="big" aria-hidden="true">+{{ points() }}</span>
+    <span class="w" aria-hidden="true" i18n="@@tick.pointsWord">poeng</span>
+  </p>
+  <p class="praise">{{ praise() }}</p>
+
+  @if (goal(); as g) {
+    <div class="ymeterlab">
+      <span class="l" i18n="@@tick.goalProgress">{{ g.balance }} av {{ g.cost }} poeng</span>
+      @if (goalLeft() > 0) {
+        <span i18n="@@tick.goalLeft">{{ goalLeft() }} igjen</span>
+      } @else {
+        <span i18n="@@tick.goalReached">Nok poeng!</span>
+      }
+    </div>
+    <app-points-meter class="ymeter" [onYellow]="true" [value]="goalShare()" />
+    <p class="ynext">{{ g.name }}</p>
+  }
+
+  @if (next(); as n) {
+    <div class="inset">
+      <span class="cb" aria-hidden="true"></span>
+      <span class="rowtext">
+        <span class="rt">{{ n.title }}</span>
+        <span class="rm">{{ n.meta }}</span>
+      </span>
+      <span class="pts" i18n="@@tick.nextPoints">+{{ n.points }} p</span>
+    </div>
+  }
+
+  <div class="spacer"></div>
+
+  <p class="undo" role="status" aria-live="polite">
+    @if (undoError()) {
+      {{ undoError() }}
+    } @else if (!undoExpired()) {
+      <ng-container i18n="@@tick.undoHint">Du kan angre i 5 minutter</ng-container>
+    }
+  </p>
+  <div class="ybtns">
+    @if (!undoExpired()) {
+      <button
+        type="button"
+        class="ybtn ghost"
+        [disabled]="undoBusy()"
+        (click)="undo.emit()"
+        i18n="@@tick.undo"
+      >
+        Angre
+      </button>
+    }
+    <button
+      #doneButton
+      type="button"
+      class="ybtn solid"
+      [disabled]="undoBusy()"
+      (click)="closed.emit()"
+      i18n="@@tick.done"
+    >
+      Ferdig
+    </button>
+  </div>
+</div>

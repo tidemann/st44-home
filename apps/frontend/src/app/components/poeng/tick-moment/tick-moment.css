@@ -1,0 +1,239 @@
+/* screens-v2 #s4. Yellow from the top of the app to the bottom, 24 px gutter
+   (342 px column), no nav. Everything on it is ink: 10.57:1 on the yellow,
+   8.31:1 on the inset. */
+
+:host {
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-index-modal);
+  display: block;
+  background: var(--yellow);
+  color: var(--ink);
+  overflow-y: auto;
+}
+
+.y {
+  min-height: 100%;
+  max-width: 600px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  padding: calc(env(safe-area-inset-top, 0px) + 46px) 24px
+    calc(env(safe-area-inset-bottom, 0px) + 20px);
+  letter-spacing: -0.02em;
+}
+
+.tickbadge {
+  width: 54px;
+  height: 54px;
+  border-radius: var(--r-badge);
+  background: var(--ink);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+}
+
+.ytitle {
+  margin: 24px 0 0;
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 28.5px;
+  line-height: 1.15;
+  letter-spacing: -0.01em;
+  color: var(--ink);
+}
+
+.ymeta {
+  margin: 8px 0 0;
+  font-family: var(--font-text);
+  font-size: 15px;
+  font-weight: 500;
+  line-height: 1.4;
+  color: var(--ink);
+}
+
+.award {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  margin: 31px 0 0;
+  color: var(--ink);
+}
+
+.award .big {
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 94px;
+  line-height: 0.72;
+  letter-spacing: -0.05em;
+  font-variant-numeric: tabular-nums;
+  animation: award-in 0.35s ease-out;
+}
+
+.award .w {
+  font-family: var(--font-display);
+  font-size: 23px;
+  font-weight: 800;
+}
+
+.praise {
+  margin: 16px 0 0;
+  font-family: var(--font-text);
+  font-size: 20px;
+  font-weight: 600;
+  line-height: 1.2;
+  color: var(--ink);
+}
+
+.ymeterlab {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-top: 16px;
+  font-family: var(--font-text);
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--ink);
+}
+
+.ymeterlab .l {
+  font-weight: 600;
+}
+
+.ymeter {
+  margin-top: 11px;
+}
+
+.ynext {
+  margin: 10px 0 0;
+  font-family: var(--font-text);
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--ink);
+}
+
+.inset {
+  height: 69px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 27px;
+  padding: 0 15px;
+  background: var(--yellow-inset);
+  border-radius: var(--r-card);
+  color: var(--ink);
+}
+
+.inset .cb {
+  flex: none;
+  width: 22px;
+  height: 22px;
+  border: 2px solid var(--ink);
+  border-radius: 7px;
+}
+
+.rowtext {
+  flex: 1;
+  min-width: 0;
+}
+
+.rt {
+  display: block;
+  font-family: var(--font-text);
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 1.2;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.rm {
+  display: block;
+  margin-top: 6px;
+  font-family: var(--font-text);
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 1.25;
+}
+
+.pts {
+  flex: none;
+  font-family: var(--font-text);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.spacer {
+  flex: 1;
+  min-height: 24px;
+}
+
+.undo {
+  margin: 0 0 13px;
+  min-height: 18px;
+  font-family: var(--font-text);
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--ink);
+}
+
+.ybtns {
+  display: flex;
+  gap: 10px;
+}
+
+.ybtn {
+  flex: 1;
+  height: 49px;
+  border-radius: var(--r-button);
+  font-family: var(--font-text);
+  font-size: 16.5px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Approved exception 1: the outline is ink (10.57:1), not the picture's gold (2.10:1) */
+.ybtn.ghost {
+  background: transparent;
+  border: 2px solid var(--ink);
+  color: var(--ink);
+}
+
+.ybtn.solid {
+  background: var(--ink);
+  border: 0;
+  color: #ffffff;
+}
+
+.ybtn:disabled {
+  cursor: progress;
+  opacity: 0.7;
+}
+
+.ybtn:focus-visible {
+  outline: var(--focus-ring);
+  outline-offset: 2px;
+}
+
+@keyframes award-in {
+  from {
+    transform: scale(0.85);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .award .big {
+    animation: none;
+  }
+}

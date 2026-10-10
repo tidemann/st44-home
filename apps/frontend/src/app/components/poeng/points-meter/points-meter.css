@@ -1,0 +1,23 @@
+:host {
+  display: flex;
+  gap: 4px;
+  height: 14px;
+}
+
+i {
+  flex: 1;
+  border-radius: 999px;
+  background: var(--track);
+}
+
+i.on {
+  background: var(--yellow);
+}
+
+:host(.on-yellow) i {
+  background: var(--yellow-track);
+}
+
+:host(.on-yellow) i.on {
+  background: var(--ink);
+}

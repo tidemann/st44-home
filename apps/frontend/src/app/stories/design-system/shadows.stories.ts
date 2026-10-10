@@ -1,5 +1,10 @@
 import type { Meta, StoryObj } from '@storybook/angular';
 
+/**
+ * Diddit elevation: Poeng, light mode.
+ * Spec: docs/design/diddit/DESIGN-GUIDE.md (Elevation & Depth, Shapes).
+ * The Flat Rule: nothing casts a shadow. Depth is a tonal step. Strokes carry meaning.
+ */
 const meta: Meta = {
   title: 'Design System/Shadows & Elevation',
   tags: ['autodocs'],
@@ -10,139 +15,143 @@ export default meta;
 export const Shadows: StoryObj = {
   render: () => ({
     template: `
-      <div style="padding: 2rem; background: #F8F9FF;">
-        <h1 style="font-size: 2rem; font-weight: 700; margin-bottom: 2rem;">Shadow System</h1>
+      <div style="font-family: var(--font-text); padding: 22px; background: var(--bg); min-height: 100vh; color: var(--text);">
+        <h1 style="font-family: var(--font-display); font-size: 2.5rem; font-weight: 800; letter-spacing: -0.02em; margin-bottom: 0.5rem;">
+          Elevation (Poeng)
+        </h1>
+        <p style="color: var(--text-muted); margin-bottom: 2rem; font-size: 1rem; font-weight: 500; max-width: 640px;">
+          The Flat Rule: there is no box-shadow anywhere in Diddit, and cards have no borders.
+          If something needs to separate from what is behind it, step the tone; do not lift it.
+          The legacy --shadow-* tokens all resolve to none.
+        </p>
 
-        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 2rem;">
-          <!-- Shadow None -->
-          <div>
-            <div style="background: white; padding: 2rem; border-radius: 8px; box-shadow: none; border: 1px solid #E2E8F0; text-align: center;">
-              <div style="font-weight: 600; margin-bottom: 0.5rem;">None</div>
-              <div style="color: #64748b; font-size: 0.875rem;">box-shadow: none</div>
+        <section style="margin-bottom: 2rem;">
+          <h2 style="font-family: var(--font-display); font-size: 1.5rem; font-weight: 800; margin-bottom: 1rem;">Depth is a tonal step</h2>
+          <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 8px;">
+            <div style="background: var(--bg); padding: 15px 0;">
+              <div style="background: var(--surface); padding: 15px; border-radius: var(--r-card);">
+                <h3 style="font-size: 16px; font-weight: 600; margin-bottom: 4px;">White card on the background</h3>
+                <p style="color: var(--text-muted); font-size: 13px; font-weight: 500;">
+                  --surface on --bg. That one step is the whole light-screen elevation vocabulary.
+                </p>
+              </div>
             </div>
-            <div style="margin-top: 0.75rem; color: #475569; font-size: 0.875rem;">
-              Base elements, no elevation
+            <div style="background: var(--yellow); padding: 15px; border-radius: var(--r-card);">
+              <div style="background: var(--yellow-inset); padding: 15px; border-radius: var(--r-card); color: var(--ink);">
+                <h3 style="font-size: 16px; font-weight: 600; margin-bottom: 4px;">Inset on the yellow</h3>
+                <p style="font-size: 13px; font-weight: 500;">
+                  --yellow-inset on --yellow. Same hue, one step darker. Text is ink.
+                </p>
+              </div>
             </div>
           </div>
+        </section>
 
-          <!-- Shadow SM -->
-          <div>
-            <div style="background: white; padding: 2rem; border-radius: 8px; box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05); text-align: center;">
-              <div style="font-weight: 600; margin-bottom: 0.5rem;">Small</div>
-              <div style="color: #64748b; font-size: 0.875rem;">0 1px 2px rgba(0,0,0,0.05)</div>
+        <section>
+          <h2 style="font-family: var(--font-display); font-size: 1.5rem; font-weight: 800; margin-bottom: 0.5rem;">The three legal strokes</h2>
+          <p style="color: var(--text-muted); font-size: 15px; font-weight: 500; margin-bottom: 1rem;">
+            A visible stroke carries state, a control boundary, or a structure. Never decoration.
+          </p>
+          <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 8px;">
+            <div style="background: var(--surface); padding: 15px; border-radius: var(--r-card); border: 2px solid var(--overdue);">
+              <h3 style="font-size: 16px; font-weight: 600; margin-bottom: 4px;">State: overdue</h3>
+              <p style="font-size: 13px; font-weight: 500; color: var(--overdue); margin-bottom: 4px;">Forfalt</p>
+              <code style="color: var(--text-muted); font-size: 13px;">2px var(--overdue)</code>
             </div>
-            <div style="margin-top: 0.75rem; color: #475569; font-size: 0.875rem;">
-              Subtle depth, tags, badges
+            <div style="background: var(--surface); padding: 15px; border-radius: var(--r-card); display: flex; gap: 12px; align-items: flex-start;">
+              <span style="flex: none; width: 24px; height: 24px; border: 2px solid var(--text-muted); border-radius: 7px;"></span>
+              <div>
+                <h3 style="font-size: 16px; font-weight: 600; margin-bottom: 4px;">Control boundary</h3>
+                <p style="color: var(--text-muted); font-size: 13px; font-weight: 500; margin-bottom: 4px;">An unchecked checkbox.</p>
+                <code style="color: var(--text-muted); font-size: 13px;">2px var(--text-muted)</code>
+              </div>
+            </div>
+            <div style="background: var(--surface); padding: 15px; border-radius: var(--r-card);">
+              <h3 style="font-size: 16px; font-weight: 600; padding-bottom: 8px; border-bottom: 1px solid var(--hairline); margin-bottom: 8px;">Structural divider</h3>
+              <p style="color: var(--text-muted); font-size: 13px; font-weight: 500; margin-bottom: 4px;">Above the nav, under a heading.</p>
+              <code style="color: var(--text-muted); font-size: 13px;">1px var(--hairline)</code>
             </div>
           </div>
-
-          <!-- Shadow MD -->
-          <div>
-            <div style="background: white; padding: 2rem; border-radius: 8px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06); text-align: center;">
-              <div style="font-weight: 600; margin-bottom: 0.5rem;">Medium</div>
-              <div style="color: #64748b; font-size: 0.875rem;">0 4px 6px rgba(0,0,0,0.1)</div>
-            </div>
-            <div style="margin-top: 0.75rem; color: #475569; font-size: 0.875rem;">
-              Cards, buttons, inputs
-            </div>
-          </div>
-
-          <!-- Shadow LG -->
-          <div>
-            <div style="background: white; padding: 2rem; border-radius: 8px; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05); text-align: center;">
-              <div style="font-weight: 600; margin-bottom: 0.5rem;">Large</div>
-              <div style="color: #64748b; font-size: 0.875rem;">0 10px 15px rgba(0,0,0,0.1)</div>
-            </div>
-            <div style="margin-top: 0.75rem; color: #475569; font-size: 0.875rem;">
-              Popovers, dropdowns
-            </div>
-          </div>
-
-          <!-- Shadow XL -->
-          <div>
-            <div style="background: white; padding: 2rem; border-radius: 8px; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04); text-align: center;">
-              <div style="font-weight: 600; margin-bottom: 0.5rem;">Extra Large</div>
-              <div style="color: #64748b; font-size: 0.875rem;">0 20px 25px rgba(0,0,0,0.1)</div>
-            </div>
-            <div style="margin-top: 0.75rem; color: #475569; font-size: 0.875rem;">
-              Modals, elevated panels
-            </div>
-          </div>
-
-          <!-- Shadow 2XL -->
-          <div>
-            <div style="background: white; padding: 2rem; border-radius: 8px; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25); text-align: center;">
-              <div style="font-weight: 600; margin-bottom: 0.5rem;">2XL</div>
-              <div style="color: #64748b; font-size: 0.875rem;">0 25px 50px rgba(0,0,0,0.25)</div>
-            </div>
-            <div style="margin-top: 0.75rem; color: #475569; font-size: 0.875rem;">
-              Floating elements, dialogs
-            </div>
-          </div>
-        </div>
-
-        <div style="background: white; padding: 1.5rem; border-radius: 8px; margin-top: 3rem; border-left: 4px solid #6366F1;">
-          <h2 style="font-size: 1.25rem; font-weight: 600; margin-bottom: 1rem;">Usage Guidelines</h2>
-          <ul style="color: #475569; padding-left: 1.5rem; margin: 0;">
-            <li style="margin-bottom: 0.5rem;">Use shadows consistently to indicate elevation</li>
-            <li style="margin-bottom: 0.5rem;">Higher elevation = larger shadow</li>
-            <li style="margin-bottom: 0.5rem;">Avoid mixing shadow sizes on similar elements</li>
-            <li>Consider accessibility - shadows should enhance, not be critical for understanding</li>
-          </ul>
-        </div>
+        </section>
       </div>
     `,
   }),
 };
 
+const radii: { name: string; value: string; css: string; w: string; h: string; use: string }[] = [
+  {
+    name: 'Card',
+    value: '12px',
+    css: 'var(--r-card)',
+    w: '120px',
+    h: '72px',
+    use: 'Cards and rows.',
+  },
+  {
+    name: 'Button',
+    value: '13px',
+    css: 'var(--r-button)',
+    w: '120px',
+    h: '49px',
+    use: 'Full-width primary and the on-yellow pair.',
+  },
+  {
+    name: 'Row action',
+    value: '10px',
+    css: 'var(--r-row-action)',
+    w: '80px',
+    h: '36px',
+    use: 'Buttons inside a row ("Hak av").',
+  },
+  { name: 'Chip', value: '9px', css: 'var(--r-chip)', w: '80px', h: '32px', use: 'Filter chips.' },
+  {
+    name: 'Meter segment',
+    value: 'pill',
+    css: '9999px',
+    w: '120px',
+    h: '8px',
+    use: 'Fully rounded points-meter segments.',
+  },
+  {
+    name: 'Initial badge',
+    value: 'circle, 38px',
+    css: '50%',
+    w: '38px',
+    h: '38px',
+    use: 'The person badge in the title row.',
+  },
+];
+
 export const BorderRadius: StoryObj = {
   render: () => ({
+    props: { radii },
     template: `
-      <div style="padding: 2rem;">
-        <h1 style="font-size: 2rem; font-weight: 700; margin-bottom: 2rem;">Border Radius</h1>
-
-        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 2rem;">
-          <div style="text-align: center;">
-            <div style="width: 150px; height: 150px; background: #6366F1; border-radius: 0; margin: 0 auto;"></div>
-            <div style="margin-top: 1rem; font-weight: 600;">None</div>
-            <div style="color: #64748b; font-size: 0.875rem;">0px</div>
-          </div>
-
-          <div style="text-align: center;">
-            <div style="width: 150px; height: 150px; background: #6366F1; border-radius: 4px; margin: 0 auto;"></div>
-            <div style="margin-top: 1rem; font-weight: 600;">Small</div>
-            <div style="color: #64748b; font-size: 0.875rem;">4px</div>
-          </div>
-
-          <div style="text-align: center;">
-            <div style="width: 150px; height: 150px; background: #6366F1; border-radius: 6px; margin: 0 auto;"></div>
-            <div style="margin-top: 1rem; font-weight: 600;">Base</div>
-            <div style="color: #64748b; font-size: 0.875rem;">6px</div>
-          </div>
-
-          <div style="text-align: center;">
-            <div style="width: 150px; height: 150px; background: #6366F1; border-radius: 8px; margin: 0 auto;"></div>
-            <div style="margin-top: 1rem; font-weight: 600;">Medium</div>
-            <div style="color: #64748b; font-size: 0.875rem;">8px</div>
-          </div>
-
-          <div style="text-align: center;">
-            <div style="width: 150px; height: 150px; background: #6366F1; border-radius: 12px; margin: 0 auto;"></div>
-            <div style="margin-top: 1rem; font-weight: 600;">Large</div>
-            <div style="color: #64748b; font-size: 0.875rem;">12px</div>
-          </div>
-
-          <div style="text-align: center;">
-            <div style="width: 150px; height: 150px; background: #6366F1; border-radius: 16px; margin: 0 auto;"></div>
-            <div style="margin-top: 1rem; font-weight: 600;">XL</div>
-            <div style="color: #64748b; font-size: 0.875rem;">16px</div>
-          </div>
-
-          <div style="text-align: center;">
-            <div style="width: 150px; height: 150px; background: #6366F1; border-radius: 9999px; margin: 0 auto;"></div>
-            <div style="margin-top: 1rem; font-weight: 600;">Full</div>
-            <div style="color: #64748b; font-size: 0.875rem;">9999px</div>
-          </div>
+      <div style="font-family: var(--font-text); padding: 22px; background: var(--bg); min-height: 100vh; color: var(--text);">
+        <h1 style="font-family: var(--font-display); font-size: 2.5rem; font-weight: 800; letter-spacing: -0.02em; margin-bottom: 0.5rem;">
+          Shapes (Poeng)
+        </h1>
+        <p style="color: var(--text-muted); margin-bottom: 2rem; font-size: 1rem; font-weight: 500;">
+          Softly rounded rectangles. Nothing is a circle except the person badges.
+        </p>
+        <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 8px;">
+          @for (r of radii; track r.name) {
+            <div style="background: var(--surface); padding: 15px; border-radius: var(--r-card);">
+              <div style="height: 80px; display: flex; align-items: center; margin-bottom: 12px;">
+                <div
+                  [style.width]="r.w"
+                  [style.height]="r.h"
+                  [style.border-radius]="r.css"
+                  [style.background]="r.name === 'Initial badge' ? 'var(--track)' : 'var(--yellow)'"
+                  style="display: flex; align-items: center; justify-content: center; font-family: var(--font-display); font-weight: 800; color: var(--text);"
+                >
+                  {{ r.name === 'Initial badge' ? 'E' : '' }}
+                </div>
+              </div>
+              <h3 style="font-size: 16px; font-weight: 600; margin-bottom: 4px;">{{ r.name }}</h3>
+              <code style="display: block; color: var(--text-muted); font-size: 13px;">{{ r.value }} · {{ r.css }}</code>
+              <p style="color: var(--text-muted); font-size: 13px; font-weight: 500; margin-top: 4px;">{{ r.use }}</p>
+            </div>
+          }
         </div>
       </div>
     `,

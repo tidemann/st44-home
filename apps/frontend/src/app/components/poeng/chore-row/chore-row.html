@@ -1,0 +1,47 @@
+<div class="row" [class.overdue]="overdue()">
+  @if (done()) {
+    <span class="cb done" role="img" i18n-aria-label="@@choreRow.done" aria-label="Gjort">
+      <svg width="13" height="10" viewBox="0 0 13 10" fill="none" aria-hidden="true">
+        <path
+          d="M1.4 5.1 4.7 8.4 11.4 1.7"
+          stroke="#fff"
+          stroke-width="2.1"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        />
+      </svg>
+    </span>
+  } @else if (checkable()) {
+    <button
+      type="button"
+      class="cb"
+      [disabled]="busy()"
+      [attr.aria-busy]="busy()"
+      [attr.aria-label]="checkLabel(title())"
+      (click)="check.emit()"
+    ></button>
+  } @else {
+    <span class="cb" aria-hidden="true"></span>
+  }
+
+  @if (openable()) {
+    <button type="button" class="rowtext rowtext-btn" (click)="open.emit()">
+      <span class="rt">{{ title() }}</span>
+      @if (meta()) {
+        <span class="rm" [class.rust]="overdue()">{{ meta() }}</span>
+      }
+    </button>
+  } @else {
+    <span class="rowtext">
+      <span class="rt">{{ title() }}</span>
+      @if (meta()) {
+        <span class="rm" [class.rust]="overdue()">{{ meta() }}</span>
+      }
+    </span>
+  }
+
+  @if (points()) {
+    <span class="pts">{{ points() }}</span>
+  }
+  <ng-content select="[row-action]" />
+</div>

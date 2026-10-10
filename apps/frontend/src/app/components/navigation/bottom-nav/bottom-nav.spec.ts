@@ -21,29 +21,28 @@ describe('BottomNav', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should display all 5 navigation items', () => {
+  it('should display the 4 Poeng navigation items', () => {
     componentRef.setInput('activeScreen', 'home');
     fixture.detectChanges();
 
     const navButtons = fixture.nativeElement.querySelectorAll('.nav-btn');
-    expect(navButtons.length).toBe(5);
+    expect(navButtons.length).toBe(4);
   });
 
-  it('should display correct icons and labels', () => {
+  it('should display an icon and label per item', () => {
     componentRef.setInput('activeScreen', 'home');
     fixture.detectChanges();
 
     const navButtons = fixture.nativeElement.querySelectorAll('.nav-btn');
-    const icons = Array.from(navButtons).map((btn) =>
-      (btn as HTMLElement).querySelector('.nav-icon')?.textContent?.trim(),
-    );
     const labels = Array.from(navButtons).map((btn) =>
       (btn as HTMLElement).querySelector('.nav-label')?.textContent?.trim(),
     );
 
-    expect(icons).toEqual(['🏠', '📋', '👥', '🏆', '🎁']);
-    // Norwegian is the source language
-    expect(labels).toEqual(['Hjem', 'Oppgaver', 'Familie', 'Fremgang', 'Belønninger']);
+    expect(
+      Array.from(navButtons).every((btn) => (btn as HTMLElement).querySelector('.nav-icon svg')),
+    ).toBe(true);
+    // Norwegian is the source language; order as drawn in the signed-off picture
+    expect(labels).toEqual(['Hjem', 'Oppgaver', 'Belønninger', 'Familie']);
   });
 
   it('should apply active class to current screen', () => {
@@ -62,7 +61,7 @@ describe('BottomNav', () => {
 
     const navButtons = fixture.nativeElement.querySelectorAll('.nav-btn');
     const tasksButton = navButtons[1];
-    const familyButton = navButtons[2];
+    const familyButton = navButtons[3];
 
     expect(tasksButton.classList.contains('active')).toBe(false);
     expect(familyButton.classList.contains('active')).toBe(false);
@@ -95,10 +94,10 @@ describe('BottomNav', () => {
     expect(navigateSpy).toHaveBeenCalledWith('home');
 
     (navButtons[2] as HTMLButtonElement).click();
-    expect(navigateSpy).toHaveBeenCalledWith('family');
+    expect(navigateSpy).toHaveBeenCalledWith('rewards');
 
     (navButtons[3] as HTMLButtonElement).click();
-    expect(navigateSpy).toHaveBeenCalledWith('progress');
+    expect(navigateSpy).toHaveBeenCalledWith('family');
   });
 
   it('should have correct accessibility attributes', () => {
@@ -131,17 +130,14 @@ describe('BottomNav', () => {
     expect(tasksButton.getAttribute('aria-current')).toBeNull();
   });
 
-  it('should have aria-label for each navigation item', () => {
+  it('should name each navigation item by its visible label', () => {
     componentRef.setInput('activeScreen', 'home');
     fixture.detectChanges();
 
     const navButtons = fixture.nativeElement.querySelectorAll('.nav-btn');
-    const labels = Array.from(navButtons).map((btn) =>
-      (btn as HTMLElement).getAttribute('aria-label'),
-    );
+    const labels = Array.from(navButtons).map((btn) => (btn as HTMLElement).textContent?.trim());
 
-    // Norwegian is the source language
-    expect(labels).toEqual(['Hjem', 'Oppgaver', 'Familie', 'Fremgang', 'Belønninger']);
+    expect(labels).toEqual(['Hjem', 'Oppgaver', 'Belønninger', 'Familie']);
   });
 
   it('should update active state when activeScreen changes', () => {

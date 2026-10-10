@@ -27,6 +27,8 @@ export const AssignmentSchema = z.object({
   status: AssignmentStatusSchema,
   completedAt: z.string().datetime().nullable(),
   createdAt: z.string().datetime(),
+  // Points the chore is worth (tasks.points), shown on the chore card (ST-777)
+  points: z.number().int().nonnegative().optional(),
 });
 
 /**
@@ -44,6 +46,8 @@ export const AssignmentFiltersSchema = z.object({
   status: AssignmentStatusSchema.optional(),
   startDate: z.string().date().optional(),
   endDate: z.string().date().optional(),
+  // How many days from `date` the list covers; the API defaults to 7 (ST-777)
+  days: z.number().int().positive().max(30).optional(),
 });
 
 export type AssignmentFilters = z.infer<typeof AssignmentFiltersSchema>;
@@ -93,3 +97,23 @@ export const AssignmentWithPointsSchema = AssignmentSchema.extend({
 });
 
 export type AssignmentWithPoints = z.infer<typeof AssignmentWithPointsSchema>;
+
+/**
+ * How long a child (or parent) can take back a "done" tap, in seconds (ST-777)
+ */
+export const UNDO_COMPLETE_SECONDS = 300;
+
+/**
+ * Uncomplete Assignment Response
+ * POST /api/assignments/:assignmentId/uncomplete puts a completed chore back to pending
+ */
+export const UncompleteAssignmentResponseSchema = z.object({
+  taskAssignment: z.object({
+    id: z.string().uuid(),
+    status: z.literal('pending'),
+    completedAt: z.null(),
+  }),
+  pointsRemoved: z.number().int().nonnegative(),
+});
+
+export type UncompleteAssignmentResponse = z.infer<typeof UncompleteAssignmentResponseSchema>;

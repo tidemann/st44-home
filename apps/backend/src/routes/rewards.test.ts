@@ -107,6 +107,8 @@ describe('Rewards API', () => {
       .rows[0].id;
     const childUserId = (await pool.query('SELECT id FROM users WHERE email = $1', [childEmail]))
       .rows[0].id;
+    // The child sees who answered by first name (ST-777)
+    await pool.query(`UPDATE users SET first_name = 'Stig' WHERE id = $1`, [parentUserId]);
 
     householdId = (
       await pool.query(`INSERT INTO households (name) VALUES ('Familien Test') RETURNING id`)
@@ -195,6 +197,8 @@ describe('Rewards API', () => {
       assert.strictEqual(request.id, redemptionId);
       assert.strictEqual(request.rewardName, 'Kino');
       assert.strictEqual(request.childName, 'Emma');
+      // Nobody has answered yet (ST-777)
+      assert.strictEqual(request.decidedByName, null);
     });
 
     test('a child cannot answer a request', async () => {
@@ -234,6 +238,21 @@ describe('Rewards API', () => {
       assert.strictEqual(request.rewardName, 'Kino');
       assert.strictEqual(request.status, 'rejected');
       assert.strictEqual(request.rejectionReason, 'Vi har kino på lørdag uansett.');
+      // Who said no, by first name (ST-777)
+      assert.strictEqual(request.decidedByName, 'Stig');
+    });
+
+    test('the parent list also names who answered', async () => {
+      const response = await app.inject({
+        method: 'GET',
+        url: `/api/households/${householdId}/redemptions`,
+        headers: auth(parentToken),
+      });
+      assert.strictEqual(response.statusCode, 200);
+      const request = JSON.parse(response.body).redemptions.find(
+        (r: { id: string }) => r.id === redemptionId,
+      );
+      assert.strictEqual(request.decidedByName, 'Stig');
     });
 
     test('a second no is harmless, a yes after a no is refused', async () => {

@@ -52,22 +52,20 @@
 
 .btn-retry {
   padding: var(--space-sm) var(--space-lg);
-  background: var(--gradient-primary-button);
-  color: white;
+  min-height: 44px;
+  background: var(--yellow);
+  color: var(--ink);
   border: none;
-  border-radius: var(--radius-sm);
+  border-radius: var(--r-button);
   font-family: var(--font-body);
   font-size: var(--font-size-base);
   font-weight: var(--font-weight-semibold);
   cursor: pointer;
-  transition:
-    transform 0.2s,
-    box-shadow 0.2s;
+  transition: background-color 0.2s;
 }
 
 .btn-retry:hover {
-  transform: translateY(-2px);
-  box-shadow: var(--shadow-md);
+  background: var(--yellow-inset);
 }
 
 /* ===== HEADER BUTTON STYLES ===== */
@@ -82,15 +80,11 @@
   font-size: var(--font-size-sm);
   font-weight: var(--font-weight-semibold);
   cursor: pointer;
-  transition:
-    transform 0.2s,
-    box-shadow 0.2s;
-  box-shadow: var(--shadow-sm);
+  transition: transform 0.2s;
 }
 
 .btn-header:hover {
   transform: translateY(-2px);
-  box-shadow: var(--shadow-md);
 }
 
 /* ===== MEMBERS SECTION ===== */
@@ -106,7 +100,7 @@
 .section-header h2 {
   font-family: var(--font-heading);
   font-size: var(--font-size-xl);
-  font-weight: var(--font-weight-bold);
+  font-weight: 800;
   color: var(--color-text-primary);
   margin: 0;
 }
@@ -135,9 +129,9 @@
 
 .btn-qr {
   padding: 0.5rem 1rem;
-  background: #f3f4f6;
-  color: #374151;
-  border: 1px solid #d1d5db;
+  background: var(--track);
+  color: var(--text);
+  border: 1px solid var(--hairline);
   border-radius: 6px;
   font-size: 0.875rem;
   font-weight: 500;
@@ -147,8 +141,8 @@
 }
 
 .btn-qr:hover {
-  background: #e5e7eb;
-  border-color: #9ca3af;
+  background: var(--track);
+  border-color: var(--text-muted);
 }
 
 @media (max-width: 640px) {
@@ -168,7 +162,6 @@
   padding: var(--space-xxl) var(--space-md);
   background: var(--color-surface);
   border-radius: var(--radius-md);
-  box-shadow: var(--shadow-sm);
 }
 
 .empty-icon {
@@ -179,7 +172,7 @@
 .empty-state h3 {
   font-family: var(--font-heading);
   font-size: var(--font-size-xl);
-  font-weight: var(--font-weight-bold);
+  font-weight: 800;
   color: var(--color-text-primary);
   margin: 0 0 var(--space-xs) 0;
 }

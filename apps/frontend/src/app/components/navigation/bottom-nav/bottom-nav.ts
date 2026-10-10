@@ -1,5 +1,6 @@
 import '@angular/localize/init';
 import { Component, ChangeDetectionStrategy, input, output } from '@angular/core';
+import { NavIcon, type NavIconName } from '../nav-icon';
 
 /**
  * Screen identifier type for navigation
@@ -12,15 +13,15 @@ export type NavScreen = 'home' | 'tasks' | 'family' | 'progress' | 'rewards' | '
  */
 export interface NavItem {
   id: NavScreen;
-  icon: string;
+  icon: NavIconName;
   label: string;
 }
 
 @Component({
   selector: 'app-bottom-nav',
-  imports: [],
+  imports: [NavIcon],
   templateUrl: './bottom-nav.html',
-  styleUrl: './bottom-nav.css',
+  styleUrl: '../nav.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class BottomNav {
@@ -39,11 +40,10 @@ export class BottomNav {
    * Norwegian is the source language - translations handled via @angular/localize
    */
   readonly navItems: NavItem[] = [
-    { id: 'home', icon: '🏠', label: $localize`:@@nav.home:Hjem` },
-    { id: 'tasks', icon: '📋', label: $localize`:@@nav.tasks:Oppgaver` },
-    { id: 'family', icon: '👥', label: $localize`:@@nav.family:Familie` },
-    { id: 'progress', icon: '🏆', label: $localize`:@@nav.progress:Fremgang` },
-    { id: 'rewards', icon: '🎁', label: $localize`:@@nav.rewards:Belønninger` },
+    { id: 'home', icon: 'home', label: $localize`:@@nav.home:Hjem` },
+    { id: 'tasks', icon: 'tasks', label: $localize`:@@nav.tasks:Oppgaver` },
+    { id: 'rewards', icon: 'rewards', label: $localize`:@@nav.rewards:Belønninger` },
+    { id: 'family', icon: 'family', label: $localize`:@@nav.family:Familie` },
   ];
 
   /**

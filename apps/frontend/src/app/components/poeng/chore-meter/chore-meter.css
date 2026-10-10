@@ -1,0 +1,19 @@
+:host {
+  display: flex;
+  gap: 3px;
+  height: 7px;
+}
+
+i {
+  flex: 1;
+  border-radius: 999px;
+  background: var(--track);
+}
+
+i.ok {
+  background: var(--done);
+}
+
+i.late {
+  background: var(--overdue);
+}

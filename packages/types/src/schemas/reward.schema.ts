@@ -51,6 +51,8 @@ export const RewardRedemptionSchema = z.object({
   decidedAt: z.string().datetime().nullable().optional(),
   // Why a parent said no, shown to the child (ST-624)
   rejectionReason: z.string().nullable().optional(),
+  // First name of the parent who said yes or no; null if unknown (ST-777)
+  decidedByName: z.string().nullable().optional(),
   // Added by list endpoint for display purposes
   rewardName: z.string().optional(),
   childName: z.string().optional(),

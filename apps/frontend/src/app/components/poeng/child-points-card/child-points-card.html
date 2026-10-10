@@ -1,0 +1,11 @@
+<div class="kid">
+  <div class="n">{{ name() }}</div>
+  <div class="v" [attr.aria-label]="pointsLabel()">{{ points() }}</div>
+  <div class="p" aria-hidden="true" i18n="@@childCard.pointsWord">poeng</div>
+  @if (chores().length > 0) {
+    <app-chore-meter class="cm" [states]="chores()" />
+    <div class="d" [class.rust]="behind()">{{ doneLabel() }}</div>
+  } @else {
+    <div class="d" i18n="@@childCard.free">Fri i dag</div>
+  }
+</div>

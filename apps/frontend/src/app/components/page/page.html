@@ -1,5 +1,5 @@
 <div class="page" [class]="containerClass()">
-  <!-- Header Section -->
+  <!-- Title row: screen name left, the person's initial badge right (guide: Initial badge) -->
   @if (showHeader()) {
     <header class="page-header" [class]="headerClass()">
       <div class="page-header-content">
@@ -8,17 +8,32 @@
         </div>
         <div class="page-header-actions">
           <ng-content select="[page-actions]" />
-          @if (showUserButton() && userData(); as user) {
-            <app-user-button [user]="user" (clicked)="handleUserButtonClick()" />
+          @if (showUserButton() && initial(); as letter) {
+            <div class="badge-wrap">
+              <button
+                type="button"
+                class="initial-badge"
+                (click)="onBadgeClick()"
+                [attr.aria-label]="badgeLabel()"
+                [attr.aria-expanded]="isChild() ? menuOpen() : null"
+              >
+                {{ letter }}
+              </button>
+              @if (menuOpen()) {
+                <div class="badge-menu">
+                  <button type="button" class="badge-menu-item" (click)="onLogout()">
+                    <ng-container i18n="@@page.logout">Logg ut</ng-container>
+                  </button>
+                </div>
+              }
+            </div>
           }
         </div>
       </div>
     </header>
   }
 
-  <!-- Main Content -->
   <main class="page-content">
-    <!-- Subtitle sits on the page surface: white body text on the gradient fails WCAG AA -->
     @if (showHeader() && subtitle()) {
       <p class="page-subtitle">{{ subtitle() }}</p>
     }

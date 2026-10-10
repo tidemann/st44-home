@@ -61,26 +61,10 @@ export class AvatarComponent {
   /** CSS class for avatar size */
   protected sizeClass = computed(() => `avatar-${this.size()}`);
 
-  /** Background color based on initials (for consistent coloring per user) */
-  protected backgroundColor = computed(() => {
-    const colors = [
-      'var(--color-primary)',
-      'var(--color-secondary)',
-      'var(--color-success)',
-      '#f59e0b', // amber
-      '#8b5cf6', // violet
-      '#ec4899', // pink
-      '#06b6d4', // cyan
-      '#84cc16', // lime
-    ];
-
-    // Generate a consistent hash from the initials
-    const str = this.initials();
-    let hash = 0;
-    for (let i = 0; i < str.length; i++) {
-      hash = str.charCodeAt(i) + ((hash << 5) - hash);
-    }
-
-    return colors[Math.abs(hash) % colors.length];
-  });
+  /**
+   * Background color for the initials badge.
+   * Poeng: the initial badge is a quiet neutral (--track with --text),
+   * never a colour per person and never the yellow.
+   */
+  protected backgroundColor = computed(() => 'var(--track)');
 }

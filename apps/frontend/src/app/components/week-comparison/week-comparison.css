@@ -1,14 +1,14 @@
 .week-comparison {
   padding: var(--space-4, 1rem);
-  border-radius: var(--radius-lg, 0.75rem);
-  background: var(--surface-secondary, #f8f9fa);
+  border-radius: var(--r-card);
+  background: var(--bg);
 }
 
 .comparison-title {
   margin: 0 0 var(--space-4, 1rem) 0;
   font-size: 1rem;
   font-weight: 600;
-  color: var(--text-primary, #212529);
+  color: var(--text);
   text-align: center;
 }
 
@@ -25,35 +25,33 @@
   flex-direction: column;
   align-items: center;
   padding: var(--space-3, 0.75rem);
-  border-radius: var(--radius-md, 0.5rem);
+  border-radius: var(--radius-md);
   background: white;
 }
 
 .period-card.current {
-  border: 2px solid var(--color-primary, #3b82f6);
+  border: 2px solid var(--color-primary);
 }
 
 .period-card.previous {
-  border: 2px solid var(--surface-tertiary, #e9ecef);
+  border: 2px solid var(--hairline);
 }
 
 .period-label {
   font-size: 0.75rem;
   font-weight: 600;
-  color: var(--text-secondary, #6c757d);
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
+  color: var(--text-muted);
 }
 
 .period-value {
   font-size: 1.75rem;
   font-weight: 700;
-  color: var(--text-primary, #212529);
+  color: var(--text);
 }
 
 .period-sublabel {
   font-size: 0.75rem;
-  color: var(--text-secondary, #6c757d);
+  color: var(--text-muted);
 }
 
 /* Trend Indicator */
@@ -62,18 +60,18 @@
   flex-direction: column;
   align-items: center;
   padding: var(--space-2, 0.5rem);
-  border-radius: var(--radius-full, 9999px);
-  background: var(--surface-tertiary, #e9ecef);
+  border-radius: var(--radius-full);
+  background: var(--track);
 }
 
 .trend-indicator.improved {
-  background: rgba(16, 185, 129, 0.1);
-  color: #10b981;
+  background: var(--color-success-light);
+  color: var(--color-success);
 }
 
 .trend-indicator.declined {
-  background: rgba(239, 68, 68, 0.1);
-  color: #ef4444;
+  background: var(--color-danger-light);
+  color: var(--color-danger);
 }
 
 .trend-arrow {
@@ -94,27 +92,27 @@
   gap: var(--space-2, 0.5rem);
   margin-top: var(--space-4, 1rem);
   padding-top: var(--space-3, 0.75rem);
-  border-top: 1px solid var(--surface-tertiary, #e9ecef);
+  border-top: 1px solid var(--hairline);
 }
 
 .points-label {
   font-size: 0.875rem;
-  color: var(--text-secondary, #6c757d);
+  color: var(--text-muted);
 }
 
 .points-value {
   font-size: 1rem;
   font-weight: 700;
-  color: var(--color-warning, #fbbf24);
+  color: var(--amber-ink);
 }
 
 .points-delta {
   font-size: 0.75rem;
-  color: var(--text-secondary, #6c757d);
+  color: var(--text-muted);
 }
 
 .points-delta.positive {
-  color: #10b981;
+  color: var(--color-success);
 }
 
 /* Responsive */
@@ -127,7 +125,7 @@
   .trend-indicator {
     flex-direction: row;
     gap: var(--space-2, 0.5rem);
-    border-radius: var(--radius-md, 0.5rem);
+    border-radius: var(--radius-md);
     padding: var(--space-2, 0.5rem) var(--space-3, 0.75rem);
   }
 }

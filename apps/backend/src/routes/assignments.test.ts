@@ -390,6 +390,8 @@ describe('Assignments API', () => {
       assert.ok(assignment.childName);
       assert.ok(assignment.date);
       assert.ok(assignment.status);
+      // Task points are returned for the chore card (ST-777)
+      assert.strictEqual(assignment.points, 10);
     });
 
     test('filters by date range', async () => {
@@ -657,6 +659,8 @@ describe('Assignments API', () => {
       assert.ok(assignment.title);
       assert.strictEqual(assignment.date, '2025-01-20');
       assert.strictEqual(assignment.status, 'pending');
+      // Task points are returned for the chore card (ST-777)
+      assert.strictEqual(assignment.points, 10);
     });
 
     test('filters by status=pending', async () => {
@@ -1303,6 +1307,185 @@ describe('Assignments API', () => {
       assert.ok(body.completion.id);
       assert.ok(typeof body.completion.pointsEarned === 'number');
       assert.ok(body.completion.completedAt);
+    });
+  });
+
+  // ==================== Test Suite: POST /api/assignments/:assignmentId/uncomplete (ST-777) ====================
+
+  describe('POST /api/assignments/:assignmentId/uncomplete', () => {
+    let assignmentId: string;
+    let childToken: string;
+    let childUserId: string;
+    let testDate: string;
+
+    const complete = (id: string, token: string) =>
+      app.inject({
+        method: 'POST',
+        url: `/api/assignments/${id}/complete`,
+        headers: { Authorization: `Bearer ${token}` },
+      });
+    const uncomplete = (id: string, token?: string) =>
+      app.inject({
+        method: 'POST',
+        url: `/api/assignments/${id}/uncomplete`,
+        ...(token ? { headers: { Authorization: `Bearer ${token}` } } : {}),
+      });
+
+    beforeEach(async () => {
+      const timestamp = Date.now();
+      const dateObj = new Date(2025, 3, 1);
+      dateObj.setDate(dateObj.getDate() + (timestamp % 100));
+      testDate = dateObj.toISOString().split('T')[0];
+
+      const result = await pool.query(
+        `INSERT INTO task_assignments (household_id, task_id, child_id, date, status)
+         VALUES ($1, $2, $3, $4, 'pending')
+         RETURNING id`,
+        [householdId, taskId, childIds[0], testDate],
+      );
+      assignmentId = result.rows[0].id;
+
+      const childData = await registerAndLogin(
+        app,
+        `test-assignments-undo-child-${timestamp}@example.com`,
+        'ChildPass123!',
+      );
+      childToken = childData.accessToken;
+      childUserId = childData.userId;
+
+      await pool.query(
+        `INSERT INTO household_members (household_id, user_id, role) VALUES ($1, $2, 'child')`,
+        [householdId, childUserId],
+      );
+      await pool.query('UPDATE children SET user_id = $1 WHERE id = $2', [
+        childUserId,
+        childIds[0],
+      ]);
+    });
+
+    afterEach(async () => {
+      if (childUserId) {
+        await pool.query('DELETE FROM reward_redemptions WHERE child_id = $1', [childIds[0]]);
+        await pool.query('DELETE FROM household_members WHERE user_id = $1', [childUserId]);
+        await pool.query('UPDATE children SET user_id = NULL WHERE user_id = $1', [childUserId]);
+        await pool.query('DELETE FROM users WHERE id = $1', [childUserId]);
+      }
+    });
+
+    test('child can undo their own chore within 5 minutes', async () => {
+      assert.strictEqual((await complete(assignmentId, childToken)).statusCode, 200);
+
+      const response = await uncomplete(assignmentId, childToken);
+      assert.strictEqual(response.statusCode, 200);
+      const body = JSON.parse(response.body);
+      assert.deepStrictEqual(body, {
+        taskAssignment: { id: assignmentId, status: 'pending', completedAt: null },
+        pointsRemoved: 10,
+      });
+
+      const dbAssignment = await pool.query('SELECT status FROM task_assignments WHERE id = $1', [
+        assignmentId,
+      ]);
+      assert.strictEqual(dbAssignment.rows[0].status, 'pending');
+      const dbCompletions = await pool.query(
+        'SELECT COUNT(*) FROM task_completions WHERE task_assignment_id = $1',
+        [assignmentId],
+      );
+      assert.strictEqual(parseInt(dbCompletions.rows[0].count), 0);
+
+      // The chore can be completed again afterwards
+      assert.strictEqual((await complete(assignmentId, childToken)).statusCode, 200);
+    });
+
+    test('parent can undo a chore', async () => {
+      assert.strictEqual((await complete(assignmentId, childToken)).statusCode, 200);
+      const response = await uncomplete(assignmentId, parentToken);
+      assert.strictEqual(response.statusCode, 200);
+      assert.strictEqual(JSON.parse(response.body).pointsRemoved, 10);
+    });
+
+    test('returns 409 after the undo window has passed', async () => {
+      assert.strictEqual((await complete(assignmentId, childToken)).statusCode, 200);
+      await pool.query(
+        `UPDATE task_completions SET completed_at = NOW() - interval '301 seconds'
+         WHERE task_assignment_id = $1`,
+        [assignmentId],
+      );
+
+      const response = await uncomplete(assignmentId, childToken);
+      assert.strictEqual(response.statusCode, 409);
+      assert.ok(JSON.parse(response.body).error.includes('Too late'));
+
+      const dbAssignment = await pool.query('SELECT status FROM task_assignments WHERE id = $1', [
+        assignmentId,
+      ]);
+      assert.strictEqual(dbAssignment.rows[0].status, 'completed');
+    });
+
+    test('returns 409 when the points have already been spent', async () => {
+      assert.strictEqual((await complete(assignmentId, childToken)).statusCode, 200);
+      // Spend everything the child has
+      const balanceResult = await pool.query(
+        'SELECT points_balance FROM child_points_balance WHERE child_id = $1',
+        [childIds[0]],
+      );
+      const balance = Number(balanceResult.rows[0].points_balance);
+      const rewardResult = await pool.query(
+        `INSERT INTO rewards (household_id, name, points_cost) VALUES ($1, 'Is', $2) RETURNING id`,
+        [householdId, balance],
+      );
+      await pool.query(
+        `INSERT INTO reward_redemptions (household_id, reward_id, child_id, points_spent, status)
+         VALUES ($1, $2, $3, $4, 'pending')`,
+        [householdId, rewardResult.rows[0].id, childIds[0], balance],
+      );
+
+      const response = await uncomplete(assignmentId, childToken);
+      assert.strictEqual(response.statusCode, 409);
+      assert.ok(JSON.parse(response.body).error.includes('already been spent'));
+
+      const dbCompletions = await pool.query(
+        'SELECT COUNT(*) FROM task_completions WHERE task_assignment_id = $1',
+        [assignmentId],
+      );
+      assert.strictEqual(parseInt(dbCompletions.rows[0].count), 1);
+      await pool.query('DELETE FROM reward_redemptions WHERE child_id = $1', [childIds[0]]);
+      await pool.query('DELETE FROM rewards WHERE id = $1', [rewardResult.rows[0].id]);
+    });
+
+    test('returns 409 when the assignment is not completed', async () => {
+      const response = await uncomplete(assignmentId, childToken);
+      assert.strictEqual(response.statusCode, 409);
+    });
+
+    test('child cannot undo another childs chore (403)', async () => {
+      const otherDate = new Date(testDate);
+      otherDate.setDate(otherDate.getDate() + 1);
+      const otherResult = await pool.query(
+        `INSERT INTO task_assignments (household_id, task_id, child_id, date, status)
+         VALUES ($1, $2, $3, $4, 'pending')
+         RETURNING id`,
+        [householdId, taskId, childIds[1], otherDate.toISOString().split('T')[0]],
+      );
+      const otherId = otherResult.rows[0].id;
+      assert.strictEqual((await complete(otherId, parentToken)).statusCode, 200);
+
+      const response = await uncomplete(otherId, childToken);
+      assert.strictEqual(response.statusCode, 403);
+    });
+
+    test('returns 404 for an outsider and for an unknown assignment', async () => {
+      assert.strictEqual((await complete(assignmentId, childToken)).statusCode, 200);
+      assert.strictEqual((await uncomplete(assignmentId, outsiderToken)).statusCode, 404);
+      assert.strictEqual(
+        (await uncomplete('00000000-0000-0000-0000-000000000000', adminToken)).statusCode,
+        404,
+      );
+    });
+
+    test('returns 400 for invalid UUID and 401 without token', async () => {
+      assert.strictEqual((await uncomplete('not-a-uuid', adminToken)).statusCode, 400);
+      assert.strictEqual((await uncomplete(assignmentId)).statusCode, 401);
     });
   });
 

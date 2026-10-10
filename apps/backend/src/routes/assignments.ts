@@ -5,12 +5,14 @@ import { validateHouseholdMembership } from '../middleware/household-membership.
 import { pool } from '../database.js';
 import { generateAssignments } from '../services/assignment-generator.js';
 import { pushService } from '../services/push.service.js';
+import { UNDO_COMPLETE_SECONDS } from '@st44/types';
 import { withTransaction, validateBody, validateParams, validateQuery } from '../utils/index.js';
 import {
   getChildTasksSchema,
   getHouseholdAssignmentsSchema,
   completeAssignmentSchema,
   postCompleteAssignmentSchema,
+  uncompleteAssignmentSchema,
   reassignTaskSchema,
   generateAssignmentsSchema,
   generateHouseholdAssignmentsSchema,
@@ -460,6 +462,7 @@ export default async function assignmentRoutes(fastify: FastifyInstance) {
             t.name as title,
             t.description,
             t.rule_type,
+            t.points,
             ta.date::text as date,
             ta.status,
             tc.completed_at::text as completed_at
@@ -491,6 +494,7 @@ export default async function assignmentRoutes(fastify: FastifyInstance) {
           date: row.date,
           status: row.status,
           completedAt: row.completed_at || null,
+          points: row.points ?? 0,
         }));
 
         return reply.code(200).send({
@@ -555,6 +559,7 @@ export default async function assignmentRoutes(fastify: FastifyInstance) {
             t.name as title,
             t.description,
             t.rule_type,
+            t.points,
             ta.child_id,
             c.name as child_name,
             ta.date::text as date,
@@ -607,6 +612,7 @@ export default async function assignmentRoutes(fastify: FastifyInstance) {
           status: row.status,
           completedAt: row.completed_at || null,
           createdAt: row.created_at,
+          points: row.points ?? 0,
         }));
 
         return reply.code(200).send({
@@ -940,6 +946,176 @@ export default async function assignmentRoutes(fastify: FastifyInstance) {
         fastify.log.error(error, 'Failed to complete assignment');
         return reply.code(500).send({
           error: 'Failed to complete assignment',
+        });
+      }
+    },
+  );
+
+  /**
+   * POST /api/assignments/:assignmentId/uncomplete
+   * Undo a "done" tap (ST-777): puts a completed assignment back to pending and
+   * removes the points it earned. Only within UNDO_COMPLETE_SECONDS of completion,
+   * and only if the child has not already spent those points.
+   */
+  fastify.post<{
+    Params: { assignmentId: string };
+  }>(
+    '/api/assignments/:assignmentId/uncomplete',
+    {
+      schema: uncompleteAssignmentSchema,
+      preHandler: [authenticateUser],
+    },
+    async (request, reply) => {
+      try {
+        const { assignmentId } = validateParams(assignmentIdParamSchema, request);
+
+        const assignmentResult = await pool.query(
+          `SELECT ta.id, ta.household_id, ta.child_id, ta.status
+           FROM task_assignments ta
+           WHERE ta.id = $1`,
+          [assignmentId],
+        );
+
+        if (assignmentResult.rows.length === 0) {
+          return reply.code(404).send({
+            error: 'Assignment not found',
+          });
+        }
+
+        const assignment = assignmentResult.rows[0];
+
+        // Authorization: outsiders get 404 so they cannot probe for assignment ids
+        const membershipResult = await pool.query(
+          'SELECT role FROM household_members WHERE household_id = $1 AND user_id = $2',
+          [assignment.household_id, request.user?.userId],
+        );
+
+        if (membershipResult.rows.length === 0) {
+          return reply.code(404).send({
+            error: 'Assignment not found',
+          });
+        }
+
+        const userRole = membershipResult.rows[0].role;
+        const isParent = userRole === 'admin' || userRole === 'parent';
+
+        // SECURITY: a child can only undo their own chores
+        if (!isParent) {
+          if (!assignment.child_id) {
+            return reply.code(403).send({
+              error: 'Only parents can undo household-wide tasks',
+            });
+          }
+
+          const childResult = await pool.query(
+            'SELECT id FROM children WHERE user_id = $1 AND household_id = $2',
+            [request.user?.userId, assignment.household_id],
+          );
+
+          if (childResult.rows.length === 0) {
+            return reply.code(403).send({
+              error: 'Child profile not found for this user',
+            });
+          }
+
+          if (assignment.child_id !== childResult.rows[0].id) {
+            return reply.code(403).send({
+              error: 'You can only undo tasks assigned to you',
+            });
+          }
+        }
+
+        const result = await withTransaction(pool, async (client) => {
+          // Lock the assignment so a double tap cannot undo twice
+          const lockedResult = await client.query(
+            `SELECT status FROM task_assignments WHERE id = $1 FOR UPDATE`,
+            [assignmentId],
+          );
+
+          if (lockedResult.rows[0]?.status !== 'completed') {
+            throw new TransactionValidationError(409, 'Only completed tasks can be undone');
+          }
+
+          // Time is compared in the database so app and DB clocks cannot disagree
+          const completionsResult = await client.query<{
+            child_id: string;
+            points_earned: number;
+            within_window: boolean;
+          }>(
+            `SELECT child_id, points_earned,
+                    completed_at > NOW() - make_interval(secs => $2) AS within_window
+             FROM task_completions
+             WHERE task_assignment_id = $1`,
+            [assignmentId, UNDO_COMPLETE_SECONDS],
+          );
+
+          const completions = completionsResult.rows;
+          if (completions.length === 0 || completions.some((c) => !c.within_window)) {
+            throw new TransactionValidationError(
+              409,
+              `Too late to undo - a task can only be undone within ${UNDO_COMPLETE_SECONDS / 60} minutes of completing it`,
+            );
+          }
+
+          // Points removed per child (normally exactly one completion for one child)
+          const pointsByChild = new Map<string, number>();
+          for (const c of completions) {
+            pointsByChild.set(c.child_id, (pointsByChild.get(c.child_id) ?? 0) + c.points_earned);
+          }
+
+          for (const [childId, points] of pointsByChild) {
+            const balanceResult = await client.query<{ points_balance: string | number }>(
+              'SELECT points_balance FROM child_points_balance WHERE child_id = $1',
+              [childId],
+            );
+            const balance = Number(balanceResult.rows[0]?.points_balance ?? 0);
+            if (balance - points < 0) {
+              throw new TransactionValidationError(
+                409,
+                'Cannot undo - the points for this task have already been spent',
+              );
+            }
+          }
+
+          await client.query('DELETE FROM task_completions WHERE task_assignment_id = $1', [
+            assignmentId,
+          ]);
+
+          await client.query(
+            `UPDATE task_assignments
+             SET status = 'pending'
+             WHERE id = $1 AND status = 'completed'`,
+            [assignmentId],
+          );
+
+          const pointsRemoved = completions.reduce((sum, c) => sum + c.points_earned, 0);
+
+          return {
+            taskAssignment: {
+              id: assignmentId,
+              status: 'pending' as const,
+              completedAt: null,
+            },
+            pointsRemoved,
+          };
+        });
+
+        return reply.code(200).send(result);
+      } catch (error) {
+        if (error instanceof z.ZodError) {
+          return reply.code(400).send({
+            error: 'Validation failed',
+            details: error.issues.map((e) => ({ path: e.path.join('.'), message: e.message })),
+          });
+        }
+        if (error instanceof TransactionValidationError) {
+          return reply.code(error.statusCode).send({
+            error: error.message,
+          });
+        }
+        fastify.log.error(error, 'Failed to undo assignment completion');
+        return reply.code(500).send({
+          error: 'Failed to undo assignment completion',
         });
       }
     },

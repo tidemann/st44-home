@@ -52,22 +52,20 @@
 
 .btn-retry {
   padding: var(--space-sm) var(--space-lg);
-  background: var(--gradient-primary-button);
-  color: white;
+  min-height: 44px;
+  background: var(--yellow);
+  color: var(--ink);
   border: none;
-  border-radius: var(--radius-sm);
+  border-radius: var(--r-button);
   font-family: var(--font-body);
   font-size: var(--font-size-base);
   font-weight: var(--font-weight-semibold);
   cursor: pointer;
-  transition:
-    transform 0.2s,
-    box-shadow 0.2s;
+  transition: background-color 0.2s;
 }
 
 .btn-retry:hover {
-  transform: translateY(-2px);
-  box-shadow: var(--shadow-md);
+  background: var(--yellow-inset);
 }
 
 /* ===== ALERTS ===== */
@@ -83,15 +81,15 @@
 }
 
 .alert-success {
-  background: var(--color-success-light, #dcfce7);
-  color: var(--color-success-dark, #166534);
-  border: 1px solid var(--color-success, #22c55e);
+  background: var(--color-success-light);
+  color: var(--color-success-dark);
+  border: 1px solid var(--color-success);
 }
 
 .alert-error {
-  background: var(--color-danger-light, #fef2f2);
-  color: var(--color-danger-dark, #991b1b);
-  border: 1px solid var(--color-danger, #ef4444);
+  background: var(--color-danger-light);
+  color: var(--color-danger-dark);
+  border: 1px solid var(--color-danger);
 }
 
 .alert-dismiss {
@@ -114,17 +112,16 @@
   border-radius: var(--radius-md);
   padding: var(--space-lg);
   margin-bottom: var(--space-lg);
-  box-shadow: var(--shadow-sm);
 }
 
 .settings-section h2 {
   font-family: var(--font-heading);
   font-size: var(--font-size-xl);
-  font-weight: var(--font-weight-bold);
+  font-weight: 800;
   color: var(--color-text-primary);
   margin: 0 0 var(--space-lg) 0;
   padding-bottom: var(--space-sm);
-  border-bottom: 1px solid var(--color-border, #e5e7eb);
+  border-bottom: 1px solid var(--color-border);
 }
 
 /* ===== FORM STYLES ===== */
@@ -150,25 +147,22 @@
 
 .form-group input {
   padding: var(--space-sm) var(--space-md);
-  border: 1px solid var(--color-border, #d1d5db);
+  border: 1px solid var(--color-border);
   border-radius: var(--radius-sm);
   font-family: var(--font-body);
   font-size: var(--font-size-base);
   color: var(--color-text-primary);
   background: white;
-  transition:
-    border-color 0.2s,
-    box-shadow 0.2s;
+  transition: border-color 0.2s;
 }
 
 .form-group input:focus {
-  outline: none;
+  outline: var(--focus-ring);
   border-color: var(--color-primary);
-  box-shadow: 0 0 0 3px var(--color-primary-light, rgba(168, 85, 247, 0.2));
 }
 
 .form-group input::placeholder {
-  color: var(--color-text-muted, #9ca3af);
+  color: var(--text-muted);
 }
 
 .form-hint {
@@ -224,7 +218,6 @@
   cursor: pointer;
   transition:
     transform 0.2s,
-    box-shadow 0.2s,
     opacity 0.2s;
   border: none;
   display: inline-flex;
@@ -239,31 +232,26 @@
 }
 
 .btn-primary {
-  background: var(--gradient-primary-button);
-  color: white;
-  box-shadow: var(--shadow-sm);
+  background: var(--yellow);
+  color: var(--ink);
 }
 
 .btn-primary:hover:not(:disabled) {
   transform: translateY(-2px);
-  box-shadow: var(--shadow-md);
 }
 
 .btn-primary:active:not(:disabled) {
   transform: translateY(0);
-  box-shadow: var(--shadow-sm);
 }
 
 .btn-danger {
-  background: var(--color-danger, #ef4444);
+  background: var(--color-danger);
   color: white;
-  box-shadow: var(--shadow-sm);
 }
 
 .btn-danger:hover:not(:disabled) {
-  background: var(--color-danger-dark, #dc2626);
+  background: var(--color-danger-dark);
   transform: translateY(-2px);
-  box-shadow: var(--shadow-md);
 }
 
 /* ===== HOUSEHOLD SECTION ===== */
@@ -293,7 +281,7 @@
 }
 
 .settings-link:hover {
-  background: var(--color-surface-hover, #f3f4f6);
+  background: var(--track);
   transform: translateX(4px);
 }
 
@@ -313,7 +301,7 @@
 }
 
 .link-arrow {
-  color: var(--color-text-muted, #9ca3af);
+  color: var(--text-muted);
   font-size: var(--font-size-lg);
 }
 
@@ -359,7 +347,7 @@
 
 .danger-zone {
   padding-top: var(--space-md);
-  border-top: 1px solid var(--color-border, #e5e7eb);
+  border-top: 1px solid var(--color-border);
 }
 
 /* ===== ANIMATIONS ===== */

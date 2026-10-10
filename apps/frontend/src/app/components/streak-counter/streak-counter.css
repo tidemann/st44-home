@@ -4,18 +4,29 @@
   align-items: center;
   gap: var(--space-2, 0.5rem);
   padding: var(--space-4, 1rem);
-  border-radius: var(--radius-lg, 0.75rem);
-  background: var(--surface-secondary, #f8f9fa);
+  border-radius: var(--r-card);
+  background: var(--bg);
   text-align: center;
 }
 
 .streak-counter.has-streak {
-  background: linear-gradient(135deg, #fff4e6 0%, #ffe8cc 100%);
+  background: var(--color-warning-light);
 }
 
 .streak-counter.new-record {
-  background: linear-gradient(135deg, #fffde7 0%, #fff59d 100%);
-  box-shadow: 0 0 0 2px var(--color-warning, #ffc107);
+  background: var(--yellow);
+}
+
+/* Anything on the yellow is ink (muted grey is only 3.7:1 there) */
+.streak-counter.new-record .streak-number,
+.streak-counter.new-record .streak-label,
+.streak-counter.new-record .streak-message,
+.streak-counter.new-record .longest-streak {
+  color: var(--ink);
+}
+
+.streak-counter.new-record .longest-streak {
+  background: var(--yellow-inset);
 }
 
 /* Fire Icons */
@@ -54,18 +65,18 @@
 }
 
 .streak-number {
+  font-family: var(--font-display);
   font-size: 3rem;
-  font-weight: 700;
+  font-weight: 800;
   line-height: 1;
-  color: var(--text-primary, #212529);
+  font-variant-numeric: tabular-nums;
+  color: var(--text);
 }
 
 .streak-label {
   font-size: 0.875rem;
   font-weight: 600;
-  color: var(--text-secondary, #6c757d);
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
+  color: var(--text-muted);
 }
 
 /* Message */
@@ -73,23 +84,23 @@
   margin: 0;
   font-size: 1rem;
   font-weight: 500;
-  color: var(--text-secondary, #6c757d);
+  color: var(--text-muted);
 }
 
 /* Longest Streak Badge */
 .longest-streak {
   margin-top: var(--space-2, 0.5rem);
   padding: var(--space-1, 0.25rem) var(--space-3, 0.75rem);
-  border-radius: var(--radius-full, 9999px);
-  background: var(--surface-tertiary, #e9ecef);
+  border-radius: var(--radius-full);
+  background: var(--track);
   font-size: 0.75rem;
   font-weight: 600;
-  color: var(--text-secondary, #6c757d);
+  color: var(--text-muted);
 }
 
 .longest-streak.is-current {
-  background: var(--color-warning, #ffc107);
-  color: var(--text-primary, #212529);
+  background: var(--yellow);
+  color: var(--ink);
 }
 
 .record-badge {

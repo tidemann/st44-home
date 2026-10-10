@@ -2,12 +2,11 @@
   background: var(--color-surface);
   border-radius: var(--radius-md);
   padding: var(--space-lg);
-  box-shadow: var(--shadow-md);
   display: grid;
   grid-template-columns: auto 1fr auto;
   gap: var(--space-md);
   align-items: center;
-  border-left: 6px solid var(--color-primary);
+  border: 2px solid transparent;
   transition: all var(--transition-base);
   position: relative;
 }
@@ -18,7 +17,6 @@
 
 .task-card.clickable:hover {
   transform: translateX(8px);
-  box-shadow: var(--shadow-lg);
 }
 
 .task-card.clickable:focus {
@@ -35,7 +33,7 @@
 }
 
 .task-card.overdue {
-  border-left-color: #dc2626;
+  border-color: var(--overdue);
 }
 
 /* Complete Button */
@@ -44,12 +42,11 @@
   height: 48px;
   border-radius: var(--radius-full);
   border: none;
-  background: var(--gradient-success);
-  color: white;
+  background: var(--done);
+  color: #ffffff;
   font-size: 20px;
   cursor: pointer;
   transition: all var(--transition-base);
-  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -58,7 +55,6 @@
 
 .task-complete-btn:hover {
   transform: scale(1.1);
-  box-shadow: 0 6px 16px rgba(16, 185, 129, 0.4);
 }
 
 .task-complete-btn:active {
@@ -84,7 +80,7 @@
 .task-title {
   font-family: var(--font-heading);
   font-size: var(--font-size-lg);
-  font-weight: var(--font-weight-bold);
+  font-weight: 800;
   color: var(--color-text-primary);
   margin: 0 0 var(--space-xs) 0;
   line-height: var(--line-height-tight);
@@ -113,7 +109,7 @@
 }
 
 .task-meta-text.status-overdue {
-  color: #dc2626;
+  color: var(--color-danger);
   font-weight: var(--font-weight-semibold);
 }
 
@@ -123,16 +119,15 @@
 
 /* Points Badge */
 .task-badge {
-  padding: var(--space-xs) var(--space-sm);
-  background: var(--gradient-accent);
-  color: white;
-  border-radius: var(--radius-sm);
-  font-weight: var(--font-weight-bold);
+  padding: var(--space-xs) 0;
+  background: none;
+  color: var(--amber-ink);
+  font-weight: var(--font-weight-semibold);
+  font-variant-numeric: tabular-nums;
   font-size: var(--font-size-sm);
   display: inline-flex;
   align-items: center;
   gap: var(--space-xs);
-  box-shadow: 0 2px 8px rgba(251, 191, 36, 0.3);
   flex-shrink: 0;
   white-space: nowrap;
   justify-self: end;
@@ -144,7 +139,6 @@
 }
 
 .task-badge .points {
-  font-family: var(--font-heading);
   line-height: 1;
 }
 
@@ -200,9 +194,9 @@
   width: 36px;
   height: 36px;
   border-radius: var(--radius-full);
-  border: 1px solid var(--color-border, #d1d5db);
-  background: var(--color-surface, white);
-  color: var(--color-text-secondary, #6b7280);
+  border: 1px solid var(--color-border);
+  background: var(--color-surface);
+  color: var(--color-text-secondary);
   font-size: 16px;
   cursor: pointer;
   transition: all var(--transition-base);
@@ -214,9 +208,9 @@
 }
 
 .task-reassign-btn:hover {
-  background: var(--color-background, #f9fafb);
-  border-color: var(--color-primary, #6366f1);
-  color: var(--color-primary, #6366f1);
+  background: var(--color-background);
+  border-color: var(--color-primary);
+  color: var(--color-primary);
   transform: scale(1.05);
 }
 
@@ -225,7 +219,7 @@
 }
 
 .task-reassign-btn:focus {
-  outline: 2px solid var(--color-primary, #6366f1);
+  outline: 2px solid var(--color-primary);
   outline-offset: 2px;
 }
 
@@ -239,26 +233,26 @@
   justify-self: start;
   min-height: 44px;
   padding: 0 var(--space-md);
-  border-radius: var(--radius-full);
-  border: 1px solid var(--color-primary, #6366f1);
-  background: var(--color-surface, white);
-  color: var(--color-primary, #6366f1);
+  border-radius: var(--r-button);
+  border: 2px solid var(--text-muted);
+  background: var(--color-surface);
+  color: var(--color-primary);
   font: inherit;
   font-size: 15px;
   font-weight: 600;
   cursor: pointer;
   display: inline-flex;
   align-items: center;
-  gap: var(--space-xs, 4px);
+  gap: var(--space-xs);
   transition: all var(--transition-base);
 }
 
 .task-remind-btn:hover:not(:disabled) {
-  background: var(--color-background, #f9fafb);
+  background: var(--color-background);
 }
 
 .task-remind-btn:focus-visible {
-  outline: 2px solid var(--color-primary, #6366f1);
+  outline: 2px solid var(--color-primary);
   outline-offset: 2px;
 }
 

@@ -1,5 +1,6 @@
 import '@angular/localize/init';
 import { Component, ChangeDetectionStrategy, input, output } from '@angular/core';
+import { NavIcon, type NavIconName } from '../nav-icon';
 
 /**
  * Child navigation screen type
@@ -11,7 +12,7 @@ export type ChildNavScreen = 'tasks' | 'rewards';
  */
 export interface ChildNavItem {
   id: ChildNavScreen;
-  icon: string;
+  icon: NavIconName;
   label: string;
 }
 
@@ -26,9 +27,9 @@ export interface ChildNavItem {
  */
 @Component({
   selector: 'app-child-nav',
-  imports: [],
+  imports: [NavIcon],
   templateUrl: './child-nav.html',
-  styleUrl: './child-nav.css',
+  styleUrl: '../nav.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ChildNav {
@@ -47,8 +48,8 @@ export class ChildNav {
    * Norwegian is the source language - translations handled via @angular/localize
    */
   readonly navItems: ChildNavItem[] = [
-    { id: 'tasks', icon: '📋', label: $localize`:@@childNav.tasks:Mine oppgaver` },
-    { id: 'rewards', icon: '🎁', label: $localize`:@@childNav.rewards:Mine belønninger` },
+    { id: 'tasks', icon: 'home', label: $localize`:@@childNav.home:Hjem` },
+    { id: 'rewards', icon: 'rewards', label: $localize`:@@nav.rewards:Belønninger` },
   ];
 
   /**

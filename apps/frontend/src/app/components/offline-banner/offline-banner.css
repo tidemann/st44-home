@@ -5,7 +5,7 @@
   z-index: 1050;
   border-radius: 0;
   border-width: 0 0 1px;
-  padding-top: calc(var(--space-sm, 8px) + env(safe-area-inset-top, 0px));
+  padding-top: calc(var(--space-sm) + env(safe-area-inset-top, 0px));
   line-height: 1.4;
 }
 

@@ -16,7 +16,7 @@
         [attr.aria-label]="item.label"
         [attr.aria-current]="isActive(item.id) ? 'page' : null"
       >
-        <span class="sidebar-icon">{{ item.icon }}</span>
+        <app-nav-icon class="sidebar-icon" [name]="item.icon" [attr.data-icon]="item.icon" />
         <span>{{ item.label }}</span>
       </button>
     }

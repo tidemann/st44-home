@@ -1,0 +1,59 @@
+/* Poeng bottom nav (guide: Navigation). Sits on --bg with a 1 px hairline above it;
+   four items pitched at 92 px with ~11 px at each edge; 19 px icon over a 12 px label.
+   Active is amber ink and heavier (two signals); inactive is muted. 71 px band. */
+
+.bottom-nav,
+.child-nav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  display: flex;
+  justify-content: center;
+  background: var(--bg);
+  border-top: 1px solid var(--hairline);
+  padding: 0 11px env(safe-area-inset-bottom, 0px);
+}
+
+.nav-btn,
+.child-nav-btn {
+  flex: 0 1 92px;
+  min-width: 0;
+  height: 71px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 9px 0 0;
+  background: transparent;
+  border: 0;
+  color: var(--text-muted);
+  font-family: var(--font-text);
+  cursor: pointer;
+}
+
+.nav-label,
+.child-nav-label {
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1.3;
+  margin-top: 6px;
+  white-space: nowrap;
+}
+
+.nav-btn.active,
+.child-nav-btn.active {
+  color: var(--amber-ink);
+}
+
+.nav-btn.active .nav-label,
+.child-nav-btn.active .child-nav-label {
+  font-weight: 700;
+}
+
+.nav-btn:focus-visible,
+.child-nav-btn:focus-visible {
+  outline: var(--focus-ring);
+  outline-offset: -4px;
+  border-radius: var(--r-card);
+}
