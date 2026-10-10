@@ -1,6 +1,7 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { of } from 'rxjs';
+import { provideRouter } from '@angular/router';
 import { Home } from './home';
 import { TaskService } from '../../services/task.service';
 import { ChildrenService } from '../../services/children.service';
@@ -84,6 +85,7 @@ describe('Home', () => {
         { provide: HouseholdStore, useValue: mockHouseholdStore },
         { provide: PushNotificationService, useValue: mockPush },
         { provide: HouseholdDayService, useValue: mockDay },
+        provideRouter([]),
       ],
     }).compileComponents();
 

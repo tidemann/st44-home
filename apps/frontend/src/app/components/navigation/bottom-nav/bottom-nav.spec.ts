@@ -115,7 +115,7 @@ describe('BottomNav', () => {
     fixture.detectChanges();
 
     const navButtons = fixture.nativeElement.querySelectorAll('.nav-btn');
-    const familyButton = navButtons[2];
+    const familyButton = navButtons[3];
 
     expect(familyButton.getAttribute('aria-current')).toBe('page');
   });
@@ -147,11 +147,11 @@ describe('BottomNav', () => {
     let navButtons = fixture.nativeElement.querySelectorAll('.nav-btn');
     expect(navButtons[0].classList.contains('active')).toBe(true);
 
-    componentRef.setInput('activeScreen', 'progress');
+    componentRef.setInput('activeScreen', 'rewards');
     fixture.detectChanges();
 
     navButtons = fixture.nativeElement.querySelectorAll('.nav-btn');
     expect(navButtons[0].classList.contains('active')).toBe(false);
-    expect(navButtons[3].classList.contains('active')).toBe(true);
+    expect(navButtons[2].classList.contains('active')).toBe(true);
   });
 });

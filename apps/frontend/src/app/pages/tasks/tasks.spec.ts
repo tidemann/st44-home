@@ -7,7 +7,8 @@ import { Tasks } from './tasks';
 import { TaskService } from '../../services/task.service';
 import { ChildrenService } from '../../services/children.service';
 import { HouseholdDayService } from '../../services/household-day.service';
-import { StorageService } from '../../services/storage.service';
+import { STORAGE_KEYS } from '../../services/storage-keys';
+import { AuthService } from '../../services/auth.service';
 import type { Task, Assignment, Child } from '@st44/types';
 
 describe('Tasks (Poeng task list)', () => {
@@ -25,7 +26,6 @@ describe('Tasks (Poeng task list)', () => {
   };
   let mockChildren: { listChildren: ReturnType<typeof vi.fn> };
   let mockDay: { load: ReturnType<typeof vi.fn> };
-  let mockStorage: { getString: ReturnType<typeof vi.fn> };
   let mockRouter: { navigate: ReturnType<typeof vi.fn> };
   let queryParams: Record<string, string>;
 
@@ -93,7 +93,7 @@ describe('Tasks (Poeng task list)', () => {
     mockDay = {
       load: vi.fn().mockResolvedValue({ today: [...day.today], overdue: [...day.overdue] }),
     };
-    mockStorage = { getString: vi.fn().mockReturnValue('household-1') };
+    localStorage.setItem(STORAGE_KEYS.ACTIVE_HOUSEHOLD_ID, 'household-1');
     mockRouter = { navigate: vi.fn().mockResolvedValue(true) };
 
     await TestBed.configureTestingModule({
@@ -102,7 +102,10 @@ describe('Tasks (Poeng task list)', () => {
         { provide: TaskService, useValue: mockTaskService },
         { provide: ChildrenService, useValue: mockChildren },
         { provide: HouseholdDayService, useValue: mockDay },
-        { provide: StorageService, useValue: mockStorage },
+        {
+          provide: AuthService,
+          useValue: { currentUser: signal({ id: 'user-1', role: 'parent' }), logout: vi.fn() },
+        },
         { provide: Router, useValue: mockRouter },
         { provide: ActivatedRoute, useValue: { snapshot: { queryParams } } },
       ],
@@ -128,7 +131,7 @@ describe('Tasks (Poeng task list)', () => {
     });
 
     it('shows an error when no household is selected', async () => {
-      mockStorage.getString.mockReturnValue('');
+      localStorage.removeItem(STORAGE_KEYS.ACTIVE_HOUSEHOLD_ID);
       fixture = TestBed.createComponent(Tasks);
       component = fixture.componentInstance;
 
