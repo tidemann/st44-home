@@ -10,7 +10,13 @@
   <div class="modal-content">
     <div class="modal-header">
       <h3 id="modal-title">Reassign Task</h3>
-      <button class="close-button" (click)="onCancel()" type="button" aria-label="Close modal">
+      <button
+        class="close-button"
+        (click)="onCancel()"
+        type="button"
+        i18n-aria-label="@@modal.closeLabel"
+        aria-label="Lukk"
+      >
         ×
       </button>
     </div>
