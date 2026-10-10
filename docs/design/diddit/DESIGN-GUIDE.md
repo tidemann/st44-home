@@ -39,6 +39,18 @@ typography:
     fontSize: '23px'
     fontWeight: 800
     lineHeight: 1
+  wordmark:
+    fontFamily: 'Bricolage Grotesque, system-ui, sans-serif'
+    fontSize: '56px'
+    fontWeight: 800
+    lineHeight: 1
+    letterSpacing: '-0.02em'
+  brand-claim:
+    fontFamily: 'Bricolage Grotesque, system-ui, sans-serif'
+    fontSize: '29px'
+    fontWeight: 800
+    lineHeight: 1.1
+    letterSpacing: '-0.02em'
   number:
     fontFamily: 'Bricolage Grotesque, system-ui, sans-serif'
     fontSize: '30px'
@@ -104,6 +116,12 @@ layout:
   gutterTickScreen: '24px'
   contentWidthTickScreen: '342px'
   navItemPitch: '92px'
+  statusBarBand: '35px'
+  brandBandPadBottom: '17px'
+  loginBrandBand: '303px'
+  loginBrandBandFocused: '112px'
+  desktopViewport: '1440x900'
+  desktopBrandPanel: '634px'
 components:
   button-primary:
     backgroundColor: '{colors.yellow}'
@@ -185,6 +203,65 @@ components:
     width: '38px'
     minTouchTarget: '44px'
     typography: '{typography.meta}'
+  badge-initial-on-brand:
+    backgroundColor: '{colors.yellow-inset}'
+    textColor: '{colors.ink}'
+    rounded: '{rounded.pill}'
+    height: '38px'
+    width: '38px'
+    minTouchTarget: '44px'
+    typography: '{typography.meta}'
+  band-brand:
+    backgroundColor: '{colors.yellow}'
+    textColor: '{colors.ink}'
+    fullBleed: true
+    top: '{layout.statusBarBand}'
+    paddingBottom: '{layout.brandBandPadBottom}'
+    gutter: '{layout.gutter}'
+  field-text:
+    backgroundColor: '{colors.surface}'
+    textColor: '{colors.text}'
+    borderColor: '{colors.text-muted}'
+    borderWidth: '1.5px'
+    rounded: '{rounded.lg}'
+    height: '49px'
+    width: '{layout.contentWidth}'
+    paddingInline: '18px'
+    typography: '{typography.body}'
+  field-text-error:
+    backgroundColor: '{colors.surface}'
+    textColor: '{colors.text}'
+    borderColor: '{colors.overdue}'
+    borderWidth: '2px'
+    rounded: '{rounded.lg}'
+    height: '49px'
+    width: '{layout.contentWidth}'
+    paddingInline: '18px'
+    typography: '{typography.body}'
+  field-label:
+    textColor: '{colors.text}'
+    typography: '{typography.label}'
+  button-outline:
+    backgroundColor: '{colors.surface}'
+    borderColor: '{colors.text-muted}'
+    borderWidth: '1.5px'
+    textColor: '{colors.text}'
+    rounded: '{rounded.lg}'
+    height: '49px'
+    width: '{layout.contentWidth}'
+    typography: '{typography.body}'
+  link-inline:
+    textColor: '{colors.amber-ink}'
+    textDecoration: 'underline'
+    minTouchTarget: '44px'
+    typography: '{typography.meta}'
+  brand-mark:
+    backgroundColor: '{colors.ink}'
+    markColor: '{colors.yellow}'
+    rounded: '{rounded.xl}'
+    height: '54px'
+    width: '54px'
+    asset: 'reference/diddit-mark.svg'
   nav-item:
     pitch: '{layout.navItemPitch}'
     height: '71px'
@@ -257,6 +334,48 @@ moment goes dark"). The screens built from those rules had the yellow drained ou
 review passed because every review checked the rules, and Stig rejected the result. See
 **Banned rules** at the end of this file.
 
+### What else Stig has approved (2026-10-10, ST-812)
+
+The five Poeng screens are the spec for everything they show. Three things they do **not** show were
+drawn by Astrid on ST-810 and approved by Stig on the decision card on ST-812: **option A, the yellow
+top**, the **login screen**, and the **Diddit mark** — all three "as drawn". Those pictures are the
+spec for those three things, on the same terms: they outrank the text below, and they are locked.
+
+| Approved picture                                                                                                    | What it is the spec for                           |
+| ------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------- |
+| [`brand-07-a-yellow-top-home.png`](reference/brand-07-a-yellow-top-home.png)                                        | A, the yellow top — family home                   |
+| [`brand-08-a-yellow-top-my-chores.png`](reference/brand-08-a-yellow-top-my-chores.png)                              | A, the yellow top — a child's "mine oppgaver"     |
+| [`brand-01-options-a-b-c.png`](reference/brand-01-options-a-b-c.png)                                                | the A / B / C comparison Stig chose from          |
+| [`brand-02-a-vs-signed-off.png`](reference/brand-02-a-vs-signed-off.png)                                            | A beside the signed-off picture, same scale       |
+| [`brand-06-diddit-mark.png`](reference/brand-06-diddit-mark.png)                                                    | the mark — app-icon grounds and lockups           |
+| [`login-17-phone-empty.png`](reference/login-17-phone-empty.png)                                                    | login, empty                                      |
+| [`login-14-phone-filled.png`](reference/login-14-phone-filled.png)                                                  | login, filled                                     |
+| [`login-15-phone-focus-keyboard.png`](reference/login-15-phone-focus-keyboard.png)                                  | login, typing with the keyboard open              |
+| [`login-16-phone-error.png`](reference/login-16-phone-error.png)                                                    | login, wrong e-mail or password                   |
+| [`login-18-phone-signing-in.png`](reference/login-18-phone-signing-in.png)                                          | login, signing in                                 |
+| [`login-19-desktop-1440x900.png`](reference/login-19-desktop-1440x900.png)                                          | login, desktop                                    |
+| [`login-13-states.png`](reference/login-13-states.png) · [`login-03-overview.png`](reference/login-03-overview.png) | the five states and the two surfaces in one sheet |
+
+**Order of precedence.** `poeng-signed-off.png` → the approved pictures above → this guide → generic
+rules. Where an approved picture and the signed-off picture disagree about something the signed-off
+picture already settles (a card width, a gutter, a row), the signed-off picture wins and the
+difference is recorded as a drawing slip rather than fixed silently. **Nothing in the approved set
+disagrees with the signed-off picture today** — the one case this guide first recorded turned out to
+be a measuring error, kept as a method note in **Measuring a card: never inside the corner radius**
+below.
+
+**Rejected, so nobody brings them back:**
+
+- **B — yellow details** (yellow initial badge, yellow marks on group labels, a yellow pill under the
+  active nav item). Rejected: too little yellow to answer "the app lacks personality" — the new yellow
+  area on the family home is smaller than one card.
+- **C — yellow background** (the whole screen `#F6B93B`). Rejected: it forces the yellow "Ferdig"
+  buttons to turn black and takes the rust out of the "Forfalt" group label (3.73:1 on yellow), which
+  rewrites what colour means in the product rather than adding to it.
+- Astrid offered to carry B's **yellow pill under the active nav item** into A. Stig approved A **as
+  drawn**, and the A pictures have no pill. There is no pill. Adding one is a change to the look and
+  goes to Maria.
+
 ## Overview
 
 **Creative North Star: "The Reward Is The Interface"**
@@ -268,10 +387,11 @@ screen competes with it. Everything around it is small, quiet and ordinary — p
 near-white background, a 16 px row title, a 13 px line of context underneath.
 
 The yellow is the second voice, and it is a loud one. It is not an accent reserved for one special
-button; it fills primary buttons, every per-item action button, every points meter, and the entire
-background of the screen where a chore gets ticked off. On the rewards screen it appears five times.
-The system's warmth comes from using it freely; the discipline is in the _text colour on top of it_
-(always near-black ink), not in rationing the yellow itself.
+button; it fills primary buttons, every per-item action button, every points meter, the title band
+at the top of every working screen, the brand area of the login, and the entire background of the
+screen where a chore gets ticked off. On the rewards screen it appears five times. The system's
+warmth comes from using it freely; the discipline is in the _text colour on top of it_ (always
+near-black ink), not in rationing the yellow itself.
 
 Depth is tonal, not shadowed. A white card on a near-white screen is the only layering device on the
 light screens; on the yellow screen, depth is a _darker shade of the same yellow_. There are no drop
@@ -601,6 +721,9 @@ is why 14.21 on the reward and child cards is read as 14 and not 15. No value he
   than the one Stig signed off.
   Reach 44 px with a padded hit area instead — see **Hit area** below.
   **Several per screen is correct**: the rewards screen has three.
+  **The label is «Ferdig», not «Hak av».** The signed-off picture draws "Hak av"; Stig renamed it on
+  2026-10-10 (ST-810), and every approved picture since says «Ferdig». A word changed, nothing else:
+  same fill, same ink, same 36 px, same 10 px radius. "Spør mor" on a reward card is unchanged.
 - **Solid dark** (`button-solid`): Ink fill, white label — only for the confirming action inside
   the yellow moment ("Ferdig"), where a yellow button would disappear into the background.
 - **Ghost on yellow** (`button-ghost-on-yellow`): transparent on the yellow with a 2 px outlined
@@ -728,6 +851,305 @@ The single most important screen in the product, and the one most likely to be d
 - "Du kan angre i 5 minutter", then **Angre** (ghost) and **Ferdig** (solid ink) side by side, both
   49 px tall. The undo is offered plainly, in the same size as the confirm — no confirmshaming.
 
+## A — the yellow top (approved 2026-10-10)
+
+![A, the yellow top, on the family home](reference/brand-07-a-yellow-top-home.png)
+
+Stig's brief was "the app lacks brand colour on all the working screens. It lacks personality."
+Option A answers it by turning **the title area of every working screen into a yellow band**. It is
+an addition, not a rewrite: it takes nothing away and changes no card, row, button or nav item.
+
+### What the band is
+
+- **Full-bleed `#F6B93B`, edge to edge**, starting at **y 35** — directly under the status-bar
+  band, which keeps `#F6F6F4`. There is no gutter at the band's left and right edges and no radius
+  on it; it runs x 0…390.
+- **It has no fixed height.** It ends **17 px under the last thing it carries**, so it is as tall as
+  its content: measured **y 35…275 (240 px)** on the family home and **y 35…305 (270 px)** on a
+  child's chore screen.
+- **Inside it, the gutter is the ordinary 22 px and the column the ordinary 346 px** — the same as
+  everywhere else on a light screen. The band is a background behind the normal column, not a
+  layout of its own.
+
+### What moves into the band
+
+Everything that already sat above the first card, and nothing else:
+
+| Screen                  | Inside the band                                                                      |
+| ----------------------- | ------------------------------------------------------------------------------------ |
+| Family home             | screen title, the day/progress sub-line, the initial badge, the three child cards    |
+| Child's "mine oppgaver" | screen title, the date sub-line, the hero number, the word "poeng", the reward meter |
+
+Everything below the band — group labels, chore rows, overdue cards, reward cards, the primary
+button, the bottom nav — is **exactly the signed-off picture**, unchanged in colour, size, radius
+and position. That is the whole point of A over C.
+
+### What changes colour inside the band, and why
+
+Three things, and all three are the **Keep-The-Yellow Rule** doing its job: the yellow stays, the
+ink on top of it changes.
+
+| Element              | On paper            | In the band                  | Why                                                               |
+| -------------------- | ------------------- | ---------------------------- | ----------------------------------------------------------------- |
+| Title, hero number   | `#15181C`           | **`#17120A`** (Ink)          | the Ink-On-Yellow Rule — 10.57:1                                  |
+| Sub-line under title | `#555E64`           | **`#17120A`** (Ink)          | `#555E64` on the yellow is **3.76:1** and fails AA for body text  |
+| Initial badge fill   | `#ECECE8`           | **`#DBA434`** (Yellow Inset) | `#ECECE8` on the yellow reads as a grey hole; ink on it is 8.31:1 |
+| Points meter         | yellow on `#ECECE8` | **Ink on `#C59430`**         | the pair the signed-off tick screen already uses on yellow        |
+
+The sub-line losing its grey is a real cost and it is the one A asks you to accept: the hierarchy
+between title and sub-line is then carried by **size and weight alone** (Title 27 / 800 against Meta
+15 / 500), not by tone. That is what the approved picture does. Do not reach for a lighter ink to
+get the tone back — on the yellow there is no lighter ink that passes.
+
+**The chore meters on the child cards do not change.** They sit on a white card inside the band, so
+they keep Done Green / Overdue Rust / `#ECECE8`. The band changes the colour of what sits _directly_
+on the yellow and nothing else.
+
+### Which screens get it
+
+Stig approved "the top of every working screen". Two of the four are drawn:
+
+| Screen                           | Drawn?                                        |
+| -------------------------------- | --------------------------------------------- |
+| Family home ("Hjemme")           | yes — `brand-07-a-yellow-top-home.png`        |
+| Child's chores ("Mine oppgaver") | yes — `brand-08-a-yellow-top-my-chores.png`   |
+| Parent's chore list ("Oppgaver") | **no** — apply the pattern above              |
+| Rewards ("Belønninger")          | **no** — apply the pattern above              |
+| Login                            | no band; it has its own brand area, see below |
+| The tick-off moment              | **never** — see the rule below                |
+
+For the two undrawn screens: take the title row and whatever already sits above the first card into
+the band, apply the colour table above, and change nothing else. Then have the result checked
+against this section before it ships — an undrawn screen is a pattern applied, not a picture signed.
+
+### The tick screen stays the only fully yellow screen
+
+A band and a full-bleed screen are two different things, and the difference is the product's loudest
+moment. The tick-off moment is yellow from under the status bar to the bottom edge, with no nav and
+no divider. A working screen is yellow for its title area only, and the paper, the cards and the nav
+are all still there below it. **No second screen becomes fully yellow**, and the tick screen never
+becomes a band.
+
+### Measuring a card: never inside the corner radius
+
+`brand-07` draws the three child cards at **109 px wide, 9 px apart, in the ordinary 22 px gutter**
+— exactly as the signed-off picture does. The cards are untouched by the band, which is what
+Astrid's option document promised of A: "Kort, rader, knapper, meny: helt urørt" (cards, rows,
+buttons, menu: completely untouched).
+
+This section exists because the first draft of it said otherwise. It read 106 / 12 / 24 off
+`brand-07` and built a "the pictures disagree" section around it; Astrid's review of PR #639 caught
+it, and the pixels confirm her. **There is no disagreement.** The reading was taken at css y 112 — 8 px below the card's top edge at y 104, still
+inside the 14 px corner radius — so it measured the arc, not the card.
+
+![brand-07's card block with rules at css x 22 and x 131, and the top-left corner at ×16](reference/child-card-measure-method.png)
+
+White runs across the card block, `brand-07`, css px at 390 × 844:
+
+| css y         | distance from the nearest card edge    | white run        | w         | gap     |
+| ------------- | -------------------------------------- | ---------------- | --------- | ------- |
+| 106           | 2 px below the top — in the arc        | 28.7 … 124.3     | 95.5      | 22.5    |
+| 112           | 8 px below the top — in the arc        | 23.4 … 129.6     | 106.3     | 11.7    |
+| 115           | 11 px below the top — in the arc       | 22.4 … 130.6     | 108.3     | 9.7     |
+| **118 … 244** | **14 px or more — clear of both arcs** | **21.9 … 131.1** | **109.1** | **8.9** |
+| 250           | 8 px above the bottom — in the arc     | 23.5 … 129.6     | 106.1     | 11.9    |
+
+A 14 px radius accounts for every one of those rows: the inset at 8 px from an edge is
+`14 − √(14² − 6²)` = 1.35 px on each side, which turns 109 into 106.3. The two 8 px rows are not
+quite equal — 106.3 at the top against 106.1 at the bottom — because a row index counts downward
+from the top in both corners, so y 112 sits 8.25 px into its arc while y 250 sits 7.75 px into its:
+half a pixel of depth, 0.2 px of width. The card block runs y 104 … 258 (**h 154**), and the
+signed-off screen 1 gives 22.0 … 131.0 / 140.0 … 250.0 / 259.0 … 368.0 at the same 154 — the same
+card.
+
+**The last row of that table is the same error, caught a second time.** This table first ended its
+full-width row at `118 … 250`, and Astrid's second review of PR #639 found it: y 250 is 8 px above
+the bottom edge, the mirror of the y 112 reading the section is about, and it reads 106.1 / 11.9 —
+not 109 / 9. (The _exact_ mirror of y 112 is y 249, not y 250; half a pixel deeper into the arc is
+why 250 reads 106.1 where 112 reads 106.3.) A section whose rule is _never measure within one radius
+of a corner_ had demonstrated it with a range that ended 6 px inside a corner. The band is one radius
+in from each edge, and the edges are hard: a vertical profile through the middle of the card shows no
+antialiased row at all, white from y 104.0 to y 258.0. With r = 14 that gives **y 118 … 244** — and
+the pixels agree, with y 244 reading the same width as mid-height while y 245 is already 0.5 px
+short.
+
+![brand-07's card block and both bottom corners of Emma's card at ×16: green y 244, cyan y 250, red y 258, magenta the card edges at x 22 and x 131](reference/child-card-bottom-arc.png)
+
+Green is y 244, the last row that still reaches the card's edges; cyan is y 250, visibly inside both
+arcs; red is the bottom edge at y 258. The first picture in this section shows the same thing at the
+top corner — and the table was wrong at the bottom for as long as only the top had a picture.
+
+**The rule: measure a card at mid-height — y 181 on this card — and never within one radius of a
+corner.** Not even at the lower bound of the band: row 244 sits a quarter of a pixel inside the arc,
+and the width you read there moves with your edge threshold — half a pixel across 240 … 252 — rather
+than with the card. Row 118 is the one of the two bounds that is genuinely clear: it sits 14.25 px
+below the top edge and returns the identical run to mid-height at every threshold. Mid-height barely
+moves at all, against half a pixel at the bounds. This is the same family of error as the 1.846
+board-px scale slip recorded in revision 2: a method that quietly measures something other than what
+it names. Nothing Eirik builds changes: the child cards were always **109 × 154 px, 9 px apart, in
+the 22 px gutter**.
+
+## The login screen (approved 2026-10-10)
+
+![Login, empty](reference/login-17-phone-empty.png)
+
+The first surface a family sees, and the only one that carries the mark. The signed-off picture
+contains no login screen and no form field, so **everything in this section is an addition built
+from the Poeng vocabulary** — same gutter, same 49 px control height, same 13 px radius, same
+colours. Nothing here introduces a new colour.
+
+### The shape of it
+
+- **Phone (390 × 844):** a full-bleed `#F6B93B` brand area across the top, the form on paper below.
+- **Desktop (1440 × 900):** the brand area becomes a **634 px yellow left panel**, full height, with
+  the form in the right-hand paper area.
+- **Gutter 22 px, column 346 px** on the phone — the ordinary one.
+
+### The brand area, phone
+
+Measured from `login-17-phone-empty.png`, css px at 390 × 844:
+
+| Element                                | Style                                  | y             |
+| -------------------------------------- | -------------------------------------- | ------------- |
+| yellow area                            | `#F6B93B`, full-bleed                  | 35 … 338      |
+| the mark                               | 54 × 54, x 22                          | 71 … 125      |
+| "Diddit"                               | **Wordmark** — Bricolage 800, 56 px    | 152 … 194     |
+| "Gjort er gjort."                      | **Brand claim** — Bricolage 800, 29 px | 220.5 … 248   |
+| "Oppgaver og poeng for hele familien." | **Body** 16, Hanken 600                | 261.5 … 276.5 |
+
+All four are Ink `#17120A` on the yellow (10.57:1). The claim is the only sentence in the product set
+in the display face; it is the brand line, not a heading.
+
+On the desktop panel the same four elements sit in the left panel, and three promises are added
+below them, each an ink checkbox glyph with a line of Body 16: "Oppgavene fordeler seg selv",
+"Poeng barna faktisk vil ha", "Belønninger dere blir enige om".
+
+### The form
+
+| Element                     | Component        | Spec                                                                        |
+| --------------------------- | ---------------- | --------------------------------------------------------------------------- |
+| Field label ("E-post")      | `field-label`    | **Label 13**, `#15181C`, **above** the field, on the gutter                 |
+| Text field                  | `field-text`     | 346 × **49**, 13 px radius, white, **1.5 px `#555E64`** border, 18 px inset |
+| Field value                 | —                | **Body 16**, `#15181C`                                                      |
+| "Glemt passord?"            | `link-inline`    | **Meta 15**, `#8A5A00`, underlined, right-aligned on the Passord label line |
+| "Logg inn"                  | `button-primary` | unchanged: 346 × 49, yellow, Ink label, Button label 16.5                   |
+| "eller"                     | —                | **Meta sm 13**, `#555E64`, between two `#DFDFD9` rules                      |
+| "Fortsett med Google"       | `button-outline` | 346 × 49, 13 px radius, white, 1.5 px `#555E64`, `#15181C` label, Body 16   |
+| "Skann QR-kode (for barna)" | `button-outline` | the same                                                                    |
+| "Ny familie? Opprett konto" | `link-inline`    | centred at the foot; "Opprett konto" is the link                            |
+
+The field label stands **above** the field and stays there. There is no placeholder that vanishes
+when you start typing, and no floating label. "Vis passord" (the eye) appears only once there is a
+character to show.
+
+Vertical rhythm, measured, empty state: label 370, field **387 … 436**, Passord label 455, field
+**472 … 521**, "Logg inn" **540 … 589**, "eller" 613 … 622, Google **640 … 689**, QR **699 … 748**,
+"Ny familie?" 802.5 … 816.
+
+### The five states
+
+All five are approved and all five are drawn. None of them introduces a colour.
+
+| State                        | Picture                                                   | What it does                                                                                                                                                                                                                                      |
+| ---------------------------- | --------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Empty**                    | [`login-17`](reference/login-17-phone-empty.png)          | Labels above empty fields. **"Logg inn" is enabled from the start** — validation happens on press, so there is no greyed-out dead end.                                                                                                            |
+| **Filled**                   | [`login-14`](reference/login-14-phone-filled.png)         | The same screen with values in it.                                                                                                                                                                                                                |
+| **Typing, keyboard open**    | [`login-15`](reference/login-15-phone-focus-keyboard.png) | The brand area collapses — see below. The focused field carries the Ink focus ring.                                                                                                                                                               |
+| **Wrong e-mail or password** | [`login-16`](reference/login-16-phone-error.png)          | **Both** fields get a 2 px `#A43A16` border, and one `#A43A16` line with a warning icon sits between the password field and the button: «Feil e-post eller passord. Prøv igjen.» Both fields, so the placement never reveals which one was wrong. |
+| **Signing in**               | [`login-18`](reference/login-18-phone-signing-in.png)     | The button **keeps its yellow**, swaps its label to «Logger inn …» and gains an Ink ring. No dimming, no grey.                                                                                                                                    |
+
+### The phone rule: the brand area shrinks so "Logg inn" stays above the keyboard
+
+This is the one piece of behaviour in the login, and it exists because of a measurement:
+
+- The brand area is **303 px**. With the iOS keyboard up (336 px of 844), the visible area ends at
+  **y 508**. "Logg inn" sits at 540 … 588 — **completely covered**.
+- So when any field takes focus, **the brand area collapses from 303 px to 112 px** and becomes the
+  horizontal lockup (mark + wordmark on the same yellow). The form moves up 191 px:
+
+| Element        | Keyboard up, band at 303 | Band at 112                  |
+| -------------- | ------------------------ | ---------------------------- |
+| Password field | 470 … 523 — half covered | **281 … 330 — visible**      |
+| "Logg inn"     | 540 … 588 — covered      | **349 … 398 — 110 px clear** |
+
+- The yellow is **not removed** — it changes format. Keep-The-Yellow Rule.
+- With an error line showing as well, the button is pushed 29 px down and lands at ≈ 379 … 426,
+  still 82 px above the keyboard edge. Do not invent a second rule for that case.
+- "Skann QR-kode" and the foot link stay below the keyboard edge and are reached by scrolling. They
+  are not the primary action, and 508 px is not enough for everything without shrinking something
+  the signed-off picture fixes.
+- The keyboard in the picture is the platform's own surface, not our palette. **The return key is
+  drawn grey, not yellow** — an app can set that key's label but not its colour, and a yellow key in
+  a drawing would promise the builder something the platform does not give.
+
+## The Diddit mark (approved 2026-10-10)
+
+![The mark: app icon on three grounds, horizontal and stacked lockups](reference/brand-06-diddit-mark.png)
+
+Before this, the product had no logo — the login set the word "Diddit!" in body type. The mark is
+built from something already in the signed-off picture: the Ink rounded square with the yellow tick
+from the tick-off moment. **No new shape and no new colour.**
+
+### The glyph
+
+- **54 × 54 px, 16 px radius** (`rounded.xl`) — the tick badge's geometry.
+- Fill **Ink `#17120A`**, tick **Diddit Yellow `#F6B93B`** (10.57:1).
+- The tick is centred in the square and spans x 11.5 … 42.5, y 15 … 40 of the 54.
+- Exported, and reproducing the approved picture pixel for pixel:
+
+| File                                                                   | Use                                                            |
+| ---------------------------------------------------------------------- | -------------------------------------------------------------- |
+| [`reference/diddit-mark.svg`](reference/diddit-mark.svg)               | the mark — ink square, yellow tick. The default everywhere.    |
+| [`reference/diddit-mark-on-ink.svg`](reference/diddit-mark-on-ink.svg) | inverted — yellow square, ink tick. App icon on a dark ground. |
+
+**Builder:** copy `diddit-mark.svg` to `apps/frontend/src/assets/diddit-mark.svg` and reference it
+from there; `docs/` is documentation, not a build input. The file is a plain `rect` + `path` with no
+`<text>`, so it needs no font. Its path is
+`M14.5 28.5 L23 37 L39.5 18`, stroke `6.2`, round cap and join, in a `0 0 54 54` viewBox — scale the
+whole viewBox, never the stroke on its own.
+
+### The wordmark and the lockups
+
+- The wordmark is **live text**, not a path: "Diddit" in Bricolage Grotesque 800 at the **Wordmark**
+  size, `-0.02em`, in Ink. Setting it as text keeps it translatable, selectable and crisp; there is
+  no wordmark SVG on purpose.
+- **Horizontal lockup** — mark, then the wordmark on the same baseline. Used in the collapsed login
+  brand area and on the desktop panel.
+- **Stacked lockup** — mark above, wordmark below, both centred.
+- **App icon** — the whole square is the icon: ink-on-yellow, yellow-on-ink, or ink-on-white.
+
+### Rules for the mark
+
+- **The square is never empty and the tick never leaves the square.** They are one glyph.
+- **Only two colour pairs**: ink square + yellow tick, or yellow square + ink tick. Never white,
+  never grey, never a third colour, never a gradient.
+- **No outline, no shadow, no rotation.** It is flat, like everything else here.
+- **Minimum drawn size 24 px**; below that the tick closes up. Clear space on all four sides is
+  **one quarter of the mark's height** (13.5 px at 54).
+- It carries the product name, so it needs `role="img"` and an accessible name ("Diddit"), or
+  `aria-hidden` when the wordmark beside it already says the name.
+
+### The mark is not the tick badge, and the brand sheet draws a third tick
+
+Three ticks exist in the approved material, and they are measurably different. Measured as a
+fraction of a 54 px square, excluding the corner arcs:
+
+| Tick                                        | Width | Height | Ink area |
+| ------------------------------------------- | ----- | ------ | -------- |
+| Tick badge, signed-off tick screen          | 19.0  | 14.5   | 73       |
+| App icon on the brand sheet (`brand-06`)    | 22.4  | 17.7   | 118      |
+| **The mark on the login (`login-14`…`19`)** | 31.0  | 25.0   | 255      |
+
+- **The mark is the login one**, and `diddit-mark.svg` matches it to within one sixteenth of a
+  channel step per pixel. Five of the six approved pictures show it that way, and it is the one on
+  the screen being built.
+- **The tick badge keeps its own, smaller tick.** It is a UI element on a chore, not a logo. Do not
+  "fix" either into the other.
+- The brand sheet's app icon sits between the two. Read as a drawing slip; the mark file is right,
+  and the sheet should be redrawn to match it the next time it is touched. **`brand-06` is approved
+  material, so redrawing it needs Maria first** — it is not a free fix, and nothing in the build
+  depends on it. Build from `diddit-mark.svg`, not from the sheet.
+
 ## Do's and Don'ts
 
 ### Do:
@@ -753,6 +1175,14 @@ The single most important screen in the product, and the one most likely to be d
 - **Don't** add `box-shadow`, card borders, or a second accent colour.
 - **Don't** let a meter be the only carrier of a number.
 - **Don't** introduce a third typeface, uppercase tracking, or italics.
+- **Don't** make a second screen fully yellow. The brand band is a band; the tick-off moment is the
+  one full-bleed yellow screen.
+- **Don't** put `#555E64` text on the yellow band (3.76:1). On the yellow, text is Ink.
+- **Don't** grey out, dim or recolour the "Logg inn" button while it works — it keeps its yellow
+  and changes its label.
+- **Don't** disable the sign-in button on an empty form. Validate on press; a dead grey button is
+  an error-prevention pattern that reads as a broken screen.
+- **Don't** give the mark a new colour pair, an outline, a shadow, or a separated tick.
 - **Don't** redesign a signed-off screen — see the next section.
 
 ## Banned rules
@@ -776,10 +1206,45 @@ stricter than the picture because a measurement was wrong. "The only stroke in t
 would have turned screen 1's green chore meters yellow. **Measure before you write a rule, and name
 the screen you measured.**
 
+## What must not break
+
+The approved pictures all show one comfortable family: short Norwegian names, three children, a
+short e-mail. Those are the easy cases. None of the following is drawn, and every one of them will
+happen — so they are specified here rather than left to the build.
+
+### The yellow band
+
+| Case                           | What must happen                                                                                                                                        |
+| ------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| A long screen title            | The band grows; it has no fixed height. The title wraps rather than truncating or shrinking.                                                            |
+| A long sub-line                | Wraps to a second line; the band grows by that line plus nothing else. The 17 px bottom padding is preserved.                                           |
+| **One or two children**        | The cards keep 109 px and stay left-aligned in the column — they do **not** stretch to fill it. A 346 px-wide child card is not in any picture.         |
+| **Four or more children**      | Horizontal scroll at the same 109 × 154 and 9 px gap, the band unchanged. Do not shrink the card and do not wrap to a second row without a new drawing. |
+| **No children yet**            | The band carries the title and sub-line only, and ends 17 px under the sub-line. The empty state goes on the paper below it, not inside the yellow.     |
+| A long child name              | One line, ellipsised inside the 109 px card. The name never pushes the number out of the card.                                                          |
+| A four-digit total             | Number 30 is tabular; 1 240 fits 109 px. Five digits ellipsise the name further before they shrink the number.                                          |
+| A chore meter with many chores | Segments divide the width as the Meters section says; they get thinner, never taller, and never wrap.                                                   |
+
+### The login
+
+| Case                                  | What must happen                                                                                                                                                       |
+| ------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **A long e-mail that will not break** | The field scrolls its value horizontally. It never widens, never wraps, never shrinks its type.                                                                        |
+| **Error + keyboard at once**          | Already computed: the button lands at ≈ 379 … 426, 82 px above the keyboard edge. No second rule.                                                                      |
+| A two-line error message              | The line wraps and pushes the button down. At 360 px with the keyboard up this is the tightest case in the screen — check it on a device.                              |
+| **360 px wide**                       | The column becomes 316 px. Every control keeps its 49 px height and its 13 px radius. «Skann QR-kode (for barna)» is the first label to wrap — it is the one to check. |
+| Slow network                          | The signing-in state is the loading state. It appears within ~100 ms of the press, not after the response.                                                             |
+| The brand area on a short viewport    | It collapses to 112 px on focus; it may also collapse when the viewport is too short for the form, by the same rule. It never disappears entirely.                     |
+| Non-Latin or very long display text   | The wordmark and claim are fixed strings and do not translate — the mark carries the name. The promise line wraps.                                                     |
+
+**The 360 px check is not optional.** ST-801 came back because child rows broke at 360 px while
+every drawing was 390. Check the login and both A screens at 360 px, with the keyboard up, before
+calling the build done.
+
 ## Changing this system
 
-The five screens in `reference/poeng-signed-off.png` are **locked**. They are not a starting point
-to be improved.
+The five screens in `reference/poeng-signed-off.png` are **locked**, and so are the approved
+pictures listed under **What else Stig has approved**. They are not a starting point to be improved.
 
 - Do not run `quieter`, `distill`, `bolder`, `colorize`, or any redesign pass over a signed-off
   screen.
@@ -788,9 +1253,10 @@ to be improved.
   drawings, not after. It is the owner's call, not the designer's.
 - Accessibility fixes that stay inside the look (text colour, weight, size, a darker shade of the
   same hue, a larger hit area) do not need that route. Fixes that remove colour do.
-- New screens that the picture does not cover (empty, loading, error, settings) are built from this
-  vocabulary and must be labelled as additions, not presented as signed off. The picture contains
-  no empty, loading or error state.
+- New screens that neither the picture nor the approved set covers (empty, loading, settings) are
+  built from this vocabulary and must be labelled as additions, not presented as signed off. The
+  signed-off picture contains no empty, loading or error state; the approved login set adds an
+  empty, an error and a loading state **for the login only**.
 
 ## Rendering screens as pictures
 
@@ -817,25 +1283,75 @@ no reason is a fault.
 
 Light mode, Norwegian, WCAG 2.2 AA as the floor. Measured from the picture:
 
-| Pair                                     | Ratio         | Verdict                        |
-| ---------------------------------------- | ------------- | ------------------------------ |
-| Ink `#17120A` on Yellow `#F6B93B`        | 10.57:1       | AAA                            |
-| Text `#15181C` on white                  | 17.81:1       | AAA                            |
-| White on Ink `#17120A` (solid button)    | 18.63:1       | AAA                            |
-| White on Text `#15181C` (active chip)    | 17.81:1       | AAA                            |
-| Done `#0F7A54` on Track `#ECECE8`        | 4.51:1        | AA+ (non-text floor is 3:1)    |
-| Overdue `#A43A16` on Track `#ECECE8`     | 5.55:1        | AA+ (non-text floor is 3:1)    |
-| Yellow `#F6B93B` on Track `#ECECE8`      | 1.49:1        | needs the number beside it     |
-| Ink on Yellow Inset `#DBA434`            | 8.31:1        | AAA                            |
-| Muted `#555E64` on white / `#F6F6F4`     | 6.62 / 6.12:1 | AA+                            |
-| Overdue `#A43A16` on white / `#F6F6F4`   | 6.57 / 6.07:1 | AA+                            |
-| Amber Ink `#8A5A00` on white / `#F6F6F4` | 5.93 / 5.48:1 | AA+                            |
-| Done `#0F7A54` on white                  | 5.34:1        | AA+                            |
-| White on Yellow                          | 1.76:1        | **banned — never use**         |
-| Amber Ink on Yellow                      | 3.36:1        | **not for text on the yellow** |
+| Pair                                     | Ratio         | Verdict                         |
+| ---------------------------------------- | ------------- | ------------------------------- |
+| Ink `#17120A` on Yellow `#F6B93B`        | 10.57:1       | AAA                             |
+| Text `#15181C` on white                  | 17.81:1       | AAA                             |
+| White on Ink `#17120A` (solid button)    | 18.63:1       | AAA                             |
+| White on Text `#15181C` (active chip)    | 17.81:1       | AAA                             |
+| Done `#0F7A54` on Track `#ECECE8`        | 4.51:1        | AA+ (non-text floor is 3:1)     |
+| Overdue `#A43A16` on Track `#ECECE8`     | 5.55:1        | AA+ (non-text floor is 3:1)     |
+| Yellow `#F6B93B` on Track `#ECECE8`      | 1.49:1        | needs the number beside it      |
+| Ink on Yellow Inset `#DBA434`            | 8.31:1        | AAA                             |
+| Muted `#555E64` on white / `#F6F6F4`     | 6.62 / 6.12:1 | AA+                             |
+| Overdue `#A43A16` on white / `#F6F6F4`   | 6.57 / 6.07:1 | AA+                             |
+| Amber Ink `#8A5A00` on white / `#F6F6F4` | 5.93 / 5.48:1 | AA+                             |
+| Done `#0F7A54` on white                  | 5.34:1        | AA+                             |
+| White on Yellow                          | 1.76:1        | **banned — never use**          |
+| Amber Ink on Yellow                      | 3.36:1        | **not for text on the yellow**  |
+| Muted `#555E64` on Yellow                | 3.76:1        | **banned for text on the band** |
 
 Every text colour in the signed-off picture already clears 4.5:1. **No contrast fix in this system
 requires touching the yellow.**
+
+### The yellow band and the login, measured
+
+Every pair in the newly approved pictures. All of them use colours the system already had.
+
+| Pair                                                 | Ratio           | Verdict                                   |
+| ---------------------------------------------------- | --------------- | ----------------------------------------- |
+| Ink on the band — title, sub-line, hero, meter label | 10.57:1         | AAA                                       |
+| Ink meter fill on `#C59430` in the band              | 6.79:1          | AA+ (non-text floor is 3:1)               |
+| Ink initial on the `#DBA434` badge in the band       | 8.31:1          | AAA                                       |
+| Field value `#15181C` on white                       | 17.81:1         | AAA                                       |
+| Field label `#15181C` on paper                       | 16.46:1         | AAA                                       |
+| Field border `#555E64` on white (non-text, 3:1)      | 6.62:1          | passes                                    |
+| Error border `#A43A16` on white (non-text, 3:1)      | 6.57:1          | passes                                    |
+| Error text `#A43A16` on paper                        | 6.07:1          | AA+                                       |
+| Link `#8A5A00` on paper                              | 5.48:1          | AA+ — and underlined, so not colour-alone |
+| "eller" `#555E64` on paper                           | 6.12:1          | AA+                                       |
+| Focus ring `#17120A` on paper / on the yellow        | 17.22 / 10.57:1 | passes                                    |
+
+### Findings on the newly approved pictures
+
+Four things the pictures leave open. None of them needs the look changed; the first three are
+builder obligations and the fourth is recorded, not fixed.
+
+1. **The error must be announced, not just shown.** The error line needs `role="alert"`, and **both**
+   fields need `aria-describedby` pointing at it. The signing-in button already carries
+   `aria-busy="true"` in the picture; the error line was drawn without the equivalent. Without this a
+   screen-reader user never learns the sign-in failed. _Severity: high — 4.1.3 Status Messages._
+2. **`autocomplete` on both fields** — `username` on the e-mail, `current-password` on the password.
+   Without it no password manager helps. _Severity: medium — 1.3.5 Identify Input Purpose._
+3. **Two more padded targets.** The guide already lists three controls drawn under 44 px (checkbox
+   22, chips 33, row buttons 36). The login adds the **"Vis passord" eye, drawn 17 × 12 px**: give it
+   a 44 × 44 transparent target without changing the drawing. The initial badge keeps its 38 px
+   drawing and 44 px target. _Severity: medium — 2.5.8._
+4. **The initial badge's edge all but vanishes on the band.** `#DBA434` on `#F6B93B` is **1.27:1** —
+   lower than the `#ECECE8` it replaces (1.49:1). 1.4.11 is still met, because the thing that
+   identifies the control is the **initial itself at 8.31:1**, not the disc. So this conforms and
+   **no change is made**. If anyone later wants the disc to read as a disc, the in-look fix is a
+   1.5 px Ink ring (10.57:1) — that is a change to the look and goes to **Maria**, not into a build.
+
+Also required of the login specifically:
+
+- The field **label stays above the field**; no placeholder-as-label and no floating label.
+- `lang="nb"`, and the mark gets an accessible name ("Diddit") or `aria-hidden` when the wordmark
+  beside it already carries it.
+- The brand area collapsing on focus is a layout change, not an animation to insist on: under
+  `prefers-reduced-motion` it may simply snap.
+- Tab order follows the drawing: e-mail → password → vis passord → Glemt passord? → Logg inn →
+  Fortsett med Google → Skann QR-kode → Opprett konto.
 
 ### The two approved exceptions to the picture
 

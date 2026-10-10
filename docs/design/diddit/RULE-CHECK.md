@@ -22,6 +22,143 @@ Crops used as evidence below:
 [`row-chore.png`](reference/row-chore.png) ·
 [`row-overdue.png`](reference/row-overdue.png)
 
+Three things the signed-off picture does not contain — **the yellow top, the login screen and the
+Diddit mark** — were approved separately by Stig on 2026-10-10 (ST-812). For those, the approved
+picture is the reference and the same test applies. See **Revision 6** below; the pictures are
+listed in the guide under "What else Stig has approved".
+
+---
+
+## Revision 6 — the yellow top, the login and the mark (2026-10-10, ST-815)
+
+Stig approved three things the signed-off picture does not contain: **option A, the yellow top**,
+the **login screen** and the **Diddit mark**, all "as drawn" (ST-812, 15:23). Astrid's pictures are
+on ST-810 and are now copied into `reference/`. This section checks every rule those three added to
+the guide, the same way the rest of this file checks the signed-off picture: **does the approved
+picture visibly do this?**
+
+Everything below is measured from the PNGs at 390 × 844, `deviceScaleFactor: 2`, in css px.
+
+### A — the yellow top
+
+| Rule in the guide                                        | Where the picture shows it                                                                                                   |
+| -------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------- |
+| The band is full-bleed `#F6B93B`                         | `brand-07` and `brand-08`: columns at css x 5 and x 380 both read `#F6B93B` through the band. No gutter, no radius.          |
+| It starts at y 35, under the status-bar band             | Both: `#F6F6F4` from y 0 to 35, `#F6B93B` from 35.                                                                           |
+| It has no fixed height; it ends ~17 px under its content | `brand-07` ends at **275**, child cards end at 257 → 18. `brand-08` ends at **305**, meter ends at 288 → 17.                 |
+| Inside it, the gutter is the ordinary 22 px              | `brand-08`: the reward meter runs x **22 … 367.5** — the 346 px column. `brand-07`: the child cards run x **21.9 … 367.1**.  |
+| Title, sub-line and hero number are Ink on the band      | Darkest pixel in each is `#17120A`, not `#15181C` and not `#555E64`.                                                         |
+| The points meter in the band is Ink on `#C59430`         | `brand-08` y 281: nine `#17120A` segments and one `#C59430`, 30.5 px wide at 35 px pitch — 14 px tall, 4 px gaps.            |
+| The initial badge in the band is `#DBA434` with Ink      | `brand-07`: disc fill `#DBA434`, y 45 … 83 → **38 px**, the signed-off diameter. The initial is `#17120A`.                   |
+| Chore meters on the child cards do **not** change        | `brand-07`: the meters inside the white cards are still Done Green / Overdue Rust / `#ECECE8`.                               |
+| Everything below the band is unchanged                   | `brand-07`: the overdue card runs x **22 … 368** with its 2 px `#A43A16` border — the signed-off gutter and column.          |
+| The tick screen is still the only fully yellow screen    | Both A screens are yellow for 240 / 270 px of 844 and keep paper, cards and nav below. Screen 4 is yellow to the frame edge. |
+| Hero sizes are unchanged by the band                     | `brand-08`: «215» ink y 128 … 185 against the signed-off 128.5 … 185. "poeng" 211 … 222 against 211.5 … 221.5.               |
+
+### Withdrawn finding — `brand-07`'s child cards are **not** the wrong width
+
+This revision first reported that `brand-07` drew the child cards 106 px wide, 12 px apart, in a
+24 px gutter, and called it the one place an approved picture contradicts the signed-off picture.
+**That was a measuring error, found by Astrid in her review of PR #639 and confirmed on the pixels
+here.** `brand-07` draws 109 / 9 / 22 — the signed-off values. The approved pictures and the
+signed-off picture agree, and no "they disagree" rule survives into the guide.
+
+| Measurement       | Signed-off screen 1   | `brand-07` at css y 112 (in the arc) | `brand-07` at mid-height   |
+| ----------------- | --------------------- | ------------------------------------ | -------------------------- |
+| Child card width  | **109** (x 22 … 131)  | 106.3 (x 23.4 … 129.6)               | **109.1** (x 21.9 … 131.1) |
+| Gap between cards | **9**                 | 11.7                                 | **8.9**                    |
+| Gutter / column   | **22 / 346**          | 23.4 / 343                           | **21.9 / 345.2**           |
+| Card height       | **154** (y 104 … 258) | —                                    | **154** (y 104 … 258)      |
+
+The card's top edge is y 104 and its radius is 14, so a scanline at y 112 crosses the corner arc and
+is inset `14 − √(14² − 6²)` = 1.35 px on each side — 109 becomes 106.3, to the tenth. The first
+reading measured the arc and named it the card.
+
+The same error then recurred one row over: the method note's own table first gave the full-width
+band as y 118 … **250**, and 250 is 8 px above the bottom edge — the mirror of the y 112 reading the
+note is about. Astrid caught that too. The card's edges are hard (white from y 104.0 to y 258.0, no
+antialiased row), so with r = 14 the band is **y 118 … 244**; y 245 is already short.
+y 250 reads **106.1 / 11.9**, not the 106.3 / 11.7 of y 112: a row index counts downward from the top
+in both corners, so y 250 sits 7.75 px into its arc against y 112's 8.25, and reads 0.2 px narrower.
+Row 244 still dips a quarter of a pixel into the arc and its width moves half a pixel across edge
+thresholds 240 … 252, so the row to actually use is **mid-height, y 181**, which barely moves at all.
+
+**The build value never changed: 109 × 154 at 9 px in the 22 px gutter.** What changed is the guide,
+which now carries the method note — _measure a card at mid-height, never within one radius of a
+corner_ — in place of the withdrawn disagreement section, with
+`reference/child-card-measure-method.png` (top corner) and `reference/child-card-bottom-arc.png`
+(both bottom corners, y 244 · 250 · 258 marked) as its evidence.
+
+### The login
+
+| Rule in the guide                                          | Where the picture shows it                                                                                                                              |
+| ---------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Gutter 22 px, column 346 px                                | `login-17`: field, primary button and outline buttons all run x 22 … 368.                                                                               |
+| Brand area `#F6B93B`, y 35 … 338 (303 px)                  | `login-17`, `-14`, `-16`, `-18`: identical in all four.                                                                                                 |
+| It collapses to 112 px when a field has focus              | `login-15`: `#F6B93B` y 35 … **147**. The keyboard surface begins at y **508**.                                                                         |
+| "Logg inn" clears the keyboard after the collapse          | `login-15`: the button sits above 508 with room to spare; at 303 it would be at 540 … 588, fully covered.                                               |
+| The mark is 54 × 54 at x 22, y 71                          | `login-17`: Ink bbox x 22 … 76, y 71 … 125.                                                                                                             |
+| Wordmark Bricolage 800 **56 px**, −0.02em                  | Picture ink: w 146.5, band 42.0, D-cap 37.0. Rendered in the repo's bundled Bricolage at 56 px: **146.5 / 42.0 / 37.0 — 0.0% on all three.**            |
+| Brand claim Bricolage 800 **29 px**, −0.02em               | Picture ink: w 183.5, band 27.5, G-cap 20.0. Rendered at 29 px: 179.5 / 27.5 / 20.0 — heights exact, width −2.2%.                                       |
+| The promise line is **Body 16**                            | Picture ink: w 265.5, band 15.0, O-cap 11.5. Rendered Hanken 600 at 16 px: **265.5 / 15.0 / 11.5 — 0.0%.**                                              |
+| Field 346 × 49, 13 px radius, 1.5 px `#555E64`             | `login-17`: white y 388 … 435 with a `#555E64` line at 387 and 435.5 → 49 px tall, 1.5 px border.                                                       |
+| Field value is Body 16                                     | `login-14`: "mari.tangen@example.com" ink w 195.5. Rendered Hanken 600 at 16 px: 195.5 — 0.0%.                                                          |
+| "Logg inn" label is Button label 16.5                      | `login-17`: ink w 59.5. Rendered at 16.5 px: 59.5 — 0.0%. The same token as the signed-off primary button.                                              |
+| Field label is Label 13, above the field, on the gutter    | "Passord" ink w 43.5, cap 9.0, left edge x 23. Rendered at 12.5 px: 43.5 — inside the guide's font residual.                                            |
+| "Glemt passord?" is `#8A5A00`, right-aligned to the column | Darkest pixel `#8a5a00`; right edge x **368**.                                                                                                          |
+| "eller" is Meta sm 13 in `#555E64`                         | ink w 26.5, darkest `#555e64`. Rendered at 13 px: 26.5 — 0.0%.                                                                                          |
+| Error: **both** field borders rust, one rust line          | `login-16`: both field borders sample `#A43A16`; the message line samples `#A43A16`.                                                                    |
+| Signing in keeps the yellow                                | `login-18`: the button is still `#F6B93B`; only the label and the ring change.                                                                          |
+| Desktop: 634 px yellow panel of 1440                       | `login-19`: `#F6B93B` from x 0 to **634**, `#F6F6F4` after.                                                                                             |
+| No new colour anywhere in the login                        | Every colour sampled — `#F6B93B`, `#17120A`, `#15181C`, `#555E64`, `#8A5A00`, `#A43A16`, `#FFFFFF`, `#F6F6F4`, `#DFDFD9` — is already in the token set. |
+
+### The mark
+
+| Rule in the guide                              | Evidence                                                                                                                             |
+| ---------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------ |
+| 54 × 54, 16 px radius, Ink square, yellow tick | `login-17`: bbox 54 × 54; the corner arc reaches the straight edge at dy ≈ 15 css and fits a circular R of 15–16.                    |
+| It is the tick badge's geometry                | Signed-off screen 4: the tick badge is also 54 × 54 (y 81 … 135) at a fitted 16 px radius (32.27 board px, revision 5).              |
+| `diddit-mark.svg` reproduces the approved mark | Rendered at 108 × 108 and differenced against the mark in `login-17`: **mean 0.004 of 765 per pixel, worst pixel 15, none over 30.** |
+| The tick is centred, x 11.5 … 42.5, y 15 … 40  | Measured with the four corner arcs excluded, so the ground does not leak into the bbox.                                              |
+
+### Finding — three different ticks exist in the approved material
+
+Measured as a fraction of a 54 px square, corner arcs excluded:
+
+| Tick                                       | w    | h    | ink area |
+| ------------------------------------------ | ---- | ---- | -------- |
+| Tick badge, signed-off screen 4            | 19.0 | 14.5 | 73       |
+| App icon on the brand sheet `brand-06`     | 22.4 | 17.7 | 118      |
+| **The mark on the login, `login-14`…`19`** | 31.0 | 25.0 | 255      |
+
+The mark is the login one — five of the six approved pictures draw it that way, and it is the one
+on the screen being built. The tick badge keeps its own smaller tick; it is a UI element, not a
+logo. The brand sheet's app icon is read as a drawing slip; `brand-06` is approved material, so
+**redrawing it needs Maria before anyone touches it**. Nothing in the build depends on the sheet —
+Eirik builds from `diddit-mark.svg`. The middle number (22.4) is this revision's own measurement and
+has not been independently checked; it is not load-bearing either way. Written into the guide so
+nobody normalises one tick into another.
+
+### Rules deliberately **not** written in this revision
+
+| Candidate rule                                       | Why not                                                                                                                                               |
+| ---------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------- |
+| "The brand band is N px tall"                        | The two approved screens measure 240 and 270. The band is content-sized; a fixed height would contradict both.                                        |
+| "A yellow pill under the active nav item"            | Astrid offered to carry it over from option B. Stig approved A **as drawn**, and neither A picture has one.                                           |
+| "Give the initial badge an ink ring on the band"     | `#DBA434` on `#F6B93B` is 1.27:1, but the initial at 8.31:1 is what identifies the control, so 1.4.11 is met. A ring is a change to the look → Maria. |
+| "Disable the sign-in button until the form is valid" | The approved empty state draws it **enabled**. Validating on press is the drawn behaviour.                                                            |
+| "The keyboard return key is yellow"                  | Drawn grey on purpose: an app can set that key's label, not its colour.                                                                               |
+| Any colour added for the login or the band           | Every pair measured resolves to an existing token. Adding one would be a change to the look.                                                          |
+
+### Still open after this revision
+
+- **Two of the four working screens are not drawn** — the parent's chore list and the rewards
+  screen. The guide gives the pattern; the result needs a look before it ships.
+- **Nothing is drawn at 360 px.** ST-801 came back for exactly that. The guide says to check the
+  login and both A screens at 360 with the keyboard up.
+- **`brand-06`'s app-icon tick** should be redrawn to match `diddit-mark.svg` the next time the
+  sheet is touched — **Maria's call, since `brand-06` is approved material.**
+
 ---
 
 ## Revision 5 — the last stale radius, and two more it turned up (2026-10-10)
@@ -369,8 +506,9 @@ none of those. **Do not treat the ST-729 stylesheet as the token source.**
 Not faults — just things the five screens do not cover, which therefore are **not** signed off and
 must be labelled as additions when they are designed:
 
-- empty, loading, error and offline states;
-- settings, auth and onboarding screens;
+- empty, loading, error and offline states — **except the login's**, which revision 6 adds;
+- settings and onboarding screens; auth is now covered for sign-in only, not for sign-up,
+  password reset or the child QR flow;
 - any dark mode;
 - landscape and tablet widths;
 - motion: the picture is still, so no timing or easing is signed off.
