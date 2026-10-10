@@ -9,7 +9,13 @@
     <div class="modal">
       <div class="modal-header">
         <h2 id="modal-title" class="modal-title">{{ title() }}</h2>
-        <button type="button" class="modal-close" (click)="onCloseClick()" aria-label="Close modal">
+        <button
+          type="button"
+          class="modal-close"
+          (click)="onCloseClick()"
+          i18n-aria-label="@@modal.closeLabel"
+          aria-label="Lukk"
+        >
           <svg
             width="24"
             height="24"
