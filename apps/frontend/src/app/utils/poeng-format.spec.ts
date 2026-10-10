@@ -22,6 +22,13 @@ describe('poeng-format', () => {
     expect(dayWord('2026-10-03', '2026-10-06')).toBe('lørdag');
   });
 
+  it('reads a full ISO timestamp as its day and never throws (ST-808)', () => {
+    expect(dayWord('2026-10-06T00:00:00.000Z', '2026-10-06')).toBe('i dag');
+    expect(dayWord('2026-10-05T00:00:00.000Z', '2026-10-06')).toBe('i går');
+    expect(dayWord('2026-10-03T00:00:00.000Z', '2026-10-06')).toBe('lørdag');
+    expect(() => dayWord('not a date', '2026-10-06')).not.toThrow();
+  });
+
   it('capitalizes the first letter only', () => {
     expect(capitalize('i går')).toBe('I går');
   });
