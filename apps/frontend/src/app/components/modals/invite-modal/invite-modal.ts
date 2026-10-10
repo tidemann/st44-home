@@ -66,17 +66,9 @@ export class InviteModal {
   /**
    * Available role options
    */
-  protected readonly roleOptions: {
-    value: 'parent' | 'adult';
-    label: string;
-    description: string;
-  }[] = [
-    {
-      value: 'parent',
-      label: 'Parent (Admin)',
-      description: 'Can manage tasks, children, and settings',
-    },
-    { value: 'adult', label: 'Adult Member', description: 'Can view and complete tasks' },
+  protected readonly roleOptions: { value: 'parent' | 'adult'; label: string }[] = [
+    { value: 'parent', label: $localize`:@@inviteModal.roleParent:Forelder (admin)` },
+    { value: 'adult', label: $localize`:@@inviteModal.roleAdult:Voksen` },
   ];
 
   /**

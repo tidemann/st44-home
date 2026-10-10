@@ -53,4 +53,16 @@ describe('InviteModal', () => {
     expect(emittedData!.role).toBe('parent');
     expect(emittedData!.message).toBe('Welcome!');
   });
+
+  it('should show the role options and close label in Norwegian', () => {
+    fixture.componentRef.setInput('open', true);
+    fixture.detectChanges();
+    const el: HTMLElement = fixture.nativeElement;
+
+    const options = Array.from(el.querySelectorAll('#invite-role option')).map((o) =>
+      o.textContent?.trim(),
+    );
+    expect(options).toEqual(['Forelder (admin)', 'Voksen']);
+    expect(el.querySelector('.modal-close')?.getAttribute('aria-label')).toBe('Lukk');
+  });
 });
