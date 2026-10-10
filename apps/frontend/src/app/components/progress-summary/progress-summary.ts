@@ -56,11 +56,11 @@ export class ProgressSummary {
   /** Get encouraging message based on completion rate */
   progressMessage = computed(() => {
     const rate = this.progress().completionRate;
-    if (rate === 100) return 'Perfect!';
-    if (rate >= 80) return 'Excellent!';
-    if (rate >= 60) return 'Good progress!';
-    if (rate >= 40) return 'Keep going!';
-    if (rate > 0) return 'Getting started!';
-    return 'Ready to begin?';
+    if (rate === 100) return $localize`:@@progressSummary.msgPerfect:Perfekt!`;
+    if (rate >= 80) return $localize`:@@progressSummary.msgExcellent:Kjempebra!`;
+    if (rate >= 60) return $localize`:@@progressSummary.msgGood:God fremgang!`;
+    if (rate >= 40) return $localize`:@@progressSummary.msgKeepGoing:Fortsett sånn!`;
+    if (rate > 0) return $localize`:@@progressSummary.msgStarted:Godt i gang!`;
+    return $localize`:@@progressSummary.msgReady:Klar til å starte?`;
   });
 }

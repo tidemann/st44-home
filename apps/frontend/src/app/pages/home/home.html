@@ -62,27 +62,13 @@
         <app-chore-row
           [title]="task.title"
           [meta]="rowMeta(task)"
-          [points]="canRemind() ? '' : pointsText(task)"
+          [points]="pointsText(task)"
           [checkable]="true"
           [busy]="completingId() === task.id"
           [openable]="true"
           (check)="onCompleteTask(task.id)"
           (open)="onEditTask(task.id)"
-        >
-          @if (canRemind()) {
-            <button
-              row-action
-              type="button"
-              class="rbtn"
-              [disabled]="remindingId() === task.id"
-              [attr.aria-label]="remindLabel(task)"
-              (click)="onRemind(task.id)"
-              i18n="@@home.remind"
-            >
-              Minn på
-            </button>
-          }
-        </app-chore-row>
+        />
       }
     } @else {
       <div class="empty" role="status">

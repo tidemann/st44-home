@@ -1,4 +1,11 @@
-import { Component, input, computed, ChangeDetectionStrategy } from '@angular/core';
+import {
+  Component,
+  input,
+  computed,
+  inject,
+  ChangeDetectionStrategy,
+  LOCALE_ID,
+} from '@angular/core';
 import { BarChart, type BarChartDataPoint } from '../charts/bar-chart/bar-chart';
 import type { DailyCompletion } from '@st44/types';
 
@@ -24,11 +31,14 @@ import type { DailyCompletion } from '@st44/types';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DailyPointsChart {
+  /** Weekday names follow the bundle: «man.» under /no/, «Mon» under /en/ */
+  private readonly locale = inject(LOCALE_ID);
+
   /** Daily completion data from analytics API */
   dailyData = input.required<DailyCompletion[]>();
 
   /** Chart title */
-  title = input<string>('Points Earned');
+  title = input<string>($localize`:@@dailyPointsChart.defaultTitle:Poeng opptjent`);
 
   /** Chart height in pixels */
   height = input<number>(180);
@@ -50,12 +60,12 @@ export class DailyPointsChart {
     return this.dailyData().reduce((sum, d) => sum + d.pointsEarned, 0);
   });
 
-  /** Format date to short day name (Mon, Tue, etc.) */
+  /** Format date to short day name (man., tir. osv.) */
   private formatDayLabel(dateStr: string): string {
     // Handle both YYYY-MM-DD and full ISO timestamp formats
     // Extract just the date portion if it's an ISO timestamp
     const dateOnly = dateStr.includes('T') ? dateStr.split('T')[0] : dateStr;
     const date = new Date(dateOnly + 'T12:00:00'); // Use noon to avoid timezone issues
-    return date.toLocaleDateString('en-US', { weekday: 'short' });
+    return date.toLocaleDateString(this.locale, { weekday: 'short' });
   }
 }
