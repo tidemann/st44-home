@@ -60,6 +60,7 @@
   --r-button: 13px;
   --r-row-action: 10px;
   --r-badge: 16px;
+  --nav-icon: 17px; /* guide nav-item.iconSize */
   --focus-ring: 2.5px solid var(--ink);
 
   /* ===== LEGACY NAMES, mapped onto Poeng so older screens match ===== */

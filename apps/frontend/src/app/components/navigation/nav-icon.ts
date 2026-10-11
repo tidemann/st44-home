@@ -9,7 +9,8 @@ export type NavIconName = 'home' | 'tasks' | 'rewards' | 'family' | 'progress';
 @Component({
   selector: 'app-nav-icon',
   templateUrl: './nav-icon.html',
-  styles: ':host { display: inline-flex; }',
+  styles:
+    ':host { display: inline-flex; } svg { width: var(--nav-icon); height: var(--nav-icon); }',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class NavIcon {
