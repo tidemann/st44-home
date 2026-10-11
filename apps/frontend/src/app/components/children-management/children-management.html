@@ -228,7 +228,8 @@
                   class="btn btn-sm btn-secondary"
                   (click)="startEdit(child)"
                   [disabled]="isLoading()"
-                  [attr.aria-label]="'Edit ' + child.name"
+                  aria-label="Rediger {{ child.name }}"
+                  i18n-aria-label="@@childrenManagement.editAriaLabel"
                   i18n="@@childrenManagement.edit"
                 >
                   Rediger
@@ -238,7 +239,8 @@
                   class="btn btn-sm btn-danger"
                   (click)="deleteChild(child)"
                   [disabled]="isLoading()"
-                  [attr.aria-label]="'Delete ' + child.name"
+                  aria-label="Slett {{ child.name }}"
+                  i18n-aria-label="@@childrenManagement.deleteAriaLabel"
                   i18n="@@childrenManagement.delete"
                 >
                   Slett

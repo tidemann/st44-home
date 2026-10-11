@@ -61,7 +61,9 @@ export class ManageHouseholds implements OnInit {
       await this.householdStore.loadHouseholds({ forceRefresh: true });
     } catch (err) {
       console.error('Failed to load households:', err);
-      this.error.set('Failed to load households. Please try again.');
+      this.error.set(
+        $localize`:@@households.error.load:Kunne ikke laste husholdningene. Prøv igjen.`,
+      );
     } finally {
       this.loading.set(false);
     }
@@ -90,7 +92,7 @@ export class ManageHouseholds implements OnInit {
    */
   protected switchToHousehold(household: HouseholdListItem): void {
     this.householdStore.setActiveHousehold(household.id);
-    this.showSuccess(`Switched to ${household.name}`);
+    this.showSuccess($localize`:@@households.switched:Byttet til ${household.name}:name:`);
   }
 
   // ==================
@@ -108,7 +110,9 @@ export class ManageHouseholds implements OnInit {
 
   protected async createHousehold(): Promise<void> {
     if (!this.createHouseholdName.trim()) {
-      this.error.set('Please enter a household name');
+      this.error.set(
+        $localize`:@@households.error.nameRequired:Skriv inn et navn på husholdningen`,
+      );
       return;
     }
 
@@ -118,10 +122,12 @@ export class ManageHouseholds implements OnInit {
 
       await this.householdService.createHousehold(this.createHouseholdName.trim());
       this.closeCreateModal();
-      this.showSuccess('Household created successfully!');
+      this.showSuccess($localize`:@@households.created:Husholdningen er opprettet`);
     } catch (err) {
       console.error('Failed to create household:', err);
-      this.error.set('Failed to create household. Please try again.');
+      this.error.set(
+        $localize`:@@households.error.create:Kunne ikke opprette husholdningen. Prøv igjen.`,
+      );
     } finally {
       this.actionInProgress.set(false);
     }
@@ -147,7 +153,9 @@ export class ManageHouseholds implements OnInit {
     if (!household) return;
 
     if (!this.editHouseholdName.trim()) {
-      this.error.set('Please enter a household name');
+      this.error.set(
+        $localize`:@@households.error.nameRequired:Skriv inn et navn på husholdningen`,
+      );
       return;
     }
 
@@ -157,10 +165,12 @@ export class ManageHouseholds implements OnInit {
 
       await this.householdService.updateHousehold(household.id, this.editHouseholdName.trim());
       this.closeEditModal();
-      this.showSuccess('Household updated successfully!');
+      this.showSuccess($localize`:@@households.updated:Husholdningen er lagret`);
     } catch (err) {
       console.error('Failed to update household:', err);
-      this.error.set('Failed to update household. Please try again.');
+      this.error.set(
+        $localize`:@@households.error.update:Kunne ikke lagre husholdningen. Prøv igjen.`,
+      );
     } finally {
       this.actionInProgress.set(false);
     }
@@ -190,16 +200,18 @@ export class ManageHouseholds implements OnInit {
 
       await this.householdService.leaveHousehold(household.id);
       this.closeLeaveModal();
-      this.showSuccess(`Left ${household.name}`);
+      this.showSuccess($localize`:@@households.left:Du har forlatt ${household.name}:name:`);
     } catch (err: unknown) {
       console.error('Failed to leave household:', err);
       const errorObj = err as { message?: string };
       if (errorObj.message?.includes('ONLY_ADMIN')) {
         this.error.set(
-          'You are the only admin. Transfer admin role to another member or delete the household.',
+          $localize`:@@households.error.onlyAdmin:Du er eneste administrator. Gi administratorrollen til en annen, eller slett husholdningen.`,
         );
       } else {
-        this.error.set('Failed to leave household. Please try again.');
+        this.error.set(
+          $localize`:@@households.error.leave:Kunne ikke forlate husholdningen. Prøv igjen.`,
+        );
       }
     } finally {
       this.actionInProgress.set(false);
@@ -230,10 +242,12 @@ export class ManageHouseholds implements OnInit {
 
       await this.householdService.deleteHousehold(household.id);
       this.closeDeleteModal();
-      this.showSuccess(`Deleted ${household.name}`);
+      this.showSuccess($localize`:@@households.deleted:Slettet ${household.name}:name:`);
     } catch (err) {
       console.error('Failed to delete household:', err);
-      this.error.set('Failed to delete household. Please try again.');
+      this.error.set(
+        $localize`:@@households.error.delete:Kunne ikke slette husholdningen. Prøv igjen.`,
+      );
     } finally {
       this.actionInProgress.set(false);
     }
@@ -269,6 +283,22 @@ export class ManageHouseholds implements OnInit {
         return 'role-badge role-child';
       default:
         return 'role-badge';
+    }
+  }
+
+  /**
+   * Role as shown to the user (never the raw key)
+   */
+  protected roleLabel(role: string): string {
+    switch (role) {
+      case 'admin':
+        return $localize`:@@households.role.admin:Administrator`;
+      case 'parent':
+        return $localize`:@@households.role.parent:Forelder`;
+      case 'child':
+        return $localize`:@@households.role.child:Barn`;
+      default:
+        return '';
     }
   }
 }

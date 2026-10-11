@@ -163,4 +163,18 @@ export class HouseholdSettingsComponent implements OnInit {
       await this.loadHouseholdData();
     }
   }
+
+  /** Role as shown to the user (never the raw key) */
+  protected roleLabel(role: string): string {
+    switch (role) {
+      case 'admin':
+        return $localize`:@@householdSettings.role.admin:Administrator`;
+      case 'parent':
+        return $localize`:@@householdSettings.role.parent:Forelder`;
+      case 'child':
+        return $localize`:@@householdSettings.role.child:Barn`;
+      default:
+        return '';
+    }
+  }
 }
