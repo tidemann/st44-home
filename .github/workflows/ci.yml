@@ -112,6 +112,17 @@ jobs:
             fi
           done
 
+          # Every container gets the log cap (ST-845), redis included.
+          caps="$(JWT_SECRET=st627-secret-probe docker compose -f infra/docker-compose.prod.yml -f pin.yml config --format json \
+            | jq -r '.services | to_entries[] | "\(.key) \(.value.logging.driver) \(.value.logging.options["max-size"]) \(.value.logging.options["max-file"])"')"
+          printf '%s\n' "$caps"
+          for svc in frontend backend db redis; do
+            if ! printf '%s\n' "$caps" | grep -qxF "${svc} json-file 50m 3"; then
+              echo "::error::${svc} did not get the json-file 50m x 3 log cap"
+              bad=1
+            fi
+          done
+
           # No ghcr image may come out on anything else, whatever it is called.
           if printf '%s\n' "$resolved" | grep -E 'image: ghcr\.io/' | grep -v ':st59-pin-probe'; then
             echo "::error::the ghcr image above ignored the pin"
