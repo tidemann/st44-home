@@ -19,15 +19,26 @@
 <!-- Main Content -->
 @if (!loading() && !error()) {
   <app-page [title]="householdName()" [subtitle]="memberCount() + ' medlemmer'" maxWidth="wide">
-    <!-- Header Actions -->
-    <ng-container page-actions>
-      <button class="btn btn-header" (click)="openInviteModal()" i18n="@@family.inviteButton">
+    <!-- Actions sit under the title, not in the title row: at 360 px the title row only has
+         room for the family name and the initial badge (ST-840). -->
+    <div class="family-actions">
+      <button
+        type="button"
+        class="btn-action"
+        (click)="openInviteModal()"
+        i18n="@@family.inviteButton"
+      >
         + Inviter
       </button>
-      <button class="btn btn-header" (click)="openAddChildModal()" i18n="@@family.addChildButton">
+      <button
+        type="button"
+        class="btn-action"
+        (click)="openAddChildModal()"
+        i18n="@@family.addChildButton"
+      >
         + Legg til barn
       </button>
-    </ng-container>
+    </div>
 
     <!-- Family Members Section -->
     <section class="members-section">

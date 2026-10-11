@@ -1,4 +1,5 @@
 import { Component, ChangeDetectionStrategy, input, output, computed } from '@angular/core';
+import { personInitial } from '../../utils/person-name';
 
 /**
  * Extended member data for display purposes
@@ -7,6 +8,8 @@ import { Component, ChangeDetectionStrategy, input, output, computed } from '@an
 export interface MemberCardData {
   id: string;
   name: string;
+  /** The badge letter, when the shown name is a fallback («Ukjent», «Barn») */
+  initial?: string;
   email?: string;
   role: 'parent' | 'child';
   tasksCompleted?: number;
@@ -43,15 +46,12 @@ export class MemberCard {
   cardClick = output<string>();
 
   /**
-   * Get initials from member name
+   * The person's single initial (guide: Initial badge) – the first letter or digit of the
+   * name, so a suffix like «(deg)» or a leading symbol never ends up in the badge.
    */
   initials = computed(() => {
-    const name = this.member().name;
-    const parts = name.split(' ');
-    if (parts.length >= 2) {
-      return `${parts[0][0]}${parts[1][0]}`.toUpperCase();
-    }
-    return name.substring(0, 2).toUpperCase();
+    const member = this.member();
+    return member.initial ?? personInitial(member.name, member.email);
   });
 
   /**

@@ -124,7 +124,7 @@ describe('Family', () => {
 
       await component.ngOnInit();
 
-      expect(component['error']()).toBe('User not authenticated');
+      expect(component['error']()).toBe('Du er ikke logget inn.');
       expect(component['loading']()).toBe(false);
     });
 
@@ -133,7 +133,7 @@ describe('Family', () => {
 
       await component.ngOnInit();
 
-      expect(component['error']()).toBe('No household found');
+      expect(component['error']()).toBe('Fant ingen familie.');
       expect(component['loading']()).toBe(false);
     });
 
@@ -144,7 +144,7 @@ describe('Family', () => {
 
       await component.ngOnInit();
 
-      expect(component['error']()).toBe('Failed to load family members. Please try again.');
+      expect(component['error']()).toBe('Kunne ikke laste familien. Prøv igjen.');
       expect(component['loading']()).toBe(false);
     });
   });
@@ -169,19 +169,36 @@ describe('Family', () => {
       });
     });
 
-    it('should use email username when displayName is null', async () => {
-      const membersWithoutDisplayName: HouseholdMemberResponse[] = [
-        {
-          ...mockMembers[0],
-          displayName: null,
-        },
-      ];
-      mockHouseholdService.getHouseholdMembers.mockResolvedValue(membersWithoutDisplayName);
+    it('should never show the e-mail as a name or initial (ST-841)', async () => {
+      mockHouseholdService.getHouseholdMembers.mockResolvedValue([
+        { ...mockMembers[0], displayName: null, email: 's(ara)-st808@example.com' },
+        { ...mockMembers[1], displayName: null, email: 'st808-child@example.com' },
+      ]);
 
       await component.ngOnInit();
 
-      const members = component['members']();
-      expect(members[0].name).toBe('test (deg)');
+      const [parent, child] = component['members']();
+      expect(parent.name).toBe('Ukjent (deg)');
+      expect(parent.initial).toBe('S');
+      expect(child.name).toBe('Barn');
+      expect(child.initial).toBe('S');
+      for (const member of component['members']()) {
+        expect(member.name).not.toContain('st808');
+        expect(member.name).not.toContain('s(ara)');
+      }
+    });
+
+    it('should take the initial from the name, not the e-mail', async () => {
+      mockHouseholdService.getHouseholdMembers.mockResolvedValue([
+        { ...mockMembers[0], displayName: 'Kari Nordmann', email: 'st808-parent@example.com' },
+        { ...mockMembers[1], displayName: 'Prøvebarn', email: 'st808-child@example.com' },
+      ]);
+
+      await component.ngOnInit();
+
+      const [parent, child] = component['members']();
+      expect(parent).toMatchObject({ name: 'Kari Nordmann (deg)', initial: 'K' });
+      expect(child).toMatchObject({ name: 'Prøvebarn', initial: 'P' });
     });
 
     it('should mark current user with (deg) suffix', async () => {
@@ -300,7 +317,7 @@ describe('Family', () => {
 
       await component['onInviteSent'](inviteData);
 
-      expect(component['error']()).toBe('No household selected');
+      expect(component['error']()).toBe('Velg en familie først.');
       expect(mockInvitationService.sendInvitation).not.toHaveBeenCalled();
     });
   });
@@ -360,7 +377,7 @@ describe('Family', () => {
 
       await component['onChildAdded'](childData);
 
-      expect(component['error']()).toBe('No household selected');
+      expect(component['error']()).toBe('Velg en familie først.');
       expect(mockChildrenService.createChild).not.toHaveBeenCalled();
     });
   });

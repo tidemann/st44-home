@@ -31,7 +31,19 @@ import {
 const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID || '';
 const googleClient = new OAuth2Client(GOOGLE_CLIENT_ID);
 
+// A child login is made by a parent with only an e-mail, so users.first_name is empty;
+// the child's name lives on the children row. Use it so the token carries the real name.
+const FIRST_NAME_SQL = `COALESCE(NULLIF(u.first_name, ''),
+  (SELECT c.name FROM children c WHERE c.user_id = u.id LIMIT 1)) AS first_name`;
+
 // Helper Functions
+
+/** Name of the family made at sign-up: Norwegian, from the person's name, never the e-mail */
+export function defaultHouseholdName(firstName?: string | null, lastName?: string | null): string {
+  const name = lastName?.trim() || firstName?.trim();
+  return name ? `Familien ${name}` : 'Min familie';
+}
+
 function validatePasswordStrength(password: string): boolean {
   const hasUpperCase = /[A-Z]/.test(password);
   const hasLowerCase = /[a-z]/.test(password);
@@ -183,7 +195,7 @@ export default async function authRoutes(fastify: FastifyInstance) {
             `INSERT INTO households (name)
              VALUES ($1)
              RETURNING id`,
-            [`${firstName}'s Household`],
+            [defaultHouseholdName(firstName, lastName)],
           );
 
           const householdId = householdResult.rows[0].id;
@@ -257,7 +269,7 @@ export default async function authRoutes(fastify: FastifyInstance) {
         // Query user by email, including name fields
         fastify.log.debug({ executionId }, '[LOGIN] Before user query');
         const result = await pool.query(
-          'SELECT id, email, password_hash, first_name, last_name FROM users WHERE email = $1',
+          `SELECT id, email, password_hash, ${FIRST_NAME_SQL}, last_name FROM users u WHERE email = $1`,
           [email],
         );
         fastify.log.debug(
@@ -359,7 +371,7 @@ export default async function authRoutes(fastify: FastifyInstance) {
 
         // Get user data from database
         const result = await pool.query(
-          'SELECT email, first_name, last_name FROM users WHERE id = $1',
+          `SELECT email, ${FIRST_NAME_SQL}, last_name FROM users u WHERE id = $1`,
           [decoded.userId],
         );
 
@@ -507,9 +519,7 @@ export default async function authRoutes(fastify: FastifyInstance) {
             lastName = insertResult.rows[0].last_name;
 
             // Create default household for new user
-            const householdName = firstName
-              ? `${firstName}'s Household`
-              : `${userEmail.split('@')[0]}'s Household`;
+            const householdName = defaultHouseholdName(firstName, lastName);
             const householdResult = await client.query(
               `INSERT INTO households (name) VALUES ($1) RETURNING id`,
               [householdName],

@@ -275,6 +275,18 @@ describe('Household API', () => {
       assert.strictEqual(body.length, 2);
     });
 
+    test('should name a member by first and last name, not the e-mail', async () => {
+      const response = await app.inject({
+        method: 'GET',
+        url: `/api/households/${householdId}/members`,
+        headers: { Authorization: `Bearer ${user1Token}` },
+      });
+
+      const body = JSON.parse(response.body) as Array<{ userId: string; displayName: string }>;
+      const me = body.find((m) => m.userId === String(user1Id));
+      assert.strictEqual(me?.displayName, 'Test User');
+    });
+
     test('should reject without authentication', async () => {
       const response = await app.inject({
         method: 'GET',
