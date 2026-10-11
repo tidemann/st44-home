@@ -56,7 +56,9 @@ export class Family implements OnInit {
   protected readonly loading = signal(false);
   protected readonly error = signal<string | null>(null);
   protected readonly members = signal<MemberCardData[]>([]);
-  protected readonly householdName = signal<string>($localize`:@@family.defaultHouseholdName:Min familie`);
+  protected readonly householdName = signal<string>(
+    $localize`:@@family.defaultHouseholdName:Min familie`,
+  );
   protected readonly householdId = signal<string | null>(null);
   protected readonly currentUserId = signal<string | null>(null);
 
@@ -279,7 +281,9 @@ export class Family implements OnInit {
       await this.loadData();
     } catch (err) {
       console.error('Failed to send invitation:', err);
-      this.error.set($localize`:@@family.error.inviteFailed:Kunne ikke sende invitasjonen. Prøv igjen.`);
+      this.error.set(
+        $localize`:@@family.error.inviteFailed:Kunne ikke sende invitasjonen. Prøv igjen.`,
+      );
     }
   }
 
@@ -308,7 +312,9 @@ export class Family implements OnInit {
       await this.loadData();
     } catch (err) {
       console.error('Failed to add child:', err);
-      this.error.set($localize`:@@family.error.addChildFailed:Kunne ikke legge til barnet. Prøv igjen.`);
+      this.error.set(
+        $localize`:@@family.error.addChildFailed:Kunne ikke legge til barnet. Prøv igjen.`,
+      );
     }
   }
 
