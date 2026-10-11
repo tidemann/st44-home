@@ -188,7 +188,8 @@ components:
   nav-item:
     pitch: '{layout.navItemPitch}'
     height: '71px'
-    iconSize: '17px'
+    iconInk: '18px'
+    iconSize: '21px'
     typography: '{typography.caption}'
   divider:
     backgroundColor: '{colors.hairline}'
@@ -709,7 +710,29 @@ Jonas green + track + rust, Mathea green + track.
 
 ### Navigation
 
-- Four items: Hjem · Oppgaver · Belønninger · Familie. A 17 px icon above a 12 px label.
+- Four items: Hjem · Oppgaver · Belønninger · Familie. **18 px of icon ink in a 21 px box**, above a
+  12 px label.
+- **Ink and box are two numbers, and the picture gives the ink.** In the signed-off picture the
+  «Hjem» house ink is 36 × 36 board px — **18.0 × 18.0 px** — on all four light screens at
+  luminance threshold 220, and 34–36 at threshold 200 where the muted glyphs' antialiased edge
+  drops out. The other three sit under it: list 17.0 × 12.0, gift 18.0 × 17.5, familie 17.0 × 15.0.
+  Measure a screenshot against the **ink**; set `--nav-icon` to the **box**.
+- **The box is 21 px because the glyphs do not fill their own viewBox.** The house runs 15.40 of
+  its 18 units tall once the 1.5 stroke is counted, so 18 ÷ 15.40 × 18 = **21.0 px** of box gives
+  18.0 px of ink. If the artwork is redrawn, re-derive the box from the new glyphs and keep the ink
+  at 18 px.
+- **Where `17px` came from, so nobody ships it again.** It was written into this guide as an icon
+  size without an ink measurement behind it, and ST-881 then built to it (PR #644): a 17 px box
+  renders 14.5 px of ink, a fifth short of the picture. PR #645 puts the box at 21 px. Maria's
+  decision on ST-881 is the rule here — **the nav icon follows the signed-off picture.**
+- **Drawing slip: the approved yellow-top pictures get this nav wrong.**
+  `brand-07-a-yellow-top-home.png` and `brand-08-a-yellow-top-my-chores.png` (approved on ST-812 for
+  the yellow top) draw the bar with a different, smaller icon set — the house has no door, the list
+  has no bullets, and the house ink measures **14.0–14.5 px** against the signed-off picture's
+  18.0. Those pictures are the spec for the yellow band, not for the nav: **the picture wins here**,
+  and the slip is recorded rather than quietly fixed in the approved files. Evidence:
+  [`nav-icon-signed-off-vs-brand-07.png`](reference/nav-icon-signed-off-vs-brand-07.png) — top, the
+  signed-off picture; bottom, brand-07, both at 2×.
 - **Pitch: 92 px per item**, leaving ≈11 px of padding at each edge — icon ink runs x 47.5…341.5.
   **Not four equal quarters of 390 px**: that pitches them 97.5 px apart, spreads the row 7 px too
   wide, and pushes the outer two items against the frame edges. Centre the four at 92 px and let
