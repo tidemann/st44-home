@@ -1,11 +1,18 @@
 /* Poeng screen 1 (screens-v2 #s1) */
 
-/* Three child cards across, 9 px apart (109 px each on a 390 px phone) */
+/* Child cards fill the row, 9 px apart: --kid-cols across (109 px each with 3 on a 390 px
+   phone); a shorter last row grows its cards to the full width (ST-864) */
 .kids {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  --kid-cols: 3;
+  display: flex;
+  flex-wrap: wrap;
   gap: 9px;
   margin-top: 16px;
+}
+
+/* Half a px under the exact share so sub-pixel rounding never wraps a card; flex-grow fills it */
+.kids > app-child-points-card {
+  flex: 1 0 calc((100% - (var(--kid-cols) - 1) * 9px) / var(--kid-cols) - 0.5px);
 }
 
 .remind-status:empty {
