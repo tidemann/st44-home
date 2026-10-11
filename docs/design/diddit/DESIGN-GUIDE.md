@@ -360,10 +360,13 @@ spec for those three things, on the same terms: they outrank the text below, and
 **Order of precedence.** `poeng-signed-off.png` → the approved pictures above → this guide → generic
 rules. Where an approved picture and the signed-off picture disagree about something the signed-off
 picture already settles (a card width, a gutter, a row), the signed-off picture wins and the
-difference is recorded as a drawing slip rather than fixed silently. **Nothing in the approved set
-disagrees with the signed-off picture today** — the one case this guide first recorded turned out to
-be a measuring error, kept as a method note in **Measuring a card: never inside the corner radius**
-below.
+difference is recorded as a drawing slip rather than fixed silently. **One case in the approved set
+does disagree today.** `brand-07-a-yellow-top-home.png` and `brand-08-a-yellow-top-my-chores.png`
+draw the bottom nav with a different, smaller icon set — 14.0–14.5 px of house ink against the
+signed-off picture's 18.0 px. Those pictures are the spec for the yellow band, not for the nav: the
+signed-off picture wins, and the slip is recorded in [RULE-CHECK.md](RULE-CHECK.md) (Revision 6)
+rather than fixed inside the approved files. An earlier recorded case turned out to be a measuring
+error, kept as a method note in **Measuring a card: never inside the corner radius** below.
 
 **Rejected, so nobody brings them back:**
 
@@ -915,7 +918,9 @@ Everything that already sat above the first card, and nothing else:
 
 Everything below the band — group labels, chore rows, overdue cards, reward cards, the primary
 button, the bottom nav — is **exactly the signed-off picture**, unchanged in colour, size, radius
-and position. That is the whole point of A over C.
+and position. That is the whole point of A over C. The one exception is in the pictures, not in A:
+both approved A screens draw the nav icons from a smaller set than the signed-off picture. Build the
+nav from the signed-off picture and **Navigation** below, not from these two files.
 
 ### What changes colour inside the band, and why
 
@@ -972,8 +977,11 @@ buttons, menu: completely untouched).
 
 This section exists because the first draft of it said otherwise. It read 106 / 12 / 24 off
 `brand-07` and built a "the pictures disagree" section around it; Astrid's review of PR #639 caught
-it, and the pixels confirm her. **There is no disagreement.** The reading was taken at css y 112 — 8 px below the card's top edge at y 104, still
-inside the 14 px corner radius — so it measured the arc, not the card.
+it, and the pixels confirm her. **There is no disagreement about the cards.** The reading was taken
+at css y 112 — 8 px below the card's top edge at y 104, still inside the 14 px corner radius — so it
+measured the arc, not the card. (The one place the approved pictures do depart from the signed-off
+picture is the nav icon set, which is a drawing slip and not a measuring error — see **Order of
+precedence** above.)
 
 ![brand-07's card block with rules at css x 22 and x 131, and the top-left corner at ×16](reference/child-card-measure-method.png)
 

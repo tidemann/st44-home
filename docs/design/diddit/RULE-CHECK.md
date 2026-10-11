@@ -25,67 +25,11 @@ Crops used as evidence below:
 
 ---
 
-## Revision 6 — the nav icon: a box number written as if it were ink (2026-10-11, ST-887)
+## Revision 7 — the yellow top, the login and the mark (2026-10-10, ST-815)
 
-`nav-item.iconSize: '17px'` had no ink measurement behind it. ST-881 built to it (PR #644, merged),
-which made the bottom-nav icons a fifth smaller than the signed-off picture draws them. Maria's
-decision on ST-881: the nav icon follows the signed-off picture. This revision puts the measurement
-in the guide and separates the two numbers — `iconInk: 18px` is what the picture shows,
-`iconSize: 21px` is what you set to get it out of the current artwork.
-
-**Method.** Nav band of each light screen in [`poeng-signed-off.png`](reference/poeng-signed-off.png):
-the `#DFDFD9` divider is board y 1738–1739, so the band is y 1740–1881 (142 board px = 71 px). Ink
-is every pixel under a luminance threshold; bounding box per item, run at thresholds 200 and 220.
-Board px ÷ 2 = css px.
-
-Eight readings per item (four screens × two thresholds). The css column is the **modal** reading,
-the range column is all of it; the low ends are the muted glyphs losing their antialiased edge at
-the tighter threshold, not smaller icons.
-
-| Item        | Ink w × h, all 8 readings (board px) | Modal (css px) |
-| ----------- | ------------------------------------ | -------------- |
-| Hjem        | 34–36 × 34–36                        | 18.0 × 18.0    |
-| Oppgaver    | 34–36 × 24–26                        | 17.0 × 12.0    |
-| Belønninger | 36–38 × 34–35                        | 18.0 × 17.5    |
-| Familie     | 34 × 30 (all eight)                  | 17.0 × 15.0    |
-
-The four items sit at cx 200.5, 384.5, 570.5, 754.5 board px on screen 1 — pitch 184, 186, 184
-board px, i.e. the 92 px of the existing rule, unchanged. The label band is 22 board px (11.9 px
-caption), unchanged. Only the icon size was wrong.
-
-**Box, derived.** The shipped glyphs do not fill their own `viewBox="0 0 18 18"`. The house path
-runs y 2.1…16 with a 1.5 stroke, so its ink is 15.40 of 18 units: 18.0 ÷ 15.40 × 18 = **21.04 px**
-of box for 18.0 px of ink. The same sum on the other three glyphs gives 20.2 (list), 20.3 (gift)
-and 19.3 (familie) — a 19.3–21.0 px spread, because the artwork is a redraw of the picture's set,
-not the set itself. 21 px is the house, which is the one glyph the picture draws square and full.
-Maria's "about 20.5 px" from ST-881 sits inside that spread; PR #645 ships 21 px, and the guide now
-says 21 px.
-
-### The brand-07 nav slip
-
-![Nav band at 2×: top, the signed-off picture; bottom, brand-07](reference/nav-icon-signed-off-vs-brand-07.png)
-
-The precedence note in this family of documents said nothing in the approved set disagreed with the
-signed-off picture. It does, in one place. The approved yellow-top pictures
-(`brand-07-a-yellow-top-home.png`, `brand-08-a-yellow-top-my-chores.png`, ST-812) draw the bottom
-nav with a **different and smaller icon set**: the house has no door, the list is three bare rules
-with no bullets, and the ink measures 28–29 board px — **14.0–14.5 px** — against the signed-off
-picture's 36 (18.0). Divider, 92 px pitch, 11.9 px labels and the amber/muted pair are all the same;
-the glyphs and their size are not.
-
-Those pictures were approved for the yellow band above the content, which is what ST-812 was asked
-about. They do not re-specify the nav. **The signed-off picture wins here**, and the slip is
-recorded, not fixed inside the approved files — no approved picture is redrawn without a new
-sign-off.
-
-Three things the signed-off picture does not contain — **the yellow top, the login screen and the
-Diddit mark** — were approved separately by Stig on 2026-10-10 (ST-812). For those, the approved
-picture is the reference and the same test applies. See **Revision 6** below; the pictures are
-listed in the guide under "What else Stig has approved".
-
----
-
-## Revision 6 — the yellow top, the login and the mark (2026-10-10, ST-815)
+> Written on 2026-10-10 and numbered 7 because it lands after **Revision 6** (the nav icon, ST-887,
+> 2026-10-11), which merged first. Only the number and the cross-references moved; nothing in this
+> section was re-measured for the renumbering.
 
 Stig approved three things the signed-off picture does not contain: **option A, the yellow top**,
 the **login screen** and the **Diddit mark**, all "as drawn" (ST-812, 15:23). Astrid's pictures are
@@ -111,13 +55,21 @@ Everything below is measured from the PNGs at 390 × 844, `deviceScaleFactor: 2`
 | The tick screen is still the only fully yellow screen    | Both A screens are yellow for 240 / 270 px of 844 and keep paper, cards and nav below. Screen 4 is yellow to the frame edge. |
 | Hero sizes are unchanged by the band                     | `brand-08`: «215» ink y 128 … 185 against the signed-off 128.5 … 185. "poeng" 211 … 222 against 211.5 … 221.5.               |
 
+**One exception to "everything below the band is unchanged", found after this section was written:**
+both A pictures draw the bottom nav with a smaller icon set than the signed-off picture — 14.0–14.5
+px of house ink against 18.0. Cards, rows, buttons, divider, pitch and labels below the band are
+unchanged; the icon glyphs are not. It is a drawing slip in the pictures, not a rule — **Revision 6**
+below.
+
 ### Withdrawn finding — `brand-07`'s child cards are **not** the wrong width
 
 This revision first reported that `brand-07` drew the child cards 106 px wide, 12 px apart, in a
 24 px gutter, and called it the one place an approved picture contradicts the signed-off picture.
 **That was a measuring error, found by Astrid in her review of PR #639 and confirmed on the pixels
-here.** `brand-07` draws 109 / 9 / 22 — the signed-off values. The approved pictures and the
-signed-off picture agree, and no "they disagree" rule survives into the guide.
+here.** `brand-07` draws 109 / 9 / 22 — the signed-off values. On the child cards, the gap, the
+gutter and the column the approved pictures and the signed-off picture agree, and no "they disagree"
+rule survives into the guide from this reading. The nav icons are a separate slip, and a real one —
+**Revision 6** below.
 
 | Measurement       | Signed-off screen 1   | `brand-07` at css y 112 (in the arc) | `brand-07` at mid-height   |
 | ----------------- | --------------------- | ------------------------------------ | -------------------------- |
@@ -214,6 +166,66 @@ nobody normalises one tick into another.
   login and both A screens at 360 with the keyboard up.
 - **`brand-06`'s app-icon tick** should be redrawn to match `diddit-mark.svg` the next time the
   sheet is touched — **Maria's call, since `brand-06` is approved material.**
+
+---
+
+## Revision 6 — the nav icon: a box number written as if it were ink (2026-10-11, ST-887)
+
+`nav-item.iconSize: '17px'` had no ink measurement behind it. ST-881 built to it (PR #644, merged),
+which made the bottom-nav icons a fifth smaller than the signed-off picture draws them. Maria's
+decision on ST-881: the nav icon follows the signed-off picture. This revision puts the measurement
+in the guide and separates the two numbers — `iconInk: 18px` is what the picture shows,
+`iconSize: 21px` is what you set to get it out of the current artwork.
+
+**Method.** Nav band of each light screen in [`poeng-signed-off.png`](reference/poeng-signed-off.png):
+the `#DFDFD9` divider is board y 1738–1739, so the band is y 1740–1881 (142 board px = 71 px). Ink
+is every pixel under a luminance threshold; bounding box per item, run at thresholds 200 and 220.
+Board px ÷ 2 = css px.
+
+Eight readings per item (four screens × two thresholds). The css column is the **modal** reading,
+the range column is all of it; the low ends are the muted glyphs losing their antialiased edge at
+the tighter threshold, not smaller icons.
+
+| Item        | Ink w × h, all 8 readings (board px) | Modal (css px) |
+| ----------- | ------------------------------------ | -------------- |
+| Hjem        | 34–36 × 34–36                        | 18.0 × 18.0    |
+| Oppgaver    | 34–36 × 24–26                        | 17.0 × 12.0    |
+| Belønninger | 36–38 × 34–35                        | 18.0 × 17.5    |
+| Familie     | 34 × 30 (all eight)                  | 17.0 × 15.0    |
+
+The four items sit at cx 200.5, 384.5, 570.5, 754.5 board px on screen 1 — pitch 184, 186, 184
+board px, i.e. the 92 px of the existing rule, unchanged. The label band is 22 board px (11.9 px
+caption), unchanged. Only the icon size was wrong.
+
+**Box, derived.** The shipped glyphs do not fill their own `viewBox="0 0 18 18"`. The house path
+runs y 2.1…16 with a 1.5 stroke, so its ink is 15.40 of 18 units: 18.0 ÷ 15.40 × 18 = **21.04 px**
+of box for 18.0 px of ink. The same sum on the other three glyphs gives 20.2 (list), 20.3 (gift)
+and 19.3 (familie) — a 19.3–21.0 px spread, because the artwork is a redraw of the picture's set,
+not the set itself. 21 px is the house, which is the one glyph the picture draws square and full.
+Maria's "about 20.5 px" from ST-881 sits inside that spread; PR #645 ships 21 px, and the guide now
+says 21 px.
+
+### The brand-07 nav slip
+
+![Nav band at 2×: top, the signed-off picture; bottom, brand-07](reference/nav-icon-signed-off-vs-brand-07.png)
+
+The precedence note in this family of documents said nothing in the approved set disagreed with the
+signed-off picture. It does, in one place. The approved yellow-top pictures
+(`brand-07-a-yellow-top-home.png`, `brand-08-a-yellow-top-my-chores.png`, ST-812) draw the bottom
+nav with a **different and smaller icon set**: the house has no door, the list is three bare rules
+with no bullets, and the ink measures 28–29 board px — **14.0–14.5 px** — against the signed-off
+picture's 36 (18.0). Divider, 92 px pitch, 11.9 px labels and the amber/muted pair are all the same;
+the glyphs and their size are not.
+
+Those pictures were approved for the yellow band above the content, which is what ST-812 was asked
+about. They do not re-specify the nav. **The signed-off picture wins here**, and the slip is
+recorded, not fixed inside the approved files — no approved picture is redrawn without a new
+sign-off.
+
+Three things the signed-off picture does not contain — **the yellow top, the login screen and the
+Diddit mark** — were approved separately by Stig on 2026-10-10 (ST-812). For those, the approved
+picture is the reference and the same test applies. See **Revision 7** above; the pictures are
+listed in the guide under "What else Stig has approved".
 
 ---
 
@@ -565,7 +577,7 @@ none of those. **Do not treat the ST-729 stylesheet as the token source.**
 Not faults — just things the five screens do not cover, which therefore are **not** signed off and
 must be labelled as additions when they are designed:
 
-- empty, loading, error and offline states — **except the login's**, which revision 6 adds;
+- empty, loading, error and offline states — **except the login's**, which revision 7 adds;
 - settings and onboarding screens; auth is now covered for sign-in only, not for sign-up,
   password reset or the child QR flow;
 - any dark mode;
