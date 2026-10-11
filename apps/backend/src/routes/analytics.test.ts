@@ -91,12 +91,12 @@ describe('Analytics API', () => {
     const task2Id = task2Result.rows[0].id;
 
     // Create task assignments with various statuses across multiple days
-    const today = new Date();
+    const now = new Date();
     const dates = [];
 
     // Last 7 days of assignments
     for (let i = 0; i < 7; i++) {
-      const date = new Date(today);
+      const date = new Date(now);
       date.setDate(date.getDate() - i);
       dates.push(date.toISOString().split('T')[0]);
     }

@@ -6,7 +6,7 @@ const nextChore: TickNext = { title: 'Ta ut søpla', meta: 'I dag', points: 5 };
 
 /**
  * TickMoment is the signature tick-off moment: yellow edge to edge, no nav.
- * Ink badge, the chore, "Haket av 16.48", a huge «+10 poeng», the praise, the
+ * Ink badge, the chore, "Ferdig 16.48", a huge «+10 poeng», the praise, the
  * ink meter towards the goal, the next chore on a darker inset, and «Angre»
  * offered at the same size as «Ferdig». It stays until the child presses
  * «Ferdig» (or Escape); «Angre» disappears after 5 minutes.

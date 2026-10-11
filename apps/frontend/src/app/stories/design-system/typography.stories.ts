@@ -113,7 +113,7 @@ const hierarchy: TypeStyle[] = [
     weight: 500,
     lineHeight: '1.4',
     numeric: false,
-    sample: 'Haket av 16.48',
+    sample: 'Ferdig 16.48',
     use: 'The second line outside a card.',
   },
   {

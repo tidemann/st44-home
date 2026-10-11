@@ -118,7 +118,7 @@ export const Examples: StoryObj = {
               <div style="font-size: 16px; font-weight: 600;">Dekke bord</div>
               <div style="font-size: 13px; font-weight: 500; color: var(--text-muted);">Mathea – I dag 16.30</div>
             </div>
-            <button style="border: none; background: var(--yellow); color: var(--ink); border-radius: var(--r-row-action); padding: 8px 12px; font-family: var(--font-text); font-size: 16px; font-weight: 600; cursor: pointer;">Hak av</button>
+            <button style="border: none; background: var(--yellow); color: var(--ink); border-radius: var(--r-row-action); padding: 8px 12px; font-family: var(--font-text); font-size: 16px; font-weight: 600; cursor: pointer;">Ferdig</button>
           </div>
           <div style="background: var(--surface); padding: 15px; border-radius: var(--r-card);">
             <div style="font-size: 16px; font-weight: 600;">Rydde rommet</div>

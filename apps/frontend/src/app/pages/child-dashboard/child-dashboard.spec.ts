@@ -88,9 +88,18 @@ describe('ChildDashboardComponent', () => {
     expect(el.textContent).toContain('I dag');
   });
 
+  it('labels the row button «Ferdig», not «Hak av»', async () => {
+    const el = await render();
+
+    const buttons = Array.from(el.querySelectorAll<HTMLButtonElement>('button.rbtn'));
+    expect(buttons.map((b) => b.textContent!.trim())).toEqual(['Ferdig', 'Ferdig']);
+    expect(buttons[1].getAttribute('aria-label')).toBe('Merk som ferdig: Mate katten');
+    expect(el.textContent).not.toMatch(/hak av/i);
+  });
+
   // ST-808: the API sent DATE columns as "2026-10-10T00:00:00.000Z". dayWord threw
   // inside the row bindings, change detection stopped, and each row kept only its
-  // projected «Hak av» button: no checkbox, no title, no group headings.
+  // projected row button: no checkbox, no title, no group headings.
   it('still renders full rows when the API sends dates as ISO timestamps', async () => {
     taskDate = (offset) => `${isoDay(offset)}T00:00:00.000Z`;
     const el = await render();

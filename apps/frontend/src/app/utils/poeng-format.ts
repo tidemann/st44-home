@@ -39,7 +39,7 @@ export function isoDay(offset = 0, now: Date = new Date()): string {
  * Also takes a full ISO timestamp (a DATE column sent without `::text` arrives as
  * "2026-10-10T00:00:00.000Z") and never throws: it runs inside template bindings,
  * and a throw there stops change detection, which left every chore row with only
- * its projected «Hak av» (ST-808).
+ * its projected button (ST-808).
  */
 export function dayWord(day: string, today: string = isoDay()): string {
   const key = String(day ?? '').slice(0, 10);

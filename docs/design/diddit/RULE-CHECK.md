@@ -157,18 +157,21 @@ been written rather than measured.
 
 ### Finding 1, verified independently
 
-![Hak av, Spør mor and the primary button at the same scale](reference/button-heights.png)
+![Ferdig, Spør mor and the primary button at the same scale](reference/button-heights.png)
 
 Flood-filled every `#F6B93B` region on all five frames and took the bounding boxes. Five row-action
 buttons, none of them 44 px:
 
 | Button     | Screen | Board box                | CSS size    |
 | ---------- | ------ | ------------------------ | ----------- |
-| "Hak av"   | 3      | x 2328–2467, y 912–983   | 70 × **36** |
-| "Hak av"   | 3      | x 2328–2467, y 1146–1217 | 70 × **36** |
+| "Ferdig"   | 3      | x 2328–2467, y 912–983   | 70 × **36** |
+| "Ferdig"   | 3      | x 2328–2467, y 1146–1217 | 70 × **36** |
 | "Spør mor" | 5      | x 3964–4137, y 702–773   | 87 × **36** |
 | "Spør mor" | 5      | x 3964–4137, y 902–973   | 87 × **36** |
 | "Spør mor" | 5      | x 3964–4137, y 1104–1175 | 87 × **36** |
+
+The picture draws the chore button as «Hak av». Stig renamed it «Ferdig» on 10.10 (ST-808); the
+board boxes above are the drawn button.
 
 The same sweep returns 346 × 49 for the primary button on screen 2 and a 166 × 49 ghost interior on
 screen 4, both exactly as documented — so the 49 was measured and the 44 was not. The widths differ
@@ -234,7 +237,7 @@ All hex values and sizes below were sampled from the PNG, not estimated by eye. 
 | Rule                                                            | Where the picture shows it                                                                                                                                                         |
 | --------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | One yellow, `#F6B93B`                                           | Sampled identical on screen 2's "Ny oppgave" button, screen 3's meter, screen 4's whole background, screen 5's "Spør mor" buttons. Four different roles, one hex.                  |
-| Yellow is a fill colour, not only a surface                     | Screen 2 primary button, screen 3 "Hak av" button and meter segments, screen 5 three reward buttons + two meters — all filled yellow.                                              |
+| Yellow is a fill colour, not only a surface                     | Screen 2 primary button, screen 3 "Ferdig" button and meter segments, screen 5 three reward buttons + two meters — all filled yellow.                                              |
 | Yellow is used freely, several times per screen                 | **Screen 5 has five yellow elements.** See [`screen-5-rewards.png`](reference/screen-5-rewards.png).                                                                               |
 | **Yellow is not used on the family-screen meters**              | Screen 1, y = 658: Emma `#0F7A54`+`#ECECE8`; Jonas `#0F7A54`+`#ECECE8`+`#A43A16`; Mathea `#0F7A54`+`#ECECE8`. No yellow. See [`meter-evidence.png`](reference/meter-evidence.png). |
 | Ink `#17120A` on every yellow surface                           | Screen 4: title, "+10", meter fill, tick badge, "Ferdig" fill — all sampled `#17120A`. 10.57:1.                                                                                    |
@@ -315,7 +318,7 @@ luminance thresholds.
 | Family screen: three cards across, 109 px wide, 9 px apart    | Screen 1, y = 620: white at 132–349, 368–587, 606–823, with `#F6F6F4` gaps at 350–367 and 588–605.                                                 |
 | Primary button 346 × 49 px                                    | Screen 2, "Ny oppgave": x 968–1659, y 1616–1713 → 692 × 98 board px.                                                                               |
 | On-yellow buttons 49 px tall                                  | Screen 4, "Angre" and "Ferdig" both y 1744–1841 → 98 board px.                                                                                     |
-| Row-action buttons 36 px tall; width follows the label        | Five instances, all 72 board px tall: "Hak av" 140 board px wide (screen 3), "Spør mor" 174 (screen 5).                                            |
+| Row-action buttons 36 px tall; width follows the label        | Five instances, all 72 board px tall: "Ferdig" 140 board px wide (screen 3), "Spør mor" 174 (screen 5).                                            |
 | Points meter 14 px tall, 4 px gaps                            | Screen 5 y 1308–1335 (28 board px), gaps 8 board px. Screen 4 y 968–995, same.                                                                     |
 | Chore meter 7 px tall, 3 px gaps                              | Screen 1 y 652–665 (14 board px), gaps 6 board px. **Exactly half the points meter.**                                                              |
 | Meter segments divide the width; they are not fixed           | Screen 1: 2 segments at 82 board px. Screen 5: 10 segments at 44–46 board px. Screen 4: 10 segments at 60–62 board px.                             |

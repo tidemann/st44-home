@@ -5,7 +5,7 @@ import { Component, ChangeDetectionStrategy, input, output } from '@angular/core
  * Poeng chore row (guide: Cards and rows)
  *
  * White 68 px card: checkbox, title over a who-and-when line, then either the
- * points in amber ink or a projected row action (`[row-action]`, e.g. «Hak av»).
+ * points in amber ink or a projected row action (`[row-action]`, e.g. «Ferdig»).
  * Overdue rows keep the white fill and get a 2 px rust border; done rows show a
  * green tick and say when ("Gjort 16.10"), never a tick alone.
  */
@@ -47,5 +47,5 @@ export class ChoreRow {
   open = output<void>();
 
   protected readonly checkLabel = (title: string) =>
-    $localize`:@@choreRow.check:Hak av ${title}:title:`;
+    $localize`:@@choreRow.check:Merk som ferdig: ${title}:title:`;
 }

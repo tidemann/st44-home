@@ -5,7 +5,7 @@ import { GroupLabel } from '../group-label/group-label';
 /**
  * ChoreRow is the white 68 px chore card: checkbox, title over a who-and-when
  * line, then either the points in amber ink or a projected row action
- * (`[row-action]`, e.g. «Hak av»). Overdue rows keep the white fill and get a
+ * (`[row-action]`, e.g. «Ferdig»). Overdue rows keep the white fill and get a
  * 2 px rust border; done rows show a green tick and say when ("Gjort 16.10").
  *
  * Part of the Diddit! Poeng look - Cards and rows.
@@ -163,7 +163,7 @@ export const LongTitle: Story = {
   },
 };
 
-/** Child view: a projected «Hak av» action instead of points */
+/** Child view: a projected «Ferdig» action instead of points */
 export const WithRowAction: Story = {
   render: (args) => ({
     props: args,
@@ -172,10 +172,10 @@ export const WithRowAction: Story = {
         <button
           row-action
           type="button"
-          [attr.aria-label]="'Hak av ' + title"
+          [attr.aria-label]="'Merk som ferdig: ' + title"
           style="height: 36px; padding: 0 14px; border: 0; border-radius: 999px; background: var(--yellow); color: var(--ink); font-weight: 700;"
         >
-          Hak av
+          Ferdig
         </button>
       </app-chore-row>
     `,
