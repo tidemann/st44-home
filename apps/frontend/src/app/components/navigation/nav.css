@@ -1,5 +1,5 @@
 /* Poeng bottom nav (guide: Navigation). Sits on --bg with a 1 px hairline above it;
-   four items pitched at 92 px with ~11 px at each edge; 19 px icon over a 12 px label.
+   four items pitched at 92 px with ~11 px at each edge; 17 px icon (--nav-icon) over a 12 px label.
    Active is amber ink and heavier (two signals); inactive is muted. 71 px band. */
 
 .bottom-nav,
