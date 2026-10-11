@@ -477,6 +477,7 @@ async function getHouseholdMembers(
         u.email,
         COALESCE(
           NULLIF(TRIM(CONCAT_WS(' ', u.first_name, u.last_name)), ''),
+          (SELECT c.name FROM children c WHERE c.user_id = u.id LIMIT 1),
           u.name
         ) as display_name,
         hm.role,
