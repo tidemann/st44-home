@@ -152,6 +152,8 @@
   line-height: 1.4;
   color: var(--text-muted);
   margin: -4px 0 0;
+  /* Keep clear of the badge column (38 px badge + 12 px gap): a long line wraps, never under it (ST-841) */
+  padding-right: 50px;
 }
 
 /* ===== CONTENT ===== */

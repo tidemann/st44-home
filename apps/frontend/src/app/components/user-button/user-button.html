@@ -1,5 +1,15 @@
-<button type="button" class="user-button" (click)="handleClick()" aria-label="Open user settings">
-  <div class="user-button__avatar" [attr.aria-label]="'Avatar for ' + user().name">
+<button
+  type="button"
+  class="user-button"
+  (click)="handleClick()"
+  aria-label="Åpne innstillinger"
+  i18n-aria-label="@@userButton.ariaLabel"
+>
+  <div
+    class="user-button__avatar"
+    aria-label="Profilbilde for {{ user().name }}"
+    i18n-aria-label="@@userButton.avatarAriaLabel"
+  >
     {{ userInitials() }}
   </div>
   <span class="user-button__name">{{ user().name }}</span>

@@ -184,7 +184,7 @@ describe('ManageHouseholds', () => {
 
       // Should show error for empty name
       expect(getProtected<WritableSignal<string | null>>('error')()).toBe(
-        'Please enter a household name',
+        'Skriv inn et navn på husholdningen',
       );
       expect(mockHouseholdService.createHousehold).not.toHaveBeenCalled();
     });
@@ -237,7 +237,7 @@ describe('ManageHouseholds', () => {
       fixture.detectChanges();
 
       expect(getProtected<WritableSignal<string | null>>('successMessage')()).toBe(
-        'Household created successfully!',
+        'Husholdningen er opprettet',
       );
     });
 
@@ -250,7 +250,7 @@ describe('ManageHouseholds', () => {
       await callProtected<Promise<void>>('createHousehold');
 
       expect(getProtected<WritableSignal<string | null>>('error')()).toBe(
-        'Failed to create household. Please try again.',
+        'Kunne ikke opprette husholdningen. Prøv igjen.',
       );
     });
   });
@@ -317,7 +317,7 @@ describe('ManageHouseholds', () => {
 
       expect(getProtected<WritableSignal<boolean>>('showEditModal')()).toBe(false);
       expect(getProtected<WritableSignal<string | null>>('successMessage')()).toBe(
-        'Household updated successfully!',
+        'Husholdningen er lagret',
       );
     });
 
@@ -328,7 +328,7 @@ describe('ManageHouseholds', () => {
       await callProtected<Promise<void>>('saveHousehold');
 
       expect(getProtected<WritableSignal<string | null>>('error')()).toBe(
-        'Please enter a household name',
+        'Skriv inn et navn på husholdningen',
       );
       expect(mockHouseholdService.updateHousehold).not.toHaveBeenCalled();
     });
@@ -371,7 +371,7 @@ describe('ManageHouseholds', () => {
 
       expect(getProtected<WritableSignal<boolean>>('showLeaveModal')()).toBe(false);
       expect(getProtected<WritableSignal<string | null>>('successMessage')()).toBe(
-        'Left Smith Family',
+        'Du har forlatt Smith Family',
       );
     });
 
@@ -384,7 +384,7 @@ describe('ManageHouseholds', () => {
 
       const errorMsg = getProtected<WritableSignal<string | null>>('error')();
       expect(errorMsg).toBeTruthy();
-      expect(errorMsg).toContain('only admin');
+      expect(errorMsg).toContain('eneste administrator');
     });
   });
 
@@ -425,7 +425,7 @@ describe('ManageHouseholds', () => {
 
       expect(getProtected<WritableSignal<boolean>>('showDeleteModal')()).toBe(false);
       expect(getProtected<WritableSignal<string | null>>('successMessage')()).toBe(
-        'Deleted Smith Family',
+        'Slettet Smith Family',
       );
     });
 
@@ -436,7 +436,7 @@ describe('ManageHouseholds', () => {
       await callProtected<Promise<void>>('deleteHousehold');
 
       expect(getProtected<WritableSignal<string | null>>('error')()).toBe(
-        'Failed to delete household. Please try again.',
+        'Kunne ikke slette husholdningen. Prøv igjen.',
       );
     });
   });
@@ -550,7 +550,7 @@ describe('ManageHouseholds', () => {
       callProtected('switchToHousehold', mockHouseholds[1]);
 
       expect(getProtected<WritableSignal<string | null>>('successMessage')()).toBe(
-        'Switched to Work House',
+        'Byttet til Work House',
       );
     });
   });
@@ -607,7 +607,7 @@ describe('ManageHouseholds', () => {
       await component.ngOnInit();
 
       expect(getProtected<WritableSignal<string | null>>('error')()).toBe(
-        'Failed to load households. Please try again.',
+        'Kunne ikke laste husholdningene. Prøv igjen.',
       );
     });
 
