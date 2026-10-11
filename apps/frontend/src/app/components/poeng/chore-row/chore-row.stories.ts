@@ -124,6 +124,16 @@ export const Busy: Story = {
   },
 };
 
+/** Long title: wraps to at most 2 lines, then «…»; only then is the row taller than 68 px */
+export const LongTitle: Story = {
+  args: {
+    title: 'Ta ut av oppvaskmaskinen og sett alt inn i skapet over vasken før middag',
+    meta: 'Mathea – I dag',
+    points: '5 p',
+    checkable: true,
+  },
+};
+
 /** Overdue: rust border and rust meta line */
 export const Overdue: Story = {
   args: {
@@ -154,8 +164,8 @@ export const Openable: Story = {
   },
 };
 
-/** A very long title is cut, not wrapped */
-export const LongTitle: Story = {
+/** A very long title wraps to 2 lines, then «…» */
+export const LongTitleCut: Story = {
   args: {
     title: 'Rydde rommet, re opp senga og legge klærne i skittentøyskurven',
     meta: 'Mathea – I dag',
