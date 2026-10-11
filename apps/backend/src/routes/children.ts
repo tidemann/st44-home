@@ -492,7 +492,7 @@ async function getMyTasks(
         t.name as task_name,
         t.description as task_description,
         t.points,
-        ta.date,
+        ta.date::text as date,
         ta.status,
         tc.completed_at
        FROM task_assignments ta

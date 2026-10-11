@@ -200,7 +200,7 @@ export class Tasks implements OnInit {
       );
     } catch (err) {
       console.error('Complete task error:', err);
-      this.error.set($localize`:@@tasks.completeFailed:Kunne ikke hake av oppgaven`);
+      this.error.set($localize`:@@tasks.completeFailed:Kunne ikke merke oppgaven som ferdig`);
     } finally {
       this.completingId.set(null);
     }

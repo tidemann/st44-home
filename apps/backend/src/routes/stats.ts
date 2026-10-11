@@ -273,7 +273,7 @@ async function getDashboardStats(
         t.name as title,
         t.description,
         t.points,
-        ta.date,
+        ta.date::text as date,
         ta.status,
         c.name as assignee_name,
         c.id as assignee_id

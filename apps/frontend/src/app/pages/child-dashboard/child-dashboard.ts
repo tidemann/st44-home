@@ -45,7 +45,7 @@ interface TickState {
  *
  * The child's points total is the hero, then the yellow meter towards the next
  * reward, then yesterday's left-over chore (Forfalt) and today's chores, each
- * with its own yellow «Hak av». Ticking one opens the full-yellow tick moment
+ * with its own yellow «Ferdig». Ticking one opens the full-yellow tick moment
  * with an undo for 5 minutes.
  */
 @Component({
@@ -204,7 +204,7 @@ export class ChildDashboardComponent implements OnInit {
     } catch (error) {
       console.error('Failed to complete task:', error);
       this.errorMessage.set(
-        $localize`:@@childDashboard.errMarkDone:Kunne ikke hake av oppgaven. Prøv igjen.`,
+        $localize`:@@childDashboard.errMarkDone:Kunne ikke merke oppgaven som ferdig. Prøv igjen.`,
       );
     } finally {
       // Remove from completing set
@@ -262,7 +262,7 @@ export class ChildDashboardComponent implements OnInit {
   }
 
   hakAvLabel(task: { taskName: string }): string {
-    return $localize`:@@childDashboard.hakAvAria:Hak av ${task.taskName}:title:`;
+    return $localize`:@@childDashboard.hakAvAria:Merk som ferdig: ${task.taskName}:title:`;
   }
 
   private refreshBalance(): void {

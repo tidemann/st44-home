@@ -101,7 +101,7 @@ const radii: { name: string; value: string; css: string; w: string; h: string; u
     css: 'var(--r-row-action)',
     w: '80px',
     h: '36px',
-    use: 'Buttons inside a row ("Hak av").',
+    use: 'Buttons inside a row ("Ferdig").',
   },
   { name: 'Chip', value: '9px', css: 'var(--r-chip)', w: '80px', h: '32px', use: 'Filter chips.' },
   {

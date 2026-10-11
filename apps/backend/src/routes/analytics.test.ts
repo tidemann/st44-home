@@ -19,6 +19,7 @@ describe('Analytics API', () => {
   let householdId: string;
   let childId: string;
   let taskId: string;
+  let today: string;
 
   before(async () => {
     app = await build();
@@ -90,15 +91,16 @@ describe('Analytics API', () => {
     const task2Id = task2Result.rows[0].id;
 
     // Create task assignments with various statuses across multiple days
-    const today = new Date();
+    const now = new Date();
     const dates = [];
 
     // Last 7 days of assignments
     for (let i = 0; i < 7; i++) {
-      const date = new Date(today);
+      const date = new Date(now);
       date.setDate(date.getDate() - i);
       dates.push(date.toISOString().split('T')[0]);
     }
+    today = dates[0];
 
     // Day 0 (today): 2 tasks, 1 completed
     await pool.query(
@@ -346,6 +348,40 @@ describe('Analytics API', () => {
       assert.strictEqual(response.statusCode, 200);
       const body = JSON.parse(response.body);
       assert.ok(body.dailyPoints);
+    });
+
+    test('sends daily dates as YYYY-MM-DD, not timestamps (ST-808)', async () => {
+      const response = await app.inject({
+        method: 'GET',
+        url: '/api/children/me/analytics?period=week',
+        headers: { Authorization: `Bearer ${childToken}` },
+      });
+
+      assert.strictEqual(response.statusCode, 200);
+      const body = JSON.parse(response.body);
+      assert.ok(body.dailyPoints.length > 0);
+      for (const day of body.dailyPoints) {
+        assert.match(day.date, /^\d{4}-\d{2}-\d{2}$/);
+      }
+    });
+  });
+
+  // ST-808: this endpoint sent the DATE column as "2026-10-10T00:00:00.000Z". The
+  // child's Poeng screen could not read it and every chore row lost its title.
+  describe('GET /api/children/me/tasks', () => {
+    test('sends each task date as YYYY-MM-DD', async () => {
+      const response = await app.inject({
+        method: 'GET',
+        url: `/api/children/me/tasks?date=${today}`,
+        headers: { Authorization: `Bearer ${childToken}` },
+      });
+
+      assert.strictEqual(response.statusCode, 200);
+      const body = JSON.parse(response.body);
+      assert.strictEqual(body.tasks.length, 2);
+      for (const task of body.tasks) {
+        assert.strictEqual(task.date, today);
+      }
     });
   });
 

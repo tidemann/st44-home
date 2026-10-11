@@ -247,7 +247,7 @@ describe('Tasks (Poeng task list)', () => {
 
       await component['onComplete'](component['openRows']()[0]);
 
-      expect(component['error']()).toBe('Kunne ikke hake av oppgaven');
+      expect(component['error']()).toBe('Kunne ikke merke oppgaven som ferdig');
       expect(component['openRows']().map((a) => a.id)).toContain('open-emma');
     });
 

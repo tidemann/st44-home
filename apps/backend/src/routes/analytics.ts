@@ -238,7 +238,7 @@ async function getHouseholdAnalytics(
     for (const child of childrenResult.rows) {
       const dailyDataResult = await db.query(
         `SELECT
-          ta.date,
+          ta.date::text as date,
           COUNT(*) as total_tasks,
           SUM(CASE WHEN ta.status = 'completed' THEN 1 ELSE 0 END) as completed_tasks,
           SUM(CASE WHEN ta.status = 'completed' THEN t.points ELSE 0 END) as points_earned
@@ -432,7 +432,7 @@ async function getChildAnalytics(
     // Get daily points for the selected period
     const dailyPointsResult = await db.query(
       `SELECT
-        ta.date,
+        ta.date::text as date,
         COUNT(*) as total_tasks,
         SUM(CASE WHEN ta.status = 'completed' THEN 1 ELSE 0 END) as completed_tasks,
         SUM(CASE WHEN ta.status = 'completed' THEN t.points ELSE 0 END) as points_earned

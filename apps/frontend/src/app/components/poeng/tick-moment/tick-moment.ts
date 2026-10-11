@@ -35,7 +35,7 @@ export const TICK_UNDO_MS = 5 * 60 * 1000;
 /**
  * The tick-off moment (guide: "The tick-off moment (signature)", screen 4).
  *
- * Yellow edge to edge, no nav. Ink badge, the chore, "Haket av 16.48", a huge
+ * Yellow edge to edge, no nav. Ink badge, the chore, "Ferdig 16.48", a huge
  * black «+10 poeng», the praise, the ink meter on the darker gold track, the next
  * chore inset one shade darker, and «Angre» offered at the same size as «Ferdig».
  * Stays until the child presses «Ferdig» (or Escape); it does not time out.

@@ -322,7 +322,7 @@ where they carry meaning.
 
 ### Primary
 
-- **Diddit Yellow** (`#F6B93B`): the one yellow. Primary buttons, per-row action buttons ("Hak av"),
+- **Diddit Yellow** (`#F6B93B`): the one yellow. Primary buttons, per-row action buttons ("Ferdig"),
   per-reward buttons ("Spør mor"), filled points-meter segments, and the full-bleed background of
   the tick-off moment. It is a surface colour and a fill colour, not a text colour: at 1.76:1
   against white it must never carry type or a hairline on its own.
@@ -436,7 +436,7 @@ it. **Three different methods, and it matters which one you re-run:**
 | **Title**        | 27px   | "Oppgaver", screen 2                   | 46 board px high                     |
 | **Button label** | 16.5px | "+ Ny oppgave" primary label, screen 2 | 105.5 px wide                        |
 | **Body**         | 16px   | "Dekke bord" chore title, screen 2     | 80.0 px wide                         |
-| **Meta**         | 15px   | "Haket av 16.48", screen 4             | 98.0 px wide                         |
+| **Meta**         | 15px   | "Ferdig 16.48" (drawn "Haket av 16.48"), s. 4         | 98.0 px wide                         |
 | **Meta sm**      | 13px   | "Mathea – I dag 16.30" in a card, s. 2 | 115.0 px wide                        |
 | **Label**        | 13px   | "Forfalt" group label, screen 2        | 18 board px high                     |
 | **Caption**      | 12px   | bottom-nav labels, screen 1            | 22 board px high                     |
@@ -467,10 +467,10 @@ it. **Three different methods, and it matters which one you re-run:**
 - **Button label** (Hanken 600, 1.35): the full-width primary button only — 16.5 px, half a pixel
   above Body, which is what makes the label ink land on 105.5 px inside a 346 px button.
 - **Body** (Hanken 600, 1.35): chore titles, reward titles, history-row titles, and the labels on
-  row-level action buttons ("Hak av", "Spør mor") at **16 px** — the width the picture's own
+  row-level action buttons ("Ferdig", "Spør mor") at **16 px** — the width the picture's own
   70 px and 87 px buttons require.
 - **Meta** (Hanken 500, 1.4): the line _outside_ a card — a screen's sub-line, the word "poeng"
-  under a hero number, a person's name ("Emma" on a child card), and "Haket av 16.48".
+  under a hero number, a person's name ("Emma" on a child card), and "Ferdig 16.48".
 - **Meta sm** (Hanken 500, 1.4): the same voice **inside** a card, one step down at 13 px — the
   who-and-when line ("Mathea – I dag 16.30"), "Du har nok poeng", "1 av 2 gjort", "5 p", "60 p",
   "25 igjen". A card's second line is quieter than a screen's second line; that is the picture.
@@ -592,15 +592,18 @@ is why 14.21 on the reward and child cards is read as 14 and not 15. No value he
 - **Shape:** gently rounded (13 px primary and on-yellow, 10 px row-level).
 - **Primary** (`button-primary`): Diddit Yellow fill, Ink label, **no border**, 346 × 49 px,
   Button label **16.5 px** / 600. Used for the one creating action on a screen ("+ Ny oppgave").
-- **Row action** (`button-row-action`): the same yellow fill and ink label at row scale — "Hak av"
+- **Row action** (`button-row-action`): the same yellow fill and ink label at row scale — "Ferdig"
   on an overdue or due chore, "Spør mor" on a reward. Label in Body **16 px** / 600.
-  **36 px tall** in every instance in the picture; the width follows the label (70 px for "Hak av",
-  87 px for "Spør mor"), so set padding, not a width — and at 16 px the labels fit those widths,
+  **36 px tall** in every instance in the picture; the width follows the label (70 px for the drawn
+  "Hak av", 87 px for "Spør mor"), so set padding, not a width — and at 16 px the labels fit those widths,
   which is the check that proved 20 px wrong. Do **not** grow it to 44 px: the reward card's layout
   is built around a short button sitting beside a line of text, and a 44 px button is 22% taller
   than the one Stig signed off.
   Reach 44 px with a padded hit area instead — see **Hit area** below.
   **Several per screen is correct**: the rewards screen has three.
+  **Wording:** the chore button says «Ferdig», never «Hak av» (the picture's word; Stig's
+  correction, 10.10, ST-808). Its aria-label is «Merk som ferdig: <chore>», and the tick moment
+  says "Ferdig 16.48".
 - **Solid dark** (`button-solid`): Ink fill, white label — only for the confirming action inside
   the yellow moment ("Ferdig"), where a yellow button would disappear into the background.
 - **Ghost on yellow** (`button-ghost-on-yellow`): transparent on the yellow with a 2 px outlined
@@ -720,7 +723,7 @@ The single most important screen in the product, and the one most likely to be d
 - **This screen's gutter is 24 px, not 22** — a 342 px column. Badge, meter, inset card and both
   buttons run x 24…366.
 - Ink tick badge top-left (54 × 54 px rounded square), then the chore title in Title, then
-  "Haket av 16.48" in Meta 15.
+  "Ferdig 16.48" in Meta 15.
 - "+10" in Display (**94 px**) with "poeng" beside it on the baseline in Display unit (**23 px**) —
   display type, not Body. In the picture "+10" runs x 27.5…170 and "poeng" x 174.5…234.5.
 - The points meter below: 10 segments, Ink on `#C59430`, with "225 av 250 poeng" and "25 igjen".
