@@ -16,9 +16,9 @@
   }
 
   @if (!loading() && !error()) {
-    <!-- Each child's points: three across -->
+    <!-- Each child's points: the cards fill the row, at most three across -->
     @if (childSummaries().length > 0) {
-      <div class="kids">
+      <div class="kids" [style.--kid-cols]="kidColumns()">
         @for (kid of childSummaries(); track kid.id) {
           <app-child-points-card [name]="kid.name" [points]="kid.points" [chores]="kid.chores" />
         }

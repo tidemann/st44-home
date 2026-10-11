@@ -39,6 +39,16 @@ interface ChildSummary {
 }
 
 /**
+ * Child cards per row, so the cards always fill the row (ST-864):
+ * 1, 2 or 3 children in one row, 4 as 2 + 2, 5 or more in rows of 3.
+ * A shorter last row stretches its cards (see `.kids` in home.css).
+ */
+export function childCardColumns(count: number): number {
+  if (count === 4) return 2;
+  return Math.max(1, Math.min(count, 3));
+}
+
+/**
  * "Hjemme" — the family's home (Poeng screen 1, ST-777)
  *
  * Each child's points across the top, then what is overdue (with «Minn på»),
@@ -135,6 +145,8 @@ export class Home implements OnInit {
         }))
     );
   });
+
+  protected readonly kidColumns = computed(() => childCardColumns(this.childSummaries().length));
 
   async ngOnInit(): Promise<void> {
     await this.loadData();

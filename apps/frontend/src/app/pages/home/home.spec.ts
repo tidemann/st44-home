@@ -2,7 +2,7 @@ import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { of } from 'rxjs';
 import { provideRouter } from '@angular/router';
-import { Home } from './home';
+import { Home, childCardColumns } from './home';
 import { TaskService } from '../../services/task.service';
 import { ChildrenService } from '../../services/children.service';
 import { AuthService } from '../../services/auth.service';
@@ -335,6 +335,20 @@ describe('Home', () => {
         ['Jonas', 215],
       ]);
       expect(kids[1].chores).toEqual(['done', 'open', 'late']);
+    });
+
+    it('fills the row with the child cards: 1, 2, 3 across, 4 as 2 + 2, then rows of 3 (ST-864)', () => {
+      expect([1, 2, 3, 4, 5, 6, 7].map(childCardColumns)).toEqual([1, 2, 3, 2, 3, 3, 3]);
+    });
+
+    it('sets the column count on the card row', async () => {
+      fixture.detectChanges(); // first render starts the (mocked) load
+      await component.ngOnInit(); // and wait for a whole load
+      fixture.detectChanges();
+
+      const row = fixture.nativeElement.querySelector('.kids') as HTMLElement;
+      expect(row.style.getPropertyValue('--kid-cols')).toBe('2');
+      expect(row.querySelectorAll('app-child-points-card').length).toBe(2);
     });
 
     it('counts the day in the sub-line and sums what is left', async () => {

@@ -515,7 +515,7 @@ A 390 × 844 phone, single column, content scrolling between a fixed title area 
 - **Chore row: 68 px tall** when the title fits on one line (see Cards and rows for long titles).
 - **Primary button:** 346 × **49 px**, pinned to the bottom of the scroll area above the nav.
   The two on-yellow buttons ("Angre", "Ferdig") are the same 49 px.
-- **Family screen: three child cards across**, each **109 px wide × 154 px tall** with **9 px**
+- **Family screen: three child cards across** (fewer or more children: see Child card), each **109 px wide × 154 px tall** with **9 px**
   between them — not a stack of full-width cards, and **not a square**: the card is half again as
   tall as it is wide, because it carries name, total, the word "poeng", the chore meter and
   "1 av 2 gjort". This is the first screen of the app; get it right.
@@ -663,6 +663,9 @@ altogether. It is the only circle in the system.
   Name in Meta **15** — a name keeps the larger size even inside a card — total in
   Number 30, the word "poeng", then the **chore meter** (green/rust — see Meters) and
   "1 av 2 gjort" (Meta sm 13) underneath.
+  **The cards always fill the row** (9 px gaps): 1 child is one full-width card, 2 are half each,
+  3 are the picture, 4 are 2 + 2, 5 or more are rows of 3 with the last row's cards stretched to
+  the full width. Only the width changes; the 154 px height and the content stay as drawn.
 - **Reward card** (`card-reward`, screen 5): white, full content column, 92 px tall, **14 px
   radius** — the same slightly softer corner as the child card. Title in Body **16** on the left,
   cost in **Muted Text** on the right ("60 p", Meta sm 13) — note this is muted, not the Amber Ink
