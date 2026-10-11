@@ -85,7 +85,9 @@ export class Progress implements OnInit {
     tasksCompletedThisWeek: 0,
     totalMembers: 0,
   });
-  protected readonly householdName = signal<string>('My Family');
+  protected readonly householdName = signal<string>(
+    $localize`:@@progress.defaultHouseholdName:Min familie`,
+  );
   protected readonly householdId = signal<string | null>(null);
   protected readonly currentUserId = signal<string | null>(null);
 
@@ -107,7 +109,7 @@ export class Progress implements OnInit {
 
       const user = this.authService.currentUser();
       if (!user) {
-        this.error.set('User not authenticated');
+        this.error.set($localize`:@@progress.error.notLoggedIn:Du er ikke logget inn.`);
         return;
       }
 
@@ -116,7 +118,7 @@ export class Progress implements OnInit {
       // Get user's households
       const households = await this.householdService.listHouseholds();
       if (households.length === 0) {
-        this.error.set('No household found');
+        this.error.set($localize`:@@progress.error.noHousehold:Fant ingen familie.`);
         return;
       }
 
@@ -147,7 +149,9 @@ export class Progress implements OnInit {
       this.loadHouseholdStatsFromAnalytics(analytics, analytics.childrenProgress.length);
     } catch (err) {
       console.error('Failed to load progress data:', err);
-      this.error.set('Failed to load progress. Please try again.');
+      this.error.set(
+        $localize`:@@progress.error.loadFailed:Kunne ikke laste fremgangen. Prøv igjen.`,
+      );
     } finally {
       this.loading.set(false);
     }
@@ -184,62 +188,67 @@ export class Progress implements OnInit {
     const currentStreak = userStreak?.currentStreak ?? 0;
     const longestStreak = userStreak?.longestStreak ?? 0;
 
+    const best = Math.max(currentStreak, longestStreak);
+    const streakAchievement = (
+      id: string,
+      icon: string,
+      days: number,
+      name: string,
+      description: string,
+    ): Achievement => ({
+      id,
+      name,
+      description,
+      icon,
+      unlocked: best >= days,
+      progress: Math.min(100, Math.round((best / days) * 100)),
+      criteria: $localize`:@@progress.achievement.criteria:${days}:days: dager på rad`,
+    });
+
     // Generate achievements based on streak milestones
     const achievements: Achievement[] = [
-      {
-        id: '1',
-        name: 'Getting Started',
-        description: 'Complete all tasks for 1 day',
-        icon: '⭐',
-        unlocked: currentStreak >= 1 || longestStreak >= 1,
-        progress: Math.min(100, (Math.max(currentStreak, longestStreak) / 1) * 100),
-        criteria: '1 day streak',
-      },
-      {
-        id: '2',
-        name: 'Early Bird',
-        description: 'Complete all tasks 5 days in a row',
-        icon: '🐦',
-        unlocked: longestStreak >= 5,
-        progress: Math.min(100, (longestStreak / 5) * 100),
-        criteria: '5 day streak',
-      },
-      {
-        id: '3',
-        name: 'Week Warrior',
-        description: '7 day completion streak',
-        icon: '🔥',
-        unlocked: longestStreak >= 7,
-        progress: Math.min(100, (longestStreak / 7) * 100),
-        criteria: '7 day streak',
-      },
-      {
-        id: '4',
-        name: 'Consistent Champion',
-        description: '14 day completion streak',
-        icon: '🏆',
-        unlocked: longestStreak >= 14,
-        progress: Math.min(100, (longestStreak / 14) * 100),
-        criteria: '14 day streak',
-      },
-      {
-        id: '5',
-        name: 'Streak Master',
-        description: '30 day completion streak',
-        icon: '💯',
-        unlocked: longestStreak >= 30,
-        progress: Math.min(100, (longestStreak / 30) * 100),
-        criteria: '30 day streak',
-      },
-      {
-        id: '6',
-        name: 'Legend',
-        description: '60 day completion streak',
-        icon: '✨',
-        unlocked: longestStreak >= 60,
-        progress: Math.min(100, (longestStreak / 60) * 100),
-        criteria: '60 day streak',
-      },
+      streakAchievement(
+        '1',
+        '⭐',
+        1,
+        $localize`:@@progress.achievement.firstDay.name:God start`,
+        $localize`:@@progress.achievement.firstDay.description:Gjør alle oppgavene én dag`,
+      ),
+      streakAchievement(
+        '2',
+        '🐦',
+        5,
+        $localize`:@@progress.achievement.fiveDays.name:Fem på rad`,
+        $localize`:@@progress.achievement.fiveDays.description:Gjør alle oppgavene 5 dager på rad`,
+      ),
+      streakAchievement(
+        '3',
+        '🔥',
+        7,
+        $localize`:@@progress.achievement.week.name:Hele uka`,
+        $localize`:@@progress.achievement.week.description:Gjør alle oppgavene 7 dager på rad`,
+      ),
+      streakAchievement(
+        '4',
+        '🏆',
+        14,
+        $localize`:@@progress.achievement.twoWeeks.name:Stø som fjell`,
+        $localize`:@@progress.achievement.twoWeeks.description:Gjør alle oppgavene 14 dager på rad`,
+      ),
+      streakAchievement(
+        '5',
+        '💯',
+        30,
+        $localize`:@@progress.achievement.month.name:Månedsmester`,
+        $localize`:@@progress.achievement.month.description:Gjør alle oppgavene 30 dager på rad`,
+      ),
+      streakAchievement(
+        '6',
+        '✨',
+        60,
+        $localize`:@@progress.achievement.legend.name:Legende`,
+        $localize`:@@progress.achievement.legend.description:Gjør alle oppgavene 60 dager på rad`,
+      ),
     ];
 
     this.achievements.set(achievements);
@@ -260,6 +269,18 @@ export class Progress implements OnInit {
     };
 
     this.householdStats.set(stats);
+  }
+
+  /** Screen-reader name of an achievement card, with its state */
+  protected achievementLabel(achievement: Achievement): string {
+    return achievement.unlocked
+      ? $localize`:@@progress.achievementUnlockedAriaLabel:${achievement.name}:name: – låst opp`
+      : $localize`:@@progress.achievementLockedAriaLabel:${achievement.name}:name: – ikke låst opp ennå`;
+  }
+
+  /** Screen-reader name of an achievement's progress bar */
+  protected progressLabel(progress: number | undefined): string {
+    return $localize`:@@progress.progressAriaLabel:Fremgang: ${progress ?? 0}:percent: prosent`;
   }
 
   /**

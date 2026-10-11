@@ -2,6 +2,7 @@ import '@angular/localize/init';
 import { Component, ChangeDetectionStrategy, input, computed, inject, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
+import { personInitial } from '../../utils/person-name';
 
 /**
  * Page width variants
@@ -120,8 +121,7 @@ export class PageComponent {
   protected readonly initial = computed(() => {
     const user = this.authService.currentUser();
     if (!user) return null;
-    const name = user.firstName || user.email?.split('@')[0] || '';
-    return name.charAt(0).toUpperCase() || null;
+    return personInitial(user.firstName, user.email) || null;
   });
 
   protected readonly badgeLabel = computed(() =>

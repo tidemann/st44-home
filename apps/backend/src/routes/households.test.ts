@@ -275,6 +275,45 @@ describe('Household API', () => {
       assert.strictEqual(body.length, 2);
     });
 
+    test('should name a member by first and last name, not the e-mail', async () => {
+      const response = await app.inject({
+        method: 'GET',
+        url: `/api/households/${householdId}/members`,
+        headers: { Authorization: `Bearer ${user1Token}` },
+      });
+
+      const body = JSON.parse(response.body) as Array<{ userId: string; displayName: string }>;
+      const me = body.find((m) => m.userId === String(user1Id));
+      assert.strictEqual(me?.displayName, 'Test User');
+    });
+
+    test('should name a child login by the child profile, not the e-mail', async () => {
+      // A child login made by a parent has no first_name or name on the user row
+      const childUser = await pool.query(
+        `INSERT INTO users (email, password_hash) VALUES ($1, 'x') RETURNING id`,
+        [`child-${Date.now()}@example.com`],
+      );
+      const childUserId = String(childUser.rows[0].id);
+      await pool.query(
+        `INSERT INTO household_members (household_id, user_id, role) VALUES ($1, $2, 'child')`,
+        [householdId, childUserId],
+      );
+      await pool.query(
+        `INSERT INTO children (household_id, user_id, name, birth_year) VALUES ($1, $2, 'Prøvebarn', 2015)`,
+        [householdId, childUserId],
+      );
+
+      const response = await app.inject({
+        method: 'GET',
+        url: `/api/households/${householdId}/members`,
+        headers: { Authorization: `Bearer ${user1Token}` },
+      });
+
+      const body = JSON.parse(response.body) as Array<{ userId: string; displayName: string }>;
+      const child = body.find((m) => m.userId === childUserId);
+      assert.strictEqual(child?.displayName, 'Prøvebarn');
+    });
+
     test('should reject without authentication', async () => {
       const response = await app.inject({
         method: 'GET',

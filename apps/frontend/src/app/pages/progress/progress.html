@@ -26,7 +26,8 @@
         <div
           class="stat-box"
           role="listitem"
-          aria-label="Total Points: {{ householdStats().totalPoints }}"
+          i18n-aria-label="@@progress.totalPointsAriaLabel"
+          aria-label="Totalt poeng: {{ householdStats().totalPoints }}"
         >
           <div class="stat-value">{{ householdStats().totalPoints }}</div>
           <div class="stat-label" i18n="@@progress.totalPoints">Totalt poeng</div>
@@ -34,7 +35,8 @@
         <div
           class="stat-box"
           role="listitem"
-          aria-label="Completion Rate: {{ householdStats().completionRate }} percent"
+          i18n-aria-label="@@progress.completionRateAriaLabel"
+          aria-label="Fullføringsrate: {{ householdStats().completionRate }} prosent"
         >
           <div class="stat-value">{{ householdStats().completionRate }}%</div>
           <div class="stat-label" i18n="@@progress.completionRate">Fullføringsrate</div>
@@ -42,7 +44,8 @@
         <div
           class="stat-box"
           role="listitem"
-          aria-label="Tasks This Week: {{ householdStats().tasksCompletedThisWeek }}"
+          i18n-aria-label="@@progress.tasksThisWeekAriaLabel"
+          aria-label="Oppgaver denne uken: {{ householdStats().tasksCompletedThisWeek }}"
         >
           <div class="stat-value">{{ householdStats().tasksCompletedThisWeek }}</div>
           <div class="stat-label" i18n="@@progress.tasksThisWeek">Oppgaver denne uken</div>
@@ -82,7 +85,11 @@
                   >
                 </div>
               </div>
-              <div class="leaderboard-points" aria-label="{{ entry.points }} points">
+              <div
+                class="leaderboard-points"
+                i18n-aria-label="@@progress.pointsAriaLabel"
+                aria-label="{{ entry.points }} poeng"
+              >
                 {{ entry.points }}
               </div>
             </li>
@@ -111,7 +118,7 @@
           class="achievements-grid"
           role="list"
           i18n-aria-label="@@progress.achievementBadges"
-          aria-label="Prestasjonsbadger"
+          aria-label="Prestasjonsmerker"
         >
           @for (achievement of achievements(); track achievement.id) {
             <article
@@ -119,9 +126,7 @@
               [class.unlocked]="achievement.unlocked"
               [class.locked]="!achievement.unlocked"
               role="listitem"
-              [attr.aria-label]="
-                achievement.name + (achievement.unlocked ? ' - Unlocked' : ' - Locked')
-              "
+              [attr.aria-label]="achievementLabel(achievement)"
             >
               <div class="achievement-icon" aria-hidden="true">{{ achievement.icon }}</div>
               <div class="achievement-info">
@@ -135,7 +140,7 @@
                       [attr.aria-valuenow]="achievement.progress"
                       aria-valuemin="0"
                       aria-valuemax="100"
-                      [attr.aria-label]="'Progress: ' + achievement.progress + ' percent'"
+                      [attr.aria-label]="progressLabel(achievement.progress)"
                     >
                       <div class="progress-fill" [style.width.%]="achievement.progress"></div>
                     </div>
@@ -152,7 +157,7 @@
       } @else {
         <div class="empty-state" role="status">
           <p i18n="@@progress.noAchievementsYet">
-            Ingen prestasjoner ennå. Begynn å fullføre oppgaver for å låse opp badges!
+            Ingen prestasjoner ennå. Begynn å fullføre oppgaver for å låse opp merker!
           </p>
         </div>
       }

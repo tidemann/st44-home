@@ -81,6 +81,12 @@ describe('Authentication API', () => {
       assert.strictEqual(householdResult.rows.length, 1);
       assert.strictEqual(householdResult.rows[0].role, 'admin');
       assert.ok(householdResult.rows[0].household_id);
+
+      // The family is named in Norwegian from the person's name, not «Test's Household»
+      const nameResult = await pool.query('SELECT name FROM households WHERE id = $1', [
+        householdResult.rows[0].household_id,
+      ]);
+      assert.strictEqual(nameResult.rows[0].name, 'Familien User');
     });
 
     test('should reject duplicate email', async () => {

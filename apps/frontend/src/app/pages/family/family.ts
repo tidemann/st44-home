@@ -24,6 +24,7 @@ import { AuthService } from '../../services/auth.service';
 import { InvitationService } from '../../services/invitation.service';
 import { ChildrenService } from '../../services/children.service';
 import { HouseholdStore } from '../../stores/household.store';
+import { personInitial, personName } from '../../utils/person-name';
 
 /**
  * Family Screen
@@ -55,7 +56,9 @@ export class Family implements OnInit {
   protected readonly loading = signal(false);
   protected readonly error = signal<string | null>(null);
   protected readonly members = signal<MemberCardData[]>([]);
-  protected readonly householdName = signal<string>('My Family');
+  protected readonly householdName = signal<string>(
+    $localize`:@@family.defaultHouseholdName:Min familie`,
+  );
   protected readonly householdId = signal<string | null>(null);
   protected readonly currentUserId = signal<string | null>(null);
 
@@ -95,7 +98,7 @@ export class Family implements OnInit {
 
       const user = this.authService.currentUser();
       if (!user) {
-        this.error.set('User not authenticated');
+        this.error.set($localize`:@@family.error.notLoggedIn:Du er ikke logget inn.`);
         return;
       }
 
@@ -104,7 +107,7 @@ export class Family implements OnInit {
       // Get user's households
       const households = await this.householdService.listHouseholds();
       if (households.length === 0) {
-        this.error.set('No household found');
+        this.error.set($localize`:@@family.error.noHousehold:Fant ingen familie.`);
         return;
       }
 
@@ -179,12 +182,14 @@ export class Family implements OnInit {
         const isCurrentUser = member.userId === user.id;
         // Trust the backend's role - it correctly identifies children (linked and unlinked)
         const isChild = member.role === 'child';
-        // Handle null email for unlinked children
-        const emailUsername = member.email ? member.email.split('@')[0] : null;
-        const name = member.displayName || emailUsername;
+        // The person's own name; the e-mail is never shown as a name (ST-841)
+        const name = personName(member.displayName);
+        const fallback = isChild
+          ? $localize`:@@family.memberChildFallback:Barn`
+          : $localize`:@@family.memberUnknown:Ukjent`;
         const displayName = isCurrentUser
-          ? $localize`:@@family.memberYou:${name || $localize`:@@family.memberUnknown:Ukjent`}:name: (deg)`
-          : name || $localize`:@@family.memberChildFallback:Barn`;
+          ? $localize`:@@family.memberYou:${name || fallback}:name: (deg)`
+          : name || fallback;
 
         // For children, use child:childId format for consistent lookup
         // For linked children: look up childId from userIdToChildId
@@ -209,6 +214,7 @@ export class Family implements OnInit {
         return {
           id: memberId,
           name: displayName,
+          initial: personInitial(name, member.email),
           email: member.email ?? undefined, // Convert null to undefined for optional field
           role: isChild ? 'child' : 'parent',
           // Use real stats from backend
@@ -249,7 +255,7 @@ export class Family implements OnInit {
       this.members.set(memberCards);
     } catch (err) {
       console.error('Failed to load family members:', err);
-      this.error.set('Failed to load family members. Please try again.');
+      this.error.set($localize`:@@family.error.loadFailed:Kunne ikke laste familien. Prøv igjen.`);
     } finally {
       this.loading.set(false);
     }
@@ -261,7 +267,7 @@ export class Family implements OnInit {
   protected async onInviteSent(data: InviteMemberData): Promise<void> {
     const householdId = this.householdId();
     if (!householdId) {
-      this.error.set('No household selected');
+      this.error.set($localize`:@@family.error.noHouseholdSelected:Velg en familie først.`);
       return;
     }
 
@@ -275,7 +281,9 @@ export class Family implements OnInit {
       await this.loadData();
     } catch (err) {
       console.error('Failed to send invitation:', err);
-      this.error.set('Failed to send invitation. Please try again.');
+      this.error.set(
+        $localize`:@@family.error.inviteFailed:Kunne ikke sende invitasjonen. Prøv igjen.`,
+      );
     }
   }
 
@@ -285,7 +293,7 @@ export class Family implements OnInit {
   protected async onChildAdded(data: AddChildData): Promise<void> {
     const householdId = this.householdId();
     if (!householdId) {
-      this.error.set('No household selected');
+      this.error.set($localize`:@@family.error.noHouseholdSelected:Velg en familie først.`);
       return;
     }
 
@@ -304,7 +312,9 @@ export class Family implements OnInit {
       await this.loadData();
     } catch (err) {
       console.error('Failed to add child:', err);
-      this.error.set('Failed to add child. Please try again.');
+      this.error.set(
+        $localize`:@@family.error.addChildFailed:Kunne ikke legge til barnet. Prøv igjen.`,
+      );
     }
   }
 
@@ -379,7 +389,7 @@ export class Family implements OnInit {
       const syntheticChild: Child = {
         id: userId, // Use userId as a placeholder
         householdId: this.householdId() || '',
-        name: member.displayName || member.email?.split('@')[0] || 'Unnamed',
+        name: personName(member.displayName) || $localize`:@@family.memberChildFallback:Barn`,
         userId: userId,
         createdAt: '',
         updatedAt: '',

@@ -48,20 +48,28 @@ describe('MemberCard', () => {
     expect(nameElement?.textContent).toContain('Sarah Johnson');
   });
 
-  it('should display correct initials for full name', () => {
+  it('should display the single initial for a full name', () => {
     componentRef.setInput('member', mockParentMember);
     fixture.detectChanges();
 
     const avatarElement = fixture.nativeElement.querySelector('.member-avatar');
-    expect(avatarElement?.textContent?.trim()).toBe('SJ');
+    expect(avatarElement?.textContent?.trim()).toBe('S');
   });
 
-  it('should display initials for single name', () => {
+  it('should display the single initial for a single name', () => {
     componentRef.setInput('member', { ...mockParentMember, name: 'Mike' });
     fixture.detectChanges();
 
     const avatarElement = fixture.nativeElement.querySelector('.member-avatar');
-    expect(avatarElement?.textContent?.trim()).toBe('MI');
+    expect(avatarElement?.textContent?.trim()).toBe('M');
+  });
+
+  it('should never put «(deg)» or a symbol in the badge', () => {
+    componentRef.setInput('member', { ...mockParentMember, name: 'øyvind (deg)' });
+    fixture.detectChanges();
+
+    const avatarElement = fixture.nativeElement.querySelector('.member-avatar');
+    expect(avatarElement?.textContent?.trim()).toBe('Ø');
   });
 
   it('should display parent role', () => {

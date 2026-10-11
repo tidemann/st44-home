@@ -306,6 +306,59 @@ describe('Children API', () => {
     });
   });
 
+  describe('child login made by a parent', () => {
+    test('the token carries the child name, not nothing (badge initial)', async () => {
+      const createResponse = await app.inject({
+        method: 'POST',
+        url: `/api/households/${householdId}/children`,
+        headers: { Authorization: `Bearer ${adminToken}` },
+        payload: { name: 'Prøvebarn', birthYear: 2016 },
+      });
+      const childId = JSON.parse(createResponse.body).id;
+      const childEmail = `test-children-login-${Date.now()}@example.com`;
+      const password = 'ChildPass123!';
+
+      const accountResponse = await app.inject({
+        method: 'POST',
+        url: `/api/households/${householdId}/children/${childId}/create-account`,
+        headers: { Authorization: `Bearer ${adminToken}` },
+        payload: { email: childEmail, password },
+      });
+      assert.strictEqual(accountResponse.statusCode, 201);
+      const childUserId = JSON.parse(accountResponse.body).userId;
+
+      try {
+        const loginResponse = await app.inject({
+          method: 'POST',
+          url: '/api/auth/login',
+          payload: { email: childEmail, password },
+        });
+        assert.strictEqual(loginResponse.statusCode, 200);
+        const login = JSON.parse(loginResponse.body);
+        assert.strictEqual(login.firstName, 'Prøvebarn');
+        const claims = JSON.parse(
+          Buffer.from(login.accessToken.split('.')[1], 'base64url').toString('utf8'),
+        );
+        assert.strictEqual(claims.firstName, 'Prøvebarn');
+
+        const refreshResponse = await app.inject({
+          method: 'POST',
+          url: '/api/auth/refresh',
+          payload: { refreshToken: login.refreshToken },
+        });
+        const refreshed = JSON.parse(refreshResponse.body);
+        const refreshedClaims = JSON.parse(
+          Buffer.from(refreshed.accessToken.split('.')[1], 'base64url').toString('utf8'),
+        );
+        assert.strictEqual(refreshedClaims.firstName, 'Prøvebarn');
+      } finally {
+        await pool.query('UPDATE children SET user_id = NULL WHERE id = $1', [childId]);
+        await pool.query('DELETE FROM household_members WHERE user_id = $1', [childUserId]);
+        await pool.query('DELETE FROM users WHERE id = $1', [childUserId]);
+      }
+    });
+  });
+
   describe('DELETE /api/households/:householdId/children/:id', () => {
     let deleteChildId: string;
 

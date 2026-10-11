@@ -186,7 +186,7 @@ describe('Progress', () => {
 
       await component['loadData']();
 
-      expect(component['error']()).toBe('User not authenticated');
+      expect(component['error']()).toBe('Du er ikke logget inn.');
       expect(component['loading']()).toBe(false);
     });
 
@@ -195,7 +195,7 @@ describe('Progress', () => {
 
       await component['loadData']();
 
-      expect(component['error']()).toBe('No household found');
+      expect(component['error']()).toBe('Fant ingen familie.');
       expect(component['loading']()).toBe(false);
     });
 
@@ -204,7 +204,7 @@ describe('Progress', () => {
 
       await component['loadData']();
 
-      expect(component['error']()).toBe('Failed to load progress. Please try again.');
+      expect(component['error']()).toBe('Kunne ikke laste fremgangen. Prøv igjen.');
       expect(component['loading']()).toBe(false);
     });
   });
@@ -262,9 +262,39 @@ describe('Progress', () => {
       const locked = achievements.filter((a) => !a.unlocked);
 
       // Based on mock data: user has longestStreak of 5
-      // Should unlock: Getting Started (1), Early Bird (5)
+      // Should unlock: God start (1), Fem på rad (5)
       expect(unlocked.length).toBe(2);
       expect(locked.length).toBe(4);
+    });
+
+    it('should name and describe every achievement in Norwegian', () => {
+      const achievements = component['achievements']();
+      expect(achievements.map((a) => a.name)).toEqual([
+        'God start',
+        'Fem på rad',
+        'Hele uka',
+        'Stø som fjell',
+        'Månedsmester',
+        'Legende',
+      ]);
+      expect(achievements[2].description).toBe('Gjør alle oppgavene 7 dager på rad');
+    });
+
+    it('should give Norwegian aria labels on the page', async () => {
+      fixture.detectChanges(); // ngOnInit loads again
+      await component['loadData']();
+      await new Promise((resolve) => setTimeout(resolve));
+      fixture.detectChanges();
+      const el: HTMLElement = fixture.nativeElement;
+      const labels = Array.from(el.querySelectorAll('[aria-label]')).map(
+        (node) => node.getAttribute('aria-label') ?? '',
+      );
+      expect(labels.length).toBeGreaterThan(0);
+      for (const label of labels) {
+        expect(label).not.toMatch(/Unlocked|Locked|Progress|percent|points|Total|Rate|Tasks/);
+      }
+      expect(labels).toContain('God start – låst opp');
+      expect(labels).toContain('Hele uka – ikke låst opp ennå');
     });
 
     it('should have progress values for all achievements', () => {

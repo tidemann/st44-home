@@ -113,7 +113,7 @@ export async function validateQrToken(
         c.household_id,
         c.user_id,
         u.email,
-        u.first_name,
+        COALESCE(NULLIF(u.first_name, ''), c.name) AS first_name,
         u.last_name
        FROM children c
        JOIN users u ON c.user_id = u.id

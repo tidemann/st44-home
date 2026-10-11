@@ -68,90 +68,92 @@
   background: var(--yellow-inset);
 }
 
-/* ===== HEADER BUTTON STYLES ===== */
+/* ===== ACTIONS (under the title, two side by side) ===== */
 
-.btn-header {
-  padding: var(--space-xs) var(--space-md);
-  background: white;
-  color: var(--color-primary);
-  border: none;
-  border-radius: var(--radius-sm);
-  font-family: var(--font-body);
-  font-size: var(--font-size-sm);
-  font-weight: var(--font-weight-semibold);
-  cursor: pointer;
-  transition: transform 0.2s;
+.family-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 15px;
 }
 
-.btn-header:hover {
-  transform: translateY(-2px);
+/* White on --bg is the guide's one tonal step; no border, no shadow. */
+.btn-action,
+.btn-qr {
+  min-height: 44px;
+  padding: 0 15px;
+  background: var(--surface);
+  color: var(--text);
+  border: 0;
+  border-radius: var(--r-button);
+  font-family: var(--font-text);
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 1.2;
+  cursor: pointer;
+}
+
+.btn-action {
+  flex: 1;
+}
+
+.btn-action:focus-visible,
+.btn-qr:focus-visible {
+  outline: var(--focus-ring);
+  outline-offset: 2px;
 }
 
 /* ===== MEMBERS SECTION ===== */
 
 .members-section {
-  margin-bottom: var(--space-xl);
+  margin: 24px 0;
 }
 
 .section-header {
-  margin-bottom: var(--space-md);
+  margin-bottom: 12px;
 }
 
 .section-header h2 {
-  font-family: var(--font-heading);
-  font-size: var(--font-size-xl);
+  font-family: var(--font-display);
+  font-size: 20px;
   font-weight: 800;
-  color: var(--color-text-primary);
+  line-height: 1.2;
+  color: var(--text);
   margin: 0;
-}
-
-@media (min-width: 768px) {
-  .section-header h2 {
-    font-size: var(--font-size-2xl);
-  }
 }
 
 .member-list {
   display: flex;
   flex-direction: column;
-  gap: var(--space-sm);
+  gap: 8px;
 }
 
+/* Every card spans the content column: a child row and its QR button stretch,
+   they are not centred into a narrower, indented card. */
 .member-row {
   display: flex;
-  gap: 0.5rem;
-  align-items: center;
-}
-
-.member-row app-member-card {
-  flex: 1;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 8px;
 }
 
 .btn-qr {
-  padding: 0.5rem 1rem;
-  background: var(--track);
-  color: var(--text);
-  border: 1px solid var(--hairline);
-  border-radius: 6px;
-  font-size: 0.875rem;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all 0.2s;
-  white-space: nowrap;
+  width: 100%;
 }
 
-.btn-qr:hover {
-  background: var(--track);
-  border-color: var(--text-muted);
-}
-
-@media (max-width: 640px) {
+@media (min-width: 768px) {
   .member-row {
-    flex-direction: column;
+    flex-direction: row;
+    align-items: center;
+  }
+
+  .member-row app-member-card {
+    flex: 1;
+    min-width: 0;
   }
 
   .btn-qr {
-    width: 100%;
+    width: auto;
+    white-space: nowrap;
   }
 }
 

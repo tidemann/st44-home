@@ -426,20 +426,20 @@ it. **Three different methods, and it matters which one you re-run:**
   Ink height is too coarse at these sizes: a 1 board px threshold error is 3.5 % of a 29 px
   measurement, which is how "Body 20 px" survived a pass.
 
-| Style            | Size   | Measured from                          | Measured ink in the picture          |
-| ---------------- | ------ | -------------------------------------- | ------------------------------------ |
-| **Display**      | 94px   | "+10", screen 4                        | 66.5 px high → 1.137 × «215»         |
-| **Display sm**   | 83px   | "215", screen 3                        | 58.5 px high, 136.0 px wide — anchor |
-| **Display xs**   | 59px   | "225", screen 5                        | 41.5 px high → 0.709 × «215»         |
-| **Display unit** | 23px   | "poeng" beside "+10", screen 4         | 60 px wide                           |
-| **Number**       | 30px   | "340" on a family card, screen 1       | 41 board px high                     |
-| **Title**        | 27px   | "Oppgaver", screen 2                   | 46 board px high                     |
-| **Button label** | 16.5px | "+ Ny oppgave" primary label, screen 2 | 105.5 px wide                        |
-| **Body**         | 16px   | "Dekke bord" chore title, screen 2     | 80.0 px wide                         |
-| **Meta**         | 15px   | "Ferdig 16.48" (drawn "Haket av 16.48"), s. 4         | 98.0 px wide                         |
-| **Meta sm**      | 13px   | "Mathea – I dag 16.30" in a card, s. 2 | 115.0 px wide                        |
-| **Label**        | 13px   | "Forfalt" group label, screen 2        | 18 board px high                     |
-| **Caption**      | 12px   | bottom-nav labels, screen 1            | 22 board px high                     |
+| Style            | Size   | Measured from                                 | Measured ink in the picture          |
+| ---------------- | ------ | --------------------------------------------- | ------------------------------------ |
+| **Display**      | 94px   | "+10", screen 4                               | 66.5 px high → 1.137 × «215»         |
+| **Display sm**   | 83px   | "215", screen 3                               | 58.5 px high, 136.0 px wide — anchor |
+| **Display xs**   | 59px   | "225", screen 5                               | 41.5 px high → 0.709 × «215»         |
+| **Display unit** | 23px   | "poeng" beside "+10", screen 4                | 60 px wide                           |
+| **Number**       | 30px   | "340" on a family card, screen 1              | 41 board px high                     |
+| **Title**        | 27px   | "Oppgaver", screen 2                          | 46 board px high                     |
+| **Button label** | 16.5px | "+ Ny oppgave" primary label, screen 2        | 105.5 px wide                        |
+| **Body**         | 16px   | "Dekke bord" chore title, screen 2            | 80.0 px wide                         |
+| **Meta**         | 15px   | "Ferdig 16.48" (drawn "Haket av 16.48"), s. 4 | 98.0 px wide                         |
+| **Meta sm**      | 13px   | "Mathea – I dag 16.30" in a card, s. 2        | 115.0 px wide                        |
+| **Label**        | 13px   | "Forfalt" group label, screen 2               | 18 board px high                     |
+| **Caption**      | 12px   | bottom-nav labels, screen 1                   | 22 board px high                     |
 
 > **Do not re-derive the display sizes from Bricolage's em ratio, and know where the uncertainty
 > sits.** Running «+10» through the font file's own 0.687 returns 97 px where the picture's ratio
@@ -512,7 +512,7 @@ A 390 × 844 phone, single column, content scrolling between a fixed title area 
 - **Card rhythm: 8 px between cards**, with a larger break before a group label
   ("Forfalt", "I dag", "Gjort i dag").
 - **Card padding: 15 px** on full-width cards; **12 px** on the narrow child cards.
-- **Chore row: 68 px tall.**
+- **Chore row: 68 px tall** when the title fits on one line (see Cards and rows for long titles).
 - **Primary button:** 346 × **49 px**, pinned to the bottom of the scroll area above the nav.
   The two on-yellow buttons ("Angre", "Ferdig") are the same 49 px.
 - **Family screen: three child cards across**, each **109 px wide × 154 px tall** with **9 px**
@@ -646,6 +646,12 @@ altogether. It is the only circle in the system.
   Accessibility), the chore title (Body **16**), the who-and-when line (Meta sm **13**, muted),
   then the points at the right in Amber Ink ("5 p", Meta sm 13) — plain type, **no chip
   background**.
+- **Long titles** (a row with a button, «Ta ut av oppvaskmaskinen og sett inn i skapet» at
+  360 px): the title wraps to **at most 2 lines**, then «…». A child must be able to read the
+  whole chore, so one line with «…» is not enough. A row whose title fits stays 68 px; only a long
+  title makes the row taller (11 px top and bottom padding, about 83 px with two lines and the
+  meta line). The checkbox, the points and the row button keep their size and stay vertically
+  centred.
 - **Overdue row** (`card-overdue`): the same white card with a 2 px Overdue Rust border, the word
   "Forfalt" above the group, and its context line in rust. The fill stays white — an overdue row is
   not a pink block.
