@@ -170,6 +170,19 @@ numbers. The other three glyphs are unaffected: they were already read inactive 
    (10.10 × 3.50 against 10.00 × 3.50), the height above the lid (3.50 on both) and the openness
    (6 enclosed px against 7). Maria's one allowed pass at the tilt is the 8° lean that is shipped;
    a second pass would close the slit before it sharpened the point.
+5. **The doorway sits 0.5 px lower than the picture's**, measured from the ink top: the rows where
+   both jambs are present run `12.5 → 15.5` in the picture and `13.0 → 16.0` in ours — the same
+   **seven rows**, so the door's height matches and only its offset differs. That is one board
+   pixel, the picture's read floor, and there is no single offset to hit: the picture's own door
+   moves about **1 px** between its chosen and inactive states (lintel 12.32 active, 11.34
+   inactive, point 3 above), which is more than the gap being measured. Lowering the lintel was
+   tried and made it worse (11.95), so it is recorded rather than chased.
+6. **The door's opening measures 3.0 px at threshold 220 on both**, which is the reading that
+   settles it; by stroke-edge subtraction from the cluster widths it is **2.73 picture / 3.24
+   ours**, because at that threshold the picture's jamb clusters measure **2.5 px** wide and ours
+   **2.0 px** — the same phase effect that makes the picture's verticals read 4 board px where its
+   rules read 3. The jamb **centres** are phase-independent and agree to **0.01 px** (5.24 against
+   5.23), and the line weight by coverage is 1.50 on both, so the geometry is the picture's.
 
 ---
 
