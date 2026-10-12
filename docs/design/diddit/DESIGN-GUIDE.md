@@ -104,6 +104,11 @@ layout:
   gutterTickScreen: '24px'
   contentWidthTickScreen: '342px'
   navItemPitch: '92px'
+  desktopMinWidth: '1024px'
+  desktopContentWidth: '880px'
+  desktopColumnWidth: '428px'
+  desktopColumnGutter: '24px'
+  desktopBandPaddingBottom: '17px'
 components:
   button-primary:
     backgroundColor: '{colors.yellow}'
@@ -190,7 +195,44 @@ components:
     height: '71px'
     iconInk: '18px'
     iconSize: '21px'
+    iconColor: '{colors.text-muted}'
+    textColor: '{colors.text-muted}'
     typography: '{typography.caption}'
+  nav-item-active:
+    pillColor: '{colors.ink}'
+    pillWidth: '46px'
+    pillHeight: '26px'
+    pillRounded: '{rounded.pill}'
+    pillOffsetFromDivider: '7.5px'
+    iconInk: '18px'
+    iconSize: '21px'
+    iconColor: '{colors.yellow}'
+    textColor: '{colors.ink}'
+    typography: '{typography.caption}'
+  tab-item:
+    textColor: '{colors.ink}'
+    iconColor: '{colors.ink}'
+    iconInk: '18px'
+    iconSize: '21px'
+    gapIconToLabel: '10.5px'
+    paddingInline: '15px'
+  tab-item-active:
+    textColor: '{colors.ink}'
+    iconColor: '{colors.ink}'
+    iconInk: '18px'
+    iconSize: '21px'
+    gapIconToLabel: '10.5px'
+    paddingInline: '15px'
+    underlineColor: '{colors.ink}'
+    underlineHeight: '3px'
+  badge-initial-on-yellow:
+    backgroundColor: '{colors.yellow-inset}'
+    textColor: '{colors.ink}'
+    rounded: '{rounded.pill}'
+    height: '38px'
+    width: '38px'
+    minTouchTarget: '44px'
+    typography: '{typography.meta}'
   divider:
     backgroundColor: '{colors.hairline}'
     height: '1px'
@@ -257,6 +299,23 @@ _stricter_ than the picture ("yellow only as a surface", "one yellow area per sc
 moment goes dark"). The screens built from those rules had the yellow drained out of them, every
 review passed because every review checked the rules, and Stig rejected the result. See
 **Banned rules** at the end of this file.
+
+### Two things the signed-off picture does not draw (approved 2026-10-11, ST-890)
+
+The picture is five **phones**. It has no desktop and no chosen-state for the menu, so for those two
+things alone the spec is the set of pictures Stig approved on ST-890 on 2026-10-11:
+
+- **Desktop and tablet, layout A** — `desktop-07-opsjon-A-1440.png`,
+  `desktop-10-anbefalt-A-1024.png`, `desktop-12-anbefalt-A-mine-oppgaver-1440.png`,
+  `desktop-15-side-om-side-godkjent-vs-forslag.png`. See **Desktop and tablet — layout A**.
+- **The chosen menu item, option A** — `nav-02-forslag-a-b-c-v2.png` (the second phone) and
+  `nav-04-a-alle-faner.png`. See **Navigation → The chosen item**.
+
+**Order of precedence:** `poeng-signed-off.png` → the approved pictures above → this guide → generic
+rules. Those pictures settle only what the signed-off picture is silent about; where they touch a
+card, a row, a colour, a font or a corner the signed-off picture already settles, **the signed-off
+picture wins** and the difference is recorded as a drawing slip rather than fixed in the approved
+file. Both sets are locked: changing them needs a new sign-off through Maria.
 
 ## Overview
 
@@ -740,9 +799,53 @@ Jonas green + track + rust, Mathea green + track.
 - The bar sits on the screen background (`#F6F6F4`), not on a white bar.
 - A **1 px `#DFDFD9` divider runs the full 390 px width** directly above the bar, on all four light
   screens. The yellow tick-off screen has no nav and no divider.
-- Active is Amber Ink with the heavier weight; inactive is Muted Text. Two signals, not one.
 - Each target fills the nav band — 71 px from the divider to the bottom edge of the frame — so these
   are the one set of controls that needs no padding to clear 44 px.
+
+#### The chosen item: the ink pill (approved 2026-10-11)
+
+![Every tab chosen in turn, option A](reference/nav-04-a-alle-faner.png)
+
+Approved by Stig on ST-890 (2026-10-11) as "menu A", from
+[`nav-02-forslag-a-b-c-v2.png`](reference/nav-02-forslag-a-b-c-v2.png) (the **second** phone) and
+[`nav-04-a-alle-faner.png`](reference/nav-04-a-alle-faner.png), drawn on ST-878. Those two pictures
+are the spec for this one thing.
+
+**What it replaces, and why.** Until this decision the chosen item differed from the other three by
+**text colour alone**, Amber Ink against Muted Text — **1.12:1**. That is below every threshold
+there is, it is colour-only, and Stig's words were that he could not see which page he was on. The
+old rule ("active is Amber Ink with the heavier weight") is deleted. Do not bring it back.
+
+- **A `#17120A` pill behind the chosen icon: 46 × 26 px, fully rounded** (`rounded.pill`; the
+  radius is half the height). Measured on both pictures, which agree: 46.00 × 26.00.
+- **The icon inside it turns `#F6B93B`.** The other three stay Muted Text `#555E64`.
+- **The chosen label turns `#17120A`**; the other three stay `#555E64`.
+- **The label does not change weight.** Both pictures draw it at the same weight as the unchosen
+  labels — normalised glyph area 1459.0 against 1460.4 device px² for the same word «Hjem», a 0.1 %
+  difference, and 2054.1 against 2052.6 for «Oppgaver». The darker colour is what makes it look
+  heavier. If you ship a bold chosen label you are adding something the picture does not have.
+- **The pill is centred on the icon, not on the item**: its centre and the icon's centre are the
+  same point to within a tenth of a px on both axes. It sits **7.5 px under the `#DFDFD9` divider**,
+  and the label starts 3 px under the pill.
+- **The pill is decoration inside the target, not the target.** The pressable area is still the
+  whole 92 × 71 nav cell. Never shrink a target to 46 × 26.
+
+**The icon size inside the pill is derived, not drawn.** `nav-02` and `nav-04` are built on top of
+`brand-07-a-yellow-top-home.png`, so they inherit the drawing slip recorded above: their icon ink
+measures **14 px**, not the signed-off picture's 18. **The signed-off picture wins**: keep the
+18 px ink in the 21 px box, inside the pill as drawn. That leaves 4 px of clearance over and under
+the ink instead of the 6 px the pictures show, and 14 px to each side. Nothing else about the pill
+moves.
+
+**Three signals, not one.** Fill, icon colour and label colour all change together, so the state
+survives greyscale and does not depend on hue:
+
+| Pair                                          | Contrast    |
+| --------------------------------------------- | ----------- |
+| Ink pill against the nav background `#F6F6F4` | **17.22:1** |
+| Yellow icon against the pill it sits on       | **10.57:1** |
+| Chosen label against unchosen label           | **2.81:1**  |
+| Chosen label against the nav background       | **17.22:1** |
 
 ### The tick-off moment (signature)
 
@@ -762,6 +865,231 @@ The single most important screen in the product, and the one most likely to be d
 - An inset `#DBA434` card for the next chore.
 - "Du kan angre i 5 minutter", then **Angre** (ghost) and **Ferdig** (solid ink) side by side, both
   49 px tall. The undo is offered plainly, in the same size as the confirm — no confirmshaming.
+
+## Desktop and tablet — layout A (approved 2026-10-11)
+
+![A at 1440 px, the family home](reference/desktop-07-opsjon-A-1440.png)
+
+Everything above this point describes a 390 px phone. This section is the only part of the guide
+that describes a pointer screen, and it covers **1024 px and wider**.
+
+Stig approved **option A** on ST-890 on 2026-10-11, drawn by Ida on ST-879. The approved pictures,
+and the only spec for this layout:
+
+| Approved picture                                                                                               | What it is the spec for                   |
+| -------------------------------------------------------------------------------------------------------------- | ----------------------------------------- |
+| [`desktop-07-opsjon-A-1440.png`](reference/desktop-07-opsjon-A-1440.png)                                       | the family home at 1440 px                |
+| [`desktop-10-anbefalt-A-1024.png`](reference/desktop-10-anbefalt-A-1024.png)                                   | the family home at 1024 px                |
+| [`desktop-12-anbefalt-A-mine-oppgaver-1440.png`](reference/desktop-12-anbefalt-A-mine-oppgaver-1440.png)       | a child's "mine oppgaver" at 1440 px      |
+| [`desktop-15-side-om-side-godkjent-vs-forslag.png`](reference/desktop-15-side-om-side-godkjent-vs-forslag.png) | A beside the signed-off phone, same scale |
+
+[`desktop-14-anbefalt-A-verstefall-1440.png`](reference/desktop-14-anbefalt-A-verstefall-1440.png)
+is the worst-case drawing from the same set. It was **not** on the decision card, so it ranks below
+the four above — it is evidence for the overflow and empty-state rules below, not a signed picture.
+
+**The old left sidebar is deleted.** Not hidden, not kept for wide screens: deleted. It is the thing
+Stig called "shit", it carries December colours that are not in the Poeng look, and nothing in this
+section replaces it.
+
+### The frame
+
+**Both widths draw the same band and the same tab row, to the pixel. Only the container's x offset
+changes.** Everything in the table is measured off the approved PNGs at `deviceScaleFactor: 2`.
+
+|                                                                  | 1440 px                          | 1024 px                        |
+| ---------------------------------------------------------------- | -------------------------------- | ------------------------------ |
+| Yellow band `#F6B93B`, **edge to edge**, no gutter and no radius | x 0…1440                         | x 0…1024                       |
+| Band height, family home                                         | **259 px**                       | **259 px**                     |
+| Band height, a child's chore screen                              | **270 px**                       | **270 px**                     |
+| Content container                                                | **880 px**, centred → x 280…1160 | **880 px**, centred → x 72…952 |
+| Left column                                                      | 428 px                           | 428 px                         |
+| Gutter between columns                                           | **24 px**                        | **24 px**                      |
+| Right column                                                     | 428 px                           | 428 px                         |
+| Page background below the band                                   | `#F6F6F4`                        | `#F6F6F4`                      |
+
+428 + 24 + 428 = 880. At 1024 the container leaves exactly 72 px at each side, which is the narrowest
+the drawings go. **Below 1024 nothing is drawn** — see Open questions.
+
+**The band has no fixed height here either.** It obeys the same rule as the phone band: it ends
+**17 px under the lowest thing it carries**. The child cards bottom out at y 242 and the band ends
+at 259; on the child screen the reward meter bottoms out at 253 and the band ends at 270. Do not
+hard-code 259.
+
+### The yellow top and its tab row
+
+Everything in the band sits inside the 880 px container; the yellow itself runs past it to both
+screen edges.
+
+| Element                                   | Where, in CSS px from the top of the page                                                                 |
+| ----------------------------------------- | --------------------------------------------------------------------------------------------------------- |
+| Diddit mark                               | **36 × 36**, at the container's left edge, y 22…58                                                        |
+| "Diddit" wordmark                         | ink starts 13.5 px right of the mark, y 29.5…49.5                                                         |
+| Tab icons                                 | ink y 32.5…47.5 — see the icon-set note below                                                             |
+| Tab labels                                | ink y 33.5…47.5, 10.5 px right of their icon                                                              |
+| Chosen tab's underline                    | **3 px `#17120A`**, y 59…62                                                                               |
+| Initial badge                             | **38 px circle**, `#DBA434` fill, `#17120A` initial, right-aligned to the container's right edge, y 21…59 |
+| Screen title ("Hjemme", "Jonas")          | ink 26.0 px tall, top at y 141.5                                                                          |
+| Sub-line under it                         | ink 14 px tall, top at y 175.5                                                                            |
+| Child cards (family home)                 | y 88…242                                                                                                  |
+| Hero number + reward meter (child screen) | y 98…253                                                                                                  |
+
+- **The tab row, the title and the child cards are three things on two lines**, not a stack. The
+  title and the cards share one line: the title at the container's left edge, the cards flush to its
+  right edge. On the phone these are stacked, and that is the whole reason this band is 259 px
+  instead of ~460.
+- **Tabs are `Hjem · Oppgaver · Familie · Fremgang · Belønninger`** — five, left to right, the first
+  tab box starting **39.5 px** right of the wordmark's ink. They are not evenly pitched: each tab is
+  as wide as its own content plus **15 px of padding on each side**, and the boxes sit about 3–4 px
+  apart.
+- **That is five tabs in a different order from the phone's four.** The bottom bar is
+  `Hjem · Oppgaver · Belønninger · Familie`; the tab row is
+  `Hjem · Oppgaver · Familie · Fremgang · Belønninger`, and it adds **Fremgang**, which has no place
+  on the phone bar. Both are as drawn in their own approved pictures. Do not normalise one to the
+  other.
+- **The chosen tab's underline spans the whole tab box**, padding included — measured **89 px** under
+  «Hjem» and **121 px** under «Oppgaver». That is the number to check a build against.
+- **The tab icons carry the same drawing slip as the nav bar, so their size is not settled here.**
+  The three desktop pictures are built on `brand-07`, and their tab icons measure the small set
+  Revision 6 recorded: ink **15.0 × 14.0** for the house, 15.0 × 11.0 list, 12.0 × 14.0 familie,
+  13.0 × 13.0 fremgang, 16.0 × 14.5 gift — against the signed-off bar's 18.0 × 18.0 house. Draw the
+  tab row with the **signed-off icon set**, not these glyphs; the box that gets 18 px of ink out of
+  it is the same 21 px the bar uses. Nothing else in the tab row moves if you do. Listed under
+  **Open questions** so it is decided rather than assumed.
+- **Everything in the band is `#17120A` on `#F6B93B` — 10.57:1.** Title, sub-line, every tab label,
+  every tab icon, the underline and the initial on the badge. The sub-line keeps the band's
+  Ink-On-Yellow cost: no grey on the yellow, hierarchy by size and weight alone. Same rule, same
+  reason as the phone band.
+
+### The chosen tab is an underline, not a pill
+
+**On a pointer screen the chosen item is drawn differently from the phone, and this is what the
+approved pictures show.** Measured across `desktop-07` (Hjem chosen) and `desktop-12` (Oppgaver
+chosen), which draw the same five tabs in both states:
+
+- **The 3 px underline is the whole signal.** Icon and label are `#17120A` whether chosen or not —
+  the tab row contains exactly two colours, and a dark pill is nowhere in it.
+- **The chosen label carries a little more ink: +11.0 % for «Hjem», +8.8 % for «Oppgaver».** Treat
+  that as one weight step and nothing more. The control is «Familie», unchosen in both pictures,
+  which still differs by **−5.4 %** between them — so ±5 % is the noise floor of the two renders and
+  a 9–11 % step is barely above it. **A user cannot see that step on its own. Never ship the weight
+  change without the underline.**
+- The phone's ink pill does **not** appear on the desktop tabs in any approved picture. See Open
+  questions: ST-890's prose and ST-890's pictures disagree about this, and that is Maria's call,
+  not a builder's.
+
+### Below the band
+
+Two columns, each a plain stack of the cards and group labels the phone already has, at the sizes
+the phone already uses.
+
+|                                       | Measured                                                           |
+| ------------------------------------- | ------------------------------------------------------------------ |
+| Band bottom → first group label's ink | 23.5 px                                                            |
+| First card top                        | y 304                                                              |
+| Chore row                             | **68 px**                                                          |
+| Between cards                         | **8 px**                                                           |
+| Card → the next group label's ink     | 23.5 px                                                            |
+| Group label → the card under it       | 9 px                                                               |
+| Last card → "+ Ny oppgave"            | 28 px                                                              |
+| "+ Ny oppgave"                        | **428 × 49 px**, `#F6B93B` fill, `#17120A` label, **13 px radius** |
+
+- **Left column: "left today".** Group labels `Forfalt` / `Igjen i dag`, then the overdue card and
+  the chore rows, then **"+ Ny oppgave" under the column** — it is a block in the flow, not a pinned
+  bar and not a floating button. This button replaces the one that used to live in the sidebar.
+- **Right column: "done today" and what is coming.** Group labels `Gjort i dag` / `Kommende`.
+- **The two columns are independent stacks.** They start at the same y and run to whatever length
+  they need; nothing balances or equalises them. In the worst-case drawing the left column is three
+  times the right.
+- **A child's chore screen uses the same two columns**: `Forfalt` / `I dag` on the left with a
+  **70 × 36 px** "Ferdig" button in each row, `Gjort i dag` / `I morgen` on the right.
+
+### Nothing inside a card changes
+
+This is the point of A over the other two options, and it is measurable. Every one of these is the
+signed-off phone value, re-measured on the desktop pictures:
+
+|                             | Signed-off phone                  | Desktop A, 1440 and 1024     |
+| --------------------------- | --------------------------------- | ---------------------------- |
+| Chore row height            | 68 px                             | **68 px**                    |
+| Chore card radius (arc fit) | 13.12                             | **13.12** at both widths     |
+| Child card                  | 109 × 154 px, 9 px apart          | **109 × 154 px, 9 px apart** |
+| Child card radius (arc fit) | 14.21                             | **14.18** at both widths     |
+| Card padding                | 15 px                             | **15 px**                    |
+| Checkbox                    | 22 × 22 px                        | **22 × 22 px**               |
+| Initial badge               | 38 px circle                      | **38 px circle**             |
+| Primary button height       | 49 px                             | **49 px**                    |
+| Title ink height            | 26.0 px                           | **26.0 px**                  |
+| Chore title / meta / points | `#15181C` / `#555E64` / `#8A5A00` | **the same three**           |
+| Overdue card                | white, 2 px `#A43A16`             | **white, 2 px `#A43A16`**    |
+| Group label "Forfalt"       | `#A43A16`                         | **`#A43A16`**                |
+
+The radii are fitted with the same sub-pixel arc method described under **Shapes**, and the fit
+returns 13.12 on the signed-off card too — so "the same" here means the same to a hundredth of a px,
+not "looks similar".
+
+### The child cards when there are not three children
+
+The phone rule is that the cards **fill the row** (1 child is one full-width card, 2 are half each,
+4 are 2 + 2). **Desktop does not do that**, because the cards share their line with the screen
+title and have only the right-hand part of the container to live in:
+
+- **The card stays 109 × 154 px with 9 px gaps, right-aligned to the container's right edge**, for
+  any number of children. Three cards occupy 345 px of the 880.
+- **At most four children are shown**, and a fifth tile reading "**+N barn til**" takes the overflow.
+  `desktop-14` draws a six-child household as four cards plus "+2 barn til" — five tiles, 581 px.
+  This comes from the worst-case drawing, not from the decision card.
+
+### Empty and worst-case states
+
+- **An empty column gets a white card, not an empty gap.** `desktop-14` draws
+  "Ingen oppgaver er haket av i dag" with "Når noen haker av en oppgave, dukker den opp her."
+  underneath, in a **70 px** white card in the column's own width.
+- **The sub-line under the screen title wraps** rather than truncating
+  ("søndag 11. oktober – 0 av 12 gjort, 2 forfalt" runs to two lines), and the band grows with it.
+- **Known slip in `desktop-14`, do not copy it.** The long chore title
+  «Rydde og støvsuge hele kjelleren, inkluder…» is drawn truncated on **one** line in a 68 px row.
+  The rule under **Cards and rows** — wrap to at most two lines, then «…» — is older, comes from the
+  signed-off picture, and wins. A child has to be able to read the whole chore.
+
+### What A changes from the signed-off phone picture
+
+Six things, each one listed on the decision card and approved. Nothing else moves.
+
+| Change                                        | Why                                                      |
+| --------------------------------------------- | -------------------------------------------------------- |
+| The menu becomes tabs in the yellow top       | there is no bottom bar on a pointer screen               |
+| The Diddit mark and wordmark appear, top left | a desktop header needs the brand; the phone has none     |
+| Chores run in two 428 px columns              | otherwise a chore row is 880 px wide for a 16 px title   |
+| Title and child cards share one line          | keeps the band at 259 px instead of ~460                 |
+| "+ Ny oppgave" sits under the left column     | it replaces the button that lived in the deleted sidebar |
+| The band runs edge to edge from y 0           | there is no 35 px status bar to sit under                |
+
+### Not included: dark mode
+
+**There is no dark mode.** `11-anbefalt-A-morkt-1440.png` and `nav-05-a-morkt.png` were drawn on
+ST-879 and ST-878, Stig did not ask for a dark mode, neither picture was put on the decision card,
+and neither was approved. The app is light mode only, as everywhere else in this guide. Building one
+is a change to the look and goes to Maria.
+
+### Open questions — not settled, do not guess
+
+1. **Do the desktop tabs get the phone's ink pill?** ST-890's text says "the desktop tabs get the
+   same rule you pick here", but the three desktop pictures Stig approved on the same card draw an
+   **underline** and no pill anywhere. The pictures outrank the prose, so this guide writes the
+   underline. Changing the desktop tabs to pills is a change to an approved look and needs Maria and
+   a fresh sign-off. Raised on ST-892.
+2. **Where does desktop turn back into the phone layout?** The drawings stop at 1024 px, where the
+   880 px container leaves exactly 72 px a side. Nothing below 1024 is drawn, and no switch point
+   has been decided.
+3. **The desktop tab's pointer target height is not drawn.** The ink is 15 px tall and the underline
+   sits at y 59…62, so a box from the icon's top to the underline is 29.5 px — over WCAG 2.2's 24 px
+   floor but under the 44 px this guide uses everywhere else. Settle it in the build, and do not
+   make the target smaller than the underline is wide.
+4. **Which icon set the desktop tabs use.** The approved desktop pictures inherit `brand-07`'s small
+   glyphs (15.0 px of house ink against the signed-off bar's 18.0). This guide says use the
+   signed-off set, by the same reasoning Revision 6 applied to the bar, but nobody has ruled on it
+   and the two sets are visibly different drawings — the signed-off house has a door, `brand-07`'s
+   does not.
 
 ## Do's and Don'ts
 
@@ -871,6 +1199,35 @@ Light mode, Norwegian, WCAG 2.2 AA as the floor. Measured from the picture:
 
 Every text colour in the signed-off picture already clears 4.5:1. **No contrast fix in this system
 requires touching the yellow.**
+
+### The chosen menu item and the desktop tabs (ST-892)
+
+The chosen menu item was this system's one real accessibility failure: it was signalled by text
+colour alone at **1.12:1**. Both approved answers fix it, and they fix it differently.
+
+| Pair                                               | Ratio   | Verdict                                  |
+| -------------------------------------------------- | ------- | ---------------------------------------- |
+| Ink pill `#17120A` on the nav background `#F6F6F4` | 17.22:1 | AAA — and 1.4.11's non-text floor is 3:1 |
+| Yellow icon on the ink pill                        | 10.57:1 | AAA                                      |
+| Chosen label `#17120A` vs unchosen `#555E64`       | 2.81:1  | a supporting signal, not the signal      |
+| Desktop tab underline `#17120A` on `#F6B93B`       | 10.57:1 | AAA                                      |
+| **Old** active label `#8A5A00` vs `#555E64`        | 1.12:1  | **the failure this replaced**            |
+
+- **1.4.1 Use of Colour — passes on the phone.** The pill is a shape, not a hue: the chosen item
+  survives greyscale, because fill, icon colour and label colour all move together.
+- **1.4.1 — passes on the desktop, but on one signal.** The tab's icon and label are the same
+  `#17120A` chosen or not; the **3 px underline is a shape** and carries the state on its own. The
+  9–11 % weight step beside it is within sight of the ±5 % render noise floor and cannot be relied
+  on. **Drop the underline and the tab row fails this criterion.**
+- **1.4.11 Non-text Contrast — passes both**, 17.22:1 and 10.57:1 against a 3:1 floor.
+- **2.5.8 Target Size — unresolved on the desktop tabs.** The phone keeps its 92 × 71 nav cell: the
+  46 × 26 pill is decoration inside it and must never become the target. The desktop tab's pointer
+  box is not drawn; from the band's geometry, icon-top to underline is 29.5 px, over the 24 px floor
+  but under the 44 px used everywhere else in this guide. Listed under **Open questions**.
+- **The sub-line on the yellow keeps the band's existing cost**: `#555E64` on `#F6B93B` is 3.76:1
+  and fails, so the desktop band uses Ink for it, exactly as the phone band does. Hierarchy comes
+  from size and weight, not tone. Do not reach for a lighter ink — on the yellow there is none that
+  passes.
 
 ### The two approved exceptions to the picture
 
