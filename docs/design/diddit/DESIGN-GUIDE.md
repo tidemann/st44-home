@@ -214,17 +214,22 @@ components:
     iconColor: '{colors.ink}'
     iconInk: '18px'
     iconSize: '21px'
-    gapIconToLabel: '10.5px'
+    gapIconBoxToLabel: '16.5px'
     paddingInline: '15px'
+    minTargetHeight: '44px'
   tab-item-active:
+    pillColor: '{colors.ink}'
+    pillWidth: '46px'
+    pillHeight: '26px'
+    pillRounded: '{rounded.pill}'
     textColor: '{colors.ink}'
-    iconColor: '{colors.ink}'
+    textWeight: 'bold'
+    iconColor: '{colors.yellow}'
     iconInk: '18px'
     iconSize: '21px'
-    gapIconToLabel: '10.5px'
+    gapIconBoxToLabel: '16.5px'
     paddingInline: '15px'
-    underlineColor: '{colors.ink}'
-    underlineHeight: '3px'
+    minTargetHeight: '44px'
   badge-initial-on-yellow:
     backgroundColor: '{colors.yellow-inset}'
     textColor: '{colors.ink}'
@@ -887,6 +892,11 @@ and the only spec for this layout:
 is the worst-case drawing from the same set. It was **not** on the decision card, so it ranks below
 the four above — it is evidence for the overflow and empty-state rules below, not a signed picture.
 
+**One thing in these pictures is out of date, and it is the only place this section departs from
+them.** They were drawn before ST-890's menu decision, so they give the chosen tab a 3 px underline.
+Maria ruled on 2026-10-12 (ST-892) that the phone's ink pill replaces it. Everything else in this
+section is measured off the pictures as drawn.
+
 **The old left sidebar is deleted.** Not hidden, not kept for wide screens: deleted. It is the thing
 Stig called "shit", it carries December colours that are not in the Poeng look, and nothing in this
 section replaces it.
@@ -908,12 +918,28 @@ changes.** Everything in the table is measured off the approved PNGs at `deviceS
 | Page background below the band                                   | `#F6F6F4`                        | `#F6F6F4`                      |
 
 428 + 24 + 428 = 880. At 1024 the container leaves exactly 72 px at each side, which is the narrowest
-the drawings go. **Below 1024 nothing is drawn** — see Open questions.
+the drawings go. **Below 1024 the phone layout takes over** — see the next section.
 
 **The band has no fixed height here either.** It obeys the same rule as the phone band: it ends
 **17 px under the lowest thing it carries**. The child cards bottom out at y 242 and the band ends
 at 259; on the child screen the reward meter bottoms out at 253 and the band ends at 270. Do not
 hard-code 259.
+
+### The breakpoint: below 1024 px it is the phone (Maria, 2026-10-12)
+
+**There is one breakpoint and it is at `tokens.layout.desktopMinWidth` — 1024 px.** At 1024 px and
+wider, this section applies. **Below 1024 px the phone layout is used, in full**, not a squeezed
+desktop:
+
+- **The bottom menu comes back** — the four-item bar with the ink pill, as in the signed-off picture.
+  There is no tab row in the band below 1024.
+- **One column**, not two. The chores run as a single stack in the phone's 22 px gutter.
+- **The band stacks again**: title, sub-line, then the child cards on their own line, which is why
+  the phone band is ~460 px tall and the desktop band is 259.
+- "+ Ny oppgave" keeps its place in the flow under the chore stack.
+- Nothing between 390 px and 1024 px is drawn. The phone layout simply gets wider: keep the 22 px
+  gutter and let the single column grow. If that ever needs its own drawing, it is a new picture and
+  a new sign-off, not a guess made in a build.
 
 ### The yellow top and its tab row
 
@@ -924,9 +950,9 @@ screen edges.
 | ----------------------------------------- | --------------------------------------------------------------------------------------------------------- |
 | Diddit mark                               | **36 × 36**, at the container's left edge, y 22…58                                                        |
 | "Diddit" wordmark                         | ink starts 13.5 px right of the mark, y 29.5…49.5                                                         |
-| Tab icons                                 | ink y 32.5…47.5 — see the icon-set note below                                                             |
-| Tab labels                                | ink y 33.5…47.5, 10.5 px right of their icon                                                              |
-| Chosen tab's underline                    | **3 px `#17120A`**, y 59…62                                                                               |
+| Tab icons                                 | ink y 32.5…47.5, in a 21 px box — the signed-off icon set, see below                                      |
+| Tab labels                                | ink y 33.5…47.5, **16.5 px** right of their icon's box — see the pill note below                          |
+| Chosen tab's ink pill                     | **46 × 26 px `#17120A`**, fully rounded, centred on the icon box → y 27…53                                |
 | Initial badge                             | **38 px circle**, `#DBA434` fill, `#17120A` initial, right-aligned to the container's right edge, y 21…59 |
 | Screen title ("Hjemme", "Jonas")          | ink 26.0 px tall, top at y 141.5                                                                          |
 | Sub-line under it                         | ink 14 px tall, top at y 175.5                                                                            |
@@ -946,36 +972,77 @@ screen edges.
   `Hjem · Oppgaver · Familie · Fremgang · Belønninger`, and it adds **Fremgang**, which has no place
   on the phone bar. Both are as drawn in their own approved pictures. Do not normalise one to the
   other.
-- **The chosen tab's underline spans the whole tab box**, padding included — measured **89 px** under
-  «Hjem» and **121 px** under «Oppgaver». That is the number to check a build against.
-- **The tab icons carry the same drawing slip as the nav bar, so their size is not settled here.**
-  The three desktop pictures are built on `brand-07`, and their tab icons measure the small set
+- **The chosen tab carries the phone's ink pill** — see **The chosen tab is the ink pill** below for
+  the geometry and for the gap it forces between every icon and its label.
+- **The tab icons use the signed-off icon set: 18 px of ink in a 21 px box** (Maria, 2026-10-12).
+  The three desktop pictures are built on `brand-07`, so their tab icons draw the small set
   Revision 6 recorded: ink **15.0 × 14.0** for the house, 15.0 × 11.0 list, 12.0 × 14.0 familie,
-  13.0 × 13.0 fremgang, 16.0 × 14.5 gift — against the signed-off bar's 18.0 × 18.0 house. Draw the
-  tab row with the **signed-off icon set**, not these glyphs; the box that gets 18 px of ink out of
-  it is the same 21 px the bar uses. Nothing else in the tab row moves if you do. Listed under
-  **Open questions** so it is decided rather than assumed.
+  13.0 × 13.0 fremgang, 16.0 × 14.5 gift — against the signed-off bar's 18.0 × 18.0 house. Those
+  glyphs are a drawing slip inherited from `brand-07`, not a desktop decision: build the tab row with
+  the **signed-off set**, at the same 18 px ink in the same 21 px box the bottom bar uses.
+- **Fremgang has no glyph in the signed-off set**, because it is not on the phone's four-item bar.
+  Draw it to the same construction as the other four — 1.5 stroke, 18 px of ink in a 21 px box — and
+  measure the ink, not the box.
 - **Everything in the band is `#17120A` on `#F6B93B` — 10.57:1.** Title, sub-line, every tab label,
-  every tab icon, the underline and the initial on the badge. The sub-line keeps the band's
-  Ink-On-Yellow cost: no grey on the yellow, hierarchy by size and weight alone. Same rule, same
-  reason as the phone band.
+  every unchosen tab icon, the chosen tab's pill and the initial on the badge. **The one thing in the
+  band that is not ink is the chosen tab's icon**, which turns `#F6B93B` inside its ink pill. The
+  sub-line keeps the band's Ink-On-Yellow cost: no grey on the yellow, hierarchy by size and weight
+  alone. Same rule, same reason as the phone band.
 
-### The chosen tab is an underline, not a pill
+### The chosen tab is the ink pill (Maria, 2026-10-12)
 
-**On a pointer screen the chosen item is drawn differently from the phone, and this is what the
-approved pictures show.** Measured across `desktop-07` (Hjem chosen) and `desktop-12` (Oppgaver
-chosen), which draw the same five tabs in both states:
+**The desktop tabs take the same chosen-state as the phone: the ink pill.** ST-890's decision says
+"the desktop tabs get the same rule you pick here", and Stig picked A. The three desktop pictures
+were drawn **before** that menu decision, so the 3 px underline they show is a placeholder, not an
+approved look — **the pill replaces it.** Maria ruled on this on 2026-10-12 after the conflict was
+raised on ST-892. The underline is deleted; do not bring it back.
 
-- **The 3 px underline is the whole signal.** Icon and label are `#17120A` whether chosen or not —
-  the tab row contains exactly two colours, and a dark pill is nowhere in it.
-- **The chosen label carries a little more ink: +11.0 % for «Hjem», +8.8 % for «Oppgaver».** Treat
-  that as one weight step and nothing more. The control is «Familie», unchosen in both pictures,
-  which still differs by **−5.4 %** between them — so ±5 % is the noise floor of the two renders and
-  a 9–11 % step is barely above it. **A user cannot see that step on its own. Never ship the weight
-  change without the underline.**
-- The phone's ink pill does **not** appear on the desktop tabs in any approved picture. See Open
-  questions: ST-890's prose and ST-890's pictures disagree about this, and that is Maria's call,
-  not a builder's.
+- **A `#17120A` pill behind the chosen icon: 46 × 26 px, fully rounded**, the same token values as
+  `nav-item-active`. **Centred on the 21 px icon box**, which puts it at **y 27…53** — the icon ink
+  runs y 32.5…47.5, so the pill clears the ink by 4 px over and under, exactly as it does on the
+  phone.
+- **The icon inside it turns `#F6B93B`.** Every unchosen icon stays `#17120A`.
+- **The chosen label is `#17120A` and bold.** Here the desktop differs from the phone on purpose:
+  the phone's chosen label keeps its weight (measured 0.1 % apart — see **The chosen item** under
+  Navigation), because on the phone the colour change from `#555E64` to ink does the work. In the
+  band every label is already ink, chosen or not, so colour cannot carry anything and the weight
+  step is what is left. The approved drawings carry a step of the same sign — **+11.0 % of glyph
+  area for «Hjem», +8.8 % for «Oppgaver»**, against a ±5 % render noise floor measured on unchosen
+  «Familie» — so bold is that step made deliberate rather than a new idea.
+- **The pill is never the only signal and never the target.** It is a shape, so the state survives
+  greyscale; the bold label sits beside it; and the pressable area is the whole tab box, not the
+  46 × 26 pill.
+
+**The pill forces a gap the drawings do not have, and this is the one measured consequence of the
+decision.** On the phone the label sits _under_ the pill. In the band it sits _beside_ it, and a
+46 px pill around a 21 px icon box reaches **12.5 px past the box on each side** — while the
+drawings place the label ink only **10.5 px** right of the icon ink, about 9 px from the box edge.
+Drawn as-is, the pill would run 3.5 px under the start of «Hjem».
+
+- **Set the gap from the icon box's right edge to the label ink at 16.5 px** — the pill's 12.5 px
+  plus the same 4 px of clearance it keeps vertically.
+- **The gap is the same on all five tabs, chosen or not.** A gap that changed with the state would
+  reflow the whole row every time you changed page.
+- **It fits at 1024, with room.** Measured on `desktop-10`: the wordmark ink ends at x 193 and the
+  first tab box starts 39.5 px after it, at 232.5. With 15 px of padding each side, a 21 px icon box,
+  the 16.5 px gap and the drawn label widths (32.5 / 65.5 / 44.5 / 64.5 / 77.5), the five boxes come
+  to 622 px; with the drawn ~3.5 px between boxes the row is **636 px** and ends at **x 868.5**. The
+  38 px initial badge starts at x 914, so **45.5 px stays clear** between them. The row grows about
+  56 px against the drawings — 7.5 px per tab from the gap, the rest from the bigger icon set — and
+  still does not reach the badge. At 1440 every number shifts +208 and the clearance is identical.
+- **Those 45.5 px are the whole budget, and a wider screen does not help.** The band is the same at
+  1024 and 1440 — the container moves, the row and the badge do not — so the clearance is 45.5 px at
+  both widths and there is no width that buys more. The row is now 56 px
+  wider than anything that has been drawn, so a build must check it rather than assume it: a
+  translated label, a different font fallback, or a user's larger text setting all spend the same
+  45.5 px. (The `en` locale is not the risk — «Belønninger» → "Rewards" and «Oppgaver» → "Tasks"
+  both shrink the row.) **If the row would reach the badge, stop** — shortening a label, dropping
+  the labels to icons alone or wrapping the row are all changes to an approved look, so they need a
+  picture and a fresh sign-off through Maria, not a decision made in the build.
+- **The tab's pointer target is at least 44 px tall** (Maria, 2026-10-12). The drawn shape does not
+  change — only the hit area grows. Centred on the pill, 44 px runs **y 18…62**, which the 259 px
+  band has room for; the title's ink does not start until y 141.5. The target's width is the tab box,
+  padding included — 100 px for «Hjem», the narrowest of the five.
 
 ### Below the band
 
@@ -1071,25 +1138,22 @@ ST-879 and ST-878, Stig did not ask for a dark mode, neither picture was put on 
 and neither was approved. The app is light mode only, as everywhere else in this guide. Building one
 is a change to the look and goes to Maria.
 
-### Open questions — not settled, do not guess
+### Four things the drawings left open — all settled (Maria, 2026-10-12)
 
-1. **Do the desktop tabs get the phone's ink pill?** ST-890's text says "the desktop tabs get the
-   same rule you pick here", but the three desktop pictures Stig approved on the same card draw an
-   **underline** and no pill anywhere. The pictures outrank the prose, so this guide writes the
-   underline. Changing the desktop tabs to pills is a change to an approved look and needs Maria and
-   a fresh sign-off. Raised on ST-892.
-2. **Where does desktop turn back into the phone layout?** The drawings stop at 1024 px, where the
-   880 px container leaves exactly 72 px a side. Nothing below 1024 is drawn, and no switch point
-   has been decided.
-3. **The desktop tab's pointer target height is not drawn.** The ink is 15 px tall and the underline
-   sits at y 59…62, so a box from the icon's top to the underline is 29.5 px — over WCAG 2.2's 24 px
-   floor but under the 44 px this guide uses everywhere else. Settle it in the build, and do not
-   make the target smaller than the underline is wide.
-4. **Which icon set the desktop tabs use.** The approved desktop pictures inherit `brand-07`'s small
-   glyphs (15.0 px of house ink against the signed-off bar's 18.0). This guide says use the
-   signed-off set, by the same reasoning Revision 6 applied to the bar, but nobody has ruled on it
-   and the two sets are visibly different drawings — the signed-off house has a door, `brand-07`'s
-   does not.
+Raised on ST-892 against the approved pictures, and decided by Maria the same day. They are recorded
+here because a reader comparing the guide with the pictures will see the difference and needs to know
+it was ruled on, not drifted into.
+
+| Open question                                                                     | Decision                                                                                                   | Where it is written                |
+| --------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------- | ---------------------------------- |
+| Do the desktop tabs get the phone's ink pill, or the underline the pictures draw? | **The pill.** The desktop pictures predate ST-890's menu decision, so their underline is a placeholder.    | **The chosen tab is the ink pill** |
+| Where does desktop turn back into the phone layout?                               | **Below 1024 px: the phone layout, bottom menu and one column.**                                           | **The breakpoint**                 |
+| How tall is the desktop tab's pointer target?                                     | **At least 44 px**, as everywhere else in this guide. The drawn shape does not change; the hit area grows. | **The chosen tab is the ink pill** |
+| Which icon set does the tab row use?                                              | **The signed-off set** — 18 px of ink in a 21 px box, by Revision 6's reasoning for the bar.               | **The yellow top and its tab row** |
+
+**The one thing still undrawn** is the Fremgang glyph, which the signed-off set does not contain
+because Fremgang is not on the phone's bar. That is a drawing instruction, not a decision: match the
+other four's construction, 18 px of ink in a 21 px box. Nothing in the layout depends on it.
 
 ## Do's and Don'ts
 
@@ -1203,27 +1267,33 @@ requires touching the yellow.**
 ### The chosen menu item and the desktop tabs (ST-892)
 
 The chosen menu item was this system's one real accessibility failure: it was signalled by text
-colour alone at **1.12:1**. Both approved answers fix it, and they fix it differently.
+colour alone at **1.12:1**. It is now the same ink pill in both places — on the phone's `#F6F6F4`
+bar and on the desktop's `#F6B93B` band — so one fix covers both, on two different surfaces.
 
-| Pair                                               | Ratio   | Verdict                                  |
-| -------------------------------------------------- | ------- | ---------------------------------------- |
-| Ink pill `#17120A` on the nav background `#F6F6F4` | 17.22:1 | AAA — and 1.4.11's non-text floor is 3:1 |
-| Yellow icon on the ink pill                        | 10.57:1 | AAA                                      |
-| Chosen label `#17120A` vs unchosen `#555E64`       | 2.81:1  | a supporting signal, not the signal      |
-| Desktop tab underline `#17120A` on `#F6B93B`       | 10.57:1 | AAA                                      |
-| **Old** active label `#8A5A00` vs `#555E64`        | 1.12:1  | **the failure this replaced**            |
+| Pair                                                 | Ratio   | Verdict                                          |
+| ---------------------------------------------------- | ------- | ------------------------------------------------ |
+| Ink pill `#17120A` on the nav background `#F6F6F4`   | 17.22:1 | AAA — and 1.4.11's non-text floor is 3:1         |
+| Ink pill `#17120A` on the yellow band `#F6B93B`      | 10.57:1 | AAA — the desktop tab's pill                     |
+| Yellow icon on the ink pill                          | 10.57:1 | AAA — the same pair either way                   |
+| Chosen label `#17120A` vs unchosen `#555E64` (phone) | 2.81:1  | a supporting signal, not the signal              |
+| Chosen label vs unchosen label (desktop band)        | 1.00:1  | **both are ink — weight is the only difference** |
+| **Old** active label `#8A5A00` vs `#555E64`          | 1.12:1  | **the failure this replaced**                    |
 
 - **1.4.1 Use of Colour — passes on the phone.** The pill is a shape, not a hue: the chosen item
   survives greyscale, because fill, icon colour and label colour all move together.
-- **1.4.1 — passes on the desktop, but on one signal.** The tab's icon and label are the same
-  `#17120A` chosen or not; the **3 px underline is a shape** and carries the state on its own. The
-  9–11 % weight step beside it is within sight of the ±5 % render noise floor and cannot be relied
-  on. **Drop the underline and the tab row fails this criterion.**
-- **1.4.11 Non-text Contrast — passes both**, 17.22:1 and 10.57:1 against a 3:1 floor.
-- **2.5.8 Target Size — unresolved on the desktop tabs.** The phone keeps its 92 × 71 nav cell: the
-  46 × 26 pill is decoration inside it and must never become the target. The desktop tab's pointer
-  box is not drawn; from the band's geometry, icon-top to underline is 29.5 px, over the 24 px floor
-  but under the 44 px used everywhere else in this guide. Listed under **Open questions**.
+- **1.4.1 — passes on the desktop, on the pill.** In the band every label is `#17120A` chosen or
+  not, so the label's **colour** distinguishes nothing there; the pill is a shape and carries the
+  state on its own, with the bold weight beside it. **Do not ship the bold label without the pill.**
+  Weight is not colour, so bold on its own would scrape past a strict reading of this criterion — but
+  the drawings' own 9–11 % step sat within sight of their ±5 % render noise floor, and a signal that
+  small is one a user cannot reliably see. The pill is what makes the chosen tab **visible**, not
+  merely conformant. It is also why the underline could not be deleted with nothing put in its place.
+- **1.4.11 Non-text Contrast — passes on both surfaces**: 17.22:1 on `#F6F6F4` and 10.57:1 on
+  `#F6B93B`, against a 3:1 floor. The yellow icon against its own pill is 10.57:1.
+- **2.5.8 Target Size — settled at 44 px** (Maria, 2026-10-12). The phone keeps its 92 × 71 nav
+  cell. The desktop tab's pointer target is **≥44 px tall** and as wide as the tab box — 44 × 100 px
+  on the narrowest of the five, «Hjem». On both surfaces the 46 × 26 pill is decoration inside the
+  target and must never become the target.
 - **The sub-line on the yellow keeps the band's existing cost**: `#555E64` on `#F6B93B` is 3.76:1
   and fails, so the desktop band uses Ink for it, exactly as the phone band does. Hierarchy comes
   from size and weight, not tone. Do not reach for a lighter ink — on the yellow there is none that

@@ -25,12 +25,18 @@ Crops used as evidence below:
 
 ---
 
-## Revision 7 — desktop A and the chosen menu item (2026-10-11, ST-890 → ST-892)
+## Revision 7 — desktop A and the chosen menu item (pictures 2026-10-11, decisions 2026-10-12, ST-890 → ST-892)
 
 The first two rules in this guide that the signed-off picture **cannot** test, because it draws
 neither of them: a pointer-screen layout, and a chosen-state for the menu. They are tested against
 the pictures Stig approved on ST-890 instead, and against the signed-off picture for everything
 those pictures reuse.
+
+**Two rows in the table below are decisions _against_ the pictures, and are marked as such.** The
+desktop drawings were made before ST-890's menu decision, so their chosen-tab underline is a
+placeholder; Maria ruled on 2026-10-12 that the phone's ink pill replaces it, and that the tab row
+uses the signed-off icon set rather than the small `brand-07` glyphs the drawings inherit. Every
+other row is a measurement of the approved pictures.
 
 **What was deleted.** "Active is Amber Ink with the heavier weight; inactive is Muted Text. Two
 signals, not one." On the phone that was `#8A5A00` against `#555E64` — **1.12:1**, colour-only, and
@@ -43,20 +49,22 @@ scale is fixed by the 46.00 px pill it shares with `nav-02-forslag-a-b-c-v2.png`
 sub-pixel arc fit from the guide's **Shapes** section; it returns **13.12** on the signed-off chore
 card, which is the calibration.
 
-| Rule                                                   | Evidence                                                                                                                                                                                                                        |
-| ------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| The band and tab row are identical at 1440 and 1024    | Every y in the band matches to the pixel across the two pictures; only the container's x offset moves (280 vs 72).                                                                                                              |
-| Container is 880 px, centred                           | 1440: x 280…1160. 1024: x 72…952. (1440−880)/2 = 280, (1024−880)/2 = 72.                                                                                                                                                        |
-| Columns are 428 + 24 + 428                             | Measured on both pictures and on the worst case. 428+24+428 = 880.                                                                                                                                                              |
-| The band ends 17 px under its lowest content           | Home: cards end y 242, band ends 259. Child: meter ends 253, band ends 270. Same rule as the phone band.                                                                                                                        |
-| Nothing inside a card changed                          | Row 68 px; card radius **13.12** (phone 13.12); child card 109 × 154 at 9 px, radius **14.18** (phone 14.21); padding 15; checkbox 22 × 22; badge 38; button 49; `#15181C`/`#555E64`/`#8A5A00`/`#A43A16` all unchanged.         |
-| Everything on the yellow is `#17120A`                  | Title, sub-line, all five tab labels and icons, the underline, the badge initial — sampled. 10.57:1.                                                                                                                            |
-| The chosen **desktop** tab is an underline, not a pill | The whole tab row contains two colours, `#F6B93B` and `#17120A`. A 46 × 26 pill would be 4 784 device px² of ink on its own; the whole strip holding the five tabs holds 4 607, which is the glyphs plus the 178 × 6 underline. |
-| The chosen desktop tab's weight step is small          | Same word, chosen vs not: «Hjem» +11.0 %, «Oppgaver» +8.8 % of normalised glyph area. Control «Familie», unchosen in both pictures, differs by −5.4 % — so ±5 % is the render noise floor. The underline carries the state.     |
-| The **phone** pill is 46 × 26, fully rounded           | Both pictures agree to 0.00 px. The run-width profile matches a stadium: 43.0 measured against 42.5 predicted at 6.5 px off centre, 37.0 against 36.6 at 10 px off centre.                                                      |
-| The pill's label does **not** change weight            | Normalised glyph area, chosen vs not: «Hjem» 1459.0 vs 1460.4, «Oppgaver» 2054.1 vs 2052.6 device px². 0.1 % apart. The colour change is the whole difference.                                                                  |
-| Three signals, not one                                 | Pill against the bar **17.22:1**; yellow icon against the pill **10.57:1**; chosen label against unchosen **2.81:1**.                                                                                                           |
-| The pill's icon size is **derived**, not drawn         | `nav-02`/`nav-04` are built on `brand-07`, so they carry the Revision 6 slip: 14 px of ink, not 18. The signed-off picture wins; the pill geometry is still theirs.                                                             |
+| Rule                                                    | Evidence                                                                                                                                                                                                                                                                                                                                                                                                                          |
+| ------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| The band and tab row are identical at 1440 and 1024     | Every y in the band matches to the pixel across the two pictures; only the container's x offset moves (280 vs 72).                                                                                                                                                                                                                                                                                                                |
+| Container is 880 px, centred                            | 1440: x 280…1160. 1024: x 72…952. (1440−880)/2 = 280, (1024−880)/2 = 72.                                                                                                                                                                                                                                                                                                                                                          |
+| Columns are 428 + 24 + 428                              | Measured on both pictures and on the worst case. 428+24+428 = 880.                                                                                                                                                                                                                                                                                                                                                                |
+| The band ends 17 px under its lowest content            | Home: cards end y 242, band ends 259. Child: meter ends 253, band ends 270. Same rule as the phone band.                                                                                                                                                                                                                                                                                                                          |
+| Nothing inside a card changed                           | Row 68 px; card radius **13.12** (phone 13.12); child card 109 × 154 at 9 px, radius **14.18** (phone 14.21); padding 15; checkbox 22 × 22; badge 38; button 49; `#15181C`/`#555E64`/`#8A5A00`/`#A43A16` all unchanged.                                                                                                                                                                                                           |
+| Everything on the yellow is `#17120A`                   | Title, sub-line, all five tab labels and icons, the badge initial — sampled. 10.57:1. The chosen tab's pill is ink as well; its icon is the one yellow thing in the band.                                                                                                                                                                                                                                                         |
+| The chosen **desktop** tab is the phone's ink pill      | **Not measurable in the pictures — it is a decision against them.** They draw a 3 px underline, 89 px under «Hjem» and 121 px under «Oppgaver», and no pill anywhere: the five-tab strip holds 4 607 device px² of ink, while one 46 × 26 pill alone would be 4 784. The pictures were drawn before ST-890's menu decision, so that underline is a placeholder; **Maria ruled on 2026-10-12 that the pill replaces it** (ST-892). |
+| The pill forces the icon→label gap from 9 px to 16.5 px | A 46 px pill centred on the 21 px icon box reaches **12.5 px** past the box each side; the drawings place the label ink **10.5 px** right of the icon ink, ~9 px from the box edge. Drawn as-is the pill runs 3.5 px under «Hjem». 12.5 + the pill's own 4 px of clearance = **16.5 px**, applied to all five tabs so the row does not reflow on a page change.                                                                   |
+| The widened row still clears the badge at 1024          | Wordmark ink ends x 193, first tab box at 232.5. Five boxes of label + 67.5 (15 + 21 + 16.5 + label + 15), labels 32.5 / 65.5 / 44.5 / 64.5 / 77.5 → 622 px, plus four ~3.5 px gaps = **636 px**, ending **x 868.5**. The 38 px badge starts at x 914: **45.5 px clear**. Row grows ≈56 px against the drawings. At 1440 every x shifts +208 and the clearance is identical.                                                      |
+| The chosen desktop tab's drawn weight step is small     | Same word, chosen vs not: «Hjem» +11.0 %, «Oppgaver» +8.8 % of normalised glyph area. Control «Familie», unchosen in both pictures, differs by −5.4 % — so ±5 % is the render noise floor. Too small to carry state on its own, which is why the guide makes it **bold** and puts the pill behind it.                                                                                                                             |
+| The **phone** pill is 46 × 26, fully rounded            | Both pictures agree to 0.00 px. The run-width profile matches a stadium: 43.0 measured against 42.5 predicted at 6.5 px off centre, 37.0 against 36.6 at 10 px off centre.                                                                                                                                                                                                                                                        |
+| The pill's label does **not** change weight             | Normalised glyph area, chosen vs not: «Hjem» 1459.0 vs 1460.4, «Oppgaver» 2054.1 vs 2052.6 device px². 0.1 % apart. The colour change is the whole difference.                                                                                                                                                                                                                                                                    |
+| Three signals, not one                                  | Pill against the bar **17.22:1**; yellow icon against the pill **10.57:1**; chosen label against unchosen **2.81:1**.                                                                                                                                                                                                                                                                                                             |
+| The pill's icon size is **derived**, not drawn          | `nav-02`/`nav-04` are built on `brand-07`, so they carry the Revision 6 slip: 14 px of ink, not 18. The signed-off picture wins; the pill geometry is still theirs.                                                                                                                                                                                                                                                               |
 
 **Dropped from the drawings, recorded rather than copied:**
 
@@ -65,11 +73,20 @@ card, which is the calibration.
 - `11-anbefalt-A-morkt-1440.png` and `nav-05-a-morkt.png` draw a dark mode. Neither was on the
   decision card and Stig did not ask for one. There is no dark mode.
 
-**Unsettled, listed in the guide under Open questions:** whether the desktop tabs take the phone's
-pill (ST-890's prose says yes, its pictures say no — the pictures win until Maria rules); where
-desktop turns back into the phone layout below 1024 px; the desktop tab's pointer target height;
-and which icon set the tab row uses, since the desktop pictures inherit the same `brand-07` glyphs
-Revision 6 ruled against for the bar.
+**Four things the drawings left open — raised on ST-892, all settled by Maria on 2026-10-12:**
+
+1. **The desktop tabs take the phone's ink pill**, not the underline the pictures draw. ST-890's
+   decision says the desktop tabs get the rule Stig picked for the phone, and the desktop pictures
+   predate that decision.
+2. **Below 1024 px the phone layout is used** — bottom menu, one column.
+3. **The desktop tab's pointer target is ≥44 px tall.** The drawn shape is unchanged; the hit area
+   grows.
+4. **The tab row uses the signed-off icon set** — 18 px of ink in a 21 px box — by the same
+   reasoning Revision 6 applied to the bar, against the `brand-07` glyphs the desktop pictures
+   inherit.
+
+Only the Fremgang glyph remains undrawn: the signed-off set has four icons and the tab row needs
+five. That is a drawing instruction, not a decision.
 
 ---
 
