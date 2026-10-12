@@ -10,7 +10,7 @@ export type NavIconName = 'home' | 'tasks' | 'rewards' | 'family' | 'progress';
   selector: 'app-nav-icon',
   templateUrl: './nav-icon.html',
   styles:
-    ':host { display: inline-flex; } svg { width: var(--nav-icon); height: var(--nav-icon); }',
+    ':host { display: inline-flex; } svg { width: var(--nav-icon, 21px); height: var(--nav-icon, 21px); }',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class NavIcon {
