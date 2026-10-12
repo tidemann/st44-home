@@ -923,14 +923,30 @@ Jonas green + track + rust, Mathea green + track.
 - Four items: Hjem · Oppgaver · Belønninger · Familie. **18 px of icon ink in a 21 px box**, above a
   12 px label.
 - **Ink and box are two numbers, and the picture gives the ink.** In the signed-off picture the
-  «Hjem» house ink is 36 × 36 board px — **18.0 × 18.0 px** — on all four light screens at
-  luminance threshold 220, and 34–36 at threshold 200 where the muted glyphs' antialiased edge
-  drops out. The other three sit under it: list 17.0 × 12.0, gift 18.0 × 17.5, familie 17.0 × 15.0.
+  «Hjem» house ink is 36 × 36 board px — **18.0 × 18.0 px** — at luminance threshold 220, and
+  34–36 at threshold 200 where the muted glyphs' antialiased edge drops out. The other three sit
+  under it: list 17.0 × 12.0, gift 18.0 × 17.5, familie 17.0 × 15.0.
   Measure a screenshot against the **ink**; set `--nav-icon` to the **box**.
-- **The box is 21 px because the glyphs do not fill their own viewBox.** The house runs 15.40 of
-  its 18 units tall once the 1.5 stroke is counted, so 18 ÷ 15.40 × 18 = **21.0 px** of box gives
-  18.0 px of ink. If the artwork is redrawn, re-derive the box from the new glyphs and keep the ink
-  at 18 px.
+- **Read a glyph where the picture draws it inactive — the picture bolds the chosen item**
+  (ST-898 round 2, 2026-10-12). Amber `#8A5A00` names the chosen item in the picture, and that item
+  is also drawn with about **20 % more ink**: the house reads 18.0 × 18.0 with a **1.84 px** stroke
+  on the two light screens where it is chosen (1 and 3) and **18.0 × 17.5** with the set's normal
+  **1.49 px** stroke on the two where it is not (2 and 5). «Oppgaver» goes 17.0 × 12.0 → 18.0 × 13.0
+  when chosen, the gift 18.0 × 17.5 → 19.0 × 17.5; «Familie» is never chosen in the picture, which
+  is why its number never moved. **Our bar does not bold the chosen item** — since ST-892 the ink
+  pill carries that state — so the comparable reading is the inactive one. The numbers above are
+  inactive readings except the house's, which is the chosen-state reading Revision 6 took from
+  screen 1; measured against the inactive house our glyph is ~0.7 px larger in both dimensions.
+  That gap is measured and recorded, not yet decided: RULE-CHECK **Revision 10**.
+- **The artwork is drawn in a 21-unit viewBox, so one unit is one rendered pixel.** `nav-icon.html`
+  uses `viewBox="0 0 21 21"` in the 21 px box: the four ink numbers above are literally the path
+  data, and `stroke-width="1.5"` renders the picture's measured **1.5 px** line. Redrawing a glyph
+  therefore needs no box derivation — draw it to the picture's ink and the box is already right.
+- **The line is 1.5 px, and that is a drawn number too.** A vertical cut through the three
+  «Oppgaver» rules in the signed-off picture reads 1.5 / 2 / 1.5 px (the middle rule straddles a
+  pixel boundary). An 18-unit drawing stretched into the 21 px box renders 1.75 px instead — ~17 %
+  heavier on every glyph — which is why the set is drawn at 21 units rather than scaled into place.
+  ST-898 redrew it; RULE-CHECK **Revision 10** holds the readings.
 - **Where `17px` came from, so nobody ships it again.** It was written into this guide as an icon
   size without an ink measurement behind it, and ST-881 then built to it (PR #644): a 17 px box
   renders 14.5 px of ink, a fifth short of the picture. PR #645 puts the box at 21 px. Maria's
@@ -1435,17 +1451,24 @@ screen edges.
   glyphs are a drawing slip inherited from `brand-07`, not a desktop decision: build the tab row with
   the **signed-off set**, at the same 18 px ink in the same 21 px box the bottom bar uses.
 - **Fremgang is not on the phone's four-item bar, but its glyph already exists** — `progress` in
-  `apps/frontend/src/app/components/navigation/nav-icon.html`, the same set ST-881 built from the
-  approved source, in the same 18 × 18 viewBox at the same 1.5 stroke. Rendered in the 21 px box its
-  ink measures **18.0 × 14.5**, in line with the other four. Use it; do not draw a sixth icon.
+  `apps/frontend/src/app/components/navigation/nav-icon.html`, in the same 21-unit viewBox at the
+  same 1.5 stroke as the other four. Its ink measures **18.0 × 14.5**, in line with them. Use it; do
+  not draw a sixth icon. It is the one glyph the signed-off picture does not draw, so ST-898 only
+  re-expressed it at 21 units — same drawing, same rendered size, the set's one line weight.
 - **The 18 px is the slot, not every glyph's ink — and these are the render's numbers, read one
-  stated way.** Ink in CSS px, w × h, on the band in
-  [`desktop-20`](reference/desktop-20-tabrow-pill-vs-underline.png), at **half coverage**: each
-  pixel's colour projected onto the band's background→ink vector, counted from coverage 0.5, edges
-  taken at pixel boundaries, DPR 2. **House 18.0 × 18.0, gift 18.0 × 18.0**, familie 19.0 × 16.5,
-  fremgang 18.0 × 14.5, list 17.5 × 13.5. **The house and the gift fill the slot; the other three do
-  not.** A screenshot of «Oppgaver» showing a 13 px glyph is the right icon in the right box — check
-  the **slot**, by the house or the gift, not each glyph's own height.
+  stated way.** Ink in CSS px, w × h, of each glyph in its 21 px slot on the band's `#F6B93B`, at
+  **half coverage**: each pixel's colour projected onto the band's background→ink vector, counted
+  from coverage 0.5, edges taken at pixel boundaries, DPR 2. **House 18.0 × 18.0, gift
+  18.0 × 17.5**, familie 17.0 × 15.0, fremgang 18.0 × 14.5, list 17.0 × 12.0. **The house and the
+  gift fill the slot; the other three do not.** A screenshot of «Oppgaver» showing a 12 px glyph is
+  the right icon in the right box — check the **slot**, by the house or the gift, not each glyph's
+  own height.
+  (These are the **current** artwork's numbers. The row was first read off the band in
+  [`desktop-20`](reference/desktop-20-tabrow-pill-vs-underline.png), which was rendered before
+  ST-898 redrew the set and still shows the old glyphs — familie 19.0 × 16.5, list 17.5 × 13.5.
+  Re-run on `origin/main` the method reproduces those two exactly and leaves house, gift and
+  fremgang unchanged, so what moved is the drawing, not the convention. `desktop-20` stays as the
+  evidence for the **pill**, which is what it was drawn to decide.)
 - **Why these are not the four numbers under `### Navigation`, and why neither set is stale.** That
   table is the same artwork measured in the **signed-off picture** at **luminance below 220** —
   RULE-CHECK **Revision 6** holds the method and all eight readings. That cut cannot be run on this
@@ -1455,13 +1478,17 @@ screen edges.
   agree to the antialiased edge that method note already describes: the picture gives list
   17.0–18.0 × 12.0–13.0 and gift 18.0–19.0 × 17.0–17.5, half a pixel under the band's read.
   **The picture's table is for the phone bar, this one for the band. Quote the convention with the
-  number, or they look like two answers.**
-- **One of the five is not a convention difference: familie.** The shipped `family` glyph spans
-  16.5 × 14.0 of its 18-unit viewBox, so in a 21 px box it can only render ≈19.3 × 16.3 — and it
-  measures 19.0 × 16.5. The signed-off picture draws that item at **17.0 × 15.0**, identical in all
-  eight Revision 6 readings, so the picture's familie is a **narrower drawing** than the one ST-881
-  shipped. That is a question about the phone bar's artwork, not a desktop decision: recorded here,
-  not changed.
+  number, or they look like two answers.** Since ST-898 the list and familie rows agree exactly,
+  and since its round 2 the gift does too — it read half a pixel taller on the band until the
+  body's bottom line moved onto the picture's, and the coverage method now gives 18.0 × 17.5 there
+  as well. The house is the one row still read against the picture's **chosen-state** glyph; see
+  the note under `### Navigation`.
+- **The familie gap is closed (ST-898, Maria's decision 2026-10-12).** The guide used to record
+  here that the shipped `family` glyph rendered ≈19.3 × 16.3 against the picture's 17.0 × 15.0 — a
+  narrower drawing in the picture, recorded and not changed. Measuring the other three turned it
+  into a larger finding: three of the four were different drawings and the whole bar was ~17 %
+  heavier. Maria chose to bring the code to the picture. The set is now drawn to it on every item;
+  RULE-CHECK **Revision 10** holds the readings and what each drawing changed.
 - **Everything in the band is `#17120A` on `#F6B93B` — 10.57:1.** Title, sub-line, every tab label,
   every unchosen tab icon, the chosen tab's pill and the initial on the badge. **The one thing in the
   band that is not ink is the chosen tab's icon**, which turns `#F6B93B` inside its ink pill. The
