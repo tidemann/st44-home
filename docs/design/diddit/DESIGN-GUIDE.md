@@ -287,6 +287,9 @@ components:
     typography: '{typography.caption}'
   tab-item:
     textColor: '{colors.ink}'
+    fontFamily: 'Hanken Grotesk, system-ui, sans-serif'
+    fontSize: '15px'
+    fontWeight: 500
     iconColor: '{colors.ink}'
     iconInk: '18px'
     iconSize: '21px'
@@ -299,7 +302,9 @@ components:
     pillHeight: '26px'
     pillRounded: '{rounded.pill}'
     textColor: '{colors.ink}'
-    textWeight: 'bold'
+    fontFamily: 'Hanken Grotesk, system-ui, sans-serif'
+    fontSize: '15px'
+    fontWeight: 600
     iconColor: '{colors.yellow}'
     iconInk: '18px'
     iconSize: '21px'
@@ -1383,7 +1388,7 @@ screen edges.
 | Diddit mark                               | **36 × 36**, at the container's left edge, y 22…58                                                        |
 | "Diddit" wordmark                         | ink starts 13.5 px right of the mark, y 29.5…49.5                                                         |
 | Tab icons                                 | ink y 32.5…47.5, in a 21 px box — the signed-off icon set, see below                                      |
-| Tab labels                                | ink y 33.5…47.5, **16.5 px** right of their icon's box — see the pill note below                          |
+| Tab labels                                | Hanken **15 px / 500**, ink y 33.5…47.5, **16.5 px** right of their icon's box — see the pill note        |
 | Chosen tab's ink pill                     | **46 × 26 px `#17120A`**, fully rounded, centred on the icon box → y 27…53                                |
 | Initial badge                             | **38 px circle**, `#DBA434` fill, `#17120A` initial, right-aligned to the container's right edge, y 21…59 |
 | Screen title ("Hjemme", "Jonas")          | ink 26.0 px tall, top at y 141.5                                                                          |
@@ -1412,9 +1417,11 @@ screen edges.
   13.0 × 13.0 fremgang, 16.0 × 14.5 gift — against the signed-off bar's 18.0 × 18.0 house. Those
   glyphs are a drawing slip inherited from `brand-07`, not a desktop decision: build the tab row with
   the **signed-off set**, at the same 18 px ink in the same 21 px box the bottom bar uses.
-- **Fremgang has no glyph in the signed-off set**, because it is not on the phone's four-item bar.
-  Draw it to the same construction as the other four — 1.5 stroke, 18 px of ink in a 21 px box — and
-  measure the ink, not the box.
+- **Fremgang is not on the phone's four-item bar, but its glyph already exists** — `progress` in
+  `apps/frontend/src/app/components/navigation/nav-icon.html`, the same set ST-881 built from the
+  approved source, in the same 18 × 18 viewBox at the same 1.5 stroke. Rendered in the 21 px box it
+  measures **18.0 px of ink**, in line with the other four (16.5 list, 18.0 gift, 19.0 familie).
+  Use it; do not draw a sixth icon.
 - **Everything in the band is `#17120A` on `#F6B93B` — 10.57:1.** Title, sub-line, every tab label,
   every unchosen tab icon, the chosen tab's pill and the initial on the badge. **The one thing in the
   band that is not ink is the chosen tab's icon**, which turns `#F6B93B` inside its ink pill. The
@@ -1434,16 +1441,23 @@ raised on ST-892. The underline is deleted; do not bring it back.
   runs y 32.5…47.5, so the pill clears the ink by 4 px over and under, exactly as it does on the
   phone.
 - **The icon inside it turns `#F6B93B`.** Every unchosen icon stays `#17120A`.
-- **The chosen label is `#17120A` and bold.** Here the desktop differs from the phone on purpose:
-  the phone's chosen label keeps its weight (measured 0.1 % apart — see **The chosen item** under
-  Navigation), because on the phone the colour change from `#555E64` to ink does the work. In the
-  band every label is already ink, chosen or not, so colour cannot carry anything and the weight
-  step is what is left. The approved drawings carry a step of the same sign — **+11.0 % of glyph
-  area for «Hjem», +8.8 % for «Oppgaver»**, against a ±5 % render noise floor measured on unchosen
-  «Familie» — so bold is that step made deliberate rather than a new idea.
+- **The chosen label is `#17120A` and one weight step heavier: Hanken Grotesk 600 against the row's
+  500, both at 15 px.** Maria asked for "ink and bold"; this is what bold is here, and it is not an
+  invention — **it is exactly what the approved pictures already draw.** Rendered at 15 px and
+  compared with `desktop-07` by ink area, Hanken 500 reproduces all four unchosen labels to **0.0 %**
+  (Oppgaver 876, Familie 654, Fremgang 912, Belønninger 1092 device px², identical in both) and
+  Hanken 600 reproduces the chosen «Hjem» to **0.0 %** (518). `desktop-12`, where Oppgaver is the
+  chosen one, carries the same step: +9.0 % over its own picture's baseline. **Do not ship 700 or
+  800** — that is heavier than anything Stig has approved.
+  Here the desktop differs from the phone on purpose: the phone's chosen label keeps its weight
+  (measured 0.1 % apart — see **The chosen item** under Navigation), because there the colour change
+  from `#555E64` to ink does the work. In the band every label is already ink, so colour carries
+  nothing and the weight step is what is left.
 - **The pill is never the only signal and never the target.** It is a shape, so the state survives
-  greyscale; the bold label sits beside it; and the pressable area is the whole tab box, not the
-  46 × 26 pill.
+  greyscale; the heavier label sits beside it; and the pressable area is the whole tab box, not the
+  46 × 26 pill. **One weight step is not enough on its own** — between the two approved pictures the
+  _same unchosen_ label moves by up to 6.4 % from rendering alone, so a 9–11 % step is only a little
+  above the noise. It supports the pill; it cannot replace it.
 
 **The pill forces a gap the drawings do not have, and this is the one measured consequence of the
 decision.** On the phone the label sits _under_ the pill. In the band it sits _beside_ it, and a
@@ -1455,26 +1469,45 @@ Drawn as-is, the pill would run 3.5 px under the start of «Hjem».
   plus the same 4 px of clearance it keeps vertically.
 - **The gap is the same on all five tabs, chosen or not.** A gap that changed with the state would
   reflow the whole row every time you changed page.
-- **It fits at 1024, with room.** Measured on `desktop-10`: the wordmark ink ends at x 193 and the
-  first tab box starts 39.5 px after it, at 232.5. With 15 px of padding each side, a 21 px icon box,
-  the 16.5 px gap and the drawn label widths (32.5 / 65.5 / 44.5 / 64.5 / 77.5), the five boxes come
-  to 622 px; with the drawn ~3.5 px between boxes the row is **636 px** and ends at **x 868.5**. The
-  38 px initial badge starts at x 914, so **45.5 px stays clear** between them. The row grows about
-  56 px against the drawings — 7.5 px per tab from the gap, the rest from the bigger icon set — and
-  still does not reach the badge. At 1440 every number shifts +208 and the clearance is identical.
-- **Those 45.5 px are the whole budget, and a wider screen does not help.** The band is the same at
-  1024 and 1440 — the container moves, the row and the badge do not — so the clearance is 45.5 px at
-  both widths and there is no width that buys more. The row is now 56 px
-  wider than anything that has been drawn, so a build must check it rather than assume it: a
-  translated label, a different font fallback, or a user's larger text setting all spend the same
-  45.5 px. (The `en` locale is not the risk — «Belønninger» → "Rewards" and «Oppgaver» → "Tasks"
-  both shrink the row.) **If the row would reach the badge, stop** — shortening a label, dropping
-  the labels to icons alone or wrapping the row are all changes to an approved look, so they need a
-  picture and a fresh sign-off through Maria, not a decision made in the build.
+- **It fits at 1024, and these numbers are rendered, not calculated.** The row was built at 1024 px
+  (DPR 2) with the pill, the signed-off icon set and the repo's own Hanken, then measured — see
+  [`desktop-20-tabrow-pill-vs-underline.png`](reference/desktop-20-tabrow-pill-vs-underline.png),
+  which puts the approved row and the rendered one in one image at the same scale. **The render
+  reproduces all five label ink widths exactly** — 32.5 / 65.5 / 44.5 / 64.5 / 77.5, the drawn
+  values to the pixel — so the row width below is the real one, not an estimate.
+
+  |                            | Measured on the render                                              |
+  | -------------------------- | ------------------------------------------------------------------- |
+  | First tab box starts       | **x 232.5** (wordmark ink ends 193, box 39.5 px after it, as drawn) |
+  | Row ends                   | **x 877** — **644.5 px** wide                                       |
+  | Tab box widths             | **102.5 / 134.5 / 113.5 / 133.5 / 146.5 px**, 3.5 px apart          |
+  | Badge                      | x 914…952                                                           |
+  | **Clearance, row → badge** | **37.0 px**                                                         |
+  | Pill                       | x 235…281, y 27…53; the label starts **4.0 px** after it            |
+
+  **Do not derive this from the label ink widths.** Summing the drawn ink gives a 636 px row and
+  45.5 px of clearance — wrong by 8 px, because a text box is wider than its ink by its side
+  bearings. Use the rendered box widths.
+
+- **Those 37 px are the whole budget, and a wider screen does not help.** The band is identical at
+  1024 and 1440 — the container moves, the row and the badge do not — so the clearance is 37.0 px at
+  both widths and there is no width that buys more. The row is ~64 px wider than anything that has
+  been drawn (7.5 px per tab from the gap, the rest from the bigger icon set), so a build must
+  measure it rather than assume it: a translated label, a different font fallback, or a user's larger
+  text setting all spend the same 37 px. (The `en` locale is not the risk — «Belønninger» →
+  "Rewards" and «Oppgaver» → "Tasks" both shrink the row.) **If the row would reach the badge,
+  stop** — shortening a label, dropping the labels to icons alone or wrapping the row are all changes
+  to an approved look, so they need a picture and a fresh sign-off through Maria, not a decision made
+  in the build.
+- **The tab label is Hanken Grotesk at 15 px — 500 unchosen, 600 chosen.** The band table gave only
+  an ink height. Rendered at 14 / 15 / 16 / 17 px and compared with the approved pictures by ink
+  width _and_ ink area, 15 px at weight 500 reproduces every unchosen label exactly; 14 px is
+  1.5–4.5 px narrow and 16 px is 3–7.5 px wide.
 - **The tab's pointer target is at least 44 px tall** (Maria, 2026-10-12). The drawn shape does not
   change — only the hit area grows. Centred on the pill, 44 px runs **y 18…62**, which the 259 px
   band has room for; the title's ink does not start until y 141.5. The target's width is the tab box,
-  padding included — 100 px for «Hjem», the narrowest of the five.
+  padding included — **102.5 px** for «Hjem», the narrowest of the five — and the 3.5 px between
+  boxes keeps two neighbouring targets from overlapping.
 
 ### Below the band
 
@@ -1583,9 +1616,10 @@ it was ruled on, not drifted into.
 | How tall is the desktop tab's pointer target?                                     | **At least 44 px**, as everywhere else in this guide. The drawn shape does not change; the hit area grows. | **The chosen tab is the ink pill** |
 | Which icon set does the tab row use?                                              | **The signed-off set** — 18 px of ink in a 21 px box, by Revision 6's reasoning for the bar.               | **The yellow top and its tab row** |
 
-**The one thing still undrawn** is the Fremgang glyph, which the signed-off set does not contain
-because Fremgang is not on the phone's bar. That is a drawing instruction, not a decision: match the
-other four's construction, 18 px of ink in a 21 px box. Nothing in the layout depends on it.
+**Nothing is left undrawn.** The one gap this list expected — a Fremgang glyph, since the phone's bar
+has four items and the tab row needs five — turned out not to be a gap: `progress` is already in the
+repo's signed-off icon set, in the same viewBox at the same stroke, and measures 18.0 px of ink in
+the 21 px box. See **The yellow top and its tab row**.
 
 ## Do's and Don'ts
 
@@ -1809,11 +1843,12 @@ bar and on the desktop's `#F6B93B` band — so one fix covers both, on two diffe
   survives greyscale, because fill, icon colour and label colour all move together.
 - **1.4.1 — passes on the desktop, on the pill.** In the band every label is `#17120A` chosen or
   not, so the label's **colour** distinguishes nothing there; the pill is a shape and carries the
-  state on its own, with the bold weight beside it. **Do not ship the bold label without the pill.**
-  Weight is not colour, so bold on its own would scrape past a strict reading of this criterion — but
-  the drawings' own 9–11 % step sat within sight of their ±5 % render noise floor, and a signal that
-  small is one a user cannot reliably see. The pill is what makes the chosen tab **visible**, not
-  merely conformant. It is also why the underline could not be deleted with nothing put in its place.
+  state on its own, with the 500 → 600 weight step beside it. **Do not ship the weight step without
+  the pill.** Weight is not colour, so the step alone would scrape past a strict reading of this
+  criterion — but it is one step, worth 9–11 % of ink, and the _same unchosen_ label moves by up to
+  6.4 % between the two approved pictures from rendering alone. A signal that close to the noise is
+  one a user cannot reliably see. The pill is what makes the chosen tab **visible**, not merely
+  conformant. It is also why the underline could not be deleted with nothing put in its place.
 - **1.4.11 Non-text Contrast — passes on both surfaces**: 17.22:1 on `#F6F6F4` and 10.57:1 on
   `#F6B93B`, against a 3:1 floor. The yellow icon against its own pill is 10.57:1.
 - **2.5.8 Target Size — settled at 44 px** (Maria, 2026-10-12). The phone keeps its 92 × 71 nav
