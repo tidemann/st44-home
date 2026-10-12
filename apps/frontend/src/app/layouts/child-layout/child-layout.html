@@ -1,4 +1,7 @@
 <div class="child-layout">
+  <!-- The yellow top's tab row (1024 px and wider; guide: Desktop and tablet — layout A) -->
+  <app-top-tabs [tabs]="desktopTabs" [activeId]="activeScreen()" (navigate)="onNavigate($event)" />
+
   <!-- Each child screen draws its own Poeng title row; "Logg ut" sits behind the initial badge -->
   <main class="child-content">
     <router-outlet />

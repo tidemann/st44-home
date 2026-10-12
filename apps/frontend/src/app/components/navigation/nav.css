@@ -1,6 +1,8 @@
 /* Poeng bottom nav (guide: Navigation). Sits on --bg with a 1 px hairline above it;
    four items pitched at 92 px with ~11 px at each edge; 21 px icon (--nav-icon) over a 12 px label.
-   Active is amber ink and heavier (two signals); inactive is muted. 71 px band. */
+   The chosen item is the ink pill (guide: The chosen item, ST-890): a 46 × 26 #17120A pill
+   centred on the icon, the icon yellow inside it, the label ink at the same weight. The others
+   stay muted. 71 px band. Under 1024 px only; from there the tabs sit in the yellow top. */
 
 .bottom-nav,
 .child-nav {
@@ -41,14 +43,41 @@
   white-space: nowrap;
 }
 
-.nav-btn.active,
-.child-nav-btn.active {
-  color: var(--amber-ink);
+/* The pill is decoration inside the 92 × 71 target, never the target */
+.nav-icon,
+.child-nav-icon {
+  position: relative;
+  isolation: isolate;
 }
 
-.nav-btn.active .nav-label,
-.child-nav-btn.active .child-nav-label {
-  font-weight: 700;
+.nav-icon::before,
+.child-nav-icon::before {
+  content: '';
+  position: absolute;
+  z-index: -1;
+  left: 50%;
+  top: 50%;
+  width: 46px;
+  height: 26px;
+  margin: -13px 0 0 -23px;
+  border-radius: 999px;
+  background: var(--ink);
+  visibility: hidden;
+}
+
+.nav-btn.active,
+.child-nav-btn.active {
+  color: var(--ink);
+}
+
+.nav-btn.active .nav-icon,
+.child-nav-btn.active .child-nav-icon {
+  color: var(--yellow);
+}
+
+.nav-btn.active .nav-icon::before,
+.child-nav-btn.active .child-nav-icon::before {
+  visibility: visible;
 }
 
 .nav-btn:focus-visible,
@@ -56,4 +85,11 @@
   outline: var(--focus-ring);
   outline-offset: -4px;
   border-radius: var(--r-card);
+}
+
+@media (min-width: 1024px) {
+  .bottom-nav,
+  .child-nav {
+    display: none;
+  }
 }

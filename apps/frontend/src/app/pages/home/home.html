@@ -4,14 +4,19 @@
   [subtitle]="subtitle()"
   maxWidth="medium"
   [band]="true"
+  [split]="true"
 >
   <!-- A, the yellow top: each child's points sit in the band (brand-07). The cards fill the
-       row, at most three across -->
+       row, at most three across. From 1024 px they sit beside the title, 109 px each, at most
+       four plus a "+N barn til" tile (desktop A) -->
   <div page-band>
     @if (!loading() && !error() && childSummaries().length > 0) {
       <div class="kids" [style.--kid-cols]="kidColumns()">
-        @for (kid of childSummaries(); track kid.id) {
+        @for (kid of shownChildren(); track kid.id) {
           <app-child-points-card [name]="kid.name" [points]="kid.points" [chores]="kid.chores" />
+        }
+        @if (desktop() && moreChildren() > 0) {
+          <p class="more-kids" i18n="@@home.moreChildren">+{{ moreChildren() }} barn til</p>
         }
       </div>
     }
@@ -34,80 +39,134 @@
   }
 
   @if (!loading() && !error()) {
-    @if (overdueTasks().length > 0) {
-      <app-group-label i18n-label="@@home.overdue" label="Forfalt" [overdue]="true" />
-      @for (task of overdueTasks(); track task.id) {
-        <app-chore-row
-          [title]="task.title"
-          [meta]="rowMeta(task, true)"
-          [overdue]="true"
-          [points]="canRemind() ? '' : pointsText(task)"
-          [checkable]="true"
-          [busy]="completingId() === task.id"
-          [openable]="true"
-          (check)="onCompleteTask(task.id)"
-          (open)="onEditTask(task.id)"
-        >
-          @if (canRemind()) {
-            <button
-              row-action
-              type="button"
-              class="rbtn"
-              [disabled]="remindingId() === task.id"
-              [attr.aria-label]="remindLabel(task)"
-              (click)="onRemind(task.id)"
-              i18n="@@home.remind"
+    <!-- One stack on the phone; from 1024 px two: left today beside done today (desktop A) -->
+    <div class="cols">
+      <div class="col">
+        @if (overdueTasks().length > 0) {
+          <app-group-label i18n-label="@@home.overdue" label="Forfalt" [overdue]="true" />
+          @for (task of overdueTasks(); track task.id) {
+            <app-chore-row
+              [title]="task.title"
+              [meta]="rowMeta(task, true)"
+              [overdue]="true"
+              [points]="canRemind() ? '' : pointsText(task)"
+              [checkable]="true"
+              [busy]="completingId() === task.id"
+              [openable]="true"
+              (check)="onCompleteTask(task.id)"
+              (open)="onEditTask(task.id)"
             >
-              Minn på
-            </button>
+              @if (canRemind()) {
+                <button
+                  row-action
+                  type="button"
+                  class="rbtn"
+                  [disabled]="remindingId() === task.id"
+                  [attr.aria-label]="remindLabel(task)"
+                  (click)="onRemind(task.id)"
+                  i18n="@@home.remind"
+                >
+                  Minn på
+                </button>
+              }
+            </app-chore-row>
           }
-        </app-chore-row>
-      }
-    }
+        }
 
-    <app-group-label i18n-label="@@home.leftTodayLabel" label="Igjen i dag" [right]="leftToday()" />
-    @if (hasTodayTasks()) {
-      @for (task of todayTasks(); track task.id) {
-        <app-chore-row
-          [title]="task.title"
-          [meta]="rowMeta(task)"
-          [points]="pointsText(task)"
-          [checkable]="true"
-          [busy]="completingId() === task.id"
-          [openable]="true"
-          (check)="onCompleteTask(task.id)"
-          (open)="onEditTask(task.id)"
+        <app-group-label
+          i18n-label="@@home.leftTodayLabel"
+          label="Igjen i dag"
+          [right]="leftToday()"
         />
-      }
-    } @else {
-      <div class="empty" role="status">
-        <p class="empty-title" i18n="@@home.noTasksToday">Ingen oppgaver igjen i dag</p>
-        <p class="empty-sub" i18n="@@home.noTasksTodayDescription">
-          Nye oppgaver lager du under Oppgaver.
-        </p>
+        @if (hasTodayTasks()) {
+          @for (task of todayTasks(); track task.id) {
+            <app-chore-row
+              [title]="task.title"
+              [meta]="rowMeta(task)"
+              [points]="pointsText(task)"
+              [checkable]="true"
+              [busy]="completingId() === task.id"
+              [openable]="true"
+              (check)="onCompleteTask(task.id)"
+              (open)="onEditTask(task.id)"
+            />
+          }
+        } @else {
+          <div class="empty" role="status">
+            <p class="empty-title" i18n="@@home.noTasksToday">Ingen oppgaver igjen i dag</p>
+            <p class="empty-sub" i18n="@@home.noTasksTodayDescription">
+              Nye oppgaver lager du under Oppgaver.
+            </p>
+          </div>
+        }
+        <p class="remind-status" role="status" aria-live="polite">{{ remindMessage() }}</p>
+
+        <!-- Desktop A: the button that lived in the old sidebar, under the left column -->
+        @if (desktop() && householdId()) {
+          <button type="button" class="newtask" (click)="openCreateTask()" i18n="@@home.newTask">
+            + Ny oppgave
+          </button>
+        }
       </div>
-    }
-    <p class="remind-status" role="status" aria-live="polite">{{ remindMessage() }}</p>
 
-    <!-- Below the picture: kept so nothing the family uses today goes away -->
-    @if (householdId()) {
-      <app-failed-tasks-section [householdId]="householdId()!" [quietWhenEmpty]="true" />
-    }
+      <div class="col">
+        <!-- Desktop A only: the right column opens with what is done today -->
+        @if (desktop()) {
+          <app-group-label i18n-label="@@home.doneToday" label="Gjort i dag" />
+          @for (task of doneToday(); track task.id) {
+            <app-chore-row
+              [title]="task.title"
+              [meta]="doneMeta(task)"
+              [done]="true"
+              [points]="task.points !== null && task.points !== undefined ? '+' + task.points : ''"
+              [openable]="true"
+              (open)="onEditTask(task.id)"
+            />
+          } @empty {
+            <div class="empty empty--left">
+              <p class="empty-title" i18n="@@home.noneDoneToday">
+                Ingen oppgaver er haket av i dag
+              </p>
+              <p class="empty-sub" i18n="@@home.noneDoneTodayDescription">
+                Når noen haker av en oppgave, dukker den opp her.
+              </p>
+            </div>
+          }
+        }
 
-    @if (hasUpcomingTasks()) {
-      <app-group-label i18n-label="@@home.comingUp" label="Kommende" />
-      @for (task of upcomingTasks(); track task.id) {
-        <app-chore-row
-          [title]="task.title"
-          [meta]="upcomingMeta(task)"
-          [points]="pointsText(task)"
-          [openable]="true"
-          (open)="onEditTask(task.id)"
-        />
-      }
-    }
+        <!-- Below the picture: kept so nothing the family uses today goes away -->
+        @if (householdId()) {
+          <app-failed-tasks-section [householdId]="householdId()!" [quietWhenEmpty]="true" />
+        }
 
-    <a class="more" routerLink="/progress" i18n="@@home.toProgress">Se fremgang for uken</a>
+        @if (hasUpcomingTasks()) {
+          <app-group-label i18n-label="@@home.comingUp" label="Kommende" />
+          @for (task of upcomingTasks(); track task.id) {
+            <app-chore-row
+              [title]="task.title"
+              [meta]="upcomingMeta(task)"
+              [points]="pointsText(task)"
+              [openable]="true"
+              (open)="onEditTask(task.id)"
+            />
+          }
+        }
+
+        <a class="more" routerLink="/progress" i18n="@@home.toProgress">Se fremgang for uken</a>
+      </div>
+    </div>
+  }
+
+  <!-- Create Task Modal (opened by "+ Ny oppgave") -->
+  @if (householdId()) {
+    <app-task-form-modal
+      [open]="createTaskOpen()"
+      mode="create"
+      [householdId]="householdId()!"
+      [children]="children()"
+      (closeRequested)="closeCreateTask()"
+      (formSubmitted)="onTaskCreated($event)"
+    />
   }
 
   <!-- Edit Task Modal -->

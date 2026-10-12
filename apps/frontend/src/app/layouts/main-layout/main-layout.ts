@@ -1,3 +1,4 @@
+import '@angular/localize/init';
 import {
   Component,
   ChangeDetectionStrategy,
@@ -10,44 +11,27 @@ import {
 import { Router, RouterOutlet, NavigationEnd } from '@angular/router';
 import { filter, Subscription } from 'rxjs';
 import { BottomNav } from '../../components/navigation/bottom-nav/bottom-nav';
-import { SidebarNav } from '../../components/navigation/sidebar-nav/sidebar-nav';
+import { TopTabs, type TopTab } from '../../components/navigation/top-tabs/top-tabs';
 import { HouseholdSwitcherComponent } from '../../components/household-switcher/household-switcher';
-import {
-  TaskFormModal,
-  type TaskFormData,
-} from '../../components/modals/task-form-modal/task-form-modal';
 import { UserButton, type UserButtonData } from '../../components/user-button/user-button';
 import { AuthService } from '../../services/auth.service';
-import { HouseholdService } from '../../services/household.service';
 import { HouseholdStore } from '../../stores/household.store';
-import { ChildrenService } from '../../services/children.service';
 import type { NavScreen } from '../../components/navigation/bottom-nav/bottom-nav';
-import type { Child } from '@st44/types';
-import { TaskService } from '../../services/task.service';
-import { take } from 'rxjs';
 
 /**
  * Main Layout Component
  *
  * Wraps authenticated parent/admin pages with:
- * - Sidebar navigation (desktop)
- * - Bottom navigation (mobile)
+ * - The yellow top's tab row (1024 px and wider)
+ * - Bottom navigation (under 1024 px)
  * - Router outlet for page content
- * - Create task modal (full-featured)
  *
  * This layout handles navigation state and routing,
  * allowing page components to focus on their content.
  */
 @Component({
   selector: 'app-main-layout',
-  imports: [
-    RouterOutlet,
-    BottomNav,
-    SidebarNav,
-    HouseholdSwitcherComponent,
-    TaskFormModal,
-    UserButton,
-  ],
+  imports: [RouterOutlet, BottomNav, TopTabs, HouseholdSwitcherComponent, UserButton],
   templateUrl: './main-layout.html',
   styleUrl: './main-layout.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -55,23 +39,26 @@ import { take } from 'rxjs';
 export class MainLayout implements OnInit, OnDestroy {
   private readonly router = inject(Router);
   private readonly authService = inject(AuthService);
-  private readonly householdService = inject(HouseholdService);
   private readonly householdStore = inject(HouseholdStore);
-  private readonly childrenService = inject(ChildrenService);
-  private readonly taskService = inject(TaskService);
 
   private routerSubscription: Subscription | null = null;
+
+  /**
+   * The desktop tab row, in the order drawn in the approved desktop A pictures:
+   * five tabs, Fremgang included (it has no place on the phone's four-item bar)
+   */
+  protected readonly desktopTabs: TopTab<NavScreen>[] = [
+    { id: 'home', icon: 'home', label: $localize`:@@nav.home:Hjem` },
+    { id: 'tasks', icon: 'tasks', label: $localize`:@@nav.tasks:Oppgaver` },
+    { id: 'family', icon: 'family', label: $localize`:@@nav.family:Familie` },
+    { id: 'progress', icon: 'progress', label: $localize`:@@nav.progress:Fremgang` },
+    { id: 'rewards', icon: 'rewards', label: $localize`:@@nav.rewards:Belønninger` },
+  ];
 
   // State signals
   protected readonly activeScreen = signal<NavScreen>('home');
   /** The screen draws its own Poeng title row, so the logo bar steps aside (route data ownHead) */
   protected readonly ownHead = signal(false);
-  protected readonly householdId = signal<string | null>(null);
-  protected readonly householdName = signal<string>('My Family');
-  protected readonly children = signal<Child[]>([]);
-
-  // Modal state
-  protected readonly createTaskOpen = signal(false);
 
   // Computed values
   protected readonly userData = computed<UserButtonData>(() => {
@@ -89,7 +76,10 @@ export class MainLayout implements OnInit, OnDestroy {
   });
 
   ngOnInit(): void {
-    this.loadHouseholdData();
+    // Keep a valid active household for every page (the switcher and the pages read it)
+    this.householdStore.autoActivateHousehold().catch((err) => {
+      console.error('Failed to activate a household:', err);
+    });
     this.updateActiveScreenFromUrl(this.router.url);
     this.updateOwnHead();
 
@@ -104,56 +94,6 @@ export class MainLayout implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.routerSubscription?.unsubscribe();
-  }
-
-  /**
-   * Load household data for sidebar and create task modal
-   */
-  private async loadHouseholdData(): Promise<void> {
-    try {
-      const households = await this.householdService.listHouseholds();
-      if (households.length === 0) {
-        return;
-      }
-
-      // Get active household from store (respects user's selection from switcher)
-      let activeHouseholdId = this.householdStore.activeHouseholdId();
-
-      // If no active household, auto-activate the first one
-      if (!activeHouseholdId) {
-        await this.householdStore.autoActivateHousehold();
-        activeHouseholdId = this.householdStore.activeHouseholdId();
-      }
-
-      // Find the active household in the list (fallback to first if not found)
-      const household = households.find((h) => h.id === activeHouseholdId) || households[0];
-
-      this.householdId.set(household.id);
-      this.householdName.set(household.name);
-
-      // Active household is already set - don't overwrite it
-      // (either from switcher or from autoActivateHousehold above)
-
-      // Pre-load children for quick-add modal
-      await this.loadChildren();
-    } catch (err) {
-      console.error('Failed to load household data:', err);
-    }
-  }
-
-  /**
-   * Load children for create task modal
-   */
-  private async loadChildren(): Promise<void> {
-    const household = this.householdId();
-    if (!household) return;
-
-    try {
-      const childrenData = await this.childrenService.listChildren(household);
-      this.children.set(childrenData);
-    } catch (err) {
-      console.error('Failed to load children:', err);
-    }
   }
 
   /**
@@ -206,50 +146,6 @@ export class MainLayout implements OnInit, OnDestroy {
     if (route) {
       this.router.navigate([route]);
     }
-  }
-
-  /**
-   * Open create task modal
-   */
-  protected async openCreateTask(): Promise<void> {
-    // Ensure children are loaded before opening modal
-    if (this.children().length === 0) {
-      await this.loadChildren();
-    }
-    this.createTaskOpen.set(true);
-  }
-
-  /**
-   * Close create task modal
-   */
-  protected closeCreateTask(): void {
-    this.createTaskOpen.set(false);
-  }
-
-  /**
-   * Handle task form submission
-   */
-  protected onTaskFormSubmit(data: TaskFormData): void {
-    const household = this.householdId();
-    if (!household) return;
-
-    this.taskService
-      .createTask(household, {
-        name: data.name,
-        description: data.description,
-        points: data.points,
-        ruleType: data.ruleType,
-        ruleConfig: data.ruleConfig,
-      })
-      .pipe(take(1))
-      .subscribe({
-        next: () => {
-          this.createTaskOpen.set(false);
-        },
-        error: (error) => {
-          console.error('Failed to create task:', error);
-        },
-      });
   }
 
   /**

@@ -50,7 +50,7 @@ export class ProgressPage extends BasePage {
 
   // Navigation
   readonly bottomNav: Locator;
-  readonly sidebarNav: Locator;
+  readonly topTabs: Locator;
 
   // Loading and error
   readonly loadingIndicator: Locator;
@@ -92,7 +92,7 @@ export class ProgressPage extends BasePage {
 
     // Navigation
     this.bottomNav = page.locator('app-bottom-nav, nav.bottom-nav');
-    this.sidebarNav = page.locator('app-sidebar-nav, aside.sidebar');
+    this.topTabs = page.locator('nav.top-tabs');
 
     // Loading and error
     this.loadingIndicator = page.locator('[aria-busy="true"], .loading, [data-testid="loading"]');

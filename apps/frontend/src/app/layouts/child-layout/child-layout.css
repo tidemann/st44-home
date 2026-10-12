@@ -12,3 +12,10 @@
   width: 100%;
   padding-bottom: calc(72px + env(safe-area-inset-bottom, 0px));
 }
+
+/* 1024 px and wider (guide: The breakpoint): the tabs sit in the yellow top, no bottom menu */
+@media (min-width: 1024px) {
+  .child-content {
+    padding-bottom: 0;
+  }
+}

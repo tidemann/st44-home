@@ -31,6 +31,7 @@ import {
 } from '../../components/poeng/tick-moment/tick-moment';
 import { capitalize, clockTime, dayWord, isoDay, longDate } from '../../utils/poeng-format';
 import type { ChildAnalytics } from '@st44/types';
+import { isDesktopSignal } from '../../utils/desktop-query';
 
 /** What the tick moment shows for the chore just ticked */
 interface TickState {
@@ -91,6 +92,9 @@ export class ChildDashboardComponent implements OnInit {
   balance = this.rewardService.pointsBalance;
 
   protected readonly today = longDate();
+
+  /** 1024 px and wider: desktop A, done chores move to their own column */
+  protected readonly desktop = isDesktopSignal();
 
   hasTasks = computed(() => this.tasks().length > 0 || this.overdueTasks().length > 0);
   pendingTasks = computed(() => this.tasks().filter((t) => t.status === 'pending'));

@@ -103,3 +103,46 @@
     transform: rotate(360deg);
   }
 }
+
+/* ===== DESKTOP A, 1024 px AND WIDER (guide: Desktop and tablet — layout A) ===== */
+
+@media (min-width: 1024px) {
+  /* Beside the name: hero, "poeng" and the reward meter, right-aligned in 345 px */
+  .bandbox {
+    width: 345px;
+    text-align: right;
+  }
+
+  /* desktop-12: hero ink y 98…155, "poeng" 176…187.5, meter 239…253, band ends 270 */
+  .hero {
+    margin-top: 9px;
+  }
+
+  .herolab {
+    margin-top: 12px;
+  }
+
+  /* The meter's label is drawn at 15 px here (ink 10.5 px tall against the phone's 9) */
+  .meterlabel {
+    margin-top: 20px;
+    font-size: 15px;
+    text-align: left;
+  }
+
+  .pmeter {
+    margin-top: 8px;
+  }
+
+  /* Two independent stacks, 428 + 24 + 428, starting at the same y */
+  .cols {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    column-gap: 24px;
+    align-items: start;
+  }
+
+  /* Label ink → the card under it is 12 px in desktop-07 / desktop-12 (16 on the phone) */
+  .cols app-group-label {
+    margin-bottom: 7px;
+  }
+}
