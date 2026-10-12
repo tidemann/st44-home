@@ -1718,19 +1718,24 @@ A popup **blocks** when the app will not go on until you answer it: it takes foc
 page behind it does not scroll, and the only ways out are its own buttons or Escape. A popup you are
 allowed to ignore — an offer, a dropdown — does not block.
 
-| Blocks — edge Ink `#17120A`, veil, heavier shadow                                                                                                              | Does not block — edge `#555E64`, no veil                                                                             |
-| -------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------- |
-| The shared `<app-modal>` and every screen that uses it: «Nytt barn», «Rediger oppgave», barnekort, invitasjon, QR, hurtigopprett, flytt oppgave, oppgaveskjema | «Slå på varsler?» — the bottom sheet Stig named                                                                      |
-| `task-form`, `reassign-modal`, `manual-assignment-modal` and the delete dialog in `task-list` — four hand-rolled copies of the same thing                      | «Legg Diddit på hjemskjermen» — the same sheet, a different screen                                                   |
-| Every Diddit replacement for a native `confirm()` (there are seven call sites, and they have no Diddit look at all)                                            | The household dropdown — it has a border and a shadow today, in three values from outside the system; it takes these |
+| Blocks — edge Ink `#17120A`, veil, heavier shadow                                                                                                                                                                                                                                         | Does not block — edge `#555E64`, no veil                                                                             |
+| ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------- |
+| The shared `<app-modal>` and every screen that uses it: «Nytt barn», «Rediger oppgave», barnekort, invitasjon, QR, hurtigopprett, flytt oppgave, oppgaveskjema — and `child-rewards.html` and `manage-households.html`, which reach for `<app-modal>` directly, outside the modals folder | «Slå på varsler?» — the bottom sheet Stig named                                                                      |
+| `task-form`, `reassign-modal`, `manual-assignment-modal` and the delete dialog in `task-list` — four hand-rolled copies of the same thing                                                                                                                                                 | «Legg Diddit på hjemskjermen» — the same sheet, a different screen                                                   |
+| Every Diddit replacement for a native `confirm()` (there are seven call sites, and they have no Diddit look at all)                                                                                                                                                                       | The household dropdown — it has a border and a shadow today, in three values from outside the system; it takes these |
 
 Not popups, and not covered by this section: the offline banner (part of the page: radius 0, a 1 px
 bottom border, no layer above anything), the QR scanner's viewfinder mask, and the celebration
 overlay (a moment; its backdrop becomes ink like the rest, nothing else changes).
 
 **A non-blocking sheet must not cover the bottom nav.** The drawings put it in the ordinary 22 px
-gutter and 8 px clear of the nav divider, not at `bottom: 12px` over the bar. A question you are
-allowed to ignore must not sit on top of the navigation.
+gutter and 8 px clear of the nav divider. The two shipped sheets do neither:
+`notification-offer.css` and `install-prompt.css` both use `left`/`right: var(--space-md)` and
+`bottom: calc(var(--space-md) + env(safe-area-inset-bottom, 0px))` — a **16 px** gutter, and the
+sheet sits hard over a nav at `z-index: 1000` from its own 1100. So the move is two things:
+**16 px gutter → 22 px, and up off the nav** so the divider stays 8 px clear. The `z-index` is
+already right and does not change. A question you are allowed to ignore must not sit on top of the
+navigation.
 
 ### The tokens
 
@@ -1844,21 +1849,26 @@ the exception is the popup layer — nothing on the page itself changes.
 
 ### What must not break
 
-None of this is drawn; all of it will happen.
+**The first three rows are drawn.** `ida-01-verste-tilfelle.png` puts them side by side at 390 px,
+each with its measured failure and a «Må fikses» badge: «Tekst på 200 %» (the sheet 422 px high,
+top at y 343, breaking out of the yellow band above and the list below), «Lengre knappetekst» (two
+lines in a 153 × 49 box, the label standing outside the outline) and «Ett langt ord» (the line
+filling 316 px of the 316 px available). That board is the only measured record of what breaks —
+build against it, not against this table alone. What no picture draws is **the fixed state**.
 
-| Case                                            | What must happen                                                                                                                                                                            |
-| ----------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **200 % text** (WCAG 1.4.4)                     | `min-height: 49px`, never `height`. The label wraps inside the button, the action row stacks to one column when two no longer fit, and the sheet takes a `max-height` with its own scroll.  |
-| A longer label («Ikke nå, spør meg senere»)     | The same rule at normal size. A button is never a fixed box with the text drawn outside it.                                                                                                 |
-| A long chore name with no spaces                | `overflow-wrap: anywhere` on the popup's body text; keep the quoted name on its own line.                                                                                                   |
-| **360 px wide**                                 | The column becomes 316 px and each button 154 px against a 16.5 px label whose ink measures 105.5 px: it fits. Check the two-line title in the install sheet on a device.                   |
-| A two-line title                                | The popup grows downward; the action row keeps its 49 px and its 8 px gap.                                                                                                                  |
-| A blocking dialog taller than the band's bottom | Expected — that is `ida-W1`, and it is why the edge is ink. Do not shrink the dialog to avoid the band.                                                                                     |
-| The sheet covering the last chore row           | Give the scroll container bottom padding equal to the sheet height plus 8 px.                                                                                                               |
-| Focus                                           | A blocking popup: `role="dialog"`, `aria-modal`, a generated `aria-labelledby` id (never a hard-coded one — two dialogs in the DOM collide), focus trap, focus return, scroll lock, Escape. |
-| Focus on a sheet                                | **A bottom sheet is not a dialog.** `<section aria-labelledby>`: no trap, no scroll lock, and it never steals focus when it appears unasked — it goes in the focus order after the list.    |
-| The first focused button                        | Always the safe one («Avbryt», «Ikke nå»). Never «Slett».                                                                                                                                   |
-| Motion                                          | Honour `prefers-reduced-motion` on the sheet's entrance.                                                                                                                                    |
+| Case                                            | What must happen                                                                                                                                                                                                                                                                                                                                                                                      |
+| ----------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **200 % text** (WCAG 1.4.4)                     | `min-height: 49px`, never `height`. The label wraps inside the button, the action row stacks to one column when two no longer fit, and the sheet takes a `max-height` with its own scroll.                                                                                                                                                                                                            |
+| A longer label («Ikke nå, spør meg senere»)     | The same rule at normal size. A button is never a fixed box with the text drawn outside it.                                                                                                                                                                                                                                                                                                           |
+| A long chore name with no spaces                | `overflow-wrap: anywhere` on the popup's body text; keep the quoted name on its own line.                                                                                                                                                                                                                                                                                                             |
+| **360 px wide**                                 | The column becomes 316 px and each button **137.5 px** — 316 less 3 px of border and 30 px of padding is 283 inside, less the 8 px gap, halved; it measures 138 px counted inclusive of the border pixel, the same half-pixel as the 152.5 above. Against a 16.5 px label whose ink measures 105.5 px it fits, with 16 px clear each side. Check the two-line title in the install sheet on a device. |
+| A two-line title                                | The popup grows downward; the action row keeps its 49 px and its 8 px gap.                                                                                                                                                                                                                                                                                                                            |
+| A blocking dialog taller than the band's bottom | Expected — that is `ida-W1`, and it is why the edge is ink. Do not shrink the dialog to avoid the band.                                                                                                                                                                                                                                                                                               |
+| The sheet covering the last chore row           | Give the scroll container bottom padding equal to the sheet height plus 8 px.                                                                                                                                                                                                                                                                                                                         |
+| Focus                                           | A blocking popup: `role="dialog"`, `aria-modal`, a generated `aria-labelledby` id (never a hard-coded one — two dialogs in the DOM collide), focus trap, focus return, scroll lock, Escape.                                                                                                                                                                                                           |
+| Focus on a sheet                                | **A bottom sheet is not a dialog.** `<section aria-labelledby>`: no trap, no scroll lock, and it never steals focus when it appears unasked — it goes in the focus order after the list.                                                                                                                                                                                                              |
+| The first focused button                        | Always the safe one («Avbryt», «Ikke nå»). Never «Slett».                                                                                                                                                                                                                                                                                                                                             |
+| Motion                                          | Honour `prefers-reduced-motion` on the sheet's entrance.                                                                                                                                                                                                                                                                                                                                              |
 
 ## Do's and Don'ts
 
