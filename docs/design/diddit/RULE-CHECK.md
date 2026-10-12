@@ -58,8 +58,13 @@ convention with the number.**
 | --------------- | ----------- | ------------- | ------------- | -------------------------------------------------------------- |
 | **Hjem**        | 18.0 × 18.0 | 17.70 × 18.00 | 18.00 × 18.00 | same house, re-expressed at 21 units                           |
 | **Oppgaver**    | 17.0 × 12.0 | 17.15 × 13.60 | 17.00 × 12.00 | **dashes, not dots** — the picture's bullet is a 1.5 dash      |
-| **Belønninger** | 18.0 × 17.5 | 18.20 × 18.10 | 18.00 × 17.50 | **lid band** over a narrower box, **small two-loop bow**       |
+| **Belønninger** | 18.0 × 17.5 | 18.20 × 18.10 | 18.00 × 17.00 | **lid band** over a narrower box, **small two-loop bow**       |
 | **Familie**     | 17.0 × 15.0 | 19.30 × 16.35 | 17.00 × 15.05 | **a small second head** — a parent and a child, not a crescent |
+
+The **now** column is round 2's artwork. «Belønninger» reads 17.00 rather than 17.50 there because
+its body's bottom line moved onto the picture's; in the picture's own convention — the 2× band at
+threshold 220 — the same glyph reads **18.00 × 17.50**, the picture's number exactly. Round 2 below
+has both readings and why they differ.
 
 «Familie» reads 17.0 × 15.0 on **all four light screens at both thresholds**. It does not drift, so
 it was never a measuring convention — it was a narrower drawing.
@@ -95,19 +100,71 @@ glyph in the desktop tab row still drawn 17 % heavier.
 **The desktop band's half-coverage table moved with the artwork.** The guide's tab-row numbers are
 measured on `#F6B93B` by coverage, not by a luminance cut (the yellow is itself luminance 188.9).
 Re-run on both refs, the method reproduces the recorded old numbers exactly and gives the new ones:
-house 18.0 × 18.0 (unchanged), gift 18.0 × 18.0 (unchanged), fremgang 18.0 × 14.5 (unchanged),
-**list 17.5 × 13.5 → 17.0 × 12.0**, **familie 19.0 × 16.5 → 17.0 × 15.0**. List and familie now
-agree exactly with the picture's table; the gift still reads half a pixel taller on the band, which
-is the convention difference the guide describes, not a drawing difference.
+house 18.0 × 18.0 (unchanged), fremgang 18.0 × 14.5 (unchanged), **list 17.5 × 13.5 → 17.0 × 12.0**,
+**familie 19.0 × 16.5 → 17.0 × 15.0**, and after round 2 below, **gift 18.0 × 18.0 → 18.0 × 17.5**.
+All four now agree exactly with the picture's table.
+
+## Round 2 — the two interiors, and a reading trap underneath them (2026-10-12)
+
+Ida measured the merged redraw against the picture and sent back two glyphs. Both findings hold;
+both are fixed here. Everything below was re-measured from the picture and from the real
+`nav-icon.html` per git ref, not taken from the review.
+
+**1. «Belønninger» — the box under the lid.** The redraw put the body's own top line 1.5 px below
+the lid's, so the shoulder read as a doubled band over a box 1.5 px too wide, with square feet
+where the picture rounds them. The body now starts **on** the lid's bottom line and its feet are
+rounded: body span c2c **15.50 → 14.00**, the picture's number exactly; overhang per side
+**0.50 → 1.25** against 1.27; one line under the lid's hollow instead of two (the row run in a
+column band inside the box is `6.5→17` on both, where the redraw gave `6.5→9.5`, a gap, then
+`16→17.5`); ink on the bottom row **17.00 → 13.00**, the picture's.
+
+**One change beyond what the review suggested, because the suggestion left a measurable gap.** The
+suggested body kept its bottom edge on 18.5. Measured, that leaves the body's bottom line at 16.75
+against the picture's **16.13**, and the whole glyph 18.00 tall against the picture's **17.50** —
+at every sub-pixel offset and at thresholds 220 and 240, so it is geometry and not raster phase.
+Moving the bottom to 18.0 lands both (16.25 and 17.50) and touches nothing else: lid, ribbon, bow
+and the 18.00 width are unchanged. Ink agreement with the picture goes **63.4 % → 90.5 %**
+(shared coverage ÷ combined coverage, 2× tiles aligned on the ink box).
+
+**2. «Hjem» — the doorway.** Door jambs c2c **6.06 → 5.24** against the picture's **5.23 active /
+5.25 inactive**, and the opening at threshold 220 **4.0 → 3.0** against 3.0. Both numbers read the
+same on all four light screens, so neither depends on the chosen state. The door's **height is not
+touched**: a pass that also lowered the lintel (door 5.6 units) puts it at 11.95 from the ink top,
+further from the picture's 12.32 than the 12.55 the redraw already had, so it was dropped.
+
+**3. Found while measuring: the picture bolds the chosen item, and one of our reference numbers is
+a chosen-state reading.** Amber `#8A5A00` names the chosen item in the picture — and that item also
+carries about **20 % more ink**. Per light screen, ink box at 220 and total coverage:
+
+| item            | inactive                           | chosen (amber)                                     |
+| --------------- | ---------------------------------- | -------------------------------------------------- |
+| **Hjem**        | 18.0 × 17.5, cov 98.1, stroke 1.49 | 18.0 × 18.0, cov 117.9, stroke 1.84 (screens 1, 3) |
+| **Oppgaver**    | 17.0 × 12.0, cov 68.4              | 18.0 × 13.0, cov 82.4 (screen 2)                   |
+| **Belønninger** | 18.0 × 17.5, cov 142.9             | 19.0 × 17.5, cov 168.9 (screen 5)                  |
+| **Familie**     | 17.0 × 15.0, cov 81.9              | never chosen in the picture                        |
+
+Three of the four reference numbers are inactive readings. **The house's is not**: Revision 6 read
+it on screen 1, where the picture draws it chosen and bolder. Our bar does not bold the chosen item
+— since ST-892 the ink pill carries that state — so the comparable reading is the inactive one, and
+against it our house is larger: wall c2c **16.50 against 15.75**, geometric ink **17.85 × 17.46
+against 17.20 × 16.65**, about 0.7 px on both dimensions. It is why «Hjem» reaches only **71.1 %**
+ink agreement where «Belønninger» now reaches 90.5 % and «Oppgaver» 94.7 %.
+
+**This is recorded, not fixed.** Narrowing the house moves the one glyph this review passed, and it
+moves it off 18.0 × 18.0 — the number Revision 6's 21 px box derivation rests on. That is a
+decision about the set and the box, not a round-2 correction, so it goes to Maria with its
+numbers. The other three glyphs are unaffected: they were already read inactive and match within
+0.2 px.
 
 **What remains different from the picture, with reasons** (a difference without a reason is a fault):
 
-1. **«Belønninger» reads 18.0 tall on the 390 px band** at both cuts, against the picture's 17.0
-   (threshold 200) and 17.5 (220), while the 10× solo render is exactly 17.50. The band's raster
-   snapping to the half-pixel grid — one half-pixel at each edge — not the drawing. The same glyph
-   on the yellow desktop band, read by coverage, lands on 18.0 × 18.0 before and after the redraw.
-2. **«Familie» measures 15.05 against 15.00** — 0.05 px, below anything the picture can be read to.
-3. **The bow's loops are a touch rounder than the picture's**, which draws them slightly more
+1. **«Belønninger» reads 17.5 tall on the 390 px band at both cuts**, against the picture's 17.0
+   (threshold 200) and 17.5 (220) — exact at 220, half a pixel over at 200, which is the picture's
+   own read floor. The 10× solo render of the same glyph reads 17.00, the geometry; the two
+   conventions differ by the antialiased edge, as the guide's method note describes.
+2. **«Hjem» is ~0.7 px larger than the picture's inactive house** — point 3 above, with Maria.
+3. **«Familie» measures 15.05 against 15.00** — 0.05 px, below anything the picture can be read to.
+4. **The bow's loops are a touch rounder than the picture's**, which draws them slightly more
    pointed at the top outer edge. At 10 × 3.5 px of ink with a 1.5 px stroke the slit is one pixel
    of near-white, so the shape is held by three numbers rather than by its outline: the box
    (10.10 × 3.50 against 10.00 × 3.50), the height above the lid (3.50 on both) and the openness

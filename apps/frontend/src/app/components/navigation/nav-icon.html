@@ -6,7 +6,7 @@
   @case ('home') {
     <svg viewBox="0 0 21 21" fill="none" aria-hidden="true">
       <path
-        d="M2.25 8.54 10.5 2.25l8.25 6.29V17.56a1.2 1.2 0 0 1-1.21 1.19h-4.01v-5.1H7.47v5.1H3.46a1.2 1.2 0 0 1-1.21-1.19Z"
+        d="M2.25 8.54 10.5 2.25l8.25 6.29V17.56a1.2 1.2 0 0 1-1.21 1.19h-4.415v-5.1H7.875v5.1H3.46a1.2 1.2 0 0 1-1.21-1.19Z"
         stroke="currentColor"
         stroke-width="1.5"
         stroke-linejoin="round"
@@ -28,9 +28,15 @@
     <!-- a lid band over a narrower box, centre ribbon, and the picture's small two-loop bow -->
     <svg viewBox="0 0 21 21" fill="none" aria-hidden="true">
       <rect x="2.25" y="6" width="16.5" height="3" stroke="currentColor" stroke-width="1.5" />
-      <rect x="2.75" y="10.5" width="15.5" height="8" stroke="currentColor" stroke-width="1.5" />
+      <!-- the body starts on the lid's own bottom line, so there is one line there and not two,
+           and its feet are rounded: that is how the picture draws the shoulder under the lid -->
+      <path
+        d="M3.5 9v7.75a1.25 1.25 0 0 0 1.25 1.25h11.5a1.25 1.25 0 0 0 1.25-1.25V9"
+        stroke="currentColor"
+        stroke-width="1.5"
+      />
       <!-- the ribbon carries up into the bow, so the centre closes at the foot as the picture draws it -->
-      <path d="M10.5 4.4V18.5" stroke="currentColor" stroke-width="1.5" />
+      <path d="M10.5 4.4V18" stroke="currentColor" stroke-width="1.5" />
       <!-- each loop leans outward and keeps a slit open at its inner foot. That slit is one pixel
            of near-white at this size, so the geometry is held to 0.01 unit. -->
       <ellipse

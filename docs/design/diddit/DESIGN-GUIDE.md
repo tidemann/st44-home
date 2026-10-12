@@ -910,10 +910,21 @@ Jonas green + track + rust, Mathea green + track.
 - Four items: Hjem · Oppgaver · Belønninger · Familie. **18 px of icon ink in a 21 px box**, above a
   12 px label.
 - **Ink and box are two numbers, and the picture gives the ink.** In the signed-off picture the
-  «Hjem» house ink is 36 × 36 board px — **18.0 × 18.0 px** — on all four light screens at
-  luminance threshold 220, and 34–36 at threshold 200 where the muted glyphs' antialiased edge
-  drops out. The other three sit under it: list 17.0 × 12.0, gift 18.0 × 17.5, familie 17.0 × 15.0.
+  «Hjem» house ink is 36 × 36 board px — **18.0 × 18.0 px** — at luminance threshold 220, and
+  34–36 at threshold 200 where the muted glyphs' antialiased edge drops out. The other three sit
+  under it: list 17.0 × 12.0, gift 18.0 × 17.5, familie 17.0 × 15.0.
   Measure a screenshot against the **ink**; set `--nav-icon` to the **box**.
+- **Read a glyph where the picture draws it inactive — the picture bolds the chosen item**
+  (ST-898 round 2, 2026-10-12). Amber `#8A5A00` names the chosen item in the picture, and that item
+  is also drawn with about **20 % more ink**: the house reads 18.0 × 18.0 with a **1.84 px** stroke
+  on the two light screens where it is chosen (1 and 3) and **18.0 × 17.5** with the set's normal
+  **1.49 px** stroke on the two where it is not (2 and 5). «Oppgaver» goes 17.0 × 12.0 → 18.0 × 13.0
+  when chosen, the gift 18.0 × 17.5 → 19.0 × 17.5; «Familie» is never chosen in the picture, which
+  is why its number never moved. **Our bar does not bold the chosen item** — since ST-892 the ink
+  pill carries that state — so the comparable reading is the inactive one. The numbers above are
+  inactive readings except the house's, which is the chosen-state reading Revision 6 took from
+  screen 1; measured against the inactive house our glyph is ~0.7 px larger in both dimensions.
+  That gap is measured and recorded, not yet decided: RULE-CHECK **Revision 9**.
 - **The artwork is drawn in a 21-unit viewBox, so one unit is one rendered pixel.** `nav-icon.html`
   uses `viewBox="0 0 21 21"` in the 21 px box: the four ink numbers above are literally the path
   data, and `stroke-width="1.5"` renders the picture's measured **1.5 px** line. Redrawing a glyph
@@ -1435,7 +1446,7 @@ screen edges.
   stated way.** Ink in CSS px, w × h, of each glyph in its 21 px slot on the band's `#F6B93B`, at
   **half coverage**: each pixel's colour projected onto the band's background→ink vector, counted
   from coverage 0.5, edges taken at pixel boundaries, DPR 2. **House 18.0 × 18.0, gift
-  18.0 × 18.0**, familie 17.0 × 15.0, fremgang 18.0 × 14.5, list 17.0 × 12.0. **The house and the
+  18.0 × 17.5**, familie 17.0 × 15.0, fremgang 18.0 × 14.5, list 17.0 × 12.0. **The house and the
   gift fill the slot; the other three do not.** A screenshot of «Oppgaver» showing a 12 px glyph is
   the right icon in the right box — check the **slot**, by the house or the gift, not each glyph's
   own height.
@@ -1454,8 +1465,11 @@ screen edges.
   agree to the antialiased edge that method note already describes: the picture gives list
   17.0–18.0 × 12.0–13.0 and gift 18.0–19.0 × 17.0–17.5, half a pixel under the band's read.
   **The picture's table is for the phone bar, this one for the band. Quote the convention with the
-  number, or they look like two answers.** Since ST-898 the list and familie rows agree exactly;
-  the gift still reads half a pixel taller on the band, which is the convention, not the drawing.
+  number, or they look like two answers.** Since ST-898 the list and familie rows agree exactly,
+  and since its round 2 the gift does too — it read half a pixel taller on the band until the
+  body's bottom line moved onto the picture's, and the coverage method now gives 18.0 × 17.5 there
+  as well. The house is the one row still read against the picture's **chosen-state** glyph; see
+  the note under `### Navigation`.
 - **The familie gap is closed (ST-898, Maria's decision 2026-10-12).** The guide used to record
   here that the shipped `family` glyph rendered ≈19.3 × 16.3 against the picture's 17.0 × 15.0 — a
   narrower drawing in the picture, recorded and not changed. Measuring the other three turned it
