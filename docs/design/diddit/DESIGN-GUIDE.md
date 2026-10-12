@@ -1383,18 +1383,18 @@ desktop:
 Everything in the band sits inside the 880 px container; the yellow itself runs past it to both
 screen edges.
 
-| Element                                   | Where, in CSS px from the top of the page                                                                 |
-| ----------------------------------------- | --------------------------------------------------------------------------------------------------------- |
-| Diddit mark                               | **36 × 36**, at the container's left edge, y 22…58                                                        |
-| "Diddit" wordmark                         | ink starts 13.5 px right of the mark, y 29.5…49.5                                                         |
-| Tab icons                                 | ink y 32.5…47.5, in a 21 px box — the signed-off icon set, see below                                      |
-| Tab labels                                | Hanken **15 px / 500**, ink y 33.5…47.5, **16.5 px** right of their icon's box — see the pill note        |
-| Chosen tab's ink pill                     | **46 × 26 px `#17120A`**, fully rounded, centred on the icon box → y 27…53                                |
-| Initial badge                             | **38 px circle**, `#DBA434` fill, `#17120A` initial, right-aligned to the container's right edge, y 21…59 |
-| Screen title ("Hjemme", "Jonas")          | ink 26.0 px tall, top at y 141.5                                                                          |
-| Sub-line under it                         | ink 14 px tall, top at y 175.5                                                                            |
-| Child cards (family home)                 | y 88…242                                                                                                  |
-| Hero number + reward meter (child screen) | y 98…253                                                                                                  |
+| Element                                   | Where, in CSS px from the top of the page                                                                          |
+| ----------------------------------------- | ------------------------------------------------------------------------------------------------------------------ |
+| Diddit mark                               | **36 × 36**, at the container's left edge, y 22…58                                                                 |
+| "Diddit" wordmark                         | ink starts 13.5 px right of the mark, y 29.5…49.5                                                                  |
+| Tab icons                                 | **18 px of artwork at y 31…49**, centred in a **21 px box** (box y 29.5…50.5) — the signed-off icon set, see below |
+| Tab labels                                | Hanken **15 px / 500**, ink y 33.5…47.5, **16.5 px** right of their icon's box — see the pill note                 |
+| Chosen tab's ink pill                     | **46 × 26 px `#17120A`**, fully rounded, centred on the icon box → y 27…53                                         |
+| Initial badge                             | **38 px circle**, `#DBA434` fill, `#17120A` initial, right-aligned to the container's right edge, y 21…59          |
+| Screen title ("Hjemme", "Jonas")          | ink 26.0 px tall, top at y 141.5                                                                                   |
+| Sub-line under it                         | ink 14 px tall, top at y 175.5                                                                                     |
+| Child cards (family home)                 | y 88…242                                                                                                           |
+| Hero number + reward meter (child screen) | y 98…253                                                                                                           |
 
 - **The tab row, the title and the child cards are three things on two lines**, not a stack. The
   title and the cards share one line: the title at the container's left edge, the cards flush to its
@@ -1419,9 +1419,13 @@ screen edges.
   the **signed-off set**, at the same 18 px ink in the same 21 px box the bottom bar uses.
 - **Fremgang is not on the phone's four-item bar, but its glyph already exists** — `progress` in
   `apps/frontend/src/app/components/navigation/nav-icon.html`, the same set ST-881 built from the
-  approved source, in the same 18 × 18 viewBox at the same 1.5 stroke. Rendered in the 21 px box it
-  measures **18.0 px of ink**, in line with the other four (16.5 list, 18.0 gift, 19.0 familie).
-  Use it; do not draw a sixth icon.
+  approved source, in the same 18 × 18 viewBox at the same 1.5 stroke. Rendered in the 21 px box its
+  ink measures **17.5 × 14.5**, in line with the other four. Use it; do not draw a sixth icon.
+- **The 18 px is the slot, not every glyph's ink.** Only the house fills it. Measured on the render
+  in [`desktop-20`](reference/desktop-20-tabrow-pill-vs-underline.png), ink in CSS px, w × h:
+  **house 18.0 × 18.0**, gift 17.5 × 18.0, familie 18.5 × 16.5, fremgang 17.5 × 14.5, list
+  16.5 × 13.0. A screenshot of «Oppgaver» showing a 13 px glyph is the right icon in the right box —
+  check the **slot**, by the house or the gift, not each glyph's own height.
 - **Everything in the band is `#17120A` on `#F6B93B` — 10.57:1.** Title, sub-line, every tab label,
   every unchosen tab icon, the chosen tab's pill and the initial on the badge. **The one thing in the
   band that is not ink is the chosen tab's icon**, which turns `#F6B93B` inside its ink pill. The
@@ -1437,9 +1441,12 @@ approved look — **the pill replaces it.** Maria ruled on this on 2026-10-12 af
 raised on ST-892. The underline is deleted; do not bring it back.
 
 - **A `#17120A` pill behind the chosen icon: 46 × 26 px, fully rounded**, the same token values as
-  `nav-item-active`. **Centred on the 21 px icon box**, which puts it at **y 27…53** — the icon ink
-  runs y 32.5…47.5, so the pill clears the ink by 4 px over and under, exactly as it does on the
-  phone.
+  `nav-item-active`. **Centred on the 21 px icon box**, which puts it at **y 27…53** — the box runs
+  y 29.5…50.5 and its 18 px of artwork **y 31…49**, so the pill clears the artwork by **4 px over and
+  under**, exactly as it does on the phone. **Centre the pill and the box on the same line (y 40).**
+  In [`desktop-20`](reference/desktop-20-tabrow-pill-vs-underline.png) the box landed on y 30…51
+  instead, so the glyphs measure y 31.5…49.5 there — half a pixel low, a slip in that render and not
+  a second slot.
 - **The icon inside it turns `#F6B93B`.** Every unchosen icon stays `#17120A`.
 - **The chosen label is `#17120A` and one weight step heavier: Hanken Grotesk 600 against the row's
   500, both at 15 px.** Maria asked for "ink and bold"; this is what bold is here, and it is not an
@@ -1490,10 +1497,11 @@ Drawn as-is, the pill would run 3.5 px under the start of «Hjem».
   bearings. Use the rendered box widths.
 
 - **Those 37 px are the whole budget, and a wider screen does not help.** The band is identical at
-  1024 and 1440 — the container moves, the row and the badge do not — so the clearance is 37.0 px at
-  both widths and there is no width that buys more. The row is ~64 px wider than anything that has
-  been drawn (7.5 px per tab from the gap, the rest from the bigger icon set), so a build must
-  measure it rather than assume it: a translated label, a different font fallback, or a user's larger
+  1024 and 1440 — the container moves and the row and the badge move with it, 208 px to the right at
+  1440, so the gap between them is 37.0 px at both widths and there is no width that buys more.
+  The row is ~64 px wider than anything that has been drawn (7.5 px per tab from the gap, the rest
+  from the bigger icon set), so a build must measure it rather than assume it: a translated label, a
+  different font fallback, or a user's larger
   text setting all spend the same 37 px. (The `en` locale is not the risk — «Belønninger» →
   "Rewards" and «Oppgaver» → "Tasks" both shrink the row.) **If the row would reach the badge,
   stop** — shortening a label, dropping the labels to icons alone or wrapping the row are all changes
@@ -1618,8 +1626,8 @@ it was ruled on, not drifted into.
 
 **Nothing is left undrawn.** The one gap this list expected — a Fremgang glyph, since the phone's bar
 has four items and the tab row needs five — turned out not to be a gap: `progress` is already in the
-repo's signed-off icon set, in the same viewBox at the same stroke, and measures 18.0 px of ink in
-the 21 px box. See **The yellow top and its tab row**.
+repo's signed-off icon set, in the same viewBox at the same stroke, and sits in the same 18 px slot
+in the 21 px box (its own ink 17.5 × 14.5). See **The yellow top and its tab row**.
 
 ## Do's and Don'ts
 
