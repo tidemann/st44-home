@@ -17,6 +17,8 @@ export interface DailyGenerationSummary {
   skipped: number;
   failedHouseholds: string[];
   errors: string[];
+  /** Tasks whose chosen children were all deleted; the parent fixes them in the app */
+  skippedNoChildren: string[];
 }
 
 interface SchedulerLogger {
@@ -84,6 +86,7 @@ export async function runDailyAssignmentGeneration(
     skipped: 0,
     failedHouseholds: [],
     errors: [],
+    skippedNoChildren: [],
   };
 
   const householdIds = await listHouseholds();
@@ -98,6 +101,9 @@ export async function runDailyAssignmentGeneration(
       summary.skipped += result.skipped;
       for (const error of result.errors) {
         summary.errors.push(`${householdId}: ${error}`);
+      }
+      for (const task of result.skippedNoChildren) {
+        summary.skippedNoChildren.push(`${householdId}: ${task}`);
       }
       if (result.errors.some((error) => error.startsWith('Transaction failed'))) {
         summary.failedHouseholds.push(householdId);

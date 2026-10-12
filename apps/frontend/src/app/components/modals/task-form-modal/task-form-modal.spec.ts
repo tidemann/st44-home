@@ -150,6 +150,55 @@ describe('TaskFormModal', () => {
       const assignedChildren = component['form'].get('assignedChildren') as FormArray;
       expect(assignedChildren.length).toBe(2);
     });
+
+    it('leaves deleted children out of the form', () => {
+      fixture.componentRef.setInput('task', {
+        ...mockTask,
+        ruleConfig: { assignedChildren: ['gone-1', 'child-2'] },
+      });
+      fixture.detectChanges();
+
+      const assignedChildren = component['form'].get('assignedChildren') as FormArray;
+      expect(assignedChildren.value).toEqual(['child-2']);
+      expect(component['childrenGone']()).toBe(false);
+    });
+
+    describe('when every chosen child is deleted (ST-914)', () => {
+      beforeEach(() => {
+        fixture.componentRef.setInput('task', {
+          ...mockTask,
+          ruleType: 'repeating',
+          ruleConfig: { repeatDays: [1, 3], assignedChildren: ['gone-1'] },
+        });
+        fixture.componentRef.setInput('open', true);
+        fixture.detectChanges();
+      });
+
+      it('tells the parent and asks for a new child', () => {
+        expect(component['childrenGone']()).toBe(true);
+        const text = fixture.nativeElement.textContent as string;
+        expect(text).toContain('Barnet som hadde denne oppgaven, er slettet');
+        expect(text).toContain('Velg minst ett barn');
+      });
+
+      it('cannot be saved until a child is picked', () => {
+        expect(component['isFormValid']()).toBe(false);
+
+        component.onChildChange('child-1', true);
+        expect(component['isFormValid']()).toBe(true);
+      });
+
+      it('can still be deleted', () => {
+        component['onDeleteClick']();
+        expect(component['showDeleteConfirm']()).toBe(true);
+      });
+
+      it('is cleared when the form is reset for a new task', () => {
+        fixture.componentRef.setInput('mode', 'create');
+        fixture.detectChanges();
+        expect(component['childrenGone']()).toBe(false);
+      });
+    });
   });
 
   describe('Form Validation', () => {

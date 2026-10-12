@@ -15,7 +15,15 @@ import type { AssignmentGenerationResult } from './assignment-generator.js';
 const ymd = (date: Date) => date.toISOString().slice(0, 10);
 
 function okSummary(date = '2026-10-05'): DailyGenerationSummary {
-  return { date, households: 0, created: 0, skipped: 0, failedHouseholds: [], errors: [] };
+  return {
+    date,
+    households: 0,
+    created: 0,
+    skipped: 0,
+    failedHouseholds: [],
+    errors: [],
+    skippedNoChildren: [],
+  };
 }
 
 function silentLogger() {
@@ -60,7 +68,7 @@ describe('Assignment Scheduler', () => {
         listHouseholds: async () => ['h1', 'h2'],
         generate: async (householdId, start, days): Promise<AssignmentGenerationResult> => {
           calls.push({ householdId, start: ymd(start), days });
-          return { created: 3, skipped: 1, errors: [] };
+          return { created: 3, skipped: 1, errors: [], skippedNoChildren: [] };
         },
       });
 
@@ -83,10 +91,15 @@ describe('Assignment Scheduler', () => {
         generate: async (householdId): Promise<AssignmentGenerationResult> => {
           if (householdId === 'h1') throw new Error('boom');
           if (householdId === 'h2') {
-            return { created: 0, skipped: 0, errors: ['Transaction failed: deadlock'] };
+            return {
+              created: 0,
+              skipped: 0,
+              errors: ['Transaction failed: deadlock'],
+              skippedNoChildren: [],
+            };
           }
           done.push(householdId);
-          return { created: 2, skipped: 0, errors: [] };
+          return { created: 2, skipped: 0, errors: [], skippedNoChildren: [] };
         },
       });
 
@@ -100,11 +113,33 @@ describe('Assignment Scheduler', () => {
       const summary = await runDailyAssignmentGeneration({
         now: new Date('2026-10-05T06:00:00Z'),
         listHouseholds: async () => ['h1'],
-        generate: async () => ({ created: 1, skipped: 0, errors: ['Task X: bad config'] }),
+        generate: async () => ({
+          created: 1,
+          skipped: 0,
+          errors: ['Task X: bad config'],
+          skippedNoChildren: [],
+        }),
       });
 
       assert.deepStrictEqual(summary.failedHouseholds, []);
       assert.deepStrictEqual(summary.errors, ['h1: Task X: bad config']);
+    });
+
+    test('tasks without children are listed as skipped, not as errors', async () => {
+      const summary = await runDailyAssignmentGeneration({
+        now: new Date('2026-10-05T06:00:00Z'),
+        listHouseholds: async () => ['h1'],
+        generate: async () => ({
+          created: 1,
+          skipped: 0,
+          errors: [],
+          skippedNoChildren: ['Task Feed cat (t1)'],
+        }),
+      });
+
+      assert.deepStrictEqual(summary.errors, []);
+      assert.deepStrictEqual(summary.failedHouseholds, []);
+      assert.deepStrictEqual(summary.skippedNoChildren, ['h1: Task Feed cat (t1)']);
     });
   });
 
@@ -165,6 +200,25 @@ describe('Assignment Scheduler', () => {
         assert.deepStrictEqual(
           logger.lines.map((l) => l.level),
           ['error', 'error', 'info'],
+        );
+      } finally {
+        scheduler.stop();
+      }
+    });
+
+    test('a run with only skipped tasks logs at info level', async () => {
+      const logger = silentLogger();
+      const scheduler = startAssignmentScheduler(logger, {
+        intervalMs: 60 * 60 * 1000,
+        now: () => new Date('2026-10-05T06:00:00Z'),
+        run: async () => ({ ...okSummary(), skippedNoChildren: ['h1: Task Feed cat (t1)'] }),
+      });
+
+      try {
+        await scheduler.firstRun;
+        assert.deepStrictEqual(
+          logger.lines.map((l) => l.level),
+          ['info'],
         );
       } finally {
         scheduler.stop();

@@ -1152,7 +1152,7 @@ describe('Assignment Generator Service', () => {
       assert.deepStrictEqual(childrenFor(trashId), new Set([null]));
     });
 
-    test('task whose assigned children are all deleted is skipped with an error', async () => {
+    test('task whose assigned children are all deleted is skipped, not an error', async () => {
       const goneId = await createTask('Feed cat', 'repeating', {
         repeatDays: [1, 3, 5],
         assignedChildren: [testChildIds[1]],
@@ -1163,9 +1163,8 @@ describe('Assignment Generator Service', () => {
       await pool.query('DELETE FROM children WHERE id = $1', [testChildIds[1]]);
 
       const result = await generateAssignments(testHouseholdId, new Date('2025-01-06'), 7);
-      assert.strictEqual(result.errors.length, 1);
-      assert.ok(result.errors[0].includes('Feed cat'));
-      assert.ok(!result.errors[0].startsWith('Transaction failed'));
+      assert.deepStrictEqual(result.errors, []);
+      assert.deepStrictEqual(result.skippedNoChildren, [`Task Feed cat (${goneId})`]);
       assert.strictEqual(result.created, 7);
 
       const counts = await pool.query(

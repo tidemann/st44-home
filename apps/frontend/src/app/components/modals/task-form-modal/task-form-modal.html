@@ -8,6 +8,13 @@
         </div>
       }
 
+      @if (childrenGone()) {
+        <div class="form-error-banner" role="status" i18n="@@taskFormModal.childrenGone">
+          Barnet som hadde denne oppgaven, er slettet, så oppgaven kommer ikke lenger på noen dag.
+          Velg et nytt barn, eller slett oppgaven.
+        </div>
+      }
+
       <!-- Task Name -->
       <div class="form-group">
         <label class="form-label" for="task-name" i18n="@@taskFormModal.taskNameLabel"
@@ -235,6 +242,9 @@
               </p>
             }
           </div>
+          @if (childrenGone() && assignedChildrenArray.length === 0) {
+            <div class="form-hint" i18n="@@taskFormModal.pickNewChild">Velg minst ett barn</div>
+          }
         </fieldset>
       }
 

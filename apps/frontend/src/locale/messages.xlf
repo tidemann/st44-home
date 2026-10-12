@@ -5642,6 +5642,48 @@
           <context context-type="linenumber">322</context>
         </context-group>
       </trans-unit>
+      <trans-unit id="tasks.noChildrenGroup" datatype="html">
+        <source>Mangler barn</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/pages/tasks/tasks.html</context>
+          <context context-type="linenumber">63,64</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="tasks.noChildrenNote" datatype="html">
+        <source> Barnet som hadde oppgaven, er slettet, så den kommer ikke lenger på noen dag. Trykk på oppgaven for å velge et nytt barn eller slette den. </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/pages/tasks/tasks.html</context>
+          <context context-type="linenumber">68,71</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="tasks.noChildrenMeta" datatype="html">
+        <source>Velg et nytt barn</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/pages/tasks/tasks.html</context>
+          <context context-type="linenumber">75,77</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="tasks.ruleNoChildren" datatype="html">
+        <source>Uten barn – velg et nytt</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/pages/tasks/tasks.ts</context>
+          <context context-type="linenumber">184</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="taskFormModal.childrenGone" datatype="html">
+        <source> Barnet som hadde denne oppgaven, er slettet, så oppgaven kommer ikke lenger på noen dag. Velg et nytt barn, eller slett oppgaven. </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/modals/task-form-modal/task-form-modal.html</context>
+          <context context-type="linenumber">13,16</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="taskFormModal.pickNewChild" datatype="html">
+        <source>Velg minst ett barn</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/modals/task-form-modal/task-form-modal.html</context>
+          <context context-type="linenumber">246,249</context>
+        </context-group>
+      </trans-unit>
     </body>
   </file>
 </xliff>

@@ -181,6 +181,13 @@ export class TaskFormModal {
   protected readonly showDeleteConfirm = signal(false);
 
   /**
+   * Edit mode: every child the task was given to has been deleted (ST-914), so the
+   * nightly job skips it. The parent must pick a new child or delete the task;
+   * saving with no child would quietly turn it into a task for everyone.
+   */
+  protected readonly childrenGone = signal(false);
+
+  /**
    * Modal title based on mode
    */
   protected readonly modalTitle = computed(() => {
@@ -256,10 +263,14 @@ export class TaskFormModal {
     const repeatDaysArray = this.form.get('repeatDays') as FormArray;
     repeatDays.forEach((day: number) => repeatDaysArray.push(this.fb.control(day)));
 
-    // Populate assignedChildren FormArray
+    // Populate assignedChildren FormArray. Deleted children stay in the stored
+    // config; leave them out so they are neither counted nor saved again
+    const childIds = new Set(this.children().map((child) => child.id));
+    const remaining = assignedChildren.filter((childId: string) => childIds.has(childId));
     const assignedChildrenArray = this.form.get('assignedChildren') as FormArray;
-    assignedChildren.forEach((childId: string) =>
-      assignedChildrenArray.push(this.fb.control(childId)),
+    remaining.forEach((childId: string) => assignedChildrenArray.push(this.fb.control(childId)));
+    this.childrenGone.set(
+      task.ruleType !== 'single' && assignedChildren.length > 0 && remaining.length === 0,
     );
 
     // Set form values without emitting events
@@ -343,6 +354,7 @@ export class TaskFormModal {
     this.updateValidators('daily');
     this.errorMessage.set(null);
     this.showDeleteConfirm.set(false);
+    this.childrenGone.set(false);
   }
 
   /**
@@ -440,6 +452,11 @@ export class TaskFormModal {
 
     // Single tasks require at least one candidate (child)
     if (ruleType === 'single' && assignedChildren.length === 0) {
+      return false;
+    }
+
+    // Its children were deleted: a new child must be picked (or the task deleted)
+    if (this.childrenGone() && assignedChildren.length === 0) {
       return false;
     }
 
