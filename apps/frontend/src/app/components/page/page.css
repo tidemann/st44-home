@@ -10,16 +10,19 @@
 /* ===== WIDTH VARIANTS ===== */
 
 .page-container--narrow .page-header-content,
+.page-container--narrow .page-band,
 .page-container--narrow .page-content {
   max-width: 600px;
 }
 
 .page-container--medium .page-header-content,
+.page-container--medium .page-band,
 .page-container--medium .page-content {
   max-width: 800px;
 }
 
 .page-container--wide .page-header-content,
+.page-container--wide .page-band,
 .page-container--wide .page-content {
   max-width: 1200px;
 }
@@ -27,7 +30,9 @@
 /* ===== TITLE ROW ===== */
 
 .page-header {
-  padding: calc(env(safe-area-inset-top, 0px) + 14px) var(--gutter) 0;
+  /* Title row y 49…87 in the pictures = 14 px under their 35 px status bar; the 38 px badge
+     runs y 45…83, so the row box starts 10 px down */
+  padding: calc(env(safe-area-inset-top, 0px) + 10px) var(--gutter) 0;
   background: var(--bg);
   color: var(--text);
 }
@@ -151,9 +156,38 @@
   font-weight: 500;
   line-height: 1.4;
   color: var(--text-muted);
-  margin: -4px 0 0;
+  margin: 0;
   /* Keep clear of the badge column (38 px badge + 12 px gap): a long line wraps, never under it (ST-841) */
   padding-right: 50px;
+}
+
+/* ===== A, THE YELLOW TOP (guide: A — the yellow top) =====
+   Full-bleed #F6B93B behind the ordinary 22 px gutter; no fixed height, it ends 17 px under
+   the last thing it carries. On the yellow everything is Ink (Ink-On-Yellow Rule): the
+   sub-line loses its grey (#555E64 is 3.76:1 there) and the badge fill becomes Yellow Inset. */
+
+.page-header--band {
+  background: var(--yellow);
+  color: var(--ink);
+  padding-bottom: 17px;
+}
+
+.page-header--band .page-title {
+  color: var(--ink);
+}
+
+.page-header--band .initial-badge {
+  background: var(--yellow-inset);
+  color: var(--ink);
+}
+
+.page-band {
+  margin: 0 auto;
+  width: 100%;
+}
+
+.page-header--band .page-subtitle {
+  color: var(--ink);
 }
 
 /* ===== CONTENT ===== */
@@ -167,6 +201,10 @@
 @media (min-width: 768px) {
   .page-header {
     padding: 32px 32px 0;
+  }
+
+  .page-header--band {
+    padding-bottom: 17px;
   }
 
   .page-content {

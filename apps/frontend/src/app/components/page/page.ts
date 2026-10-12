@@ -94,6 +94,13 @@ export class PageComponent {
   showUserButton = input<boolean>(true);
 
   /**
+   * A, the yellow top (guide: "A — the yellow top"): the title row, the sub-line and
+   * whatever is projected with the `page-band` attribute sit on a full-bleed yellow band
+   * that ends 17 px under its last item. Everything else stays on the paper below.
+   */
+  band = input<boolean>(false);
+
+  /**
    * Computed CSS class for container width
    */
   protected containerClass = computed(() => {

@@ -9,6 +9,8 @@ h2 {
 .tabs {
   display: flex;
   gap: var(--space-sm);
+  /* The first thing on the paper under the yellow band, as the chips on Oppgaver */
+  margin-top: 16px;
   margin-bottom: var(--space-md);
   border-bottom: 2px solid var(--color-border);
 }

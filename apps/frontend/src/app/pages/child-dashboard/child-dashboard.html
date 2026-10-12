@@ -1,4 +1,22 @@
-<app-page [title]="childName() || ''" [subtitle]="today" maxWidth="narrow">
+<app-page [title]="childName() || ''" [subtitle]="today" maxWidth="narrow" [band]="true">
+  <!-- A, the yellow top (brand-08): the hero, the word "poeng" and the reward meter sit in
+       the band, in Ink, with the meter Ink on #C59430 as on the tick screen -->
+  <div page-band>
+    @if (!isLoading() && !errorMessage()) {
+      <!-- The hero: the child's points, the largest thing on the screen -->
+      <p class="hero" [attr.aria-label]="pointsLabel()">{{ balance() }}</p>
+      <p class="herolab" aria-hidden="true" i18n="@@childDashboard.pointsWord">poeng</p>
+
+      @if (goal(); as g) {
+        <div class="meterlabel">
+          <span class="l">{{ g.name }}</span>
+          <span i18n="@@childDashboard.goalLeft">{{ g.pointsCost - balance() }} igjen</span>
+        </div>
+        <app-points-meter class="pmeter" [value]="goalShare()" [onYellow]="true" />
+      }
+    }
+  </div>
+
   <!-- Loading State -->
   @if (isLoading()) {
     <div class="state" role="status" aria-live="polite">
@@ -18,18 +36,6 @@
   }
 
   @if (!isLoading() && !errorMessage()) {
-    <!-- The hero: the child's points, the largest thing on the screen -->
-    <p class="hero" [attr.aria-label]="pointsLabel()">{{ balance() }}</p>
-    <p class="herolab" aria-hidden="true" i18n="@@childDashboard.pointsWord">poeng</p>
-
-    @if (goal(); as g) {
-      <div class="meterlabel">
-        <span class="l">{{ g.name }}</span>
-        <span i18n="@@childDashboard.goalLeft">{{ g.pointsCost - balance() }} igjen</span>
-      </div>
-      <app-points-meter class="pmeter" [value]="goalShare()" />
-    }
-
     @if (!hasTasks()) {
       <div class="empty" role="status">
         <p class="empty-title" i18n="@@childDashboard.noTasksToday">Ingen oppgaver i dag!</p>

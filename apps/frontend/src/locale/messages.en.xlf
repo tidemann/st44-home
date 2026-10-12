@@ -50,69 +50,17 @@
         <source>Spor en forelder</source>
         <target>Ask a parent</target>
       </trans-unit>
-      <trans-unit id="login.title" datatype="html">
-        <source>Velkommen tilbake!</source>
-        <target>Welcome Back!</target>
-      </trans-unit>
-      <trans-unit id="login.subtitle" datatype="html">
-        <source>Logg inn for å administrere husholdningsoppgavene</source>
-        <target>Log in to manage your household tasks</target>
-      </trans-unit>
-      <trans-unit id="login.registration.success" datatype="html">
-        <source>Konto opprettet! Vennligst logg inn.</source>
-        <target>Account created successfully! Please log in.</target>
-      </trans-unit>
       <trans-unit id="common.or" datatype="html">
         <source>ELLER</source>
         <target>OR</target>
-      </trans-unit>
-      <trans-unit id="login.email.label" datatype="html">
-        <source>E-post</source>
-        <target>Email</target>
-      </trans-unit>
-      <trans-unit id="login.email.placeholder" datatype="html">
-        <source>deg@eksempel.no</source>
-        <target>you@example.com</target>
       </trans-unit>
       <trans-unit id="error.email.required" datatype="html">
         <source>E-post er påkrevd</source>
         <target>Email is required</target>
       </trans-unit>
-      <trans-unit id="login.password.label" datatype="html">
-        <source>Passord</source>
-        <target>Password</target>
-      </trans-unit>
-      <trans-unit id="login.password.placeholder" datatype="html">
-        <source>Skriv inn passordet ditt</source>
-        <target>Enter your password</target>
-      </trans-unit>
       <trans-unit id="error.password.required" datatype="html">
         <source>Passord er påkrevd</source>
         <target>Password is required</target>
-      </trans-unit>
-      <trans-unit id="login.rememberMe" datatype="html">
-        <source>Husk meg</source>
-        <target>Remember me</target>
-      </trans-unit>
-      <trans-unit id="login.submit.loading" datatype="html">
-        <source>Logger inn...</source>
-        <target>Logging in...</target>
-      </trans-unit>
-      <trans-unit id="login.submit.button" datatype="html">
-        <source>Logg inn</source>
-        <target>Log In</target>
-      </trans-unit>
-      <trans-unit id="login.forgotPassword" datatype="html">
-        <source>Glemt passord?</source>
-        <target>Forgot password?</target>
-      </trans-unit>
-      <trans-unit id="login.createAccount" datatype="html">
-        <source>Opprett konto</source>
-        <target>Create account</target>
-      </trans-unit>
-      <trans-unit id="login.qrCode.button" datatype="html">
-        <source> 📱 Skann QR-kode for å logge inn </source>
-        <target> 📱 Scan QR Code to Login </target>
       </trans-unit>
       <trans-unit id="register.title" datatype="html">
         <source>Opprett konto</source>
@@ -253,6 +201,118 @@
       <trans-unit id="resetPassword.requestNewLink" datatype="html">
         <source>Be om ny lenke</source>
         <target>Request new link</target>
+      </trans-unit>
+      <trans-unit id="login.brand.promise" datatype="html">
+        <source>Oppgaver og poeng for hele familien.</source>
+        <target>Chores and points for the whole family.</target>
+      </trans-unit>
+      <trans-unit id="login.brand.promise1" datatype="html">
+        <source>Oppgavene fordeler seg selv</source>
+        <target>Chores share themselves out</target>
+      </trans-unit>
+      <trans-unit id="login.brand.promise2" datatype="html">
+        <source>Poeng barna faktisk vil ha</source>
+        <target>Points the kids actually want</target>
+      </trans-unit>
+      <trans-unit id="login.brand.promise3" datatype="html">
+        <source>Belønninger dere blir enige om</source>
+        <target>Rewards you agree on together</target>
+      </trans-unit>
+      <trans-unit id="login.title" datatype="html">
+        <source>Logg inn</source>
+        <target>Log in</target>
+      </trans-unit>
+      <trans-unit id="login.welcome" datatype="html">
+        <source>Velkommen tilbake.</source>
+        <target>Welcome back.</target>
+      </trans-unit>
+      <trans-unit id="login.registration.success" datatype="html">
+        <source>Kontoen er laget. Logg inn for å komme i gang.</source>
+        <target>Your account is ready. Log in to get started.</target>
+      </trans-unit>
+      <trans-unit id="login.email.label" datatype="html">
+        <source>E-post</source>
+        <target>Email</target>
+      </trans-unit>
+      <trans-unit id="login.password.label" datatype="html">
+        <source>Passord</source>
+        <target>Password</target>
+      </trans-unit>
+      <trans-unit id="login.forgotPassword" datatype="html">
+        <source>Glemt passord?</source>
+        <target>Forgot password?</target>
+      </trans-unit>
+      <trans-unit id="login.submit.loading" datatype="html">
+        <source>Logger inn …</source>
+        <target>Logging in …</target>
+      </trans-unit>
+      <trans-unit id="login.submit.button" datatype="html">
+        <source>Logg inn</source>
+        <target>Log in</target>
+      </trans-unit>
+      <trans-unit id="login.or" datatype="html">
+        <source>eller</source>
+        <target>or</target>
+      </trans-unit>
+      <trans-unit id="login.google" datatype="html">
+        <source>Fortsett med Google</source>
+        <target>Continue with Google</target>
+      </trans-unit>
+      <trans-unit id="login.qrCode.button" datatype="html">
+        <source>Skann QR-kode (for barna)</source>
+        <target>Scan QR code (for kids)</target>
+      </trans-unit>
+      <trans-unit id="login.newFamily" datatype="html">
+        <source>Ny familie?</source>
+        <target>New family?</target>
+      </trans-unit>
+      <trans-unit id="login.createAccount" datatype="html">
+        <source>Opprett konto</source>
+        <target>Create account</target>
+      </trans-unit>
+      <trans-unit id="login.password.hide" datatype="html">
+        <source>Skjul passord</source>
+        <target>Hide password</target>
+      </trans-unit>
+      <trans-unit id="login.password.show" datatype="html">
+        <source>Vis passord</source>
+        <target>Show password</target>
+      </trans-unit>
+      <trans-unit id="login.googleUnavailable" datatype="html">
+        <source>Google-innlogging er ikke tilgjengelig akkurat nå. Prøv igjen om litt.</source>
+        <target>Google sign-in is not available right now. Try again in a moment.</target>
+      </trans-unit>
+      <trans-unit id="login.googleSigninFailed" datatype="html">
+        <source>Google-innloggingen gikk ikke. Prøv igjen.</source>
+        <target>Google sign-in did not work. Try again.</target>
+      </trans-unit>
+      <trans-unit id="login.error.bothEmpty" datatype="html">
+        <source>Skriv inn e-post og passord.</source>
+        <target>Enter your email and password.</target>
+      </trans-unit>
+      <trans-unit id="login.error.email" datatype="html">
+        <source>Skriv inn en gyldig e-postadresse.</source>
+        <target>Enter a valid email address.</target>
+      </trans-unit>
+      <trans-unit id="login.error.password" datatype="html">
+        <source>Skriv inn passordet ditt.</source>
+        <target>Enter your password.</target>
+      </trans-unit>
+      <trans-unit id="login.error.credentials" datatype="html">
+        <source>Feil e-post eller passord. Prøv igjen.</source>
+        <target>Wrong email or password. Try again.</target>
+      </trans-unit>
+      <trans-unit id="login.error.tooMany" datatype="html">
+        <source>For mange forsøk. Vent litt, og prøv igjen.</source>
+        <target>Too many attempts. Wait a moment and try again.</target>
+      </trans-unit>
+      <trans-unit id="login.loginFailed" datatype="html">
+        <source>Vi fikk ikke logget deg inn. Sjekk nettet, og prøv igjen.</source>
+        <target>We could not log you in. Check your connection and try again.</target>
+      </trans-unit>
+      <trans-unit id="login.qrLoginFailed" datatype="html">
+        <source>QR-koden virket ikke. Be en voksen om en ny, og prøv igjen.</source>
+        <target>The QR code did not work. Ask a grown-up for a new one and try again.</target>
       </trans-unit>
     </body>
   </file>

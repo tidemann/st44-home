@@ -3,6 +3,12 @@
   display: inline-block;
 }
 
+/* One household: nothing renders, and the empty box must not hold a 24 px line above the
+   title row (it showed as a paper strip over the yellow band, ST-816) */
+.household-switcher:empty {
+  display: none;
+}
+
 /* Toggle Button */
 .switcher-toggle {
   display: flex;
