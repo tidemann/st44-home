@@ -25,6 +25,97 @@ Crops used as evidence below:
 
 ---
 
+## Revision 9 — the nav glyphs redrawn to the picture (2026-10-12, ST-898)
+
+> Numbered 9 because it merges after **Revision 8** (desktop A and the chosen menu item, ST-892).
+> Same convention: the order is the order they merged.
+
+Revision 6 settled the nav icon's **size** and left its **drawings** untested. ST-898 was opened for
+one number — «Familie» measuring ~2 px wider than the picture — and measuring the other three turned
+it into a larger finding:
+
+> **Three of the four shipped glyphs were different drawings from the signed-off picture, and the
+> whole bar was drawn ~17 % heavier.** The size gap on «Familie» was a symptom of the wrong drawing,
+> not a sizing mistake.
+
+Maria's decision on 2026-10-12: **bring the code to the picture.** The alternatives (keep it; give
+each glyph its own box; rescale the same drawings) were measured and all three leave at least one
+wrong drawing — a per-glyph box cannot fix «Oppgaver» at all, because its shipped shape needs a
+20.8 px box for the picture's width and an 18.5 px box for its height, and no single number
+satisfies both. Not a new look, so it did not need Stig.
+
+**Method.** Revision 6's, re-run from scratch rather than quoted, and it reproduced exactly: nav
+band of each light screen, ink = every pixel under a luminance threshold, bounding box per item,
+thresholds 200 and 220, board px ÷ 2 = css px; divider at board y 1738–1739, icon ink y 1759–1794,
+item centres cx 200.5 / 384.5 / 570.5 / 754.5. The render is measured from the **real
+`nav-icon.html`**, parsed per git ref, not from a copy of the path data. Exact ink is read from a
+**10× solo render** of that glyph on white — every pixel under luminance 250, ÷ 20 — which takes the
+numbers off the half-pixel raster to ~0.05 px. The table therefore carries two conventions: the
+picture's column is the board at threshold 220, the two render columns are the 10× solo. **Quote the
+convention with the number.**
+
+| Item            | picture     | was (PR #645) | now           | what the drawing changed                                       |
+| --------------- | ----------- | ------------- | ------------- | -------------------------------------------------------------- |
+| **Hjem**        | 18.0 × 18.0 | 17.70 × 18.00 | 18.00 × 18.00 | same house, re-expressed at 21 units                           |
+| **Oppgaver**    | 17.0 × 12.0 | 17.15 × 13.60 | 17.00 × 12.00 | **dashes, not dots** — the picture's bullet is a 1.5 dash      |
+| **Belønninger** | 18.0 × 17.5 | 18.20 × 18.10 | 18.00 × 17.50 | **lid band** over a narrower box, **small two-loop bow**       |
+| **Familie**     | 17.0 × 15.0 | 19.30 × 16.35 | 17.00 × 15.05 | **a small second head** — a parent and a child, not a crescent |
+
+«Familie» reads 17.0 × 15.0 on **all four light screens at both thresholds**. It does not drift, so
+it was never a measuring convention — it was a narrower drawing.
+
+**The line weight, which affected all four.** A vertical cut through the three «Oppgaver» rules
+(luminance under 210) gives the picture **1.5 / 2 / 1.5** px — the middle rule straddles a pixel
+boundary. PR #645 rendered **2 / 2 / 2**: a drawn stroke of 1.75 px, because an 18-unit drawing
+stretched into a 21 px box multiplies every number, the stroke included, by 1.167. The redrawn set
+reproduces 1.5 / 2 / 1.5.
+
+**Box, no longer derived.** This supersedes Revision 6's box derivation. The set is drawn in a
+**21-unit viewBox**, so one unit is one rendered pixel in the 21 px box and the ink numbers above
+are literally the path data. `--nav-icon: 21px` is unchanged and no CSS changed. Revision 6's
+arithmetic (18.0 ÷ 15.40 × 18 = 21.04) was right about the box and is why the number is still 21;
+it only ever fitted the house, which is the one glyph the picture draws square and full.
+
+**The bow, measured as openness rather than as a shape.** The picture's two loops are
+**10.00 × 3.50** of ink standing **3.50 px above the lid**, with a slit open at each inner foot:
+**7 enclosed near-white pixels** (greys 216–246, so right at the antialiasing floor — only 1
+survives a 245 cut). PR #645's two large round loops are **15.10 × 5.35**, stand 5.35 px above the
+lid and enclose far more. The shipped redraw is **10.10 × 3.50**, standing 3.50 — the picture's bow
+to a tenth of a pixel. A first attempt matched the 10.0 × 3.5 box but closed the slit solid
+(**0 px**), which is a different fault, not a smaller one. The shipped drawing is two loops leaning
+8° outward with the ribbon carried up into the bow: **6 enclosed px**, and the channel the picture
+keeps between the loops closes at the foot the same way (centre light-run per row, top down:
+picture 12/6/4/2/0/0/0, shipped 8/4/2/2/0/0/0).
+
+**`progress` (Fremgang), the fifth glyph.** Not in the signed-off picture, so there is nothing to
+redraw it against. It was only re-expressed at 21 units: same drawing, ink 18.1 × 14.6 → 17.9 ×
+14.4, which is the lighter line and not a size change. Left at 18 units it would have been the one
+glyph in the desktop tab row still drawn 17 % heavier.
+
+**The desktop band's half-coverage table moved with the artwork.** The guide's tab-row numbers are
+measured on `#F6B93B` by coverage, not by a luminance cut (the yellow is itself luminance 188.9).
+Re-run on both refs, the method reproduces the recorded old numbers exactly and gives the new ones:
+house 18.0 × 18.0 (unchanged), gift 18.0 × 18.0 (unchanged), fremgang 18.0 × 14.5 (unchanged),
+**list 17.5 × 13.5 → 17.0 × 12.0**, **familie 19.0 × 16.5 → 17.0 × 15.0**. List and familie now
+agree exactly with the picture's table; the gift still reads half a pixel taller on the band, which
+is the convention difference the guide describes, not a drawing difference.
+
+**What remains different from the picture, with reasons** (a difference without a reason is a fault):
+
+1. **«Belønninger» reads 18.0 tall on the 390 px band** at both cuts, against the picture's 17.0
+   (threshold 200) and 17.5 (220), while the 10× solo render is exactly 17.50. The band's raster
+   snapping to the half-pixel grid — one half-pixel at each edge — not the drawing. The same glyph
+   on the yellow desktop band, read by coverage, lands on 18.0 × 18.0 before and after the redraw.
+2. **«Familie» measures 15.05 against 15.00** — 0.05 px, below anything the picture can be read to.
+3. **The bow's loops are a touch rounder than the picture's**, which draws them slightly more
+   pointed at the top outer edge. At 10 × 3.5 px of ink with a 1.5 px stroke the slit is one pixel
+   of near-white, so the shape is held by three numbers rather than by its outline: the box
+   (10.10 × 3.50 against 10.00 × 3.50), the height above the lid (3.50 on both) and the openness
+   (6 enclosed px against 7). Maria's one allowed pass at the tilt is the 8° lean that is shipped;
+   a second pass would close the slit before it sharpened the point.
+
+---
+
 ## Revision 8 — desktop A and the chosen menu item (pictures 2026-10-11, decisions 2026-10-12, ST-890 → ST-892)
 
 > Numbered 8 because it merges after **Revision 7** (the yellow top, the login and the mark,
@@ -287,6 +378,12 @@ and 19.3 (familie) — a 19.3–21.0 px spread, because the artwork is a redraw 
 not the set itself. 21 px is the house, which is the one glyph the picture draws square and full.
 Maria's "about 20.5 px" from ST-881 sits inside that spread; PR #645 ships 21 px, and the guide now
 says 21 px.
+
+> **Superseded in part by Revision 9.** The box is still 21 px, but it is no longer derived: ST-898
+> redrew the set in a **21-unit viewBox**, so one unit is one rendered pixel. The 19.3–21.0 spread
+> read above was the symptom this revision could not yet name — three of the four were different
+> drawings. Revision 9 holds that reading. Everything else here, including the eight readings and
+> the ink table, stands and was reproduced from scratch.
 
 ### The brand-07 nav slip
 
