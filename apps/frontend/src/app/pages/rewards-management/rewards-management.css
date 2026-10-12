@@ -9,8 +9,9 @@ h2 {
 .tabs {
   display: flex;
   gap: var(--space-sm);
-  /* The first thing on the paper under the yellow band, as the chips on Oppgaver */
-  margin-top: 16px;
+  /* The first thing on the paper under the yellow band: the label's first ink 22 px under
+     it, as the chips' pill on Oppgaver. The 44 px button puts that ink ~18.5 px down */
+  margin-top: 4px;
   margin-bottom: var(--space-md);
   border-bottom: 2px solid var(--color-border);
 }
