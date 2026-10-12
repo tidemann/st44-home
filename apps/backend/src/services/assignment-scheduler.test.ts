@@ -15,7 +15,15 @@ import type { AssignmentGenerationResult } from './assignment-generator.js';
 const ymd = (date: Date) => date.toISOString().slice(0, 10);
 
 function okSummary(date = '2026-10-05'): DailyGenerationSummary {
-  return { date, households: 0, created: 0, skipped: 0, failedHouseholds: [], errors: [], skippedNoChildren: [] };
+  return {
+    date,
+    households: 0,
+    created: 0,
+    skipped: 0,
+    failedHouseholds: [],
+    errors: [],
+    skippedNoChildren: [],
+  };
 }
 
 function silentLogger() {
@@ -83,7 +91,12 @@ describe('Assignment Scheduler', () => {
         generate: async (householdId): Promise<AssignmentGenerationResult> => {
           if (householdId === 'h1') throw new Error('boom');
           if (householdId === 'h2') {
-            return { created: 0, skipped: 0, errors: ['Transaction failed: deadlock'], skippedNoChildren: [] };
+            return {
+              created: 0,
+              skipped: 0,
+              errors: ['Transaction failed: deadlock'],
+              skippedNoChildren: [],
+            };
           }
           done.push(householdId);
           return { created: 2, skipped: 0, errors: [], skippedNoChildren: [] };
@@ -100,7 +113,12 @@ describe('Assignment Scheduler', () => {
       const summary = await runDailyAssignmentGeneration({
         now: new Date('2026-10-05T06:00:00Z'),
         listHouseholds: async () => ['h1'],
-        generate: async () => ({ created: 1, skipped: 0, errors: ['Task X: bad config'], skippedNoChildren: [] }),
+        generate: async () => ({
+          created: 1,
+          skipped: 0,
+          errors: ['Task X: bad config'],
+          skippedNoChildren: [],
+        }),
       });
 
       assert.deepStrictEqual(summary.failedHouseholds, []);
