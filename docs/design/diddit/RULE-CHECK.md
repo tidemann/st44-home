@@ -102,8 +102,9 @@ the approved row and the rendered one in one image at the same scale.
 **The one gap this list expected is not a gap.** Fremgang is not on the phone's four-item bar, so a
 fifth glyph looked missing — but `progress` is already in the repo's signed-off set
 (`apps/frontend/src/app/components/navigation/nav-icon.html`, same 18 × 18 viewBox, same 1.5 stroke,
-built by ST-881 from the approved source) and renders **18.0 px of ink** in the 21 px box. Nothing in
-this revision is left for someone to draw.
+built by ST-881 from the approved source) and renders **18.0 × 14.5 px of ink** in the 21 px box —
+width, then height, at half coverage on the band, the convention the guide's tab-row section states.
+Nothing in this revision is left for someone to draw.
 
 ---
 

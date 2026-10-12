@@ -1420,12 +1420,31 @@ screen edges.
 - **Fremgang is not on the phone's four-item bar, but its glyph already exists** — `progress` in
   `apps/frontend/src/app/components/navigation/nav-icon.html`, the same set ST-881 built from the
   approved source, in the same 18 × 18 viewBox at the same 1.5 stroke. Rendered in the 21 px box its
-  ink measures **17.5 × 14.5**, in line with the other four. Use it; do not draw a sixth icon.
-- **The 18 px is the slot, not every glyph's ink.** Only the house fills it. Measured on the render
-  in [`desktop-20`](reference/desktop-20-tabrow-pill-vs-underline.png), ink in CSS px, w × h:
-  **house 18.0 × 18.0**, gift 17.5 × 18.0, familie 18.5 × 16.5, fremgang 17.5 × 14.5, list
-  16.5 × 13.0. A screenshot of «Oppgaver» showing a 13 px glyph is the right icon in the right box —
-  check the **slot**, by the house or the gift, not each glyph's own height.
+  ink measures **18.0 × 14.5**, in line with the other four. Use it; do not draw a sixth icon.
+- **The 18 px is the slot, not every glyph's ink — and these are the render's numbers, read one
+  stated way.** Ink in CSS px, w × h, on the band in
+  [`desktop-20`](reference/desktop-20-tabrow-pill-vs-underline.png), at **half coverage**: each
+  pixel's colour projected onto the band's background→ink vector, counted from coverage 0.5, edges
+  taken at pixel boundaries, DPR 2. **House 18.0 × 18.0, gift 18.0 × 18.0**, familie 19.0 × 16.5,
+  fremgang 18.0 × 14.5, list 17.5 × 13.5. **The house and the gift fill the slot; the other three do
+  not.** A screenshot of «Oppgaver» showing a 13 px glyph is the right icon in the right box — check
+  the **slot**, by the house or the gift, not each glyph's own height.
+- **Why these are not the four numbers under `### Navigation`, and why neither set is stale.** That
+  table is the same artwork measured in the **signed-off picture** at **luminance below 220** —
+  RULE-CHECK **Revision 6** holds the method and all eight readings. That cut cannot be run on this
+  band: `#F6B93B` is itself luminance **188.9** (163 on a flat mean), under 220 either way, so the
+  background would read as ink. Coverage does not care what the background is, which is why the band
+  is measured that way. Read against Revision 6's **ranges** instead of its modal column, the two
+  agree to the antialiased edge that method note already describes: the picture gives list
+  17.0–18.0 × 12.0–13.0 and gift 18.0–19.0 × 17.0–17.5, half a pixel under the band's read.
+  **The picture's table is for the phone bar, this one for the band. Quote the convention with the
+  number, or they look like two answers.**
+- **One of the five is not a convention difference: familie.** The shipped `family` glyph spans
+  16.5 × 14.0 of its 18-unit viewBox, so in a 21 px box it can only render ≈19.3 × 16.3 — and it
+  measures 19.0 × 16.5. The signed-off picture draws that item at **17.0 × 15.0**, identical in all
+  eight Revision 6 readings, so the picture's familie is a **narrower drawing** than the one ST-881
+  shipped. That is a question about the phone bar's artwork, not a desktop decision: recorded here,
+  not changed.
 - **Everything in the band is `#17120A` on `#F6B93B` — 10.57:1.** Title, sub-line, every tab label,
   every unchosen tab icon, the chosen tab's pill and the initial on the badge. **The one thing in the
   band that is not ink is the chosen tab's icon**, which turns `#F6B93B` inside its ink pill. The
@@ -1627,7 +1646,7 @@ it was ruled on, not drifted into.
 **Nothing is left undrawn.** The one gap this list expected — a Fremgang glyph, since the phone's bar
 has four items and the tab row needs five — turned out not to be a gap: `progress` is already in the
 repo's signed-off icon set, in the same viewBox at the same stroke, and sits in the same 18 px slot
-in the 21 px box (its own ink 17.5 × 14.5). See **The yellow top and its tab row**.
+in the 21 px box (its own ink 18.0 × 14.5). See **The yellow top and its tab row**.
 
 ## Do's and Don'ts
 
