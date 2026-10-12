@@ -25,6 +25,89 @@ Crops used as evidence below:
 
 ---
 
+## Revision 8 — desktop A and the chosen menu item (pictures 2026-10-11, decisions 2026-10-12, ST-890 → ST-892)
+
+> Numbered 8 because it merges after **Revision 7** (the yellow top, the login and the mark,
+> ST-815), which landed on `main` first. Same convention that revision used for its own number:
+> the order is the order they merged, not the order they were written.
+
+The first two rules in this guide that the signed-off picture **cannot** test, because it draws
+neither of them: a pointer-screen layout, and a chosen-state for the menu. They are tested against
+the pictures Stig approved on ST-890 instead, and against the signed-off picture for everything
+those pictures reuse.
+
+**Two rows in the table below are decisions _against_ the pictures, and are marked as such.** The
+desktop drawings were made before ST-890's menu decision, so their chosen-tab underline is a
+placeholder; Maria ruled on 2026-10-12 that the phone's ink pill replaces it, and that the tab row
+uses the signed-off icon set rather than the small `brand-07` glyphs the drawings inherit. Every
+other row is a measurement of the approved pictures.
+
+**What was deleted.** "Active is Amber Ink with the heavier weight; inactive is Muted Text. Two
+signals, not one." On the phone that was `#8A5A00` against `#555E64` — **1.12:1**, colour-only, and
+Stig could not tell which page he was on. Replaced by the ink pill.
+
+**Method.** Measured on the approved PNGs at `deviceScaleFactor: 2`
+(`desktop-07-opsjon-A-1440.png`, `desktop-10-anbefalt-A-1024.png`,
+`desktop-12-anbefalt-A-mine-oppgaver-1440.png`) and at scale 4 on `nav-04-a-alle-faner.png`, whose
+scale is fixed by the 46.00 px pill it shares with `nav-02-forslag-a-b-c-v2.png`. Radii use the
+sub-pixel arc fit from the guide's **Shapes** section; it returns **13.12** on the signed-off chore
+card, which is the calibration.
+
+**The pill in the band had to be rendered, because no picture contains it.** The tab row was built at
+1024 px, `deviceScaleFactor: 2`, with the pill, the repo's signed-off nav icons
+(`nav-icon.html`, `progress` included) and the repo's own `hanken-500.ttf` / `hanken-600.ttf`, using the Playwright
+pinning in the guide's **Rendering screens as pictures**. Ink is measured on that render with the
+same column-run method used on the approved PNGs, so the two are comparable:
+[`desktop-20-tabrow-pill-vs-underline.png`](reference/desktop-20-tabrow-pill-vs-underline.png) puts
+the approved row and the rendered one in one image at the same scale.
+
+| Rule                                                                 | Evidence                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
+| -------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| The band and tab row are identical at 1440 and 1024                  | Every y in the band matches to the pixel across the two pictures; only the container's x offset moves (280 vs 72).                                                                                                                                                                                                                                                                                                                                                                                                           |
+| Container is 880 px, centred                                         | 1440: x 280…1160. 1024: x 72…952. (1440−880)/2 = 280, (1024−880)/2 = 72.                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
+| Columns are 428 + 24 + 428                                           | Measured on both pictures and on the worst case. 428+24+428 = 880.                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
+| The band ends 17 px under its lowest content                         | Home: cards end y 242, band ends 259. Child: meter ends 253, band ends 270. Same rule as the phone band.                                                                                                                                                                                                                                                                                                                                                                                                                     |
+| Nothing inside a card changed                                        | Row 68 px; card radius **13.12** (phone 13.12); child card 109 × 154 at 9 px, radius **14.18** (phone 14.21); padding 15; checkbox 22 × 22; badge 38; button 49; `#15181C`/`#555E64`/`#8A5A00`/`#A43A16` all unchanged.                                                                                                                                                                                                                                                                                                      |
+| Everything on the yellow is `#17120A`                                | Title, sub-line, all five tab labels and icons, the badge initial — sampled. 10.57:1. The chosen tab's pill is ink as well; its icon is the one yellow thing in the band.                                                                                                                                                                                                                                                                                                                                                    |
+| The chosen **desktop** tab is the phone's ink pill                   | **Not measurable in the pictures — it is a decision against them.** They draw a 3 px underline, 89 px under «Hjem» and 121 px under «Oppgaver», and no pill anywhere: the five-tab strip holds 4 607 device px² of ink, while one 46 × 26 pill alone would be 4 784. The pictures were drawn before ST-890's menu decision, so that underline is a placeholder; **Maria ruled on 2026-10-12 that the pill replaces it** (ST-892).                                                                                            |
+| The pill forces the icon→label gap from 9 px to 16.5 px              | A 46 px pill centred on the 21 px icon box reaches **12.5 px** past the box each side; the drawings place the label ink **10.5 px** right of the icon ink, ~9 px from the box edge. Drawn as-is the pill runs 3.5 px under «Hjem». 12.5 + the pill's own 4 px of clearance = **16.5 px**, applied to all five tabs so the row does not reflow on a page change.                                                                                                                                                              |
+| The widened row still clears the badge at 1024                       | **Rendered, then measured** — not derived. Row built at 1024 (DPR 2) with the pill, the signed-off icon set and the repo's Hanken; the render reproduces all five drawn label ink widths **exactly** (32.5 / 65.5 / 44.5 / 64.5 / 77.5). First tab box x 232.5, row ends **x 877** = **644.5 px**; box widths 102.5 / 134.5 / 113.5 / 133.5 / 146.5 at 3.5 px apart; targets 44.0 px tall at y 18…62; label starts exactly **4.0 px** after the pill. The 38 px badge starts at x 914: **37.0 px clear**. Identical at 1440. |
+| Arithmetic over the label **ink** gets this wrong by 8 px            | Summing the drawn ink widths predicts a 636 px row ending at x 868.5 with 45.5 px of clearance. The render says 644.5 and 37.0: a text box carries side bearings beyond its ink. The rendered box widths are the build numbers.                                                                                                                                                                                                                                                                                              |
+| The tab label is Hanken Grotesk 15 px — **500 unchosen, 600 chosen** | Ink **area** against `desktop-07`, rendered at 15 px: weight 500 reproduces all four unchosen labels to **0.0 %** (Oppgaver 876, Familie 654, Fremgang 912, Belønninger 1092 device px², identical), and weight 600 reproduces the chosen «Hjem» to **0.0 %** (518). `desktop-12`, where Oppgaver is chosen, shows the same step: +9.0 % over its own baseline. The drawings' "weight step" is exactly 500 → 600 — not 700, not 800. Sizes 14 / 16 / 17 px are out by 1.5–7.5 px of width.                                   |
+| One weight step cannot carry the state on its own                    | Same word, chosen vs not: «Hjem» +11.0 %, «Oppgaver» +9.0 % of ink area. But the _same unchosen_ label moves between the two pictures by −6.4 % («Familie»), −4.6 % («Fremgang»), −3.8 % («Belønninger») from rendering alone. A 9–11 % step sits just above a ~5 % floor, which is why the pill is the signal and the weight only supports it.                                                                                                                                                                              |
+| The **phone** pill is 46 × 26, fully rounded                         | Both pictures agree to 0.00 px. The run-width profile matches a stadium: 43.0 measured against 42.5 predicted at 6.5 px off centre, 37.0 against 36.6 at 10 px off centre.                                                                                                                                                                                                                                                                                                                                                   |
+| The pill's label does **not** change weight                          | Normalised glyph area, chosen vs not: «Hjem» 1459.0 vs 1460.4, «Oppgaver» 2054.1 vs 2052.6 device px². 0.1 % apart. The colour change is the whole difference.                                                                                                                                                                                                                                                                                                                                                               |
+| Three signals, not one                                               | Pill against the bar **17.22:1**; yellow icon against the pill **10.57:1**; chosen label against unchosen **2.81:1**.                                                                                                                                                                                                                                                                                                                                                                                                        |
+| The pill's icon size is **derived**, not drawn                       | `nav-02`/`nav-04` are built on `brand-07`, so they carry the Revision 6 slip: 14 px of ink, not 18. The signed-off picture wins; the pill geometry is still theirs.                                                                                                                                                                                                                                                                                                                                                          |
+
+**Dropped from the drawings, recorded rather than copied:**
+
+- `desktop-14` truncates a long chore title to **one** line. The two-line rule under **Cards and
+  rows** is older and comes from the signed-off picture, so it stands.
+- `11-anbefalt-A-morkt-1440.png` and `nav-05-a-morkt.png` draw a dark mode. Neither was on the
+  decision card and Stig did not ask for one. There is no dark mode.
+
+**Four things the drawings left open — raised on ST-892, all settled by Maria on 2026-10-12:**
+
+1. **The desktop tabs take the phone's ink pill**, not the underline the pictures draw. ST-890's
+   decision says the desktop tabs get the rule Stig picked for the phone, and the desktop pictures
+   predate that decision.
+2. **Below 1024 px the phone layout is used** — bottom menu, one column.
+3. **The desktop tab's pointer target is ≥44 px tall.** The drawn shape is unchanged; the hit area
+   grows.
+4. **The tab row uses the signed-off icon set** — 18 px of ink in a 21 px box — by the same
+   reasoning Revision 6 applied to the bar, against the `brand-07` glyphs the desktop pictures
+   inherit.
+
+**The one gap this list expected is not a gap.** Fremgang is not on the phone's four-item bar, so a
+fifth glyph looked missing — but `progress` is already in the repo's signed-off set
+(`apps/frontend/src/app/components/navigation/nav-icon.html`, same 18 × 18 viewBox, same 1.5 stroke,
+built by ST-881 from the approved source) and renders **18.0 × 14.5 px of ink** in the 21 px box —
+width, then height, at half coverage on the band, the convention the guide's tab-row section states.
+Nothing in this revision is left for someone to draw.
+
+---
+
 ## Revision 7 — the yellow top, the login and the mark (2026-10-10, ST-815)
 
 > Written on 2026-10-10 and numbered 7 because it lands after **Revision 6** (the nav icon, ST-887,
@@ -447,7 +530,7 @@ All hex values and sizes below were sampled from the PNG, not estimated by eye. 
 | **Yellow is not used on the family-screen meters**              | Screen 1, y = 658: Emma `#0F7A54`+`#ECECE8`; Jonas `#0F7A54`+`#ECECE8`+`#A43A16`; Mathea `#0F7A54`+`#ECECE8`. No yellow. See [`meter-evidence.png`](reference/meter-evidence.png). |
 | Ink `#17120A` on every yellow surface                           | Screen 4: title, "+10", meter fill, tick badge, "Ferdig" fill — all sampled `#17120A`. 10.57:1.                                                                                    |
 | White on yellow never appears                                   | No white type anywhere on screen 4 or on any yellow button. Computed 1.76:1.                                                                                                       |
-| Amber Ink `#8A5A00` is a white-background colour                | "5 p" on a white row ([`row-chore.png`](reference/row-chore.png)) and the active nav label. It appears nowhere on the yellow.                                                      |
+| Amber Ink `#8A5A00` is a white-background colour                | "5 p" on a white row ([`row-chore.png`](reference/row-chore.png)). It appears nowhere on the yellow. It is **no longer** the active nav label — see Revision 8.                    |
 | Reward costs are Muted Text, not Amber Ink                      | "60 p" on screen 5 sampled `#555E64`, unlike "5 p" on a chore row. Two different points colours, two different meanings.                                                           |
 | Overdue Rust `#A43A16`                                          | The word "Forfalt", the 2 px card border, and the overdue meter segment on Jonas's card. See [`row-overdue.png`](reference/row-overdue.png).                                       |
 | Done Green `#0F7A54`                                            | Filled check on completed rows (screen 2), "Du har nok poeng" (screen 5), filled chore-meter segments (screen 1).                                                                  |
