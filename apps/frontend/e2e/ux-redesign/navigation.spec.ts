@@ -8,7 +8,7 @@ import { seedFullScenario, resetDatabase } from '../helpers/seed-database';
  *
  * Tests navigation between screens:
  * - Bottom nav on mobile
- * - Sidebar nav on desktop
+ * - Tabs in the yellow top on desktop
  * - URL routing
  * - Active state highlighting
  *
@@ -99,7 +99,7 @@ test.describe('Navigation - Mobile (Bottom Nav)', () => {
   });
 });
 
-test.describe('Navigation - Desktop (Sidebar Nav)', () => {
+test.describe('Navigation - Desktop (tabs in the yellow top)', () => {
   let scenario: Awaited<ReturnType<typeof seedFullScenario>>;
 
   test.beforeEach(async ({ page }) => {
@@ -113,14 +113,14 @@ test.describe('Navigation - Desktop (Sidebar Nav)', () => {
     await page.setViewportSize({ width: 1440, height: 900 });
   });
 
-  test('sidebar nav is visible on desktop', async ({ page }) => {
+  test('the tab row is visible on desktop', async ({ page }) => {
     await loginAsUser(page, scenario.user.email, 'SecureTestPass123!');
 
     const homePage = new HomePage(page);
     await homePage.goto();
     await homePage.waitForDashboardLoad();
 
-    await expect(homePage.sidebarNav).toBeVisible();
+    await expect(homePage.topTabs).toBeVisible();
   });
 
   test('navigates to tasks screen via URL', async ({ page }) => {
@@ -159,7 +159,7 @@ test.describe('Navigation - Responsive Transition', () => {
     });
   });
 
-  test('shows bottom nav on mobile, hides sidebar', async ({ page }) => {
+  test('shows bottom nav on mobile, hides the tab row', async ({ page }) => {
     await page.setViewportSize({ width: 375, height: 667 });
 
     await loginAsUser(page, scenario.user.email, 'SecureTestPass123!');
@@ -170,12 +170,12 @@ test.describe('Navigation - Responsive Transition', () => {
 
     await expect(homePage.bottomNav).toBeVisible();
 
-    // Sidebar should be hidden on mobile
-    const sidebarVisible = await homePage.sidebarNav.isVisible();
-    expect(sidebarVisible).toBe(false);
+    // The tab row should be hidden on mobile
+    const tabsVisible = await homePage.topTabs.isVisible();
+    expect(tabsVisible).toBe(false);
   });
 
-  test('shows sidebar on desktop, hides bottom nav', async ({ page }) => {
+  test('shows the tab row on desktop, hides bottom nav', async ({ page }) => {
     await page.setViewportSize({ width: 1440, height: 900 });
 
     await loginAsUser(page, scenario.user.email, 'SecureTestPass123!');
@@ -184,7 +184,7 @@ test.describe('Navigation - Responsive Transition', () => {
     await homePage.goto();
     await homePage.waitForDashboardLoad();
 
-    await expect(homePage.sidebarNav).toBeVisible();
+    await expect(homePage.topTabs).toBeVisible();
 
     // Bottom nav should be hidden on desktop
     const bottomNavVisible = await homePage.bottomNav.isVisible();

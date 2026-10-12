@@ -1,0 +1,28 @@
+<div class="top">
+  <div class="brand">
+    <app-diddit-mark [size]="36" />
+    <span class="wordmark" translate="no">Diddit</span>
+  </div>
+
+  <nav class="top-tabs" i18n-aria-label="@@nav.mainNavigation" aria-label="Hovednavigasjon">
+    @for (tab of tabs(); track tab.id) {
+      <button
+        type="button"
+        class="tab"
+        [class.active]="activeId() === tab.id"
+        [attr.aria-current]="activeId() === tab.id ? 'page' : null"
+        (click)="navigate.emit(tab.id)"
+      >
+        <app-nav-icon class="tab-icon" [name]="tab.icon" />
+        <span class="tab-label">{{ tab.label }}</span>
+      </button>
+    }
+  </nav>
+
+  <div class="end">
+    @if (showSwitcher()) {
+      <app-household-switcher />
+    }
+    <app-initial-badge [onYellow]="true" />
+  </div>
+</div>

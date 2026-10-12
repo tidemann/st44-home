@@ -78,76 +78,6 @@
   gap: 8px;
 }
 
-/* ===== INITIAL BADGE: 38 px drawn, 44 px pressed ===== */
-
-.badge-wrap {
-  position: relative;
-}
-
-.initial-badge {
-  position: relative;
-  width: 38px;
-  height: 38px;
-  border: 0;
-  border-radius: 999px;
-  background: var(--track);
-  color: var(--text);
-  font-family: var(--font-text);
-  font-size: 15px;
-  font-weight: 600;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-}
-
-.initial-badge::after {
-  content: '';
-  position: absolute;
-  inset: -3px;
-}
-
-.initial-badge:focus-visible {
-  outline: var(--focus-ring);
-  outline-offset: 2px;
-}
-
-.badge-menu {
-  position: absolute;
-  right: 0;
-  top: calc(100% + 6px);
-  z-index: var(--z-index-dropdown);
-  background: var(--surface);
-  border: 1px solid var(--hairline);
-  border-radius: var(--r-card);
-  padding: 4px;
-  min-width: 140px;
-}
-
-.badge-menu-item {
-  width: 100%;
-  min-height: 44px;
-  padding: 0 12px;
-  border: 0;
-  border-radius: 9px;
-  background: transparent;
-  color: var(--text);
-  font-family: var(--font-text);
-  font-size: 16px;
-  font-weight: 600;
-  text-align: left;
-  cursor: pointer;
-}
-
-.badge-menu-item:hover {
-  background: var(--track);
-}
-
-.badge-menu-item:focus-visible {
-  outline: var(--focus-ring);
-  outline-offset: -2px;
-}
-
 /* ===== SUB-LINE (Meta 15/500, muted 6.12:1 on --bg) ===== */
 
 .page-subtitle {
@@ -176,11 +106,6 @@
   color: var(--ink);
 }
 
-.page-header--band .initial-badge {
-  background: var(--yellow-inset);
-  color: var(--ink);
-}
-
 .page-band {
   margin: 0 auto;
   width: 100%;
@@ -198,7 +123,11 @@
   width: 100%;
 }
 
-@media (min-width: 768px) {
+/* ===== DESKTOP, 1024 px AND WIDER (guide: The breakpoint) =====
+   Under 1024 px the phone layout is used in full. From 1024 px the yellow top's tab row
+   carries the initial badge, so the title row drops its own. */
+
+@media (min-width: 1024px) {
   .page-header {
     padding: 32px 32px 0;
   }
@@ -211,7 +140,56 @@
     padding: 0 32px 32px;
   }
 
-  .page-title {
-    font-size: 30px;
+  .page-badge {
+    display: none;
+  }
+
+  /* Desktop A: title and sub-line on the left, the band's content on the right, one line,
+     in an 880 px container; the title block is centred on the content beside it */
+  .page--split .page-header {
+    padding: 8px 0 17px;
+  }
+
+  .page--split .page-header-inner {
+    max-width: 880px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    grid-template-rows: 1fr auto auto 1fr;
+    grid-template-areas:
+      '. band'
+      'title band'
+      'sub band'
+      '. band';
+    column-gap: 24px;
+  }
+
+  .page--split .page-header-content,
+  .page--split .page-band {
+    display: contents;
+  }
+
+  .page--split .page-header-actions {
+    display: none;
+  }
+
+  .page--split .page-header-text {
+    grid-area: title;
+  }
+
+  /* Title ink y 142…167.5, sub-line ink from 175.5: 8 px apart (desktop-07) */
+  .page--split .page-subtitle {
+    grid-area: sub;
+    margin-top: 2px;
+    padding-right: 0;
+  }
+
+  .page--split .page-band-slot {
+    grid-area: band;
+  }
+
+  .page--split .page-content {
+    max-width: 880px;
+    padding: 0 0 32px;
   }
 }

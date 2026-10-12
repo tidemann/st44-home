@@ -1,44 +1,33 @@
-<div class="page" [class]="containerClass()">
+<div class="page" [class]="containerClass()" [class.page--split]="split()">
   <!-- Title row: screen name left, the person's initial badge right (guide: Initial badge).
-       With [band], the title area is the yellow top (guide: A — the yellow top). -->
+       With [band], the title area is the yellow top (guide: A — the yellow top).
+       With [split], from 1024 px the title and the band's content share one line (desktop A). -->
   @if (showHeader()) {
     <header class="page-header" [class]="headerClass()" [class.page-header--band]="band()">
-      <div class="page-header-content">
-        <div class="page-header-text">
-          <h1 class="page-title">{{ title() }}</h1>
+      <div class="page-header-inner">
+        <div class="page-header-content">
+          <div class="page-header-text">
+            <h1 class="page-title">{{ title() }}</h1>
+          </div>
+          <div class="page-header-actions">
+            <ng-content select="[page-actions]" />
+            @if (showUserButton()) {
+              <!-- From 1024 px the badge sits in the yellow top's tab row instead -->
+              <app-initial-badge class="page-badge" [onYellow]="band()" />
+            }
+          </div>
         </div>
-        <div class="page-header-actions">
-          <ng-content select="[page-actions]" />
-          @if (showUserButton() && initial(); as letter) {
-            <div class="badge-wrap">
-              <button
-                type="button"
-                class="initial-badge"
-                (click)="onBadgeClick()"
-                [attr.aria-label]="badgeLabel()"
-                [attr.aria-expanded]="isChild() ? menuOpen() : null"
-              >
-                {{ letter }}
-              </button>
-              @if (menuOpen()) {
-                <div class="badge-menu">
-                  <button type="button" class="badge-menu-item" (click)="onLogout()">
-                    <ng-container i18n="@@page.logout">Logg ut</ng-container>
-                  </button>
-                </div>
-              }
+        @if (band()) {
+          <div class="page-band">
+            @if (subtitle()) {
+              <p class="page-subtitle">{{ subtitle() }}</p>
+            }
+            <div class="page-band-slot">
+              <ng-content select="[page-band]" />
             </div>
-          }
-        </div>
+          </div>
+        }
       </div>
-      @if (band()) {
-        <div class="page-band">
-          @if (subtitle()) {
-            <p class="page-subtitle">{{ subtitle() }}</p>
-          }
-          <ng-content select="[page-band]" />
-        </div>
-      }
     </header>
   }
 

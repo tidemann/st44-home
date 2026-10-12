@@ -141,7 +141,7 @@ test.describe('Home Dashboard', () => {
     await expect(homePage.bottomNav).toBeVisible();
   });
 
-  test('shows sidebar navigation on desktop viewport', async ({ page }) => {
+  test('shows the tab row in the yellow top on desktop', async ({ page }) => {
     // Set desktop viewport
     await page.setViewportSize({ width: 1440, height: 900 });
 
@@ -151,8 +151,8 @@ test.describe('Home Dashboard', () => {
     await homePage.goto();
     await homePage.waitForDashboardLoad();
 
-    // Sidebar should be visible on desktop
-    await expect(homePage.sidebarNav).toBeVisible();
+    // The tab row should be visible on desktop
+    await expect(homePage.topTabs).toBeVisible();
   });
 
   test('handles loading state gracefully', async ({ page }) => {

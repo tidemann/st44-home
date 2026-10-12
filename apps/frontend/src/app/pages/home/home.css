@@ -94,3 +94,81 @@ app-failed-tasks-section {
     transform: rotate(360deg);
   }
 }
+
+/* ===== DESKTOP A, 1024 px AND WIDER (guide: Desktop and tablet — layout A) ===== */
+
+/* The empty "Gjort i dag" card (desktop-14): left-aligned, 70 px, in the column's width */
+.empty--left {
+  text-align: left;
+}
+
+@media (min-width: 1024px) {
+  /* Two independent stacks, 428 + 24 + 428, starting at the same y */
+  .cols {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    column-gap: 24px;
+    align-items: start;
+  }
+
+  /* Label ink → the card under it is 12 px in desktop-07 / desktop-12 (16 on the phone) */
+  .cols app-group-label {
+    margin-bottom: 7px;
+  }
+
+  /* Beside the title: 109 × 154 cards, 9 px apart, flush to the container's right edge */
+  .kids {
+    flex-wrap: nowrap;
+    justify-content: flex-end;
+  }
+
+  .kids > app-child-points-card {
+    flex: none;
+    width: 109px;
+  }
+
+  .more-kids {
+    display: flex;
+    flex: none;
+    align-items: center;
+    justify-content: center;
+    width: 109px;
+    min-height: 154px;
+    margin: 0;
+    padding: 12px;
+    background: var(--surface);
+    border-radius: var(--r-card-tile);
+    font-size: 15px;
+    font-weight: 600;
+    line-height: 1.4;
+    text-align: center;
+    color: var(--text);
+  }
+
+  /* "+ Ny oppgave": 428 × 49, yellow, ink label, 28 px under the last card */
+  .newtask {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 49px;
+    margin-top: 28px;
+    border: 0;
+    border-radius: var(--r-button);
+    background: var(--yellow);
+    color: var(--ink);
+    font-family: var(--font-text);
+    font-size: 16.5px;
+    font-weight: 600;
+    cursor: pointer;
+  }
+
+  .newtask:hover {
+    background: var(--yellow-inset);
+  }
+
+  .newtask:focus-visible {
+    outline: var(--focus-ring);
+    outline-offset: 2px;
+  }
+}

@@ -1,7 +1,14 @@
-<app-page [title]="childName() || ''" [subtitle]="today" maxWidth="narrow" [band]="true">
+<app-page
+  [title]="childName() || ''"
+  [subtitle]="today"
+  maxWidth="narrow"
+  [band]="true"
+  [split]="true"
+>
   <!-- A, the yellow top (brand-08): the hero, the word "poeng" and the reward meter sit in
-       the band, in Ink, with the meter Ink on #C59430 as on the tick screen -->
-  <div page-band>
+       the band, in Ink, with the meter Ink on #C59430 as on the tick screen. From 1024 px they
+       sit right-aligned beside the name (desktop A) -->
+  <div page-band class="bandbox">
     @if (!isLoading() && !errorMessage()) {
       <!-- The hero: the child's points, the largest thing on the screen -->
       <p class="hero" [attr.aria-label]="pointsLabel()">{{ balance() }}</p>
@@ -36,100 +43,122 @@
   }
 
   @if (!isLoading() && !errorMessage()) {
-    @if (!hasTasks()) {
-      <div class="empty" role="status">
-        <p class="empty-title" i18n="@@childDashboard.noTasksToday">Ingen oppgaver i dag!</p>
-        <p class="empty-sub" i18n="@@childDashboard.enjoyFreeTime">Nyt fritiden din!</p>
-      </div>
-    }
-
-    @if (overdueTasks().length > 0) {
-      <app-group-label i18n-label="@@childDashboard.overdue" label="Forfalt" [overdue]="true" />
-      @for (task of overdueTasks(); track task.id) {
-        <app-chore-row [title]="task.taskName" [meta]="overdueMeta(task)" [overdue]="true">
-          <button
-            row-action
-            type="button"
-            class="rbtn"
-            [disabled]="isCompleting(task.id)"
-            [attr.aria-label]="hakAvLabel(task)"
-            (click)="onMarkDone(task)"
-            i18n="@@childDashboard.hakAv"
-          >
-            Ferdig
-          </button>
-        </app-chore-row>
-      }
-    }
-
-    @if (tasks().length > 0) {
-      <app-group-label i18n-label="@@childDashboard.today" label="I dag" />
-      @for (task of pendingTasks(); track task.id) {
-        <app-chore-row [title]="task.taskName" [meta]="openMeta(task)">
-          <button
-            row-action
-            type="button"
-            class="rbtn"
-            [disabled]="isCompleting(task.id)"
-            [attr.aria-label]="hakAvLabel(task)"
-            (click)="onMarkDone(task)"
-            i18n="@@childDashboard.hakAv"
-          >
-            Ferdig
-          </button>
-        </app-chore-row>
-      }
-      @for (task of completedTasks(); track task.id) {
-        <app-chore-row
-          [title]="task.taskName"
-          [meta]="doneMeta(task)"
-          [done]="true"
-          [points]="'+' + task.points"
-        />
-      }
-    }
-
-    <!-- Not in the signed-off picture: kept so nothing the family uses today goes away -->
-    @if (hasAvailableTasks()) {
-      <div class="extra">
-        <app-available-tasks-section />
-      </div>
-    }
-
-    <div class="extra">
-      <app-notification-settings audience="child" [compact]="true" />
-    </div>
-
-    @if (analytics()) {
-      <section class="extra analytics-section">
-        <app-group-label i18n-label="@@childDashboard.thisWeekGroup" label="Denne uken" />
-        <app-streak-counter
-          [currentStreak]="analytics()!.currentStreak"
-          [longestStreak]="analytics()!.longestStreak"
-        />
-        <div class="progress-cards">
-          <app-progress-summary
-            i18n-title="@@childDashboard.thisWeek"
-            title="Denne uken"
-            icon="📅"
-            [progress]="analytics()!.weekProgress"
-          />
-          <app-progress-summary
-            i18n-title="@@childDashboard.thisMonth"
-            title="Denne måneden"
-            icon="📆"
-            [progress]="analytics()!.monthProgress"
-          />
-        </div>
-        @if (analytics()!.dailyPoints.length > 0) {
-          <app-daily-points-chart
-            [dailyData]="analytics()!.dailyPoints"
-            i18n-title="@@childDashboard.pointsThisWeek"
-            title="Poeng denne uken"
-          />
+    <!-- One stack on the phone; from 1024 px two: what is left beside what is done (desktop A) -->
+    <div class="cols">
+      <div class="col">
+        @if (!hasTasks()) {
+          <div class="empty" role="status">
+            <p class="empty-title" i18n="@@childDashboard.noTasksToday">Ingen oppgaver i dag!</p>
+            <p class="empty-sub" i18n="@@childDashboard.enjoyFreeTime">Nyt fritiden din!</p>
+          </div>
         }
-      </section>
-    }
+
+        @if (overdueTasks().length > 0) {
+          <app-group-label i18n-label="@@childDashboard.overdue" label="Forfalt" [overdue]="true" />
+          @for (task of overdueTasks(); track task.id) {
+            <app-chore-row [title]="task.taskName" [meta]="overdueMeta(task)" [overdue]="true">
+              <button
+                row-action
+                type="button"
+                class="rbtn"
+                [disabled]="isCompleting(task.id)"
+                [attr.aria-label]="hakAvLabel(task)"
+                (click)="onMarkDone(task)"
+                i18n="@@childDashboard.hakAv"
+              >
+                Ferdig
+              </button>
+            </app-chore-row>
+          }
+        }
+
+        @if (tasks().length > 0) {
+          <app-group-label i18n-label="@@childDashboard.today" label="I dag" />
+          @for (task of pendingTasks(); track task.id) {
+            <app-chore-row [title]="task.taskName" [meta]="openMeta(task)">
+              <button
+                row-action
+                type="button"
+                class="rbtn"
+                [disabled]="isCompleting(task.id)"
+                [attr.aria-label]="hakAvLabel(task)"
+                (click)="onMarkDone(task)"
+                i18n="@@childDashboard.hakAv"
+              >
+                Ferdig
+              </button>
+            </app-chore-row>
+          }
+          @if (!desktop()) {
+            @for (task of completedTasks(); track task.id) {
+              <app-chore-row
+                [title]="task.taskName"
+                [meta]="doneMeta(task)"
+                [done]="true"
+                [points]="'+' + task.points"
+              />
+            }
+          }
+        }
+      </div>
+
+      <div class="col">
+        <!-- Desktop A: done today opens the right column -->
+        @if (desktop() && completedTasks().length > 0) {
+          <app-group-label i18n-label="@@childDashboard.doneToday" label="Gjort i dag" />
+          @for (task of completedTasks(); track task.id) {
+            <app-chore-row
+              [title]="task.taskName"
+              [meta]="doneMeta(task)"
+              [done]="true"
+              [points]="'+' + task.points"
+            />
+          }
+        }
+
+        <!-- Not in the signed-off picture: kept so nothing the family uses today goes away -->
+        @if (hasAvailableTasks()) {
+          <div class="extra">
+            <app-available-tasks-section />
+          </div>
+        }
+
+        <div class="extra">
+          <app-notification-settings audience="child" [compact]="true" />
+        </div>
+
+        @if (analytics()) {
+          <section class="extra analytics-section">
+            <app-group-label i18n-label="@@childDashboard.thisWeekGroup" label="Denne uken" />
+            <app-streak-counter
+              [currentStreak]="analytics()!.currentStreak"
+              [longestStreak]="analytics()!.longestStreak"
+            />
+            <div class="progress-cards">
+              <app-progress-summary
+                i18n-title="@@childDashboard.thisWeek"
+                title="Denne uken"
+                icon="📅"
+                [progress]="analytics()!.weekProgress"
+              />
+              <app-progress-summary
+                i18n-title="@@childDashboard.thisMonth"
+                title="Denne måneden"
+                icon="📆"
+                [progress]="analytics()!.monthProgress"
+              />
+            </div>
+            @if (analytics()!.dailyPoints.length > 0) {
+              <app-daily-points-chart
+                [dailyData]="analytics()!.dailyPoints"
+                i18n-title="@@childDashboard.pointsThisWeek"
+                title="Poeng denne uken"
+              />
+            }
+          </section>
+        }
+      </div>
+    </div>
   }
 </app-page>
 

@@ -10,7 +10,7 @@ import { BasePage } from './base.page';
  * - Today's tasks section
  * - Upcoming tasks section
  * - Quick-add FAB button
- * - Navigation (bottom nav for mobile, sidebar for desktop)
+ * - Navigation (bottom nav under 1024 px, tabs in the yellow top from 1024 px)
  */
 export class HomePage extends BasePage {
   // Selectors
@@ -49,7 +49,7 @@ export class HomePage extends BasePage {
 
   // Navigation
   readonly bottomNav: Locator;
-  readonly sidebarNav: Locator;
+  readonly topTabs: Locator;
   readonly navHomeButton: Locator;
   readonly navTasksButton: Locator;
   readonly navFamilyButton: Locator;
@@ -131,9 +131,9 @@ export class HomePage extends BasePage {
     this.navFamilyButton = page.getByRole('button', { name: 'Family' });
     this.navProgressButton = page.getByRole('button', { name: 'Progress' });
 
-    // Sidebar nav (desktop)
-    // Use nav.sidebar-nav for visibility checks (inner nav element has CSS visibility rules)
-    this.sidebarNav = page.locator('nav.sidebar-nav');
+    // Top tabs (desktop)
+    // The tab row in the yellow top (1024 px and wider)
+    this.topTabs = page.locator('nav.top-tabs');
 
     // Loading and error
     this.loadingIndicator = page.locator('[aria-busy="true"], .loading, [data-testid="loading"]');
@@ -262,7 +262,7 @@ export class HomePage extends BasePage {
 
   /**
    * Click the first visible navigation button matching the role
-   * Handles both mobile (bottom-nav) and desktop (sidebar-nav) layouts
+   * Handles both mobile (bottom-nav) and desktop (top-tabs) layouts
    */
   private async clickVisibleNavButton(button: Locator): Promise<void> {
     // Get count of matching buttons

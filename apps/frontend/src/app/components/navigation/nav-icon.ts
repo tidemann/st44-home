@@ -3,7 +3,7 @@ import { Component, ChangeDetectionStrategy, input } from '@angular/core';
 export type NavIconName = 'home' | 'tasks' | 'rewards' | 'family' | 'progress';
 
 /**
- * The four Poeng bottom-nav icons, plus progress for the desktop sidebar. Stroked in currentColor, so the active
+ * The four Poeng bottom-nav icons, plus progress for the desktop tab row. Stroked in currentColor, so the active
  * amber and the inactive muted come from the button around it.
  */
 @Component({

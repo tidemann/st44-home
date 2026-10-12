@@ -1,3 +1,4 @@
+import '@angular/localize/init';
 import {
   Component,
   ChangeDetectionStrategy,
@@ -9,18 +10,20 @@ import {
 import { Router, RouterOutlet, NavigationEnd } from '@angular/router';
 import { filter, Subscription } from 'rxjs';
 import { ChildNav, type ChildNavScreen } from '../../components/navigation/child-nav/child-nav';
+import { TopTabs, type TopTab } from '../../components/navigation/top-tabs/top-tabs';
+import { isDesktopSignal } from '../../utils/desktop-query';
 
 /**
  * Child Layout Component
  *
  * Layout wrapper for child user pages with:
  * - Screens draw their own title row (log out is behind the initial badge)
- * - Bottom navigation (Tasks / Rewards)
+ * - Bottom navigation (Tasks / Rewards) under 1024 px, the same two as tabs in the yellow top above
  * - Child-friendly interface
  */
 @Component({
   selector: 'app-child-layout',
-  imports: [RouterOutlet, ChildNav],
+  imports: [RouterOutlet, ChildNav, TopTabs],
   templateUrl: './child-layout.html',
   styleUrl: './child-layout.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -28,6 +31,16 @@ import { ChildNav, type ChildNavScreen } from '../../components/navigation/child
 export class ChildLayout implements OnInit, OnDestroy {
   private readonly router = inject(Router);
   private routerSubscription: Subscription | null = null;
+
+  /** 1024 px and wider: the tab row */
+  protected readonly desktop = isDesktopSignal();
+
+  /** The child's own two screens, as tabs from 1024 px. As on the child's bottom bar, the
+      chores screen ('tasks', /my-tasks) is the child's home, so it carries the house and «Hjem» */
+  protected readonly desktopTabs: TopTab<ChildNavScreen>[] = [
+    { id: 'tasks', icon: 'home', label: $localize`:@@childNav.home:Hjem` },
+    { id: 'rewards', icon: 'rewards', label: $localize`:@@nav.rewards:Belønninger` },
+  ];
 
   // State
   protected readonly activeScreen = signal<ChildNavScreen>('tasks');

@@ -1,0 +1,117 @@
+/* The yellow top's tab row (guide: Desktop and tablet — layout A, The chosen tab is the ink pill).
+   Everything is ink on #F6B93B (10.57:1) except the chosen tab's icon, yellow in its ink pill.
+   One line centred on y 40: mark y 22…58, pill y 27…53, badge y 21…59, 44 px targets y 18…62. */
+
+:host {
+  display: none;
+}
+
+@media (min-width: 1024px) {
+  :host {
+    display: block;
+    background: var(--yellow);
+    color: var(--ink);
+  }
+}
+
+.top {
+  max-width: 880px;
+  height: 80px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+}
+
+.brand {
+  flex: none;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+/* «Diddit», ink y 29.5…49.5 */
+.wordmark {
+  font-family: var(--font-display);
+  font-size: 26px;
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: -0.02em;
+  color: var(--ink);
+  /* the glyphs sit 1 px high in their line box; this centres the ink on y 39.5 */
+  padding-top: 2px;
+}
+
+/* The first tab box starts 39.5 px after the wordmark's ink; boxes 3.5 px apart */
+.top-tabs {
+  display: flex;
+  gap: 3.5px;
+  margin-left: 39.5px;
+}
+
+/* Content plus 15 px each side; the whole box is the target, 44 px tall */
+.tab {
+  display: flex;
+  align-items: center;
+  height: 44px;
+  padding: 0 15px;
+  border: 0;
+  border-radius: var(--r-card);
+  background: transparent;
+  color: var(--ink);
+  font-family: var(--font-text);
+  font-size: 15px;
+  font-weight: 500;
+  line-height: 1;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.tab:focus-visible {
+  outline: var(--focus-ring);
+  outline-offset: -2px;
+}
+
+/* The 21 px icon box (18 px of ink, --nav-icon); the pill is centred on it */
+.tab-icon {
+  position: relative;
+  isolation: isolate;
+}
+
+.tab-icon::before {
+  content: '';
+  position: absolute;
+  z-index: -1;
+  left: 50%;
+  top: 50%;
+  width: 46px;
+  height: 26px;
+  margin: -13px 0 0 -23px;
+  border-radius: 999px;
+  background: var(--ink);
+  visibility: hidden;
+}
+
+/* The pill reaches 12.5 px past the box; the label ink starts 4 px after it, on every tab */
+.tab-label {
+  margin-left: 16.5px;
+}
+
+.tab.active .tab-icon {
+  color: var(--yellow);
+}
+
+.tab.active .tab-icon::before {
+  visibility: visible;
+}
+
+/* Ink and one weight step up: 600 against the row's 500 */
+.tab.active .tab-label {
+  font-weight: 600;
+}
+
+.end {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}

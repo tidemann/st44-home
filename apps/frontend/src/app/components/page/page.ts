@@ -1,8 +1,5 @@
-import '@angular/localize/init';
-import { Component, ChangeDetectionStrategy, input, computed, inject, signal } from '@angular/core';
-import { Router } from '@angular/router';
-import { AuthService } from '../../services/auth.service';
-import { personInitial } from '../../utils/person-name';
+import { Component, ChangeDetectionStrategy, input, computed } from '@angular/core';
+import { InitialBadge } from '../initial-badge/initial-badge';
 
 /**
  * Page width variants
@@ -48,15 +45,12 @@ export type PageWidth = 'narrow' | 'medium' | 'wide';
  */
 @Component({
   selector: 'app-page',
-  imports: [],
+  imports: [InitialBadge],
   templateUrl: './page.html',
   styleUrl: './page.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PageComponent {
-  private readonly router = inject(Router);
-  private readonly authService = inject(AuthService);
-
   /**
    * Page title displayed in the header (required)
    */
@@ -101,6 +95,13 @@ export class PageComponent {
   band = input<boolean>(false);
 
   /**
+   * Desktop A (guide: "Desktop and tablet — layout A"): from 1024 px the band's title and
+   * sub-line sit on the left of an 880 px container and the `page-band` content on the right,
+   * on one line; the content below gets the same 880 px. Under 1024 px nothing changes.
+   */
+  split = input<boolean>(false);
+
+  /**
    * Computed CSS class for container width
    */
   protected containerClass = computed(() => {
@@ -119,35 +120,4 @@ export class PageComponent {
   protected headerClass = computed(() => {
     return this.showGradient() ? 'page-header--gradient' : 'page-header--plain';
   });
-
-  /** The child's badge opens a one-item menu (log out); a parent's goes to settings */
-  protected readonly isChild = computed(() => this.authService.currentUser()?.role === 'child');
-  protected readonly menuOpen = signal(false);
-
-  /** The person's single initial, drawn in the 38 px badge */
-  protected readonly initial = computed(() => {
-    const user = this.authService.currentUser();
-    if (!user) return null;
-    return personInitial(user.firstName, user.email) || null;
-  });
-
-  protected readonly badgeLabel = computed(() =>
-    this.isChild()
-      ? $localize`:@@page.badge.childMenu:Meny`
-      : $localize`:@@page.badge.settings:Innstillinger`,
-  );
-
-  protected onBadgeClick(): void {
-    if (this.isChild()) {
-      this.menuOpen.update((open) => !open);
-      return;
-    }
-    void this.router.navigate(['/settings']);
-  }
-
-  protected onLogout(): void {
-    this.menuOpen.set(false);
-    this.authService.logout();
-    void this.router.navigate(['/child-login']);
-  }
 }

@@ -27,8 +27,12 @@ import { HouseholdStore } from '../../stores/household.store';
 import { HouseholdDayService } from '../../services/household-day.service';
 import { PushNotificationService } from '../../services/push-notification.service';
 import { HttpErrorResponse } from '@angular/common/http';
-import { capitalize, dayWord, isoDay, longDate } from '../../utils/poeng-format';
+import { isDesktopSignal } from '../../utils/desktop-query';
+import { capitalize, clockTime, dayWord, isoDay, longDate } from '../../utils/poeng-format';
 import type { Task, Assignment, Child, HouseholdMemberResponse } from '@st44/types';
+
+/** Child cards beside the title from 1024 px (desktop A); more go on one "+N barn til" tile */
+export const DESKTOP_MAX_CHILD_CARDS = 4;
 
 /** One child card on the family home */
 interface ChildSummary {
@@ -94,6 +98,7 @@ export class Home implements OnInit {
   protected readonly completingId = signal<string | null>(null);
 
   // Modal state
+  protected readonly createTaskOpen = signal(false);
   protected readonly editTaskOpen = signal(false);
   protected readonly selectedTask = signal<Task | null>(null);
 
@@ -147,6 +152,21 @@ export class Home implements OnInit {
   });
 
   protected readonly kidColumns = computed(() => childCardColumns(this.childSummaries().length));
+
+  /** 1024 px and wider: desktop A */
+  protected readonly desktop = isDesktopSignal();
+
+  /** Every child on the phone; at most four beside the title on desktop */
+  protected readonly shownChildren = computed(() =>
+    this.desktop()
+      ? this.childSummaries().slice(0, DESKTOP_MAX_CHILD_CARDS)
+      : this.childSummaries(),
+  );
+
+  /** Desktop A shows at most four child cards; the rest are counted on a "+N barn til" tile */
+  protected readonly moreChildren = computed(() =>
+    Math.max(0, this.childSummaries().length - DESKTOP_MAX_CHILD_CARDS),
+  );
 
   async ngOnInit(): Promise<void> {
     await this.loadData();
@@ -244,6 +264,13 @@ export class Home implements OnInit {
     return overdue
       ? $localize`:@@home.overdueMeta:${who}:who: – forfalt ${dayWord(a.date)}:day:`
       : $localize`:@@home.openMeta:${who}:who: – ${dayWord(a.date)}:day:`;
+  }
+
+  /** "Emma – gjort 16.10" for "Gjort i dag" */
+  protected doneMeta(a: Assignment): string {
+    const who = a.childName || $localize`:@@home.anyone:Alle`;
+    const at = a.completedAt ? ` ${clockTime(a.completedAt)}` : '';
+    return $localize`:@@home.doneMeta:${who}:who: – gjort${at}:at:`;
   }
 
   /** "Mathea – i morgen" for "Kommende" */
@@ -385,6 +412,43 @@ export class Home implements OnInit {
         this.error.set('Failed to delete task. Please try again.');
       },
     });
+  }
+
+  /** "+ Ny oppgave" (desktop A, under the left column) */
+  protected openCreateTask(): void {
+    this.createTaskOpen.set(true);
+  }
+
+  protected closeCreateTask(): void {
+    this.createTaskOpen.set(false);
+  }
+
+  /** Create the chore, then reload so it shows up in its column */
+  protected onTaskCreated(data: TaskFormData): void {
+    const householdIdValue = this.householdId();
+    if (!householdIdValue) return;
+
+    this.taskService
+      .createTask(householdIdValue, {
+        name: data.name,
+        description: data.description,
+        points: data.points,
+        ruleType: data.ruleType,
+        ruleConfig: data.ruleConfig,
+      })
+      .subscribe({
+        next: () => {
+          this.createTaskOpen.set(false);
+          void this.loadData();
+        },
+        error: (err) => {
+          // The modal stays open with what was typed; the page keeps its chores
+          console.error('Failed to create task:', err);
+          this.remindMessage.set(
+            $localize`:@@home.createFailed:Kunne ikke lage oppgaven. Prøv igjen.`,
+          );
+        },
+      });
   }
 
   /**
