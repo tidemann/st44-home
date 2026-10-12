@@ -56,6 +56,31 @@
   }
 
   @if (!loading() && !error()) {
+    <!-- ST-914: chores whose children were all deleted get no new days until the parent acts -->
+    @if (noChildTasks().length > 0) {
+      <app-group-label
+        i18n-label="@@tasks.noChildrenGroup"
+        label="Mangler barn"
+        [right]="'' + noChildTasks().length"
+        [overdue]="true"
+      />
+      <p class="no-children-note" i18n="@@tasks.noChildrenNote">
+        Barnet som hadde oppgaven, er slettet, så den kommer ikke lenger på noen dag. Trykk på
+        oppgaven for å velge et nytt barn eller slette den.
+      </p>
+      @for (t of noChildTasks(); track t.id) {
+        <app-chore-row
+          [title]="t.name"
+          i18n-meta="@@tasks.noChildrenMeta"
+          meta="Velg et nytt barn"
+          [overdue]="true"
+          [points]="points(t.points)"
+          [openable]="true"
+          (open)="onEdit(t.id)"
+        />
+      }
+    }
+
     @if (overdueRows().length > 0) {
       <app-group-label
         i18n-label="@@tasks.overdueGroup"

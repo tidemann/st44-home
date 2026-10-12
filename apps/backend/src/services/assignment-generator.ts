@@ -6,6 +6,11 @@ export interface AssignmentGenerationResult {
   created: number;
   skipped: number;
   errors: string[];
+  /**
+   * Tasks left out because every child the parent picked has been deleted. Not an
+   * error: the task list shows these to the parent, who picks a new child there.
+   */
+  skippedNoChildren: string[];
 }
 
 interface Task {
@@ -60,6 +65,7 @@ export async function generateAssignments(
     created: 0,
     skipped: 0,
     errors: [],
+    skippedNoChildren: [],
   };
 
   // Validate inputs
@@ -145,7 +151,8 @@ export async function generateAssignments(
           const remaining = assignedChildren.filter((id) => currentChildIds.has(id));
           // Not household-wide: the parent picked children, so skip until the task is edited
           if (remaining.length === 0) {
-            throw new Error('none of the assigned children exist any more');
+            result.skippedNoChildren.push(`Task ${task.name} (${task.id})`);
+            continue;
           }
           task.rule_config.assignedChildren = remaining;
         }

@@ -23,6 +23,7 @@ import { PageComponent } from '../../components/page/page';
 import { ChoreRow } from '../../components/poeng/chore-row/chore-row';
 import { GroupLabel } from '../../components/poeng/group-label/group-label';
 import { capitalize, clockTime, dayWord } from '../../utils/poeng-format';
+import { hasNoChildrenLeft } from '../../utils/task-children';
 import type { Task, Child, Assignment } from '@st44/types';
 
 /**
@@ -60,6 +61,10 @@ export class Tasks implements OnInit {
   protected readonly children = signal<Child[]>([]);
   /** Active task templates («Alle oppgaver») */
   protected readonly templates = computed(() => this.taskService.tasks().filter((t) => t.active));
+  /** Recurring tasks whose chosen children were all deleted: no new days until edited */
+  protected readonly noChildTasks = computed(() =>
+    this.templates().filter((t) => hasNoChildrenLeft(t, this.children())),
+  );
 
   /** The selected child chip; null is «Alle» */
   protected readonly selectedChildId = signal<string | null>(null);
@@ -173,8 +178,11 @@ export class Tasks implements OnInit {
     return $localize`:@@tasks.doneMeta:${this.who(a)}:who: – Gjort${at}:at:`;
   }
 
-  /** "Gjentas" / "Én gang" for a template row */
+  /** "Gjentas" / "Én gang" for a template row; "Uten barn" when its children are gone */
   protected templateMeta(t: Task): string {
+    if (this.noChildTasks().includes(t)) {
+      return $localize`:@@tasks.ruleNoChildren:Uten barn – velg et nytt`;
+    }
     return t.ruleType === 'single'
       ? $localize`:@@tasks.ruleOnce:Én gang`
       : $localize`:@@tasks.ruleRepeat:Gjentas`;

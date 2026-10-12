@@ -193,6 +193,55 @@ describe('Tasks (Poeng task list)', () => {
     });
   });
 
+  describe('chores whose children were deleted (ST-914)', () => {
+    const orphan: Task = {
+      ...task,
+      id: 'task-orphan',
+      name: 'Mate katten',
+      ruleType: 'repeating',
+      ruleConfig: { repeatDays: [1, 3], assignedChildren: ['gone-1'] },
+    };
+    const shared: Task = {
+      ...task,
+      id: 'task-shared',
+      ruleConfig: { assignedChildren: ['gone-1', 'child-2'] },
+    };
+
+    beforeEach(async () => {
+      mockTaskService.tasks.set([task, orphan, shared]);
+      // The first change detection runs ngOnInit, which starts loading the page
+      fixture.detectChanges();
+      await component['loadTasks']();
+      fixture.detectChanges();
+    });
+
+    it('lists only the chores with no child left under Mangler barn', () => {
+      expect(component['noChildTasks']().map((t) => t.id)).toEqual(['task-orphan']);
+      const text = fixture.nativeElement.textContent as string;
+      expect(text).toContain('Mangler barn');
+      expect(text).toContain('Barnet som hadde oppgaven, er slettet');
+      expect(text).toContain('Velg et nytt barn');
+    });
+
+    it('marks the chore under Alle oppgaver too', () => {
+      expect(component['templateMeta'](orphan)).toBe('Uten barn – velg et nytt');
+      expect(component['templateMeta'](shared)).toBe('Gjentas');
+    });
+
+    it('opens the chore for editing when tapped', () => {
+      component['onEdit']('task-orphan');
+      expect(component['editingTask']()).toEqual(orphan);
+      expect(component['editOpen']()).toBe(true);
+    });
+
+    it('shows nothing when every chore has a child', () => {
+      mockTaskService.tasks.set([task, shared]);
+      fixture.detectChanges();
+      expect(component['noChildTasks']()).toEqual([]);
+      expect(fixture.nativeElement.textContent).not.toContain('Mangler barn');
+    });
+  });
+
   describe('child chips', () => {
     it('keeps the chip in the URL', () => {
       component['onSelectChild']('child-1');
