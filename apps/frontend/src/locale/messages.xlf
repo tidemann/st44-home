@@ -122,27 +122,6 @@
           <context context-type="linenumber">60</context>
         </context-group>
       </trans-unit>
-      <trans-unit id="login.title" datatype="html">
-        <source>Velkommen tilbake!</source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/auth/login.html</context>
-          <context context-type="linenumber">9,10</context>
-        </context-group>
-      </trans-unit>
-      <trans-unit id="login.subtitle" datatype="html">
-        <source> Logg inn for å administrere husholdningsoppgavene </source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/auth/login.html</context>
-          <context context-type="linenumber">11,14</context>
-        </context-group>
-      </trans-unit>
-      <trans-unit id="login.registration.success" datatype="html">
-        <source> Konto opprettet! Vennligst logg inn. </source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/auth/login.html</context>
-          <context context-type="linenumber">17,21</context>
-        </context-group>
-      </trans-unit>
       <trans-unit id="common.or" datatype="html">
         <source>ELLER</source>
         <context-group purpose="location">
@@ -158,20 +137,6 @@
           <context context-type="linenumber">37,39</context>
         </context-group>
       </trans-unit>
-      <trans-unit id="login.email.label" datatype="html">
-        <source>E-post</source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/auth/login.html</context>
-          <context context-type="linenumber">60,62</context>
-        </context-group>
-      </trans-unit>
-      <trans-unit id="login.email.placeholder" datatype="html">
-        <source>deg@eksempel.no</source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/auth/login.html</context>
-          <context context-type="linenumber">67,68</context>
-        </context-group>
-      </trans-unit>
       <trans-unit id="error.email.required" datatype="html">
         <source>E-post er påkrevd</source>
         <context-group purpose="location">
@@ -183,20 +148,6 @@
           <context context-type="linenumber">121,123</context>
         </context-group>
       </trans-unit>
-      <trans-unit id="login.password.label" datatype="html">
-        <source>Passord</source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/auth/login.html</context>
-          <context context-type="linenumber">87,88</context>
-        </context-group>
-      </trans-unit>
-      <trans-unit id="login.password.placeholder" datatype="html">
-        <source>Skriv inn passordet ditt</source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/auth/login.html</context>
-          <context context-type="linenumber">95,96</context>
-        </context-group>
-      </trans-unit>
       <trans-unit id="error.password.required" datatype="html">
         <source>Passord er påkrevd</source>
         <context-group purpose="location">
@@ -206,69 +157,6 @@
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/auth/reset-password.html</context>
           <context context-type="linenumber">51,53</context>
-        </context-group>
-      </trans-unit>
-      <trans-unit id="login.rememberMe" datatype="html">
-        <source>Husk meg</source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/auth/login.html</context>
-          <context context-type="linenumber">121,123</context>
-        </context-group>
-      </trans-unit>
-      <trans-unit id="login.submit.loading" datatype="html">
-        <source>Logger inn...</source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/auth/login.html</context>
-          <context context-type="linenumber">139,141</context>
-        </context-group>
-      </trans-unit>
-      <trans-unit id="login.submit.button" datatype="html">
-        <source>Logg inn</source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/auth/login.html</context>
-          <context context-type="linenumber">141,143</context>
-        </context-group>
-      </trans-unit>
-      <trans-unit id="login.forgotPassword" datatype="html">
-        <source>Glemt passord?</source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/auth/login.html</context>
-          <context context-type="linenumber">148,150</context>
-        </context-group>
-      </trans-unit>
-      <trans-unit id="login.createAccount" datatype="html">
-        <source>Opprett konto</source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/auth/login.html</context>
-          <context context-type="linenumber">151,154</context>
-        </context-group>
-      </trans-unit>
-      <trans-unit id="login.qrCode.button" datatype="html">
-        <source> 📱 Skann QR-kode for å logge inn </source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/auth/login.html</context>
-          <context context-type="linenumber">166,169</context>
-        </context-group>
-      </trans-unit>
-      <trans-unit id="login.googleSigninFailed" datatype="html">
-        <source>Google-pålogging feilet. Vennligst prøv igjen.</source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/auth/login.ts</context>
-          <context context-type="linenumber">138</context>
-        </context-group>
-      </trans-unit>
-      <trans-unit id="login.loginFailed" datatype="html">
-        <source>Pålogging feilet. Vennligst sjekk dine innloggingsopplysninger.</source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/auth/login.ts</context>
-          <context context-type="linenumber">172</context>
-        </context-group>
-      </trans-unit>
-      <trans-unit id="login.qrLoginFailed" datatype="html">
-        <source>QR-kode pålogging feilet. Vennligst prøv igjen.</source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/auth/login.ts</context>
-          <context context-type="linenumber">223</context>
         </context-group>
       </trans-unit>
       <trans-unit id="register.title" datatype="html">
@@ -5556,6 +5444,202 @@
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/utils/poeng-format.ts</context>
           <context context-type="linenumber">40</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="login.brand.promise" datatype="html">
+        <source>Oppgaver og poeng for hele familien.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/auth/login.html</context>
+          <context context-type="linenumber">12,14</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="login.brand.promise1" datatype="html">
+        <source>Oppgavene fordeler seg selv</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/auth/login.html</context>
+          <context context-type="linenumber">16,19</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="login.brand.promise2" datatype="html">
+        <source>Poeng barna faktisk vil ha</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/auth/login.html</context>
+          <context context-type="linenumber">20,23</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="login.brand.promise3" datatype="html">
+        <source>Belønninger dere blir enige om</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/auth/login.html</context>
+          <context context-type="linenumber">24,27</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="login.title" datatype="html">
+        <source>Logg inn</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/auth/login.html</context>
+          <context context-type="linenumber">39,40</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="login.welcome" datatype="html">
+        <source>Velkommen tilbake.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/auth/login.html</context>
+          <context context-type="linenumber">40,42</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="login.registration.success" datatype="html">
+        <source> Kontoen er laget. Logg inn for å komme i gang. </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/auth/login.html</context>
+          <context context-type="linenumber">45,49</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="login.email.label" datatype="html">
+        <source>E-post</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/auth/login.html</context>
+          <context context-type="linenumber">67,69</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="login.password.label" datatype="html">
+        <source>Passord</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/auth/login.html</context>
+          <context context-type="linenumber">83,84</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="login.forgotPassword" datatype="html">
+        <source>Glemt passord?</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/auth/login.html</context>
+          <context context-type="linenumber">85,88</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="login.submit.loading" datatype="html">
+        <source>Logger inn …</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/auth/login.html</context>
+          <context context-type="linenumber">146,148</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="login.submit.button" datatype="html">
+        <source>Logg inn</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/auth/login.html</context>
+          <context context-type="linenumber">148,150</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="login.or" datatype="html">
+        <source>eller</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/auth/login.html</context>
+          <context context-type="linenumber">154,156</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="login.google" datatype="html">
+        <source>Fortsett med Google</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/auth/login.html</context>
+          <context context-type="linenumber">186,187</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="login.qrCode.button" datatype="html">
+        <source>Skann QR-kode (for barna)</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/auth/login.html</context>
+          <context context-type="linenumber">202,205</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="login.newFamily" datatype="html">
+        <source>Ny familie?</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/auth/login.html</context>
+          <context context-type="linenumber">207,208</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="login.createAccount" datatype="html">
+        <source>Opprett konto</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/auth/login.html</context>
+          <context context-type="linenumber">208,211</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="login.password.hide" datatype="html">
+        <source>Skjul passord</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/auth/login.ts</context>
+          <context context-type="linenumber">111</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="login.password.show" datatype="html">
+        <source>Vis passord</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/auth/login.ts</context>
+          <context context-type="linenumber">112</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="login.googleUnavailable" datatype="html">
+        <source>Google-innlogging er ikke tilgjengelig akkurat nå. Prøv igjen om litt.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/auth/login.ts</context>
+          <context context-type="linenumber">176</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="login.googleSigninFailed" datatype="html">
+        <source>Google-innloggingen gikk ikke. Prøv igjen.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/auth/login.ts</context>
+          <context context-type="linenumber">196</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="login.error.bothEmpty" datatype="html">
+        <source>Skriv inn e-post og passord.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/auth/login.ts</context>
+          <context context-type="linenumber">237</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="login.error.email" datatype="html">
+        <source>Skriv inn en gyldig e-postadresse.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/auth/login.ts</context>
+          <context context-type="linenumber">239</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="login.error.password" datatype="html">
+        <source>Skriv inn passordet ditt.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/auth/login.ts</context>
+          <context context-type="linenumber">240</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="login.error.credentials" datatype="html">
+        <source>Feil e-post eller passord. Prøv igjen.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/auth/login.ts</context>
+          <context context-type="linenumber">265</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="login.error.tooMany" datatype="html">
+        <source>For mange forsøk. Vent litt, og prøv igjen.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/auth/login.ts</context>
+          <context context-type="linenumber">269</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="login.loginFailed" datatype="html">
+        <source>Vi fikk ikke logget deg inn. Sjekk nettet, og prøv igjen.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/auth/login.ts</context>
+          <context context-type="linenumber">273</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="login.qrLoginFailed" datatype="html">
+        <source>QR-koden virket ikke. Be en voksen om en ny, og prøv igjen.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/auth/login.ts</context>
+          <context context-type="linenumber">322</context>
         </context-group>
       </trans-unit>
     </body>

@@ -3,10 +3,14 @@
   title="Belønninger"
   [subtitle]="subtitle()"
   maxWidth="narrow"
+  [band]="true"
 >
-  <!-- The balance: one hero on this screen, smaller than the chore screen's -->
-  <p class="hero" [attr.aria-label]="balanceLabel()" aria-live="polite">{{ pointsBalance() }}</p>
-  <p class="herolab" aria-hidden="true" i18n="@@childRewards.balanceWord">poeng å bruke</p>
+  <!-- A, the yellow top: the balance is this screen's one hero, smaller than the chore
+       screen's, and sits in the band in Ink -->
+  <div page-band>
+    <p class="hero" [attr.aria-label]="balanceLabel()" aria-live="polite">{{ pointsBalance() }}</p>
+    <p class="herolab" aria-hidden="true" i18n="@@childRewards.balanceWord">poeng å bruke</p>
+  </div>
 
   @if (successMessage()) {
     <p class="notice" role="status">{{ successMessage() }}</p>

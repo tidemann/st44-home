@@ -960,6 +960,10 @@ For the two undrawn screens: take the title row and whatever already sits above 
 the band, apply the colour table above, and change nothing else. Then have the result checked
 against this section before it ships — an undrawn screen is a pattern applied, not a picture signed.
 
+- **Checked (ST-897, 12.10):** Oppgaver, Belønninger (forelder) and the child's Belønninger pass this section at 360 / 390 / 412 — band `#F6B93B` full-bleed, gutter 22, pad 10 / 17, Ink only (10.57:1, badge 8.31:1).
+- **Chips and tabs stay on the paper, under the band.** They filter or switch the list, so they belong with it; on the yellow the inactive tab label would be 3.76:1 and the tab indicator's baseline 1.27:1.
+- **Their first ink sits 22 px under the band** on both screens: the chips' pill on Oppgaver, the tab label on Belønninger (the 44 px tab button carries ~18.5 px of that itself).
+
 ### The tick screen stays the only fully yellow screen
 
 A band and a full-bleed screen are two different things, and the difference is the product's loudest

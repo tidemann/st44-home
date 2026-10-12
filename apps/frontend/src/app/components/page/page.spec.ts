@@ -192,4 +192,37 @@ describe('PageComponent', () => {
       expect(content).toBeTruthy();
     });
   });
+
+  describe('band input (A, the yellow top)', () => {
+    it('should keep the plain title row when band is off', () => {
+      fixture.componentRef.setInput('title', 'Title');
+      fixture.detectChanges();
+
+      expect(fixture.debugElement.query(By.css('.page-header--band'))).toBeNull();
+      expect(fixture.debugElement.query(By.css('.page-band'))).toBeNull();
+    });
+
+    it('should put the title row and the sub-line on the band', () => {
+      fixture.componentRef.setInput('title', 'Hjemme');
+      fixture.componentRef.setInput('subtitle', 'mandag 12. oktober – 2 av 7 gjort');
+      fixture.componentRef.setInput('band', true);
+      fixture.detectChanges();
+
+      const header = fixture.debugElement.query(By.css('header.page-header--band'));
+      expect(header).toBeTruthy();
+      expect(header.query(By.css('.page-title')).nativeElement.textContent).toBe('Hjemme');
+      expect(header.query(By.css('.page-band .page-subtitle')).nativeElement.textContent).toBe(
+        'mandag 12. oktober – 2 av 7 gjort',
+      );
+      expect(fixture.debugElement.query(By.css('.page-content .page-subtitle'))).toBeNull();
+    });
+
+    it('should keep the h1 as the only heading on the band', () => {
+      fixture.componentRef.setInput('title', 'Oppgaver');
+      fixture.componentRef.setInput('band', true);
+      fixture.detectChanges();
+
+      expect(fixture.debugElement.queryAll(By.css('.page-header--band h1')).length).toBe(1);
+    });
+  });
 });

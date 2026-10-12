@@ -354,3 +354,38 @@ export const Accessibility: Story = {
     `,
   }),
 };
+
+/**
+ * A, the yellow top (approved 2026-10-10)
+ *
+ * The title row, the sub-line and anything projected with `page-band` sit on a full-bleed
+ * #F6B93B band that ends 17 px under its last item. Ink on the yellow; the badge fill is
+ * Yellow Inset. Everything else stays on the paper below.
+ */
+export const YellowTop: Story = {
+  args: {
+    title: 'Hjemme',
+    subtitle: 'tirsdag 6. oktober – 3 av 7 gjort',
+    maxWidth: 'medium',
+    band: true,
+  },
+  argTypes: {
+    band: {
+      control: 'boolean',
+      description: 'A, the yellow top: the title area becomes a full-bleed yellow band',
+    },
+  },
+  render: (args) => ({
+    props: args,
+    template: `
+      <app-page [title]="title" [subtitle]="subtitle" [maxWidth]="maxWidth" [band]="band">
+        <div page-band style="display: flex; gap: 9px;">
+          <div style="flex: 1; height: 154px; background: #fff; border-radius: 14px;"></div>
+          <div style="flex: 1; height: 154px; background: #fff; border-radius: 14px;"></div>
+          <div style="flex: 1; height: 154px; background: #fff; border-radius: 14px;"></div>
+        </div>
+        <p style="margin: 21px 0 0; font: 600 13px/1.3 'Hanken Grotesk', sans-serif; color: #a43a16;">Forfalt</p>
+      </app-page>
+    `,
+  }),
+};

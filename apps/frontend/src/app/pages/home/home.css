@@ -1,13 +1,12 @@
 /* Poeng screen 1 (screens-v2 #s1) */
 
-/* Child cards fill the row, 9 px apart: --kid-cols across (109 px each with 3 on a 390 px
+/* In the band, straight under the sub-line (brand-07: cards y 104…258). Child cards fill the row, 9 px apart: --kid-cols across (109 px each with 3 on a 390 px
    phone); a shorter last row grows its cards to the full width (ST-864) */
 .kids {
   --kid-cols: 3;
   display: flex;
   flex-wrap: wrap;
   gap: 9px;
-  margin-top: 16px;
 }
 
 /* Half a px under the exact share so sub-pixel rounding never wraps a card; flex-grow fills it */

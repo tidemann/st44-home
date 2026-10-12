@@ -1,7 +1,8 @@
 <div class="page" [class]="containerClass()">
-  <!-- Title row: screen name left, the person's initial badge right (guide: Initial badge) -->
+  <!-- Title row: screen name left, the person's initial badge right (guide: Initial badge).
+       With [band], the title area is the yellow top (guide: A — the yellow top). -->
   @if (showHeader()) {
-    <header class="page-header" [class]="headerClass()">
+    <header class="page-header" [class]="headerClass()" [class.page-header--band]="band()">
       <div class="page-header-content">
         <div class="page-header-text">
           <h1 class="page-title">{{ title() }}</h1>
@@ -30,11 +31,19 @@
           }
         </div>
       </div>
+      @if (band()) {
+        <div class="page-band">
+          @if (subtitle()) {
+            <p class="page-subtitle">{{ subtitle() }}</p>
+          }
+          <ng-content select="[page-band]" />
+        </div>
+      }
     </header>
   }
 
   <main class="page-content">
-    @if (showHeader() && subtitle()) {
+    @if (showHeader() && !band() && subtitle()) {
       <p class="page-subtitle">{{ subtitle() }}</p>
     }
     <ng-content />

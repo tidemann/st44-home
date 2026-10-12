@@ -1,345 +1,668 @@
-/**
- * Login Component Styles
- * Diddit design system: Poeng, light mode
- */
+/* The login (guide: The login screen). Phone first, measured from login-17 at 390 × 844 with
+   the drawn 35 px status bar taken off: on a device the browser owns that strip, so the
+   yellow starts at the top of the viewport. */
 
-/* ===== AUTH CONTAINER ===== */
 :host {
   display: block;
 }
 
-.auth-container {
+.login {
   min-height: 100vh;
+  min-height: 100dvh;
   display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0;
+  flex-direction: column;
   background: var(--bg);
-  position: relative;
-  overflow: hidden;
-}
-
-/* ===== AUTH CARD ===== */
-.auth-card {
-  background: var(--color-surface);
-  border-radius: var(--r-card);
-  padding: var(--space-xxl);
-  max-width: 480px;
-  width: 100%;
-  position: relative;
-  z-index: 1;
-  animation: slideUp var(--transition-slow) ease-out;
-}
-
-@media (max-width: 480px) {
-  .auth-card {
-    padding: var(--space-xl);
-    border-radius: var(--r-card);
-    margin: var(--space-md);
-  }
-}
-
-/* ===== AUTH LOGO ===== */
-.auth-logo {
-  text-align: center;
-  margin-bottom: var(--space-xxl);
-}
-
-.auth-logo-text {
-  font-family: var(--font-heading);
-  font-size: 2.5rem;
-  font-weight: 800;
   color: var(--text);
-  letter-spacing: -0.02em;
 }
 
-/* ===== AUTH TITLE & SUBTITLE ===== */
-.auth-title {
-  font-family: var(--font-heading);
-  font-size: var(--font-size-3xl);
-  font-weight: 800;
-  margin-bottom: var(--space-sm);
-  text-align: center;
-  color: var(--color-text-primary);
-}
+/* ===== BRAND AREA: full-bleed yellow, 303 px; Ink on it (10.57:1) ===== */
 
-.auth-subtitle {
-  text-align: center;
-  color: var(--color-text-secondary);
-  margin-bottom: var(--space-xxl);
-  font-size: var(--font-size-base);
-  line-height: var(--line-height-relaxed);
-}
-
-/* ===== FORM STYLES ===== */
-.form-group {
-  margin-bottom: var(--space-lg);
-}
-
-.form-label {
-  display: block;
-  margin-bottom: var(--space-xs);
-  font-weight: var(--font-weight-semibold);
-  font-size: var(--font-size-sm);
-  color: var(--color-text-primary);
-}
-
-.form-input {
-  width: 100%;
-  padding: var(--space-md);
-  border: 2px solid transparent;
-  border-radius: var(--radius-sm);
-  font-size: var(--font-size-base);
-  font-family: var(--font-body);
-  background: var(--color-background);
-  color: var(--color-text-primary);
-  transition: all var(--transition-fast);
-}
-
-.form-input::placeholder {
-  color: var(--color-text-tertiary);
-}
-
-.form-input:focus {
-  outline: var(--focus-ring);
-  border-color: var(--color-primary);
-  background: var(--color-surface);
-}
-
-.form-input[aria-invalid='true'] {
-  border-color: var(--color-danger);
-  background: var(--color-danger-light);
-}
-
-.form-input[aria-invalid='true']:focus {
-  outline: var(--focus-ring);
-  outline-offset: 2px;
-}
-
-/* ===== PASSWORD INPUT ===== */
-.password-input-wrapper {
-  position: relative;
-  display: flex;
-}
-
-.password-input-wrapper .form-input {
-  padding-right: 3rem;
-}
-
-.toggle-password {
-  position: absolute;
-  right: var(--space-md);
-  top: 50%;
-  transform: translateY(-50%);
-  background: none;
-  border: none;
-  cursor: pointer;
-  padding: var(--space-xs);
-  font-size: 1.25rem;
-  color: var(--color-text-tertiary);
-  transition: color var(--transition-fast);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.toggle-password:hover {
-  color: var(--color-text-secondary);
-}
-
-.toggle-password:focus {
-  outline: 2px solid var(--color-primary);
-  outline-offset: 2px;
-  border-radius: 4px;
-}
-
-/* ===== CHECKBOX ===== */
-.checkbox-group {
-  display: flex;
-  align-items: center;
-  margin-bottom: var(--space-lg);
-}
-
-.checkbox-group label {
-  display: flex;
-  align-items: center;
-  gap: var(--space-sm);
-  cursor: pointer;
-  font-size: var(--font-size-sm);
-  color: var(--color-text-secondary);
-  margin-bottom: 0;
-  font-weight: var(--font-weight-normal);
-}
-
-.checkbox-group input[type='checkbox'] {
-  width: 18px;
-  height: 18px;
-  accent-color: var(--color-primary);
-  cursor: pointer;
-}
-
-/* ===== ERROR MESSAGES ===== */
-.error {
-  color: var(--color-danger);
-  font-size: var(--font-size-sm);
-  margin-top: var(--space-xs);
-  display: flex;
-  align-items: center;
-  gap: var(--space-xs);
-}
-
-.server-error {
-  padding: var(--space-md);
-  background: var(--color-danger-light);
-  border: 1px solid var(--color-danger);
-  border-radius: var(--radius-sm);
-  margin-bottom: var(--space-lg);
-}
-
-/* ===== SUCCESS MESSAGE ===== */
-.success-message {
-  padding: var(--space-md);
-  background: var(--color-success-light);
-  border: 1px solid var(--color-success);
-  border-radius: var(--radius-sm);
-  color: var(--color-success-dark);
-  margin-bottom: var(--space-lg);
-  text-align: center;
-  font-weight: var(--font-weight-medium);
-}
-
-/* ===== BUTTONS ===== */
-.btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  padding: var(--space-md) var(--space-xl);
-  font-family: var(--font-body);
-  font-size: var(--font-size-base);
-  font-weight: var(--font-weight-semibold);
-  min-height: 49px;
-  border-radius: var(--r-button);
-  border: none;
-  cursor: pointer;
-  transition: all var(--transition-fast);
-  text-decoration: none;
-}
-
-.btn-primary {
+.brand {
+  box-sizing: border-box;
+  min-height: calc(303px + env(safe-area-inset-top, 0px));
+  padding: calc(env(safe-area-inset-top, 0px) + 36px) var(--gutter) 24px;
   background: var(--yellow);
   color: var(--ink);
 }
 
-.btn-primary:hover:not(:disabled) {
-  background: var(--yellow-inset);
+.lockup {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
 }
 
-.btn-primary:focus-visible {
+.wordmark {
+  margin: 22px 0 0;
+  font-family: var(--font-display);
+  font-size: 56px;
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: -0.02em;
+  color: var(--ink);
+}
+
+.claim {
+  margin: 14px 0 0;
+  font-family: var(--font-display);
+  font-size: 29px;
+  font-weight: 800;
+  line-height: 1.1;
+  letter-spacing: -0.01em;
+  color: var(--ink);
+}
+
+.promise {
+  margin: 8px 0 0;
+  font-family: var(--font-text);
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 1.35;
+  color: var(--ink);
+}
+
+/* The three promises are drawn on the desktop panel only */
+.promises {
+  display: none;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+/* Typing, or a viewport too short for the form: the brand area becomes the horizontal
+   lockup on the same yellow, 112 px. The yellow changes format; it never goes away. */
+.login.typing .brand {
+  min-height: calc(112px + env(safe-area-inset-top, 0px));
+  padding-top: calc(env(safe-area-inset-top, 0px) + 34px);
+  padding-bottom: 34px;
+}
+
+.login.typing .lockup {
+  flex-direction: row;
+  align-items: center;
+  gap: 13px;
+}
+
+.login.typing .mark {
+  width: 44px;
+  height: 44px;
+}
+
+.login.typing .mark ::ng-deep svg {
+  width: 44px;
+  height: 44px;
+}
+
+.login.typing .wordmark {
+  margin: 0;
+  font-size: 37px;
+}
+
+.login.typing .pitch {
+  display: none;
+}
+
+/* ===== PAPER: the form ===== */
+
+.paper {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 29px var(--gutter) 25px;
+}
+
+.column {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-width: 400px;
+  margin: 0 auto;
+}
+
+/* The phone picture has no heading on the paper; the h1 stays for screen readers */
+.title,
+.welcome {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+.notice {
+  margin: 0 0 16px;
+  padding: 12px 15px;
+  background: var(--surface);
+  border-radius: var(--r-card);
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--done);
+}
+
+form {
+  display: flex;
+  flex-direction: column;
+}
+
+.label {
+  display: block;
+  margin: 0 0 3px;
+  font-family: var(--font-text);
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.3;
+  color: var(--text);
+}
+
+.label-row {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  grid-template-areas:
+    'label link'
+    'field field';
+  align-items: baseline;
+  column-gap: 12px;
+  margin-top: 14px;
+}
+
+.label-row .label {
+  grid-area: label;
+}
+
+.label-row .link {
+  grid-area: link;
+}
+
+.label-row .password {
+  grid-area: field;
+}
+
+/* Label 13 above, field 49 tall, 13 px radius, 1.5 px #555E64 (6.62:1), 18 px inset */
+.field {
+  box-sizing: border-box;
+  width: 100%;
+  height: 49px;
+  margin: 0;
+  padding: 0 18px;
+  border: 1.5px solid var(--text-muted);
+  border-radius: var(--r-button);
+  background: var(--surface);
+  color: var(--text);
+  font-family: var(--font-text);
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 1.35;
+  /* A long e-mail scrolls inside the field; it never widens, wraps or shrinks */
+  text-overflow: clip;
+  appearance: none;
+}
+
+.field:focus {
   outline: var(--focus-ring);
   outline-offset: 2px;
 }
 
-.btn-primary:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-  transform: none;
+.field.invalid {
+  border: 2px solid var(--overdue);
+  padding: 0 17.5px;
 }
 
-.btn-block {
-  width: 100%;
+.password {
+  position: relative;
 }
 
-/* ===== DIVIDER ===== */
-.divider {
+.field.has-eye {
+  padding-right: 52px;
+}
+
+/* Masked characters drawn as squares, as in the approved pictures */
+.field[type='password'] {
+  -webkit-text-security: square;
+  font-size: 27px;
+  letter-spacing: 3.8px;
+  padding-left: 15.6px;
+  padding-bottom: 5px;
+}
+
+.field.invalid[type='password'] {
+  padding-left: 15.2px;
+}
+
+/* «Vis passord»: drawn 17 × 12, pressed at 44 × 44 */
+.eye {
+  position: absolute;
+  top: 50%;
+  right: 3px;
+  width: 44px;
+  height: 44px;
+  transform: translateY(-50%);
   display: flex;
   align-items: center;
-  gap: var(--space-md);
-  margin: var(--space-xl) 0;
-  color: var(--color-text-tertiary);
-  font-size: var(--font-size-sm);
+  justify-content: center;
+  padding: 0;
+  border: 0;
+  border-radius: 10px;
+  background: transparent;
+  color: var(--text);
+  cursor: pointer;
 }
 
-.divider::before,
-.divider::after {
+.eye svg {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.eye:focus-visible {
+  outline: var(--focus-ring);
+  outline-offset: -2px;
+}
+
+/* One rust line between the password and the button, announced as an alert */
+.error-line {
+  display: flex;
+  align-items: flex-start;
+  gap: 9px;
+  margin: 12px 0 0;
+  font-family: var(--font-text);
+  font-size: 15px;
+  font-weight: 500;
+  line-height: 1.4;
+  color: var(--overdue);
+}
+
+.error-line svg {
+  flex-shrink: 0;
+  margin-top: 2px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.5;
+  stroke-linecap: round;
+}
+
+.error-line svg .dot {
+  fill: currentColor;
+}
+
+/* «Logg inn»: the primary button, unchanged — 49 px, yellow, Ink label, 16.5 px */
+.primary {
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  width: 100%;
+  height: 49px;
+  margin-top: 19px;
+  padding: 0 16px;
+  border: 0;
+  border-radius: var(--r-button);
+  background: var(--yellow);
+  color: var(--ink);
+  font-family: var(--font-text);
+  font-size: 16.5px;
+  font-weight: 600;
+  line-height: 1.35;
+  cursor: pointer;
+}
+
+.primary:focus-visible {
+  outline: var(--focus-ring);
+  outline-offset: 2px;
+}
+
+/* The error line pushes the button 29 px down in all (login-16) */
+.error-line + .primary {
+  margin-top: 15px;
+}
+
+/* Signing in: keeps its yellow and swaps its label; the ring is the spinner, an ink arc on
+   the darker gold (login-18). Never dimmed, never grey. */
+.primary.busy {
+  cursor: progress;
+}
+
+.spinner {
+  width: 17px;
+  height: 17px;
+  box-sizing: border-box;
+  border: 2px solid var(--yellow-track);
+  border-top-color: var(--ink);
+  border-radius: 50%;
+  animation: login-spin 0.8s linear infinite;
+}
+
+@keyframes login-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .spinner {
+    animation: none;
+  }
+}
+
+/* «eller» between two hairlines */
+.or {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin: 20px 0 13px;
+  font-family: var(--font-text);
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 1.4;
+  color: var(--text-muted);
+}
+
+.or::before,
+.or::after {
   content: '';
   flex: 1;
   height: 1px;
   background: var(--hairline);
 }
 
-/* ===== AUTH LINKS ===== */
-.auth-links {
-  text-align: center;
-  margin-top: var(--space-xl);
-  font-size: var(--font-size-sm);
-  color: var(--color-text-secondary);
-}
-
-.auth-link {
-  color: var(--color-primary);
-  text-decoration: none;
-  font-weight: var(--font-weight-semibold);
-  transition: color var(--transition-fast);
-}
-
-.auth-link:hover {
-  color: var(--color-secondary);
-  text-decoration: underline;
-}
-
-.auth-link:focus {
-  outline: 2px solid var(--color-primary);
-  outline-offset: 2px;
-  border-radius: 2px;
-}
-
-.auth-links .separator {
-  margin: 0 var(--space-sm);
-  color: var(--color-text-tertiary);
-}
-
-/* ===== GOOGLE SIGN-IN ===== */
-.google-signin-wrapper {
-  display: flex;
-  justify-content: center;
-  margin-bottom: var(--space-md);
-}
-
-/* ===== QR CODE SCANNER ===== */
-.qr-scanner-section {
-  margin-top: 1rem;
-}
-
-.btn-qr-login {
-  width: 100%;
-  min-height: 49px;
-  padding: 0.75rem;
-  background: var(--surface);
-  color: var(--text);
-  border: 2px solid var(--text-muted);
-  border-radius: var(--r-button);
-  font-size: 1rem;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all 0.2s;
+/* White outline buttons: 49 px, 13 px radius, 1.5 px #555E64, #15181C label in Body 16 */
+.alt-button {
+  box-sizing: border-box;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 0.5rem;
+  gap: 12px;
+  width: 100%;
+  height: 49px;
+  padding: 0 16px;
+  border: 1.5px solid var(--text-muted);
+  border-radius: var(--r-button);
+  background: var(--surface);
+  color: var(--text);
+  font-family: var(--font-text);
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 1.35;
+  cursor: pointer;
 }
 
-.btn-qr-login:hover {
-  background: var(--track);
+.alt-button:focus-visible {
+  outline: var(--focus-ring);
+  outline-offset: 2px;
 }
 
-/* ===== ANIMATIONS ===== */
-@keyframes slideUp {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
+.alt-button svg {
+  flex-shrink: 0;
+}
+
+.alt-button svg rect,
+.alt-button svg .dots {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.6;
+  stroke-linecap: round;
+}
+
+.alt-button svg .dots {
+  stroke-width: 2.2;
+}
+
+.google + .alt-button,
+.or + .alt-button {
+  margin-top: 0;
+}
+
+.google + .alt-button {
+  margin-top: 10px;
+}
+
+/* Google's own button lies over ours, near-invisible, and takes the press */
+.google {
+  position: relative;
+}
+
+.gsi-layer {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  border-radius: var(--r-button);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0.01;
+}
+
+.gsi-layer ::ng-deep > div {
+  transform: scale(1.2);
+}
+
+.google.ready:focus-within .alt-button {
+  outline: var(--focus-ring);
+  outline-offset: 2px;
+}
+
+/* Amber Ink links, underlined (5.48:1 on paper, not colour alone), 44 px targets */
+.link {
+  position: relative;
+  font-family: var(--font-text);
+  font-size: 15px;
+  font-weight: 500;
+  line-height: 1.4;
+  color: var(--amber-ink);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+/* «Glemt passord?» on the label line is drawn a step smaller than the foot link: 14 px */
+.label-row .link {
+  font-size: 14px;
+}
+
+.link::after {
+  content: '';
+  position: absolute;
+  inset: -12px -4px;
+}
+
+.link:focus-visible {
+  outline: var(--focus-ring);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+.qr-scanner-section {
+  margin-bottom: 16px;
+}
+
+/* «Ny familie? Opprett konto», centred at the foot */
+.foot {
+  margin: auto 0 0;
+  padding-top: 32px;
+  text-align: center;
+  font-family: var(--font-text);
+  font-size: 15px;
+  font-weight: 500;
+  line-height: 1.4;
+  color: var(--text-muted);
+}
+
+/* ===== DESKTOP: a 634 px yellow left panel, the form centred on the paper ===== */
+
+@media (min-width: 960px) {
+  .login {
+    flex-direction: row;
   }
-  to {
-    opacity: 1;
-    transform: translateY(0);
+
+  .brand {
+    flex: 0 0 auto;
+    width: min(634px, 44vw);
+    min-height: 100vh;
+    padding: 72px;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .lockup,
+  .login.typing .lockup {
+    flex-direction: row;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .wordmark,
+  .login.typing .wordmark {
+    margin: 0;
+    font-size: 43px;
+  }
+
+  .login.typing .brand {
+    min-height: 100vh;
+    padding: 72px;
+  }
+
+  .login.typing .mark,
+  .login.typing .mark ::ng-deep svg {
+    width: 54px;
+    height: 54px;
+  }
+
+  .pitch,
+  .login.typing .pitch {
+    display: block;
+    margin: auto 0;
+    padding-top: 8px;
+  }
+
+  .claim {
+    margin: 0;
+    font-size: 72px;
+    line-height: 1.055;
+    letter-spacing: -0.023em;
+    max-width: 8ch;
+  }
+
+  .promise {
+    margin-top: 19px;
+    font-size: 21px;
+  }
+
+  .promises {
+    display: flex;
+    flex-direction: column;
+    gap: 17px;
+    margin-top: 62px;
+  }
+
+  .promises li {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    font-family: var(--font-text);
+    font-size: 19px;
+    font-weight: 600;
+    line-height: 1.35;
+  }
+
+  .tick {
+    flex-shrink: 0;
+  }
+
+  .tick rect {
+    fill: var(--ink);
+  }
+
+  .tick path {
+    fill: none;
+    stroke: var(--yellow);
+    stroke-width: 3;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  .paper {
+    justify-content: center;
+    padding: 50px 48px 48px;
+  }
+
+  .column {
+    flex: 0 0 auto;
+    max-width: 382px;
+  }
+
+  .title {
+    position: static;
+    width: auto;
+    height: auto;
+    overflow: visible;
+    clip: auto;
+    white-space: normal;
+    margin: 0;
+    font-family: var(--font-display);
+    font-size: 34px;
+    font-weight: 800;
+    line-height: 1.15;
+    letter-spacing: -0.01em;
+    color: var(--text);
+  }
+
+  .welcome {
+    position: static;
+    width: auto;
+    height: auto;
+    overflow: visible;
+    clip: auto;
+    white-space: normal;
+    margin: 6px 0 26px;
+    font-family: var(--font-text);
+    font-size: 15px;
+    font-weight: 500;
+    line-height: 1.4;
+    color: var(--text-muted);
+  }
+
+  .label {
+    margin-bottom: 7px;
+  }
+
+  .label-row {
+    margin-top: 9px;
+  }
+
+  .foot {
+    margin-top: 0;
+    padding-top: 18px;
+  }
+}
+
+/* A viewport too short for the form collapses the brand area by the same rule (phone only) */
+@media (max-width: 959.98px) and (max-height: 600px) {
+  .brand {
+    min-height: calc(112px + env(safe-area-inset-top, 0px));
+    padding-top: calc(env(safe-area-inset-top, 0px) + 34px);
+    padding-bottom: 34px;
+  }
+
+  .lockup {
+    flex-direction: row;
+    align-items: center;
+    gap: 13px;
+  }
+
+  .mark,
+  .mark ::ng-deep svg {
+    width: 44px;
+    height: 44px;
+  }
+
+  .wordmark {
+    margin: 0;
+    font-size: 37px;
+  }
+
+  .pitch {
+    display: none;
   }
 }

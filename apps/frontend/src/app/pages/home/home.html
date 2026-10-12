@@ -1,4 +1,22 @@
-<app-page i18n-title="@@home.title" title="Hjemme" [subtitle]="subtitle()" maxWidth="medium">
+<app-page
+  i18n-title="@@home.title"
+  title="Hjemme"
+  [subtitle]="subtitle()"
+  maxWidth="medium"
+  [band]="true"
+>
+  <!-- A, the yellow top: each child's points sit in the band (brand-07). The cards fill the
+       row, at most three across -->
+  <div page-band>
+    @if (!loading() && !error() && childSummaries().length > 0) {
+      <div class="kids" [style.--kid-cols]="kidColumns()">
+        @for (kid of childSummaries(); track kid.id) {
+          <app-child-points-card [name]="kid.name" [points]="kid.points" [chores]="kid.chores" />
+        }
+      </div>
+    }
+  </div>
+
   @if (loading()) {
     <div class="state" role="status" aria-live="polite">
       <span class="spinner" aria-hidden="true"></span>
@@ -16,15 +34,6 @@
   }
 
   @if (!loading() && !error()) {
-    <!-- Each child's points: the cards fill the row, at most three across -->
-    @if (childSummaries().length > 0) {
-      <div class="kids" [style.--kid-cols]="kidColumns()">
-        @for (kid of childSummaries(); track kid.id) {
-          <app-child-points-card [name]="kid.name" [points]="kid.points" [chores]="kid.chores" />
-        }
-      </div>
-    }
-
     @if (overdueTasks().length > 0) {
       <app-group-label i18n-label="@@home.overdue" label="Forfalt" [overdue]="true" />
       @for (task of overdueTasks(); track task.id) {

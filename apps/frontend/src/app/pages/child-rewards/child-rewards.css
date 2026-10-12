@@ -8,7 +8,7 @@
   line-height: 0.72;
   letter-spacing: -0.04em;
   font-variant-numeric: tabular-nums;
-  color: var(--text);
+  color: var(--ink);
 }
 
 .herolab {
@@ -17,7 +17,7 @@
   font-size: 15px;
   font-weight: 500;
   line-height: 1.4;
-  color: var(--text-muted);
+  color: var(--ink); /* on the band: #555E64 is 3.76:1 on the yellow */
 }
 
 .rewards {
