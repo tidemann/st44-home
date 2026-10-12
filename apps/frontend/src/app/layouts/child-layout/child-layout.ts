@@ -11,6 +11,7 @@ import { Router, RouterOutlet, NavigationEnd } from '@angular/router';
 import { filter, Subscription } from 'rxjs';
 import { ChildNav, type ChildNavScreen } from '../../components/navigation/child-nav/child-nav';
 import { TopTabs, type TopTab } from '../../components/navigation/top-tabs/top-tabs';
+import { isDesktopSignal } from '../../utils/desktop-query';
 
 /**
  * Child Layout Component
@@ -31,7 +32,11 @@ export class ChildLayout implements OnInit, OnDestroy {
   private readonly router = inject(Router);
   private routerSubscription: Subscription | null = null;
 
-  /** The child's own two screens, as tabs from 1024 px */
+  /** 1024 px and wider: the tab row */
+  protected readonly desktop = isDesktopSignal();
+
+  /** The child's own two screens, as tabs from 1024 px. As on the child's bottom bar, the
+      chores screen ('tasks', /my-tasks) is the child's home, so it carries the house and «Hjem» */
   protected readonly desktopTabs: TopTab<ChildNavScreen>[] = [
     { id: 'tasks', icon: 'home', label: $localize`:@@childNav.home:Hjem` },
     { id: 'rewards', icon: 'rewards', label: $localize`:@@nav.rewards:Belønninger` },

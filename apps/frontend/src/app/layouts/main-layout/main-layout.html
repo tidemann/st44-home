@@ -1,11 +1,13 @@
 <div class="layout-container">
   <!-- The yellow top's tab row (1024 px and wider; guide: Desktop and tablet — layout A) -->
-  <app-top-tabs
-    [tabs]="desktopTabs"
-    [activeId]="activeScreen()"
-    [showSwitcher]="true"
-    (navigate)="onNavigate($event)"
-  />
+  @if (desktop()) {
+    <app-top-tabs
+      [tabs]="desktopTabs"
+      [activeId]="activeScreen()"
+      [showSwitcher]="true"
+      (navigate)="onNavigate($event)"
+    />
+  }
 
   <!-- Main Content Area -->
   <div class="main-content">

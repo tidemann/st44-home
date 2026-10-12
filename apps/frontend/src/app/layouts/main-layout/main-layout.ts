@@ -16,6 +16,7 @@ import { HouseholdSwitcherComponent } from '../../components/household-switcher/
 import { UserButton, type UserButtonData } from '../../components/user-button/user-button';
 import { AuthService } from '../../services/auth.service';
 import { HouseholdStore } from '../../stores/household.store';
+import { isDesktopSignal } from '../../utils/desktop-query';
 import type { NavScreen } from '../../components/navigation/bottom-nav/bottom-nav';
 
 /**
@@ -54,6 +55,9 @@ export class MainLayout implements OnInit, OnDestroy {
     { id: 'progress', icon: 'progress', label: $localize`:@@nav.progress:Fremgang` },
     { id: 'rewards', icon: 'rewards', label: $localize`:@@nav.rewards:Belønninger` },
   ];
+
+  /** 1024 px and wider: the tab row (only created there, so the switcher exists once) */
+  protected readonly desktop = isDesktopSignal();
 
   // State signals
   protected readonly activeScreen = signal<NavScreen>('home');

@@ -439,11 +439,14 @@ export class Home implements OnInit {
       .subscribe({
         next: () => {
           this.createTaskOpen.set(false);
-          this.loadData();
+          void this.loadData();
         },
         error: (err) => {
+          // The modal stays open with what was typed; the page keeps its chores
           console.error('Failed to create task:', err);
-          this.error.set('Failed to create task. Please try again.');
+          this.remindMessage.set(
+            $localize`:@@home.createFailed:Kunne ikke lage oppgaven. Prøv igjen.`,
+          );
         },
       });
   }
