@@ -421,6 +421,14 @@ Stig on ST-890:
 - **The chosen menu item, option A** — `nav-02-forslag-a-b-c-v2.png` (the second phone) and
   `nav-04-a-alle-faner.png`. See **Navigation → The chosen item**.
 
+**Round three — ST-880, 2026-10-11.** The picture has no popup in it. Stig chose between three drawn
+options on ST-873 and approved a four-point rule for every popup in the product: a thin dark edge and
+a soft shadow on all of them, a 30 % ink veil on the ones that block, an **ink** edge rather than
+grey on those, and «Slett» in Overdue Rust. Pictures: `popup-02-anbefalt-tre-popups.png`,
+`popup-01-valg-a-b-c.png`, `ida-W1-kant-17120A.png`, `ida-01-verste-tilfelle.png`. See **Popups** —
+and note that the last two of the four points are amendments **to** the drawings, so the four points
+win where they disagree with `popup-02`.
+
 **Order of precedence.** `poeng-signed-off.png` → the approved pictures above → this guide → generic
 rules. Where an approved picture and the signed-off picture disagree about something the signed-off
 picture already settles (a card width, a gutter, a row), the signed-off picture wins and the
@@ -479,8 +487,9 @@ shadows and no card borders anywhere in the picture.
 - Points are the hero: one enormous tabular numeral per child screen, never a second hero near it.
 - Yellow is used freely and is always one hex (`#F6B93B`), never lightened, muted or greyed.
 - Near-black ink on yellow, always (10.57:1). White on yellow never appears.
-- Flat: no shadows, no card strokes. Strokes exist, but only for state, a control boundary, or a
-  structural divider — never decoration.
+- Flat: no shadows, no card strokes. Strokes exist, but only for state, a control boundary, a
+  structural divider — or, since 2026-10-11, the boundary of a popup sitting above the page; that
+  layer is the one approved exception to both (see **Popups**). Never decoration.
 - Every state that uses colour also uses a word: "Forfalt", "Gjort 16.10", "35 igjen".
 - Light mode only. The picture is "lys modus" and there is no signed-off dark mode.
 
@@ -727,7 +736,7 @@ A 390 × 844 phone, single column, content scrolling between a fixed title area 
 
 ## Elevation & Depth
 
-**There are no shadows and no card borders in this system.** Depth is tonal only:
+**There are no shadows and no card borders on the page.** Depth is tonal only:
 
 - On a light screen: `#FFFFFF` card on a `#F6F6F4` background. That 1.18:1 step is the entire
   elevation vocabulary, and it is enough because the cards are large and edge-to-edge.
@@ -735,22 +744,26 @@ A 390 × 844 phone, single column, content scrolling between a fixed title area 
 
 Strokes do exist. There are exactly three kinds in the picture, and each one is doing a job:
 
-| Stroke                                              | Colour    | Width | Where                                |
-| --------------------------------------------------- | --------- | ----- | ------------------------------------ |
-| State — an overdue card                             | `#A43A16` | 2px   | Screens 1 and 3                      |
-| Control boundary — an unchecked checkbox            | `#DFDFD9` | 2px   | Every chore row                      |
-| Structural divider — above the nav, under a heading | `#DFDFD9` | 1px   | All four light screens; "Hentet før" |
+| Stroke                                              | Colour                | Width | Where                                                   |
+| --------------------------------------------------- | --------------------- | ----- | ------------------------------------------------------- |
+| State — an overdue card                             | `#A43A16`             | 2px   | Screens 1 and 3                                         |
+| Control boundary — an unchecked checkbox            | `#DFDFD9`             | 2px   | Every chore row                                         |
+| Structural divider — above the nav, under a heading | `#DFDFD9`             | 1px   | All four light screens; "Hentet før"                    |
+| Layer boundary — the edge of a popup                | `#555E64` / `#17120A` | 1.5px | Not in the picture; approved 2026-10-11, see **Popups** |
 
 The checkbox stroke is the picture's colour. **A build draws it in `#555E64` instead** — one of the
 two approved exceptions listed under Accessibility. Same width, same shape, same position.
 
 ### Named Rules
 
-**The Flat Rule.** No `box-shadow` anywhere. If something needs to separate from what is behind it,
-step the tone — do not lift it.
+**The Flat Rule.** No `box-shadow` on the page. If something needs to separate from what is behind
+it, step the tone — do not lift it. **One exception, approved by Stig on 2026-10-11:** a popup is
+above the page rather than on it, and it carries a soft ink shadow. Everything on the page stays
+flat. See **Popups**.
 
-**The Borders Mean Something Rule.** A visible stroke carries **state**, a **control boundary**, or a
-**structural divider**. It is never decoration, and a card never gets a decorative hairline.
+**The Borders Mean Something Rule.** A visible stroke carries **state**, a **control boundary**, a
+**structural divider**, or — on the popup layer only — a **layer boundary**. It is never decoration,
+and a card never gets a decorative hairline.
 
 ## Shapes
 
@@ -924,7 +937,7 @@ Jonas green + track + rust, Mathea green + track.
   pill carries that state — so the comparable reading is the inactive one. The numbers above are
   inactive readings except the house's, which is the chosen-state reading Revision 6 took from
   screen 1; measured against the inactive house our glyph is ~0.7 px larger in both dimensions.
-  That gap is measured and recorded, not yet decided: RULE-CHECK **Revision 9**.
+  That gap is measured and recorded, not yet decided: RULE-CHECK **Revision 10**.
 - **The artwork is drawn in a 21-unit viewBox, so one unit is one rendered pixel.** `nav-icon.html`
   uses `viewBox="0 0 21 21"` in the 21 px box: the four ink numbers above are literally the path
   data, and `stroke-width="1.5"` renders the picture's measured **1.5 px** line. Redrawing a glyph
@@ -933,7 +946,7 @@ Jonas green + track + rust, Mathea green + track.
   «Oppgaver» rules in the signed-off picture reads 1.5 / 2 / 1.5 px (the middle rule straddles a
   pixel boundary). An 18-unit drawing stretched into the 21 px box renders 1.75 px instead — ~17 %
   heavier on every glyph — which is why the set is drawn at 21 units rather than scaled into place.
-  ST-898 redrew it; RULE-CHECK **Revision 9** holds the readings.
+  ST-898 redrew it; RULE-CHECK **Revision 10** holds the readings.
 - **Where `17px` came from, so nobody ships it again.** It was written into this guide as an icon
   size without an ink measurement behind it, and ST-881 then built to it (PR #644): a 17 px box
   renders 14.5 px of ink, a fifth short of the picture. PR #645 puts the box at 21 px. Maria's
@@ -1475,7 +1488,7 @@ screen edges.
   narrower drawing in the picture, recorded and not changed. Measuring the other three turned it
   into a larger finding: three of the four were different drawings and the whole bar was ~17 %
   heavier. Maria chose to bring the code to the picture. The set is now drawn to it on every item;
-  RULE-CHECK **Revision 9** holds the readings and what each drawing changed.
+  RULE-CHECK **Revision 10** holds the readings and what each drawing changed.
 - **Everything in the band is `#17120A` on `#F6B93B` — 10.57:1.** Title, sub-line, every tab label,
   every unchosen tab icon, the chosen tab's pill and the initial on the badge. **The one thing in the
   band that is not ink is the chosen tab's icon**, which turns `#F6B93B` inside its ink pill. The
@@ -1679,6 +1692,211 @@ has four items and the tab row needs five — turned out not to be a gap: `progr
 repo's signed-off icon set, in the same viewBox at the same stroke, and sits in the same 18 px slot
 in the 21 px box (its own ink 18.0 × 14.5). See **The yellow top and its tab row**.
 
+## Popups (approved 2026-10-11)
+
+The signed-off picture draws no popup, and neither does the approved set from ST-812 or ST-890. Stig
+asked for one on ST-139 — "the «Slå på varsler» popup … should stand out better from the background.
+Look into adding a border and/or shadow to the card" — chose between three drawn options on ST-873,
+and approved a rule for **every** popup on **ST-880, 2026-10-11**. This section is that rule.
+
+| Approved picture                                                                 | What it is the spec for                                                                              |
+| -------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------- |
+| [`popup-02-anbefalt-tre-popups.png`](reference/popup-02-anbefalt-tre-popups.png) | the rule on three popups — two bottom sheets and one blocking dialog                                 |
+| [`popup-01-valg-a-b-c.png`](reference/popup-01-valg-a-b-c.png)                   | today's sheet and the three options A / B / C, same popup, same page, same frame                     |
+| [`ida-W1-kant-17120A.png`](reference/ida-W1-kant-17120A.png)                     | the **ink edge** on the worst case — a tall blocking dialog whose sides cross the dimmed yellow band |
+| [`ida-01-verste-tilfelle.png`](reference/ida-01-verste-tilfelle.png)             | the review board: the worst cases, and the two edge colours at ×6 in the same spot                   |
+
+**Two of the four points below are amendments to those drawings, not what they show.** `popup-02`
+and `popup-R3-slette-oppgaven.png` draw a blocking dialog with the **grey** edge and an **ink-filled**
+«Slett»; Stig approved the ink edge and the rust «Slett» on top of them. Where a drawing and the four
+points disagree, the four points win — they are the later decision, and `ida-W1-kant-17120A.png` is
+the picture for the ink edge.
+
+Supporting frames, all device-true 780 × 1688 and all measured below:
+[`popup-R1-varsler.png`](reference/popup-R1-varsler.png) (the non-blocking sheet) ·
+[`popup-R3-slette-oppgaven.png`](reference/popup-R3-slette-oppgaven.png) (the blocking dialog as
+drawn) · [`ida-W1-kant-555E64.png`](reference/ida-W1-kant-555E64.png) (the same worst case with the
+grey edge, the one Stig rejected) ·
+[`popup-03-kanten-x6.png`](reference/popup-03-kanten-x6.png) (the sheet's top-left corner at ×6 in
+all four versions) · [`popup-00-i-dag.png`](reference/popup-00-i-dag.png) (the sheet as it ships
+today) · [`popup-B-dempet-bakgrunn.png`](reference/popup-B-dempet-bakgrunn.png) and
+[`popup-C-gul-flate.png`](reference/popup-C-gul-flate.png) (the two rejected options, device-true).
+
+[`popup-04-slett-rust.png`](reference/popup-04-slett-rust.png) is **not** an approved drawing: it was
+rendered on ST-883 so point 4 has a picture at all, and it puts the drawn ink «Slett» beside the
+approved rust one at the same scale. Stig approved the colour in words; this is what the words look
+like.
+
+### The rule, in four points
+
+1. **Every popup gets a thin dark edge and a soft shadow** (option A). The page behind it and the
+   yellow top are untouched.
+2. **A popup that blocks also gets a 30 % ink veil** over the page — «Slette oppgaven?», «Rediger
+   oppgave» and everything else you have to answer before the app continues.
+3. **A blocking popup takes the edge in Ink `#17120A`, not grey.** Where a tall dialog crosses the
+   veiled yellow band grey measures 1.4:1 against the pixel next to it and 1.9:1 clear of the
+   shadow — the figure on Stig's card. Ink clears the 3:1 floor in both readings.
+4. **«Slett» is filled with Overdue Rust `#A43A16`** and a white label — never the ink fill that
+   means «Ferdig».
+
+### Which popups block
+
+A popup **blocks** when the app will not go on until you answer it: it takes focus and keeps it, the
+page behind it does not scroll, and the only ways out are its own buttons or Escape. A popup you are
+allowed to ignore — an offer, a dropdown — does not block.
+
+| Blocks — edge Ink `#17120A`, veil, heavier shadow                                                                                                                                                                                                                                         | Does not block — edge `#555E64`, no veil                                                                             |
+| ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------- |
+| The shared `<app-modal>` and every screen that uses it: «Nytt barn», «Rediger oppgave», barnekort, invitasjon, QR, hurtigopprett, flytt oppgave, oppgaveskjema — and `child-rewards.html` and `manage-households.html`, which reach for `<app-modal>` directly, outside the modals folder | «Slå på varsler?» — the bottom sheet Stig named                                                                      |
+| `task-form`, `reassign-modal`, `manual-assignment-modal` and the delete dialog in `task-list` — four hand-rolled copies of the same thing                                                                                                                                                 | «Legg Diddit på hjemskjermen» — the same sheet, a different screen                                                   |
+| Every Diddit replacement for a native `confirm()` (there are seven call sites, and they have no Diddit look at all)                                                                                                                                                                       | The household dropdown — it has a border and a shadow today, in three values from outside the system; it takes these |
+
+Not popups, and not covered by this section: the offline banner (part of the page: radius 0, a 1 px
+bottom border, no layer above anything), the QR scanner's viewfinder mask, and the celebration
+overlay (a moment; its backdrop becomes ink like the rest, nothing else changes).
+
+**A non-blocking sheet must not cover the bottom nav.** The drawings put it in the ordinary 22 px
+gutter and 8 px clear of the nav divider. The two shipped sheets do neither:
+`notification-offer.css` and `install-prompt.css` both use `left`/`right: var(--space-md)` and
+`bottom: calc(var(--space-md) + env(safe-area-inset-bottom, 0px))` — a **16 px** gutter, and the
+sheet sits hard over a nav at `z-index: 1000` from its own 1100. So the move is two things:
+**16 px gutter → 22 px, and up off the nav** so the divider stays 8 px clear. The `z-index` is
+already right and does not change. A question you are allowed to ignore must not sit on top of the
+navigation.
+
+### The tokens
+
+| Token              | Value                                                             | Where it comes from                       |
+| ------------------ | ----------------------------------------------------------------- | ----------------------------------------- |
+| popup surface      | `#FFFFFF`                                                         | `colors.surface`, unchanged               |
+| popup radius       | `13px`                                                            | `rounded.md` — the card radius            |
+| edge, non-blocking | `1.5px solid #555E64`                                             | the same stroke the login field uses      |
+| edge, blocking     | `1.5px solid #17120A`                                             | Ink — point 3                             |
+| shadow, sheet      | `0 10px 30px rgba(23,18,10,.16)`, `0 2px 8px rgba(23,18,10,.10)`  | **new** — Ink at a low alpha, no new hue  |
+| shadow, blocking   | `0 12px 32px rgba(23,18,10,.26)`, `0 3px 10px rgba(23,18,10,.16)` | **new** — one step heavier                |
+| veil               | `rgba(23,18,10,0.30)` over the page **below the status bar**      | **new** — Ink, replaces `rgba(0,0,0,0.5)` |
+| «Slett» fill       | `#A43A16`, white label                                            | Overdue Rust — point 4                    |
+
+**No new colour.** The two new things in this system are an alpha on Ink and a shadow recipe.
+
+### The geometry, measured in the approved frames
+
+- **346 px wide at the 22 px gutter** — the content column, the same on the sheet and on the dialog.
+  Measured: left stroke at x 22.0, right at x 367.5 in both `popup-R1-varsler.png` and
+  `ida-W1-kant-17120A.png`.
+- **13 px radius**, fitted on the corner arc of both: 12.5–12.8 px, the same value the chore card
+  returns under the **Shapes** method.
+- **15 px inside the popup** — the card padding, not a new value. Text starts at x 38.0.
+- **The action row is two buttons, 152.5 × 49 px, 8 px apart**, filling the 313 px between the
+  paddings. The safe one («Avbryt», «Ikke nå») is on the **left** and is outlined; the one that acts
+  is on the right and is filled. Measured in `ida-W1-kant-17120A.png` and `popup-R3`: both buttons
+  152 × 49 at 8 px, «Lagre»/«Slett» starting at x 199–200.
+- **A bottom sheet ends 8 px above the nav divider.** Measured in `popup-R1`: sheet edge at y 764.5,
+  divider at y 772.
+- **Title 27 px Bricolage 800, body 16 px Hanken 600** — the guide's Title and Body, unchanged. The
+  body line pitch measures 21.5 px (1.34), and «Søppel og pant ut»-length text fills two lines.
+
+### Measured: the edge
+
+**Two numbers, and which one you use matters.** The shadow darkens the page immediately outside the
+stroke, so a popup's edge has two honest readings and this guide gives both:
+
+- **next to the stroke** — the very next pixel outside it, which is the darkest the shadow gets.
+  The strict reading of WCAG 1.4.11.
+- **clear of the shadow** — the page's own colour a few px further out, which is what the eye reads
+  as "the page".
+
+Everything below was measured in the PNGs in `reference/`, at `deviceScaleFactor: 2`, by reading the
+stroke pixel and then the page pixel beside it on the same row. No figure here is predicted.
+
+| Edge, and what it meets                                                     | Next to the stroke     | Clear of the shadow                                                        | Verdict                                       |
+| --------------------------------------------------------------------------- | ---------------------- | -------------------------------------------------------------------------- | --------------------------------------------- |
+| **Today**, no edge: white sheet on paper (`popup-00-i-dag`)                 | —                      | **1.08:1**                                                                 | there is no edge                              |
+| **Today**, white sheet over a white chore card                              | —                      | **1.00:1**                                                                 | the same hex on both sides                    |
+| Sheet `#555E64`, top edge on a white card (`popup-R1`)                      | 5.71:1 (`#EEEEEE`)     | **6.62:1**                                                                 | passes                                        |
+| Sheet `#555E64`, side edge on paper                                         | 4.64:1 (`#D8D8D5`)     | 6.01:1                                                                     | passes                                        |
+| Sheet `#555E64`, bottom edge on paper                                       | 4.15:1 (`#CDCDC9`)     | 6.12:1                                                                     | passes                                        |
+| Blocking `#555E64`, side edge on the **veiled band** (`ida-W1-kant-555E64`) | **1.43:1** (`#936F24`) | **1.92:1** (`#AF832B`)                                                     | **fails 1.4.11 — this is why point 3 exists** |
+| Blocking `#555E64`, top edge on a veiled white card                         | 2.67:1 (`#A7A4A1`)     | 3.31:1 (`#B9B7B5`)                                                         | fails next to the stroke                      |
+| Blocking **`#17120A`**, side edge on the veiled band (`ida-W1-kant-17120A`) | **4.03:1**             | 5.41:1, 5.64:1 against the band clear of the dialog altogether (`#B3862C`) | passes                                        |
+| Blocking **`#17120A`**, top edge on the veiled band                         | 4.64:1 (`#A17826`)     | —                                                                          | passes                                        |
+| Blocking **`#17120A`**, top edge on a veiled white card                     | 7.51:1 (`#A7A4A1`)     | 9.32:1 (`#B9B7B5`)                                                         | passes                                        |
+| Non-blocking edge `#555E64` on **undimmed** yellow                          | —                      | 3.76:1 (computed)                                                          | passes (a sheet or the dropdown on the band)  |
+
+> **The owner card said 5.2:1 and 5.1:1 for the ink edge, and 1.9:1 for grey.** Those are the same
+> measurement one step further out of the shadow, at the row where the dialog's top edge sits.
+> Re-measured here next to the stroke the ink edge reads **4.03:1** and grey **1.43:1**. The decision
+> is the same under either convention — ink clears 3:1 everywhere, grey clears it nowhere on the
+> band — which is the only thing the number had to settle. **Quote the convention with the figure**,
+> or the next person re-measures and thinks one of you is wrong.
+
+### Measured: the veil
+
+`rgba(23,18,10,0.30)` over the page below the status bar, sampled in `ida-W1-kant-17120A.png`
+against the approved page it is drawn on:
+
+| Surface              | Approved  | Under the veil |
+| -------------------- | --------- | -------------- |
+| The yellow band      | `#F6B93B` | `#B3862C`      |
+| A white card         | `#FFFFFF` | `#B9B7B5`      |
+| Paper                | `#F6F6F4` | `#B3B1AD`      |
+| The status bar       | `#F6F6F4` | unchanged      |
+| Ink text on the band | `#17120A` | `#17120A`      |
+
+Ink stays ink, so text under the veil keeps 5.64:1 on the band, 8.70:1 on veiled paper and 9.32:1 on a veiled card. **The
+veil is a temporary layer over the page, not a change to the yellow token.** It lifts the moment the
+dialog closes, it is strictly less dimming than the `rgba(0,0,0,0.5)` the build ships today, and the
+veiled band is 1.87:1 from `#F6B93B` — this is the one place in the product where the brand colour
+looks different, and it is approved only here, only while a blocking popup is open. Everything under
+**The Keep-The-Yellow Rule** still holds for the page itself.
+
+### Why A, and what was rejected
+
+From `popup-01-valg-a-b-c.png`, measured in the frames:
+
+| Option                       | Edge against the page                           | The yellow band while the popup is up             | Verdict                                                                                                                          |
+| ---------------------------- | ----------------------------------------------- | ------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------- |
+| **A** — edge + soft shadow   | **6.62:1** on a white card, 6.12:1 on paper     | **unchanged `#F6B93B`**                           | **chosen**                                                                                                                       |
+| **B** — 52 % dimmed backdrop | no edge; surface against the dimmed page 3.87:1 | `#826121` — **3.24:1** away from the brand colour | **rejected.** It separates the popup by draining the page, and dimming the whole app to ask about notifications is too much.     |
+| **C** — yellow surface       | **1.63:1** on paper, 1.76:1 on a white card     | unchanged                                         | **rejected.** Its edge is a hue step, not a lightness step, and it spends the «Angre»/«Ferdig» button pair on a system question. |
+
+Do not bring B or C back. The 30 % veil in point 2 is **not** B: it is a third of B's dimming, on
+blocking popups only, with A's edge doing the separating so the veil does not have to.
+
+### What this changes elsewhere in the guide
+
+Three lines were written from a picture that has no popup in it. They gain one exception each, and
+the exception is the popup layer — nothing on the page itself changes.
+
+| Rule                                         | The exception                                                                                                                            |
+| -------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
+| **The Flat Rule** — no `box-shadow` anywhere | A popup is the one thing that is **above** the page rather than on it, and it carries a shadow. Everything on the page stays flat.       |
+| **The Borders Mean Something Rule**          | A fourth stroke kind: **layer boundary** — the edge of a layer sitting on top of the page. It is not decoration and it is not on a card. |
+| **Don't add `box-shadow`, card borders**     | Same two, same place. A card on the page never gets either.                                                                              |
+
+### What must not break
+
+**The first three rows are drawn.** `ida-01-verste-tilfelle.png` puts them side by side at 390 px,
+each with its measured failure and a «Må fikses» badge: «Tekst på 200 %» (the sheet 422 px high,
+top at y 343, breaking out of the yellow band above and the list below), «Lengre knappetekst» (two
+lines in a 153 × 49 box, the label standing outside the outline) and «Ett langt ord» (the line
+filling 316 px of the 316 px available). That board is the only measured record of what breaks —
+build against it, not against this table alone. What no picture draws is **the fixed state**.
+
+| Case                                            | What must happen                                                                                                                                                                                                                                                                                                                                                                                      |
+| ----------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **200 % text** (WCAG 1.4.4)                     | `min-height: 49px`, never `height`. The label wraps inside the button, the action row stacks to one column when two no longer fit, and the sheet takes a `max-height` with its own scroll.                                                                                                                                                                                                            |
+| A longer label («Ikke nå, spør meg senere»)     | The same rule at normal size. A button is never a fixed box with the text drawn outside it.                                                                                                                                                                                                                                                                                                           |
+| A long chore name with no spaces                | `overflow-wrap: anywhere` on the popup's body text; keep the quoted name on its own line.                                                                                                                                                                                                                                                                                                             |
+| **360 px wide**                                 | The column becomes 316 px and each button **137.5 px** — 316 less 3 px of border and 30 px of padding is 283 inside, less the 8 px gap, halved; it measures 138 px counted inclusive of the border pixel, the same half-pixel as the 152.5 above. Against a 16.5 px label whose ink measures 105.5 px it fits, with 16 px clear each side. Check the two-line title in the install sheet on a device. |
+| A two-line title                                | The popup grows downward; the action row keeps its 49 px and its 8 px gap.                                                                                                                                                                                                                                                                                                                            |
+| A blocking dialog taller than the band's bottom | Expected — that is `ida-W1`, and it is why the edge is ink. Do not shrink the dialog to avoid the band.                                                                                                                                                                                                                                                                                               |
+| The sheet covering the last chore row           | Give the scroll container bottom padding equal to the sheet height plus 8 px.                                                                                                                                                                                                                                                                                                                         |
+| Focus                                           | A blocking popup: `role="dialog"`, `aria-modal`, a generated `aria-labelledby` id (never a hard-coded one — two dialogs in the DOM collide), focus trap, focus return, scroll lock, Escape.                                                                                                                                                                                                           |
+| Focus on a sheet                                | **A bottom sheet is not a dialog.** `<section aria-labelledby>`: no trap, no scroll lock, and it never steals focus when it appears unasked — it goes in the focus order after the list.                                                                                                                                                                                                              |
+| The first focused button                        | Always the safe one («Avbryt», «Ikke nå»). Never «Slett».                                                                                                                                                                                                                                                                                                                                             |
+| Motion                                          | Honour `prefers-reduced-motion` on the sheet's entrance.                                                                                                                                                                                                                                                                                                                                              |
+
 ## Do's and Don'ts
 
 ### Do:
@@ -1690,7 +1908,10 @@ in the 21 px box (its own ink 18.0 × 14.5). See **The yellow top and its tab ro
   shade of the same hue on a small area (`#DBA434`, `#C59430`).
 - **Do** pair every colour-coded state with a word or a number.
 - **Do** use tabular figures for every number.
-- **Do** keep the system flat — tonal steps, never shadows.
+- **Do** keep the page flat — tonal steps, never shadows. The popup layer above it is the one
+  exception, and only there.
+- **Do** give a popup that blocks the ink edge and the 30 % ink veil, and one that you may ignore
+  the grey edge and no veil — see **Popups**.
 - **Do** keep a visible, equal-weight undo on anything that awards or spends points.
 
 ### Don't:
@@ -1701,7 +1922,8 @@ in the 21 px box (its own ink 18.0 × 14.5). See **The yellow top and its tab ro
 - **Don't** ration the yellow to one element per screen.
 - **Don't** make the tick-off moment dark, dimmed, or a card on a neutral screen.
 - **Don't** use the yellow points meter on a family child card — that meter is green.
-- **Don't** add `box-shadow`, card borders, or a second accent colour.
+- **Don't** add `box-shadow`, card borders, or a second accent colour. The popup layer is the one
+  approved exception, and it adds no new colour — see **Popups**.
 - **Don't** let a meter be the only carrier of a number.
 - **Don't** introduce a third typeface, uppercase tracking, or italics.
 - **Don't** make a second screen fully yellow. The brand band is a band; the tick-off moment is the
@@ -1832,6 +2054,20 @@ Light mode, Norwegian, WCAG 2.2 AA as the floor. Measured from the picture:
 
 Every text colour in the signed-off picture already clears 4.5:1. **No contrast fix in this system
 requires touching the yellow.**
+
+The popup layer, measured in the approved frames rather than in the picture (the picture has no
+popup). Boundaries are judged against **the pixel next to the stroke**, the strict reading of
+1.4.11 — see **Popups** for the same figures clear of the shadow:
+
+| Pair                                                   | Ratio         | Verdict                                            |
+| ------------------------------------------------------ | ------------- | -------------------------------------------------- |
+| Sheet edge `#555E64` against the page it sits on       | 4.15–5.71:1   | AA+ (non-text floor is 3:1)                        |
+| Blocking edge `#17120A` against the veiled yellow band | 4.03:1        | passes                                             |
+| Blocking edge `#17120A` against a veiled white card    | 7.51:1        | passes                                             |
+| Blocking edge `#555E64` against the veiled yellow band | 1.43:1        | **fails — why a blocking popup takes ink**         |
+| Today's sheet: white on white, no edge                 | 1.00:1        | **the defect Stig named**                          |
+| White on «Slett» `#A43A16`                             | 6.57:1        | AA+                                                |
+| Ink text under the 30 % veil, on the band / on a card  | 5.64 / 9.32:1 | passes — the page stays readable while it is inert |
 
 ### The yellow band and the login, measured
 

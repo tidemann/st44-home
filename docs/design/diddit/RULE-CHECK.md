@@ -25,10 +25,10 @@ Crops used as evidence below:
 
 ---
 
-## Revision 9 — the nav glyphs redrawn to the picture (2026-10-12, ST-898)
+## Revision 10 — the nav glyphs redrawn to the picture (2026-10-12, ST-898)
 
-> Numbered 9 because it merges after **Revision 8** (desktop A and the chosen menu item, ST-892).
-> Same convention: the order is the order they merged.
+> Numbered 10 because it merges after **Revision 9** (the popup layer, ST-883), which landed on
+> `main` first while this branch was in review. Same convention: the order is the order they merged.
 
 Revision 6 settled the nav icon's **size** and left its **drawings** untested. ST-898 was opened for
 one number — «Familie» measuring ~2 px wider than the picture — and measuring the other three turned
@@ -170,6 +170,46 @@ numbers. The other three glyphs are unaffected: they were already read inactive 
    (10.10 × 3.50 against 10.00 × 3.50), the height above the lid (3.50 on both) and the openness
    (6 enclosed px against 7). Maria's one allowed pass at the tilt is the 8° lean that is shipped;
    a second pass would close the slit before it sharpened the point.
+
+---
+
+## Revision 9 — the popup layer (drawings 2026-10-11, decision ST-880 2026-10-11, written ST-883)
+
+The third thing in this guide the signed-off picture **cannot** test: it contains no popup. The
+rules under **Popups** are tested against the pictures Stig chose from on ST-873 and the four-point
+rule he approved on ST-880, and against the signed-off picture for everything the popups reuse —
+surface, radius, column, padding, button size, the ink-on-yellow rule.
+
+**Method.** Every figure was re-measured on ST-883 in the PNGs now in `reference/`, at
+`deviceScaleFactor: 2`: read the stroke pixel, then the page pixel on the same row immediately
+outside it, then the page clear of the shadow. Radii use the arc fit from the guide's **Shapes**
+section. No figure was copied from the ST-873 documents or from the owner card.
+
+| Rule                                                          | Evidence                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
+| ------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| The problem is real: today's sheet has no edge                | `popup-00-i-dag.png`: the sheet is `#FFFFFF` on `#F6F6F4` — **1.08:1** — with a white chore card 2 px above it. Where the shipped sheet overlaps that card the two sides are the same hex: **1.00:1**. Its position read in the CSS, not guessed: `notification-offer.css` and `install-prompt.css` both set `left`/`right: var(--space-md)` and `bottom: calc(var(--space-md) + env(safe-area-inset-bottom, 0px))`, and `--space-md: 1rem` in `styles.css` — a **16 px** gutter, `z-index: 1100` over a nav at 1000. |
+| A popup reuses the page's geometry, nothing new               | Left stroke x 22.0, right x 367.5 (346 px column) in `popup-R1-varsler.png` and `ida-W1-kant-17120A.png`; corner arc 12.4–12.8 → **13 px**; padding 15; buttons **152 × 49 at 8 px**, first at x 38.0, second at x 199–200.                                                                                                                                                                                                                                                                                           |
+| Every popup takes the same edge and shadow                    | `popup-02-anbefalt-tre-popups.png` draws it on three: two sheets on two different screens and one blocking dialog. Sheet edge `#555E64`: **5.71:1** top, 4.64:1 side, 4.15:1 bottom next to the stroke; 6.62 / 6.01 / 6.12:1 clear of the shadow.                                                                                                                                                                                                                                                                     |
+| A blocking popup takes an **ink** edge                        | `ida-W1-kant-555E64.png` vs `ida-W1-kant-17120A.png`, the same frame: grey **1.43:1** against the veiled band next to the stroke (1.92:1 clear), ink **4.03:1** (5.41:1 clear, 5.64:1 against the undisturbed veiled band). Side edges are the worst case, not the top.                                                                                                                                                                                                                                               |
+| The veil is 30 % Ink, and the page keeps its colours under it | Sampled against the approved page: `#F6B93B` → `#B3862C`, `#FFFFFF` → `#B9B7B5`, `#F6F6F4` → `#B3B1AD`, status bar untouched, ink text still `#17120A` (5.64:1 on the band, 9.32:1 on a veiled card). `rgba(23,18,10,.30)` composited over each of those hexes reproduces the sampled pixel to within one channel step (179/135/44 predicted against 179/134/44 sampled on the band), so the alpha in the drawings is the alpha in the token.                                                                         |
+| The yellow band is not re-coloured, only veiled               | The veiled band is 1.87:1 from `#F6B93B` and returns to it when the dialog closes. It is also strictly less dimming than the `rgba(0,0,0,0.5)` the build ships today. Stig approved this on the card; it is the one place the brand colour looks different.                                                                                                                                                                                                                                                           |
+| «Slett» is rust, not ink                                      | **No approved picture shows it** — the drawings fill «Slett» with ink. `popup-04-slett-rust.png` was rendered on ST-883 from the repo's own fonts, at the measured 152 × 49, to give the point a picture: white on `#A43A16` is **6.57:1**.                                                                                                                                                                                                                                                                           |
+
+**Dropped from the drawings, recorded rather than copied:**
+
+- **B — 52 % dimmed backdrop.** Band `#826121`, **3.24:1** from the approved yellow; the popup gets
+  its separation by draining the page. Rejected. The approved 30 % veil is a third of it, on
+  blocking popups only.
+- **C — yellow surface.** Edge **1.63:1** on paper: a hue step, not a lightness step. Rejected.
+- **The grey edge and the ink «Slett» in `popup-02` / `popup-R3`.** Superseded by points 3 and 4 of
+  the same decision. The drawings stand for everything else they show.
+
+**Known gap.** The breaking cases **are** drawn: `ida-01-verste-tilfelle.png` carries «Tekst på
+200 %», «Lengre knappetekst» and «Ett langt ord» at 390 px, each measured and badged «Må fikses»,
+and it is the record the build works from. What nothing in the approved set draws is the **fixed**
+state, a frame at **360 px**, or the rust «Slett» in place on a real screen. The build (ST-884)
+must send phone screenshots of «Slå på varsler», a blocking popup, «Rediger oppgave» and a dialog
+tall enough to reach the yellow band, with the edge measured in those screenshots.
 
 ---
 
@@ -436,10 +476,10 @@ not the set itself. 21 px is the house, which is the one glyph the picture draws
 Maria's "about 20.5 px" from ST-881 sits inside that spread; PR #645 ships 21 px, and the guide now
 says 21 px.
 
-> **Superseded in part by Revision 9.** The box is still 21 px, but it is no longer derived: ST-898
+> **Superseded in part by Revision 10.** The box is still 21 px, but it is no longer derived: ST-898
 > redrew the set in a **21-unit viewBox**, so one unit is one rendered pixel. The 19.3–21.0 spread
 > read above was the symptom this revision could not yet name — three of the four were different
-> drawings. Revision 9 holds that reading. Everything else here, including the eight readings and
+> drawings. Revision 10 holds that reading. Everything else here, including the eight readings and
 > the ink table, stands and was reproduced from scratch.
 
 ### The brand-07 nav slip
