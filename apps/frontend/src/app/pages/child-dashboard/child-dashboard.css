@@ -145,4 +145,10 @@
   .cols app-group-label {
     margin-bottom: 7px;
   }
+
+  /* Two cards side by side are 210 px each in the 428 px column, too narrow for
+     "Denne måneden" on one line; stacked, each card reads as it does on the phone */
+  .progress-cards {
+    grid-template-columns: minmax(0, 1fr);
+  }
 }
