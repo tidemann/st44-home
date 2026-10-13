@@ -123,11 +123,14 @@
           </div>
         }
 
-        <div class="extra">
-          <app-notification-settings audience="child" [compact]="true" />
-        </div>
+        <!-- Phone only: picture 12 draws neither the reminders nor the week block (ST-902) -->
+        @if (!desktop()) {
+          <div class="extra">
+            <app-notification-settings audience="child" [compact]="true" />
+          </div>
+        }
 
-        @if (analytics()) {
+        @if (!desktop() && analytics()) {
           <section class="extra analytics-section">
             <app-group-label i18n-label="@@childDashboard.thisWeekGroup" label="Denne uken" />
             <app-streak-counter

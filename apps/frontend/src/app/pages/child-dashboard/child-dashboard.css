@@ -68,9 +68,11 @@
   margin-top: 24px;
 }
 
+/* One card per row: side by side at 360–412 px a card leaves the title 49–85 px, and
+   "Denne måneden" needs 108 px at its own size, so it wrapped (ST-908) */
 .progress-cards {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: minmax(0, 1fr);
   gap: 8px;
   margin: 8px 0;
 }
@@ -144,11 +146,5 @@
   /* Label ink → the card under it is 12 px in desktop-07 / desktop-12 (16 on the phone) */
   .cols app-group-label {
     margin-bottom: 7px;
-  }
-
-  /* Two cards side by side are 210 px each in the 428 px column, too narrow for
-     "Denne måneden" on one line; stacked, each card reads as it does on the phone */
-  .progress-cards {
-    grid-template-columns: minmax(0, 1fr);
   }
 }
