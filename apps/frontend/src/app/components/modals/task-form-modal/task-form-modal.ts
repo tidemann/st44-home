@@ -8,6 +8,8 @@ import {
   computed,
   ChangeDetectionStrategy,
   DestroyRef,
+  ElementRef,
+  viewChild,
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import {
@@ -181,6 +183,12 @@ export class TaskFormModal {
   protected readonly showDeleteConfirm = signal(false);
 
   /**
+   * «Avbryt» on the delete question. The modal only focuses its first element when it opens,
+   * not when its content switches, so the safe answer is focused here when the question appears.
+   */
+  private readonly cancelDeleteButton = viewChild<ElementRef<HTMLButtonElement>>('cancelDelete');
+
+  /**
    * Edit mode: every child the task was given to has been deleted (ST-914), so the
    * nightly job skips it. The parent must pick a new child or delete the task;
    * saving with no child would quietly turn it into a task for everyone.
@@ -228,6 +236,8 @@ export class TaskFormModal {
   });
 
   constructor() {
+    effect(() => this.cancelDeleteButton()?.nativeElement.focus());
+
     // Watch ruleType changes to update validators and clear selections
     this.form
       .get('ruleType')

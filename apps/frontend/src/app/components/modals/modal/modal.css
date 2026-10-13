@@ -94,6 +94,8 @@
 .modal :is(.modal-body, .modal-footer) ::ng-deep .btn {
   min-height: 49px;
   height: auto;
+  padding-inline: var(--space-sm);
+  line-height: 1.2;
   white-space: normal;
   overflow-wrap: anywhere;
 }

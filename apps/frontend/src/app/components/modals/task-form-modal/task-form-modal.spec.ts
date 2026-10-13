@@ -460,6 +460,21 @@ describe('TaskFormModal', () => {
 
       expect(component['showDeleteConfirm']()).toBe(false);
     });
+
+    it('drops the × on «Slette oppgaven?» and focuses «Avbryt» (guide: Popups)', () => {
+      fixture.componentRef.setInput('open', true);
+      fixture.detectChanges();
+      const el: HTMLElement = fixture.nativeElement;
+      expect(el.querySelector('.modal-close')).not.toBeNull();
+
+      component.onDeleteClick();
+      fixture.detectChanges();
+
+      expect(el.querySelector('.modal-close')).toBeNull();
+      const cancel = el.querySelector('.popup-actions .btn-secondary');
+      expect(cancel?.textContent?.trim()).toBe('Avbryt');
+      expect(document.activeElement).toBe(cancel);
+    });
   });
 
   describe('Modal Controls', () => {

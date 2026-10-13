@@ -726,6 +726,8 @@ h6 {
   flex: 1 1 8em; /* 132 px at the 16.5 px label: two fit at 360 px (137.5), stack at 200 % */
   min-height: 49px;
   height: auto;
+  padding-inline: var(--space-sm); /* 12 px: «Slå på varsler» stays on one line at 360 px */
+  line-height: 1.2;
   white-space: normal;
   overflow-wrap: anywhere;
   text-align: center;
