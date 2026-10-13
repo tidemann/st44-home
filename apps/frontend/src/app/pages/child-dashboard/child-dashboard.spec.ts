@@ -112,4 +112,33 @@ describe('ChildDashboardComponent', () => {
     expect(metas[0]).toBe('Forfalt i går');
     expect(metas[1]).toBe('I dag – 10 poeng');
   });
+
+  // ST-908: picture 12 draws no reminders and no week block in the right column
+  function stubWidth(desktop: boolean): void {
+    vi.stubGlobal('matchMedia', (query: string) => ({
+      matches: desktop,
+      media: query,
+      addEventListener: () => undefined,
+      removeEventListener: () => undefined,
+    }));
+  }
+
+  it('keeps the reminders and the week block on the phone', async () => {
+    stubWidth(false);
+    const el = await render();
+    vi.unstubAllGlobals();
+
+    expect(el.querySelector('app-notification-settings')).not.toBeNull();
+    expect(el.querySelector('.analytics-section')).not.toBeNull();
+  });
+
+  it('drops the reminders and the week block on desktop', async () => {
+    stubWidth(true);
+    const el = await render();
+    vi.unstubAllGlobals();
+
+    expect(el.querySelector('app-notification-settings')).toBeNull();
+    expect(el.querySelector('.analytics-section')).toBeNull();
+    expect(el.textContent).toContain('Gjort i dag');
+  });
 });

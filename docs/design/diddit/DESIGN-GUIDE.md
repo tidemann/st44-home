@@ -1605,6 +1605,10 @@ the phone already uses.
   times the right.
 - **A child's chore screen uses the same two columns**: `Forfalt` / `I dag` on the left with a
   **70 × 36 px** "Ferdig" button in each row, `Gjort i dag` / `I morgen` on the right.
+- **Child desktop screen: no Påminnelser card or week block (picture 12).** The phone keeps both
+  (Maria, ST-902).
+- **The child tab row shows the child's own pages (today Hjem, Belønninger); picture 12's five tabs
+  are the parent set.**
 
 ### Nothing inside a card changes
 
