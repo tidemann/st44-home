@@ -70,11 +70,11 @@ describe('TaskFormModal', () => {
     });
 
     it('should have correct modal title', () => {
-      expect(component['modalTitle']()).toBe('Create Task');
+      expect(component['modalTitle']()).toBe('Ny oppgave');
     });
 
     it('should have correct submit button text', () => {
-      expect(component['submitButtonText']()).toBe('Create Task');
+      expect(component['submitButtonText']()).toBe('Legg til');
     });
 
     it('should have all task type options', () => {
@@ -108,11 +108,11 @@ describe('TaskFormModal', () => {
     });
 
     it('should have correct modal title', () => {
-      expect(component['modalTitle']()).toBe('Edit Task');
+      expect(component['modalTitle']()).toBe('Rediger oppgave');
     });
 
     it('should have correct submit button text', () => {
-      expect(component['submitButtonText']()).toBe('Save Changes');
+      expect(component['submitButtonText']()).toBe('Lagre');
     });
 
     it('should prefill repeating task with days', () => {

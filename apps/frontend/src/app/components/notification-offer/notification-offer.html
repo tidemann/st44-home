@@ -1,25 +1,30 @@
 @if (visible()) {
   <section
-    class="notify-card card"
+    class="notify-card popup-sheet"
+    appSheetClearance
     aria-labelledby="notify-offer-title"
     aria-describedby="notify-offer-text"
   >
     <div class="notify-head">
       <span class="notify-icon" aria-hidden="true">🔔</span>
-      <h2 id="notify-offer-title" class="notify-title" i18n="@@notificationOffer.title">
+      <h2 id="notify-offer-title" class="notify-title popup-title" i18n="@@notificationOffer.title">
         Slå på varsler?
       </h2>
     </div>
     @if (forChild()) {
-      <p id="notify-offer-text" class="notify-text" i18n="@@notificationOffer.childText">
+      <p id="notify-offer-text" class="notify-text popup-body" i18n="@@notificationOffer.childText">
         Da får du en påminnelse på telefonen når du har oppgaver igjen.
       </p>
     } @else {
-      <p id="notify-offer-text" class="notify-text" i18n="@@notificationOffer.parentText">
+      <p
+        id="notify-offer-text"
+        class="notify-text popup-body"
+        i18n="@@notificationOffer.parentText"
+      >
         Da får du beskjed når barna er ferdige, og barna kan få påminnelser fra deg.
       </p>
     }
-    <div class="notify-actions">
+    <div class="notify-actions popup-actions">
       <button
         type="button"
         class="btn btn-secondary"

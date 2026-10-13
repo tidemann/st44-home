@@ -34,13 +34,15 @@ import {
   templateUrl: './modal.html',
   styleUrl: './modal.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  host: {
-    '[attr.role]': '"dialog"',
-    '[attr.aria-modal]': 'open()',
-    '[attr.aria-labelledby]': '"modal-title"',
-  },
 })
 export class Modal {
+  private static nextId = 0;
+
+  /**
+   * Generated title id, so two dialogs in the DOM never share one (guide: Popups, Focus)
+   */
+  protected readonly titleId = `modal-title-${Modal.nextId++}`;
+
   /**
    * Whether the modal is open
    */
@@ -60,6 +62,12 @@ export class Modal {
    * Whether pressing ESC closes the modal (default: true)
    */
   closeOnEsc = input<boolean>(true);
+
+  /**
+   * Whether the X close button shows (default: true). A question answered by its own two
+   * buttons, like the confirm dialog, has none.
+   */
+  showClose = input<boolean>(true);
 
   /**
    * Event emitted when the modal should close

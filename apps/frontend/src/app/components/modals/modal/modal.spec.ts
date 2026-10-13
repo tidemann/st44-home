@@ -60,4 +60,28 @@ describe('Modal', () => {
 
     expect(closeEmitted).toBe(true);
   });
+
+  it('labels the dialog with a generated title id, never a shared one', () => {
+    const second = TestBed.createComponent(Modal);
+    for (const f of [fixture, second]) {
+      f.componentRef.setInput('open', true);
+      f.componentRef.setInput('title', 'Tittel');
+      f.detectChanges();
+    }
+    const ids = [fixture, second].map((f) => {
+      const dialog = (f.nativeElement as HTMLElement).querySelector('[role="dialog"]');
+      const title = (f.nativeElement as HTMLElement).querySelector('.modal-title');
+      expect(dialog?.getAttribute('aria-modal')).toBe('true');
+      expect(dialog?.getAttribute('aria-labelledby')).toBe(title?.id);
+      return title?.id;
+    });
+    expect(ids[0]).not.toBe(ids[1]);
+  });
+
+  it('hides the close button when showClose is false', () => {
+    fixture.componentRef.setInput('open', true);
+    fixture.componentRef.setInput('showClose', false);
+    fixture.detectChanges();
+    expect((fixture.nativeElement as HTMLElement).querySelector('.modal-close')).toBeNull();
+  });
 });

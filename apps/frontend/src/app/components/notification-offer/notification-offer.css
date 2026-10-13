@@ -1,13 +1,18 @@
-/* Bottom sheet above the bottom nav (z-index 1000), like the install card */
+/* Bottom sheet (guide: Popups). Does not block: grey edge, soft shadow, no veil. 22 px gutter,
+   and it ends 8 px above the nav divider so a question you may ignore never covers the nav. */
 .notify-card {
   position: fixed;
-  left: var(--space-md);
-  right: var(--space-md);
-  bottom: calc(var(--space-md) + env(safe-area-inset-bottom, 0px));
+  left: var(--gutter);
+  right: var(--gutter);
+  bottom: calc(var(--nav-band) + 8px + env(safe-area-inset-bottom, 0px));
   z-index: 1100;
   max-width: 480px;
   margin: 0 auto;
-  padding: var(--space-lg);
+  padding: var(--popup-pad);
+  max-height: calc(
+    100dvh - var(--nav-band) - 8px - var(--gutter) - env(safe-area-inset-bottom, 0px)
+  );
+  overflow-y: auto;
   display: flex;
   flex-direction: column;
   gap: var(--space-md);
@@ -24,29 +29,10 @@
   line-height: 1;
 }
 
-.notify-title {
-  margin: 0;
-  font-family: var(--font-heading);
-  font-size: 20px;
-  font-weight: 800;
-  color: var(--color-text-primary);
-}
-
-.notify-text {
-  margin: 0;
-  font-size: 15px;
-  line-height: 1.5;
-  color: var(--color-text-primary);
-}
-
-/* "Ikke nå" and "Slå på varsler" share the row with equal weight */
-.notify-actions {
-  display: grid;
-  grid-auto-flow: column;
-  grid-auto-columns: 1fr;
-  gap: var(--space-sm);
-}
-
-.notify-actions .btn {
-  min-height: 48px;
+/* 1024 px and wider: no bottom nav, so the sheet sits in the gutter */
+@media (min-width: 1024px) {
+  .notify-card {
+    bottom: calc(var(--gutter) + env(safe-area-inset-bottom, 0px));
+    max-height: calc(100dvh - 2 * var(--gutter));
+  }
 }

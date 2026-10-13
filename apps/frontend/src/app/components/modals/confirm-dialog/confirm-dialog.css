@@ -1,0 +1,6 @@
+/* Guide: Popups. Body text sits over the 49 px action row with the card padding between them;
+   the message keeps its own line breaks so a quoted chore name stays on its own line. */
+.confirm-message {
+  margin-bottom: var(--popup-pad);
+  white-space: pre-line;
+}

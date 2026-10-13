@@ -3,6 +3,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { InvitationAcceptComponent } from './invitation-accept';
 import { InvitationService } from '../../services/invitation.service';
 import { AuthService } from '../../services/auth.service';
+import { ConfirmDialogService } from '../../services/confirm-dialog.service';
 import { Router, ActivatedRoute, provideRouter } from '@angular/router';
 import { provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
@@ -204,7 +205,7 @@ describe('InvitationAcceptComponent', () => {
     beforeEach(() => {
       mockAuthService.isAuthenticated.set(true);
       fixture.detectChanges();
-      vi.spyOn(window, 'confirm').mockReturnValue(true);
+      vi.spyOn(TestBed.inject(ConfirmDialogService), 'confirm').mockResolvedValue(true);
     });
 
     it('should not decline if no token', async () => {
@@ -222,13 +223,13 @@ describe('InvitationAcceptComponent', () => {
     it('should show confirmation dialog before declining', async () => {
       mockInvitationService.declineInvitation.mockResolvedValue({});
       await component['declineInvitation']();
-      expect(window.confirm).toHaveBeenCalledWith(
-        'Are you sure you want to decline this invitation?',
+      expect(TestBed.inject(ConfirmDialogService).confirm).toHaveBeenCalledWith(
+        expect.objectContaining({ title: 'Avslå invitasjonen?', danger: true }),
       );
     });
 
     it('should not decline if user cancels confirmation', async () => {
-      vi.spyOn(window, 'confirm').mockReturnValue(false);
+      vi.spyOn(TestBed.inject(ConfirmDialogService), 'confirm').mockResolvedValue(false);
       await component['declineInvitation']();
       expect(mockInvitationService.declineInvitation).not.toHaveBeenCalled();
     });

@@ -297,12 +297,13 @@
     </form>
   } @else {
     <!-- Delete Confirmation -->
+    <!-- Guide: Popups, «Slette oppgaven?». The safe answer left, «Slett» in rust on the right -->
     <div class="delete-confirm">
-      <p class="delete-confirm-text" i18n="@@taskFormModal.deleteConfirmText">
-        Er du sikker på at du vil slette denne oppgaven? Denne handlingen kan ikke angres.
+      <p class="delete-confirm-text popup-body" i18n="@@taskFormModal.deleteConfirmText">
+        «{{ task()?.name }}» forsvinner for hele familien. Poeng som alt er gitt, blir stående.
       </p>
 
-      <div class="modal-actions" modal-actions>
+      <div class="popup-actions">
         <button
           type="button"
           class="btn btn-secondary"
@@ -317,7 +318,7 @@
           (click)="onConfirmDelete()"
           i18n="@@taskFormModal.confirmDeleteButton"
         >
-          Ja, slett oppgave
+          Slett
         </button>
       </div>
     </div>

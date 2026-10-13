@@ -1,10 +1,10 @@
 .modal-overlay {
   position: fixed;
-  top: 0;
+  top: env(safe-area-inset-top, 0px);
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(0, 0, 0, 0.5);
+  background: var(--popup-veil);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -12,10 +12,12 @@
 }
 
 .modal-content {
-  background: white;
-  padding: 2rem;
-  border-radius: 8px;
-  width: 90%;
+  background: var(--surface);
+  border: var(--popup-edge-block);
+  box-shadow: var(--popup-shadow-block);
+  padding: var(--popup-pad);
+  border-radius: var(--r-card);
+  width: calc(100% - 2 * var(--gutter));
   max-width: 500px;
   max-height: 90vh;
   overflow-y: auto;

@@ -191,7 +191,12 @@ export class TaskFormModal {
    * Modal title based on mode
    */
   protected readonly modalTitle = computed(() => {
-    return this.mode() === 'create' ? 'Create Task' : 'Edit Task';
+    if (this.showDeleteConfirm()) {
+      return $localize`:@@taskFormModal.deleteTitle:Slette oppgaven?`;
+    }
+    return this.mode() === 'create'
+      ? $localize`:@@taskFormModal.createTitle:Ny oppgave`
+      : $localize`:@@taskFormModal.editTitle:Rediger oppgave`;
   });
 
   /**
@@ -199,9 +204,11 @@ export class TaskFormModal {
    */
   protected readonly submitButtonText = computed(() => {
     if (this.submitting()) {
-      return this.mode() === 'create' ? 'Creating...' : 'Saving...';
+      return $localize`:@@taskFormModal.saving:Lagrer …`;
     }
-    return this.mode() === 'create' ? 'Create Task' : 'Save Changes';
+    return this.mode() === 'create'
+      ? $localize`:@@taskFormModal.createButton:Legg til`
+      : $localize`:@@taskFormModal.saveButton:Lagre`;
   });
 
   /**

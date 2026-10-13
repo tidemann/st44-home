@@ -2,6 +2,7 @@ import { Component, inject, signal, OnInit } from '@angular/core';
 import { CommonModule, DatePipe } from '@angular/common';
 import { InvitationService, Invitation } from '../../services/invitation.service';
 import { HouseholdService } from '../../services/household.service';
+import { ConfirmDialogService } from '../../services/confirm-dialog.service';
 
 @Component({
   selector: 'app-invitations-sent-list',
@@ -12,6 +13,7 @@ import { HouseholdService } from '../../services/household.service';
 export class InvitationsSentListComponent implements OnInit {
   private invitationService = inject(InvitationService);
   private householdService = inject(HouseholdService);
+  private confirmDialog = inject(ConfirmDialogService);
 
   invitations = signal<Invitation[]>([]);
   isLoading = signal(false);
@@ -70,9 +72,12 @@ export class InvitationsSentListComponent implements OnInit {
    * Cancel a pending invitation
    */
   async cancelInvitation(invitation: Invitation) {
-    const confirmed = confirm(
-      `Are you sure you want to cancel the invitation to ${invitation.invitedEmail}?`,
-    );
+    const confirmed = await this.confirmDialog.confirm({
+      title: $localize`:@@invitationsSent.cancelTitle:Trekke tilbake invitasjonen?`,
+      message: $localize`:@@invitationsSent.cancelMessage:Invitasjonen til ${invitation.invitedEmail}:email: slutter å virke.`,
+      confirmLabel: $localize`:@@invitationsSent.cancelConfirm:Trekk tilbake`,
+      danger: true,
+    });
     if (!confirmed) {
       return;
     }
@@ -133,9 +138,12 @@ export class InvitationsSentListComponent implements OnInit {
    * Clean up cancelled and expired invitations
    */
   async cleanupInvitations() {
-    const confirmed = confirm(
-      'Are you sure you want to remove all cancelled, declined, and expired invitations?',
-    );
+    const confirmed = await this.confirmDialog.confirm({
+      title: $localize`:@@invitationsSent.cleanupTitle:Rydde i invitasjonene?`,
+      message: $localize`:@@invitationsSent.cleanupMessage:Alle tilbaketrukne, avslåtte og utløpte invitasjoner fjernes fra listen.`,
+      confirmLabel: $localize`:@@invitationsSent.cleanupConfirm:Rydd`,
+      danger: true,
+    });
     if (!confirmed) {
       return;
     }

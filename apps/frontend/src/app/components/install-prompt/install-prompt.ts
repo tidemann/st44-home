@@ -1,5 +1,6 @@
 import { ChangeDetectionStrategy, Component, computed, inject, input } from '@angular/core';
 import { PwaService, type InstallPlatform } from '../../services/pwa.service';
+import { SheetClearance } from '../../directives/sheet-clearance.directive';
 
 /**
  * Install card (sketch 01). iPhone: the two manual steps in Safari, because
@@ -8,6 +9,7 @@ import { PwaService, type InstallPlatform } from '../../services/pwa.service';
  */
 @Component({
   selector: 'app-install-prompt',
+  imports: [SheetClearance],
   templateUrl: './install-prompt.html',
   styleUrl: './install-prompt.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
