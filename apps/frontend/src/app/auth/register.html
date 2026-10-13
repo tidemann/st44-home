@@ -99,7 +99,9 @@
               fieldError;
               context: {
                 id: 'firstName-error',
-                text: firstNameControl.errors?.['maxlength'] ? text.firstNameTooLong : text.firstNameRequired,
+                text: firstNameControl.errors?.['maxlength']
+                  ? text.firstNameTooLong
+                  : text.firstNameRequired,
               }
             "
           />
@@ -110,7 +112,9 @@
               fieldError;
               context: {
                 id: 'lastName-error',
-                text: lastNameControl.errors?.['maxlength'] ? text.lastNameTooLong : text.lastNameRequired,
+                text: lastNameControl.errors?.['maxlength']
+                  ? text.lastNameTooLong
+                  : text.lastNameRequired,
               }
             "
           />
@@ -153,7 +157,9 @@
             formControlName="password"
             autocomplete="new-password"
             [attr.aria-invalid]="showError(passwordControl)"
-            [attr.aria-describedby]="showError(passwordControl) ? 'password-error' : 'password-hint'"
+            [attr.aria-describedby]="
+              showError(passwordControl) ? 'password-error' : 'password-hint'
+            "
           />
           <!-- «Vis passord» shows both password fields -->
           @if (hasPassword()) {
