@@ -1,13 +1,16 @@
-/* Bottom sheet above the bottom nav (z-index 1000) */
+/* Bottom sheet (guide: Popups). Does not block: grey edge, soft shadow, no veil. 22 px gutter,
+   and it ends 8 px above the nav divider so a question you may ignore never covers the nav. */
 .install-card {
   position: fixed;
-  left: var(--space-md);
-  right: var(--space-md);
-  bottom: calc(var(--space-md) + env(safe-area-inset-bottom, 0px));
+  left: var(--gutter);
+  right: var(--gutter);
+  bottom: calc(var(--nav-band) + 8px + env(safe-area-inset-bottom, 0px));
   z-index: 1100;
   max-width: 480px;
   margin: 0 auto;
-  padding: var(--space-lg);
+  padding: var(--popup-pad);
+  max-height: calc(100dvh - var(--nav-band) - 8px - var(--gutter) - env(safe-area-inset-bottom, 0px));
+  overflow-y: auto;
   display: flex;
   flex-direction: column;
   gap: var(--space-md);
@@ -24,19 +27,12 @@
   border-radius: 12px;
 }
 
-.install-title {
-  margin: 0;
-  font-family: var(--font-heading);
-  font-size: 20px;
-  font-weight: 800;
-  color: var(--color-text-primary);
-}
 
-.install-text,
 .install-steps {
   margin: 0;
-  font-size: 15px;
-  line-height: 1.5;
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 1.34;
   color: var(--color-text-primary);
 }
 
@@ -57,14 +53,12 @@
   font-size: 13px;
 }
 
-/* "Ikke nå" and "Installer" share the row with equal weight */
-.install-actions {
-  display: grid;
-  grid-auto-flow: column;
-  grid-auto-columns: 1fr;
-  gap: var(--space-sm);
-}
 
-.install-actions .btn {
-  min-height: 48px;
+
+/* 1024 px and wider: no bottom nav, so the sheet sits in the gutter */
+@media (min-width: 1024px) {
+  .install-card {
+    bottom: calc(var(--gutter) + env(safe-area-inset-bottom, 0px));
+    max-height: calc(100dvh - 2 * var(--gutter));
+  }
 }

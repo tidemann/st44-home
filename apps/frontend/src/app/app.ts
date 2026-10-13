@@ -3,11 +3,12 @@ import { RouterOutlet } from '@angular/router';
 import { InstallPrompt } from './components/install-prompt/install-prompt';
 import { NotificationOffer } from './components/notification-offer/notification-offer';
 import { OfflineBanner } from './components/offline-banner/offline-banner';
+import { ConfirmDialog } from './components/modals/confirm-dialog/confirm-dialog';
 import { PwaService } from './services/pwa.service';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet, InstallPrompt, NotificationOffer, OfflineBanner],
+  imports: [RouterOutlet, InstallPrompt, NotificationOffer, OfflineBanner, ConfirmDialog],
   templateUrl: './app.html',
   styleUrl: './app.css',
   changeDetection: ChangeDetectionStrategy.OnPush,

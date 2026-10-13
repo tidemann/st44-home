@@ -13,6 +13,7 @@ import { Router, ActivatedRoute, RouterLink } from '@angular/router';
 import { timer } from 'rxjs';
 import { InvitationService, AcceptInvitationResponse } from '../../services/invitation.service';
 import { AuthService } from '../../services/auth.service';
+import { ConfirmDialogService } from '../../services/confirm-dialog.service';
 
 const REDIRECT_DELAY_MS = 2000;
 
@@ -29,6 +30,7 @@ export class InvitationAcceptComponent implements OnInit {
   private readonly router = inject(Router);
   private readonly route = inject(ActivatedRoute);
   private readonly destroyRef = inject(DestroyRef);
+  private readonly confirmDialog = inject(ConfirmDialogService);
 
   protected readonly token = signal<string | null>(null);
   protected readonly isProcessing = signal(false);
@@ -84,7 +86,12 @@ export class InvitationAcceptComponent implements OnInit {
     const token = this.token();
     if (!token || this.isProcessing()) return;
 
-    const confirmed = confirm('Are you sure you want to decline this invitation?');
+    const confirmed = await this.confirmDialog.confirm({
+      title: $localize`:@@invitationAccept.declineTitle:Avslå invitasjonen?`,
+      message: $localize`:@@invitationAccept.declineMessage:Du blir ikke med i husstanden. Dette kan ikke angres.`,
+      confirmLabel: $localize`:@@invitationAccept.declineConfirm:Avslå`,
+      danger: true,
+    });
     if (!confirmed) return;
 
     this.isProcessing.set(true);

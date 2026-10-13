@@ -63,6 +63,16 @@
   --nav-icon: 21px; /* 18 px of ink, as in poeng-signed-off.png */
   --focus-ring: 2.5px solid var(--ink);
 
+  /* Popups (guide: Popups, approved 2026-10-11 on ST-880). The one layer above the page, so
+     the one place with a shadow. No new colour: an alpha on Ink and a shadow recipe. */
+  --popup-edge: 1.5px solid var(--text-muted); /* sheet, dropdown: does not block */
+  --popup-edge-block: 1.5px solid var(--ink); /* blocks: grey reads 1.4:1 on the veiled band */
+  --popup-shadow: 0 10px 30px rgba(23, 18, 10, 0.16), 0 2px 8px rgba(23, 18, 10, 0.1);
+  --popup-shadow-block: 0 12px 32px rgba(23, 18, 10, 0.26), 0 3px 10px rgba(23, 18, 10, 0.16);
+  --popup-veil: rgba(23, 18, 10, 0.3); /* blocking popups only, below the status bar */
+  --popup-pad: 15px; /* the card padding */
+  --nav-band: 72px; /* bottom nav: 71 px items + the 1 px divider */
+
   /* ===== LEGACY NAMES, mapped onto Poeng so older screens match ===== */
 
   /* Primary Colors */
@@ -658,6 +668,73 @@ h6 {
   border-radius: var(--radius-md);
   box-shadow: var(--shadow-sm);
   overflow: hidden;
+}
+
+/* ===== POPUPS (guide: Popups) ===== */
+
+/* A popup you may ignore: grey edge, soft shadow, no veil */
+.popup-sheet {
+  background: var(--surface);
+  border: var(--popup-edge);
+  border-radius: var(--r-card);
+  box-shadow: var(--popup-shadow);
+}
+
+/* A popup that blocks: ink edge, heavier shadow, sits on .popup-veil */
+.popup-dialog {
+  background: var(--surface);
+  border: var(--popup-edge-block);
+  border-radius: var(--r-card);
+  box-shadow: var(--popup-shadow-block);
+}
+
+.popup-veil {
+  position: fixed;
+  inset: env(safe-area-inset-top, 0px) 0 0 0;
+  background: var(--popup-veil);
+}
+
+.popup-title {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: 27px;
+  font-weight: 800;
+  line-height: 1.15;
+  color: var(--ink);
+  overflow-wrap: anywhere;
+}
+
+.popup-body {
+  margin: 0;
+  font-family: var(--font-text);
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 1.34;
+  color: var(--text);
+  overflow-wrap: anywhere;
+}
+
+/* Two buttons, 49 px, 8 px apart, safe one left. They stack to one column when two no longer
+   fit (200 % text, a long label); the label wraps inside the button, never outside it. */
+.popup-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.popup-actions > .btn {
+  flex: 1 1 8em; /* 132 px at the 16.5 px label: two fit at 360 px (137.5), stack at 200 % */
+  min-height: 49px;
+  height: auto;
+  white-space: normal;
+  overflow-wrap: anywhere;
+  text-align: center;
+}
+
+/* «Slett» and other destroying answers: Overdue Rust, white label, never the ink of «Ferdig» */
+.popup-actions > .btn-danger {
+  background: var(--overdue);
+  color: #ffffff;
 }
 
 .card-header {

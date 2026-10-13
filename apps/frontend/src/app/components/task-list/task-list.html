@@ -173,7 +173,7 @@
       (keydown.escape)="cancelDelete()"
       role="dialog"
       aria-modal="true"
-      aria-labelledby="dialog-title"
+      aria-labelledby="task-list-delete-title"
       tabindex="-1"
     >
       <div
@@ -182,7 +182,7 @@
         (keydown.enter)="$event.stopPropagation()"
         tabindex="0"
       >
-        <h3 id="dialog-title" i18n="@@taskList.deleteDialogTitle">Slette oppgavemal?</h3>
+        <h3 id="task-list-delete-title" i18n="@@taskList.deleteDialogTitle">Slette oppgavemal?</h3>
         <p i18n="@@taskList.deleteDialogMessage">
           Er du sikker på at du vil slette
           <strong>"{{ taskToDelete()?.name }}"</strong>? Dette vil fjerne malen, men bevare

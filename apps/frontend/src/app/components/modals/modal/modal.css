@@ -1,28 +1,34 @@
-/* Modal Overlay */
+/* Guide: Popups. Every <app-modal> blocks, so it takes the 30 % ink veil, the ink edge and the
+   heavier shadow. 346 px at the 22 px gutter on a phone, 13 px radius, 15 px inside. */
+
+/* Modal Overlay: the veil, below the status bar */
 .modal-overlay {
   position: fixed;
-  top: 0;
+  top: env(safe-area-inset-top, 0px);
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(0, 0, 0, 0.5);
+  background: var(--popup-veil);
   display: flex;
   align-items: center;
   justify-content: center;
   z-index: var(--z-index-modal-backdrop);
-  padding: var(--space-lg);
+  padding: var(--space-lg) var(--gutter);
   animation: fadeIn var(--transition-base) ease-out;
 }
 
 /* Modal Container */
 .modal {
   background: var(--color-surface);
+  border: var(--popup-edge-block);
   border-radius: var(--r-card);
-  padding: var(--space-xl);
+  box-shadow: var(--popup-shadow-block);
+  padding: var(--popup-pad);
   max-width: 500px;
   width: 100%;
-  max-height: 90vh;
+  max-height: 100%;
   overflow-y: auto;
+  overscroll-behavior: contain;
   position: relative;
   z-index: var(--z-index-modal);
   animation: scaleIn var(--transition-base) ease-out;
@@ -33,17 +39,21 @@
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  margin-bottom: var(--space-lg);
-  gap: var(--space-md);
+  margin-bottom: var(--space-md);
+  gap: var(--space-sm);
 }
 
+/* Guide: Title, 27 px Bricolage 800 */
 .modal-title {
   font-family: var(--font-heading);
-  font-size: var(--font-size-2xl);
+  font-size: 27px;
   font-weight: 800;
-  color: var(--color-text-primary);
+  line-height: 1.15;
+  color: var(--ink);
   margin: 0;
   flex: 1;
+  min-width: 0;
+  overflow-wrap: anywhere;
 }
 
 .modal-close {
@@ -65,19 +75,37 @@
   color: var(--color-text-primary);
 }
 
-.modal-close:focus {
-  outline: 2px solid var(--color-primary);
+.modal-close:focus-visible {
+  outline: var(--focus-ring);
   outline-offset: 2px;
 }
 
 /* Modal Body */
 .modal-body {
-  margin-bottom: var(--space-lg);
+  overflow-wrap: anywhere;
 }
 
 /* Modal Footer */
 .modal-footer:empty {
   display: none;
+}
+
+/* The action row (guide: 49 px, 8 px apart; the label wraps inside, never outside) */
+.modal :is(.modal-body, .modal-footer) ::ng-deep .btn {
+  min-height: 49px;
+  height: auto;
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+
+.modal :is(.modal-body, .modal-footer) ::ng-deep :is(.modal-actions, .modal-actions-right) {
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.modal :is(.modal-body, .modal-footer) ::ng-deep .modal-actions-split {
+  flex-wrap: wrap;
+  gap: 8px;
 }
 
 /* Animations */
@@ -101,15 +129,9 @@
   }
 }
 
-/* Responsive */
-@media (max-width: 640px) {
+@media (prefers-reduced-motion: reduce) {
+  .modal-overlay,
   .modal {
-    max-width: 100%;
-    max-height: 100vh;
-    border-radius: var(--radius-md);
-  }
-
-  .modal-overlay {
-    padding: var(--space-md);
+    animation: none;
   }
 }

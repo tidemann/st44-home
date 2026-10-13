@@ -1,0 +1,28 @@
+<app-modal
+  [open]="open()"
+  [title]="request()?.title ?? ''"
+  [showClose]="false"
+  (closeModal)="answer(false)"
+>
+  @if (request(); as r) {
+    <p class="popup-body confirm-message">{{ r.message }}</p>
+    <div class="popup-actions">
+      <button type="button" class="btn btn-secondary" (click)="answer(false)">
+        @if (r.cancelLabel) {
+          {{ r.cancelLabel }}
+        } @else {
+          <ng-container i18n="@@confirmDialog.cancel">Avbryt</ng-container>
+        }
+      </button>
+      <button
+        type="button"
+        class="btn"
+        [class.btn-danger]="r.danger"
+        [class.btn-primary]="!r.danger"
+        (click)="answer(true)"
+      >
+        {{ r.confirmLabel }}
+      </button>
+    </div>
+  }
+</app-modal>

@@ -14,6 +14,7 @@ import { REDEMPTION_UNDO_SECONDS } from '@st44/types';
 import type { Reward, CreateRewardRequest, RewardRedemption } from '@st44/types';
 import { RewardService } from '../../services/reward.service';
 import { HouseholdService } from '../../services/household.service';
+import { ConfirmDialogService } from '../../services/confirm-dialog.service';
 import { PageComponent } from '../../components/page/page';
 
 /**
@@ -37,6 +38,7 @@ export class RewardsManagementComponent implements OnInit {
   private householdService = inject(HouseholdService);
   private router = inject(Router);
   private destroyRef = inject(DestroyRef);
+  private confirmDialog = inject(ConfirmDialogService);
 
   // Component state signals
   showCreateForm = signal(false);
@@ -239,8 +241,14 @@ export class RewardsManagementComponent implements OnInit {
     this.resetForm();
   }
 
-  deleteReward(reward: Reward): void {
-    if (!confirm($localize`:@@rewards.confirmDelete:Vil du slette «${reward.name}:rewardName:»?`)) {
+  async deleteReward(reward: Reward): Promise<void> {
+    const confirmed = await this.confirmDialog.confirm({
+      title: $localize`:@@rewards.confirmDeleteTitle:Slette belønningen?`,
+      message: $localize`:@@rewards.confirmDelete:Vil du slette «${reward.name}:rewardName:»?`,
+      confirmLabel: $localize`:@@rewards.confirmDeleteButton:Slett`,
+      danger: true,
+    });
+    if (!confirmed) {
       return;
     }
 

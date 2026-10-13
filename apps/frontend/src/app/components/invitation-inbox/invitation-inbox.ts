@@ -6,6 +6,7 @@ import {
   Invitation,
   AcceptInvitationResponse,
 } from '../../services/invitation.service';
+import { ConfirmDialogService } from '../../services/confirm-dialog.service';
 
 @Component({
   selector: 'app-invitation-inbox',
@@ -17,6 +18,7 @@ import {
 export class InvitationInboxComponent implements OnInit {
   private readonly invitationService = inject(InvitationService);
   private readonly router = inject(Router);
+  private readonly confirmDialog = inject(ConfirmDialogService);
 
   protected readonly invitations = signal<Invitation[]>([]);
   protected readonly isLoading = signal(false);
@@ -54,9 +56,12 @@ export class InvitationInboxComponent implements OnInit {
    * Accept an invitation after confirmation
    */
   async acceptInvitation(invitation: Invitation) {
-    const confirmed = confirm(
-      `Accept invitation to join "${invitation.householdName || 'the household'}"?\n\nYou will become a member with the role: ${invitation.role}`,
-    );
+    const householdName = invitation.householdName || $localize`:@@invitationInbox.theHousehold:husstanden`;
+    const confirmed = await this.confirmDialog.confirm({
+      title: $localize`:@@invitationInbox.acceptTitle:Bli med i husstanden?`,
+      message: $localize`:@@invitationInbox.acceptMessage:Du blir med i «${householdName}:householdName:» som ${invitation.role}:role:.`,
+      confirmLabel: $localize`:@@invitationInbox.acceptConfirm:Bli med`,
+    });
     if (!confirmed) {
       return;
     }
@@ -99,9 +104,13 @@ export class InvitationInboxComponent implements OnInit {
    * Decline an invitation after confirmation
    */
   async declineInvitation(invitation: Invitation) {
-    const confirmed = confirm(
-      `Decline invitation to join "${invitation.householdName || 'the household'}"?\n\nThis action cannot be undone.`,
-    );
+    const householdName = invitation.householdName || $localize`:@@invitationInbox.theHousehold:husstanden`;
+    const confirmed = await this.confirmDialog.confirm({
+      title: $localize`:@@invitationInbox.declineTitle:Avslå invitasjonen?`,
+      message: $localize`:@@invitationInbox.declineMessage:Du blir ikke med i «${householdName}:householdName:». Dette kan ikke angres.`,
+      confirmLabel: $localize`:@@invitationInbox.declineConfirm:Avslå`,
+      danger: true,
+    });
     if (!confirmed) {
       return;
     }

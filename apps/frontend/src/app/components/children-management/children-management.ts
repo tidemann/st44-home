@@ -4,6 +4,7 @@ import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import type { Child } from '@st44/types';
 import { ChildrenService } from '../../services/children.service';
 import { HouseholdService } from '../../services/household.service';
+import { ConfirmDialogService } from '../../services/confirm-dialog.service';
 
 @Component({
   selector: 'app-children-management',
@@ -15,6 +16,7 @@ export class ChildrenManagementComponent implements OnInit {
   private childrenService = inject(ChildrenService);
   private householdService = inject(HouseholdService);
   private fb = inject(FormBuilder);
+  private confirmDialog = inject(ConfirmDialogService);
 
   children = signal<Child[]>([]);
   isLoading = signal(false);
@@ -198,9 +200,12 @@ export class ChildrenManagementComponent implements OnInit {
    * Delete a child with confirmation
    */
   async deleteChild(child: Child) {
-    const confirmed = confirm(
-      `Are you sure you want to remove ${child.name}? This action cannot be undone.`,
-    );
+    const confirmed = await this.confirmDialog.confirm({
+      title: $localize`:@@childrenManagement.removeTitle:Fjerne barnet?`,
+      message: $localize`:@@childrenManagement.removeMessage:«${child.name}:childName:» forsvinner fra familien. Dette kan ikke angres.`,
+      confirmLabel: $localize`:@@childrenManagement.removeConfirm:Fjern`,
+      danger: true,
+    });
     if (!confirmed) {
       return;
     }

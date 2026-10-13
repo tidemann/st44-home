@@ -6,9 +6,10 @@
     (keydown.space)="onOverlayKeydown($event)"
     tabindex="-1"
   >
-    <div class="modal">
+    <div class="modal" role="dialog" aria-modal="true" [attr.aria-labelledby]="titleId">
       <div class="modal-header">
-        <h2 id="modal-title" class="modal-title">{{ title() }}</h2>
+        <h2 [id]="titleId" class="modal-title">{{ title() }}</h2>
+        @if (showClose()) {
         <button
           type="button"
           class="modal-close"
@@ -30,6 +31,7 @@
             <line x1="6" y1="6" x2="18" y2="18"></line>
           </svg>
         </button>
+        }
       </div>
 
       <div class="modal-body">
