@@ -29,6 +29,7 @@ import { HouseholdDayService } from '../../services/household-day.service';
 import { PushNotificationService } from '../../services/push-notification.service';
 import { HttpErrorResponse } from '@angular/common/http';
 import { isDesktopSignal } from '../../utils/desktop-query';
+import { remindNote, type RemindState } from '../../utils/remind-note';
 import { capitalize, clockTime, dayWord, isoDay, longDate } from '../../utils/poeng-format';
 import type { Task, Assignment, Child, HouseholdMemberResponse } from '@st44/types';
 
@@ -111,6 +112,9 @@ export class Home implements OnInit {
   protected readonly canRemind = computed(() => !this.authService.hasRole('child'));
   protected readonly remindingId = signal<string | null>(null);
   protected readonly remindMessage = signal<string | null>(null);
+  // ST-1066 C: what happened to each reminder stays in its row; a success is only read aloud
+  protected readonly reminders = signal<Record<string, RemindState>>({});
+  protected readonly remindAnnounce = signal<string | null>(null);
 
   protected readonly hasTodayTasks = computed(() => this.todayTasks().length > 0);
   protected readonly hasUpcomingTasks = computed(() => this.upcomingTasks().length > 0);
@@ -304,6 +308,18 @@ export class Home implements OnInit {
     return a.points != null ? $localize`:@@home.points:${a.points}:points: p` : '';
   }
 
+  protected reminderNote(a: Assignment) {
+    return remindNote(this.reminders()[a.id]);
+  }
+
+  protected reminderSent(a: Assignment): boolean {
+    return this.reminders()[a.id]?.status === 'sent';
+  }
+
+  protected reminderFailed(a: Assignment): boolean {
+    return this.reminders()[a.id]?.status === 'failed';
+  }
+
   protected remindLabel(a: Assignment): string {
     return $localize`:@@home.remindAria:Minn ${a.childName ?? ''}:name: på ${a.title}:title:`;
   }
@@ -346,14 +362,23 @@ export class Home implements OnInit {
     const name = assignment?.childName || $localize`:@@home.remindFallbackName:Barnet`;
     this.remindingId.set(assignmentId);
     this.remindMessage.set(null);
+    this.remindAnnounce.set(null);
+    const settle = (state: RemindState) =>
+      this.reminders.update((r) => ({ ...r, [assignmentId]: state }));
     try {
       const sent = await this.push.remind(assignmentId);
-      this.remindMessage.set(
-        sent > 0
-          ? $localize`:@@home.remindSent:Påminnelse sendt til ${name}:name:.`
-          : $localize`:@@home.remindNoPhone:${name}:name: har ikke slått på varsler på telefonen ennå.`,
-      );
+      if (sent > 0) {
+        settle({ status: 'sent', at: new Date() });
+        this.remindAnnounce.set($localize`:@@home.remindSent:Påminnelse sendt til ${name}:name:.`);
+      } else {
+        // No phone to reach is a failure too: it must never look as if it went well
+        settle({ status: 'failed' });
+        this.remindMessage.set(
+          $localize`:@@home.remindNoPhone:${name}:name: har ikke slått på varsler på telefonen ennå.`,
+        );
+      }
     } catch (err) {
+      settle({ status: 'failed' });
       this.remindMessage.set(remindError(err));
     } finally {
       this.remindingId.set(null);

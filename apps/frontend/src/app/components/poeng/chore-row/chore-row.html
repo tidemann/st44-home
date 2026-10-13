@@ -1,4 +1,4 @@
-<div class="row" [class.overdue]="overdue()">
+<div class="row" [class.overdue]="overdue()" [class.has-note]="note()">
   @if (done()) {
     <span class="cb done" role="img" i18n-aria-label="@@choreRow.done" aria-label="Gjort">
       <svg width="13" height="10" viewBox="0 0 13 10" fill="none" aria-hidden="true">
@@ -44,4 +44,32 @@
     <span class="pts">{{ points() }}</span>
   }
   <ng-content select="[row-action]" />
+
+  @if (note(); as n) {
+    <span class="note" [class.rust]="n.tone === 'overdue'">
+      @if (n.tone === 'overdue') {
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+          <path
+            d="M8 2.2 14.6 13.6H1.4Z"
+            stroke="currentColor"
+            stroke-width="1.6"
+            stroke-linejoin="round"
+          />
+          <path d="M8 6.6v3.2" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" />
+          <circle cx="8" cy="11.7" r="0.95" fill="currentColor" />
+        </svg>
+      } @else {
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+          <path
+            d="M2.2 8.4 6 12.1 13.8 4.3"
+            stroke="currentColor"
+            stroke-width="1.9"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          />
+        </svg>
+      }
+      {{ n.text }}
+    </span>
+  }
 </div>

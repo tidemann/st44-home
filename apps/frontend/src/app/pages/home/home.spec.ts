@@ -270,8 +270,43 @@ describe('Home', () => {
       component['todayTasks'].set([open]);
       await component['onRemind']('a-1');
       expect(mockPush.remind).toHaveBeenCalledWith('a-1');
-      expect(component['remindMessage']()).toBe('Påminnelse sendt til Emma.');
+      expect(component['remindAnnounce']()).toBe('Påminnelse sendt til Emma.');
+      expect(component['remindMessage']()).toBeNull();
       expect(component['remindingId']()).toBeNull();
+    });
+
+    // ST-1066 C: thumbs up + «Sendt» in the button, «Påminnelse sendt HH.MM» stays in the row
+    it('turns the button into «Sendt» and keeps the time in the row', async () => {
+      render([open], []);
+      await component['onRemind']('a-1');
+      const el = render([open], []); // the mocked first load settled during the await
+      const btn = el.querySelector<HTMLButtonElement>('app-chore-row .rbtn')!;
+      expect(btn.textContent!.trim()).toBe('Sendt');
+      expect(btn.classList).toContain('rbtn-sent');
+      expect(btn.disabled).toBe(true);
+      expect(btn.querySelector('svg')).not.toBeNull();
+      const note = el.querySelector('app-chore-row .note')!;
+      expect(note.textContent!.trim()).toMatch(/^Påminnelse sendt \d\d\.\d\d$/);
+      expect(note.classList).not.toContain('rust');
+    });
+
+    it('offers «Prøv igjen» and a rust line when sending failed', async () => {
+      render([open], []);
+      mockPush.remind.mockRejectedValue(new HttpErrorResponse({ status: 500 }));
+      await component['onRemind']('a-1');
+      const el = render([open], []);
+      const btn = el.querySelector<HTMLButtonElement>('app-chore-row .rbtn')!;
+      expect(btn.textContent!.trim()).toBe('Prøv igjen');
+      expect(btn.disabled).toBe(false);
+      const note = el.querySelector('app-chore-row .note')!;
+      expect(note.textContent!.trim()).toBe('Påminnelsen gikk ikke gjennom');
+      expect(note.classList).toContain('rust');
+    });
+
+    it('shows no line under a row that was not reminded', () => {
+      const el = render([open], []);
+      expect(el.querySelector('app-chore-row .note')).toBeNull();
+      expect(el.querySelector('app-chore-row .rbtn')!.textContent!.trim()).toBe('Minn på');
     });
 
     it('says when the child has no phone with notifications on', async () => {
@@ -279,6 +314,7 @@ describe('Home', () => {
       mockPush.remind.mockResolvedValue(0);
       await component['onRemind']('a-1');
       expect(component['remindMessage']()).toContain('har ikke slått på varsler');
+      expect(component['reminders']()['a-1']).toEqual({ status: 'failed' });
     });
 
     // ST-691: a failed send must never read as "sendt"

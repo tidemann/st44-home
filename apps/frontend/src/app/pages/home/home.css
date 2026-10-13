@@ -56,6 +56,16 @@
   color: var(--text);
 }
 
+/* «Sendt» (ST-1066 C): 16 px thumb, 8 px, label; it stays full yellow, not faded */
+.rbtn.rbtn-sent {
+  gap: 8px;
+  padding: 0 12px;
+}
+
+.rbtn.rbtn-sent:disabled {
+  opacity: 1;
+}
+
 .empty {
   padding: 20px 15px;
   background: var(--surface);

@@ -21,6 +21,45 @@
   padding: 9px 13px;
 }
 
+/* With a note (ST-1066 C) the card is 95 px: the row keeps its 46 px line and
+   the button its place, then 6 px, the 17 px note line and 15 px under it */
+.row.has-note {
+  flex-wrap: wrap;
+  row-gap: 6px;
+  padding-bottom: 15px;
+}
+
+.row.overdue.has-note {
+  padding-bottom: 13px;
+}
+
+.has-note .rowtext {
+  min-height: 46px;
+  justify-content: center;
+}
+
+/* Icon under the checkbox column, text from 39 px (drawn) */
+.note {
+  flex-basis: 100%;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-text);
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 17px;
+  color: var(--done);
+  min-width: 0;
+}
+
+.note svg {
+  flex: none;
+}
+
+.note.rust {
+  color: var(--overdue);
+}
+
 /* Checkbox: 22 px drawn in muted (approved exception 2: 6.62:1), 44 px pressed */
 .cb {
   position: relative;
