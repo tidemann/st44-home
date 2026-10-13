@@ -17,7 +17,7 @@
 /* The date line gets room over it and more under it, before the cards (Stig, ST-954) */
 @media (max-width: 1023.98px) {
   :host ::ng-deep .page-header--band .page-subtitle {
-    margin: 6px 0 14px;
+    margin: 6px 0 20px;
   }
 }
 
