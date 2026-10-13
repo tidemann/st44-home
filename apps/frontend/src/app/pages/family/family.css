@@ -68,56 +68,68 @@
   background: var(--yellow-inset);
 }
 
-/* ===== ACTIONS (under the title, two side by side) ===== */
+/* ===== MEMBERS SECTION (approved picture, ST-1068) ===== */
 
-.family-actions {
-  display: flex;
-  gap: 8px;
-  margin-top: 15px;
+/* «+ Inviter» 20 px under the band; the first row 8 px under it */
+.members-section {
+  margin: 20px 0 0;
 }
 
-/* White on --bg is the guide's one tonal step; no border, no shadow. */
-.btn-action {
-  min-height: 44px;
-  padding: 0 15px;
-  background: var(--surface);
-  color: var(--text);
-  border: 0;
-  border-radius: var(--r-button);
+/* The group label and «+ Inviter» on one line, centred on each other */
+.section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 8px;
+}
+
+/* Section label as on Innstillinger: Label 13/600, ink, on the paper */
+.section-header h2 {
   font-family: var(--font-text);
-  font-size: 16px;
+  font-size: 13px;
   font-weight: 600;
   line-height: 1.2;
+  letter-spacing: -0.01em;
+  color: var(--text);
+  margin: 0;
+}
+
+/* «+ Inviter»: 33 px drawn, yellow with ink, the row action's 10 px corner; 44 px pressed */
+.btn-invite {
+  position: relative;
+  flex: none;
+  height: 33px;
+  padding: 0 13px;
+  border: 0;
+  border-radius: var(--r-row-action);
+  background: var(--yellow);
+  color: var(--ink);
+  font-family: var(--font-text);
+  font-size: 15px;
+  font-weight: 600;
+  line-height: 1;
+  letter-spacing: -0.02em;
+  white-space: nowrap;
   cursor: pointer;
 }
 
-.btn-action {
-  flex: 1;
+.btn-invite::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: -6px;
+  bottom: -6px;
 }
 
-.btn-action:focus-visible,
-.btn-qr:focus-visible {
+.btn-invite:hover {
+  background: var(--yellow-inset);
+}
+
+.btn-invite:focus-visible {
   outline: var(--focus-ring);
   outline-offset: 2px;
-}
-
-/* ===== MEMBERS SECTION ===== */
-
-.members-section {
-  margin: 24px 0;
-}
-
-.section-header {
-  margin-bottom: 12px;
-}
-
-.section-header h2 {
-  font-family: var(--font-display);
-  font-size: 20px;
-  font-weight: 800;
-  line-height: 1.2;
-  color: var(--text);
-  margin: 0;
 }
 
 .member-list {
@@ -126,20 +138,28 @@
   gap: 8px;
 }
 
-/* The child's QR button, inside its row at the right end (ST-954): the outline button
-   (button-outline) at the 44 × 44 touch size, the QR glyph from the login */
-.btn-qr {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 44px;
-  height: 44px;
-  padding: 0;
-  background: var(--surface);
-  color: var(--text);
-  border: 1.5px solid var(--text-muted);
-  border-radius: var(--r-button);
-  cursor: pointer;
+/* The child's QR button inside its row (Stig, ST-954): the yellow row action (.rbtn), 36 px,
+   the QR glyph 16 px and «QR-kode» 6 px after it. Grown-ups get none */
+.rbtn.btn-qr {
+  gap: 6px;
+  padding: 0 13px 0 12px;
+}
+
+/* «+ Legg til barn» pinned above the bottom nav, on the page colour so rows pass under it
+   (the same slot as «+ Ny oppgave» on Oppgaver) */
+.new-slot {
+  position: sticky;
+  bottom: calc(72px + env(safe-area-inset-bottom, 0px));
+  z-index: 5;
+  margin-top: 16px;
+  padding: 10px 0 12px;
+  background: var(--bg);
+}
+
+@media (min-width: 1024px) {
+  .new-slot {
+    bottom: 0;
+  }
 }
 
 .btn-qr svg rect,
