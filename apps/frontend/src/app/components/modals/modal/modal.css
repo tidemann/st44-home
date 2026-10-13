@@ -26,9 +26,11 @@
   padding: var(--popup-pad);
   max-width: 500px;
   width: 100%;
+  /* Never taller than the screen: the header and the action row stay, the body scrolls (ST-954) */
   max-height: 100%;
-  overflow-y: auto;
-  overscroll-behavior: contain;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
   position: relative;
   z-index: var(--z-index-modal);
   animation: scaleIn var(--transition-base) ease-out;
@@ -41,6 +43,7 @@
   align-items: flex-start;
   margin-bottom: var(--space-md);
   gap: var(--space-sm);
+  flex: none;
 }
 
 /* Guide: Title, 27 px Bricolage 800 */
@@ -81,11 +84,32 @@
 }
 
 /* Modal Body */
+/* The only part that scrolls. 4 px of room each side so a field's focus ring is not clipped. */
 .modal-body {
   overflow-wrap: anywhere;
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  margin: -4px;
+  padding: 4px;
+}
+
+/* An action row that sits inside a <form> cannot be projected into the footer, so it sticks to
+   the bottom of the scrolling body instead and stays in view like the footer does. */
+.modal-body ::ng-deep [modal-actions] {
+  position: sticky;
+  bottom: -4px;
+  z-index: 1;
+  background: var(--color-surface);
+  padding-bottom: 4px;
 }
 
 /* Modal Footer */
+.modal-footer {
+  flex: none;
+}
+
 .modal-footer:empty {
   display: none;
 }

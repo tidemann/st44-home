@@ -49,27 +49,42 @@
       @if (members().length > 0) {
         <div class="member-list">
           @for (member of members(); track member.id) {
-            <div class="member-row">
-              <app-member-card
-                [member]="member"
-                [showStats]="true"
-                [clickable]="isChildMember(member)"
-                (cardClick)="onMemberClick($event)"
-              />
+            <!-- The child's QR button sits inside its own row (Stig, ST-954) -->
+            <app-member-card
+              [member]="member"
+              [showStats]="true"
+              [clickable]="isChildMember(member)"
+              (cardClick)="onMemberClick($event)"
+            >
               @if (isChildMember(member)) {
                 <button
-                  class="btn btn-qr"
+                  member-action
+                  type="button"
+                  class="btn-qr"
                   (click)="openQrCodeModal(member.id)"
                   i18n-aria-label="@@family.qrCodeAriaLabel"
                   aria-label="Vis innloggings-QR-kode for {{ member.name }}"
                   i18n-title="@@family.qrCodeTitle"
                   title="Generer barneinnloggings-QR-kode"
-                  i18n="@@family.qrCodeButton"
                 >
-                  📱 Barneinnloggings-QR
+                  <svg
+                    viewBox="0 0 20 20"
+                    width="20"
+                    height="20"
+                    aria-hidden="true"
+                    focusable="false"
+                  >
+                    <rect x="1.5" y="1.5" width="6.5" height="6.5" rx="1.5" />
+                    <rect x="12" y="1.5" width="6.5" height="6.5" rx="1.5" />
+                    <rect x="1.5" y="12" width="6.5" height="6.5" rx="1.5" />
+                    <path
+                      class="dots"
+                      d="M12.5 12.5 h0.01 M17.5 12.5 h0.01 M15 15 h0.01 M12.5 17.5 h0.01 M17.5 17.5 h0.01"
+                    />
+                  </svg>
                 </button>
               }
-            </div>
+            </app-member-card>
           }
         </div>
       } @else {

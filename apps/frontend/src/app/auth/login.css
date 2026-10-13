@@ -25,16 +25,23 @@
   color: var(--ink);
 }
 
+/* The desktop lockup on the phone too: the word to the right of the mark (Stig, ST-954) */
 .lockup {
   display: flex;
-  flex-direction: column;
-  align-items: flex-start;
+  flex-direction: row;
+  align-items: center;
+  gap: 16px;
+}
+
+/* The 78 px the word took under the mark (22 + 56), so the claim keeps its drawn place */
+.pitch {
+  margin-top: 78px;
 }
 
 .wordmark {
-  margin: 22px 0 0;
+  margin: 0;
   font-family: var(--font-display);
-  font-size: 56px;
+  font-size: 43px;
   font-weight: 800;
   line-height: 1;
   letter-spacing: -0.02em;

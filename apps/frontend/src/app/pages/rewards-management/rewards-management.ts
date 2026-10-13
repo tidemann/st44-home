@@ -129,9 +129,9 @@ export class RewardsManagementComponent implements OnInit {
     this.rejectReason.set('');
   }
 
+  /** The reason is optional (ST-954): a «nei» goes without one, and the child sees it when given */
   confirmReject(redemption: RewardRedemption): void {
-    const reason = this.rejectReason().trim();
-    if (!reason) return;
+    const reason = this.rejectReason().trim() || undefined;
     this.send(redemption, (householdId) =>
       this.rewardService.rejectRedemption(householdId, redemption.id, reason),
     );

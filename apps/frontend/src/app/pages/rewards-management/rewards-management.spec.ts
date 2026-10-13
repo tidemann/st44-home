@@ -106,18 +106,23 @@ describe('RewardsManagementComponent', () => {
     );
   });
 
-  it('says no only with a reason, and sends the reason', () => {
+  it('says no with a reason, and sends the reason', () => {
+    const request = redemption({});
+    component.startReject(request);
+
+    component.rejectReason.set('  Ikke i dag ');
+    component.confirmReject(request);
+    expect(mockRewardService.rejectRedemption).toHaveBeenCalledWith('h-1', 'r-1', 'Ikke i dag');
+    expect(component.rejectingId()).toBeNull();
+  });
+
+  it('says no without a reason (ST-954)', () => {
     const request = redemption({});
     component.startReject(request);
 
     component.rejectReason.set('   ');
     component.confirmReject(request);
-    expect(mockRewardService.rejectRedemption).not.toHaveBeenCalled();
-
-    component.rejectReason.set('Ikke i dag');
-    component.confirmReject(request);
-    expect(mockRewardService.rejectRedemption).toHaveBeenCalledWith('h-1', 'r-1', 'Ikke i dag');
-    expect(component.rejectingId()).toBeNull();
+    expect(mockRewardService.rejectRedemption).toHaveBeenCalledWith('h-1', 'r-1', undefined);
   });
 
   it('shows the receipt with "Angre" after a yes and undoes it', () => {

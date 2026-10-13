@@ -7,6 +7,7 @@ import {
   inject,
   OnInit,
 } from '@angular/core';
+import { NgTemplateOutlet } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
 import {
@@ -33,6 +34,9 @@ import type { Task, Assignment, Child, HouseholdMemberResponse } from '@st44/typ
 
 /** Child cards beside the title from 1024 px (desktop A); more go on one "+N barn til" tile */
 export const DESKTOP_MAX_CHILD_CARDS = 4;
+
+/** The chore groups on the family home */
+type HomeGroup = 'overdue' | 'today' | 'done' | 'upcoming';
 
 /** One child card on the family home */
 interface ChildSummary {
@@ -62,6 +66,7 @@ export function childCardColumns(count: number): number {
   selector: 'app-home',
   imports: [
     RouterLink,
+    NgTemplateOutlet,
     PageComponent,
     ChoreRow,
     GroupLabel,
@@ -109,6 +114,22 @@ export class Home implements OnInit {
 
   protected readonly hasTodayTasks = computed(() => this.todayTasks().length > 0);
   protected readonly hasUpcomingTasks = computed(() => this.upcomingTasks().length > 0);
+
+  /** A group shows its first 10 chores, then «Vis flere» shows the rest (ST-954) */
+  protected readonly groupLimit = 10;
+  private readonly expandedGroups = signal<ReadonlySet<HomeGroup>>(new Set());
+
+  protected shown(group: HomeGroup, tasks: Assignment[]): Assignment[] {
+    return this.expandedGroups().has(group) ? tasks : tasks.slice(0, this.groupLimit);
+  }
+
+  protected hiddenCount(group: HomeGroup, tasks: Assignment[]): number {
+    return tasks.length - this.shown(group, tasks).length;
+  }
+
+  protected showAll(group: HomeGroup): void {
+    this.expandedGroups.update((groups) => new Set(groups).add(group));
+  }
 
   /** "tirsdag 6. oktober – 3 av 7 gjort" */
   protected readonly subtitle = computed(() => {

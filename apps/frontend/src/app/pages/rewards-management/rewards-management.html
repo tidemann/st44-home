@@ -71,7 +71,7 @@
                     @if (rejectingId() === redemption.id) {
                       <div class="reject-form">
                         <label [for]="'reason-' + redemption.id" i18n="@@rewards.reasonLabel">
-                          Skriv hvorfor (barnet ser dette)
+                          Skriv hvorfor, om du vil (barnet ser dette)
                         </label>
                         <textarea
                           [id]="'reason-' + redemption.id"
@@ -86,7 +86,7 @@
                           <button
                             type="button"
                             class="btn btn-danger"
-                            [disabled]="!rejectReason().trim() || busyId() === redemption.id"
+                            [disabled]="busyId() === redemption.id"
                             (click)="confirmReject(redemption)"
                             i18n="@@rewards.sendNo"
                           >
@@ -120,7 +120,7 @@
                           (click)="startReject(redemption)"
                           i18n="@@rewards.sayNo"
                         >
-                          Si nei og skriv hvorfor
+                          Si nei
                         </button>
                       </div>
                     }

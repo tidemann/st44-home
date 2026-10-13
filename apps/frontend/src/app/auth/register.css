@@ -1,316 +1,43 @@
-/**
- * Register Component Styles
- * Diddit design system: Poeng, light mode
- */
+/* Create account (ST-954). Everything drawn on the login comes from login.css; this file only
+   places the fields the login does not have, at the login's own 14 px between fields. */
 
-/* ===== AUTH CONTAINER ===== */
-:host {
-  display: block;
-}
-
-.auth-container {
-  min-height: 100vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0;
-  background: var(--bg);
-  position: relative;
-  overflow: hidden;
-}
-
-/* ===== AUTH CARD ===== */
-.auth-card {
-  background: var(--color-surface);
-  border-radius: var(--r-card);
-  padding: var(--space-xxl);
-  max-width: 480px;
-  width: 100%;
-  position: relative;
-  z-index: 1;
-  animation: slideUp var(--transition-slow) ease-out;
-}
-
-@media (max-width: 480px) {
-  .auth-card {
-    padding: var(--space-xl);
-    border-radius: var(--r-card);
-    margin: var(--space-md);
-  }
-}
-
-/* ===== AUTH LOGO ===== */
-.auth-logo {
-  text-align: center;
-  margin-bottom: var(--space-xxl);
-}
-
-.auth-logo-text {
-  font-family: var(--font-heading);
-  font-size: 2.5rem;
-  font-weight: 800;
-  color: var(--text);
-  letter-spacing: -0.02em;
-}
-
-/* ===== AUTH TITLE & SUBTITLE ===== */
-.auth-title {
-  font-family: var(--font-heading);
-  font-size: var(--font-size-3xl);
-  font-weight: 800;
-  margin-bottom: var(--space-sm);
-  text-align: center;
-  color: var(--color-text-primary);
-}
-
-.auth-subtitle {
-  text-align: center;
-  color: var(--color-text-secondary);
-  margin-bottom: var(--space-xxl);
-  font-size: var(--font-size-base);
-  line-height: var(--line-height-relaxed);
-}
-
-/* ===== FORM STYLES ===== */
-/* Name fields side-by-side on larger screens */
+/* Fornavn and Etternavn side by side, 12 px apart, as the login puts its label and link */
 .name-fields {
   display: grid;
-  grid-template-columns: 1fr;
-  gap: 0;
+  grid-template-columns: 1fr 1fr;
+  column-gap: 12px;
 }
 
-@media (min-width: 480px) {
-  .name-fields {
-    grid-template-columns: 1fr 1fr;
-    gap: var(--space-md);
-  }
-
-  .name-fields .form-group {
-    margin-bottom: var(--space-lg);
-  }
+.name-field {
+  min-width: 0;
 }
 
-.form-group {
-  margin-bottom: var(--space-lg);
+form > .label {
+  margin-top: 14px;
 }
 
-.form-label {
-  display: block;
-  margin-bottom: var(--space-xs);
-  font-weight: var(--font-weight-semibold);
-  font-size: var(--font-size-sm);
-  color: var(--color-text-primary);
+/* A field's own rust line sits closer to its field than the login's line over the button */
+.field-error {
+  margin-top: 6px;
 }
 
-.form-input {
-  width: 100%;
-  padding: var(--space-md);
-  border: 2px solid transparent;
-  border-radius: var(--radius-sm);
-  font-size: var(--font-size-base);
-  font-family: var(--font-body);
-  background: var(--color-background);
-  color: var(--color-text-primary);
-  transition: all var(--transition-fast);
+/* The password rule, then its strength: 13 px muted under the field, like the label above it */
+.hint {
+  margin: 6px 0 0;
+  font-family: var(--font-text);
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 1.4;
+  color: var(--text-muted);
 }
 
-.form-input::placeholder {
-  color: var(--color-text-tertiary);
+.strength {
+  font-weight: 600;
+  color: var(--text);
 }
 
-.form-input:focus {
-  outline: var(--focus-ring);
-  border-color: var(--color-primary);
-  background: var(--color-surface);
-}
-
-.form-input[aria-invalid='true'] {
-  border-color: var(--color-danger);
-  background: var(--color-danger-light);
-}
-
-.form-input[aria-invalid='true']:focus {
-  outline: var(--focus-ring);
-  outline-offset: 2px;
-}
-
-/* ===== PASSWORD INPUT ===== */
-.password-input-wrapper {
-  position: relative;
-  display: flex;
-}
-
-.password-input-wrapper .form-input {
-  padding-right: 3rem;
-}
-
-.toggle-password {
-  position: absolute;
-  right: var(--space-md);
-  top: 50%;
-  transform: translateY(-50%);
-  background: none;
-  border: none;
-  cursor: pointer;
-  padding: var(--space-xs);
-  font-size: 1.25rem;
-  color: var(--color-text-tertiary);
-  transition: color var(--transition-fast);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.toggle-password:hover {
-  color: var(--color-text-secondary);
-}
-
-.toggle-password:focus {
-  outline: 2px solid var(--color-primary);
-  outline-offset: 2px;
-  border-radius: 4px;
-}
-
-/* ===== PASSWORD STRENGTH INDICATOR ===== */
-.strength-indicator {
-  font-size: var(--font-size-sm);
-  margin-top: var(--space-xs);
-  color: var(--color-text-secondary);
-}
-
-.strength-weak {
-  color: var(--color-danger);
-  font-weight: var(--font-weight-semibold);
-}
-
-.strength-medium {
-  color: var(--amber-ink);
-  font-weight: var(--font-weight-semibold);
-}
-
-.strength-strong {
-  color: var(--color-success);
-  font-weight: var(--font-weight-semibold);
-}
-
-/* ===== ERROR MESSAGES ===== */
-.error {
-  color: var(--color-danger);
-  font-size: var(--font-size-sm);
-  margin-top: var(--space-xs);
-  display: flex;
-  align-items: center;
-  gap: var(--space-xs);
-}
-
-.server-error {
-  padding: var(--space-md);
-  background: var(--color-danger-light);
-  border: 1px solid var(--color-danger);
-  border-radius: var(--radius-sm);
-  margin-bottom: var(--space-lg);
-}
-
-/* ===== BUTTONS ===== */
-.btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  padding: var(--space-md) var(--space-xl);
-  font-family: var(--font-body);
-  font-size: var(--font-size-base);
-  font-weight: var(--font-weight-semibold);
-  min-height: 49px;
-  border-radius: var(--r-button);
-  border: none;
-  cursor: pointer;
-  transition: all var(--transition-fast);
-  text-decoration: none;
-}
-
-.btn-primary {
-  background: var(--yellow);
-  color: var(--ink);
-}
-
-.btn-primary:hover:not(:disabled) {
-  background: var(--yellow-inset);
-}
-
-.btn-primary:focus-visible {
-  outline: var(--focus-ring);
-  outline-offset: 2px;
-}
-
-.btn-primary:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-  transform: none;
-}
-
-.btn-block {
-  width: 100%;
-}
-
-/* ===== DIVIDER ===== */
-.divider {
-  display: flex;
-  align-items: center;
-  gap: var(--space-md);
-  margin: var(--space-xl) 0;
-  color: var(--color-text-tertiary);
-  font-size: var(--font-size-sm);
-}
-
-.divider::before,
-.divider::after {
-  content: '';
-  flex: 1;
-  height: 1px;
-  background: var(--hairline);
-}
-
-/* ===== AUTH LINKS ===== */
-.auth-links {
-  text-align: center;
-  margin-top: var(--space-xl);
-  font-size: var(--font-size-sm);
-  color: var(--color-text-secondary);
-}
-
-.auth-link {
-  color: var(--color-primary);
-  text-decoration: none;
-  font-weight: var(--font-weight-semibold);
-  transition: color var(--transition-fast);
-}
-
-.auth-link:hover {
-  color: var(--color-secondary);
-  text-decoration: underline;
-}
-
-.auth-link:focus {
-  outline: 2px solid var(--color-primary);
-  outline-offset: 2px;
-  border-radius: 2px;
-}
-
-/* ===== GOOGLE SIGN-IN ===== */
-.google-signin-wrapper {
-  display: flex;
-  justify-content: center;
-  margin-bottom: var(--space-md);
-}
-
-/* ===== ANIMATIONS ===== */
-@keyframes slideUp {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
+@media (min-width: 960px) {
+  form > .label {
+    margin-top: 9px;
   }
 }

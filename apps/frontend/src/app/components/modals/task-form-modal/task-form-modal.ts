@@ -126,31 +126,81 @@ export class TaskFormModal {
    * Task types configuration
    */
   readonly taskTypes: { value: TaskRuleType; label: string; description: string }[] = [
-    { value: 'daily', label: 'Daily', description: 'Assigned every day' },
-    { value: 'repeating', label: 'Repeating', description: 'On specific days of the week' },
-    { value: 'weekly_rotation', label: 'Weekly Rotation', description: 'Rotates between children' },
-    { value: 'single', label: 'Single', description: 'One-time task with deadline' },
+    {
+      value: 'daily',
+      label: $localize`:@@taskFormModal.typeDaily:Daglig`,
+      description: $localize`:@@taskFormModal.typeDailyDescription:hver dag`,
+    },
+    {
+      value: 'repeating',
+      label: $localize`:@@taskFormModal.typeRepeating:Faste dager`,
+      description: $localize`:@@taskFormModal.typeRepeatingDescription:på valgte ukedager`,
+    },
+    {
+      value: 'weekly_rotation',
+      label: $localize`:@@taskFormModal.typeRotation:Ukesrotasjon`,
+      description: $localize`:@@taskFormModal.typeRotationDescription:barna bytter på`,
+    },
+    {
+      value: 'single',
+      label: $localize`:@@taskFormModal.typeSingle:Én gang`,
+      description: $localize`:@@taskFormModal.typeSingleDescription:med frist`,
+    },
   ];
 
   /**
    * Days of the week configuration
    */
   readonly daysOfWeek: DayOption[] = [
-    { value: 1, label: 'Monday', shortLabel: 'Mon' },
-    { value: 2, label: 'Tuesday', shortLabel: 'Tue' },
-    { value: 3, label: 'Wednesday', shortLabel: 'Wed' },
-    { value: 4, label: 'Thursday', shortLabel: 'Thu' },
-    { value: 5, label: 'Friday', shortLabel: 'Fri' },
-    { value: 6, label: 'Saturday', shortLabel: 'Sat' },
-    { value: 0, label: 'Sunday', shortLabel: 'Sun' },
+    {
+      value: 1,
+      label: $localize`:@@taskFormModal.monday:mandag`,
+      shortLabel: $localize`:@@taskFormModal.mondayShort:Man`,
+    },
+    {
+      value: 2,
+      label: $localize`:@@taskFormModal.tuesday:tirsdag`,
+      shortLabel: $localize`:@@taskFormModal.tuesdayShort:Tir`,
+    },
+    {
+      value: 3,
+      label: $localize`:@@taskFormModal.wednesday:onsdag`,
+      shortLabel: $localize`:@@taskFormModal.wednesdayShort:Ons`,
+    },
+    {
+      value: 4,
+      label: $localize`:@@taskFormModal.thursday:torsdag`,
+      shortLabel: $localize`:@@taskFormModal.thursdayShort:Tor`,
+    },
+    {
+      value: 5,
+      label: $localize`:@@taskFormModal.friday:fredag`,
+      shortLabel: $localize`:@@taskFormModal.fridayShort:Fre`,
+    },
+    {
+      value: 6,
+      label: $localize`:@@taskFormModal.saturday:lørdag`,
+      shortLabel: $localize`:@@taskFormModal.saturdayShort:Lør`,
+    },
+    {
+      value: 0,
+      label: $localize`:@@taskFormModal.sunday:søndag`,
+      shortLabel: $localize`:@@taskFormModal.sundayShort:Søn`,
+    },
   ];
 
   /**
    * Rotation types for weekly rotation tasks
    */
   readonly rotationTypes: { value: 'alternating' | 'odd_even_week'; label: string }[] = [
-    { value: 'alternating', label: 'Alternating (switch each week)' },
-    { value: 'odd_even_week', label: 'Odd/Even Week (based on week number)' },
+    {
+      value: 'alternating',
+      label: $localize`:@@taskFormModal.rotationAlternating:Bytter hver uke`,
+    },
+    {
+      value: 'odd_even_week',
+      label: $localize`:@@taskFormModal.rotationOddEven:Partalls- og oddetallsuker (etter ukenummer)`,
+    },
   ];
 
   /**

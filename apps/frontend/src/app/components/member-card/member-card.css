@@ -5,8 +5,21 @@
   display: block;
 }
 
-.member-card {
+.member-item {
   background: var(--surface);
+  border-radius: var(--r-card);
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+
+/* A projected action ends the row 15 px from its right edge, like the card padding */
+.member-item > ::ng-deep [member-action] {
+  flex-shrink: 0;
+  margin-right: 15px;
+}
+
+.member-card {
   border-radius: var(--r-card);
   padding: 15px;
   min-height: 68px;
@@ -14,7 +27,8 @@
   display: flex;
   align-items: center;
   gap: 12px;
-  width: 100%;
+  flex: 1;
+  min-width: 0;
 }
 
 .member-card.clickable {

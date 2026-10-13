@@ -44,7 +44,7 @@
       <div class="col">
         @if (overdueTasks().length > 0) {
           <app-group-label i18n-label="@@home.overdue" label="Forfalt" [overdue]="true" />
-          @for (task of overdueTasks(); track task.id) {
+          @for (task of shown('overdue', overdueTasks()); track task.id) {
             <app-chore-row
               [title]="task.title"
               [meta]="rowMeta(task, true)"
@@ -71,6 +71,9 @@
               }
             </app-chore-row>
           }
+          <ng-container
+            *ngTemplateOutlet="showMore; context: { group: 'overdue', tasks: overdueTasks() }"
+          />
         }
 
         <app-group-label
@@ -79,7 +82,7 @@
           [right]="leftToday()"
         />
         @if (hasTodayTasks()) {
-          @for (task of todayTasks(); track task.id) {
+          @for (task of shown('today', todayTasks()); track task.id) {
             <app-chore-row
               [title]="task.title"
               [meta]="rowMeta(task)"
@@ -91,6 +94,9 @@
               (open)="onEditTask(task.id)"
             />
           }
+          <ng-container
+            *ngTemplateOutlet="showMore; context: { group: 'today', tasks: todayTasks() }"
+          />
         } @else {
           <div class="empty" role="status">
             <p class="empty-title" i18n="@@home.noTasksToday">Ingen oppgaver igjen i dag</p>
@@ -113,7 +119,7 @@
         <!-- Desktop A only: the right column opens with what is done today -->
         @if (desktop()) {
           <app-group-label i18n-label="@@home.doneToday" label="Gjort i dag" />
-          @for (task of doneToday(); track task.id) {
+          @for (task of shown('done', doneToday()); track task.id) {
             <app-chore-row
               [title]="task.title"
               [meta]="doneMeta(task)"
@@ -132,6 +138,9 @@
               </p>
             </div>
           }
+          <ng-container
+            *ngTemplateOutlet="showMore; context: { group: 'done', tasks: doneToday() }"
+          />
         }
 
         <!-- Below the picture: kept so nothing the family uses today goes away -->
@@ -141,7 +150,7 @@
 
         @if (hasUpcomingTasks()) {
           <app-group-label i18n-label="@@home.comingUp" label="Kommende" />
-          @for (task of upcomingTasks(); track task.id) {
+          @for (task of shown('upcoming', upcomingTasks()); track task.id) {
             <app-chore-row
               [title]="task.title"
               [meta]="upcomingMeta(task)"
@@ -150,12 +159,24 @@
               (open)="onEditTask(task.id)"
             />
           }
+          <ng-container
+            *ngTemplateOutlet="showMore; context: { group: 'upcoming', tasks: upcomingTasks() }"
+          />
         }
 
         <a class="more" routerLink="/progress" i18n="@@home.toProgress">Se fremgang for uken</a>
       </div>
     </div>
   }
+
+  <!-- After the first 10 chores in a group: «Vis flere» shows the rest (ST-954) -->
+  <ng-template #showMore let-group="group" let-tasks="tasks">
+    @if (hiddenCount(group, tasks) > 0) {
+      <button type="button" class="show-more" (click)="showAll(group)" i18n="@@home.showMore">
+        Vis flere ({{ hiddenCount(group, tasks) }})
+      </button>
+    }
+  </ng-template>
 
   <!-- Create Task Modal (opened by "+ Ny oppgave") -->
   @if (householdId()) {

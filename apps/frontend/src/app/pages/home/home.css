@@ -14,6 +14,38 @@
   flex: 1 0 calc((100% - (var(--kid-cols) - 1) * 9px) / var(--kid-cols) - 0.5px);
 }
 
+/* The date line gets room over it and more under it, before the cards (Stig, ST-954) */
+@media (max-width: 1023.98px) {
+  :host ::ng-deep .page-header--band .page-subtitle {
+    margin: 6px 0 14px;
+  }
+}
+
+/* «Vis flere» under the 10th row: the outline button (button-outline), 8 px under the row like
+   the next row would be, at the 44 px touch height */
+.show-more {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-height: 44px;
+  margin-top: 8px;
+  padding: 0 16px;
+  border: 1.5px solid var(--text-muted);
+  border-radius: var(--r-button);
+  background: var(--surface);
+  color: var(--text);
+  font-family: var(--font-text);
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.show-more:focus-visible {
+  outline: var(--focus-ring);
+  outline-offset: 2px;
+}
+
 .remind-status:empty {
   display: none;
 }
