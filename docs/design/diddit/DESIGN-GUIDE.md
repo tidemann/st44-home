@@ -429,6 +429,11 @@ grey on those, and «Slett» in Overdue Rust. Pictures: `popup-02-anbefalt-tre-p
 and note that the last two of the four points are amendments **to** the drawings, so the four points
 win where they disagree with `popup-02`.
 
+**Round four — ST-1069, 2026-10-14.** Innstillinger, drawn by Ida on ST-955 and approved by Stig
+"as drawn": [`innstillinger-01-approved.png`](reference/innstillinger-01-approved.png) (the screen and
+its worst case, a long e-mail). See **Innstillinger**. The bottom nav in that picture is the
+current one; it is not a nav decision.
+
 **Order of precedence.** `poeng-signed-off.png` → the approved pictures above → this guide → generic
 rules. Where an approved picture and the signed-off picture disagree about something the signed-off
 picture already settles (a card width, a gutter, a row), the signed-off picture wins and the
@@ -1901,6 +1906,40 @@ build against it, not against this table alone. What no picture draws is **the f
 | The first focused button                        | Always the safe one («Avbryt», «Ikke nå»). Never «Slett».                                                                                                                                                                                                                                                                                                                                             |
 | Motion                                          | Honour `prefers-reduced-motion` on the sheet's entrance.                                                                                                                                                                                                                                                                                                                                              |
 
+## Innstillinger (approved 2026-10-14)
+
+The picture is [`innstillinger-01-approved.png`](reference/innstillinger-01-approved.png) (ST-1069).
+It outranks this section. Stig asked for the profile fields to stand tight together; the rest of the
+page is rows on cards.
+
+### The shape of it, measured at 390 px
+
+| Element           | Spec                                                                                                                                                                                                                |
+| ----------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| The yellow top    | A, the yellow top: «‹ Hjem» (Meta 15/500, Ink, 8 × 14 chevron, 44 px target), the title, then the sub-line «Kari Dahl – forelder» (role word «forelder» or «barn»). No initial badge: you are on your own settings. |
+| Section label     | «Profil», «Husstand», «Konto», «Om»: **Label 13**/600, `#15181C`, on the paper, **8 px** over its card                                                                                                              |
+| Sections          | the first label 18 px under the band, each later label **20 px** under the block above it                                                                                                                           |
+| Card              | the full 346 px column, white, 13 px radius, **15 px** padding                                                                                                                                                      |
+| Profile fields    | the login's text field (see **The login screen → The form**): 49 px, 13 px radius, 1.5 px `#555E64`, 18 px inset. **4 px** from label to field, **12 px** from one field to the next label. No placeholder.         |
+| Long e-mail       | scrolls inside the field and ends in «…»; the field never widens and the text never shrinks                                                                                                                         |
+| Hint              | «Slik vises du for de andre i husstanden.» under the e-mail field: Meta sm 13/500, `#555E64`                                                                                                                        |
+| «+ Endre passord» | Amber Ink, underlined, Meta 15/500, 12 px under the hint; it opens the two password fields in the same card                                                                                                         |
+| «Lagre endringer» | `button-primary`, 346 × 49, **12 px** under the card it saves — outside the card                                                                                                                                    |
+| Row               | 52 px: title Body 16/600 left; value Meta sm 13/500 `#555E64` and an 8 × 14 `#555E64` chevron right; a 1 px `#DFDFD9` hairline between rows, inset 15 px both sides                                                 |
+| «Logg ut»         | a row on the Konto card, label in Overdue Rust — a destroying answer, as «Slett»                                                                                                                                    |
+
+Ink rows of the build at 390 px against the picture: 18 of 22 on the same pixel row, 4 one pixel
+higher. The band is 110 px against the drawn 108 px: it keeps the shared rule (ends 17 px under the
+sub-line), and the first label is placed 18 px under it so everything below sits where drawn.
+
+### Not drawn, the pattern applied
+
+The picture stops at «Husstandsinnstillinger». Under it, built from the rows above and labelled as an
+addition: «Invitasjoner» (with the count of waiting invitations) as the third Husstand row; the
+existing Varsler card unchanged; «Konto» (Medlem siden, Logg ut) and «Om» (Versjon, Bygg) as rows.
+The «Nåværende husstand» row opens the household list, so there is no separate «Administrer
+husstander» row.
+
 ## Do's and Don'ts
 
 ### Do:
@@ -2008,7 +2047,7 @@ pictures listed under **What else Stig has approved**. They are not a starting p
   drawings, not after. It is the owner's call, not the designer's.
 - Accessibility fixes that stay inside the look (text colour, weight, size, a darker shade of the
   same hue, a larger hit area) do not need that route. Fixes that remove colour do.
-- New screens that neither the picture nor the approved set covers (empty, loading, settings) are
+- New screens that neither the picture nor the approved set covers (empty, loading) are
   built from this vocabulary and must be labelled as additions, not presented as signed off. The
   signed-off picture contains no empty, loading or error state; the approved login set adds an
   empty, an error and a loading state **for the login only**.

@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { personInitial, personName } from './person-name';
+import { personInitial, personName, settingsSubline } from './person-name';
 
 describe('personInitial', () => {
   it('takes the first letter of the name', () => {
@@ -29,5 +29,35 @@ describe('personName', () => {
     expect(personName('  Kari ')).toBe('Kari');
     expect(personName('   ')).toBeNull();
     expect(personName(null)).toBeNull();
+  });
+});
+
+describe('settingsSubline', () => {
+  it('shows full name and parent role', () => {
+    expect(settingsSubline('Kari', 'Dahl', 'parent')).toBe('Kari Dahl – forelder');
+  });
+
+  it('shows only the first name when last name is empty', () => {
+    expect(settingsSubline('Kari', '', 'parent')).toBe('Kari – forelder');
+  });
+
+  it('trims names and presents admin as parent', () => {
+    expect(settingsSubline('  Kari ', '  Dahl ', 'admin')).toBe('Kari Dahl – forelder');
+  });
+
+  it('shows child role without a last name', () => {
+    expect(settingsSubline('Ola', null, 'child')).toBe('Ola – barn');
+  });
+
+  it('shows only the role when there is no name', () => {
+    expect(settingsSubline('', '  ', 'parent')).toBe('forelder');
+  });
+
+  it('shows only the name when there is no role', () => {
+    expect(settingsSubline('Kari', 'Dahl', null)).toBe('Kari Dahl');
+  });
+
+  it('is empty when there is neither name nor role', () => {
+    expect(settingsSubline(null, undefined, undefined)).toBe('');
   });
 });

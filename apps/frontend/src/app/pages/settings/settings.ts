@@ -1,4 +1,11 @@
-import { Component, ChangeDetectionStrategy, signal, inject, OnInit } from '@angular/core';
+import {
+  Component,
+  ChangeDetectionStrategy,
+  signal,
+  computed,
+  inject,
+  OnInit,
+} from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { DatePipe } from '@angular/common';
 import { Router, RouterLink } from '@angular/router';
@@ -9,6 +16,7 @@ import { InvitationService } from '../../services/invitation.service';
 import { PageComponent } from '../../components/page/page';
 import { NotificationSettings } from '../../components/notification-settings/notification-settings';
 import { environment } from '../../../environments/environment';
+import { settingsSubline } from '../../utils/person-name';
 
 /**
  * Settings Screen
@@ -47,6 +55,12 @@ export class Settings implements OnInit {
   // Household data
   protected readonly activeHousehold = signal<HouseholdListItem | null>(null);
   protected readonly pendingInvitationsCount = signal(0);
+
+  /** The line under the title on the yellow top: «Kari Dahl – forelder» (saved name, not the form) */
+  protected readonly subline = computed(() => {
+    const profile = this.profile();
+    return settingsSubline(profile?.firstName, profile?.lastName, this.activeHousehold()?.role);
+  });
 
   // Form fields
   protected firstName = '';
