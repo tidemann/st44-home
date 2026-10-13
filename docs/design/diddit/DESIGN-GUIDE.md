@@ -1914,19 +1914,19 @@ page is rows on cards.
 
 ### The shape of it, measured at 390 px
 
-| Element                     | Spec                                                                                                       |
-| --------------------------- | ---------------------------------------------------------------------------------------------------------- |
-| The yellow top              | A, the yellow top: «‹ Hjem» (Meta 15/500, Ink, 8 × 14 chevron, 44 px target), the title, then the sub-line «Kari Dahl – forelder» (role word «forelder» or «barn»). No initial badge: you are on your own settings. |
-| Section label               | «Profil», «Husstand», «Konto», «Om»: **Label 13**/600, `#15181C`, on the paper, **8 px** over its card     |
-| Sections                    | the first label 18 px under the band, each later label **20 px** under the block above it                  |
-| Card                        | the full 346 px column, white, 13 px radius, **15 px** padding                                             |
-| Profile fields              | the login's text field (see **The login screen → The form**): 49 px, 13 px radius, 1.5 px `#555E64`, 18 px inset. **4 px** from label to field, **12 px** from one field to the next label. No placeholder. |
-| Long e-mail                 | scrolls inside the field and ends in «…»; the field never widens and the text never shrinks              |
-| Hint                        | «Slik vises du for de andre i husstanden.» under the e-mail field: Meta sm 13/500, `#555E64`             |
-| «+ Endre passord»           | Amber Ink, underlined, Meta 15/500, 12 px under the hint; it opens the two password fields in the same card |
-| «Lagre endringer»           | `button-primary`, 346 × 49, **12 px** under the card it saves — outside the card                         |
-| Row                         | 52 px: title Body 16/600 left; value Meta sm 13/500 `#555E64` and an 8 × 14 `#555E64` chevron right; a 1 px `#DFDFD9` hairline between rows, inset 15 px both sides |
-| «Logg ut»                   | a row on the Konto card, label in Overdue Rust — a destroying answer, as «Slett»                          |
+| Element           | Spec                                                                                                                                                                                                                |
+| ----------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| The yellow top    | A, the yellow top: «‹ Hjem» (Meta 15/500, Ink, 8 × 14 chevron, 44 px target), the title, then the sub-line «Kari Dahl – forelder» (role word «forelder» or «barn»). No initial badge: you are on your own settings. |
+| Section label     | «Profil», «Husstand», «Konto», «Om»: **Label 13**/600, `#15181C`, on the paper, **8 px** over its card                                                                                                              |
+| Sections          | the first label 18 px under the band, each later label **20 px** under the block above it                                                                                                                           |
+| Card              | the full 346 px column, white, 13 px radius, **15 px** padding                                                                                                                                                      |
+| Profile fields    | the login's text field (see **The login screen → The form**): 49 px, 13 px radius, 1.5 px `#555E64`, 18 px inset. **4 px** from label to field, **12 px** from one field to the next label. No placeholder.         |
+| Long e-mail       | scrolls inside the field and ends in «…»; the field never widens and the text never shrinks                                                                                                                         |
+| Hint              | «Slik vises du for de andre i husstanden.» under the e-mail field: Meta sm 13/500, `#555E64`                                                                                                                        |
+| «+ Endre passord» | Amber Ink, underlined, Meta 15/500, 12 px under the hint; it opens the two password fields in the same card                                                                                                         |
+| «Lagre endringer» | `button-primary`, 346 × 49, **12 px** under the card it saves — outside the card                                                                                                                                    |
+| Row               | 52 px: title Body 16/600 left; value Meta sm 13/500 `#555E64` and an 8 × 14 `#555E64` chevron right; a 1 px `#DFDFD9` hairline between rows, inset 15 px both sides                                                 |
+| «Logg ut»         | a row on the Konto card, label in Overdue Rust — a destroying answer, as «Slett»                                                                                                                                    |
 
 Ink rows of the build at 390 px against the picture: 18 of 22 on the same pixel row, 4 one pixel
 higher. The band is 110 px against the drawn 108 px: it keeps the shared rule (ends 17 px under the
