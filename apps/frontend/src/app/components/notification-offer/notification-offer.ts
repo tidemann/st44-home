@@ -15,6 +15,7 @@ import { INSTALL_DISMISS_MS, PwaService } from '../../services/pwa.service';
 import { StorageService } from '../../services/storage.service';
 import { STORAGE_KEYS } from '../../services/storage-keys';
 import type { NotificationAudience } from '../notification-settings/notification-settings';
+import { SheetClearance } from '../../directives/sheet-clearance.directive';
 
 /**
  * Notifications offer (ST-686): after install or login, a card at the bottom
@@ -27,6 +28,7 @@ import type { NotificationAudience } from '../notification-settings/notification
  */
 @Component({
   selector: 'app-notification-offer',
+  imports: [SheetClearance],
   templateUrl: './notification-offer.html',
   styleUrl: './notification-offer.css',
   changeDetection: ChangeDetectionStrategy.OnPush,

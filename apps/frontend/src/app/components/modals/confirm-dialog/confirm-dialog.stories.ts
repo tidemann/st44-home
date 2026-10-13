@@ -35,7 +35,8 @@ type Story = StoryObj<ConfirmDialog>;
 export const DeleteTask: Story = {
   decorators: ask({
     title: 'Slette oppgaven?',
-    message: '«Søppel og pant ut» forsvinner for hele familien. Poeng som alt er gitt, blir stående.',
+    message:
+      '«Søppel og pant ut» forsvinner for hele familien. Poeng som alt er gitt, blir stående.',
     confirmLabel: 'Slett',
     danger: true,
   }),

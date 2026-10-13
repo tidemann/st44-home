@@ -56,7 +56,8 @@ export class InvitationInboxComponent implements OnInit {
    * Accept an invitation after confirmation
    */
   async acceptInvitation(invitation: Invitation) {
-    const householdName = invitation.householdName || $localize`:@@invitationInbox.theHousehold:husstanden`;
+    const householdName =
+      invitation.householdName || $localize`:@@invitationInbox.theHousehold:husstanden`;
     const confirmed = await this.confirmDialog.confirm({
       title: $localize`:@@invitationInbox.acceptTitle:Bli med i husstanden?`,
       message: $localize`:@@invitationInbox.acceptMessage:Du blir med i «${householdName}:householdName:» som ${invitation.role}:role:.`,
@@ -104,7 +105,8 @@ export class InvitationInboxComponent implements OnInit {
    * Decline an invitation after confirmation
    */
   async declineInvitation(invitation: Invitation) {
-    const householdName = invitation.householdName || $localize`:@@invitationInbox.theHousehold:husstanden`;
+    const householdName =
+      invitation.householdName || $localize`:@@invitationInbox.theHousehold:husstanden`;
     const confirmed = await this.confirmDialog.confirm({
       title: $localize`:@@invitationInbox.declineTitle:Avslå invitasjonen?`,
       message: $localize`:@@invitationInbox.declineMessage:Du blir ikke med i «${householdName}:householdName:». Dette kan ikke angres.`,

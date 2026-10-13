@@ -9,7 +9,9 @@
   max-width: 480px;
   margin: 0 auto;
   padding: var(--popup-pad);
-  max-height: calc(100dvh - var(--nav-band) - 8px - var(--gutter) - env(safe-area-inset-bottom, 0px));
+  max-height: calc(
+    100dvh - var(--nav-band) - 8px - var(--gutter) - env(safe-area-inset-bottom, 0px)
+  );
   overflow-y: auto;
   display: flex;
   flex-direction: column;
@@ -26,10 +28,6 @@
   font-size: 32px;
   line-height: 1;
 }
-
-
-
-
 
 /* 1024 px and wider: no bottom nav, so the sheet sits in the gutter */
 @media (min-width: 1024px) {
