@@ -3491,7 +3491,7 @@
         <source>Merk som ferdig: <x id="title" equiv-text="title"/></source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/poeng/chore-row/chore-row.ts</context>
-          <context context-type="linenumber">50</context>
+          <context context-type="linenumber">56</context>
         </context-group>
       </trans-unit>
       <trans-unit id="rewardCard.cost" datatype="html">
@@ -4677,201 +4677,222 @@
           <context context-type="linenumber">46,47</context>
         </context-group>
       </trans-unit>
-      <trans-unit id="home.remind" datatype="html">
-        <source> Minn på </source>
+      <trans-unit id="home.remindSentButton" datatype="html">
+        <source>Sendt</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/home/home.html</context>
-          <context context-type="linenumber">69,70</context>
+          <context context-type="linenumber">89,90</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="home.remindRetry" datatype="html">
+        <source>Prøv igjen</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/pages/home/home.html</context>
+          <context context-type="linenumber">91,92</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="home.remind" datatype="html">
+        <source>Minn på</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/pages/home/home.html</context>
+          <context context-type="linenumber">93,94</context>
         </context-group>
       </trans-unit>
       <trans-unit id="home.leftTodayLabel" datatype="html">
         <source>Igjen i dag</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/home/home.html</context>
-          <context context-type="linenumber">81,83</context>
+          <context context-type="linenumber">106,108</context>
         </context-group>
       </trans-unit>
       <trans-unit id="home.noTasksToday" datatype="html">
         <source>Ingen oppgaver igjen i dag</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/home/home.html</context>
-          <context context-type="linenumber">102,103</context>
+          <context context-type="linenumber">127,128</context>
         </context-group>
       </trans-unit>
       <trans-unit id="home.noTasksTodayDescription" datatype="html">
         <source> Nye oppgaver lager du under Oppgaver. </source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/home/home.html</context>
-          <context context-type="linenumber">104,106</context>
+          <context context-type="linenumber">129,131</context>
         </context-group>
       </trans-unit>
       <trans-unit id="home.newTask" datatype="html">
         <source> + Ny oppgave </source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/home/home.html</context>
-          <context context-type="linenumber">113,114</context>
+          <context context-type="linenumber">139,140</context>
         </context-group>
       </trans-unit>
       <trans-unit id="home.doneToday" datatype="html">
         <source>Gjort i dag</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/home/home.html</context>
-          <context context-type="linenumber">121,122</context>
+          <context context-type="linenumber">147,148</context>
         </context-group>
       </trans-unit>
       <trans-unit id="home.noneDoneToday" datatype="html">
         <source> Ingen oppgaver er haket av i dag </source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/home/home.html</context>
-          <context context-type="linenumber">134,135</context>
+          <context context-type="linenumber">160,161</context>
         </context-group>
       </trans-unit>
       <trans-unit id="home.noneDoneTodayDescription" datatype="html">
         <source> Når noen haker av en oppgave, dukker den opp her. </source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/home/home.html</context>
-          <context context-type="linenumber">137,139</context>
+          <context context-type="linenumber">163,165</context>
         </context-group>
       </trans-unit>
       <trans-unit id="home.comingUp" datatype="html">
         <source>Kommende</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/home/home.html</context>
-          <context context-type="linenumber">152,153</context>
+          <context context-type="linenumber">178,179</context>
         </context-group>
       </trans-unit>
       <trans-unit id="home.toProgress" datatype="html">
         <source>Se fremgang for uken</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/home/home.html</context>
-          <context context-type="linenumber">167,170</context>
+          <context context-type="linenumber">193,196</context>
         </context-group>
       </trans-unit>
       <trans-unit id="home.showMore" datatype="html">
         <source> Vis flere (<x id="INTERPOLATION" equiv-text="{{ hiddenCount(group, tasks) }}"/>) </source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/home/home.html</context>
-          <context context-type="linenumber">176,178</context>
+          <context context-type="linenumber">202,204</context>
         </context-group>
       </trans-unit>
       <trans-unit id="home.subtitle" datatype="html">
         <source><x id="date" equiv-text="date"/> – <x id="done" equiv-text="done"/> av <x id="total" equiv-text="total"/> gjort</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/home/home.ts</context>
-          <context context-type="linenumber">140</context>
+          <context context-type="linenumber">144</context>
         </context-group>
       </trans-unit>
       <trans-unit id="home.leftToday" datatype="html">
         <source><x id="count" equiv-text="open.length"/> oppgaver – <x id="points" equiv-text="points"/> poeng</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/home/home.ts</context>
-          <context context-type="linenumber">148</context>
+          <context context-type="linenumber">152</context>
         </context-group>
       </trans-unit>
       <trans-unit id="home.anyone" datatype="html">
         <source>Alle</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/home/home.ts</context>
-          <context context-type="linenumber">284</context>
+          <context context-type="linenumber">288</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/home/home.ts</context>
-          <context context-type="linenumber">292</context>
+          <context context-type="linenumber">296</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/home/home.ts</context>
-          <context context-type="linenumber">299</context>
+          <context context-type="linenumber">303</context>
         </context-group>
       </trans-unit>
       <trans-unit id="home.overdueMeta" datatype="html">
         <source><x id="who" equiv-text="who"/> – forfalt <x id="day" equiv-text="dayWord(a.date)"/></source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/home/home.ts</context>
-          <context context-type="linenumber">286</context>
+          <context context-type="linenumber">290</context>
         </context-group>
       </trans-unit>
       <trans-unit id="home.openMeta" datatype="html">
         <source><x id="who" equiv-text="who"/> – <x id="day" equiv-text="dayWord(a.date)"/></source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/home/home.ts</context>
-          <context context-type="linenumber">287</context>
+          <context context-type="linenumber">291</context>
         </context-group>
       </trans-unit>
       <trans-unit id="home.doneMeta" datatype="html">
         <source><x id="who" equiv-text="who"/> – gjort<x id="at" equiv-text="at"/></source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/home/home.ts</context>
-          <context context-type="linenumber">294</context>
+          <context context-type="linenumber">298</context>
         </context-group>
       </trans-unit>
       <trans-unit id="home.upcomingMeta" datatype="html">
         <source><x id="who" equiv-text="who"/> – i morgen</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/home/home.ts</context>
-          <context context-type="linenumber">300</context>
+          <context context-type="linenumber">304</context>
         </context-group>
       </trans-unit>
       <trans-unit id="home.points" datatype="html">
         <source><x id="points" equiv-text="a.points"/> p</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/home/home.ts</context>
-          <context context-type="linenumber">304</context>
+          <context context-type="linenumber">308</context>
         </context-group>
       </trans-unit>
       <trans-unit id="home.remindAria" datatype="html">
         <source>Minn <x id="name" equiv-text="a.childName ?? &apos;&apos;"/> på <x id="title" equiv-text="a.title"/></source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/home/home.ts</context>
-          <context context-type="linenumber">308</context>
+          <context context-type="linenumber">324</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="home.remindSentAria" datatype="html">
+        <source>Påminnelse sendt til <x id="name" equiv-text="a.childName ?? &apos;&apos;"/> om <x id="title" equiv-text="a.title"/></source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/pages/home/home.ts</context>
+          <context context-type="linenumber">329</context>
         </context-group>
       </trans-unit>
       <trans-unit id="home.remindFallbackName" datatype="html">
         <source>Barnet</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/home/home.ts</context>
-          <context context-type="linenumber">346</context>
+          <context context-type="linenumber">367</context>
         </context-group>
       </trans-unit>
       <trans-unit id="home.remindSent" datatype="html">
         <source>Påminnelse sendt til <x id="name" equiv-text="name"/>.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/home/home.ts</context>
-          <context context-type="linenumber">353</context>
+          <context context-type="linenumber">383</context>
         </context-group>
       </trans-unit>
       <trans-unit id="home.remindNoPhone" datatype="html">
         <source><x id="name" equiv-text="name"/> har ikke slått på varsler på telefonen ennå.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/home/home.ts</context>
-          <context context-type="linenumber">354</context>
+          <context context-type="linenumber">388</context>
         </context-group>
       </trans-unit>
       <trans-unit id="home.createFailed" datatype="html">
         <source>Kunne ikke lage oppgaven. Prøv igjen.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/home/home.ts</context>
-          <context context-type="linenumber">469</context>
+          <context context-type="linenumber">505</context>
         </context-group>
       </trans-unit>
       <trans-unit id="home.remindNotOpen" datatype="html">
         <source>Oppgaven er ikke åpen lenger.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/home/home.ts</context>
-          <context context-type="linenumber">492</context>
+          <context context-type="linenumber">528</context>
         </context-group>
       </trans-unit>
       <trans-unit id="home.remindServerOff" datatype="html">
         <source>Påminnelser er ikke slått på i Diddit ennå.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/home/home.ts</context>
-          <context context-type="linenumber">495</context>
+          <context context-type="linenumber">531</context>
         </context-group>
       </trans-unit>
       <trans-unit id="home.remindFailed" datatype="html">
         <source>Kunne ikke sende påminnelsen. Prøv igjen.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/home/home.ts</context>
-          <context context-type="linenumber">498</context>
+          <context context-type="linenumber">534</context>
         </context-group>
       </trans-unit>
       <trans-unit id="invitationAccept.declineTitle" datatype="html">
@@ -6779,6 +6800,20 @@
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/utils/poeng-format.ts</context>
           <context context-type="linenumber">48</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="remindNote.failed" datatype="html">
+        <source>Påminnelsen gikk ikke gjennom</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/utils/remind-note.ts</context>
+          <context context-type="linenumber">10</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="remindNote.sent" datatype="html">
+        <source>Påminnelse sendt <x id="time" equiv-text="time"/></source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/utils/remind-note.ts</context>
+          <context context-type="linenumber">16</context>
         </context-group>
       </trans-unit>
     </body>

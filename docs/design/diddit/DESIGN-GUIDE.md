@@ -435,6 +435,13 @@ its worst case, a long e-mail). See **Innstillinger**. The bottom nav in that pi
 current one; it is not a nav decision. The «‹ Hjem» it draws above the title is removed by a later
 rule (see **Navigation**: no link back home at the top of a page).
 
+**Round five — ST-1066, 2026-10-14.** The feedback after «Minn på», drawn by Ida on ST-955:
+Stig chose **option C**, thumbs up + «Sendt» in the button, with «Påminnelse sendt 16.49» staying in
+the row, and the failure state as drawn.
+[`paaminnelse-01-approved.png`](reference/paaminnelse-01-approved.png) (column C) and
+[`paaminnelse-02-feil.png`](reference/paaminnelse-02-feil.png) (column C). Options A (toast) and B
+(fireworks) were not chosen. See **«Minn på» feedback**.
+
 **Order of precedence.** `poeng-signed-off.png` → the approved pictures above → this guide → generic
 rules. Where an approved picture and the signed-off picture disagree about something the signed-off
 picture already settles (a card width, a gutter, a row), the signed-off picture wins and the
@@ -821,6 +828,8 @@ is why 14.21 on the reward and child cards is read as 14 and not 15. No value he
   correction, 10.10, ST-808). Its aria-label is «Merk som ferdig: <chore>», and the tick moment
   says "Ferdig 16.48". A word changed, nothing else: same fill, same ink, same 36 px, same 10 px
   radius, and every approved picture since says «Ferdig». "Spør mor" on a reward card is unchanged.
+  «Minn på» on a Forfalt row turns into thumbs up + «Sendt» or «Prøv igjen» after the tap; see
+  **«Minn på» feedback**.
 - **Solid dark** (`button-solid`): Ink fill, white label — only for the confirming action inside
   the yellow moment ("Ferdig"), where a yellow button would disappear into the background.
 - **Ghost on yellow** (`button-ghost-on-yellow`): transparent on the yellow with a 2 px outlined
@@ -1945,6 +1954,50 @@ addition: «Invitasjoner» (with the count of waiting invitations) as the third 
 existing Varsler card unchanged; «Konto» (Medlem siden, Logg ut) and «Om» (Versjon, Bygg) as rows.
 The «Nåværende husstand» row opens the household list, so there is no separate «Administrer
 husstander» row.
+
+## «Minn på» feedback (approved 2026-10-14)
+
+The pictures are column C of [`paaminnelse-01-approved.png`](reference/paaminnelse-01-approved.png)
+and of [`paaminnelse-02-feil.png`](reference/paaminnelse-02-feil.png) (ST-1066). They outrank this
+section. The answer appears where the parent's finger was: in the button and in the row. Nothing
+flies, nothing goes away on a timer, and you can still see later that it went out.
+
+### The three states of the row
+
+| State     | Button                                                                     | Line under the row, inside the card                            |
+| --------- | -------------------------------------------------------------------------- | -------------------------------------------------------------- |
+| Not sent  | «Minn på» (`button-row-action`)                                            | none: the row is 68 px                                         |
+| Sent      | a 16 px thumbs up, 8 px, «Sendt»; the same yellow, ink and 36 px, at full strength, not pressable | Done Green tick + «Påminnelse sendt 16.49» (local time, HH.MM) |
+| Failed    | «Prøv igjen» (`button-row-action`, pressable: it sends again)       | Overdue Rust warning sign + «Påminnelsen gikk ikke gjennom»    |
+
+A failed send is never drawn as a success, and a child without a phone that takes notifications is
+a failure too: no phone was reached. The reason in words («Jonas har ikke slått på varsler på
+telefonen ennå.», «Oppgaven er ikke åpen lenger.») stays as the one line under the list, so the
+parent knows whether trying again can help. A success is only read aloud to a screen reader there;
+on screen, the row already says it.
+
+### The geometry, measured at 390 px
+
+| Element     | Spec                                                                                                                       |
+| ----------- | -------------------------------------------------------------------------------------------------------------------------- |
+| Card        | 68 → **95 px**. The first line keeps its 46 px and the button stays **16 px** from the card top; it does not re-centre    |
+| Note line   | **6 px** under the first line, a 17 px line, **15 px** to the card bottom (13 px inside the 2 px rust border)               |
+| Icon        | 16 px, in the checkbox column (from 15 px), the colour of the text                                                         |
+| Text        | from **39 px**, Meta sm **13**/500, Done Green `#0F7A54` (5.34:1) or Overdue Rust `#A43A16` (6.57:1) on white              |
+| «Sendt»     | 12 px padding, thumb 16 px, 8 px gap: 88 px wide (drawn 90)                                                                 |
+
+The build against the picture, ink rows relative to the card top: the note's ink 66–76 (drawn 66–77)
+for «sendt» and 65–78 (drawn 65–78) for the failure; icon ink from 16 px (drawn 16), text from 40
+(drawn 39); in the button the thumb from 13 px and «Sendt» from 37 (both as drawn). The note's text
+runs about 3.5 % narrower than the picture's: the picture renders its 13 px a little wide, and the
+guide's Meta sm 13 is kept.
+
+### Where it is
+
+The picture draws a plain row on Oppgaver with «Påminn nå». In the app «Minn på» lives only on the
+**Forfalt** rows of the family home (ST-800), so that is where C is built: the same card, with its
+2 px rust border, gets the line. The button keeps its word «Minn på»; Stig approved the feedback, not
+a new word. The state lasts until the page is loaded again.
 
 ## Do's and Don'ts
 

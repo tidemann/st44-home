@@ -47,6 +47,10 @@ const meta: Meta<ChoreRow> = {
       control: 'boolean',
       description: 'The title area is a button that opens the chore',
     },
+    note: {
+      control: 'object',
+      description: 'Line under the row, e.g. { text: "Påminnelse sendt 16.49", tone: "done" }',
+    },
     check: {
       action: 'check',
       description: 'Emitted when the checkbox is ticked',
@@ -64,6 +68,7 @@ const meta: Meta<ChoreRow> = {
     checkable: false,
     busy: false,
     openable: false,
+    note: null,
   },
   decorators: [
     moduleMetadata({ imports: [GroupLabel] }),
@@ -193,6 +198,43 @@ export const WithRowAction: Story = {
   args: {
     title: 'Rydde rommet',
     meta: 'Mathea – I dag',
+  },
+};
+
+/** «Minn på» went out (ST-1066 C): thumbs up + «Sendt», and the time stays in the row */
+export const ReminderSent: Story = {
+  render: (args) => ({
+    props: args,
+    template: `
+      <app-chore-row [title]="title" [meta]="meta" [overdue]="true" [note]="note">
+        <button row-action type="button" class="rbtn" disabled style="gap: 8px; padding: 0 12px; opacity: 1">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 10v12" /><path d="M15 5.88 14 10h5.83a2 2 0 0 1 1.92 2.56l-2.33 8A2 2 0 0 1 17.5 22H4a2 2 0 0 1-2-2v-8a2 2 0 0 1 2-2h2.76a2 2 0 0 0 1.79-1.11L12 2a3.13 3.13 0 0 1 3 3.88Z" /></svg>
+          Sendt
+        </button>
+      </app-chore-row>
+    `,
+  }),
+  args: {
+    title: 'Rydde rommet',
+    meta: 'Jonas – I går',
+    note: { text: 'Påminnelse sendt 16.49', tone: 'done' },
+  },
+};
+
+/** «Minn på» did not go out: «Prøv igjen» and a rust line with a warning sign */
+export const ReminderFailed: Story = {
+  render: (args) => ({
+    props: args,
+    template: `
+      <app-chore-row [title]="title" [meta]="meta" [overdue]="true" [note]="note">
+        <button row-action type="button" class="rbtn">Prøv igjen</button>
+      </app-chore-row>
+    `,
+  }),
+  args: {
+    title: 'Rydde rommet',
+    meta: 'Jonas – I går',
+    note: { text: 'Påminnelsen gikk ikke gjennom', tone: 'overdue' },
   },
 };
 
