@@ -33,9 +33,10 @@
   gap: 16px;
 }
 
-/* The 78 px the word took under the mark (22 + 56), so the claim keeps its drawn place */
+/* The 78 px the word took under the mark (22 + 56) plus the claim's 14 px, which collapses into
+   this margin, so the claim keeps its drawn place */
 .pitch {
-  margin-top: 78px;
+  margin-top: 92px;
 }
 
 .wordmark {
