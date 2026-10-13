@@ -4839,53 +4839,60 @@
           <context context-type="linenumber">324</context>
         </context-group>
       </trans-unit>
+      <trans-unit id="home.remindSentAria" datatype="html">
+        <source>Påminnelse sendt til <x id="name" equiv-text="a.childName ?? &apos;&apos;"/> om <x id="title" equiv-text="a.title"/></source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/pages/home/home.ts</context>
+          <context context-type="linenumber">329</context>
+        </context-group>
+      </trans-unit>
       <trans-unit id="home.remindFallbackName" datatype="html">
         <source>Barnet</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/home/home.ts</context>
-          <context context-type="linenumber">362</context>
+          <context context-type="linenumber">367</context>
         </context-group>
       </trans-unit>
       <trans-unit id="home.remindSent" datatype="html">
         <source>Påminnelse sendt til <x id="name" equiv-text="name"/>.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/home/home.ts</context>
-          <context context-type="linenumber">372</context>
+          <context context-type="linenumber">383</context>
         </context-group>
       </trans-unit>
       <trans-unit id="home.remindNoPhone" datatype="html">
         <source><x id="name" equiv-text="name"/> har ikke slått på varsler på telefonen ennå.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/home/home.ts</context>
-          <context context-type="linenumber">377</context>
+          <context context-type="linenumber">388</context>
         </context-group>
       </trans-unit>
       <trans-unit id="home.createFailed" datatype="html">
         <source>Kunne ikke lage oppgaven. Prøv igjen.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/home/home.ts</context>
-          <context context-type="linenumber">494</context>
+          <context context-type="linenumber">505</context>
         </context-group>
       </trans-unit>
       <trans-unit id="home.remindNotOpen" datatype="html">
         <source>Oppgaven er ikke åpen lenger.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/home/home.ts</context>
-          <context context-type="linenumber">517</context>
+          <context context-type="linenumber">528</context>
         </context-group>
       </trans-unit>
       <trans-unit id="home.remindServerOff" datatype="html">
         <source>Påminnelser er ikke slått på i Diddit ennå.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/home/home.ts</context>
-          <context context-type="linenumber">520</context>
+          <context context-type="linenumber">531</context>
         </context-group>
       </trans-unit>
       <trans-unit id="home.remindFailed" datatype="html">
         <source>Kunne ikke sende påminnelsen. Prøv igjen.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/home/home.ts</context>
-          <context context-type="linenumber">523</context>
+          <context context-type="linenumber">534</context>
         </context-group>
       </trans-unit>
       <trans-unit id="invitationAccept.declineTitle" datatype="html">

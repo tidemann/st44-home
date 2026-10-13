@@ -324,6 +324,11 @@ export class Home implements OnInit {
     return $localize`:@@home.remindAria:Minn ${a.childName ?? ''}:name: på ${a.title}:title:`;
   }
 
+  /** «Sendt» still says which chore it belongs to when a screen reader lists the buttons */
+  protected remindSentLabel(a: Assignment): string {
+    return $localize`:@@home.remindSentAria:Påminnelse sendt til ${a.childName ?? ''}:name: om ${a.title}:title:`;
+  }
+
   /**
    * Handle task completion (a parent may still tick a chore off here)
    */
@@ -363,6 +368,12 @@ export class Home implements OnInit {
     this.remindingId.set(assignmentId);
     this.remindMessage.set(null);
     this.remindAnnounce.set(null);
+    // A retry clears the old failure first, so the row never says two things at once
+    this.reminders.update((r) => {
+      const next = { ...r };
+      delete next[assignmentId];
+      return next;
+    });
     const settle = (state: RemindState) =>
       this.reminders.update((r) => ({ ...r, [assignmentId]: state }));
     try {

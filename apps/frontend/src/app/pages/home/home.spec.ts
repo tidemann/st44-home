@@ -303,6 +303,30 @@ describe('Home', () => {
       expect(note.classList).toContain('rust');
     });
 
+    it('moves a failed row to «Sendt» when «Prøv igjen» gets through', async () => {
+      render([open], []);
+      mockPush.remind.mockRejectedValueOnce(new HttpErrorResponse({ status: 500 }));
+      await component['onRemind']('a-1');
+      expect(component['reminders']()['a-1']).toEqual({ status: 'failed' });
+
+      render([open], []); // the mocked first load settled during the await
+      mockPush.remind.mockResolvedValueOnce(1);
+      await component['onRemind']('a-1');
+      expect(component['reminders']()['a-1'].status).toBe('sent');
+      expect(component['remindMessage']()).toBeNull();
+
+      const el = render([open], []);
+      const btn = el.querySelector<HTMLButtonElement>('app-chore-row .rbtn')!;
+      expect(btn.textContent!.trim()).toBe('Sendt');
+      expect(btn.getAttribute('aria-label')).toBe('Påminnelse sendt til Emma om Gå på do');
+      expect(el.querySelector('app-chore-row .note')!.classList).not.toContain('rust');
+      // The success is read aloud, not shown as a second line under the list
+      expect(el.querySelector('.visually-hidden[role="status"]')!.textContent!.trim()).toBe(
+        'Påminnelse sendt til Emma.',
+      );
+      expect(el.querySelector('.remind-status')!.textContent!.trim()).toBe('');
+    });
+
     it('shows no line under a row that was not reminded', () => {
       const el = render([open], []);
       expect(el.querySelector('app-chore-row .note')).toBeNull();
