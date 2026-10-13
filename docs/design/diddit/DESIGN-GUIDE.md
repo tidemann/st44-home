@@ -1969,16 +1969,16 @@ happen — so they are specified here rather than left to the build.
 
 ### The yellow band
 
-| Case                           | What must happen                                                                                                                                        |
-| ------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| A long screen title            | The band grows; it has no fixed height. The title wraps rather than truncating or shrinking.                                                            |
-| A long sub-line                | Wraps to a second line; the band grows by that line plus nothing else. The 17 px bottom padding is preserved.                                           |
-| **One or two children**        | The cards keep 109 px and stay left-aligned in the column — they do **not** stretch to fill it. A 346 px-wide child card is not in any picture.         |
-| **Four or more children**      | Horizontal scroll at the same 109 × 154 and 9 px gap, the band unchanged. Do not shrink the card and do not wrap to a second row without a new drawing. |
-| **No children yet**            | The band carries the title and sub-line only, and ends 17 px under the sub-line. The empty state goes on the paper below it, not inside the yellow.     |
-| A long child name              | One line, ellipsised inside the 109 px card. The name never pushes the number out of the card.                                                          |
-| A four-digit total             | Number 30 is tabular; 1 240 fits 109 px. Five digits ellipsise the name further before they shrink the number.                                          |
-| A chore meter with many chores | Segments divide the width as the Meters section says; they get thinner, never taller, and never wrap.                                                   |
+| Case                           | What must happen                                                                                                                                                                                                       |
+| ------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| A long screen title            | The band grows; it has no fixed height. The title wraps rather than truncating or shrinking.                                                                                                                           |
+| A long sub-line                | Wraps to a second line; the band grows by that line plus nothing else. The 17 px bottom padding is preserved.                                                                                                          |
+| **One or two children**        | The cards **fill the row** — see **Child card** under Components: 1 child is one full-width card, 2 are half each, with the same 9 px gap. Only the width grows; the card stays 154 px tall with the content as drawn. |
+| **Four or more children**      | The cards still fill the row and wrap: 4 are 2 + 2, 5 or more are rows of 3 with the last row's cards stretched to the full width. No horizontal scroll, and the band is unchanged.                                    |
+| **No children yet**            | The band carries the title and sub-line only, and ends 17 px under the sub-line. The empty state goes on the paper below it, not inside the yellow.                                                                    |
+| A long child name              | One line, ellipsised inside the 109 px card. The name never pushes the number out of the card.                                                                                                                         |
+| A four-digit total             | Number 30 is tabular; 1 240 fits 109 px. Five digits ellipsise the name further before they shrink the number.                                                                                                         |
+| A chore meter with many chores | Segments divide the width as the Meters section says; they get thinner, never taller, and never wrap.                                                                                                                  |
 
 ### The login
 
