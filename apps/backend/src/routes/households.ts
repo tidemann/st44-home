@@ -15,6 +15,17 @@ import {
 import { validateRequest, handleZodError, withTransaction } from '../utils/index.js';
 import { stripResponseValidation } from '../schemas/common.js';
 
+// The handlers send role and counts; the bare HouseholdSchema made the serializer drop them (ST-1076).
+export const HouseholdDetailResponseSchema = HouseholdSchema.extend({
+  role: z.enum(['admin', 'parent', 'child']),
+  memberCount: z.number().int().nonnegative(),
+  childrenCount: z.number().int().nonnegative(),
+});
+
+export const HouseholdListItemResponseSchema = HouseholdDetailResponseSchema.extend({
+  adminCount: z.number().int().nonnegative(),
+});
+
 function toDateTimeString(value: unknown): string {
   if (value instanceof Date) return value.toISOString();
   if (typeof value === 'string') return value;
@@ -648,7 +659,7 @@ export default async function householdRoutes(server: FastifyInstance) {
       response: {
         200: {
           type: 'array',
-          items: zodToOpenAPI(HouseholdSchema),
+          items: zodToOpenAPI(HouseholdListItemResponseSchema),
         },
         ...CommonErrors.Unauthorized,
         ...CommonErrors.InternalServerError,
@@ -667,7 +678,7 @@ export default async function householdRoutes(server: FastifyInstance) {
       security: [{ bearerAuth: [] }],
       params: zodToOpenAPI(HouseholdParamsSchema),
       response: {
-        200: zodToOpenAPI(HouseholdSchema),
+        200: zodToOpenAPI(HouseholdDetailResponseSchema),
         ...CommonErrors.BadRequest,
         ...CommonErrors.Unauthorized,
         ...CommonErrors.Forbidden,
