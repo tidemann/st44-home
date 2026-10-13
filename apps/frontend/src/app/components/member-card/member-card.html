@@ -1,32 +1,37 @@
-<div
-  class="member-card"
-  [class.clickable]="clickable()"
-  (click)="handleClick()"
-  [attr.role]="clickable() ? 'button' : null"
-  [attr.tabindex]="clickable() ? 0 : null"
-  [attr.aria-label]="clickable() ? ariaLabel() : null"
-  (keydown.enter)="handleClick()"
-  (keydown.space)="handleClick()"
->
-  <div class="member-avatar" aria-hidden="true">{{ initials() }}</div>
+<!-- The white row. The clickable part and a projected action (the child's QR button) sit side by
+     side in it, so a button is never nested inside the role="button" (ST-954) -->
+<div class="member-item">
+  <div
+    class="member-card"
+    [class.clickable]="clickable()"
+    (click)="handleClick()"
+    [attr.role]="clickable() ? 'button' : null"
+    [attr.tabindex]="clickable() ? 0 : null"
+    [attr.aria-label]="clickable() ? ariaLabel() : null"
+    (keydown.enter)="handleClick()"
+    (keydown.space)="handleClick()"
+  >
+    <div class="member-avatar" aria-hidden="true">{{ initials() }}</div>
 
-  <div class="member-info">
-    <div class="member-name">{{ member().name }}</div>
-    <div class="member-role" [class]="roleClass()">
-      @if (member().role === 'parent') {
-        <ng-container i18n="@@memberCard.roleParent">Forelder</ng-container>
-      } @else {
-        <ng-container i18n="@@memberCard.roleChild">Barn</ng-container>
-      }
-    </div>
-  </div>
-
-  @if (showStats()) {
-    <div class="member-stats">
-      <div class="member-points" i18n="@@memberCard.points">{{ member().points || 0 }} poeng</div>
-      <div class="member-tasks" i18n="@@memberCard.tasks">
-        {{ member().tasksCompleted || 0 }}/{{ member().totalTasks || 0 }} oppgaver
+    <div class="member-info">
+      <div class="member-name">{{ member().name }}</div>
+      <div class="member-role" [class]="roleClass()">
+        @if (member().role === 'parent') {
+          <ng-container i18n="@@memberCard.roleParent">Forelder</ng-container>
+        } @else {
+          <ng-container i18n="@@memberCard.roleChild">Barn</ng-container>
+        }
       </div>
     </div>
-  }
+
+    @if (showStats()) {
+      <div class="member-stats">
+        <div class="member-points" i18n="@@memberCard.points">{{ member().points || 0 }} poeng</div>
+        <div class="member-tasks" i18n="@@memberCard.tasks">
+          {{ member().tasksCompleted || 0 }}/{{ member().totalTasks || 0 }} oppgaver
+        </div>
+      </div>
+    }
+  </div>
+  <ng-content select="[member-action]" />
 </div>

@@ -77,8 +77,7 @@
 }
 
 /* White on --bg is the guide's one tonal step; no border, no shadow. */
-.btn-action,
-.btn-qr {
+.btn-action {
   min-height: 44px;
   padding: 0 15px;
   background: var(--surface);
@@ -127,34 +126,32 @@
   gap: 8px;
 }
 
-/* Every card spans the content column: a child row and its QR button stretch,
-   they are not centred into a narrower, indented card. */
-.member-row {
-  display: flex;
-  flex-direction: column;
-  align-items: stretch;
-  gap: 8px;
-}
-
+/* The child's QR button, inside its row at the right end (ST-954): the outline button
+   (button-outline) at the 44 × 44 touch size, the QR glyph from the login */
 .btn-qr {
-  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  background: var(--surface);
+  color: var(--text);
+  border: 1.5px solid var(--text-muted);
+  border-radius: var(--r-button);
+  cursor: pointer;
 }
 
-@media (min-width: 768px) {
-  .member-row {
-    flex-direction: row;
-    align-items: center;
-  }
+.btn-qr svg rect,
+.btn-qr svg .dots {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.6;
+  stroke-linecap: round;
+}
 
-  .member-row app-member-card {
-    flex: 1;
-    min-width: 0;
-  }
-
-  .btn-qr {
-    width: auto;
-    white-space: nowrap;
-  }
+.btn-qr svg .dots {
+  stroke-width: 2.2;
 }
 
 /* ===== EMPTY STATE ===== */

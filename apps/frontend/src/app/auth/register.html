@@ -1,224 +1,305 @@
-<div class="auth-container">
-  <div class="auth-card">
-    <!-- Logo -->
-    <div class="auth-logo">
-      <div class="auth-logo-text">Diddit!</div>
+<!-- Create account (ST-954): the login's brand area, fields, buttons and states (login.css), with
+     the extra fields this form needs (register.css). Phone: the yellow collapses to the horizontal
+     lockup while a field has focus. Desktop: the brand area is the yellow left panel. -->
+<div class="login register" [class.typing]="typing()">
+  <section class="brand" aria-label="Diddit">
+    <div class="lockup">
+      <app-diddit-mark class="mark" [size]="54" />
+      <p class="wordmark" translate="no">Diddit</p>
     </div>
+    <div class="pitch">
+      <p class="claim" translate="no">Gjort er gjort.</p>
+      <p class="promise" i18n="@@login.brand.promise">Oppgaver og poeng for hele familien.</p>
+      <ul class="promises">
+        <li>
+          <ng-container *ngTemplateOutlet="tick" />
+          <span i18n="@@login.brand.promise1">Oppgavene fordeler seg selv</span>
+        </li>
+        <li>
+          <ng-container *ngTemplateOutlet="tick" />
+          <span i18n="@@login.brand.promise2">Poeng barna faktisk vil ha</span>
+        </li>
+        <li>
+          <ng-container *ngTemplateOutlet="tick" />
+          <span i18n="@@login.brand.promise3">Belønninger dere blir enige om</span>
+        </li>
+      </ul>
+    </div>
+  </section>
 
-    <!-- Title -->
-    <h1 class="auth-title" i18n="@@register.title">Opprett konto</h1>
-    <p class="auth-subtitle" i18n="@@register.subtitle">
-      Begynn å administrere husholdningen din i dag
+  <ng-template #tick>
+    <svg
+      class="tick"
+      viewBox="0 0 26 26"
+      width="26"
+      height="26"
+      aria-hidden="true"
+      focusable="false"
+    >
+      <rect width="26" height="26" rx="4" />
+      <path d="M7 13.5 L11 17.5 L19 8.5" />
+    </svg>
+  </ng-template>
+
+  <!-- A field's own rust line, under the field it is about -->
+  <ng-template #fieldError let-id="id" let-text="text">
+    <p [id]="id" class="error-line field-error" role="alert">
+      <svg viewBox="0 0 16 16" width="17" height="17" aria-hidden="true" focusable="false">
+        <circle cx="8" cy="8" r="6.75" />
+        <path d="M8 4.6 V8.7" />
+        <circle class="dot" cx="8" cy="11.2" r="0.6" />
+      </svg>
+      <span>{{ text }}</span>
     </p>
+  </ng-template>
 
-    <!-- Google Sign-Up Button -->
-    @if (googleClientId) {
-      <div class="google-signin-wrapper">
-        <div
-          id="g_id_onload_register"
-          [attr.data-client_id]="googleClientId"
-          data-context="signup"
-          data-ux_mode="popup"
-          data-callback="handleGoogleSignUp"
-          data-auto_prompt="false"
-        ></div>
-        <div
-          class="g_id_signin"
-          data-type="standard"
-          data-shape="rectangular"
-          data-theme="outline"
-          data-text="signup_with"
-          data-size="large"
-          data-logo_alignment="left"
-        ></div>
-      </div>
+  <main class="paper">
+    <div class="column">
+      <h1 class="title" i18n="@@register.title">Opprett konto</h1>
+      <p class="welcome" i18n="@@register.subtitle">Lag en konto for familien din.</p>
 
-      <div class="divider">
-        <span i18n="@@common.or">ELLER</span>
-      </div>
-    }
-
-    <form [formGroup]="registerForm" (ngSubmit)="onSubmit()">
-      <!-- Name fields - side by side on larger screens -->
-      <div class="name-fields">
-        <!-- First Name -->
-        <div class="form-group">
-          <label for="firstName" class="form-label" i18n="@@register.firstName.label"
-            >Fornavn</label
-          >
-          <input
-            id="firstName"
-            type="text"
-            class="form-input"
-            formControlName="firstName"
-            i18n-placeholder="@@register.firstName.placeholder"
-            placeholder="Fornavn"
-            [attr.aria-invalid]="firstNameControl.invalid && firstNameControl.touched"
-            [attr.aria-describedby]="
-              firstNameControl.invalid && firstNameControl.touched ? 'firstName-error' : null
+      <form
+        [formGroup]="registerForm"
+        (ngSubmit)="onSubmit()"
+        (focusin)="onFieldFocus($event)"
+        (focusout)="onFieldBlur($event)"
+        novalidate
+      >
+        <div class="name-fields">
+          <div class="name-field">
+            <label for="firstName" class="label" i18n="@@register.firstName.label">Fornavn</label>
+            <input
+              id="firstName"
+              type="text"
+              class="field"
+              [class.invalid]="showError(firstNameControl)"
+              formControlName="firstName"
+              autocomplete="given-name"
+              [attr.aria-invalid]="showError(firstNameControl)"
+              [attr.aria-describedby]="showError(firstNameControl) ? 'firstName-error' : null"
+            />
+          </div>
+          <div class="name-field">
+            <label for="lastName" class="label" i18n="@@register.lastName.label">Etternavn</label>
+            <input
+              id="lastName"
+              type="text"
+              class="field"
+              [class.invalid]="showError(lastNameControl)"
+              formControlName="lastName"
+              autocomplete="family-name"
+              [attr.aria-invalid]="showError(lastNameControl)"
+              [attr.aria-describedby]="showError(lastNameControl) ? 'lastName-error' : null"
+            />
+          </div>
+        </div>
+        @if (showError(firstNameControl)) {
+          <ng-container
+            *ngTemplateOutlet="
+              fieldError;
+              context: {
+                id: 'firstName-error',
+                text: firstNameControl.errors?.['maxlength']
+                  ? text.firstNameTooLong
+                  : text.firstNameRequired,
+              }
             "
           />
-          @if (firstNameControl.invalid && firstNameControl.touched) {
-            <div id="firstName-error" class="error" role="alert">
-              @if (firstNameControl.errors?.['required']) {
-                <span i18n="@@error.firstName.required">Fornavn er påkrevd</span>
+        }
+        @if (showError(lastNameControl)) {
+          <ng-container
+            *ngTemplateOutlet="
+              fieldError;
+              context: {
+                id: 'lastName-error',
+                text: lastNameControl.errors?.['maxlength']
+                  ? text.lastNameTooLong
+                  : text.lastNameRequired,
               }
-              @if (firstNameControl.errors?.['maxlength']) {
-                <span i18n="@@error.firstName.tooLong">Fornavnet er for langt</span>
-              }
-            </div>
-          }
-        </div>
-
-        <!-- Last Name -->
-        <div class="form-group">
-          <label for="lastName" class="form-label" i18n="@@register.lastName.label"
-            >Etternavn</label
-          >
-          <input
-            id="lastName"
-            type="text"
-            class="form-input"
-            formControlName="lastName"
-            i18n-placeholder="@@register.lastName.placeholder"
-            placeholder="Etternavn"
-            [attr.aria-invalid]="lastNameControl.invalid && lastNameControl.touched"
-            [attr.aria-describedby]="
-              lastNameControl.invalid && lastNameControl.touched ? 'lastName-error' : null
             "
           />
-          @if (lastNameControl.invalid && lastNameControl.touched) {
-            <div id="lastName-error" class="error" role="alert">
-              @if (lastNameControl.errors?.['required']) {
-                <span i18n="@@error.lastName.required">Etternavn er påkrevd</span>
-              }
-              @if (lastNameControl.errors?.['maxlength']) {
-                <span i18n="@@error.lastName.tooLong">Etternavnet er for langt</span>
-              }
-            </div>
-          }
-        </div>
-      </div>
+        }
 
-      <!-- Email -->
-      <div class="form-group">
-        <label for="email" class="form-label" i18n="@@register.email.label">E-post</label>
+        <label for="email" class="label" i18n="@@register.email.label">E-post</label>
         <input
           id="email"
           type="email"
-          class="form-input"
+          class="field"
+          [class.invalid]="showError(emailControl)"
           formControlName="email"
-          i18n-placeholder="@@register.email.placeholder"
-          placeholder="deg@eksempel.no"
-          [attr.aria-invalid]="emailControl.invalid && emailControl.touched"
-          [attr.aria-describedby]="
-            emailControl.invalid && emailControl.touched ? 'email-error' : null
-          "
+          autocomplete="email"
+          inputmode="email"
+          autocapitalize="none"
+          spellcheck="false"
+          [attr.aria-invalid]="showError(emailControl)"
+          [attr.aria-describedby]="showError(emailControl) ? 'email-error' : null"
         />
-        @if (emailControl.invalid && emailControl.touched) {
-          <div id="email-error" class="error" role="alert">
-            @if (emailControl.errors?.['required']) {
-              <span i18n="@@error.email.required">E-post er påkrevd</span>
-            }
-            @if (emailControl.errors?.['email']) {
-              <span i18n="@@error.email.invalid">Vennligst oppgi en gyldig e-postadresse</span>
-            }
-          </div>
+        @if (showError(emailControl)) {
+          <ng-container
+            *ngTemplateOutlet="
+              fieldError;
+              context: {
+                id: 'email-error',
+                text: emailControl.errors?.['required'] ? text.emailRequired : text.emailInvalid,
+              }
+            "
+          />
         }
-      </div>
 
-      <!-- Password -->
-      <div class="form-group">
-        <label for="password" class="form-label" i18n="@@register.password.label">Passord</label>
-        <div class="password-input-wrapper">
+        <label for="password" class="label" i18n="@@register.password.label">Passord</label>
+        <div class="password">
           <input
             id="password"
             [type]="showPassword() ? 'text' : 'password'"
-            class="form-input"
+            class="field"
+            [class.invalid]="showError(passwordControl)"
+            [class.has-eye]="hasPassword()"
             formControlName="password"
-            i18n-placeholder="@@register.password.placeholder"
-            placeholder="Opprett et sterkt passord"
-            [attr.aria-invalid]="passwordControl.invalid && passwordControl.touched"
+            autocomplete="new-password"
+            [attr.aria-invalid]="showError(passwordControl)"
             [attr.aria-describedby]="
-              'password-strength' +
-              (passwordControl.invalid && passwordControl.touched ? ' password-error' : '')
+              showError(passwordControl) ? 'password-error' : 'password-hint'
             "
           />
-          <button
-            type="button"
-            class="toggle-password"
-            (click)="togglePasswordVisibility()"
-            [attr.aria-label]="showPassword() ? 'Skjul passord' : 'Vis passord'"
-          >
-            {{ showPassword() ? '👁️' : '👁️‍🗨️' }}
-          </button>
+          <!-- «Vis passord» shows both password fields -->
+          @if (hasPassword()) {
+            <button
+              type="button"
+              class="eye"
+              (click)="togglePasswordVisibility()"
+              [attr.aria-label]="eyeLabel()"
+              [attr.aria-pressed]="showPassword()"
+            >
+              <svg viewBox="0 0 18 13" width="18" height="13" aria-hidden="true" focusable="false">
+                <path
+                  d="M1 6.5 C3.5 2.2 6 1 9 1 S14.5 2.2 17 6.5 C14.5 10.8 12 12 9 12 S3.5 10.8 1 6.5 Z"
+                />
+                <circle cx="9" cy="6.5" r="2.4" />
+                @if (showPassword()) {
+                  <path d="M2.5 12 L15.5 1" />
+                }
+              </svg>
+            </button>
+          }
         </div>
-
-        @if (passwordControl.value) {
-          <div id="password-strength" class="strength-indicator" aria-live="polite">
-            <ng-container i18n="@@register.password.strength">Styrke:</ng-container>
-            <span [class]="'strength-' + passwordStrength()">{{ passwordStrength() }}</span>
-          </div>
+        @if (showError(passwordControl)) {
+          <ng-container
+            *ngTemplateOutlet="
+              fieldError;
+              context: { id: 'password-error', text: text.passwordRequirements }
+            "
+          />
+        } @else {
+          <p id="password-hint" class="hint" aria-live="polite">
+            @if (hasPassword()) {
+              <ng-container i18n="@@register.password.strength">Styrke:</ng-container>&ngsp;
+              <span class="strength">{{ strengthLabel() }}</span>
+            } @else {
+              <ng-container i18n="@@register.password.rule"
+                >Minst 8 tegn, med store og små bokstaver og tall.</ng-container
+              >
+            }
+          </p>
         }
 
-        @if (passwordControl.invalid && passwordControl.touched) {
-          <div id="password-error" class="error" role="alert" i18n="@@error.password.requirements">
-            Passordet må være minst 8 tegn med store bokstaver, små bokstaver og tall
-          </div>
-        }
-      </div>
-
-      <!-- Confirm Password -->
-      <div class="form-group">
-        <label for="confirmPassword" class="form-label" i18n="@@register.confirmPassword.label"
+        <label for="confirmPassword" class="label" i18n="@@register.confirmPassword.label"
           >Bekreft passord</label
         >
         <input
           id="confirmPassword"
           [type]="showPassword() ? 'text' : 'password'"
-          class="form-input"
+          class="field"
+          [class.invalid]="confirmInvalid()"
           formControlName="confirmPassword"
-          i18n-placeholder="@@register.confirmPassword.placeholder"
-          placeholder="Bekreft passordet ditt"
-          [attr.aria-invalid]="confirmPasswordControl.invalid && confirmPasswordControl.touched"
-          [attr.aria-describedby]="
-            confirmPasswordControl.invalid && confirmPasswordControl.touched
-              ? 'confirm-error'
-              : null
-          "
+          autocomplete="new-password"
+          [attr.aria-invalid]="confirmInvalid()"
+          [attr.aria-describedby]="confirmInvalid() ? 'confirm-error' : null"
         />
-        @if (registerForm.errors?.['passwordMismatch'] && confirmPasswordControl.touched) {
-          <div id="confirm-error" class="error" role="alert" i18n="@@error.password.mismatch">
-            Passordene samsvarer ikke
-          </div>
+        @if (confirmInvalid()) {
+          <ng-container
+            *ngTemplateOutlet="
+              fieldError;
+              context: {
+                id: 'confirm-error',
+                text: confirmPasswordControl.errors?.['required']
+                  ? text.confirmRequired
+                  : text.mismatch,
+              }
+            "
+          />
         }
-      </div>
 
-      <!-- Server Error -->
-      @if (errorMessage()) {
-        <div class="error server-error" role="alert" aria-live="assertive">
-          {{ errorMessage() }}
+        <!-- The server's answer: one rust line over the button, as on the login -->
+        @if (errorMessage()) {
+          <p class="error-line" role="alert">
+            <svg viewBox="0 0 16 16" width="17" height="17" aria-hidden="true" focusable="false">
+              <circle cx="8" cy="8" r="6.75" />
+              <path d="M8 4.6 V8.7" />
+              <circle class="dot" cx="8" cy="11.2" r="0.6" />
+            </svg>
+            <span>{{ errorMessage() }}</span>
+          </p>
+        }
+
+        <!-- Enabled from the start; validation happens on press, as on the login -->
+        <button
+          type="submit"
+          class="primary"
+          [class.busy]="isLoading()"
+          [attr.aria-busy]="isLoading() ? 'true' : null"
+          [attr.aria-disabled]="isLoading() ? 'true' : null"
+        >
+          @if (isLoading()) {
+            <span class="spinner" aria-hidden="true"></span>
+            <span i18n="@@register.submit.loading">Oppretter konto …</span>
+          } @else {
+            <span i18n="@@register.submit.button">Opprett konto</span>
+          }
+        </button>
+      </form>
+
+      @if (googleClientId) {
+        <div class="or">
+          <span i18n="@@login.or">eller</span>
+        </div>
+
+        <!-- Google's own button lies invisibly over the drawn one, as on the login -->
+        <div class="google" [class.ready]="googleReady()">
+          <button
+            type="button"
+            class="alt-button"
+            [attr.tabindex]="googleReady() ? -1 : null"
+            [attr.aria-hidden]="googleReady() ? 'true' : null"
+            (click)="onGoogleUnavailable()"
+          >
+            <svg viewBox="0 0 18 18" width="20" height="20" aria-hidden="true" focusable="false">
+              <path
+                fill="#4285F4"
+                d="M17.64 9.2c0-.64-.06-1.25-.16-1.84H9v3.48h4.84a4.14 4.14 0 0 1-1.8 2.72v2.26h2.92c1.7-1.57 2.68-3.88 2.68-6.62z"
+              />
+              <path
+                fill="#34A853"
+                d="M9 18c2.43 0 4.47-.8 5.96-2.18l-2.92-2.26c-.8.54-1.84.86-3.04.86-2.34 0-4.32-1.58-5.03-3.7H.96v2.33A9 9 0 0 0 9 18z"
+              />
+              <path
+                fill="#FBBC05"
+                d="M3.97 10.72a5.4 5.4 0 0 1 0-3.44V4.95H.96a9 9 0 0 0 0 8.1l3.01-2.33z"
+              />
+              <path
+                fill="#EA4335"
+                d="M9 3.58c1.32 0 2.5.45 3.44 1.35l2.58-2.58A9 9 0 0 0 .96 4.95l3.01 2.33C4.68 5.16 6.66 3.58 9 3.58z"
+              />
+            </svg>
+            <span i18n="@@register.google">Fortsett med Google</span>
+          </button>
+          <div class="gsi-layer"></div>
         </div>
       }
 
-      <!-- Submit -->
-      <button
-        type="submit"
-        class="btn btn-primary btn-block"
-        [disabled]="registerForm.invalid || isLoading()"
-      >
-        @if (isLoading()) {
-          <span i18n="@@register.submit.loading">Oppretter konto...</span>
-        } @else {
-          <span i18n="@@register.submit.button">Opprett konto</span>
-        }
-      </button>
-
-      <!-- Links -->
-      <div class="auth-links">
-        <ng-container i18n="@@register.hasAccount">Har du allerede en konto?</ng-container>
-        <a routerLink="/login" class="auth-link" i18n="@@register.login">Logg inn</a>
-      </div>
-    </form>
-  </div>
+      <p class="foot">
+        <span i18n="@@register.hasAccount">Har du allerede en konto?</span>&ngsp;
+        <a routerLink="/login" class="link" i18n="@@register.login">Logg inn</a>
+      </p>
+    </div>
+  </main>
 </div>
