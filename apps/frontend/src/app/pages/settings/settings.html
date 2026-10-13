@@ -16,8 +16,9 @@
   </div>
 }
 
-<!-- Main Content: the approved Innstillinger picture (ST-1069). The yellow top carries «‹ Hjem»,
-     the title and «Kari Dahl – forelder»; below it each part is a section label over a white card.
+<!-- Main Content: the approved Innstillinger picture (ST-1069). The yellow top carries the title
+     and «Kari Dahl – forelder»; no link back home (Stig, 13 Oct: the bottom menu is the way home).
+     Below it each part is a section label over a white card.
      The profile fields stand tight: 4 px label to field, 12 px between fields (ST-951). -->
 @if (!loading() && profile()) {
   <app-page
@@ -28,13 +29,6 @@
     [showUserButton]="false"
     maxWidth="narrow"
   >
-    <a page-back routerLink="/home" class="back-link">
-      <svg class="back-chevron" viewBox="0 0 8 14" aria-hidden="true">
-        <path d="M7 1 1 7l6 6" />
-      </svg>
-      <span i18n="@@settings.backHome">Hjem</span>
-    </a>
-
     <!-- Success Message -->
     @if (successMessage()) {
       <div class="alert alert-success" role="status" aria-live="polite">
