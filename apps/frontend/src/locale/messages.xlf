@@ -6025,186 +6025,186 @@
         <source>Prøv igjen</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/settings/settings.html</context>
-          <context context-type="linenumber">15,20</context>
+          <context context-type="linenumber">15,19</context>
         </context-group>
       </trans-unit>
       <trans-unit id="settings.pageTitle" datatype="html">
         <source>Innstillinger</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/settings/settings.html</context>
-          <context context-type="linenumber">26,28</context>
+          <context context-type="linenumber">25,27</context>
         </context-group>
       </trans-unit>
       <trans-unit id="settings.backHome" datatype="html">
         <source>Hjem</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/settings/settings.html</context>
-          <context context-type="linenumber">36,39</context>
+          <context context-type="linenumber">35,38</context>
         </context-group>
       </trans-unit>
       <trans-unit id="settings.dismissAriaLabel" datatype="html">
         <source>Lukk</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/settings/settings.html</context>
-          <context context-type="linenumber">48,50</context>
+          <context context-type="linenumber">47,49</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/settings/settings.html</context>
-          <context context-type="linenumber">63,65</context>
+          <context context-type="linenumber">62,64</context>
         </context-group>
       </trans-unit>
       <trans-unit id="settings.profileTitle" datatype="html">
         <source>Profil</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/settings/settings.html</context>
-          <context context-type="linenumber">71,73</context>
+          <context context-type="linenumber">70,72</context>
         </context-group>
       </trans-unit>
       <trans-unit id="settings.firstNameLabel" datatype="html">
         <source>Fornavn</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/settings/settings.html</context>
-          <context context-type="linenumber">76,78</context>
+          <context context-type="linenumber">75,77</context>
         </context-group>
       </trans-unit>
       <trans-unit id="settings.lastNameLabel" datatype="html">
         <source>Etternavn</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/settings/settings.html</context>
-          <context context-type="linenumber">89,91</context>
+          <context context-type="linenumber">88,90</context>
         </context-group>
       </trans-unit>
       <trans-unit id="settings.emailLabel" datatype="html">
         <source>E-postadresse</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/settings/settings.html</context>
-          <context context-type="linenumber">102,104</context>
+          <context context-type="linenumber">101,103</context>
         </context-group>
       </trans-unit>
       <trans-unit id="settings.profileHint" datatype="html">
         <source>Slik vises du for de andre i husstanden.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/settings/settings.html</context>
-          <context context-type="linenumber">114,116</context>
+          <context context-type="linenumber">113,115</context>
         </context-group>
       </trans-unit>
       <trans-unit id="settings.hidePasswordSection" datatype="html">
         <source>- Skjul passordseksjon</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/settings/settings.html</context>
-          <context context-type="linenumber">120,122</context>
+          <context context-type="linenumber">119,121</context>
         </context-group>
       </trans-unit>
       <trans-unit id="settings.changePassword" datatype="html">
         <source>+ Endre passord</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/settings/settings.html</context>
-          <context context-type="linenumber">122,124</context>
+          <context context-type="linenumber">121,123</context>
         </context-group>
       </trans-unit>
       <trans-unit id="settings.newPasswordLabel" datatype="html">
         <source>Nytt passord</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/settings/settings.html</context>
-          <context context-type="linenumber">128,130</context>
+          <context context-type="linenumber">127,129</context>
         </context-group>
       </trans-unit>
       <trans-unit id="settings.passwordHint" datatype="html">
         <source> Minimum 8 tegn, må inneholde stor bokstav, liten bokstav og tall </source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/settings/settings.html</context>
-          <context context-type="linenumber">140,141</context>
+          <context context-type="linenumber">139,140</context>
         </context-group>
       </trans-unit>
       <trans-unit id="settings.confirmPasswordLabel" datatype="html">
         <source>Bekreft nytt passord</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/settings/settings.html</context>
-          <context context-type="linenumber">146,148</context>
+          <context context-type="linenumber">145,147</context>
         </context-group>
       </trans-unit>
       <trans-unit id="settings.saving" datatype="html">
         <source>Lagrer...</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/settings/settings.html</context>
-          <context context-type="linenumber">162,164</context>
+          <context context-type="linenumber">161,163</context>
         </context-group>
       </trans-unit>
       <trans-unit id="settings.saveChanges" datatype="html">
         <source>Lagre endringer</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/settings/settings.html</context>
-          <context context-type="linenumber">164,166</context>
+          <context context-type="linenumber">163,165</context>
         </context-group>
       </trans-unit>
       <trans-unit id="settings.householdTitle" datatype="html">
         <source> Husstand </source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/settings/settings.html</context>
-          <context context-type="linenumber">174,177</context>
+          <context context-type="linenumber">173,176</context>
         </context-group>
       </trans-unit>
       <trans-unit id="settings.currentHouseholdLabel" datatype="html">
         <source>Nåværende husstand</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/settings/settings.html</context>
-          <context context-type="linenumber">180,182</context>
+          <context context-type="linenumber">179,181</context>
         </context-group>
       </trans-unit>
       <trans-unit id="settings.householdSettingsLink" datatype="html">
         <source>Husstandsinnstillinger</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/settings/settings.html</context>
-          <context context-type="linenumber">190,192</context>
+          <context context-type="linenumber">189,191</context>
         </context-group>
       </trans-unit>
       <trans-unit id="settings.invitationsLink" datatype="html">
         <source>Invitasjoner</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/settings/settings.html</context>
-          <context context-type="linenumber">198,199</context>
+          <context context-type="linenumber">197,198</context>
         </context-group>
       </trans-unit>
       <trans-unit id="settings.accountTitle" datatype="html">
         <source>Konto</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/settings/settings.html</context>
-          <context context-type="linenumber">219,221</context>
+          <context context-type="linenumber">218,220</context>
         </context-group>
       </trans-unit>
       <trans-unit id="settings.memberSinceLabel" datatype="html">
         <source>Medlem siden</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/settings/settings.html</context>
-          <context context-type="linenumber">223,224</context>
+          <context context-type="linenumber">222,223</context>
         </context-group>
       </trans-unit>
       <trans-unit id="settings.logOutButton" datatype="html">
         <source> Logg ut </source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/settings/settings.html</context>
-          <context context-type="linenumber">232,234</context>
+          <context context-type="linenumber">231,233</context>
         </context-group>
       </trans-unit>
       <trans-unit id="settings.aboutTitle" datatype="html">
         <source>Om</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/settings/settings.html</context>
-          <context context-type="linenumber">241</context>
+          <context context-type="linenumber">240</context>
         </context-group>
       </trans-unit>
       <trans-unit id="settings.versionLabel" datatype="html">
         <source>Versjon</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/settings/settings.html</context>
-          <context context-type="linenumber">243,244</context>
+          <context context-type="linenumber">242,243</context>
         </context-group>
       </trans-unit>
       <trans-unit id="settings.buildLabel" datatype="html">
         <source>Bygg</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/settings/settings.html</context>
-          <context context-type="linenumber">247,248</context>
+          <context context-type="linenumber">246,247</context>
         </context-group>
       </trans-unit>
       <trans-unit id="setupWizard.progress" datatype="html">
@@ -6754,6 +6754,24 @@
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/tasks/tasks.ts</context>
           <context context-type="linenumber">305</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="settings.roleParent" datatype="html">
+        <source>forelder</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/utils/person-name.ts</context>
+          <context context-type="linenumber">40</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/utils/person-name.ts</context>
+          <context context-type="linenumber">41</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="settings.roleChild" datatype="html">
+        <source>barn</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/utils/person-name.ts</context>
+          <context context-type="linenumber">42</context>
         </context-group>
       </trans-unit>
       <trans-unit id="poeng.today" datatype="html">

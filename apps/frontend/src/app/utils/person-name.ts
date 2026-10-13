@@ -36,8 +36,12 @@ export function settingsSubline(
   lastName: string | null | undefined,
   role: 'admin' | 'parent' | 'child' | null | undefined,
 ): string {
+  const roleWords = {
+    admin: $localize`:@@settings.roleParent:forelder`,
+    parent: $localize`:@@settings.roleParent:forelder`,
+    child: $localize`:@@settings.roleChild:barn`,
+  };
   const name = [firstName?.trim(), lastName?.trim()].filter(Boolean).join(' ');
-  const roleWord =
-    role === 'child' ? 'barn' : role === 'admin' || role === 'parent' ? 'forelder' : '';
+  const roleWord = role ? roleWords[role] : '';
   return [name, roleWord].filter(Boolean).join(' – ');
 }
