@@ -1,4 +1,10 @@
-<app-modal [open]="open()" (closeModal)="onClose()" [title]="modalTitle()">
+<!-- The delete question is drawn without ×: «Avbryt» is its way out -->
+<app-modal
+  [open]="open()"
+  (closeModal)="onClose()"
+  [title]="modalTitle()"
+  [showClose]="!showDeleteConfirm()"
+>
   @if (!showDeleteConfirm()) {
     <form [formGroup]="form" (ngSubmit)="onSubmit()">
       <!-- Error Message -->
@@ -305,6 +311,7 @@
 
       <div class="popup-actions">
         <button
+          #cancelDelete
           type="button"
           class="btn btn-secondary"
           (click)="onCancelDelete()"
