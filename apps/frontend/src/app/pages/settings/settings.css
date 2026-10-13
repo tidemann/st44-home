@@ -105,33 +105,84 @@
   opacity: 1;
 }
 
-/* ===== SETTINGS SECTION ===== */
+/* ===== THE APPROVED INNSTILLINGER PICTURE (ST-1069) =====
+   Measured at 390 px: a section label 20 px under the band (or the block above), its card 8 px
+   under it; cards are the full 346 px column, white, 13 px radius, 15 px padding. */
+
+/* «‹ Hjem» above the title, Ink on the yellow, pressed at 44 px */
+.back-link {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin: 2px 0 9px 5px;
+  font-family: var(--font-text);
+  font-size: 15px;
+  font-weight: 500;
+  line-height: 1.4;
+  color: var(--ink);
+  text-decoration: none;
+}
+
+.back-link::after {
+  content: '';
+  position: absolute;
+  inset: -12px -8px;
+}
+
+.back-link:focus-visible {
+  outline: var(--focus-ring);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+.back-chevron {
+  width: 8px;
+  height: 14px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
 
 .settings-section {
-  background: var(--color-surface);
-  border-radius: var(--radius-md);
-  padding: var(--space-lg);
-  margin-bottom: var(--space-lg);
+  margin-top: 20px;
 }
 
-.settings-section h2 {
-  font-family: var(--font-heading);
-  font-size: var(--font-size-xl);
-  font-weight: 800;
-  color: var(--color-text-primary);
-  margin: 0 0 var(--space-lg) 0;
-  padding-bottom: var(--space-sm);
-  border-bottom: 1px solid var(--color-border);
+/* The band ends 17 px under the sub-line (shared rule); the picture draws «Profil» 18 px lower */
+.settings-section:first-of-type {
+  margin-top: 18px;
 }
 
-/* ===== FORM STYLES ===== */
+/* «Profil», «Husstand»: Label 13 over the card, on the paper */
+.section-label {
+  margin: 0 0 8px;
+  font-family: var(--font-text);
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.3;
+  color: var(--text);
+}
 
-/* The login's rhythm (guide: The form): 19 px from one field to the next label, the label just
-   over its field. The global .form-group margin is dropped so it is not added on top (ST-954). */
+.settings-card {
+  background: var(--surface);
+  border-radius: var(--r-card);
+}
+
+/* ===== PROFILE: the login's fields, tight together ===== */
+
 .settings-form {
   display: flex;
   flex-direction: column;
-  gap: 19px;
+  gap: 12px;
+}
+
+.profile-card {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 15px;
 }
 
 .form-group {
@@ -142,170 +193,159 @@
 }
 
 .form-group label {
-  font-family: var(--font-body);
-  font-size: var(--font-size-sm);
-  font-weight: var(--font-weight-semibold);
-  color: var(--color-text-primary);
+  font-family: var(--font-text);
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.3;
+  color: var(--text);
 }
 
-.form-group input {
-  padding: var(--space-sm) var(--space-md);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-sm);
-  font-family: var(--font-body);
-  font-size: var(--font-size-base);
-  color: var(--color-text-primary);
-  background: white;
-  transition: border-color 0.2s;
+/* The login's text field (guide: The form): 49 px, 13 px radius, 1.5 px #555E64, 18 px inset.
+   A long e-mail scrolls inside the field and ends in «…»; the field never widens. */
+.field {
+  box-sizing: border-box;
+  width: 100%;
+  height: 49px;
+  margin: 0;
+  padding: 0 18px;
+  border: 1.5px solid var(--text-muted);
+  border-radius: var(--r-button);
+  background: var(--surface);
+  color: var(--text);
+  font-family: var(--font-text);
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 1.35;
+  text-overflow: ellipsis;
+  appearance: none;
 }
 
-.form-group input:focus {
+.field:focus {
   outline: var(--focus-ring);
-  border-color: var(--color-primary);
-}
-
-.form-group input::placeholder {
-  color: var(--text-muted);
-}
-
-.form-hint {
-  font-size: var(--font-size-xs);
-  color: var(--color-text-secondary);
-}
-
-/* ===== PASSWORD SECTION ===== */
-
-.btn-link {
-  background: none;
-  border: none;
-  color: var(--color-primary);
-  font-family: var(--font-body);
-  font-size: var(--font-size-sm);
-  font-weight: var(--font-weight-semibold);
-  cursor: pointer;
-  padding: 0;
-  text-align: left;
-}
-
-.btn-link:hover {
-  text-decoration: underline;
-}
-
-.password-section {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-lg);
-  padding: var(--space-md);
-  background: var(--color-background);
-  border-radius: var(--radius-sm);
-  animation: fadeIn 0.3s ease-out;
-}
-
-/* ===== FORM ACTIONS ===== */
-
-.form-actions {
-  display: flex;
-  justify-content: flex-end;
-  gap: var(--space-sm);
-  padding-top: var(--space-md);
-}
-
-/* ===== BUTTONS ===== */
-
-.btn {
-  padding: var(--space-sm) var(--space-lg);
-  border-radius: var(--radius-sm);
-  font-family: var(--font-body);
-  font-size: var(--font-size-base);
-  font-weight: var(--font-weight-semibold);
-  cursor: pointer;
-  transition:
-    transform 0.2s,
-    opacity 0.2s;
-  border: none;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: var(--space-xs);
-}
-
-.btn:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-}
-
-.btn-primary {
-  background: var(--yellow);
-  color: var(--ink);
-}
-
-.btn-primary:hover:not(:disabled) {
-  transform: translateY(-2px);
-}
-
-.btn-primary:active:not(:disabled) {
-  transform: translateY(0);
-}
-
-.btn-danger {
-  background: var(--color-danger);
-  color: white;
-}
-
-.btn-danger:hover:not(:disabled) {
-  background: var(--color-danger-dark);
-  transform: translateY(-2px);
-}
-
-/* ===== HOUSEHOLD SECTION ===== */
-
-.household-info {
-  margin-bottom: var(--space-md);
-}
-
-.household-links {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-sm);
-}
-
-.settings-link {
-  display: flex;
-  align-items: center;
-  gap: var(--space-sm);
-  padding: var(--space-md);
-  background: var(--color-background);
-  border-radius: var(--radius-sm);
-  text-decoration: none;
-  color: var(--color-text-primary);
-  transition:
-    background 0.2s,
-    transform 0.2s;
-}
-
-.settings-link:hover {
-  background: var(--track);
-  transform: translateX(4px);
-}
-
-.settings-link:focus-visible {
-  outline: 2px solid var(--color-primary);
   outline-offset: 2px;
 }
 
-.link-icon {
-  font-size: var(--font-size-lg);
-  flex-shrink: 0;
-}
-
-.link-text {
-  flex: 1;
-  font-weight: var(--font-weight-medium);
-}
-
-.link-arrow {
+.form-hint {
+  margin-top: 4px;
+  font-family: var(--font-text);
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 1.4;
   color: var(--text-muted);
-  font-size: var(--font-size-lg);
+}
+
+/* «+ Endre passord»: Amber Ink, underlined, as «Glemt passord?» */
+.btn-link {
+  position: relative;
+  align-self: flex-start;
+  background: none;
+  border: none;
+  padding: 0;
+  font-family: var(--font-text);
+  font-size: 15px;
+  font-weight: 500;
+  line-height: 1.4;
+  color: var(--amber-ink);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  cursor: pointer;
+}
+
+.btn-link::after {
+  content: '';
+  position: absolute;
+  inset: -12px -4px;
+}
+
+.btn-link:focus-visible {
+  outline: var(--focus-ring);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+.save-button:disabled {
+  cursor: default;
+  opacity: 0.6;
+}
+
+/* ===== ROWS: 51 px + a 1 px hairline inset 15 px, title left, value and chevron right ===== */
+
+.settings-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  box-sizing: border-box;
+  width: 100%;
+  min-height: 52px;
+  padding: 0 19px 0 15px;
+  background: none;
+  border: 0;
+  font: inherit;
+  text-align: left;
+  text-decoration: none;
+  color: var(--text);
+  position: relative;
+}
+
+.settings-row + .settings-row::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 15px;
+  right: 15px;
+  border-top: 1px solid var(--hairline);
+}
+
+a.settings-row,
+button.settings-row {
+  cursor: pointer;
+}
+
+a.settings-row:focus-visible,
+button.settings-row:focus-visible {
+  outline: var(--focus-ring);
+  outline-offset: -2px;
+  border-radius: var(--r-card);
+}
+
+.row-title {
+  flex: 1;
+  min-width: 0;
+  font-family: var(--font-text);
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 1.35;
+  overflow-wrap: anywhere;
+}
+
+.row-value {
+  min-width: 0;
+  font-family: var(--font-text);
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 1.4;
+  color: var(--text-muted);
+  text-align: right;
+  overflow-wrap: anywhere;
+}
+
+.row-chevron {
+  flex-shrink: 0;
+  width: 8px;
+  height: 14px;
+  fill: none;
+  stroke: var(--text-muted);
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* «Logg ut»: the destroying answer in Overdue Rust, as «Slett» */
+.row-danger {
+  font-family: var(--font-text);
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--overdue);
 }
 
 .badge {
@@ -314,46 +354,17 @@
   justify-content: center;
   min-width: 20px;
   height: 20px;
-  padding: 0 var(--space-xs);
-  background: var(--color-primary);
-  color: white;
-  font-size: var(--font-size-xs);
-  font-weight: var(--font-weight-bold);
+  padding: 0 6px;
+  background: var(--yellow);
+  color: var(--ink);
+  font-size: 12px;
+  font-weight: 700;
   border-radius: var(--radius-full);
 }
 
-/* ===== ACCOUNT INFO ===== */
-
-.account-info {
-  margin-bottom: var(--space-lg);
+.notifications-card {
+  padding: 15px;
 }
-
-.info-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: var(--space-sm) 0;
-}
-
-.info-label {
-  font-size: var(--font-size-sm);
-  color: var(--color-text-secondary);
-}
-
-.info-value {
-  font-size: var(--font-size-sm);
-  font-weight: var(--font-weight-semibold);
-  color: var(--color-text-primary);
-}
-
-/* ===== DANGER ZONE ===== */
-
-.danger-zone {
-  padding-top: var(--space-md);
-  border-top: 1px solid var(--color-border);
-}
-
-/* ===== ANIMATIONS ===== */
 
 @keyframes fadeIn {
   from {
@@ -364,12 +375,4 @@
     opacity: 1;
     transform: translateY(0);
   }
-}
-
-.settings-section {
-  animation: fadeIn 0.4s ease-out;
-}
-
-.settings-section:nth-child(2) {
-  animation-delay: 0.1s;
 }

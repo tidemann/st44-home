@@ -7,6 +7,8 @@
       <div class="page-header-inner">
         <div class="page-header-content">
           <div class="page-header-text">
+            <!-- A back link above the title, e.g. «‹ Hjem» on Innstillinger (ST-951) -->
+            <ng-content select="[page-back]" />
             <h1 class="page-title">{{ title() }}</h1>
           </div>
           <div class="page-header-actions">
