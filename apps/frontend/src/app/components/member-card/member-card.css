@@ -60,41 +60,30 @@
   min-width: 0;
 }
 
-/* A long name (an e-mail with no name set, a long double name) wraps inside the row */
+/* A long name stays on one line and ends in «…»; the QR button keeps its place (ST-1068) */
 .member-name {
   font-family: var(--font-text);
   font-size: 16px;
   font-weight: 600;
   line-height: 1.3;
   color: var(--text);
-  overflow-wrap: anywhere;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
-.member-role {
+.member-meta {
   font-family: var(--font-text);
   font-size: 13px;
   font-weight: 500;
   line-height: 1.4;
   color: var(--text-muted);
-}
-
-.member-stats {
-  flex-shrink: 0;
-  text-align: right;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .member-points {
-  font-family: var(--font-text);
-  font-size: 13px;
-  font-weight: 600;
-  line-height: 1.4;
-  color: var(--amber-ink);
-}
-
-.member-tasks {
-  font-family: var(--font-text);
-  font-size: 13px;
   font-weight: 500;
-  line-height: 1.4;
-  color: var(--text-muted);
+  color: var(--amber-ink);
 }
