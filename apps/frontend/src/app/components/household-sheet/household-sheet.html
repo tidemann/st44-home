@@ -1,0 +1,59 @@
+@if (open()) {
+  <div class="sheet-veil" (click)="closed.emit()" aria-hidden="true"></div>
+  <section
+    #sheet
+    class="sheet"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="household-sheet-title"
+    tabindex="-1"
+    (keydown)="onKeydown($event)"
+  >
+    <div class="sheet-grabber" aria-hidden="true"></div>
+    <h2 id="household-sheet-title" class="sheet-title" i18n="@@householdSheet.title">
+      Bytt husstand
+    </h2>
+    <p class="sheet-lead">{{ lead() }}</p>
+
+    <ul class="sheet-list">
+      @for (household of households(); track household.id) {
+        <li>
+          <button
+            type="button"
+            class="sheet-row"
+            [attr.aria-current]="household.id === activeId() ? 'true' : null"
+            (click)="choose(household)"
+          >
+            <span class="sheet-row-text">
+              <span class="sheet-row-name">{{ household.name }}</span>
+              <span class="sheet-row-detail">{{ detail(household) }}</span>
+            </span>
+            @if (household.id === activeId()) {
+              <span class="sheet-row-chosen">
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                  <path
+                    d="M2.5 8.5L6.2 12L13.5 4.5"
+                    stroke="currentColor"
+                    stroke-width="2.2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  />
+                </svg>
+                <ng-container i18n="@@householdSheet.chosen">Valgt nå</ng-container>
+              </span>
+            }
+          </button>
+        </li>
+      }
+    </ul>
+
+    <button
+      type="button"
+      class="sheet-manage"
+      (click)="manage.emit()"
+      i18n="@@householdSheet.manage"
+    >
+      Administrer husstander
+    </button>
+  </section>
+}

@@ -7,7 +7,39 @@
       <div class="page-header-inner">
         <div class="page-header-content">
           <div class="page-header-text">
-            <h1 class="page-title">{{ title() }}</h1>
+            <h1 class="page-title">
+              @if (titleMenu()) {
+                <!-- The caret sits right after the name, also on its last line (ST-1065) -->
+                <button
+                  type="button"
+                  class="page-title-menu"
+                  aria-haspopup="dialog"
+                  (click)="titleMenuOpen.emit()"
+                >
+                  {{ title()
+                  }}<span class="visually-hidden" i18n="@@page.switchHousehold">
+                    – bytt husstand</span
+                  ><svg
+                    class="page-title-caret"
+                    width="14"
+                    height="14"
+                    viewBox="0 0 14 14"
+                    fill="none"
+                    aria-hidden="true"
+                  >
+                    <path
+                      d="M2.5 5L7 9.5L11.5 5"
+                      stroke="currentColor"
+                      stroke-width="2.2"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    />
+                  </svg>
+                </button>
+              } @else {
+                {{ title() }}
+              }
+            </h1>
           </div>
           <div class="page-header-actions">
             <ng-content select="[page-actions]" />

@@ -71,6 +71,25 @@
   overflow-wrap: anywhere;
 }
 
+/* The household name as a button (ST-1065): it looks like the title, the caret follows the
+   last word 8 px after it, and the whole name is the tap target */
+.page-title-menu {
+  all: unset;
+  cursor: pointer;
+  border-radius: 6px;
+}
+
+.page-title-menu:focus-visible {
+  outline: 2px solid var(--ink);
+  outline-offset: 2px;
+}
+
+.page-title-caret {
+  display: inline-block;
+  margin-left: 8px;
+  vertical-align: 0.05em;
+}
+
 .page-header-actions {
   flex-shrink: 0;
   display: flex;

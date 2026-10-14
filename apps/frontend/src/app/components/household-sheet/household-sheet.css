@@ -1,0 +1,166 @@
+/* «Bytt husstand» (ST-1065), measured at 390 px in Stig's picture: a full-width sheet on the
+   paper colour under the 30 % ink veil; white 346 px rows, 15 px inside, 8 px apart; a 49 px
+   outlined «Administrer husstander» 12 px under the list. */
+
+.sheet-veil {
+  position: fixed;
+  inset: env(safe-area-inset-top, 0px) 0 0 0;
+  background: var(--popup-veil);
+  z-index: var(--z-index-modal-backdrop);
+  animation: fadeIn var(--transition-base) ease-out;
+}
+
+.sheet {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: var(--z-index-modal);
+  max-height: calc(100% - 48px);
+  overflow-y: auto;
+  background: var(--bg);
+  border-radius: 20px 20px 0 0;
+  padding: 13px var(--gutter) calc(40px + env(safe-area-inset-bottom, 0px));
+  outline: none;
+  animation: sheetUp var(--transition-base) ease-out;
+}
+
+.sheet-grabber {
+  width: 44px;
+  height: 4px;
+  margin: 0 auto 8px;
+  border-radius: 2px;
+  background: #dfdfd9;
+}
+
+/* Desktop: the same sheet, as wide as the content column, centred */
+@media (min-width: 1024px) {
+  .sheet {
+    width: 440px;
+    margin-inline: auto;
+  }
+}
+
+.sheet-title {
+  font-family: var(--font-display);
+  font-size: 26px;
+  font-weight: 800;
+  line-height: 1.15;
+  letter-spacing: -0.01em;
+  color: var(--ink);
+  margin: 0;
+}
+
+.sheet-lead {
+  font-family: var(--font-body);
+  font-size: 15px;
+  line-height: 1.3;
+  color: var(--text-muted);
+  margin: 4px 0 14px;
+}
+
+.sheet-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.sheet-row {
+  all: unset;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  min-height: 67.5px;
+  padding: 12px 15px;
+  background: var(--color-surface);
+  border-radius: var(--r-card);
+  cursor: pointer;
+}
+
+.sheet-row:focus-visible {
+  outline: 2px solid var(--ink);
+  outline-offset: 2px;
+}
+
+.sheet-row-text {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.sheet-row-name {
+  font-family: var(--font-body);
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 1.3;
+  color: var(--ink);
+  overflow-wrap: anywhere;
+}
+
+.sheet-row-detail {
+  font-family: var(--font-body);
+  font-size: 14px;
+  line-height: 1.3;
+  color: var(--text-muted);
+}
+
+.sheet-row-chosen {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--font-body);
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--done);
+}
+
+.sheet-manage {
+  all: unset;
+  box-sizing: border-box;
+  display: block;
+  width: 100%;
+  height: 49px;
+  margin-top: 12px;
+  border: 1px solid var(--text-muted);
+  border-radius: var(--r-card);
+  background: var(--color-surface);
+  font-family: var(--font-body);
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--ink);
+  text-align: center;
+  cursor: pointer;
+}
+
+.sheet-manage:focus-visible {
+  outline: 2px solid var(--ink);
+  outline-offset: 2px;
+}
+
+@keyframes sheetUp {
+  from {
+    transform: translateY(24px);
+    opacity: 0;
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sheet,
+  .sheet-veil {
+    animation: none;
+  }
+}
