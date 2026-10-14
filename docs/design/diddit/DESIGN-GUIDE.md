@@ -118,6 +118,7 @@ layout:
   navItemPitch: '92px'
   statusBarBand: '35px'
   brandBandPadBottom: '17px'
+  brandSubGap: '20px'
   loginBrandBand: '303px'
   loginBrandBandFocused: '112px'
   desktopViewport: '1440x900'
@@ -221,6 +222,7 @@ components:
     fullBleed: true
     top: '{layout.statusBarBand}'
     paddingBottom: '{layout.brandBandPadBottom}'
+    subLineGapBottom: '{layout.brandSubGap}'
     gutter: '{layout.gutter}'
   field-text:
     backgroundColor: '{colors.surface}'
@@ -1066,11 +1068,89 @@ an addition, not a rewrite: it takes nothing away and changes no card, row, butt
   band, which keeps `#F6F6F4`. There is no gutter at the band's left and right edges and no radius
   on it; it runs x 0…390.
 - **It has no fixed height.** It ends **17 px under the last thing it carries**, so it is as tall as
-  its content: measured **y 35…275 (240 px)** on the family home and **y 35…305 (270 px)** on a
-  child's chore screen.
+  its content: the two approved pictures measure **y 35…275 (240 px)** on the family home and
+  **y 35…305 (270 px)** on a child's chore screen. With the 20 px under the sub-line that Stig
+  asked for on 2026-10-13, the same content makes **260 px** and **290 px**. **Build to those two.**
+- **The ST-1074 drawings measure 261 px and 294 px, and that is not a conflict.** Both numbers are
+  right in their own frame, so do not "correct" either one:
+
+  |                                         | Family home | Child's chores |
+  | --------------------------------------- | ----------- | -------------- |
+  | Signed picture, old gap                 | 240         | 270            |
+  | **Build to this** (signed picture + 20) | **260**     | **290**        |
+  | ST-1074 drawing kit, old gap            | 241         | 274            |
+  | ST-1074 drawing kit, new gap            | 261         | 294            |
+
+  The kit's band was already 1 px and 4 px taller than the pictures **before** this change — it sets
+  the sub-line 3 px lower and its bold display cuts render a little larger (both recorded in
+  `RULE-CHECK.md` revision 7). The 20 px itself lands exactly: 241 → 261 and 274 → 294, +20 in each.
+  Measured at 390 × 844, DPR 2, on the full-bleed yellow at the screen's left edge.
+
+- **The sub-line has 20 px of air under it** (`layout.brandSubGap`), and nothing in the band comes
+  closer than that: not the first child card, not the hero number, not the band's own bottom edge.
+  See **The Air Under The Sub-Line** below.
 - **Inside it, the gutter is the ordinary 22 px and the column the ordinary 346 px** — the same as
   everywhere else on a light screen. The band is a background behind the normal column, not a
   layout of its own.
+
+### The Air Under The Sub-Line (Stig, 2026-10-13, ST-1065)
+
+**The sub-line always has 20 px under it.** This holds on every screen whose top is this band —
+title plus sub-line — whatever comes next:
+
+| What follows the sub-line              | Where the 20 px are measured                                        |
+| -------------------------------------- | ------------------------------------------------------------------- |
+| A card or tile (family home)           | sub-line line box → the card's top edge                             |
+| A hero number ("215", "225")           | sub-line line box → the hero's box, its own leading on top of that  |
+| Nothing — the sub-line is last in band | sub-line line box → the band's bottom edge. **20 px here, not 17.** |
+
+```css
+.band .sub {
+  margin-bottom: 20px;
+}
+.band .sub:last-child {
+  margin-bottom: 0;
+}
+.band:has(.sub:last-child) {
+  padding-bottom: 20px;
+}
+```
+
+**What that CSS assumes about the markup:** the sub-line is a direct child of `.band`, a sibling of
+whatever follows it. Wrap the title and sub-line in their own header `<div>` and `.sub:last-child`
+becomes true on every screen — including the family home, where a card follows — and the band
+silently takes 20 px of bottom padding where it should take 17. If the markup nests, drop the
+`:has()` and put the 20 px on an explicit class (`.band--endsOnSubLine`) instead. The rule is "20 px
+under the sub-line, whatever follows"; these three selectors are only one way to say it.
+
+**Why it is written here and not read off the approved pictures.** `brand-07` draws 3 px of yellow
+between the date line's descenders and the child cards, and `brand-08` draws 26 px between the date
+line and "215". Stig rejected the 3 px on ST-1065 in these words: _"Needs more space under mandag 12
+oktober Line. This needs to be added to design guide. Also do this for all pages with similar
+layout."_ So on this one measure the guide is **deliberately ahead of the two pictures**, by the
+owner's own instruction. Do not "correct" it back to the picture.
+
+**Measured in the redrawn set** (390 × 844, DPR 2, css px; `boksavstand` is line box to line box,
+`klart gult` is the clear yellow from the sub-line's lowest ink to the next thing's ink or edge):
+
+| Screen                              | Box gap | Clear yellow | What follows        |
+| ----------------------------------- | ------- | ------------ | ------------------- |
+| Hjem / family home                  | 20      | 20           | child card edge     |
+| Child's "mine oppgaver"             | 20      | 45           | the hero "215"      |
+| Oppgaver                            | 20      | 20           | the band's own edge |
+| Belønninger                         | 20      | 27           | the hero "225"      |
+| Fremgang                            | 20      | 23           | stat card edge      |
+| Familie / Innstillinger             | 20      | 23           | the band's own edge |
+| Home, sub-line wrapped to two lines | 20      | 20           | child card edge     |
+| Home, 360 px and 412 px             | 20      | 20           | child card edge     |
+
+The box gap is the number to build and to check. The clear yellow is what the eye reads and it is
+never smaller than the box gap — a hero number carries its own leading above the ink.
+
+![The signed-off home, the same screen redrawn with the old gap, and with the new 20 px](reference/band-subgap-before-after.png)
+
+`reference/band-subgap-before-after.png` — evidence, not a signed picture: `brand-07`, the same
+screen redrawn at the old gap, and the 20 px, at the same scale and crop (ST-1074).
 
 ### What moves into the band
 
@@ -2071,10 +2151,10 @@ happen — so they are specified here rather than left to the build.
 | Case                           | What must happen                                                                                                                                        |
 | ------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | A long screen title            | The band grows; it has no fixed height. The title wraps rather than truncating or shrinking.                                                            |
-| A long sub-line                | Wraps to a second line; the band grows by that line plus nothing else. The 17 px bottom padding is preserved.                                           |
+| A long sub-line                | Wraps to a second line; the band grows by that line plus nothing else. The 20 px under the sub-line are preserved, and so is the 17 px band padding under the last element.                                           |
 | **One or two children**        | The cards keep 109 px and stay left-aligned in the column — they do **not** stretch to fill it. A 346 px-wide child card is not in any picture.         |
 | **Four or more children**      | Horizontal scroll at the same 109 × 154 and 9 px gap, the band unchanged. Do not shrink the card and do not wrap to a second row without a new drawing. |
-| **No children yet**            | The band carries the title and sub-line only, and ends 17 px under the sub-line. The empty state goes on the paper below it, not inside the yellow.     |
+| **No children yet**            | The band carries the title and sub-line only, and ends **20 px** under the sub-line — the sub-line's own air, not the 17 px band padding. The empty state goes on the paper below it, not inside the yellow.     |
 | A long child name              | One line, ellipsised inside the 109 px card. The name never pushes the number out of the card.                                                          |
 | A four-digit total             | Number 30 is tabular; 1 240 fits 109 px. Five digits ellipsise the name further before they shrink the number.                                          |
 | A chore meter with many chores | Segments divide the width as the Meters section says; they get thinner, never taller, and never wrap.                                                   |
