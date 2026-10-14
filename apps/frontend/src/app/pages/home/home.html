@@ -9,19 +9,18 @@
 >
   <!-- A, the yellow top: each child's points sit in the band (brand-07). The cards fill the
        row, at most three across. From 1024 px they sit beside the title, 109 px each, at most
-       four plus a "+N barn til" tile (desktop A) -->
-  <div page-band>
-    @if (!loading() && !error() && childSummaries().length > 0) {
-      <div class="kids" [style.--kid-cols]="kidColumns()">
-        @for (kid of shownChildren(); track kid.id) {
-          <app-child-points-card [name]="kid.name" [points]="kid.points" [chores]="kid.chores" />
-        }
-        @if (desktop() && moreChildren() > 0) {
-          <p class="more-kids" i18n="@@home.moreChildren">+{{ moreChildren() }} barn til</p>
-        }
-      </div>
-    }
-  </div>
+       four plus a "+N barn til" tile (desktop A). With no children the slot stays empty, so
+       the band ends 20 px under the sub-line (ST-1103) -->
+  @if (!loading() && !error() && childSummaries().length > 0) {
+    <div page-band class="kids" [style.--kid-cols]="kidColumns()">
+      @for (kid of shownChildren(); track kid.id) {
+        <app-child-points-card [name]="kid.name" [points]="kid.points" [chores]="kid.chores" />
+      }
+      @if (desktop() && moreChildren() > 0) {
+        <p class="more-kids" i18n="@@home.moreChildren">+{{ moreChildren() }} barn til</p>
+      }
+    </div>
+  }
 
   @if (loading()) {
     <div class="state" role="status" aria-live="polite">
