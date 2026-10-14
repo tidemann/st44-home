@@ -101,6 +101,7 @@ describe('Home', () => {
 
   it('ignores a second household switch while the first is still loading', async () => {
     component['loading'].set(true);
+    component['householdSheetOpen'].set(true);
     const loadData = vi
       .spyOn(component as unknown as { loadData: () => Promise<void> }, 'loadData')
       .mockResolvedValue();
@@ -110,6 +111,18 @@ describe('Home', () => {
 
     expect(setActiveHousehold).not.toHaveBeenCalled();
     expect(loadData).not.toHaveBeenCalled();
+    expect(component['householdSheetOpen']()).toBe(false);
+  });
+
+  it('switches household and reloads when nothing is loading', async () => {
+    const loadData = vi
+      .spyOn(component as unknown as { loadData: () => Promise<void> }, 'loadData')
+      .mockResolvedValue();
+
+    await component['switchHousehold']('other-id');
+
+    expect(mockHouseholdStore.setActiveHousehold).toHaveBeenCalledWith('other-id');
+    expect(loadData).toHaveBeenCalledTimes(1);
   });
 
   describe('loadData', () => {
