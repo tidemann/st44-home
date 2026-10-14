@@ -71,7 +71,7 @@
   --popup-shadow-block: 0 12px 32px rgba(23, 18, 10, 0.26), 0 3px 10px rgba(23, 18, 10, 0.16);
   --popup-veil: rgba(23, 18, 10, 0.3); /* blocking popups only, below the status bar */
   --popup-pad: 15px; /* the card padding */
-  --nav-band: 72px; /* bottom nav: 71 px items + the 1 px divider */
+  --nav-band: 78px; /* bottom nav: the 1 px divider + 77 px items (E6, ST-1064) */
 
   /* ===== LEGACY NAMES, mapped onto Poeng so older screens match ===== */
 

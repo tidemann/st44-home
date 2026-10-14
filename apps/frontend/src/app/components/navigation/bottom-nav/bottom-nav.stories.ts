@@ -72,6 +72,19 @@ export const Rewards: StoryObj<BottomNav> = {
 };
 
 /**
+ * Narrow phone (360 px) with the longest label chosen: «Belønninger» must stay on one line inside the yellow label.
+ * The transform makes the 360 px box the containing block of the fixed menu.
+ */
+export const RewardsNarrow360: StoryObj<BottomNav> = {
+  args: { activeScreen: 'rewards' },
+  render: (args) => ({
+    props: args,
+    template:
+      '<div style="width: 360px; height: 120px; transform: translateZ(0)"><app-bottom-nav [activeScreen]="activeScreen" /></div>',
+  }),
+};
+
+/**
  * Interactive demo showing navigation between screens
  */
 export const Interactive: StoryObj<BottomNav> = {
