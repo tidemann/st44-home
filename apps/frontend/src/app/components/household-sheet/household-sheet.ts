@@ -45,6 +45,13 @@ export class HouseholdSheet {
       : $localize`:@@householdSheet.lead:Du er med i ${count}:count: husstander.`;
   });
 
+  /** The chosen household first, as drawn; the rest keep their order (ST-1103) */
+  protected readonly rows = computed(() => {
+    const active = this.activeId();
+    const list = this.households();
+    return [...list.filter((h) => h.id === active), ...list.filter((h) => h.id !== active)];
+  });
+
   /** Where focus was when the sheet opened (the title button); it goes back there on close */
   private returnFocus: HTMLElement | null = null;
 
