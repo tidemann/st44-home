@@ -14,153 +14,104 @@
   </div>
 }
 
-<!-- Main Content -->
+<!-- Fremgang as Stig approved it (ST-1067 v2): the week's three numbers in the yellow top,
+     then «Ukens ledere» and «Prestasjoner» on the paper (guide: Fremgang) -->
 @if (!loading() && !error()) {
-  <app-page i18n-title="@@progress.pageTitle" title="Fremgang" maxWidth="wide">
-    <!-- Household Stats Section -->
-    <section class="stats-section" aria-labelledby="stats-heading">
-      <h2 id="stats-heading" class="visually-hidden" i18n="@@progress.statsHeading">
-        Husstandsstatistikk
-      </h2>
-      <div class="stats-grid" role="list">
-        <div
-          class="stat-box"
-          role="listitem"
-          i18n-aria-label="@@progress.totalPointsAriaLabel"
-          aria-label="Totalt poeng: {{ householdStats().totalPoints }}"
-        >
-          <div class="stat-value">{{ householdStats().totalPoints }}</div>
-          <div class="stat-label" i18n="@@progress.totalPoints">Totalt poeng</div>
-        </div>
-        <div
-          class="stat-box"
-          role="listitem"
-          i18n-aria-label="@@progress.completionRateAriaLabel"
-          aria-label="Fullføringsrate: {{ householdStats().completionRate }} prosent"
-        >
-          <div class="stat-value">{{ householdStats().completionRate }}%</div>
-          <div class="stat-label" i18n="@@progress.completionRate">Fullføringsrate</div>
-        </div>
-        <div
-          class="stat-box"
-          role="listitem"
-          i18n-aria-label="@@progress.tasksThisWeekAriaLabel"
-          aria-label="Oppgaver denne uken: {{ householdStats().tasksCompletedThisWeek }}"
-        >
-          <div class="stat-value">{{ householdStats().tasksCompletedThisWeek }}</div>
-          <div class="stat-label" i18n="@@progress.tasksThisWeek">Oppgaver denne uken</div>
-        </div>
-      </div>
-    </section>
+  <app-page
+    i18n-title="@@progress.pageTitle"
+    title="Fremgang"
+    [subtitle]="weekLine"
+    maxWidth="medium"
+    [band]="true"
+    [split]="true"
+  >
+    <div page-band>
+      <ul class="stats" i18n-aria-label="@@progress.statsHeading" aria-label="Husstandsstatistikk">
+        <li class="stat">
+          <span class="stat-value">{{ householdStats().totalPoints }}</span>
+          <span class="stat-label" i18n="@@progress.statPoints">poeng</span>
+          <span class="stat-note" i18n="@@progress.statPointsNote">denne uka</span>
+        </li>
+        <li class="stat">
+          <span class="stat-value">{{ householdStats().completionRate }}%</span>
+          <span class="stat-label" i18n="@@progress.statDone">fullført</span>
+          <span class="stat-note" i18n="@@progress.statDoneNote"
+            >{{ householdStats().tasksCompletedThisWeek }} av
+            {{ householdStats().totalTasksThisWeek }}</span
+          >
+        </li>
+        <li class="stat">
+          <span class="stat-value">{{ householdStats().tasksCompletedThisWeek }}</span>
+          <span class="stat-label" i18n="@@progress.statTasks">oppgaver</span>
+          <span class="stat-note" i18n="@@progress.statTasksNote">gjort i uka</span>
+        </li>
+      </ul>
+    </div>
 
-    <!-- Leaderboard Section -->
-    <section class="section" aria-labelledby="leaderboard-heading">
-      <div class="section-header">
-        <h2 id="leaderboard-heading" i18n="@@progress.leaderboardTitle">Ukens ledere</h2>
-        <p class="section-subtitle" i18n="@@progress.leaderboardSubtitle">
-          Bra jobba, alle sammen!
-        </p>
-      </div>
+    <!-- Ukens ledere: rank, name with the week's chores, points -->
+    <section class="section">
+      <app-group-label
+        i18n-label="@@progress.leaderboardTitle"
+        label="Ukens ledere"
+        [right]="weekLabel"
+      />
 
       @if (hasLeaderboard()) {
-        <ol
-          class="leaderboard"
-          i18n-aria-label="@@progress.leaderboardAriaLabel"
-          aria-label="Ukentlig toppliste"
-        >
+        <ol class="rows">
           @for (entry of leaderboard(); track entry.userId) {
-            <li
-              class="leaderboard-item"
-              [class.current-user]="entry.isCurrentUser"
-              [attr.aria-current]="entry.isCurrentUser ? 'true' : null"
-            >
-              <div class="leaderboard-rank" aria-hidden="true">
-                {{ getMedalForRank(entry.rank) }}
-              </div>
-              <div class="leaderboard-info">
-                <div class="leaderboard-name">{{ entry.name }}</div>
-                <div class="leaderboard-tasks">
-                  <ng-container i18n="@@progress.tasksCompleted"
-                    >{{ entry.tasksCompleted }} oppgaver fullført</ng-container
-                  >
-                </div>
-              </div>
-              <div
-                class="leaderboard-points"
-                i18n-aria-label="@@progress.pointsAriaLabel"
-                aria-label="{{ entry.points }} poeng"
-              >
-                {{ entry.points }}
-              </div>
+            <li class="leader">
+              <span class="leader-rank">{{ entry.rank }}</span>
+              <span class="leader-text">
+                <span class="leader-name">{{ entry.name }}</span>
+                <span class="leader-sub" i18n="@@progress.tasksCompleted"
+                  >{{ entry.tasksCompleted }} oppgaver fullført</span
+                >
+              </span>
+              <span class="leader-points" i18n="@@progress.points">{{ entry.points }} p</span>
             </li>
           }
         </ol>
       } @else {
-        <div class="empty-state" role="status">
-          <p i18n="@@progress.noLeaderboardData">
-            Ingen toppliste-data ennå. Fullfør noen oppgaver for å komme i gang!
-          </p>
-        </div>
+        <p class="empty" role="status" i18n="@@progress.noLeaderboardData">
+          Ingen toppliste-data ennå. Fullfør noen oppgaver for å komme i gang!
+        </p>
       }
     </section>
 
-    <!-- Achievements Section -->
-    <section class="section" aria-labelledby="achievements-heading">
-      <div class="section-header">
-        <h2 id="achievements-heading" i18n="@@progress.achievementsTitle">Prestasjoner</h2>
-        <p class="section-subtitle" i18n="@@progress.achievementsSubtitle">
-          Fortsett den flotte innsatsen!
-        </p>
-      </div>
+    <!-- Prestasjoner: one card each, the meter is ten pills -->
+    <section class="section">
+      <app-group-label i18n-label="@@progress.achievementsTitle" label="Prestasjoner" />
 
-      @if (hasAchievements()) {
-        <div
-          class="achievements-grid"
-          role="list"
-          i18n-aria-label="@@progress.achievementBadges"
-          aria-label="Prestasjonsmerker"
-        >
-          @for (achievement of achievements(); track achievement.id) {
-            <article
-              class="achievement-card"
-              [class.unlocked]="achievement.unlocked"
-              [class.locked]="!achievement.unlocked"
-              role="listitem"
-              [attr.aria-label]="achievementLabel(achievement)"
-            >
-              <div class="achievement-icon" aria-hidden="true">{{ achievement.icon }}</div>
-              <div class="achievement-info">
-                <h3>{{ achievement.name }}</h3>
-                <div class="achievement-desc">{{ achievement.description }}</div>
-                @if (!achievement.unlocked && achievement.progress !== undefined) {
-                  <div class="achievement-progress">
-                    <div
-                      class="progress-bar"
-                      role="progressbar"
-                      [attr.aria-valuenow]="achievement.progress"
-                      aria-valuemin="0"
-                      aria-valuemax="100"
-                      [attr.aria-label]="progressLabel(achievement.progress)"
-                    >
-                      <div class="progress-fill" [style.width.%]="achievement.progress"></div>
-                    </div>
-                    <div class="progress-text" aria-hidden="true">{{ achievement.progress }}%</div>
-                  </div>
+      <ul class="rows">
+        @for (achievement of achievements(); track achievement.id) {
+          <li class="achievement" [attr.aria-label]="achievementLabel(achievement)">
+            <div class="achievement-head">
+              <span class="achievement-icon" aria-hidden="true">
+                <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                  <path
+                    d="M10 2.2l2.4 4.9 5.4.8-3.9 3.8.9 5.4L10 14.6l-4.8 2.5.9-5.4-3.9-3.8 5.4-.8z"
+                    stroke="currentColor"
+                    stroke-width="1.6"
+                    stroke-linejoin="round"
+                  />
+                </svg>
+              </span>
+              <span class="achievement-text">
+                <span class="achievement-name">{{ achievement.name }}</span>
+                <span class="achievement-desc">{{ achievement.description }}</span>
+              </span>
+            </div>
+            <div class="achievement-meter">
+              <span class="pills" aria-hidden="true">
+                @for (pill of pillSlots; track pill) {
+                  <span class="pill" [class.on]="pill < filledPills(achievement)"></span>
                 }
-                @if (achievement.unlocked) {
-                  <div class="achievement-unlocked" i18n="@@progress.unlocked">Låst opp!</div>
-                }
-              </div>
-            </article>
-          }
-        </div>
-      } @else {
-        <div class="empty-state" role="status">
-          <p i18n="@@progress.noAchievementsYet">
-            Ingen prestasjoner ennå. Begynn å fullføre oppgaver for å låse opp merker!
-          </p>
-        </div>
-      }
+              </span>
+              <span class="achievement-count">{{ achievementCount(achievement) }}</span>
+            </div>
+          </li>
+        }
+      </ul>
     </section>
   </app-page>
 }
