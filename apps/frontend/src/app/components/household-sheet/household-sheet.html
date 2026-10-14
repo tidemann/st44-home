@@ -16,7 +16,7 @@
     <p class="sheet-lead">{{ lead() }}</p>
 
     <ul class="sheet-list">
-      @for (household of households(); track household.id) {
+      @for (household of rows(); track household.id) {
         <li>
           <button
             type="button"

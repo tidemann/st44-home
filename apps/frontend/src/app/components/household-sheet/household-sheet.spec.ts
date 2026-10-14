@@ -47,6 +47,17 @@ describe('HouseholdSheet («Bytt husstand», ST-1065)', () => {
     expect(rows[1].querySelector('.sheet-row-chosen')).toBeNull();
   });
 
+  it('lists the chosen household first (ST-1103)', () => {
+    fixture.componentRef.setInput('activeId', 'b');
+    fixture.componentRef.setInput('open', true);
+    fixture.detectChanges();
+
+    const rows = Array.from(el.querySelectorAll('.sheet-row'));
+    expect(rows[0].textContent).toContain('Hytta på Geilo');
+    expect(rows[0].querySelector('.sheet-row-chosen')).toBeTruthy();
+    expect(rows[1].textContent).toContain('Familien Dahl');
+  });
+
   it('emits pick for another household, and only closes for the chosen one', () => {
     fixture.componentRef.setInput('open', true);
     fixture.detectChanges();
