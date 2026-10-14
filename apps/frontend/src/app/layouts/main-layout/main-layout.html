@@ -4,7 +4,6 @@
     <app-top-tabs
       [tabs]="desktopTabs"
       [activeId]="activeScreen()"
-      [showSwitcher]="true"
       (navigate)="onNavigate($event)"
     />
   }
@@ -17,14 +16,10 @@
         <div class="mobile-header-content">
           <div class="mobile-logo">Diddit!</div>
           <div class="mobile-header-actions">
-            <app-household-switcher />
             <app-user-button [user]="userData()" (clicked)="onSettings()" />
           </div>
         </div>
       </header>
-    } @else {
-      <!-- Renders nothing unless the parent belongs to more than one household -->
-      <app-household-switcher class="switcher-slot" />
     }
 
     <!-- Router Outlet for Page Content -->

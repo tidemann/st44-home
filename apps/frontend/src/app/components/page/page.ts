@@ -1,4 +1,4 @@
-import { Component, ChangeDetectionStrategy, input, computed } from '@angular/core';
+import { Component, ChangeDetectionStrategy, input, output, computed } from '@angular/core';
 import { InitialBadge } from '../initial-badge/initial-badge';
 
 /**
@@ -100,6 +100,13 @@ export class PageComponent {
    * on one line; the content below gets the same 880 px. Under 1024 px nothing changes.
    */
   split = input<boolean>(false);
+
+  /**
+   * The household name as the title (ST-1065): with 2 or more households the title is a
+   * button with a caret right after the name, and a tap emits `titleMenuOpen`.
+   */
+  titleMenu = input<boolean>(false);
+  titleMenuOpen = output<void>();
 
   /**
    * Computed CSS class for container width

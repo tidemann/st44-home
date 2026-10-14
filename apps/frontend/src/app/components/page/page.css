@@ -71,6 +71,25 @@
   overflow-wrap: anywhere;
 }
 
+/* The household name as a button (ST-1065): it looks like the title, the caret follows the
+   last word 8 px after it, and the whole name is the tap target */
+.page-title-menu {
+  all: unset;
+  cursor: pointer;
+  border-radius: 6px;
+}
+
+.page-title-menu:focus-visible {
+  outline: 2px solid var(--ink);
+  outline-offset: 2px;
+}
+
+.page-title-caret {
+  display: inline-block;
+  margin-left: 8px;
+  vertical-align: 0.05em;
+}
+
 .page-header-actions {
   flex-shrink: 0;
   display: flex;
@@ -111,8 +130,17 @@
   width: 100%;
 }
 
+/* The Air Under The Sub-Line: 20 px under it, whatever follows (Stig, ST-1065) */
 .page-header--band .page-subtitle {
   color: var(--ink);
+  margin-bottom: 20px;
+}
+
+/* Nothing in the band under the sub-line: the band ends 20 px under it, not 17 + 20. The band
+   is its own formatting context, so those 20 px stay yellow instead of collapsing out under it */
+.page-header--band:has(.page-band-slot:empty) {
+  display: flow-root;
+  padding-bottom: 0;
 }
 
 /* ===== CONTENT ===== */
@@ -148,6 +176,11 @@
      in an 880 px container; the title block is centred on the content beside it */
   .page--split .page-header {
     padding: 8px 0 17px;
+  }
+
+  /* Desktop A keeps its centred title block; the 20 px is the phone's band */
+  .page--split .page-header--band .page-subtitle {
+    margin-bottom: 0;
   }
 
   .page--split .page-header-inner {

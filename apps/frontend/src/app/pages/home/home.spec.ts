@@ -98,6 +98,30 @@ describe('Home', () => {
   });
 
   describe('loadData', () => {
+    it('uses the household name as the title', async () => {
+      await component.ngOnInit();
+      expect(component['homeTitle']()).toBe('Test Household');
+    });
+
+    it('shows «Hjemme» before the household is loaded', () => {
+      expect(component['homeTitle']()).toBe('Hjemme');
+    });
+
+    it('hides the caret with one household', async () => {
+      await component.ngOnInit();
+      expect(component['showHouseholdCaret']()).toBe(false);
+    });
+
+    it('shows the caret with two households', async () => {
+      mockHouseholdService.listHouseholds.mockResolvedValue([
+        { id: 'household-1', name: 'Test Household', createdAt: new Date().toISOString() },
+        { id: 'household-2', name: 'Hytta', createdAt: new Date().toISOString() },
+      ]);
+      await component.ngOnInit();
+      expect(component['showHouseholdCaret']()).toBe(true);
+      expect(component['homeTitle']()).toBe('Test Household');
+    });
+
     it('should load household, children, and tasks on init', async () => {
       await component.ngOnInit();
 

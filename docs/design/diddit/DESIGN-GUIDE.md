@@ -118,6 +118,7 @@ layout:
   navItemPitch: '92px'
   statusBarBand: '35px'
   brandBandPadBottom: '17px'
+  brandSubGap: '20px'
   loginBrandBand: '303px'
   loginBrandBandFocused: '112px'
   desktopViewport: '1440x900'
@@ -221,6 +222,7 @@ components:
     fullBleed: true
     top: '{layout.statusBarBand}'
     paddingBottom: '{layout.brandBandPadBottom}'
+    subLineGapBottom: '{layout.brandSubGap}'
     gutter: '{layout.gutter}'
   field-text:
     backgroundColor: '{colors.surface}'
@@ -446,6 +448,14 @@ the row, and the failure state as drawn.
 drawn": [`familie-01-approved.png`](reference/familie-01-approved.png) (the screen and its worst
 case, a long name and a one-letter name). See **Familie**. The «Familien Dahl ⌄» title with the
 household picker is a separate decision (ST-1065) and is not part of this approval.
+
+**Round seven — ST-1065, 2026-10-14.** The household name as the home title, with «⌄» and the
+«Bytt husstand» sheet, redrawn by Ida with the 20 px under the date line (ST-1074):
+[`husstand-01-approved.png`](reference/husstand-01-approved.png) (one household, two, the sheet
+open, and a three-line name). See **The household name as the home title**.
+
+**Round eight — ST-1067, 2026-10-14.** Fremgang v2, without «‹ Hjem» and with 20 px under the week
+line: [`fremgang-01-approved.png`](reference/fremgang-01-approved.png). See **Fremgang**.
 
 **Order of precedence.** `poeng-signed-off.png` → the approved pictures above → this guide → generic
 rules. Where an approved picture and the signed-off picture disagree about something the signed-off
@@ -1071,11 +1081,89 @@ an addition, not a rewrite: it takes nothing away and changes no card, row, butt
   band, which keeps `#F6F6F4`. There is no gutter at the band's left and right edges and no radius
   on it; it runs x 0…390.
 - **It has no fixed height.** It ends **17 px under the last thing it carries**, so it is as tall as
-  its content: measured **y 35…275 (240 px)** on the family home and **y 35…305 (270 px)** on a
-  child's chore screen.
+  its content: the two approved pictures measure **y 35…275 (240 px)** on the family home and
+  **y 35…305 (270 px)** on a child's chore screen. With the 20 px under the sub-line that Stig
+  asked for on 2026-10-13, the same content makes **260 px** and **290 px**. **Build to those two.**
+- **The ST-1074 drawings measure 261 px and 294 px, and that is not a conflict.** Both numbers are
+  right in their own frame, so do not "correct" either one:
+
+  |                                         | Family home | Child's chores |
+  | --------------------------------------- | ----------- | -------------- |
+  | Signed picture, old gap                 | 240         | 270            |
+  | **Build to this** (signed picture + 20) | **260**     | **290**        |
+  | ST-1074 drawing kit, old gap            | 241         | 274            |
+  | ST-1074 drawing kit, new gap            | 261         | 294            |
+
+  The kit's band was already 1 px and 4 px taller than the pictures **before** this change — it sets
+  the sub-line 3 px lower and its bold display cuts render a little larger (both recorded in
+  `RULE-CHECK.md` revision 7). The 20 px itself lands exactly: 241 → 261 and 274 → 294, +20 in each.
+  Measured at 390 × 844, DPR 2, on the full-bleed yellow at the screen's left edge.
+
+- **The sub-line has 20 px of air under it** (`layout.brandSubGap`), and nothing in the band comes
+  closer than that: not the first child card, not the hero number, not the band's own bottom edge.
+  See **The Air Under The Sub-Line** below.
 - **Inside it, the gutter is the ordinary 22 px and the column the ordinary 346 px** — the same as
   everywhere else on a light screen. The band is a background behind the normal column, not a
   layout of its own.
+
+### The Air Under The Sub-Line (Stig, 2026-10-13, ST-1065)
+
+**The sub-line always has 20 px under it.** This holds on every screen whose top is this band —
+title plus sub-line — whatever comes next:
+
+| What follows the sub-line              | Where the 20 px are measured                                        |
+| -------------------------------------- | ------------------------------------------------------------------- |
+| A card or tile (family home)           | sub-line line box → the card's top edge                             |
+| A hero number ("215", "225")           | sub-line line box → the hero's box, its own leading on top of that  |
+| Nothing — the sub-line is last in band | sub-line line box → the band's bottom edge. **20 px here, not 17.** |
+
+```css
+.band .sub {
+  margin-bottom: 20px;
+}
+.band .sub:last-child {
+  margin-bottom: 0;
+}
+.band:has(.sub:last-child) {
+  padding-bottom: 20px;
+}
+```
+
+**What that CSS assumes about the markup:** the sub-line is a direct child of `.band`, a sibling of
+whatever follows it. Wrap the title and sub-line in their own header `<div>` and `.sub:last-child`
+becomes true on every screen — including the family home, where a card follows — and the band
+silently takes 20 px of bottom padding where it should take 17. If the markup nests, drop the
+`:has()` and put the 20 px on an explicit class (`.band--endsOnSubLine`) instead. The rule is "20 px
+under the sub-line, whatever follows"; these three selectors are only one way to say it.
+
+**Why it is written here and not read off the approved pictures.** `brand-07` draws 3 px of yellow
+between the date line's descenders and the child cards, and `brand-08` draws 26 px between the date
+line and "215". Stig rejected the 3 px on ST-1065 in these words: _"Needs more space under mandag 12
+oktober Line. This needs to be added to design guide. Also do this for all pages with similar
+layout."_ So on this one measure the guide is **deliberately ahead of the two pictures**, by the
+owner's own instruction. Do not "correct" it back to the picture.
+
+**Measured in the redrawn set** (390 × 844, DPR 2, css px; `boksavstand` is line box to line box,
+`klart gult` is the clear yellow from the sub-line's lowest ink to the next thing's ink or edge):
+
+| Screen                              | Box gap | Clear yellow | What follows        |
+| ----------------------------------- | ------- | ------------ | ------------------- |
+| Hjem / family home                  | 20      | 20           | child card edge     |
+| Child's "mine oppgaver"             | 20      | 45           | the hero "215"      |
+| Oppgaver                            | 20      | 20           | the band's own edge |
+| Belønninger                         | 20      | 27           | the hero "225"      |
+| Fremgang                            | 20      | 23           | stat card edge      |
+| Familie / Innstillinger             | 20      | 23           | the band's own edge |
+| Home, sub-line wrapped to two lines | 20      | 20           | child card edge     |
+| Home, 360 px and 412 px             | 20      | 20           | child card edge     |
+
+The box gap is the number to build and to check. The clear yellow is what the eye reads and it is
+never smaller than the box gap — a hero number carries its own leading above the ink.
+
+![The signed-off home, the same screen redrawn with the old gap, and with the new 20 px](reference/band-subgap-before-after.png)
+
+`reference/band-subgap-before-after.png` — evidence, not a signed picture: `brand-07`, the same
+screen redrawn at the old gap, and the 20 px, at the same scale and crop (ST-1074).
 
 ### What moves into the band
 
@@ -1969,11 +2057,11 @@ flies, nothing goes away on a timer, and you can still see later that it went ou
 
 ### The three states of the row
 
-| State     | Button                                                                     | Line under the row, inside the card                            |
-| --------- | -------------------------------------------------------------------------- | -------------------------------------------------------------- |
-| Not sent  | «Minn på» (`button-row-action`)                                            | none: the row is 68 px                                         |
-| Sent      | a 16 px thumbs up, 8 px, «Sendt»; the same yellow, ink and 36 px, at full strength, not pressable | Done Green tick + «Påminnelse sendt 16.49» (local time, HH.MM) |
-| Failed    | «Prøv igjen» (`button-row-action`, pressable: it sends again)       | Overdue Rust warning sign + «Påminnelsen gikk ikke gjennom»    |
+| State    | Button                                                                                            | Line under the row, inside the card                            |
+| -------- | ------------------------------------------------------------------------------------------------- | -------------------------------------------------------------- |
+| Not sent | «Minn på» (`button-row-action`)                                                                   | none: the row is 68 px                                         |
+| Sent     | a 16 px thumbs up, 8 px, «Sendt»; the same yellow, ink and 36 px, at full strength, not pressable | Done Green tick + «Påminnelse sendt 16.49» (local time, HH.MM) |
+| Failed   | «Prøv igjen» (`button-row-action`, pressable: it sends again)                                     | Overdue Rust warning sign + «Påminnelsen gikk ikke gjennom»    |
 
 A failed send is never drawn as a success, and a child without a phone that takes notifications is
 a failure too: no phone was reached. The reason in words («Jonas har ikke slått på varsler på
@@ -1983,13 +2071,13 @@ on screen, the row already says it.
 
 ### The geometry, measured at 390 px
 
-| Element     | Spec                                                                                                                       |
-| ----------- | -------------------------------------------------------------------------------------------------------------------------- |
-| Card        | 68 → **95 px**. The first line keeps its 46 px and the button stays **16 px** from the card top; it does not re-centre    |
-| Note line   | **6 px** under the first line, a 17 px line, **15 px** to the card bottom (13 px inside the 2 px rust border)               |
-| Icon        | 16 px, in the checkbox column (from 15 px), the colour of the text                                                         |
-| Text        | from **39 px**, Meta sm **13**/500, Done Green `#0F7A54` (5.34:1) or Overdue Rust `#A43A16` (6.57:1) on white              |
-| «Sendt»     | 12 px padding, thumb 16 px, 8 px gap: 88 px wide (drawn 90)                                                                 |
+| Element   | Spec                                                                                                                   |
+| --------- | ---------------------------------------------------------------------------------------------------------------------- |
+| Card      | 68 → **95 px**. The first line keeps its 46 px and the button stays **16 px** from the card top; it does not re-centre |
+| Note line | **6 px** under the first line, a 17 px line, **15 px** to the card bottom (13 px inside the 2 px rust border)          |
+| Icon      | 16 px, in the checkbox column (from 15 px), the colour of the text                                                     |
+| Text      | from **39 px**, Meta sm **13**/500, Done Green `#0F7A54` (5.34:1) or Overdue Rust `#A43A16` (6.57:1) on white          |
+| «Sendt»   | 12 px padding, thumb 16 px, 8 px gap: 88 px wide (drawn 90)                                                            |
 
 The build against the picture, ink rows relative to the card top: the note's ink 66–76 (drawn 66–77)
 for «sendt» and 65–78 (drawn 65–78) for the failure; icon ink from 16 px (drawn 16), text from 40
@@ -2012,24 +2100,96 @@ asked; grown-ups get none.
 
 ### The shape of it, measured at 390 px
 
-| Element            | Spec                                                                                                                                         |
-| ------------------ | -------------------------------------------------------------------------------------------------------------------------------------------- |
-| The yellow top     | A, the yellow top: the household name, then «5 medlemmer», and the initial badge. No «‹ Hjem».                                               |
-| Group line         | «Familiemedlemmer» (**Label 13**/600, ink) on the left, «+ Inviter» on the right, centred on each other; the button **20 px** under the band |
-| «+ Inviter»        | yellow, ink label 15/600, **33 px** drawn (44 px pressed), 10 px corner, 79 px wide                                                         |
-| Rows               | the first **8 px** under «+ Inviter», **8 px** apart; white, 346 px, 13 px radius, **68 px**, 15 px padding                                   |
-| In a row           | the 38 px initial badge, 12 px, then the name (Body 16/600) over one line: «Forelder», or «340 p · 1 av 3 gjort» with «340 p» in Amber Ink  |
-| «QR-kode»          | child rows only: the row action (`button-row-action`), 36 px, **110 px** wide, 16 px QR glyph + 6 px + «QR-kode», 16 px from the row top, 15 px from its right edge |
-| Long name          | one line ending in «…»; the QR button keeps its place and size                                                                               |
-| «+ Legg til barn»  | the screen's one `button-primary`, 346 × 49, in the same pinned slot as «+ Ny oppgave» on Oppgaver                                         |
+| Element           | Spec                                                                                                                                                                |
+| ----------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| The yellow top    | A, the yellow top: the household name, then «5 medlemmer», and the initial badge. No «‹ Hjem».                                                                      |
+| Group line        | «Familiemedlemmer» (**Label 13**/600, ink) on the left, «+ Inviter» on the right, centred on each other; the button **20 px** under the band                        |
+| «+ Inviter»       | yellow, ink label 15/600, **33 px** drawn (44 px pressed), 10 px corner, 79 px wide                                                                                 |
+| Rows              | the first **8 px** under «+ Inviter», **8 px** apart; white, 346 px, 13 px radius, **68 px**, 15 px padding                                                         |
+| In a row          | the 38 px initial badge, 12 px, then the name (Body 16/600) over one line: «Forelder», or «340 p · 1 av 3 gjort» with «340 p» in Amber Ink                          |
+| «QR-kode»         | child rows only: the row action (`button-row-action`), 36 px, **110 px** wide, 16 px QR glyph + 6 px + «QR-kode», 16 px from the row top, 15 px from its right edge |
+| Long name         | one line ending in «…»; the QR button keeps its place and size                                                                                                      |
+| «+ Legg til barn» | the screen's one `button-primary`, 346 × 49, in the same pinned slot as «+ Ny oppgave» on Oppgaver                                                                  |
 
 ### What the build does not take from the picture
 
-- The title is the household name without «⌄»: the picker is ST-1065 and waits for Stig.
+- The title is the household name without «⌄»: the picker lives on Hjem only (see **The household
+  name as the home title**).
 - Kari's line «Forelder – la til 4 oppgaver i dag» needs a count the app does not have; every grown-up
   says «Forelder», as Per's row does.
 - On a short list «+ Legg til barn» sits under the last row, not at the screen's bottom: it is the
   Oppgaver slot, which pins to the nav only when the list is long enough to scroll.
+
+## The household name as the home title (approved 2026-10-14)
+
+The picture is [`husstand-01-approved.png`](reference/husstand-01-approved.png) (ST-1065, redrawn
+with the 20 px in ST-1074). It outranks this section. **The top household selector is gone** — from
+the phone's logo bar, from above the yellow top, and from the desktop tab row. The household is
+chosen from the home title, and only there.
+
+| Element       | Spec                                                                                                                            |
+| ------------- | ------------------------------------------------------------------------------------------------------------------------------- |
+| Title         | the active household's name, the screen title as before (26 px Bricolage 800); «Hjemme» until it has loaded                     |
+| Long name     | wraps over as many lines as it needs; the date line follows, and the 20 px under it still hold                                  |
+| «⌄»           | **only with 2 or more households**; 14 px, ink, **8 px** after the last word. The whole name is one button that opens the sheet |
+| One household | the name alone, no caret, not a button                                                                                          |
+
+### «Bytt husstand», measured at 390 px
+
+A bottom sheet that **blocks**: the 30 % ink veil, the full width, 20 px top corners, the paper
+colour `#F6F6F4`. Escape or a tap on the veil closes it. Distances are from the sheet's top edge.
+
+| Element                      | Spec                                                                                                    |
+| ---------------------------- | ------------------------------------------------------------------------------------------------------- |
+| Grabber                      | 44 × 4 px, Hairline `#DFDFD9`, 18.5 px from the top                                                     |
+| «Bytt husstand»              | 26 px Bricolage 800, ink at y 35.5                                                                      |
+| «Du er med i to husstander.» | 15 px, Text Muted, ink at y 68.5; 14 px under it the list                                               |
+| Rows                         | white, 346 px, 13 px radius, **67.5 px**, **8 px** apart; name Body 16/700 over a 13 px muted line      |
+| The row's line               | «5 medlemmer – 3 av 7 gjort i dag» for the chosen household; «4 medlemmer» for the others               |
+| «✓ Valgt nå»                 | the chosen row only, Done Green `#0F7A54`, 14/600, centred on the row                                   |
+| «Administrer husstander»     | outlined, 346 × 49, 1 px Text Muted edge, 16/700 ink, **12 px** under the last row; opens `/households` |
+| Desktop                      | the same sheet, 440 px wide, centred at the bottom of the window                                        |
+
+Measured against the picture by ink rows: title, lead and rows on the drawn pixel; the row's two lines
+within 1.5 px.
+
+**Not taken from the picture:** the other household's «ingen oppgaver i dag». The app knows today's
+chores for the chosen household only, so the other rows show the member count alone.
+
+## Fremgang (approved 2026-10-14)
+
+The picture is [`fremgang-01-approved.png`](reference/fremgang-01-approved.png) (ST-1067 v2). It
+outranks this section. No «‹ Hjem»; the bottom menu is the way home.
+
+### The shape of it, measured at 390 px
+
+| Element        | Spec                                                                                                                                                                                            |
+| -------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| The yellow top | A: «Fremgang», the week line «uke 42 – 12. til 18. oktober» (ISO week, Monday to Sunday), **20 px**, then three cards; the band ends 17 px under them                                           |
+| Week cards     | white, three across, **9 px** apart, **121.5 px** high, 14 px radius (the child-card tile); 34 px Bricolage 800 number over two 13 px muted lines                                               |
+| The three      | «735 / poeng / denne uka», «82% / fullført / 28 av 34», «28 / oppgaver / gjort i uka» — the week's points, share done and chores done                                                           |
+| «Ukens ledere» | the group label (Label 13) with «uke 42» on the right                                                                                                                                           |
+| Leader rows    | white, 346 px, 13 px radius, **67.5 px**, **8 px** apart: the rank (21 px Bricolage 800), 12 px, the name (16/700) over «11 oppgaver fullført» (13 px muted), «340 p» right in Amber Ink 15/600 |
+| «Prestasjoner» | the group label, then one card per achievement, 8 px apart                                                                                                                                      |
+| An achievement | 15 px inside: a 37.5 px Track `#ECECE8` tile with the ink star, 12.5 px, the name (16/700) over its description (13 px muted); 14.5 px under the tile the meter                                 |
+| The meter      | **ten pills**, 23 × 14 px, 4 px apart, Yellow for done and Track for not yet, then «3 av 5» (13 px muted) at the card's right edge                                                              |
+
+Measured against the picture by ink rows: the week cards and their three lines within 1 px; the band
+1.5 px short; the leader rows 2 px lower than drawn (the shared group label); the achievement card's
+tile, text and pills on the drawn pixel.
+
+### What the build does not take from the picture
+
+- **The achievements are the app's own.** The picture draws one, «Tusen poeng – Samle 1 000 poeng til
+  sammen», which the app does not have. Its achievements are day streaks («God start», «Fem på rad»,
+  «Hele uka», …), so each card shows its own name and «X av N» days; the ten pills fill by the share,
+  rounded down. A reached one fills all ten and says «Låst opp». All of them are listed, in the drawn
+  card.
+- **Every achievement gets the drawn star.** The app's emoji icons are not in the picture.
+- **The title is the shared screen title, 26 px.** «Fremgang» measures about 15 % taller in the
+  picture than the other screens' titles; it stays the same size as on every other screen.
+- **The pills share the line with the count**, at most the drawn 23 px: they measure 22 px at 390
+  beside «3 av 5» and 19 px at 360, so «12 av 30» still fits on the line.
 
 ## Do's and Don'ts
 
@@ -2100,16 +2260,16 @@ happen — so they are specified here rather than left to the build.
 
 ### The yellow band
 
-| Case                           | What must happen                                                                                                                                        |
-| ------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| A long screen title            | The band grows; it has no fixed height. The title wraps rather than truncating or shrinking.                                                            |
-| A long sub-line                | Wraps to a second line; the band grows by that line plus nothing else. The 17 px bottom padding is preserved.                                           |
-| **One or two children**        | The cards keep 109 px and stay left-aligned in the column — they do **not** stretch to fill it. A 346 px-wide child card is not in any picture.         |
-| **Four or more children**      | Horizontal scroll at the same 109 × 154 and 9 px gap, the band unchanged. Do not shrink the card and do not wrap to a second row without a new drawing. |
-| **No children yet**            | The band carries the title and sub-line only, and ends 17 px under the sub-line. The empty state goes on the paper below it, not inside the yellow.     |
-| A long child name              | One line, ellipsised inside the 109 px card. The name never pushes the number out of the card.                                                          |
-| A four-digit total             | Number 30 is tabular; 1 240 fits 109 px. Five digits ellipsise the name further before they shrink the number.                                          |
-| A chore meter with many chores | Segments divide the width as the Meters section says; they get thinner, never taller, and never wrap.                                                   |
+| Case                           | What must happen                                                                                                                                                                                             |
+| ------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| A long screen title            | The band grows; it has no fixed height. The title wraps rather than truncating or shrinking.                                                                                                                 |
+| A long sub-line                | Wraps to a second line; the band grows by that line plus nothing else. The 20 px under the sub-line are preserved, and so is the 17 px band padding under the last element.                                  |
+| **One or two children**        | The cards keep 109 px and stay left-aligned in the column — they do **not** stretch to fill it. A 346 px-wide child card is not in any picture.                                                              |
+| **Four or more children**      | Horizontal scroll at the same 109 × 154 and 9 px gap, the band unchanged. Do not shrink the card and do not wrap to a second row without a new drawing.                                                      |
+| **No children yet**            | The band carries the title and sub-line only, and ends **20 px** under the sub-line — the sub-line's own air, not the 17 px band padding. The empty state goes on the paper below it, not inside the yellow. |
+| A long child name              | One line, ellipsised inside the 109 px card. The name never pushes the number out of the card.                                                                                                               |
+| A four-digit total             | Number 30 is tabular; 1 240 fits 109 px. Five digits ellipsise the name further before they shrink the number.                                                                                               |
+| A chore meter with many chores | Segments divide the width as the Meters section says; they get thinner, never taller, and never wrap.                                                                                                        |
 
 ### The login
 

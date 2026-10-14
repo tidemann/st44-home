@@ -11,7 +11,12 @@ import { HouseholdService } from '../../services/household.service';
 import { AnalyticsService } from '../../services/analytics.service';
 import { HouseholdStore } from '../../stores/household.store';
 import { PageComponent } from '../../components/page/page';
+import { GroupLabel } from '../../components/poeng/group-label/group-label';
+import { isoWeek, weekSubline } from './week-subline';
 import type { HouseholdAnalytics, ChildStreak } from '@st44/types';
+
+/** The achievement meter is ten pills, each a tenth of the way (ST-1067) */
+const PILLS = 10;
 
 /**
  * Leaderboard entry for weekly rankings
@@ -36,6 +41,9 @@ interface Achievement {
   unlocked: boolean;
   progress?: number; // 0-100 percentage
   criteria: string;
+  /** Days on a row so far, and the days it takes */
+  reached: number;
+  goal: number;
 }
 
 /**
@@ -45,25 +53,20 @@ interface HouseholdStats {
   totalPoints: number;
   completionRate: number; // 0-100 percentage
   tasksCompletedThisWeek: number;
+  totalTasksThisWeek: number;
   totalMembers: number;
 }
 
 /**
  * Progress Screen (Leaderboard & Achievements)
  *
- * Displays gamification features:
- * - Weekly leaderboard with rankings and medals
- * - Current user highlighted in leaderboard
- * - Achievement badges (unlocked/locked states with progress)
- * - Household-level statistics
- *
- * Design matches the "Diddit!" playful aesthetic from UX redesign.
- * Friendly, non-competitive design that celebrates everyone's progress.
+ * As Stig approved it (ST-1067 v2, guide: Fremgang): the week's points, share done and chores
+ * in the yellow top; «Ukens ledere» ranked by points; «Prestasjoner» with a ten-pill meter.
  * Navigation is handled by the parent MainLayout component.
  */
 @Component({
   selector: 'app-progress',
-  imports: [PageComponent],
+  imports: [PageComponent, GroupLabel],
   templateUrl: './progress.html',
   styleUrl: './progress.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -83,8 +86,14 @@ export class Progress implements OnInit {
     totalPoints: 0,
     completionRate: 0,
     tasksCompletedThisWeek: 0,
+    totalTasksThisWeek: 0,
     totalMembers: 0,
   });
+
+  /** «uke 42 – 12. til 18. oktober» under the title, and «uke 42» beside «Ukens ledere» */
+  protected readonly weekLine = weekSubline(new Date());
+  protected readonly weekLabel = $localize`:@@progress.weekLabel:uke ${isoWeek(new Date())}:week:`;
+  protected readonly pillSlots = Array.from({ length: PILLS }, (_, i) => i);
   protected readonly householdName = signal<string>(
     $localize`:@@progress.defaultHouseholdName:Min familie`,
   );
@@ -203,6 +212,8 @@ export class Progress implements OnInit {
       unlocked: best >= days,
       progress: Math.min(100, Math.round((best / days) * 100)),
       criteria: $localize`:@@progress.achievement.criteria:${days}:days: dager på rad`,
+      reached: Math.min(best, days),
+      goal: days,
     });
 
     // Generate achievements based on streak milestones
@@ -265,6 +276,7 @@ export class Progress implements OnInit {
       totalPoints: analytics.periodComparison.current.totalPoints,
       completionRate: analytics.periodComparison.current.completionRate,
       tasksCompletedThisWeek: analytics.periodComparison.current.completedTasks,
+      totalTasksThisWeek: analytics.periodComparison.current.totalTasks,
       totalMembers: memberCount,
     };
 
@@ -278,24 +290,15 @@ export class Progress implements OnInit {
       : $localize`:@@progress.achievementLockedAriaLabel:${achievement.name}:name: – ikke låst opp ennå`;
   }
 
-  /** Screen-reader name of an achievement's progress bar */
-  protected progressLabel(progress: number | undefined): string {
-    return $localize`:@@progress.progressAriaLabel:Fremgang: ${progress ?? 0}:percent: prosent`;
+  /** Pills filled on the meter: all of them once it is unlocked */
+  protected filledPills(achievement: Achievement): number {
+    return achievement.unlocked ? PILLS : Math.floor(((achievement.progress ?? 0) / 100) * PILLS);
   }
 
-  /**
-   * Get medal emoji for leaderboard rank
-   */
-  protected getMedalForRank(rank: number): string {
-    switch (rank) {
-      case 1:
-        return '🥇';
-      case 2:
-        return '🥈';
-      case 3:
-        return '🥉';
-      default:
-        return `#${rank}`;
-    }
+  /** «3 av 5» beside the meter, «Låst opp» once it is reached */
+  protected achievementCount(achievement: Achievement): string {
+    return achievement.unlocked
+      ? $localize`:@@progress.unlocked:Låst opp`
+      : $localize`:@@progress.achievementCount:${achievement.reached}:reached: av ${achievement.goal}:goal:`;
   }
 }

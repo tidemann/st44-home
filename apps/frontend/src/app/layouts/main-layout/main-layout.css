@@ -45,12 +45,6 @@
   gap: 8px;
 }
 
-/* Household switcher above a Poeng title row: only visible with 2+ households */
-.switcher-slot {
-  display: block;
-  padding: 0 var(--gutter);
-}
-
 /* Bottom navigation container */
 .bottom-nav-container {
   position: fixed;
@@ -61,14 +55,13 @@
 }
 
 /* 1024 px and wider (guide: The breakpoint): the tab row in the yellow top replaces the
-   bottom menu, the logo bar and the switcher slot */
+   bottom menu and the logo bar */
 @media (min-width: 1024px) {
   .main-content {
     padding-bottom: var(--sheet-clearance, 0px);
   }
 
-  .mobile-header,
-  .switcher-slot {
+  .mobile-header {
     display: none;
   }
 

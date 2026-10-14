@@ -1,6 +1,7 @@
 <app-page
-  i18n-title="@@home.title"
-  title="Hjemme"
+  [title]="homeTitle()"
+  [titleMenu]="showHouseholdCaret()"
+  (titleMenuOpen)="householdSheetOpen.set(true)"
   [subtitle]="subtitle()"
   maxWidth="medium"
   [band]="true"
@@ -225,5 +226,16 @@
     (closeRequested)="closeEditTask()"
     (formSubmitted)="onTaskUpdated($event)"
     (taskDeleted)="onTaskDeleted()"
+  />
+
+  <!-- «Bytt husstand», behind the caret in the title (ST-1065) -->
+  <app-household-sheet
+    [open]="householdSheetOpen()"
+    [households]="households()"
+    [activeId]="householdId()"
+    [activeDay]="householdDayLine()"
+    (pick)="switchHousehold($event)"
+    (manage)="manageHouseholds()"
+    (closed)="householdSheetOpen.set(false)"
   />
 </app-page>

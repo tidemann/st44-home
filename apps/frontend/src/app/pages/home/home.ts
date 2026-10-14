@@ -8,7 +8,7 @@ import {
   OnInit,
 } from '@angular/core';
 import { NgTemplateOutlet } from '@angular/common';
-import { RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
 import {
   TaskFormModal,
@@ -23,7 +23,8 @@ import type { ChoreState } from '../../components/poeng/chore-meter/chore-meter'
 import { TaskService } from '../../services/task.service';
 import { ChildrenService } from '../../services/children.service';
 import { AuthService } from '../../services/auth.service';
-import { HouseholdService } from '../../services/household.service';
+import { HouseholdService, type HouseholdListItem } from '../../services/household.service';
+import { HouseholdSheet } from '../../components/household-sheet/household-sheet';
 import { HouseholdStore } from '../../stores/household.store';
 import { HouseholdDayService } from '../../services/household-day.service';
 import { PushNotificationService } from '../../services/push-notification.service';
@@ -74,6 +75,7 @@ export function childCardColumns(count: number): number {
     ChildPointsCard,
     TaskFormModal,
     FailedTasksSectionComponent,
+    HouseholdSheet,
   ],
   templateUrl: './home.html',
   styleUrl: './home.css',
@@ -87,6 +89,7 @@ export class Home implements OnInit {
   private readonly householdStore = inject(HouseholdStore);
   private readonly householdDay = inject(HouseholdDayService);
   private readonly push = inject(PushNotificationService);
+  private readonly router = inject(Router);
 
   // State signals
   protected readonly loading = signal(false);
@@ -101,6 +104,24 @@ export class Home implements OnInit {
   protected readonly members = signal<HouseholdMemberResponse[]>([]);
   protected readonly children = signal<Child[]>([]);
   protected readonly householdId = signal<string | null>(null);
+  /** The title is the household's name (ST-1065); «Hjemme» until it has loaded */
+  protected readonly householdName = signal<string | null>(null);
+  protected readonly householdCount = signal(0);
+  protected readonly homeTitle = computed(
+    () => this.householdName() ?? $localize`:@@home.title:Hjemme`,
+  );
+  /** The caret and the picker exist only with 2 or more households */
+  protected readonly showHouseholdCaret = computed(() => this.householdCount() >= 2);
+  protected readonly households = signal<HouseholdListItem[]>([]);
+  protected readonly householdSheetOpen = signal(false);
+  /** The chosen household's line in «Bytt husstand»: «3 av 7 gjort i dag» */
+  protected readonly householdDayLine = computed(() => {
+    const done = this.doneToday().length;
+    const total = done + this.todayTasks().length + this.overdueTasks().length;
+    return total > 0
+      ? $localize`:@@home.householdDay:${done}:done: av ${total}:total: gjort i dag`
+      : $localize`:@@home.householdNoTasks:ingen oppgaver i dag`;
+  });
   protected readonly completingId = signal<string | null>(null);
 
   // Modal state
@@ -230,6 +251,9 @@ export class Home implements OnInit {
       // Find the active household in the list (fallback to first if not found)
       const household = households.find((h) => h.id === activeHouseholdId) || households[0];
       this.householdId.set(household.id);
+      this.householdName.set(household.name);
+      this.householdCount.set(households.length);
+      this.households.set(households);
 
       // Children (for the edit modal), the day, the points and tomorrow, in parallel
       const [childrenData] = await Promise.all([
@@ -246,6 +270,18 @@ export class Home implements OnInit {
     } finally {
       this.loading.set(false);
     }
+  }
+
+  /** «Bytt husstand»: the chosen household becomes active and the home reloads for it */
+  protected async switchHousehold(householdId: string): Promise<void> {
+    this.householdSheetOpen.set(false);
+    this.householdStore.setActiveHousehold(householdId);
+    await this.loadData();
+  }
+
+  protected manageHouseholds(): void {
+    this.householdSheetOpen.set(false);
+    void this.router.navigate(['/households']);
   }
 
   /** Today's chores and what is left over from the week */

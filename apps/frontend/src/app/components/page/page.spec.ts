@@ -13,6 +13,31 @@ describe('PageComponent', () => {
     fixture = TestBed.createComponent(PageComponent);
   });
 
+  describe('titleMenu (ST-1065)', () => {
+    it('is a plain title without the caret by default', () => {
+      fixture.componentRef.setInput('title', 'Familien Dahl');
+      fixture.detectChanges();
+
+      expect(fixture.debugElement.query(By.css('.page-title-menu'))).toBeNull();
+      expect(fixture.debugElement.query(By.css('.page-title-caret'))).toBeNull();
+    });
+
+    it('makes the title a button with the caret, and a tap emits titleMenuOpen', () => {
+      fixture.componentRef.setInput('title', 'Familien Dahl');
+      fixture.componentRef.setInput('titleMenu', true);
+      fixture.detectChanges();
+      let opened = 0;
+      fixture.componentInstance.titleMenuOpen.subscribe(() => opened++);
+
+      const button = fixture.debugElement.query(By.css('h1.page-title .page-title-menu'));
+      expect(button.nativeElement.textContent).toContain('Familien Dahl');
+      expect(fixture.debugElement.query(By.css('.page-title-caret'))).toBeTruthy();
+
+      button.nativeElement.click();
+      expect(opened).toBe(1);
+    });
+  });
+
   describe('title input', () => {
     it('should display the title in the header', () => {
       fixture.componentRef.setInput('title', 'Test Title');

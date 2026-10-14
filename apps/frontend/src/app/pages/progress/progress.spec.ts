@@ -323,22 +323,32 @@ describe('Progress', () => {
     });
   });
 
-  describe('getMedalForRank', () => {
-    it('should return gold medal for rank 1', () => {
-      expect(component['getMedalForRank'](1)).toBe('🥇');
+  describe('achievement meter (ST-1067)', () => {
+    const achievement = (progress: number, reached: number, goal: number, unlocked = false) => ({
+      id: 'a',
+      name: 'Fem på rad',
+      description: '',
+      icon: '',
+      unlocked,
+      progress,
+      criteria: '',
+      reached,
+      goal,
     });
 
-    it('should return silver medal for rank 2', () => {
-      expect(component['getMedalForRank'](2)).toBe('🥈');
+    it('fills a tenth of the ten pills per tenth of the way, rounded down', () => {
+      expect(component['filledPills'](achievement(60, 3, 5))).toBe(6);
+      expect(component['filledPills'](achievement(14, 1, 7))).toBe(1);
+      expect(component['filledPills'](achievement(0, 0, 5))).toBe(0);
     });
 
-    it('should return bronze medal for rank 3', () => {
-      expect(component['getMedalForRank'](3)).toBe('🥉');
+    it('fills every pill once it is unlocked', () => {
+      expect(component['filledPills'](achievement(100, 5, 5, true))).toBe(10);
     });
 
-    it('should return hash with number for rank 4+', () => {
-      expect(component['getMedalForRank'](4)).toBe('#4');
-      expect(component['getMedalForRank'](5)).toBe('#5');
+    it('counts «3 av 5», and says «Låst opp» once reached', () => {
+      expect(component['achievementCount'](achievement(60, 3, 5))).toBe('3 av 5');
+      expect(component['achievementCount'](achievement(100, 5, 5, true))).toBe('Låst opp');
     });
   });
 
@@ -358,6 +368,7 @@ describe('Progress', () => {
         totalPoints: 0,
         completionRate: 0,
         tasksCompletedThisWeek: 0,
+        totalTasksThisWeek: 0,
         totalMembers: 0,
       });
 
