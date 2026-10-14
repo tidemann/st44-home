@@ -71,7 +71,8 @@ describe('HouseholdSheet («Bytt husstand», ST-1065)', () => {
     fixture.componentInstance.closed.subscribe(() => closed++);
     fixture.componentInstance.manage.subscribe(() => managed++);
 
-    el.querySelector('.sheet')?.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape' }));
+    // Escape works wherever focus is: the listener is on the document
+    document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape' }));
     el.querySelector<HTMLElement>('.sheet-veil')?.click();
     el.querySelector<HTMLButtonElement>('.sheet-manage')?.click();
 

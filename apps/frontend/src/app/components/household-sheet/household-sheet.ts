@@ -2,6 +2,7 @@ import {
   Component,
   ChangeDetectionStrategy,
   ElementRef,
+  HostListener,
   computed,
   effect,
   input,
@@ -44,13 +45,27 @@ export class HouseholdSheet {
       : $localize`:@@householdSheet.lead:Du er med i ${count}:count: husstander.`;
   });
 
+  /** Where focus was when the sheet opened (the title button); it goes back there on close */
+  private returnFocus: HTMLElement | null = null;
+
   constructor() {
-    // Focus moves into the sheet when it opens, so Escape and Tab work from the start
+    // Focus moves into the sheet when it opens, and back to where it came from when it closes
     effect(() => {
       if (this.open()) {
+        this.returnFocus = document.activeElement as HTMLElement | null;
         queueMicrotask(() => this.sheet()?.nativeElement.focus());
+      } else if (this.returnFocus) {
+        const target = this.returnFocus;
+        this.returnFocus = null;
+        queueMicrotask(() => target.isConnected && target.focus());
       }
     });
+  }
+
+  /** Escape closes the sheet wherever focus is, as the blocking popups do */
+  @HostListener('document:keydown.escape')
+  protected onEscape(): void {
+    if (this.open()) this.closed.emit();
   }
 
   /** «5 medlemmer – 3 av 7 gjort i dag» */
@@ -72,10 +87,22 @@ export class HouseholdSheet {
     this.pick.emit(household.id);
   }
 
+  /** Tab stays inside the sheet while it is open: past the last button it wraps to the first */
   protected onKeydown(event: KeyboardEvent): void {
-    if (event.key === 'Escape') {
-      event.stopPropagation();
-      this.closed.emit();
+    if (event.key !== 'Tab') return;
+    const buttons = Array.from(
+      this.sheet()?.nativeElement.querySelectorAll<HTMLElement>('button') ?? [],
+    );
+    if (buttons.length === 0) return;
+    const first = buttons[0];
+    const last = buttons[buttons.length - 1];
+    const active = document.activeElement;
+    if (event.shiftKey && (active === first || active === this.sheet()?.nativeElement)) {
+      event.preventDefault();
+      last.focus();
+    } else if (!event.shiftKey && active === last) {
+      event.preventDefault();
+      first.focus();
     }
   }
 }
