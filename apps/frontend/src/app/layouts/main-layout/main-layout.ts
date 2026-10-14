@@ -12,7 +12,6 @@ import { Router, RouterOutlet, NavigationEnd } from '@angular/router';
 import { filter, Subscription } from 'rxjs';
 import { BottomNav } from '../../components/navigation/bottom-nav/bottom-nav';
 import { TopTabs, type TopTab } from '../../components/navigation/top-tabs/top-tabs';
-import { HouseholdSwitcherComponent } from '../../components/household-switcher/household-switcher';
 import { UserButton, type UserButtonData } from '../../components/user-button/user-button';
 import { AuthService } from '../../services/auth.service';
 import { HouseholdStore } from '../../stores/household.store';
@@ -32,7 +31,7 @@ import type { NavScreen } from '../../components/navigation/bottom-nav/bottom-na
  */
 @Component({
   selector: 'app-main-layout',
-  imports: [RouterOutlet, BottomNav, TopTabs, HouseholdSwitcherComponent, UserButton],
+  imports: [RouterOutlet, BottomNav, TopTabs, UserButton],
   templateUrl: './main-layout.html',
   styleUrl: './main-layout.css',
   changeDetection: ChangeDetectionStrategy.OnPush,

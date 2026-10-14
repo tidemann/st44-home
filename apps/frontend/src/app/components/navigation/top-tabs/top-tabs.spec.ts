@@ -91,13 +91,4 @@ describe('TopTabs', () => {
     (fixture.nativeElement.querySelectorAll('.tab')[4] as HTMLElement).click();
     expect(emitted).toEqual(['rewards']);
   });
-
-  it('should leave out the household switcher unless asked for', () => {
-    fixture.detectChanges();
-    expect(fixture.nativeElement.querySelector('app-household-switcher')).toBeNull();
-
-    componentRef.setInput('showSwitcher', true);
-    fixture.detectChanges();
-    expect(fixture.nativeElement.querySelector('app-household-switcher')).toBeTruthy();
-  });
 });

@@ -35,10 +35,6 @@ const meta: Meta<TopTabs> = {
       options: ['home', 'tasks', 'family', 'progress', 'rewards', 'none'],
       description: "The chosen tab's id",
     },
-    showSwitcher: {
-      control: 'boolean',
-      description: 'Show the household switcher (nothing for one household)',
-    },
   },
   parameters: {
     layout: 'fullscreen',
@@ -52,25 +48,25 @@ type Story = StoryObj<TopTabs>;
 
 /** The family home: Hjem chosen */
 export const Home: Story = {
-  args: { tabs: parentTabs, activeId: 'home', showSwitcher: false },
+  args: { tabs: parentTabs, activeId: 'home' },
 };
 
 /** Oppgaver chosen */
 export const Tasks: Story = {
-  args: { tabs: parentTabs, activeId: 'tasks', showSwitcher: false },
+  args: { tabs: parentTabs, activeId: 'tasks' },
 };
 
 /** Belønninger chosen: the widest tab */
 export const Rewards: Story = {
-  args: { tabs: parentTabs, activeId: 'rewards', showSwitcher: false },
+  args: { tabs: parentTabs, activeId: 'rewards' },
 };
 
 /** A screen outside the menu (settings): no tab chosen */
 export const NoneChosen: Story = {
-  args: { tabs: parentTabs, activeId: 'none', showSwitcher: false },
+  args: { tabs: parentTabs, activeId: 'none' },
 };
 
 /** A child's two screens */
 export const Child: Story = {
-  args: { tabs: childTabs, activeId: 'tasks', showSwitcher: false },
+  args: { tabs: childTabs, activeId: 'tasks' },
 };

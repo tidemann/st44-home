@@ -2,7 +2,6 @@ import { Component, ChangeDetectionStrategy, input, output } from '@angular/core
 import { NavIcon, type NavIconName } from '../nav-icon';
 import { DidditMark } from '../../diddit-mark/diddit-mark';
 import { InitialBadge } from '../../initial-badge/initial-badge';
-import { HouseholdSwitcherComponent } from '../../household-switcher/household-switcher';
 
 /** One tab in the yellow top */
 export interface TopTab<T extends string = string> {
@@ -19,7 +18,7 @@ export interface TopTab<T extends string = string> {
  */
 @Component({
   selector: 'app-top-tabs',
-  imports: [NavIcon, DidditMark, InitialBadge, HouseholdSwitcherComponent],
+  imports: [NavIcon, DidditMark, InitialBadge],
   templateUrl: './top-tabs.html',
   styleUrl: './top-tabs.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -30,9 +29,6 @@ export class TopTabs<T extends string = string> {
 
   /** The chosen tab's id; any other value chooses none */
   activeId = input.required<T | 'none'>();
-
-  /** Show the household switcher (it renders nothing for one household) */
-  showSwitcher = input<boolean>(false);
 
   /** Emitted with the tab's id when a tab is pressed */
   navigate = output<T>();
