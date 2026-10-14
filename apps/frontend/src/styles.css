@@ -926,8 +926,11 @@ h6 {
   cursor: pointer;
 }
 
-.poeng-primary:hover {
-  background: var(--yellow-inset);
+/* Only a real pointer hovers: a phone keeps :hover after a tap (ST-1098) */
+@media (hover: hover) {
+  .poeng-primary:hover {
+    background: var(--yellow-inset);
+  }
 }
 
 .poeng-primary:focus-visible {

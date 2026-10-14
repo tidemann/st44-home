@@ -64,8 +64,10 @@
   transition: background-color 0.2s;
 }
 
-.btn-retry:hover {
-  background: var(--yellow-inset);
+@media (hover: hover) {
+  .btn-retry:hover {
+    background: var(--yellow-inset);
+  }
 }
 
 /* ===== MEMBERS SECTION (approved picture, ST-1068) ===== */
@@ -123,8 +125,11 @@
   bottom: -6px;
 }
 
-.btn-invite:hover {
-  background: var(--yellow-inset);
+/* Only a real pointer hovers: a phone keeps :hover after a tap (ST-1098) */
+@media (hover: hover) {
+  .btn-invite:hover {
+    background: var(--yellow-inset);
+  }
 }
 
 .btn-invite:focus-visible {
