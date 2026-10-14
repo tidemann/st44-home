@@ -270,12 +270,20 @@ components:
     asset: 'reference/diddit-mark.svg'
   nav-item:
     pitch: '{layout.navItemPitch}'
-    height: '71px'
-    iconInk: '18px'
-    iconSize: '21px'
+    height: '78px'
+    iconInk: '21px'
+    iconSize: '24px'
     iconColor: '{colors.text-muted}'
     textColor: '{colors.text-muted}'
     typography: '{typography.caption}'
+  nav-item-chosen:
+    backgroundColor: '{colors.yellow}'
+    textColor: '{colors.ink}'
+    rounded: '14px'
+    width: '{layout.navItemPitch}'
+    height: '56px'
+    spaceAbove: '11px'
+    spaceBelow: '11px'
   nav-item-active:
     pillColor: '{colors.ink}'
     pillWidth: '46px'
