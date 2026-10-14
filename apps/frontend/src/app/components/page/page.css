@@ -90,6 +90,11 @@
   vertical-align: 0.05em;
 }
 
+/* The last word and the caret wrap as one, so the caret never sits alone on a line (ST-1103) */
+.page-title-last {
+  white-space: nowrap;
+}
+
 .page-header-actions {
   flex-shrink: 0;
   display: flex;

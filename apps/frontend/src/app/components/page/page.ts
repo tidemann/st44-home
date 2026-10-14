@@ -120,6 +120,17 @@ export class PageComponent {
     return widthClasses[this.maxWidth()];
   });
 
+  /** The title up to its last word, and the last word, which wraps together with the caret (ST-1103) */
+  protected titleHead = computed(() => {
+    const title = this.title();
+    const cut = title.lastIndexOf(' ');
+    return cut < 0 ? '' : title.slice(0, cut + 1);
+  });
+  protected titleLast = computed(() => {
+    const title = this.title();
+    return title.slice(title.lastIndexOf(' ') + 1);
+  });
+
   /**
    * Computed CSS class for header style. Poeng has no gradient header, so both
    * classes render the same flat title row; the input stays for existing callers.
