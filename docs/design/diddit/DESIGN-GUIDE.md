@@ -442,6 +442,11 @@ the row, and the failure state as drawn.
 [`paaminnelse-02-feil.png`](reference/paaminnelse-02-feil.png) (column C). Options A (toast) and B
 (fireworks) were not chosen. See **«Minn på» feedback**.
 
+**Round six — ST-1068, 2026-10-14.** Familie, drawn by Ida on ST-955 and approved by Stig "as
+drawn": [`familie-01-approved.png`](reference/familie-01-approved.png) (the screen and its worst
+case, a long name and a one-letter name). See **Familie**. The «Familien Dahl ⌄» title with the
+household picker is a separate decision (ST-1065) and is not part of this approval.
+
 **Order of precedence.** `poeng-signed-off.png` → the approved pictures above → this guide → generic
 rules. Where an approved picture and the signed-off picture disagree about something the signed-off
 picture already settles (a card width, a gutter, a row), the signed-off picture wins and the
@@ -1998,6 +2003,33 @@ The picture draws a plain row on Oppgaver with «Påminn nå». In the app «Min
 **Forfalt** rows of the family home (ST-800), so that is where C is built: the same card, with its
 2 px rust border, gets the line. The button keeps its word «Minn på»; Stig approved the feedback, not
 a new word. The state lasts until the page is loaded again.
+
+## Familie (approved 2026-10-14)
+
+The picture is [`familie-01-approved.png`](reference/familie-01-approved.png) (ST-1068). It outranks
+this section. One row per family member; the child's QR button sits inside the child's row, as Stig
+asked; grown-ups get none.
+
+### The shape of it, measured at 390 px
+
+| Element            | Spec                                                                                                                                         |
+| ------------------ | -------------------------------------------------------------------------------------------------------------------------------------------- |
+| The yellow top     | A, the yellow top: the household name, then «5 medlemmer», and the initial badge. No «‹ Hjem».                                               |
+| Group line         | «Familiemedlemmer» (**Label 13**/600, ink) on the left, «+ Inviter» on the right, centred on each other; the button **20 px** under the band |
+| «+ Inviter»        | yellow, ink label 15/600, **33 px** drawn (44 px pressed), 10 px corner, 79 px wide                                                         |
+| Rows               | the first **8 px** under «+ Inviter», **8 px** apart; white, 346 px, 13 px radius, **68 px**, 15 px padding                                   |
+| In a row           | the 38 px initial badge, 12 px, then the name (Body 16/600) over one line: «Forelder», or «340 p · 1 av 3 gjort» with «340 p» in Amber Ink  |
+| «QR-kode»          | child rows only: the row action (`button-row-action`), 36 px, **110 px** wide, 16 px QR glyph + 6 px + «QR-kode», 16 px from the row top, 15 px from its right edge |
+| Long name          | one line ending in «…»; the QR button keeps its place and size                                                                               |
+| «+ Legg til barn»  | the screen's one `button-primary`, 346 × 49, in the same pinned slot as «+ Ny oppgave» on Oppgaver                                         |
+
+### What the build does not take from the picture
+
+- The title is the household name without «⌄»: the picker is ST-1065 and waits for Stig.
+- Kari's line «Forelder – la til 4 oppgaver i dag» needs a count the app does not have; every grown-up
+  says «Forelder», as Per's row does.
+- On a short list «+ Legg til barn» sits under the last row, not at the screen's bottom: it is the
+  Oppgaver slot, which pins to the nav only when the list is long enough to scroll.
 
 ## Do's and Don'ts
 

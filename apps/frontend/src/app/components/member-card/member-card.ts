@@ -55,14 +55,6 @@ export class MemberCard {
   });
 
   /**
-   * Get role badge color class
-   */
-  roleClass = computed(() => {
-    const role = this.member().role;
-    return role === 'parent' ? 'role-parent' : 'role-child';
-  });
-
-  /**
    * Screen reader label when the card is clickable
    */
   ariaLabel = computed(

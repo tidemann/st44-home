@@ -890,8 +890,11 @@ h6 {
   bottom: -4px;
 }
 
-.rbtn:hover:not(:disabled) {
-  background: var(--yellow-inset);
+/* Only a real pointer hovers: a phone keeps :hover after a tap, and the button would stay dark (ST-1081) */
+@media (hover: hover) {
+  .rbtn:hover:not(:disabled) {
+    background: var(--yellow-inset);
+  }
 }
 
 .rbtn:focus-visible {

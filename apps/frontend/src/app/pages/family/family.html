@@ -18,32 +18,24 @@
 
 <!-- Main Content -->
 @if (!loading() && !error()) {
-  <app-page [title]="householdName()" [subtitle]="memberCount() + ' medlemmer'" maxWidth="wide">
-    <!-- Actions sit under the title, not in the title row: at 360 px the title row only has
-         room for the family name and the initial badge (ST-840). -->
-    <div class="family-actions">
-      <button
-        type="button"
-        class="btn-action"
-        (click)="openInviteModal()"
-        i18n="@@family.inviteButton"
-      >
-        + Inviter
-      </button>
-      <button
-        type="button"
-        class="btn-action"
-        (click)="openAddChildModal()"
-        i18n="@@family.addChildButton"
-      >
-        + Legg til barn
-      </button>
-    </div>
-
-    <!-- Family Members Section -->
+  <app-page
+    [title]="householdName()"
+    [subtitle]="memberCount() + ' medlemmer'"
+    [band]="true"
+    maxWidth="wide"
+  >
+    <!-- Family Members Section (approved picture, ST-1068): «+ Inviter» sits on the group line -->
     <section class="members-section">
       <div class="section-header">
         <h2 i18n="@@family.membersTitle">Familiemedlemmer</h2>
+        <button
+          type="button"
+          class="btn-invite"
+          (click)="openInviteModal()"
+          i18n="@@family.inviteButton"
+        >
+          + Inviter
+        </button>
       </div>
 
       @if (members().length > 0) {
@@ -60,7 +52,7 @@
                 <button
                   member-action
                   type="button"
-                  class="btn-qr"
+                  class="rbtn btn-qr"
                   (click)="openQrCodeModal(member.id)"
                   i18n-aria-label="@@family.qrCodeAriaLabel"
                   aria-label="Vis innloggings-QR-kode for {{ member.name }}"
@@ -69,8 +61,8 @@
                 >
                   <svg
                     viewBox="0 0 20 20"
-                    width="20"
-                    height="20"
+                    width="16"
+                    height="16"
                     aria-hidden="true"
                     focusable="false"
                   >
@@ -82,6 +74,7 @@
                       d="M12.5 12.5 h0.01 M17.5 12.5 h0.01 M15 15 h0.01 M12.5 17.5 h0.01 M17.5 17.5 h0.01"
                     />
                   </svg>
+                  <span i18n="@@family.qrCodeLabel">QR-kode</span>
                 </button>
               }
             </app-member-card>
@@ -97,6 +90,18 @@
         </div>
       }
     </section>
+
+    <!-- The screen's one primary button, pinned above the bottom nav like «+ Ny oppgave» -->
+    <div class="new-slot">
+      <button
+        type="button"
+        class="poeng-primary"
+        (click)="openAddChildModal()"
+        i18n="@@family.addChildButton"
+      >
+        + Legg til barn
+      </button>
+    </div>
 
     <!-- Modals -->
     <app-invite-modal

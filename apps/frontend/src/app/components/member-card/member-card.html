@@ -15,23 +15,22 @@
 
     <div class="member-info">
       <div class="member-name">{{ member().name }}</div>
-      <div class="member-role" [class]="roleClass()">
+      <div class="member-meta">
         @if (member().role === 'parent') {
           <ng-container i18n="@@memberCard.roleParent">Forelder</ng-container>
+        } @else if (showStats()) {
+          <span class="member-points" i18n="@@memberCard.pointsShort"
+            >{{ member().points || 0 }} p</span
+          >
+          ·
+          <span i18n="@@memberCard.doneOf"
+            >{{ member().tasksCompleted || 0 }} av {{ member().totalTasks || 0 }} gjort</span
+          >
         } @else {
           <ng-container i18n="@@memberCard.roleChild">Barn</ng-container>
         }
       </div>
     </div>
-
-    @if (showStats()) {
-      <div class="member-stats">
-        <div class="member-points" i18n="@@memberCard.points">{{ member().points || 0 }} poeng</div>
-        <div class="member-tasks" i18n="@@memberCard.tasks">
-          {{ member().tasksCompleted || 0 }}/{{ member().totalTasks || 0 }} oppgaver
-        </div>
-      </div>
-    }
   </div>
   <ng-content select="[member-action]" />
 </div>

@@ -73,36 +73,39 @@ describe('MemberCard', () => {
   });
 
   it('should display parent role', () => {
-    componentRef.setInput('member', mockParentMember);
+    componentRef.setInput('member', { ...mockParentMember, points: 0 });
     fixture.detectChanges();
 
-    const roleElement = fixture.nativeElement.querySelector('.member-role');
-    expect(roleElement?.textContent).toContain('Forelder');
-    expect(roleElement?.classList.contains('role-parent')).toBe(true);
+    const meta = fixture.nativeElement.querySelector('.member-meta');
+    expect(meta?.textContent!.replace(/\s+/g, ' ').trim()).toBe('Forelder');
+    expect(fixture.nativeElement.querySelector('.member-points')).toBeNull();
+    expect(fixture.nativeElement.querySelector('.member-stats')).toBeNull();
   });
 
   it('should display child role', () => {
-    componentRef.setInput('member', mockChildMember);
+    componentRef.setInput('member', {
+      ...mockChildMember,
+      points: 340,
+      tasksCompleted: 1,
+      totalTasks: 3,
+    });
     fixture.detectChanges();
 
-    const roleElement = fixture.nativeElement.querySelector('.member-role');
-    expect(roleElement?.textContent).toContain('Barn');
-    expect(roleElement?.classList.contains('role-child')).toBe(true);
+    const meta = fixture.nativeElement.querySelector('.member-meta');
+    expect(meta?.textContent!.replace(/\s+/g, ' ').trim()).toBe('340 p · 1 av 3 gjort');
+    const points = fixture.nativeElement.querySelector('.member-points');
+    expect(points?.textContent!.replace(/\s+/g, ' ').trim()).toBe('340 p');
+    expect(fixture.nativeElement.querySelector('.member-stats')).toBeNull();
   });
 
-  it('should display stats when showStats is true', () => {
-    componentRef.setInput('member', mockParentMember);
-    componentRef.setInput('showStats', true);
+  it('should display child role when stats are hidden', () => {
+    componentRef.setInput('member', mockChildMember);
+    componentRef.setInput('showStats', false);
     fixture.detectChanges();
 
-    const statsElement = fixture.nativeElement.querySelector('.member-stats');
-    expect(statsElement).toBeTruthy();
-
-    const pointsElement = fixture.nativeElement.querySelector('.member-points');
-    expect(pointsElement?.textContent).toContain('450 poeng');
-
-    const tasksElement = fixture.nativeElement.querySelector('.member-tasks');
-    expect(tasksElement?.textContent).toContain('12/15 oppgaver');
+    const meta = fixture.nativeElement.querySelector('.member-meta');
+    expect(meta?.textContent!.replace(/\s+/g, ' ').trim()).toBe('Barn');
+    expect(fixture.nativeElement.querySelector('.member-stats')).toBeNull();
   });
 
   it('should hide stats when showStats is false', () => {
@@ -110,25 +113,22 @@ describe('MemberCard', () => {
     componentRef.setInput('showStats', false);
     fixture.detectChanges();
 
-    const statsElement = fixture.nativeElement.querySelector('.member-stats');
-    expect(statsElement).toBeFalsy();
+    const pointsElement = fixture.nativeElement.querySelector('.member-points');
+    expect(pointsElement).toBeNull();
   });
 
   it('should display zero stats correctly', () => {
     componentRef.setInput('member', {
-      ...mockParentMember,
+      ...mockChildMember,
       tasksCompleted: 0,
       totalTasks: 0,
       points: 0,
     });
-    componentRef.setInput('showStats', true);
     fixture.detectChanges();
 
-    const pointsElement = fixture.nativeElement.querySelector('.member-points');
-    expect(pointsElement?.textContent).toContain('0 poeng');
-
-    const tasksElement = fixture.nativeElement.querySelector('.member-tasks');
-    expect(tasksElement?.textContent).toContain('0/0 oppgaver');
+    const meta = fixture.nativeElement.querySelector('.member-meta');
+    expect(meta?.textContent!.replace(/\s+/g, ' ').trim()).toBe('0 p · 0 av 0 gjort');
+    expect(fixture.nativeElement.querySelector('.member-stats')).toBeNull();
   });
 
   it('should display default values for missing stats', () => {
@@ -139,14 +139,11 @@ describe('MemberCard', () => {
     };
 
     componentRef.setInput('member', memberWithoutStats);
-    componentRef.setInput('showStats', true);
     fixture.detectChanges();
 
-    const pointsElement = fixture.nativeElement.querySelector('.member-points');
-    expect(pointsElement?.textContent).toContain('0 poeng');
-
-    const tasksElement = fixture.nativeElement.querySelector('.member-tasks');
-    expect(tasksElement?.textContent).toContain('0/0 oppgaver');
+    const meta = fixture.nativeElement.querySelector('.member-meta');
+    expect(meta?.textContent!.replace(/\s+/g, ' ').trim()).toBe('0 p · 0 av 0 gjort');
+    expect(fixture.nativeElement.querySelector('.member-stats')).toBeNull();
   });
 
   it('should apply clickable class when clickable is true', () => {
