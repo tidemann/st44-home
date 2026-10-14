@@ -136,8 +136,10 @@
   margin-bottom: 20px;
 }
 
-/* Nothing in the band under the sub-line: the band ends 20 px under it, not 17 + 20 */
+/* Nothing in the band under the sub-line: the band ends 20 px under it, not 17 + 20. The band
+   is its own formatting context, so those 20 px stay yellow instead of collapsing out under it */
 .page-header--band:has(.page-band-slot:empty) {
+  display: flow-root;
   padding-bottom: 0;
 }
 

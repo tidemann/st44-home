@@ -1,7 +1,8 @@
 /* Poeng screen 3 (screens-v2 #s3) */
 
+/* The sub-line's 20 px set the gap to the hero's box (guide: The Air Under The Sub-Line) */
 .hero {
-  margin: 23px 0 0;
+  margin: 0;
   font-family: var(--font-display);
   font-weight: 800;
   font-size: 83px;
