@@ -111,8 +111,15 @@
   width: 100%;
 }
 
+/* The Air Under The Sub-Line: 20 px under it, whatever follows (Stig, ST-1065) */
 .page-header--band .page-subtitle {
   color: var(--ink);
+  margin-bottom: 20px;
+}
+
+/* Nothing in the band under the sub-line: the band ends 20 px under it, not 17 + 20 */
+.page-header--band:has(.page-band-slot:empty) {
+  padding-bottom: 0;
 }
 
 /* ===== CONTENT ===== */
@@ -148,6 +155,11 @@
      in an 880 px container; the title block is centred on the content beside it */
   .page--split .page-header {
     padding: 8px 0 17px;
+  }
+
+  /* Desktop A keeps its centred title block; the 20 px is the phone's band */
+  .page--split .page-header--band .page-subtitle {
+    margin-bottom: 0;
   }
 
   .page--split .page-header-inner {
