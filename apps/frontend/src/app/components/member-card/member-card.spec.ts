@@ -83,7 +83,12 @@ describe('MemberCard', () => {
   });
 
   it('should display child role', () => {
-    componentRef.setInput('member', { ...mockChildMember, points: 340, tasksCompleted: 1, totalTasks: 3 });
+    componentRef.setInput('member', {
+      ...mockChildMember,
+      points: 340,
+      tasksCompleted: 1,
+      totalTasks: 3,
+    });
     fixture.detectChanges();
 
     const meta = fixture.nativeElement.querySelector('.member-meta');

@@ -19,8 +19,13 @@
         @if (member().role === 'parent') {
           <ng-container i18n="@@memberCard.roleParent">Forelder</ng-container>
         } @else if (showStats()) {
-          <span class="member-points" i18n="@@memberCard.pointsShort">{{ member().points || 0 }} p</span>
-          · <span i18n="@@memberCard.doneOf">{{ member().tasksCompleted || 0 }} av {{ member().totalTasks || 0 }} gjort</span>
+          <span class="member-points" i18n="@@memberCard.pointsShort"
+            >{{ member().points || 0 }} p</span
+          >
+          ·
+          <span i18n="@@memberCard.doneOf"
+            >{{ member().tasksCompleted || 0 }} av {{ member().totalTasks || 0 }} gjort</span
+          >
         } @else {
           <ng-container i18n="@@memberCard.roleChild">Barn</ng-container>
         }
