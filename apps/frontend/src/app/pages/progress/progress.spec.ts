@@ -368,6 +368,7 @@ describe('Progress', () => {
         totalPoints: 0,
         completionRate: 0,
         tasksCompletedThisWeek: 0,
+        totalTasksThisWeek: 0,
         totalMembers: 0,
       });
 

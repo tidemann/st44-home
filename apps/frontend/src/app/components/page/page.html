@@ -7,9 +7,9 @@
       <div class="page-header-inner">
         <div class="page-header-content">
           <div class="page-header-text">
-            <h1 class="page-title">
-              @if (titleMenu()) {
-                <!-- The caret sits right after the name, also on its last line (ST-1065) -->
+            @if (titleMenu()) {
+              <!-- The caret sits right after the name, also on its last line (ST-1065) -->
+              <h1 class="page-title">
                 <button
                   type="button"
                   class="page-title-menu"
@@ -36,10 +36,10 @@
                     />
                   </svg>
                 </button>
-              } @else {
-                {{ title() }}
-              }
-            </h1>
+              </h1>
+            } @else {
+              <h1 class="page-title">{{ title() }}</h1>
+            }
           </div>
           <div class="page-header-actions">
             <ng-content select="[page-actions]" />
