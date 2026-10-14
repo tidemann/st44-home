@@ -46,7 +46,7 @@
 /* «+ Ny oppgave» pinned above the bottom nav, on the page colour so rows pass under it */
 .new-slot {
   position: sticky;
-  bottom: calc(72px + env(safe-area-inset-bottom, 0px));
+  bottom: calc(var(--nav-band) + env(safe-area-inset-bottom, 0px));
   z-index: 5;
   margin-top: 16px;
   padding: 10px 0 12px;

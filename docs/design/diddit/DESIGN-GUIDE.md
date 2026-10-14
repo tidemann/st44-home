@@ -457,6 +457,13 @@ open, and a three-line name). See **The household name as the home title**.
 **Round eight — ST-1067, 2026-10-14.** Fremgang v2, without «‹ Hjem» and with 20 px under the week
 line: [`fremgang-01-approved.png`](reference/fremgang-01-approved.png). See **Fremgang**.
 
+**Round nine — ST-1064, 2026-10-14.** The bottom menu E6, drawn by Ida on ST-1114: a paper menu
+with the chosen item on a yellow label, the other three muted, 24 px icons, 78 px high, 11 px over
+and under the label: [`nav-e6-signed-off.png`](reference/nav-e6-signed-off.png), with the five
+variants in [`nav-e-runde-4.png`](reference/nav-e-runde-4.png) (build only E6) and the 360 px check
+in [`nav-e-360.png`](reference/nav-e-360.png). It replaces the ink pill in the bottom menu; the desktop
+tab row keeps the pill. See **Navigation → The chosen item**.
+
 **Order of precedence.** `poeng-signed-off.png` → the approved pictures above → this guide → generic
 rules. Where an approved picture and the signed-off picture disagree about something the signed-off
 picture already settles (a card width, a gutter, a row), the signed-off picture wins and the
@@ -954,8 +961,10 @@ Jonas green + track + rust, Mathea green + track.
   in the top back to home. This goes for all pages."). The bottom menu, or the tab row on desktop,
   is the way home. This also holds where an approved picture still draws «‹ Hjem» (Innstillinger,
   Familie): the rule is later and wins.
-- Four items: Hjem · Oppgaver · Belønninger · Familie. **18 px of icon ink in a 21 px box**, above a
-  12 px label.
+- Four items: Hjem · Oppgaver · Belønninger · Familie. **The bottom menu draws its icons in a 24 px
+  box** (E6, see **The chosen item** below): the same 21-unit artwork scaled up, so the house has
+  **21 px of ink**. The desktop tab row keeps **18 px of ink in a 21 px box**. The numbers below,
+  down to the drawing slip, are the 21 px readings that the tab row still uses.
 - **Ink and box are two numbers, and the picture gives the ink.** In the signed-off picture the
   «Hjem» house ink is 36 × 36 board px — **18.0 × 18.0 px** — at luminance threshold 220, and
   34–36 at threshold 200 where the muted glyphs' antialiased edge drops out. The other three sit
@@ -1000,10 +1009,58 @@ Jonas green + track + rust, Mathea green + track.
 - The bar sits on the screen background (`#F6F6F4`), not on a white bar.
 - A **1 px `#DFDFD9` divider runs the full 390 px width** directly above the bar, on all four light
   screens. The yellow tick-off screen has no nav and no divider.
-- Each target fills the nav band — 71 px from the divider to the bottom edge of the frame — so these
-  are the one set of controls that needs no padding to clear 44 px.
+- **The menu is 78 px high**, counted from the top of the divider to the bottom edge of the frame
+  (`--nav-band`). Every screen that leaves room for the menu reads that token; never write the
+  number into a page.
+- Each target is the item's label box: **the full cell width (92 px at 390, 85 px at 360) by 56 px**,
+  well over 44 px. The yellow label is drawn on the chosen one; the other three have the same box
+  without a fill.
 
-#### The chosen item: the ink pill (approved 2026-10-11)
+#### The chosen item: the yellow label, E6 (approved 2026-10-14)
+
+![E6, the signed-off bottom menu on Hjem](reference/nav-e6-signed-off.png)
+
+Approved by Stig on ST-1064 (2026-10-14) as **E6**, from round 4 on ST-1114
+([`nav-e-runde-4.png`](reference/nav-e-runde-4.png), the last phone). The longest label at 360 px
+is drawn in [`nav-e-360.png`](reference/nav-e-360.png). Those pictures are the spec for the bottom
+menu. It replaces the ink pill (below) **in the bottom menu only**; the desktop tab row keeps the
+pill.
+
+Measured on the signed-off picture (390 px, dsf 2), and built to the same pixel:
+
+- **Paper menu.** The menu sits on `#F6F6F4` with the 1 px `#DFDFD9` divider across the full width
+  on top. The menu is **78 px** from the top of the divider to the bottom edge.
+- **The chosen item sits on a Diddit Yellow `#F6B93B` label** as wide as its cell (**92 px** at
+  390, **85 px** at 360) and **56 px** high, with **14 px** corners. There is **11 px** of paper over
+  it, counted from the top of the divider, and **11 px** under it.
+- **Icon and text on the label are Ink `#17120A`.** The label text is **600**.
+- **The three items you are not on are Muted Text `#555E64`**, icon and text, at **500**. Only
+  the chosen item is black. The text ink matches the picture to within 3 device px² at both
+  weights.
+- **Icons are 24 px boxes** (`--nav-icon: 24px` on the menu): the house's ink runs y 784.5…805.5
+  on the screen, 21 px, as drawn. The label text sits 4 px under the icon box; its ink runs
+  y 813.5…824.5, as drawn.
+- **The longest label fits at 360 px.** «Belønninger» is 64 px wide and sits 10.5 px from each
+  side of the 85 px label. It never wraps and is never cut.
+- The gift glyph runs 0.5 px short of the picture top and bottom (19.5 against 21 px of ink). This
+  is the set's own gift, not a new drawing; record it, do not redraw it.
+
+**Contrast**, the numbers from ST-1114:
+
+| Pair                                | Contrast    |
+| ----------------------------------- | ----------- |
+| Ink on the yellow label             | **10.57:1** |
+| Yellow label against the paper menu | **1.63:1**  |
+| Muted item against the paper menu   | **6.12:1**  |
+| Chosen ink against a muted item     | **2.81:1**  |
+
+The label alone is 1.63:1 against the paper, under the 3:1 a shape needs on its own. That is why
+the chosen item is also the **only black item in the row**: the label is never the only signal.
+
+#### The desktop tab row: the ink pill (approved 2026-10-11)
+
+This section was the bottom menu's chosen item until E6 (above). It still holds for the desktop
+tab row in the yellow top.
 
 ![Every tab chosen in turn, option A](reference/nav-04-a-alle-faner.png)
 
@@ -1028,8 +1085,9 @@ old rule ("active is Amber Ink with the heavier weight") is deleted. Do not brin
 - **The pill is centred on the icon, not on the item**: its centre and the icon's centre are the
   same point to within a tenth of a px on both axes. It sits **7.5 px under the `#DFDFD9` divider**,
   and the label starts 3 px under the pill.
-- **The pill is decoration inside the target, not the target.** The pressable area is still the
-  whole 92 × 71 nav cell. Never shrink a target to 46 × 26.
+- **The pill is decoration inside the target, not the target.** On the phone the pressable area
+  was the whole 92 × 71 nav cell (since E6 it is the 92 × 56 label box). Never shrink a target to
+  46 × 26.
 
 **The icon size inside the pill is derived, not drawn.** `nav-02` and `nav-04` are built on top of
 `brand-07-a-yellow-top-home.png`, so they inherit the drawing slip recorded above: their icon ink
@@ -1513,7 +1571,8 @@ bottoms out at 253 and the band ends at 270. Do not hard-code 259.
 wider, this section applies. **Below 1024 px the phone layout is used, in full**, not a squeezed
 desktop:
 
-- **The bottom menu comes back** — the four-item bar with the ink pill, as in the signed-off picture.
+- **The bottom menu comes back** — the four-item E6 menu with the yellow label (see **Navigation →
+  The chosen item**).
   There is no tab row in the band below 1024.
 - **One column**, not two. The chores run as a single stack in the phone's 22 px gutter.
 - **The band stacks again**: title, sub-line, then the child cards on their own line, which is why
@@ -2416,8 +2475,10 @@ Also required of the login specifically:
 ### The chosen menu item and the desktop tabs (ST-892)
 
 The chosen menu item was this system's one real accessibility failure: it was signalled by text
-colour alone at **1.12:1**. It is now the same ink pill in both places — on the phone's `#F6F6F4`
-bar and on the desktop's `#F6B93B` band — so one fix covers both, on two different surfaces.
+colour alone at **1.12:1**. ST-892 made it the same ink pill in both places — on the phone's
+`#F6F6F4` bar and on the desktop's `#F6B93B` band. **Since E6 (ST-1064, 2026-10-14) the phone menu
+uses the yellow label instead** (its numbers are in **Navigation → The chosen item**); the pill rows
+below hold for the desktop tabs, and the phone rows are kept as history.
 
 | Pair                                                 | Ratio   | Verdict                                          |
 | ---------------------------------------------------- | ------- | ------------------------------------------------ |
@@ -2440,8 +2501,8 @@ bar and on the desktop's `#F6B93B` band — so one fix covers both, on two diffe
   conformant. It is also why the underline could not be deleted with nothing put in its place.
 - **1.4.11 Non-text Contrast — passes on both surfaces**: 17.22:1 on `#F6F6F4` and 10.57:1 on
   `#F6B93B`, against a 3:1 floor. The yellow icon against its own pill is 10.57:1.
-- **2.5.8 Target Size — settled at 44 px** (Maria, 2026-10-12). The phone keeps its 92 × 71 nav
-  cell. The desktop tab's pointer target is **≥44 px tall** and as wide as the tab box — 44 × 100 px
+- **2.5.8 Target Size — settled at 44 px** (Maria, 2026-10-12). The phone's menu target is the 92 × 56
+  label box (85 × 56 at 360 px) since E6. The desktop tab's pointer target is **≥44 px tall** and as wide as the tab box — 44 × 100 px
   on the narrowest of the five, «Hjem». On both surfaces the 46 × 26 pill is decoration inside the
   target and must never become the target.
 - **The sub-line on the yellow keeps the band's existing cost**: `#555E64` on `#F6B93B` is 3.76:1
