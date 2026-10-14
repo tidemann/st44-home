@@ -36,6 +36,21 @@ describe('PageComponent', () => {
       button.nativeElement.click();
       expect(opened).toBe(1);
     });
+
+    it('keeps the last household-name word with the caret', () => {
+      fixture.componentRef.setInput('title', 'Hytta på Geilo og Familien Dahl-Pettersen');
+      fixture.componentRef.setInput('titleMenu', true);
+      fixture.detectChanges();
+
+      const button = fixture.debugElement.query(By.css('h1.page-title .page-title-menu'));
+      const last = button.query(By.css('.page-title-last'));
+      expect(last).toBeTruthy();
+      expect(last.nativeElement.textContent).toMatch(/^Dahl-Pettersen/);
+      expect(last.query(By.css('.page-title-caret'))).toBeTruthy();
+      expect(button.nativeElement.textContent).toContain(
+        'Hytta på Geilo og Familien Dahl-Pettersen',
+      );
+    });
   });
 
   describe('title input', () => {
