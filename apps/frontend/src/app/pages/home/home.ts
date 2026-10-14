@@ -101,6 +101,14 @@ export class Home implements OnInit {
   protected readonly members = signal<HouseholdMemberResponse[]>([]);
   protected readonly children = signal<Child[]>([]);
   protected readonly householdId = signal<string | null>(null);
+  /** The title is the household's name (ST-1065); «Hjemme» until it has loaded */
+  protected readonly householdName = signal<string | null>(null);
+  protected readonly householdCount = signal(0);
+  protected readonly homeTitle = computed(
+    () => this.householdName() ?? $localize`:@@home.title:Hjemme`,
+  );
+  /** The caret and the picker exist only with 2 or more households */
+  protected readonly showHouseholdCaret = computed(() => this.householdCount() >= 2);
   protected readonly completingId = signal<string | null>(null);
 
   // Modal state
@@ -230,6 +238,8 @@ export class Home implements OnInit {
       // Find the active household in the list (fallback to first if not found)
       const household = households.find((h) => h.id === activeHouseholdId) || households[0];
       this.householdId.set(household.id);
+      this.householdName.set(household.name);
+      this.householdCount.set(households.length);
 
       // Children (for the edit modal), the day, the points and tomorrow, in parallel
       const [childrenData] = await Promise.all([
