@@ -461,6 +461,19 @@ describe('Home', () => {
       const row = fixture.nativeElement.querySelector('.kids') as HTMLElement;
       expect(row.style.getPropertyValue('--kid-cols')).toBe('2');
       expect(row.querySelectorAll('app-child-points-card').length).toBe(2);
+      expect(row.parentElement?.classList).toContain('page-band-slot');
+    });
+
+    it('leaves the band slot empty with no children, so the band ends 20 px under the sub-line (ST-1103)', async () => {
+      mockHouseholdService.getHouseholdMembers.mockResolvedValue([
+        { userId: 'p-1', displayName: 'Kari', role: 'parent', points: 0 },
+      ]);
+      fixture.detectChanges();
+      await component.ngOnInit();
+      fixture.detectChanges();
+
+      const slot = fixture.nativeElement.querySelector('.page-band-slot') as HTMLElement;
+      expect(slot.matches(':empty')).toBe(true);
     });
 
     it('counts the day in the sub-line and sums what is left', async () => {
