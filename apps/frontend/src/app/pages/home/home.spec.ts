@@ -39,6 +39,7 @@ describe('Home', () => {
   let mockHouseholdStore: {
     activeHouseholdId: ReturnType<typeof vi.fn>;
     autoActivateHousehold: ReturnType<typeof vi.fn>;
+    setActiveHousehold: ReturnType<typeof vi.fn>;
   };
 
   beforeEach(async () => {
@@ -73,6 +74,7 @@ describe('Home', () => {
     mockHouseholdStore = {
       activeHouseholdId: vi.fn().mockReturnValue('household-1'),
       autoActivateHousehold: vi.fn().mockResolvedValue(undefined),
+      setActiveHousehold: vi.fn(),
     };
 
     await TestBed.configureTestingModule({
@@ -95,6 +97,32 @@ describe('Home', () => {
 
   it('should create', () => {
     expect(component).toBeTruthy();
+  });
+
+  it('ignores a second household switch while the first is still loading', async () => {
+    component['loading'].set(true);
+    component['householdSheetOpen'].set(true);
+    const loadData = vi
+      .spyOn(component as unknown as { loadData: () => Promise<void> }, 'loadData')
+      .mockResolvedValue();
+    const setActiveHousehold = vi.spyOn(mockHouseholdStore, 'setActiveHousehold');
+
+    await component['switchHousehold']('other-id');
+
+    expect(setActiveHousehold).not.toHaveBeenCalled();
+    expect(loadData).not.toHaveBeenCalled();
+    expect(component['householdSheetOpen']()).toBe(false);
+  });
+
+  it('switches household and reloads when nothing is loading', async () => {
+    const loadData = vi
+      .spyOn(component as unknown as { loadData: () => Promise<void> }, 'loadData')
+      .mockResolvedValue();
+
+    await component['switchHousehold']('other-id');
+
+    expect(mockHouseholdStore.setActiveHousehold).toHaveBeenCalledWith('other-id');
+    expect(loadData).toHaveBeenCalledTimes(1);
   });
 
   describe('loadData', () => {

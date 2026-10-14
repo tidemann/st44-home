@@ -275,6 +275,8 @@ export class Home implements OnInit {
   /** «Bytt husstand»: the chosen household becomes active and the home reloads for it */
   protected async switchHousehold(householdId: string): Promise<void> {
     this.householdSheetOpen.set(false);
+    // One switch at a time: a second tap while loading would race the first
+    if (this.loading()) return;
     this.householdStore.setActiveHousehold(householdId);
     await this.loadData();
   }
