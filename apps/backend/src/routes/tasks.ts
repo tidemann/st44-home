@@ -18,9 +18,10 @@ import {
   requireHouseholdParent,
 } from '../middleware/household-membership.js';
 import { validateRequest, validateParams, handleZodError } from '../utils/validation.js';
-import { householdTaskParamsSchema } from '../schemas/validation.js';
+import { householdTaskParamsSchema, householdIdParamSchema } from '../schemas/validation.js';
 import { stripResponseValidation } from '../schemas/common.js';
 import type { TaskRow } from '../types/database.js';
+import { todayInTimeZone } from '../services/assignment-scheduler.js';
 
 interface HouseholdParams {
   householdId: string;
@@ -630,6 +631,77 @@ async function updateTask(request: FastifyRequest<UpdateTaskRequest>, reply: Fas
   }
 }
 
+const bulkDeleteBodySchema = z.object({
+  taskIds: z.array(z.string().uuid()).min(1).max(200),
+});
+
+/** Today's date (YYYY-MM-DD) in the household time zone, as the scheduler counts it */
+function todayIso(): string {
+  return todayInTimeZone(new Date()).toISOString().slice(0, 10);
+}
+
+/**
+ * Deleting a template also takes today's not-done chores of it off the day,
+ * so «forsvinner for hele familien» is true. Done rows stay: points and history do not change.
+ */
+async function clearTodayOpenRows(
+  client: { query: typeof db.query },
+  householdId: string,
+  taskIds: string[],
+): Promise<void> {
+  await client.query(
+    `DELETE FROM task_assignments
+     WHERE household_id = $1 AND task_id = ANY($2::uuid[])
+       AND date = $3 AND status <> 'completed'`,
+    [householdId, taskIds, todayIso()],
+  );
+}
+
+async function bulkDeleteTasks(
+  request: FastifyRequest<{ Params: { householdId: string }; Body: { taskIds: string[] } }>,
+  reply: FastifyReply,
+) {
+  try {
+    const { householdId } = validateParams(householdIdParamSchema, request);
+    const { taskIds } = validateRequest(bulkDeleteBodySchema, request.body);
+    const unique = [...new Set(taskIds)];
+
+    const client = await db.connect();
+    try {
+      await client.query('BEGIN');
+      const result = await client.query<{ id: string }>(
+        `UPDATE tasks SET active = false, updated_at = NOW()
+         WHERE household_id = $1 AND id = ANY($2::uuid[]) AND active = true
+         RETURNING id`,
+        [householdId, unique],
+      );
+      const deleted = result.rows.map((r) => r.id);
+      if (deleted.length > 0) await clearTodayOpenRows(client, householdId, deleted);
+      await client.query('COMMIT');
+
+      const failed = unique
+        .filter((id) => !deleted.includes(id))
+        .map((taskId) => ({ taskId, reason: 'not_found' as const }));
+      return reply.send({ deleted, failed });
+    } catch (error) {
+      await client.query('ROLLBACK');
+      throw error;
+    } finally {
+      client.release();
+    }
+  } catch (error) {
+    if (error instanceof z.ZodError) {
+      return handleZodError(error, reply);
+    }
+    request.log.error(error, 'Failed to bulk delete tasks');
+    return reply.status(500).send({
+      statusCode: 500,
+      error: 'Internal Server Error',
+      message: 'Failed to delete tasks',
+    });
+  }
+}
+
 /**
  * DELETE /api/households/:householdId/tasks/:taskId - Soft delete task
  * Requires parent or admin role
@@ -655,6 +727,8 @@ async function deleteTask(request: FastifyRequest<{ Params: TaskParams }>, reply
         message: 'Task not found in this household',
       });
     }
+
+    await clearTodayOpenRows(db, householdId, [taskId]);
 
     return reply.send({
       success: true,
@@ -812,5 +886,32 @@ export default async function taskRoutes(server: FastifyInstance) {
     }),
     preHandler: [authenticateUser, validateHouseholdMembership, requireHouseholdParent],
     handler: deleteTask,
+  });
+
+  // Delete several tasks at once (parent/admin access, ST-1402)
+  server.post('/api/households/:householdId/tasks/bulk-delete', {
+    schema: stripResponseValidation({
+      summary: 'Delete several task templates',
+      description:
+        "Soft delete task templates in one transaction; also removes today's not-done chores of them",
+      tags: ['tasks'],
+      security: [{ bearerAuth: [] }],
+      params: zodToOpenAPI(ParamsSchema),
+      body: zodToOpenAPI(bulkDeleteBodySchema),
+      response: {
+        200: zodToOpenAPI(
+          z.object({
+            deleted: z.array(z.string().uuid()),
+            failed: z.array(z.object({ taskId: z.string(), reason: z.literal('not_found') })),
+          }),
+        ),
+        ...CommonErrors.BadRequest,
+        ...CommonErrors.Unauthorized,
+        ...CommonErrors.Forbidden,
+        ...CommonErrors.InternalServerError,
+      },
+    }),
+    preHandler: [authenticateUser, validateHouseholdMembership, requireHouseholdParent],
+    handler: bulkDeleteTasks,
   });
 }

@@ -4,6 +4,7 @@ import { build } from '../server.ts';
 import type { FastifyInstance } from 'fastify';
 import pg from 'pg';
 import { registerAndLogin } from '../test-helpers/auth.ts';
+import { todayInTimeZone } from '../services/assignment-scheduler.ts';
 
 /**
  * Task Templates CRUD API Tests
@@ -101,6 +102,7 @@ describe('Tasks API', () => {
 
   after(async () => {
     // Cleanup
+    await pool.query('DELETE FROM task_assignments WHERE household_id = $1', [householdId]);
     await pool.query('DELETE FROM tasks WHERE household_id = $1', [householdId]);
     await pool.query('DELETE FROM children WHERE household_id = $1', [householdId]);
     await pool.query('DELETE FROM households WHERE id = $1', [householdId]);
@@ -572,6 +574,111 @@ describe('Tasks API', () => {
       });
 
       assert.strictEqual(response.statusCode, 403);
+    });
+  });
+
+  describe('POST /api/households/:householdId/tasks/bulk-delete', () => {
+    const unknownId = '00000000-0000-0000-0000-000000000000';
+    const today = () => todayInTimeZone(new Date()).toISOString().slice(0, 10);
+
+    async function createDailyTask(name: string): Promise<string> {
+      const response = await app.inject({
+        method: 'POST',
+        url: `/api/households/${householdId}/tasks`,
+        headers: { Authorization: `Bearer ${adminToken}` },
+        payload: { name, ruleType: 'daily' },
+      });
+      assert.strictEqual(response.statusCode, 201, response.body);
+      return JSON.parse(response.body).id;
+    }
+
+    async function seedTodayRows(id: string) {
+      await pool.query(
+        `INSERT INTO task_assignments (household_id, task_id, child_id, date, status)
+         VALUES ($1, $2, $3, $4, 'pending'), ($1, $2, $5, $4, 'completed')`,
+        [householdId, id, childId1, today(), childId2],
+      );
+    }
+
+    test('deletes several and reports unknown ids as failed', async () => {
+      const a = await createDailyTask('Bulk A');
+      const b = await createDailyTask('Bulk B');
+      const response = await app.inject({
+        method: 'POST',
+        url: `/api/households/${householdId}/tasks/bulk-delete`,
+        headers: { Authorization: `Bearer ${adminToken}` },
+        payload: { taskIds: [a, b, unknownId] },
+      });
+      assert.strictEqual(response.statusCode, 200, response.body);
+      const body = JSON.parse(response.body);
+      assert.deepStrictEqual(new Set(body.deleted), new Set([a, b]));
+      assert.deepStrictEqual(body.failed, [{ taskId: unknownId, reason: 'not_found' }]);
+      const rows = await pool.query('SELECT active FROM tasks WHERE id = ANY($1::uuid[])', [
+        [a, b],
+      ]);
+      assert.strictEqual(rows.rows.length, 2);
+      assert.ok(rows.rows.every((row) => row.active === false));
+    });
+
+    test("removes today's open row, keeps today's done row", async () => {
+      const c = await createDailyTask('Bulk C');
+      await seedTodayRows(c);
+      const response = await app.inject({
+        method: 'POST',
+        url: `/api/households/${householdId}/tasks/bulk-delete`,
+        headers: { Authorization: `Bearer ${adminToken}` },
+        payload: { taskIds: [c] },
+      });
+      assert.strictEqual(response.statusCode, 200, response.body);
+      const rows = await pool.query('SELECT status FROM task_assignments WHERE task_id = $1', [c]);
+      assert.deepStrictEqual(rows.rows, [{ status: 'completed' }]);
+    });
+
+    test("single DELETE also removes today's open row", async () => {
+      const c2 = await createDailyTask('Single C2');
+      await seedTodayRows(c2);
+      const response = await app.inject({
+        method: 'DELETE',
+        url: `/api/households/${householdId}/tasks/${c2}`,
+        headers: { Authorization: `Bearer ${adminToken}` },
+      });
+      assert.strictEqual(response.statusCode, 200, response.body);
+      const rows = await pool.query('SELECT status FROM task_assignments WHERE task_id = $1', [c2]);
+      assert.deepStrictEqual(rows.rows, [{ status: 'completed' }]);
+    });
+
+    test('rejects an empty list', async () => {
+      const response = await app.inject({
+        method: 'POST',
+        url: `/api/households/${householdId}/tasks/bulk-delete`,
+        headers: { Authorization: `Bearer ${adminToken}` },
+        payload: { taskIds: [] },
+      });
+      assert.strictEqual(response.statusCode, 400, response.body);
+    });
+
+    test('rejects an outsider', async () => {
+      const response = await app.inject({
+        method: 'POST',
+        url: `/api/households/${householdId}/tasks/bulk-delete`,
+        headers: { Authorization: `Bearer ${outsiderToken}` },
+        payload: { taskIds: [unknownId] },
+      });
+      assert.strictEqual(response.statusCode, 403, response.body);
+    });
+
+    test("does not delete another household's task", async () => {
+      const response = await app.inject({
+        method: 'POST',
+        url: `/api/households/${householdId}/tasks/bulk-delete`,
+        headers: { Authorization: `Bearer ${adminToken}` },
+        payload: { taskIds: [unknownId] },
+      });
+      assert.strictEqual(response.statusCode, 200, response.body);
+      assert.deepStrictEqual(JSON.parse(response.body), {
+        deleted: [],
+        failed: [{ taskId: unknownId, reason: 'not_found' }],
+      });
     });
   });
 });

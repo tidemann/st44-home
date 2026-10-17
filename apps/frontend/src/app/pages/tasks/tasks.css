@@ -59,6 +59,198 @@
   }
 }
 
+/* Select mode, the band (ST-1343, 03–06): the sub-line with «Velg alle» on its right,
+   ending 20 px over the band's edge like every sub-line (17 px band padding + 3) */
+.select-sub {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 3px;
+}
+
+.select-sub-text {
+  margin: 0;
+  font-family: var(--font-text);
+  font-size: 15px;
+  font-weight: 500;
+  line-height: 1.4;
+  color: var(--ink);
+}
+
+.select-all {
+  position: relative;
+  flex: none;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--ink);
+  font-family: var(--font-text);
+  font-size: 15px;
+  font-weight: 600;
+  line-height: 1.4;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  cursor: pointer;
+}
+
+/* 44 px pressed */
+.select-all::after {
+  content: '';
+  position: absolute;
+  inset: -12px -8px;
+}
+
+.select-all:focus-visible {
+  outline: var(--focus-ring);
+  outline-offset: 2px;
+}
+
+/* «Avbryt» left, «Slett n» right, 8 px apart, in the «+ Ny oppgave» slot (ST-1343, choice 5) */
+.select-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.select-summary {
+  display: none;
+}
+
+@media (min-width: 1024px) {
+  .select-slot {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+  }
+
+  .select-summary {
+    display: block;
+    margin: 0;
+    font-size: 16px;
+    font-weight: 500;
+    color: var(--text);
+  }
+
+  .select-actions {
+    grid-template-columns: auto auto;
+  }
+
+  .sbtn {
+    padding: 0 22px;
+  }
+}
+
+.sbtn {
+  min-height: 49px;
+  padding: 0 12px;
+  border-radius: var(--r-button);
+  font-family: var(--font-text);
+  font-size: 16.5px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  cursor: pointer;
+}
+
+.sbtn:focus-visible {
+  outline: var(--focus-ring);
+  outline-offset: 2px;
+}
+
+.sbtn-cancel {
+  border: 1.5px solid var(--text-muted);
+  background: var(--surface);
+  color: var(--text);
+}
+
+.sbtn-delete {
+  border: 1.5px solid var(--overdue);
+  background: var(--overdue);
+  color: #fff;
+}
+
+/* Nothing chosen: the rust stays, the fill goes, so the delete is still seen (6.07:1) */
+.sbtn-delete.none {
+  background: transparent;
+  color: var(--overdue);
+  cursor: default;
+}
+
+/* «3 oppgaver slettet»: a white card with the done tick, role="status" (ST-1343, 08) */
+.receipt {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 24px;
+  padding: 12px 15px;
+  min-height: 46px;
+  background: var(--surface);
+  border-radius: var(--r-card);
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.receipt-tick {
+  flex: none;
+  width: 22px;
+  height: 22px;
+  border-radius: 7px;
+  background: var(--done);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Some did not go: the overdue card the system already has, role="alert" (ST-1343, e2) */
+.bulk-failed {
+  margin-top: 2px;
+  padding: 13px 13px 15px;
+  background: var(--surface);
+  border: 2px solid var(--overdue);
+  border-radius: var(--r-card);
+  color: var(--overdue);
+}
+
+.bulk-failed-title {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.bulk-failed-help {
+  margin: 6px 0 0;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+/* The confirm names up to three tasks, then «+ 20 til» */
+.confirm-names {
+  margin: 14px 0 0;
+  padding: 0;
+  list-style: none;
+  color: var(--text-muted);
+  font-size: 15px;
+  line-height: 1.4;
+  overflow-wrap: anywhere;
+}
+
+.busy-ring {
+  width: 16px;
+  height: 16px;
+  border: 2px solid rgb(255 255 255 / 40%);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: spin 0.9s linear infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .busy-ring {
+    animation: none;
+  }
+}
+
 .no-children-note {
   margin: 0 0 8px;
   color: var(--text-muted);

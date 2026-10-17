@@ -30,6 +30,11 @@ export interface PaginatedTasksResponse {
   pagination: PaginationMeta;
 }
 
+export interface BulkDeleteResult {
+  deleted: string[];
+  failed: { taskId: string; reason: string }[];
+}
+
 /**
  * My task assignment response from /children/me/tasks endpoint
  */
@@ -260,6 +265,33 @@ export class TaskService {
         // Mark as inactive in state (soft delete)
         this.tasksSignal.update((tasks) =>
           tasks.map((t) => (t.id === taskId ? { ...t, active: false } : t)),
+        );
+        this.loadingSignal.set(false);
+      }),
+      catchError((err) => {
+        this.errorSignal.set('Failed to delete task template');
+        this.loadingSignal.set(false);
+        return throwError(() => err);
+      }),
+    );
+  }
+
+  /**
+   * Delete several task templates in one call (ST-1402)
+   * @returns the ids that went and the ones that did not
+   */
+  bulkDeleteTasks(householdId: string, taskIds: string[]): Observable<BulkDeleteResult> {
+    this.loadingSignal.set(true);
+    this.errorSignal.set(null);
+
+    return from(
+      this.apiService.post<BulkDeleteResult>(`/households/${householdId}/tasks/bulk-delete`, {
+        taskIds,
+      }),
+    ).pipe(
+      tap((result) => {
+        this.tasksSignal.update((tasks) =>
+          tasks.map((t) => (result.deleted.includes(t.id) ? { ...t, active: false } : t)),
         );
         this.loadingSignal.set(false);
       }),

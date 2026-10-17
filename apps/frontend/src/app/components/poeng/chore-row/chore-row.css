@@ -21,6 +21,48 @@
   padding: 9px 13px;
 }
 
+/* No iOS callout and no text selection under a held finger; a tap stays a tap (ST-1391) */
+.row.pressable {
+  touch-action: manipulation;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+/* Held: a 2 px Ink line inside the card. Inset, so the list never clips it and the row
+   does not resize under the finger; on an overdue card it sits inside the rust edge */
+.row.held {
+  box-shadow: inset 0 0 0 2px var(--ink);
+}
+
+/* Select mode: the whole card is one checkbox (ST-1343) */
+.row-select {
+  width: 100%;
+  border: 0;
+  text-align: left;
+  font: inherit;
+  color: inherit;
+  cursor: pointer;
+}
+
+.row-select.overdue {
+  border: 2px solid var(--overdue);
+}
+
+.row-select:focus-visible {
+  outline: var(--focus-ring);
+  outline-offset: 2px;
+}
+
+/* Chosen: Ink fill with a white tick, as the active person chip (ST-1343, choice 3) */
+.cb.on {
+  background: var(--text);
+  border-color: var(--text);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
 /* With a note (ST-1066 C) the card is 95 px: the row keeps its 46 px line and
    the button its place, then 6 px, the 17 px note line and 15 px under it */
 .row.has-note {

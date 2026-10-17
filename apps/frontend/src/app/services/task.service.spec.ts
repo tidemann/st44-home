@@ -527,6 +527,49 @@ describe('TaskService', () => {
     });
   });
 
+  describe('bulkDeleteTasks', () => {
+    beforeEach(async () => {
+      mockApiService.get.mockResolvedValue({ tasks: [mockTask, mockTask2] });
+      await firstValueFrom(service.getTasks('household-1'));
+    });
+
+    it('calls ApiService.post with the bulk-delete endpoint and task IDs', async () => {
+      mockApiService.post.mockResolvedValue({ deleted: ['task-1', 'task-2'], failed: [] });
+
+      await firstValueFrom(service.bulkDeleteTasks('household-1', ['task-1', 'task-2']));
+
+      expect(mockApiService.post).toHaveBeenCalledWith(
+        '/households/household-1/tasks/bulk-delete',
+        { taskIds: ['task-1', 'task-2'] },
+      );
+    });
+
+    it('marks only deleted tasks inactive and returns the result', async () => {
+      const response = {
+        deleted: ['task-1'],
+        failed: [{ taskId: 'task-2', reason: 'not_found' }],
+      };
+      mockApiService.post.mockResolvedValue(response);
+
+      const result = await firstValueFrom(
+        service.bulkDeleteTasks('household-1', ['task-1', 'task-2']),
+      );
+
+      expect(result).toEqual(response);
+      expect(service.tasks().find((t) => t.id === 'task-1')?.active).toBe(false);
+      expect(service.tasks().find((t) => t.id === 'task-2')?.active).toBe(true);
+    });
+
+    it('propagates post errors', async () => {
+      mockApiService.post.mockRejectedValue(new Error('Delete failed'));
+
+      const result$ = service.bulkDeleteTasks('household-1', ['task-1', 'task-2']);
+
+      await expect(firstValueFrom(result$)).rejects.toThrow();
+      expect(service.error()).toBe('Failed to delete task template');
+    });
+  });
+
   describe('Computed Signals', () => {
     beforeEach(async () => {
       // Set up state with mix of active and inactive tasks

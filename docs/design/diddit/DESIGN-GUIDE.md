@@ -787,12 +787,13 @@ A 390 × 844 phone, single column, content scrolling between a fixed title area 
 
 Strokes do exist. There are exactly three kinds in the picture, and each one is doing a job:
 
-| Stroke                                              | Colour                | Width | Where                                                   |
-| --------------------------------------------------- | --------------------- | ----- | ------------------------------------------------------- |
-| State — an overdue card                             | `#A43A16`             | 2px   | Screens 1 and 3                                         |
-| Control boundary — an unchecked checkbox            | `#DFDFD9`             | 2px   | Every chore row                                         |
-| Structural divider — above the nav, under a heading | `#DFDFD9`             | 1px   | All four light screens; "Hentet før"                    |
-| Layer boundary — the edge of a popup                | `#555E64` / `#17120A` | 1.5px | Not in the picture; approved 2026-10-11, see **Popups** |
+| Stroke                                              | Colour                | Width | Where                                                                                              |
+| --------------------------------------------------- | --------------------- | ----- | -------------------------------------------------------------------------------------------------- |
+| State — an overdue card                             | `#A43A16`             | 2px   | Screens 1 and 3                                                                                    |
+| Control boundary — an unchecked checkbox            | `#DFDFD9`             | 2px   | Every chore row                                                                                    |
+| Structural divider — above the nav, under a heading | `#DFDFD9`             | 1px   | All four light screens; "Hentet før"                                                               |
+| Layer boundary — the edge of a popup                | `#555E64` / `#17120A` | 1.5px | Not in the picture; approved 2026-10-11, see **Popups**                                            |
+| State — a row held under a finger (long press)      | `#17120A`             | 2px   | Inside the card (`box-shadow: inset 0 0 0 2px`). Not in the picture; approved 2026-10-18 (ST-1391) |
 
 The checkbox stroke is the picture's colour. **A build draws it in `#555E64` instead** — one of the
 two approved exceptions listed under Accessibility. Same width, same shape, same position.
@@ -802,7 +803,8 @@ two approved exceptions listed under Accessibility. Same width, same shape, same
 **The Flat Rule.** No `box-shadow` on the page. If something needs to separate from what is behind
 it, step the tone — do not lift it. **One exception, approved by Stig on 2026-10-11:** a popup is
 above the page rather than on it, and it carries a soft ink shadow. Everything on the page stays
-flat. See **Popups**.
+flat. See **Popups**. The held-row line is drawn with `inset 0 0 0 2px`; that is a stroke inside the
+card, not a lift (no blur, no offset), so it does not break this rule.
 
 **The Borders Mean Something Rule.** A visible stroke carries **state**, a **control boundary**, a
 **structural divider**, or — on the popup layer only — a **layer boundary**. It is never decoration,
