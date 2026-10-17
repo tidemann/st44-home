@@ -1,8 +1,16 @@
-import { Component, ChangeDetectionStrategy, signal, inject, OnInit } from '@angular/core';
+import {
+  Component,
+  ChangeDetectionStrategy,
+  signal,
+  computed,
+  inject,
+  OnInit,
+} from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { HouseholdService, type HouseholdListItem } from '../../services/household.service';
 import { HouseholdStore } from '../../stores/household.store';
 import { PageComponent } from '../../components/page/page';
+import { NavIcon } from '../../components/navigation/nav-icon';
 import { Modal } from '../../components/modals/modal/modal';
 
 /**
@@ -17,7 +25,7 @@ import { Modal } from '../../components/modals/modal/modal';
  */
 @Component({
   selector: 'app-manage-households',
-  imports: [FormsModule, PageComponent, Modal],
+  imports: [FormsModule, PageComponent, Modal, NavIcon],
   templateUrl: './manage-households.html',
   styleUrl: './manage-households.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -34,6 +42,12 @@ export class ManageHouseholds implements OnInit {
 
   // Data
   protected readonly households = this.householdStore.households;
+
+  // ST-1409 rule 2: the band carries a title and one short sub-line.
+  protected readonly householdCountLine = computed(() => {
+    const n = this.households().length;
+    return n === 1 ? '1 husstand' : `${n} husstander`;
+  });
   protected readonly activeHouseholdId = this.householdStore.activeHouseholdId;
 
   // Modal states

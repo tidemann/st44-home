@@ -944,3 +944,136 @@ app-chore-row + app-chore-row,
 app-reward-card + app-reward-card {
   margin-top: 8px;
 }
+
+/* =====================================================================================
+   ST-1409 — the eight desktop page rules, drawn (ST-1370). Pictures only: this block is
+   not pushed to main. Nothing here adds a colour, a font or a component; every value is
+   one the guide already carries.
+   ===================================================================================== */
+
+@media (min-width: 1024px) {
+  /* RULE 4 — content under the band. Two 428 px columns with 24 px between them when the
+     page has groups; one 428 px column for a form or a short list; the full 880 only for
+     a card that needs the width. 428 + 24 + 428 = 880. */
+  .r4-cols {
+    display: grid;
+    grid-template-columns: 428px 428px;
+    column-gap: 24px;
+    align-items: start;
+  }
+
+  .r4-col {
+    width: 428px;
+  }
+
+  .r4-cols > * {
+    min-width: 0;
+  }
+
+  /* RULE 5 — four button types only.
+     Main and outline: 49 px, 13 px corners, 16.5 px label, as wide as its column.
+     Row button: 36 px, 10 px corners. Chip: 9 px corners. Everything else hugs its label.
+     No other corner sizes: the invented 4, 6 and 8 px are gone. */
+  .btn {
+    border-radius: var(--r-button);
+  }
+
+  .btn-sm,
+  .btn-row {
+    min-height: 36px;
+    border-radius: var(--r-row-action);
+    font-size: 16px;
+    padding-inline: 14px;
+  }
+
+  .r5-main,
+  .r5-outline {
+    min-height: 49px;
+    border-radius: var(--r-button);
+    font-size: 16.5px;
+    padding-block: 0;
+    width: 100%;
+  }
+
+  .r5-outline {
+    background: var(--surface);
+    color: var(--text);
+    border: 2px solid var(--text-muted);
+  }
+
+  /* RULE 6 — the main button is never pale. It keeps the yellow and the dark label; the
+     form is checked when it is pressed and the error shows under the field (login's own
+     pattern). The Keep-The-Yellow Rule: nothing here is dimmed or greyed. */
+  .btn-primary:disabled,
+  .btn-warning:disabled,
+  .r5-main:disabled {
+    opacity: 1;
+    background: var(--yellow);
+    color: var(--ink);
+  }
+
+  /* RULE 7 — one card for empty, loading and error: a white card in the page width, one
+     title line, one sentence, and a main button when there is something to do. */
+  .r7-card {
+    background: var(--surface);
+    border: none;
+    border-radius: var(--r-card);
+    padding: 15px;
+    text-align: left;
+  }
+
+  .r7-card .r7-title {
+    font-family: var(--font-display);
+    font-size: 17px;
+    font-weight: 800;
+    line-height: 1.2;
+    color: var(--text);
+    margin: 0;
+  }
+
+  .r7-card .r7-line {
+    font-family: var(--font-text);
+    font-size: 15px;
+    font-weight: 500;
+    line-height: 1.4;
+    color: var(--text-muted);
+    margin: 6px 0 0;
+  }
+
+  .r7-card .r5-main {
+    margin-top: 15px;
+    width: auto;
+    padding-inline: 22px;
+  }
+
+  /* Loading shows the rows it will show, not a sentence (perceived performance). */
+  .r7-skeleton {
+    display: grid;
+    gap: 8px;
+  }
+
+  .r7-skeleton i {
+    display: block;
+    height: 68px;
+    border-radius: var(--r-card);
+    background: var(--surface);
+  }
+
+  .r7-skeleton i::after {
+    content: '';
+    display: block;
+    width: 52%;
+    height: 16px;
+    margin: 18px 0 0 15px;
+    border-radius: 8px;
+    background: var(--track);
+  }
+
+  .r7-skeleton i:nth-child(2)::after {
+    width: 38%;
+  }
+
+  .r7-skeleton i:nth-child(3)::after {
+    width: 45%;
+  }
+}

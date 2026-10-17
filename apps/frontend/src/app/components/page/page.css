@@ -161,6 +161,20 @@
    carries the initial badge, so the title row drops its own. */
 
 @media (min-width: 1024px) {
+  /* ST-1409 RULE 1 — page width. Every page is 880 px and centred, on the menu's own left
+     edge. The narrow/medium/wide variants are a phone idea; on desktop there is one width. */
+  .page-container--narrow .page-header-content,
+  .page-container--narrow .page-band,
+  .page-container--narrow .page-content,
+  .page-container--medium .page-header-content,
+  .page-container--medium .page-band,
+  .page-container--medium .page-content,
+  .page-container--wide .page-header-content,
+  .page-container--wide .page-band,
+  .page-container--wide .page-content {
+    max-width: 880px;
+  }
+
   .page-header {
     padding: 32px 32px 0;
   }
@@ -169,8 +183,14 @@
     padding-bottom: 17px;
   }
 
+  /* The 880 is the content itself, not a border-box with 32 px of padding inside it: the
+     container must measure 880 at x 280…1160, the same left edge as the Diddit mark. */
   .page-content {
-    padding: 0 32px 32px;
+    padding: 0 0 32px;
+  }
+
+  .page-header {
+    padding-inline: 0;
   }
 
   .page-badge {

@@ -20,7 +20,15 @@
 
 <!-- Main Content -->
 @if (!loading()) {
-  <app-page title="Husholdninger" i18n-title="@@households.title" maxWidth="narrow">
+  <!-- ST-1409 rules 2 + 3: the title moves into the yellow band with a short sub-line, in
+       the one title style. Rule 1 gives it the 880 container and the menu's left edge. -->
+  <app-page
+    title="Husholdninger"
+    i18n-title="@@households.title"
+    [subtitle]="householdCountLine()"
+    [band]="true"
+    maxWidth="narrow"
+  >
     <!-- Success Message -->
     @if (successMessage()) {
       <div class="alert alert-success" role="status" aria-live="polite">
@@ -61,7 +69,7 @@
     <!-- Households List -->
     @if (households().length === 0) {
       <div class="empty-state">
-        <div class="empty-icon">🏠</div>
+        
         <h3 i18n="@@households.emptyTitle">Ingen husholdninger ennå</h3>
         <p i18n="@@households.emptyText">Opprett din første husholdning for å komme i gang.</p>
       </div>
@@ -86,7 +94,7 @@
             <div class="household-stats">
               @if (household.memberCount !== undefined) {
                 <span class="stat">
-                  <span class="stat-icon">👥</span>
+                  <span class="stat-icon"><app-nav-icon name="family" /></span>
                   <ng-container i18n="@@households.memberCount">{household.memberCount, plural,
                     =1 {1 medlem}
                     other {{{ household.memberCount }} medlemmer}
@@ -95,7 +103,7 @@
               }
               @if (household.childrenCount !== undefined) {
                 <span class="stat">
-                  <span class="stat-icon">👶</span>
+                  
                   <ng-container i18n="@@households.childrenCount">{household.childrenCount, plural,
                     =1 {1 barn}
                     other {{{ household.childrenCount }} barn}
