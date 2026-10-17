@@ -1,0 +1,115 @@
+# Diddit staging (ST-1357): a second, throw-away copy of the stack on the same host.
+#
+# It shares nothing with live on purpose:
+#   - its own compose project, containers, volumes and network (`st44-staging_*`).
+#     It is NOT on the external `st44_default` network: the frontend's nginx proxies
+#     to the hostname `backend`, and on a shared network that name could resolve to
+#     the live backend.
+#   - its own database password and JWT secret (STAGING_* GitHub secrets), so a live
+#     login token is not valid here and the other way round.
+#   - no SendGrid key, hard-coded empty below. Nothing staging "sends" leaves the
+#     host; see docs/STAGING.md for where the messages end up.
+#   - no host ports except the gate's. db and redis are reachable only inside the
+#     staging network.
+#
+# The only way in is `gate`: basic auth, `X-Robots-Tag: noindex`, and a Disallow-all
+# robots.txt in front of the normal frontend. The host's TLS proxy forwards
+# staging.home.st44.no to STAGING_PORT.
+#
+# Installed by .github/workflows/deploy-staging.yml into ~/st44-staging on the host
+# (the deploy user's home; /srv/st44-home is not touched). Every variable is exported
+# by that workflow over ssh; none of them is written to disk.
+name: st44-staging
+
+services:
+  redis:
+    image: redis:7-alpine
+    container_name: st44-staging-redis
+    restart: unless-stopped
+    volumes:
+      - redis_data:/data
+    command: redis-server --appendonly yes
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    logging: &logging
+      driver: json-file
+      options:
+        max-size: "20m"
+        max-file: "2"
+
+  db:
+    image: ${IMAGE_PREFIX:?}-db:${IMAGE_TAG:?}
+    container_name: st44-staging-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: st44
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: ${STAGING_DB_PASSWORD:?STAGING_DB_PASSWORD must be exported by the deploy}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    logging: *logging
+
+  backend:
+    image: ${IMAGE_PREFIX:?}-backend:${IMAGE_TAG:?}
+    container_name: st44-staging-backend
+    restart: unless-stopped
+    environment:
+      NODE_ENV: production
+      PORT: 3000
+      HOST: 0.0.0.0
+      DB_HOST: db
+      DB_PORT: 5432
+      DB_NAME: st44
+      DB_USER: postgres
+      DB_PASSWORD: ${STAGING_DB_PASSWORD:?STAGING_DB_PASSWORD must be exported by the deploy}
+      JWT_SECRET: ${STAGING_JWT_SECRET:?STAGING_JWT_SECRET must be exported by the deploy}
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      CORS_ORIGIN: https://${STAGING_HOST:?}
+      APP_URL: https://${STAGING_HOST:?}
+      # Never set. Without it the backend sends nothing (see docs/STAGING.md).
+      SENDGRID_API_KEY: ""
+      FROM_EMAIL: noreply@staging.invalid
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    logging: *logging
+
+  frontend:
+    image: ${IMAGE_PREFIX:?}-frontend:${IMAGE_TAG:?}
+    container_name: st44-staging-frontend
+    restart: unless-stopped
+    depends_on:
+      - backend
+    logging: *logging
+
+  gate:
+    image: nginx:1.27-alpine
+    container_name: st44-staging-gate
+    restart: unless-stopped
+    environment:
+      # Read by the nginx image's envsubst step into gate.conf. Derived from the
+      # basic-auth secret by the deploy, so it is stable across deploys.
+      GATE_COOKIE: ${GATE_COOKIE:?GATE_COOKIE must be exported by the deploy}
+    volumes:
+      - ./gate.conf.template:/etc/nginx/templates/default.conf.template:ro
+      - ./htpasswd:/etc/nginx/htpasswd:ro
+    ports:
+      - "${STAGING_PORT:-3200}:80"
+    depends_on:
+      - frontend
+    logging: *logging
+
+volumes:
+  postgres_data:
+  redis_data:
