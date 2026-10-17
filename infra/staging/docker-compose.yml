@@ -14,7 +14,7 @@
 #
 # The only way in is `gate`: basic auth, `X-Robots-Tag: noindex`, and a Disallow-all
 # robots.txt in front of the normal frontend. The host's TLS proxy forwards
-# staging.home.st44.no to STAGING_PORT.
+# home-staging.st44.no to STAGING_PORT.
 #
 # Installed by .github/workflows/deploy-staging.yml into ~/st44-staging on the host
 # (the deploy user's home; /srv/st44-home is not touched). Every variable is exported
@@ -30,15 +30,15 @@ services:
       - redis_data:/data
     command: redis-server --appendonly yes
     healthcheck:
-      test: ["CMD", "redis-cli", "ping"]
+      test: ['CMD', 'redis-cli', 'ping']
       interval: 10s
       timeout: 5s
       retries: 5
     logging: &logging
       driver: json-file
       options:
-        max-size: "20m"
-        max-file: "2"
+        max-size: '20m'
+        max-file: '2'
 
   db:
     image: ${IMAGE_PREFIX:?}-db:${IMAGE_TAG:?}
@@ -51,7 +51,7 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      test: ['CMD-SHELL', 'pg_isready -U postgres']
       interval: 10s
       timeout: 5s
       retries: 5
@@ -76,7 +76,7 @@ services:
       CORS_ORIGIN: https://${STAGING_HOST:?}
       APP_URL: https://${STAGING_HOST:?}
       # Never set. Without it the backend sends nothing (see docs/STAGING.md).
-      SENDGRID_API_KEY: ""
+      SENDGRID_API_KEY: ''
       FROM_EMAIL: noreply@staging.invalid
     depends_on:
       db:
@@ -105,7 +105,7 @@ services:
       - ./gate.conf.template:/etc/nginx/templates/default.conf.template:ro
       - ./htpasswd:/etc/nginx/htpasswd:ro
     ports:
-      - "${STAGING_PORT:-3200}:80"
+      - '${STAGING_PORT:-3200}:80'
     depends_on:
       - frontend
     logging: *logging

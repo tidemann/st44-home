@@ -1,6 +1,6 @@
 name: Deploy staging
 
-# Diddit staging (ST-1357): puts any branch on https://staging.home.st44.no, with
+# Diddit staging (ST-1357): puts any branch on https://home-staging.st44.no, with
 # its own empty database. Manual only, so nothing reaches staging by accident and
 # a push to main still deploys live exactly as before (deploy.yml).
 #
@@ -15,11 +15,11 @@ on:
   workflow_dispatch:
     inputs:
       ref:
-        description: "Branch, tag or commit to put on staging."
+        description: 'Branch, tag or commit to put on staging.'
         required: true
         default: main
       reset:
-        description: "Delete the staging database and start empty."
+        description: 'Delete the staging database and start empty.'
         type: boolean
         default: false
 
@@ -33,7 +33,7 @@ concurrency:
 env:
   IMAGE_PREFIX: ghcr.io/${{ github.repository_owner }}/${{ github.event.repository.name }}
   STAGING_DIR: st44-staging
-  STAGING_HOST: staging.home.st44.no
+  STAGING_HOST: home-staging.st44.no
   STAGING_PORT: '3200'
 
 jobs:
