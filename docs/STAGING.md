@@ -68,9 +68,12 @@ leaves staging**:
   docker logs st44-staging-backend 2>&1 | grep -A4 'PASSWORD RESET EMAIL'
   ```
 
-- **Invitations:** the invitation is created, the e-mail is not sent, and the log
-  says `Failed to send invitation email`. The invited person can still accept it
-  in the app by logging in with the invited address.
+- **Invitations:** the e-mail is written to the backend log instead, with the
+  accept link:
+
+  ```bash
+  docker logs st44-staging-backend 2>&1 | grep 'Invitation email'
+  ```
 - There is no e-mail verification step in Diddit today.
 
 ## One-time setup

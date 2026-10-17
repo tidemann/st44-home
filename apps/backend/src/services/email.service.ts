@@ -316,11 +316,19 @@ export class EmailService {
    * @returns Promise that resolves when email is sent (or rejects on failure)
    */
   async sendInvitationEmail(to: string, data: InvitationEmailData): Promise<void> {
-    // Check if email service is configured
+    // Without SendGrid (development, staging) the email is logged, not sent
     if (!this.isConfigured()) {
-      const message = 'Email service not configured - SENDGRID_API_KEY missing';
-      this.logger?.warn(message);
-      throw new Error(message);
+      const message = {
+        to: to.toLowerCase(),
+        subject: `You've been invited to join ${data.householdName} on Diddit`,
+        acceptUrl: `${APP_URL}/invitations/accept/${data.token}`,
+        expiresAt: data.expiresAt,
+      };
+      this.logger?.info(
+        { email: message },
+        '[EMAIL SIMULATION] Invitation email (SendGrid not configured)',
+      );
+      return;
     }
 
     try {
