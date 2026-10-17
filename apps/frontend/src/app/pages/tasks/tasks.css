@@ -60,13 +60,15 @@
 }
 
 /* Select mode, the band (ST-1343, 03–06): the sub-line with «Velg alle» on its right,
-   ending 20 px over the band's edge like every sub-line (17 px band padding + 3) */
+   20 px of yellow under the underline, 21 under the sub-line (measured in 03/05). With no
+   badge in the title row the line sits 4 px closer to the title: the band is 83 px, not 90 */
 .select-sub {
   display: flex;
   align-items: baseline;
   justify-content: space-between;
   gap: 12px;
-  margin-bottom: 3px;
+  margin-top: -4px;
+  margin-bottom: 1px;
 }
 
 .select-sub-text {
@@ -227,7 +229,7 @@
 
 /* The confirm names up to three tasks, then «+ 20 til» */
 .confirm-names {
-  margin: 14px 0 0;
+  margin: 14px 0 18px;
   padding: 0;
   list-style: none;
   color: var(--text-muted);
