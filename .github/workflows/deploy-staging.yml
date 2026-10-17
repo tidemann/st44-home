@@ -1,0 +1,237 @@
+name: Deploy staging
+
+# Diddit staging (ST-1357): puts any branch on https://home-staging.st44.no, with
+# its own empty database. Manual only, so nothing reaches staging by accident and
+# a push to main still deploys live exactly as before (deploy.yml).
+#
+#   gh workflow run deploy-staging.yml -f ref=<branch>               # deploy a branch
+#   gh workflow run deploy-staging.yml -f ref=main -f reset=true     # wipe to empty
+#
+# This workflow never touches the live stack: it writes only to ~/st44-staging in
+# the deploy user's home and only runs `docker compose -p st44-staging`. It never
+# moves `:latest`. See docs/STAGING.md.
+
+on:
+  workflow_dispatch:
+    inputs:
+      ref:
+        description: 'Branch, tag or commit to put on staging.'
+        required: true
+        default: main
+      reset:
+        description: 'Delete the staging database and start empty.'
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+concurrency:
+  group: deploy-st44-staging
+  cancel-in-progress: false
+
+env:
+  IMAGE_PREFIX: ghcr.io/${{ github.repository_owner }}/${{ github.event.repository.name }}
+  STAGING_DIR: st44-staging
+  STAGING_HOST: home-staging.st44.no
+  STAGING_PORT: '3200'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    outputs:
+      sha: ${{ steps.sha.outputs.sha }}
+    strategy:
+      matrix:
+        include:
+          - svc: frontend
+            context: .
+            file: ./infra/nginx/Dockerfile.frontend
+          - svc: backend
+            context: .
+            file: ./apps/backend/Dockerfile
+          - svc: db
+            context: ./docker/postgres
+            file: ./docker/postgres/Dockerfile
+    steps:
+      - name: Checkout the requested ref
+        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+        with:
+          ref: ${{ inputs.ref }}
+
+      - name: Resolve the commit
+        id: sha
+        run: echo "sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@f87e5991a6d7451dcb8d9637bfbc97413f497069 # v4.4.1
+
+      - name: Login to GHCR
+        uses: docker/login-action@dbcb813823bdd20940b903addbd779551569679f # v4.6.0
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      # Only the SHA tag. `:latest` belongs to live and only deploy.yml moves it.
+      # No GOOGLE_CLIENT_ID: Google sign-in is not set up for the staging address;
+      # staging is for e-mail registration.
+      - name: Build and push ${{ matrix.svc }}
+        uses: docker/build-push-action@c3c9e263c25d99ce0380d002d59b67737d91b0dc # v7.4.0
+        with:
+          context: ${{ matrix.context }}
+          file: ${{ matrix.file }}
+          push: true
+          tags: ${{ env.IMAGE_PREFIX }}-${{ matrix.svc }}:${{ steps.sha.outputs.sha }}
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    env:
+      IMAGE_TAG: ${{ needs.build.outputs.sha }}
+    steps:
+      - name: Checkout the requested ref
+        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+        with:
+          ref: ${{ needs.build.outputs.sha }}
+
+      - name: Check the staging secrets are set
+        env:
+          STAGING_DB_PASSWORD: ${{ secrets.STAGING_DB_PASSWORD }}
+          STAGING_JWT_SECRET: ${{ secrets.STAGING_JWT_SECRET }}
+          STAGING_BASIC_AUTH: ${{ secrets.STAGING_BASIC_AUTH }}
+        run: |
+          set -euo pipefail
+          missing=''
+          [ -n "${STAGING_DB_PASSWORD}" ] || missing="${missing} STAGING_DB_PASSWORD"
+          [ -n "${STAGING_JWT_SECRET}" ] || missing="${missing} STAGING_JWT_SECRET"
+          [ -n "${STAGING_BASIC_AUTH}" ] || missing="${missing} STAGING_BASIC_AUTH"
+          if [ -n "${missing}" ]; then
+            echo "::error::missing repository secrets:${missing}. See docs/STAGING.md. Nothing on the server was changed."
+            exit 1
+          fi
+
+      # Same ssh setup as deploy.yml: one alias, strict host key.
+      - name: Configure ssh
+        run: |
+          set -euo pipefail
+          mkdir -p ~/.ssh
+          chmod 700 ~/.ssh
+          printf '%s\n' "${{ secrets.DEPLOY_KEY }}" > ~/.ssh/id_deploy
+          chmod 600 ~/.ssh/id_deploy
+          ssh-keyscan -H '${{ secrets.SERVER_HOST }}' >> ~/.ssh/known_hosts
+          test -s ~/.ssh/known_hosts
+          cat > ~/.ssh/config <<EOF
+          Host deploy-target
+            HostName ${{ secrets.SERVER_HOST }}
+            User ${{ secrets.SERVER_USER }}
+            IdentityFile ~/.ssh/id_deploy
+            IdentitiesOnly yes
+            StrictHostKeyChecking yes
+            BatchMode yes
+          EOF
+          chmod 600 ~/.ssh/config
+
+      - name: Send the staging stack files
+        run: |
+          set -euo pipefail
+          ssh deploy-target "mkdir -p ~/${STAGING_DIR}"
+          scp infra/staging/docker-compose.yml infra/staging/gate.conf.template \
+            "deploy-target:${STAGING_DIR}/"
+
+      # Secrets travel on ssh's stdin, as in deploy.yml: never on a command line,
+      # never in a file -- except htpasswd, which nginx has to read. That file
+      # holds only a hash and lives in the deploy user's home, mode 644 so the
+      # nginx worker inside the container can read it.
+      - name: Start staging
+        env:
+          STAGING_DB_PASSWORD: ${{ secrets.STAGING_DB_PASSWORD }}
+          STAGING_JWT_SECRET: ${{ secrets.STAGING_JWT_SECRET }}
+          STAGING_BASIC_AUTH: ${{ secrets.STAGING_BASIC_AUTH }}
+          RESET: ${{ inputs.reset }}
+        run: |
+          set -euo pipefail
+          { printf 'export STAGING_DB_PASSWORD=%q\n' "${STAGING_DB_PASSWORD}"
+            printf 'export STAGING_JWT_SECRET=%q\n' "${STAGING_JWT_SECRET}"
+            printf 'export STAGING_BASIC_AUTH=%q\n' "${STAGING_BASIC_AUTH}"
+            cat <<'REMOTE'
+          set -euo pipefail
+          cd ~/"${STAGING_DIR}"
+          printf '%s\n' "${STAGING_BASIC_AUTH}" > htpasswd
+          chmod 644 htpasswd
+          GATE_COOKIE="$(printf 'st44-staging-gate:%s' "${STAGING_BASIC_AUTH}" | sha256sum | cut -c1-64)"
+          export IMAGE_PREFIX IMAGE_TAG STAGING_HOST STAGING_PORT GATE_COOKIE
+          docker compose config --quiet
+          docker compose pull --quiet
+          if [ "${RESET}" = "true" ]; then
+            echo "reset: deleting the staging containers and volumes"
+            docker compose down --volumes --remove-orphans
+          fi
+          docker compose up -d --force-recreate db redis
+          for i in $(seq 1 30); do
+            [ "$(docker inspect -f '{{.State.Health.Status}}' st44-staging-db)" = healthy ] && break
+            sleep 2
+          done
+          docker exec st44-staging-db /usr/local/bin/run-migrations.sh
+          docker compose up -d --force-recreate backend frontend gate
+          for i in $(seq 1 30); do
+            if curl -fsS "http://localhost:${STAGING_PORT}/health" >/dev/null 2>&1; then
+              echo "staging /health: ok after $i attempt(s)"
+              docker compose ps --format 'table {{.Name}}\t{{.Image}}\t{{.Status}}'
+              exit 0
+            fi
+            sleep 2
+          done
+          echo "staging never answered on port ${STAGING_PORT}"
+          docker compose logs --tail 50 backend gate || true
+          exit 1
+          REMOTE
+          } | ssh deploy-target STAGING_DIR="${STAGING_DIR}" IMAGE_PREFIX="${IMAGE_PREFIX}" \
+                IMAGE_TAG="${IMAGE_TAG}" STAGING_HOST="${STAGING_HOST}" \
+                STAGING_PORT="${STAGING_PORT}" RESET="${RESET}" bash -s
+
+      # Live must be untouched by any of the above.
+      - name: Check live is still healthy
+        run: |
+          set -euo pipefail
+          code="$(curl -sS -o /dev/null -w '%{http_code}' https://home.st44.no/health || true)"
+          echo "home.st44.no/health: ${code}"
+          [ "${code}" = "200" ]
+
+      - name: Check the public staging address
+        run: |
+          set -euo pipefail
+          for i in $(seq 1 12); do
+            code="$(curl -sS -o /dev/null -w '%{http_code}' "https://${STAGING_HOST}/health" || true)"
+            if [ "$code" = "200" ]; then
+              # And the door is shut without the password.
+              closed="$(curl -sS -o /dev/null -w '%{http_code}' "https://${STAGING_HOST}/no/" || true)"
+              echo "staging /health 200; /no/ without password: ${closed}"
+              [ "${closed}" = "401" ]
+              exit 0
+            fi
+            echo "attempt $i: http=$code"
+            sleep 10
+          done
+          echo "::error::https://${STAGING_HOST}/health did not return 200. Is the host proxy and DNS set up? See docs/STAGING.md."
+          exit 1
+
+      - name: Summary
+        if: always()
+        env:
+          JOB_STATUS: ${{ job.status }}
+          REF: ${{ inputs.ref }}
+          RESET: ${{ inputs.reset }}
+        run: |
+          {
+            echo "## Staging: ${JOB_STATUS}"
+            echo
+            echo "| | |"
+            echo "| --- | --- |"
+            echo "| ref | \`${REF}\` (\`${IMAGE_TAG}\`) |"
+            echo "| reset | \`${RESET}\` |"
+            echo "| address | https://${STAGING_HOST} |"
+          } >> "$GITHUB_STEP_SUMMARY"
