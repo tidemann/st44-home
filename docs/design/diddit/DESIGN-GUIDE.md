@@ -472,6 +472,17 @@ variants in [`nav-e-runde-4.png`](reference/nav-e-runde-4.png) (build only E6) a
 in [`nav-e-360.png`](reference/nav-e-360.png). It replaces the ink pill in the bottom menu; the desktop
 tab row keeps the pill. See **Navigation → The chosen item**.
 
+**Round ten — ST-1370, 2026-10-18.** Eight rules for **every page on desktop**, with all 18 desktop
+pages drawn today-against-the-rules by Ida on ST-1409 and ST-1410 and checked by Astrid. Stig
+approved the rules and the pictures together ("Approved. Thank you."). The four overview sheets —
+[`desktop-rules-overview-parent-1.png`](reference/desktop-rules-overview-parent-1.png),
+[`desktop-rules-overview-parent-2.png`](reference/desktop-rules-overview-parent-2.png),
+[`desktop-rules-overview-child-setup-1.png`](reference/desktop-rules-overview-child-setup-1.png),
+[`desktop-rules-overview-child-setup-2.png`](reference/desktop-rules-overview-child-setup-2.png) —
+and the 18 `desktop-rules-*-1440.png` files are the spec for the pages layout A does not draw. See
+**Desktop: rules for all pages**. Popups (step 2) and the single-page points (step 3) were
+deliberately **not** in this approval.
+
 **Order of precedence.** `poeng-signed-off.png` → the approved pictures above → this guide → generic
 rules. Where an approved picture and the signed-off picture disagree about something the signed-off
 picture already settles (a card width, a gutter, a row), the signed-off picture wins and the
@@ -712,7 +723,9 @@ it. **Three different methods, and it matters which one you re-run:**
 - **Display unit** (Bricolage 800, 1.0): the word "poeng" sitting on the baseline beside "+10" on
   the tick screen. Not Body — it is display type, a third the height of the numeral it follows.
 - **Number** (Bricolage 800, 1.0, tabular): a child's total on a family card — "340".
-- **Title** (Bricolage 800, 1.15): the screen name — "Hjemme", "Oppgaver", "Belønninger".
+- **Title** (Bricolage 800, 1.15): the screen name — "Hjemme", "Oppgaver", "Belønninger". **27 px is
+  the phone's title** (measured off «Oppgaver» in the signed-off picture). On a pointer screen the
+  page title is **26 px / 800** — see **Desktop: rules for all pages**, rule 3.
 - **Button label** (Hanken 600, 1.35): the full-width primary button only — 16.5 px, half a pixel
   above Body, which is what makes the label ink land on 105.5 px inside a 346 px button.
 - **Body** (Hanken 600, 1.35): chore titles, reward titles, history-row titles, and the labels on
@@ -847,6 +860,9 @@ is why 14.21 on the reward and child cards is read as 14 and not 15. No value he
 - **Shape:** gently rounded (13 px primary and on-yellow, 10 px row-level).
 - **Primary** (`button-primary`): Diddit Yellow fill, Ink label, **no border**, 346 × 49 px,
   Button label **16.5 px** / 600. Used for the one creating action on a screen ("+ Ny oppgave").
+  **346 px is the phone's content column**; the button is as wide as the column it sits in, which on
+  desktop is 428 px — see **Desktop: rules for all pages**, rule 5. The 49 px height, the 13 px
+  radius and the 16.5 px label do not change with the width.
 - **Row action** (`button-row-action`): the same yellow fill and ink label at row scale — "Ferdig"
   on an overdue or due chore, "Spør mor" on a reward. Label in Body **16 px** / 600.
   **36 px tall** in every instance in the picture; the width follows the label (70 px for the drawn
@@ -1282,6 +1298,11 @@ Stig approved "the top of every working screen". Two of the four are drawn:
 | Login                            | no band; it has its own brand area, see below |
 | The tick-off moment              | **never** — see the rule below                |
 
+**On a pointer screen every page has the band** (ST-1370, 2026-10-18) — not only these four. That
+includes «Barnas innlogging», «Glemt passord», «Sett nytt passord» and «Invitasjon», which carry the
+Diddit mark in it because they have no tab row. The "Login" row above is «Logg inn» and «Opprett
+konto» only. See **Desktop: rules for all pages**, rule 2.
+
 For the two undrawn screens: take the title row and whatever already sits above the first card into
 the band, apply the colour table above, and change nothing else. Then have the result checked
 against this section before it ships — an undrawn screen is a pattern applied, not a picture signed.
@@ -1550,6 +1571,11 @@ section is measured off the pictures as drawn.
 **The old left sidebar is deleted.** Not hidden, not kept for wide screens: deleted. It is the thing
 Stig called "shit", it carries December colours that are not in the Poeng look, and nothing in this
 section replaces it.
+
+**This section draws two pages: the family home and a child's chores.** The rules that cover the
+other sixteen desktop pages were approved on 2026-10-18 and are in **Desktop: rules for all pages**,
+with a picture of every page. On these two pages this section wins; everywhere else those 8 rules
+are the spec.
 
 ### The frame
 
@@ -1831,7 +1857,10 @@ title and have only the right-hand part of the container to live in:
 
 - **An empty column gets a white card, not an empty gap.** `desktop-14` draws
   "Ingen oppgaver er haket av i dag" with "Når noen haker av en oppgave, dukker den opp her."
-  underneath, in a **70 px** white card in the column's own width.
+  underneath, in a **70 px** white card in the column's own width. That card's content, and the
+  loading and error states beside it, are now rule 7 — one title line, one sentence, a main button
+  if there is something to do, and grey placeholder rows while loading. The 70 px is one measured
+  card, not a height to build to. See **Desktop: rules for all pages**.
 - **The sub-line under the screen title wraps** rather than truncating
   ("søndag 11. oktober – 0 av 12 gjort, 2 forfalt" runs to two lines), and the band grows with it.
 - **Known slip in `desktop-14`, do not copy it.** The long chore title
@@ -1876,6 +1905,221 @@ it was ruled on, not drifted into.
 has four items and the tab row needs five — turned out not to be a gap: `progress` is already in the
 repo's signed-off icon set, in the same viewBox at the same stroke, and sits in the same 18 px slot
 in the 21 px box (its own ink 18.0 × 14.5). See **The yellow top and its tab row**.
+
+## Desktop: rules for all pages (≥ 1024 px) (approved 2026-10-18)
+
+![The 8 rules on the parent pages: today on the left, with the rules on the right](reference/desktop-rules-overview-parent-1.png)
+
+**The 18 pictures listed below are the spec for this section.** Stig approved these 8 rules together
+with them on ST-1370 on 2026-10-18 ("Approved. Thank you."), drawn by Ida on ST-1409 and ST-1410 and
+checked by Astrid. Where the words below and a picture disagree, the picture wins.
+
+**Layout A above describes two pages** — the family home and a child's chores. It was the only
+desktop drawing there was, and the other sixteen pages drifted: across the 18 pages, 9 different
+content widths between 400 and 1200 px, 8 pages whose left edge missed the Diddit mark, 4 pages with
+no title in the band, 6 band heights, 7 title sizes and weights, 9 corner sizes, button heights from
+33 to 78 px, one button 1136 px wide, two pages in English, and emoji used as icons. The measurements
+are in Ida's review on ST-1345. These 8 rules close that gap. **They apply to every page at 1024 px
+and wider, drawn or undrawn** — layout A still wins on the two pages it draws. Three pages turned out
+to pass all eight already and are in the set to show that the rules let them stand: «Logg inn»,
+«Opprett konto» and «Mine oppgaver».
+
+**Three things this step does not do**, so nobody reads them out of it:
+
+- **It does not cover popups.** The popup rules are step 2 (ST-1430); **Popups** below is unchanged.
+- **It does not fix single pages.** The pink «Administrator» chip, the faded expired invitation card,
+  where «+ Ny husholdning» sits, and what the band shows before a child's name has loaded are all
+  step 3, each with its own decision.
+- **It changes nothing on the phone.** Every rule here is scoped to 1024 px and wider. Below 1024 px
+  the phone layout takes over in full — see **The breakpoint**.
+
+### The 8 rules
+
+The numbers are the decision card's own, and they are quoted in the build task and in review
+findings — **do not renumber them**.
+
+| #     | Rule                                                                                                                                                                                                                                                            | Where you see it                                                                                                                                                                                                                               |
+| ----- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **1** | **Page width.** Every page is 880 px wide and centred. It does not grow or shrink with the window. Its left edge is the same as the left edge of the Diddit mark in the menu.                                                                                   | [`desktop-rules-familie-1440.png`](reference/desktop-rules-familie-1440.png) — 1200 px at x 120 became 880 at x 280                                                                                                                            |
+| **2** | **Yellow title row.** Every page has its title and one short sub-line in the yellow band, at the left edge (for example «Familie» / «4 medlemmer»). The band ends 17 px under the lowest item in it. With only a title and a sub-line, the band is 191 px tall. | [`desktop-rules-husholdninger-1440.png`](reference/desktop-rules-husholdninger-1440.png) — the page had no yellow anywhere; now a 191 px band                                                                                                  |
+| **3** | **Page title.** One style: 26 px Bricolage, extra bold (800), dark ink `#17120A`, left-aligned. Only «Logg inn» and «Opprett konto» keep their larger 34 px title.                                                                                              | [`desktop-rules-sett-nytt-passord-1440.png`](reference/desktop-rules-sett-nytt-passord-1440.png) — 24 px / 600 centred became 26 / 800 left; the exception is [`desktop-rules-logg-inn-1440.png`](reference/desktop-rules-logg-inn-1440.png)   |
+| **4** | **Content under the band.** Two columns of 428 px with 24 px between them when the page has groups. One 428 px column for a form or a short list. The full 880 px only for a card that needs the width.                                                         | [`desktop-rules-fremgang-1440.png`](reference/desktop-rules-fremgang-1440.png) — two columns; [`desktop-rules-ny-husstand-1440.png`](reference/desktop-rules-ny-husstand-1440.png) — one 428 px form                                           |
+| **5** | **Four button types only.** Main button: 49 px tall, 13 px corners, 16.5 px label, as wide as its column. Outline button: the same size. Row button: 36 px tall, 10 px corners. Chip: 9 px corners. Other buttons fit their label. No other corner sizes.       | [`desktop-rules-husholdningsinnstillinger-1440.png`](reference/desktop-rules-husholdningsinnstillinger-1440.png) — heights 36–65 and radii 4/6/8 became 36/10 and 49/13                                                                        |
+| **6** | **The main button is never pale.** It stays yellow with dark text. The form is checked when you press it, and the error shows under the field. Same as the login page today.                                                                                    | [`desktop-rules-barnas-innlogging-1440.png`](reference/desktop-rules-barnas-innlogging-1440.png) — «🚀 Logg inn» was pale grey at 3.48:1 before you typed                                                                                      |
+| **7** | **One card for empty, loading and error.** A white card in the page width: one title line, one sentence, and a main button if there is something to do. While loading, it shows grey placeholder rows, not a sentence.                                          | [`desktop-rules-mine-oppgaver-barn-laster-1440.png`](reference/desktop-rules-mine-oppgaver-barn-laster-1440.png) and [`desktop-rules-belonninger-laster-1440.png`](reference/desktop-rules-belonninger-laster-1440.png) — the placeholder rows |
+| **8** | **Norwegian text and Diddit icons.** All text is Norwegian. No emoji as icons.                                                                                                                                                                                  | [`desktop-rules-glemt-passord-1440.png`](reference/desktop-rules-glemt-passord-1440.png) — the whole page was English; [`desktop-rules-husholdninger-1440.png`](reference/desktop-rules-husholdninger-1440.png) — 👥 👶 🏠 are gone            |
+
+### The pictures
+
+Each pair is **the page today on the left and the same page with the 8 rules on the right**, nothing
+else changed, same fictional family throughout, 1440 px, light mode, `deviceScaleFactor: 2`. The four
+overview sheets are the pairs; the per-page files are the right-hand half at full size.
+
+| Sheet                                                                                            | Pages                                                                   |
+| ------------------------------------------------------------------------------------------------ | ----------------------------------------------------------------------- |
+| [`desktop-rules-overview-parent-1.png`](reference/desktop-rules-overview-parent-1.png)           | Hjemme, Oppgaver, Familie, Belønninger, Innstillinger                   |
+| [`desktop-rules-overview-parent-2.png`](reference/desktop-rules-overview-parent-2.png)           | Fremgang, Husholdninger, Husholdningsinnstillinger, Invitasjoner        |
+| [`desktop-rules-overview-child-setup-1.png`](reference/desktop-rules-overview-child-setup-1.png) | Mine oppgaver, Belønninger (barn), Ny husstand, Logg inn, Opprett konto |
+| [`desktop-rules-overview-child-setup-2.png`](reference/desktop-rules-overview-child-setup-2.png) | Barnas innlogging, Glemt passord, Sett nytt passord, Invitasjon         |
+
+The 18 pages, and the two loading states rule 7 needs:
+
+| Page                      | Picture                                                                                                          | Page                   | Picture                                                                                                          |
+| ------------------------- | ---------------------------------------------------------------------------------------------------------------- | ---------------------- | ---------------------------------------------------------------------------------------------------------------- |
+| Hjemme                    | [`desktop-rules-hjemme-1440.png`](reference/desktop-rules-hjemme-1440.png)                                       | Mine oppgaver (barn)   | [`desktop-rules-mine-oppgaver-barn-1440.png`](reference/desktop-rules-mine-oppgaver-barn-1440.png)               |
+| Oppgaver                  | [`desktop-rules-oppgaver-1440.png`](reference/desktop-rules-oppgaver-1440.png)                                   | Belønninger (barn)     | [`desktop-rules-belonninger-barn-1440.png`](reference/desktop-rules-belonninger-barn-1440.png)                   |
+| Familie                   | [`desktop-rules-familie-1440.png`](reference/desktop-rules-familie-1440.png)                                     | Ny husstand            | [`desktop-rules-ny-husstand-1440.png`](reference/desktop-rules-ny-husstand-1440.png)                             |
+| Belønninger               | [`desktop-rules-belonninger-1440.png`](reference/desktop-rules-belonninger-1440.png)                             | Logg inn               | [`desktop-rules-logg-inn-1440.png`](reference/desktop-rules-logg-inn-1440.png)                                   |
+| Belønninger, loading      | [`desktop-rules-belonninger-laster-1440.png`](reference/desktop-rules-belonninger-laster-1440.png)               | Opprett konto          | [`desktop-rules-opprett-konto-1440.png`](reference/desktop-rules-opprett-konto-1440.png)                         |
+| Innstillinger             | [`desktop-rules-innstillinger-1440.png`](reference/desktop-rules-innstillinger-1440.png)                         | Barnas innlogging      | [`desktop-rules-barnas-innlogging-1440.png`](reference/desktop-rules-barnas-innlogging-1440.png)                 |
+| Fremgang                  | [`desktop-rules-fremgang-1440.png`](reference/desktop-rules-fremgang-1440.png)                                   | Glemt passord          | [`desktop-rules-glemt-passord-1440.png`](reference/desktop-rules-glemt-passord-1440.png)                         |
+| Husholdninger             | [`desktop-rules-husholdninger-1440.png`](reference/desktop-rules-husholdninger-1440.png)                         | Sett nytt passord      | [`desktop-rules-sett-nytt-passord-1440.png`](reference/desktop-rules-sett-nytt-passord-1440.png)                 |
+| Husholdningsinnstillinger | [`desktop-rules-husholdningsinnstillinger-1440.png`](reference/desktop-rules-husholdningsinnstillinger-1440.png) | Invitasjon             | [`desktop-rules-invitasjon-1440.png`](reference/desktop-rules-invitasjon-1440.png)                               |
+| Invitasjoner              | [`desktop-rules-invitasjoner-1440.png`](reference/desktop-rules-invitasjoner-1440.png)                           | Mine oppgaver, loading | [`desktop-rules-mine-oppgaver-barn-laster-1440.png`](reference/desktop-rules-mine-oppgaver-barn-laster-1440.png) |
+
+**All 18 are drawn at 1440 px only.** Rules 1 and 2 are width-independent — at 1024 px the same
+880 px page sits at x 72…952, exactly as **The frame** already says — but no picture shows it, so
+1024 px is checked live rather than against a file.
+
+### The numbers behind rules 1 and 2, measured on the files
+
+Read off the 18 PNGs (DPR 2, css px): the band is the topmost run of `#F6B93B` at the window's left
+edge; the content edges are the first and last column under the band that is not the paper `#F6F6F4`.
+
+| Band ends at | Pages                                                                                                                                                                               | Why                                         |
+| ------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------- |
+| **191 px**   | Oppgaver, Familie, Belønninger, Innstillinger, Husholdninger, Husholdningsinnstillinger, Invitasjoner, Ny husstand, Barnas innlogging, Glemt passord, Sett nytt passord, Invitasjon | title + sub-line only — rule 2's own number |
+| 227 px       | Fremgang                                                                                                                                                                            | the three stat figures are the lowest item  |
+| 259 px       | Hjemme                                                                                                                                                                              | the child cards are the lowest item         |
+| 270 px       | Mine oppgaver (barn)                                                                                                                                                                | the hero number and the reward meter        |
+| 282 px       | Belønninger (barn)                                                                                                                                                                  | the points total under the sub-line         |
+
+- **Content x 280…1160 (880 px)** on every two-column page and **x 280…708 (428 px)** on every
+  one-column page. **x 280 on all sixteen** — the Diddit mark's own left edge, which is rule 1.
+  «Logg inn» and «Opprett konto» are the two that do not have a band or an 880 px page: their form
+  column measures 380 px at x 847, the login picture's own frame, untouched.
+- **The 191 px is the 20 px rule, not a new number.** The band's general bottom padding is 17 px
+  (`layout.brandBandPadBottom`), but when the sub-line is the lowest thing in the band, **The Air
+  Under The Sub-Line** gives it 20 px — see that section and the "No children yet" row under
+  **What must not break**. 191 is what those 20 px produce under a 26 px title and a 15 px sub-line.
+  A build that applies 17 px there lands on 188 and is wrong.
+- **Rule 3's 26 px is the set size, not an ink height.** `.page-title` sets **26 px at weight 800**,
+  and the sub-line is Meta 15 / 500. The band table under **The yellow top and its tab row** records
+  the same title as "ink 26.0 px tall", measured off «Hjemme», whose «j» descender happens to make
+  the ink and the set size the same number. They are one title, read two ways.
+
+### The three choices recorded with the approval
+
+These were on the decision card as choices, not as rules, and Stig approved the pictures that show
+them. They are as binding as the rules, and changing one is a change to the look.
+
+1. **A form page has no white card.** «Ny husstand», «Barnas innlogging», «Glemt passord», «Sett
+   nytt passord» and «Invitasjon» put label, field and button straight on the paper in the 428 px
+   column, like the signed-off [`login-19-desktop-1440x900.png`](reference/login-19-desktop-1440x900.png).
+   **The white card is then rule 7's card and nothing else** — empty, loading, error. A form in a
+   white card would make the white card mean two things on one page, and on «Glemt passord» both
+   are on screen one after the other. A card around a settings _group_ (Innstillinger → «Profil») is
+   not a form page and keeps its card.
+2. **The four sign-in pages without a menu carry the Diddit mark in the band.** «Barnas innlogging»,
+   «Glemt passord», «Sett nytt passord» and «Invitasjon» have no tab row, so rule 1's left edge and
+   rule 2's band would have nothing to line up with. They get the same **80 px yellow row as the tab
+   row** — mark 36 px at the container's left edge, wordmark 26 px / 800 ink beside it — and then the
+   ordinary band under it. **No tabs and no initial badge**: nobody is signed in yet. Every value is
+   taken from `app-top-tabs`, nothing is invented. They do **not** get the login's 634 px yellow
+   panel; rule 3 gives the exception to «Logg inn» and «Opprett konto» only, which is the same thing
+   said about the title.
+3. **«Logg inn» and «Opprett konto» are untouched.** They keep the 634 px brand panel, their 382 px
+   form column and their **34 px / 800** title (`login.css`, the ≥ 1024 px block) — rules 1 and 2 do
+   not reach them, and rules 5–8 already held there. Their pictures are in the set to show that the
+   rules let them stand.
+
+### Where this section replaces something the guide said before
+
+Nothing is deleted; these are the places a reader will see two numbers and needs to know which one
+is which.
+
+| The guide said                                                                                                           | Now                                                                                                                                                                                                                                  |
+| ------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| **Which screens get it**: the band is drawn on 2 screens, applied to «Oppgaver» and «Belønninger», and "Login — no band" | Rule 2: **every** desktop page has the band. That "Login" row is «Logg inn» and «Opprett konto» only; the other four sign-in pages get a band **and** the mark (choice 2).                                                           |
+| **Typography → Title: 27 px**, and "Title 27 / 800 against Meta 15 / 500" under the band's colour table                  | 27 px is the phone's title, derived from «Oppgaver» in the signed-off picture. **On desktop the page title is 26 px / 800** (rule 3). The phone is unchanged.                                                                        |
+| **Buttons → Primary: 346 × 49 px**                                                                                       | 346 px is the phone's content column. On desktop the main button is **as wide as its column** — 428 px, as **Below the band** already draws «+ Ny oppgave». 49 px and 13 px are the same everywhere.                                 |
+| **Empty and worst-case states**: an empty column gets a "70 px white card in the column's own width"                     | Rule 7 gives that card its content — one title line, one sentence, a main button if there is something to do — and gives loading **grey placeholder rows**. The 70 px was one card measured in `desktop-14`; rule 7 fixes no height. |
+| **Don't** disable the sign-in button on an empty form (written for the login)                                            | Rule 6 is the same rule for **every** main button on every page: yellow from the start, validate on press, error under the field.                                                                                                    |
+| **Shapes**: radii 13 / 14 / 16 / 10 / 9 across cards, tiles, the tick badge and chips                                    | Rule 5's "no other corner sizes" is about the **four button types** it lists — it sits under "Four button types only". Card radii (13 row, 14 tile), the tick badge (16) and the chip's own 33 px height are untouched.              |
+
+### Two pages where the rules change something that already looked right
+
+Both are visible in the approved pictures, so they are approved as drawn. They are recorded here
+because a reader comparing this section with layout A will notice them.
+
+- **Fremgang is split into two columns** — the leaderboard left, the badges right. ST-1345 called the
+  page correct on rules 1, 2 and 3, and rule 4 still applies because the page has groups. This is
+  the one page in the set where the rules change a page that was already right.
+  [`desktop-rules-fremgang-1440.png`](reference/desktop-rules-fremgang-1440.png).
+- **«+ Ny husholdning» sits above the list** on Husholdninger, while layout A puts the main button
+  **under** its column ("+ Ny oppgave" is a block in the flow). The 8 rules do not say where the
+  button goes, so the picture does not break them — but it is the one page in the set where the main
+  button is not where the signed-off desktop picture puts it.
+  [`desktop-rules-husholdninger-1440.png`](reference/desktop-rules-husholdninger-1440.png).
+
+### What rule 7's "page width" means, measured
+
+Rule 7's picture of what is wrong is "a white stripe across the full window". **No white area on any
+of the 18 pages reaches past the 880 px page**: measured on every file, every white run below the
+band starts at or after x 280 and ends at or before x 1160 (and on «Logg inn» / «Opprett konto»
+inside their own 380 px column). Inside that, the card is as wide as the thing it stands in:
+
+- **880 px** where the page's whole content is the one list that is loading — the three placeholder
+  rows on «Mine oppgaver» measure 880 px at x 280, each 68 px tall with a 13 px corner, 8 px apart,
+  the same shape as the chore rows they are about to become.
+- **428 px** where one column is empty or failed — the card is the column's card, as **Empty and
+  worst-case states** already says for the home.
+
+So "in the page width" rules out the window-wide stripe; it does not widen a column's own card to
+880 px.
+
+### What these 8 rules do not touch
+
+Recorded so a review does not read them as faults, and so they are not quietly fixed inside this
+step. Each is somebody's decision, not a builder's:
+
+1. **The tab strip inside Belønninger** (ST-1345 F10) — still an underlined strip, now 880 px wide
+   because rule 1 moved the frame. Two tab patterns on one page is a separate decision.
+2. **Husholdningsinnstillinger has cards inside cards and doubled headings** — the page needs its own
+   drawing (ST-1345 F12). The rules fix its frame and its buttons, not its content.
+3. **«Alder: 0 (Født )»** on the same page is a broken string, not a layout fault.
+4. **The expired invitation card is dimmed with `opacity`** on Invitasjoner: body text **3.37:1**
+   and the grey «Utløpt» button **2.98:1**, both under 4.5:1. That is the card's transparency, not
+   one of the 8 rules, and the fix inside the look is a darker grey text instead of `opacity` on the
+   whole card. **Open for Maria.**
+5. **The «Administrator» chip on Husholdninger is still pink**, a colour that is not in the palette
+   (ST-1345 F11). Rule 5 names the chip's corner, not its colour.
+6. **A child's two bands still differ** (ST-1345 F8): «Mine oppgaver» puts the points total beside
+   the name, «Belønninger» stacks it under the sub-line — hence 270 against 282. No rule says where
+   in the band the total goes.
+7. **What the band shows before the name has loaded.** On «Mine oppgaver» the child's name _is_ the
+   title and it arrives with the chore list, so while the page loads the band carries only the
+   sub-line and measures **128 px** — the same 128 px before and after the rules, so this is not
+   something they introduced. Rule 2 still says every page carries a title. **Open for Maria**, and
+   it is one of the step-3 items.
+
+### Accessibility
+
+No new colour, no new font and no new component: every value is one the guide already carries. Four
+things the rules make better, and they are the reason rules 6 and 8 are worth their cost:
+
+- **3.1.1 Språk** — «Glemt passord» and «Invitasjon» were English pages inside a Norwegian app.
+- **1.1.1** — emoji used as icons are gone: 📧 🔐 🙈 and the rocket on «Barnas innlogging», 👁️ on
+  «Sett nytt passord», 👥 👶 🏠 on Husholdninger, 🔔 in the «Ny husstand» wizard. A screen reader
+  read them out by name. (The 🔔 is on the reminder step, which no picture draws.)
+- **Rule 6 removes three grey dead ends** ST-1345 measured: the wizard's «Neste» at 2.67:1, the
+  child's «Logg inn» at 3.48:1 and «Send Reset Link» at 3.48:1. The button is yellow from the start
+  and the check happens on the press, as the login has always done.
+- **2.4.6** — Invitasjoner had an `<h2>` and no `<h1>`; rule 2 gives it a page title.
+
+**No rule here weakens a contrast reading.** Ink on yellow stays 10.57:1, and the band's sub-line is
+ink, not the `#555E64` that is only 3.76:1 there. The one reading in the set that is under 4.5:1 is
+the dimmed invitation card above, which the rules do not touch.
 
 ## Popups (approved 2026-10-11)
 
@@ -2296,7 +2540,9 @@ tile, text and pills on the drawn pixel.
 - **Don't** grey out, dim or recolour the "Logg inn" button while it works — it keeps its yellow
   and changes its label.
 - **Don't** disable the sign-in button on an empty form. Validate on press; a dead grey button is
-  an error-prevention pattern that reads as a broken screen.
+  an error-prevention pattern that reads as a broken screen. **This holds for every main button on
+  every page**, not only the login — see **Desktop: rules for all pages**, rule 6.
+- **Don't** use an emoji as an icon, and don't leave English text on a page. Both are rule 8.
 - **Don't** give the mark a new colour pair, an outline, a shadow, or a separated tick.
 - **Don't** redesign a signed-off screen — see the next section.
 
