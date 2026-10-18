@@ -91,7 +91,13 @@ export class ResetPasswordComponent implements OnInit {
   }
 
   protected async onSubmit(): Promise<void> {
-    if (this.resetPasswordForm.invalid || !this.resetToken()) return;
+    if (this.isLoading() || !this.resetToken()) return;
+
+    // Validate on press: the button is never a greyed-out dead end (guide, rule 6)
+    if (this.resetPasswordForm.invalid) {
+      this.resetPasswordForm.markAllAsTouched();
+      return;
+    }
 
     this.isLoading.set(true);
     this.errorMessage.set(null);
