@@ -2182,12 +2182,12 @@ A popup **blocks** when the app will not go on until you answer it: it takes foc
 page behind it does not scroll, and the only ways out are its own buttons or Escape. A popup you are
 allowed to ignore — an offer, a dropdown — does not block.
 
-| Blocks — edge Ink `#17120A`, veil, heavier shadow                                                                                                                                                                                                                                         | Does not block — edge `#555E64`, no veil                                                                                 |
-| ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------ |
-| The shared `<app-modal>` and every screen that uses it: «Nytt barn», «Rediger oppgave», barnekort, invitasjon, QR, hurtigopprett, flytt oppgave, oppgaveskjema — and `child-rewards.html` and `manage-households.html`, which reach for `<app-modal>` directly, outside the modals folder | «Slå på varsler?» — the bottom sheet Stig named                                                                          |
-| `task-form`, `reassign-modal`, `manual-assignment-modal` and the delete dialog in `task-list` — four hand-rolled copies of the same thing                                                                                                                                                 | «Legg Diddit på hjemskjermen» — the same sheet, a different screen                                                       |
-| Every Diddit replacement for a native `confirm()` (there are seven call sites, and they have no Diddit look at all)                                                                                                                                                                       | ~~The household dropdown — it has a border and a shadow today, in three values from outside the system; it takes these~~ |
-| **«Bytt husstand»**, the household choice from the home title — **moved here 2026-10-18** (Stig, ST-1482, option A); it replaces the struck-through line on the right, which was written about a dropdown at the name while what the code opens is a full sheet                           | —                                                                                                                        |
+| Blocks — edge Ink `#17120A`, veil, heavier shadow                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       | Does not block — edge `#555E64`, no veil                                                                                 |
+| --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------ |
+| The shared `<app-modal>` and every screen that uses it: «Nytt barn», «Rediger oppgave», barnekort, invitasjon, QR, hurtigopprett, flytt oppgave, oppgaveskjema — and `child-rewards.html` and `manage-households.html`, which reach for `<app-modal>` directly, outside the modals folder                                                                                                                                                                                                                                                                                                                                               | «Slå på varsler?» — the bottom sheet Stig named                                                                          |
+| `task-form`, `reassign-modal`, `manual-assignment-modal` and the delete dialog in `task-list` — four hand-rolled copies of the same thing                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               | «Legg Diddit på hjemskjermen» — the same sheet, a different screen                                                       |
+| Every Diddit replacement for a native `confirm()` (there are seven call sites, and they have no Diddit look at all)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     | ~~The household dropdown — it has a border and a shadow today, in three values from outside the system; it takes these~~ |
+| **«Bytt husstand»**, the household choice from the home title — **moved here 2026-10-18** (Stig, ST-1482, option A); it replaces the struck-through line on the right, which was written about a dropdown at the name while what the code opens is a full sheet. **What it takes from this column is the veil.** The ink edge and the heavier shadow in the heading are the **desktop** dialog's, under rules 1 and 7; **on the phone it keeps the sheet as drawn** — the 30 % veil, full width, 20 px top corners, paper `#F6F6F4`, **no ink edge and no shadow** (signed off 2026-10-14; see **«Bytt husstand», measured at 390 px**) | —                                                                                                                        |
 
 Not popups, and not covered by this section: the offline banner (part of the page: radius 0, a 1 px
 bottom border, no layer above anything), the QR scanner's viewfinder mask, and the celebration
@@ -2436,7 +2436,8 @@ collected into a banner.
 
 - **«QR-kode innlogging» shows its frame only.** The code is drawn from a server answer the mock does
   not give, and the popup has no action row at all, so that pair carries **rule 1 and rule 2 only**;
-  its one pressable is the 40 × 40 px close cross.
+  its one pressable is the 40 × 40 px close cross, which keeps that drawn size and takes a padded
+  44 × 44 px target — see point 1 under **What these 8 rules do not touch**.
 - **In «Barnedetaljer» the 362 px and 93 px buttons sit inside the body's own blocks** («Opprett
   innlogging» in the notice, «Fjern barn» in «Faresone»). The action row is the 396 px «Lukk» at the
   bottom.
@@ -2505,11 +2506,17 @@ is which.
 Recorded so a review does not read them as faults, and so they are not quietly fixed inside this
 step. Each is somebody's decision, not a builder's:
 
-1. **Two hit areas inside a popup are under the 24 × 24 px floor** of WCAG 2.5.8 that this guide
-   quotes under **Hit area**: «✏️ Rediger» in «Barnedetaljer», whose pressable box measures
-   **63.7 × 22.4 px**, and the empty «Velg barn» menu in «Tilordne oppgave på nytt». **Open for
-   Maria**, step 3. Everything else in the 17 clears the floor — the close cross is 40 × 40 px and
-   every action is 49 px tall.
+1. **Two hit areas inside a popup are under WCAG 2.5.8's 24 × 24 px minimum**: «✏️ Rediger» in
+   «Barnedetaljer», whose pressable box measures **63.7 × 22.4 px**, and the empty «Velg barn» menu
+   in «Tilordne oppgave på nytt». Those two are **open for Maria**, step 3, because reaching the
+   floor there changes a drawn popup. **There are two floors, and this guide's own is the higher
+   one:** **Hit area** requires a **padded target of 44 × 44 px** on anything drawn smaller, and
+   Maria settled 2.5.8 at **44 px** on 2026-10-12. (The 24 px figure is under **Chips**, as the
+   WCAG minimum the 33 px chips clear.) Measured against 44 px, one more pressable in the 17 is
+   short: the **40 × 40 px close cross** on «QR-kode innlogging». It takes **a padded 44 × 44 px
+   target** like every other small control in the guide — transparent padding, **the drawn
+   40 × 40 px cross unchanged** — so that one is a build instruction, not a change to a picture and
+   not Maria's. Every action row button is 49 px tall and clears both floors.
 2. **The open menu list** (rule 6). The rule bans the operating system's menu; the Diddit menu that
    replaces it is a component for the build, and only the closed field is in these pictures.
 3. **Emoji as icons inside a popup.** Step 1's rule 8 was scoped to pages. The popups in this set
@@ -2538,7 +2545,9 @@ No new colour, no new font and no new component: every value is one the guide al
   veil, which no one can read while the veil is up.
 - **1.4.11 Non-text Contrast.** Rule 5 removes the one field with no edge at all («Personlig melding»,
   a white box on a white surface) and the `#E2E8F0` edge, which is both off-palette and too pale.
-- **The two readings under the 24 × 24 px floor are listed above and are not fixed here.**
+- **The two readings under WCAG 2.5.8's 24 × 24 px minimum are listed above and are not fixed
+  here.** The 40 × 40 px close cross clears 24 px but not this guide's own 44 px, so it takes a
+  padded 44 × 44 px target; the drawing does not change.
 
 **No rule here weakens a contrast reading**, and the 8 rules add no new veil: a popup that blocks
 carries the same 30 % ink veil, with the same measurements, as **Measured: the veil** above.
