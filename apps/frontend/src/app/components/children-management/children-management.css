@@ -268,3 +268,32 @@
     transition: none;
   }
 }
+
+@media (min-width: 1024px) {
+  /* Rule 5: «+ Legg til barn» is the main button, as wide as its column */
+  .header {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+  }
+
+  .header .btn-primary {
+    width: 100%;
+    min-height: 0;
+    height: 49px;
+    padding: 0 16px;
+    border-radius: var(--r-button);
+    font-size: 16.5px;
+    font-weight: 600;
+    white-space: nowrap;
+  }
+
+  /* Rule 5: «Rediger» and «Slett» are row buttons, 36 px with 10 px corners */
+  .child-actions .btn {
+    min-height: 0;
+    height: 36px;
+    padding: 0 14px;
+    border-radius: var(--r-row-action);
+    font-size: 15px;
+  }
+}

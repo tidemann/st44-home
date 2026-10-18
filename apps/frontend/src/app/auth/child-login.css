@@ -323,18 +323,21 @@
   }
 
   .child-body {
-    padding-top: 22px;
+    padding-top: 24px;
   }
 
   .login-form {
     gap: 15px;
   }
 
+  /* the global .form-group and .form-label margins added 24 px per field (ST-1462 F6) */
   .form-group {
     gap: 3px;
+    margin-bottom: 0;
   }
 
   .form-label {
+    margin: 0 0 3px;
     font-family: var(--font-text);
     font-size: 13px;
     font-weight: 600;
@@ -366,7 +369,7 @@
   }
 
   .help-section {
-    margin-top: 8px;
+    margin-top: 1px;
     padding-top: 0;
     border-top: 0;
     text-align: left;
@@ -375,6 +378,7 @@
   .help-text {
     font-family: var(--font-text);
     font-size: 15px;
+    line-height: 1.3;
   }
 
   .help-link {

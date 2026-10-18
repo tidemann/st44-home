@@ -233,6 +233,7 @@
   .btn,
   .btn-secondary {
     height: 36px;
+    min-height: 0;
     padding: 0 14px;
     border-radius: var(--r-row-action);
   }

@@ -127,6 +127,38 @@ export class InvitationsSentListComponent implements OnInit {
     }
   }
 
+  /** Role in Norwegian (rule 8) */
+  getRoleLabel(role: string): string {
+    switch (role) {
+      case 'admin':
+        return $localize`:@@invitationsSent.roleAdmin:Administrator`;
+      case 'parent':
+        return $localize`:@@invitationsSent.roleParent:Forelder`;
+      case 'child':
+        return $localize`:@@invitationsSent.roleChild:Barn`;
+      default:
+        return role;
+    }
+  }
+
+  /** Status in Norwegian (rule 8) */
+  getStatusLabel(status: string): string {
+    switch (status) {
+      case 'pending':
+        return $localize`:@@invitationsSent.statusPending:Venter`;
+      case 'accepted':
+        return $localize`:@@invitationsSent.statusAccepted:Godtatt`;
+      case 'declined':
+        return $localize`:@@invitationsSent.statusDeclined:Avslått`;
+      case 'cancelled':
+        return $localize`:@@invitationsSent.statusCancelled:Avbrutt`;
+      case 'expired':
+        return $localize`:@@invitationsSent.statusExpired:Utløpt`;
+      default:
+        return status;
+    }
+  }
+
   /**
    * Check if invitation can be cancelled
    */
