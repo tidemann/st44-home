@@ -38,7 +38,13 @@ export class ChildLoginComponent {
   }
 
   protected async onSubmit(): Promise<void> {
-    if (this.loginForm.invalid) return;
+    if (this.isLoading()) return;
+
+    // Validate on press: the button is never a greyed-out dead end (guide, rule 6)
+    if (this.loginForm.invalid) {
+      this.loginForm.markAllAsTouched();
+      return;
+    }
 
     this.isLoading.set(true);
     this.errorMessage.set(null);

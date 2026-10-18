@@ -271,3 +271,12 @@
     min-width: 44px;
   }
 }
+
+/* The login page's eye drawing (guide, rule 8: Diddit icons, no emoji) */
+.toggle-password svg {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
