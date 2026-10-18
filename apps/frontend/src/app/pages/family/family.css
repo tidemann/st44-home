@@ -162,6 +162,11 @@
 }
 
 @media (min-width: 1024px) {
+  /* Rule 5: the row action is 36 px on desktop; the phone keeps the drawn 33 px */
+  .btn-invite {
+    height: 36px;
+  }
+
   .new-slot {
     bottom: 0;
   }

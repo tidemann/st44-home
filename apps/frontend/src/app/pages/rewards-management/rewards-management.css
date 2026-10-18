@@ -305,3 +305,14 @@ h2 {
     display: none;
   }
 }
+
+/* Rule 5: «Si ja» and «Si nei» are row buttons, 36 px with 10 px corners */
+@media (min-width: 1024px) {
+  .request-actions .btn {
+    min-height: 0;
+    height: 36px;
+    padding: 0 14px;
+    border-radius: var(--r-row-action);
+    font-size: 15px;
+  }
+}
