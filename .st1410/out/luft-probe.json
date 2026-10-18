@@ -1,0 +1,135 @@
+{
+ "loaded": {
+  "band": {
+   "tag": "header.page-header",
+   "top": 80,
+   "bottom": 269.8,
+   "x": 0,
+   "w": 1440,
+   "h": 189.8,
+   "mt": "0px",
+   "pt": "8px"
+  },
+  "content": {
+   "tag": "main.page-content",
+   "top": 269.8,
+   "bottom": 679.5,
+   "x": 280,
+   "w": 880,
+   "h": 409.8,
+   "mt": "0px",
+   "pt": "0px"
+  },
+  "kids": [
+   {
+    "tag": "div.cols",
+    "top": 269.8,
+    "bottom": 647.5,
+    "x": 280,
+    "w": 880,
+    "h": 377.8,
+    "mt": "0px",
+    "pt": "0px"
+   }
+  ],
+  "colKids": [
+   {
+    "tag": "app-group-label.",
+    "top": 290.8,
+    "bottom": 307.6,
+    "x": 280,
+    "w": 428,
+    "h": 16.9,
+    "mt": "21px",
+    "pt": "0px"
+   },
+   {
+    "tag": "app-chore-row.",
+    "top": 314.6,
+    "bottom": 382.6,
+    "x": 280,
+    "w": 428,
+    "h": 68,
+    "mt": "0px",
+    "pt": "0px"
+   },
+   {
+    "tag": "app-chore-row.",
+    "top": 390.6,
+    "bottom": 458.6,
+    "x": 280,
+    "w": 428,
+    "h": 68,
+    "mt": "8px",
+    "pt": "0px"
+   }
+  ],
+  "skeleton": null,
+  "firstSkelRow": null,
+  "text": "Diddit Hjem Belønninger J Jonas søndag 18. oktober 34 poeng Kinokveld 26 igjen Forfalt Rydde rommet "
+ },
+ "loading": {
+  "band": {
+   "tag": "header.page-header",
+   "top": 80,
+   "bottom": 128,
+   "x": 0,
+   "w": 1440,
+   "h": 48,
+   "mt": "0px",
+   "pt": "8px"
+  },
+  "content": {
+   "tag": "main.page-content",
+   "top": 128,
+   "bottom": 380,
+   "x": 280,
+   "w": 880,
+   "h": 252,
+   "mt": "0px",
+   "pt": "0px"
+  },
+  "kids": [
+   {
+    "tag": "div.r7-skeleton",
+    "top": 128,
+    "bottom": 348,
+    "x": 280,
+    "w": 880,
+    "h": 220,
+    "mt": "0px",
+    "pt": "0px"
+   }
+  ],
+  "colKids": [],
+  "skeleton": {
+   "tag": "div.r7-skeleton",
+   "top": 128,
+   "bottom": 348,
+   "x": 280,
+   "w": 880,
+   "h": 220,
+   "mt": "0px",
+   "pt": "0px"
+  },
+  "firstSkelRow": {
+   "tag": "i.",
+   "top": 128,
+   "bottom": 196,
+   "x": 280,
+   "w": 880,
+   "h": 68,
+   "mt": "0px",
+   "pt": "0px"
+  },
+  "text": "Diddit Hjem Belønninger J søndag 18. oktober"
+ },
+ "gaps": {
+  "loaded_band_bottom": 269.8,
+  "loaded_firstChild": 0,
+  "loaded_firstColKid": 21,
+  "loaded_secondColKid": 44.8,
+  "loading_band_bottom": 128,
+  "loading_skeleton": 0
+ }
+}

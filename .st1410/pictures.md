@@ -22,9 +22,11 @@ Som i del 1: sidene er **appen selv**, ikke en tegning. `ng serve` på `origin/m
 arbeidstrær — ett uten reglene (venstre halvdel i arkene) og ett med dem — API-et mokket med
 oppdiktede data, `deviceScaleFactor: 2`, og den samme *settle*-ventingen som i runde 2 av del 1
 (nettverket i ro, ingen «Laster/Henter», ingen plassholderrad). Begge halvdelene i hvert par er
-tegnet i samme kjøring. Gren `ida/st-1410-rules-pictures` (33e9bcb) — **ikke for main.**
+tegnet i samme kjøring. Gren `ida/st-1410-rules-pictures` (**04a950f**, runde 2) — **ikke for main.**
 Skriptene: `st1410-shoot.js`, `.st1410/measure.js`, `.st1410/audit.js`, `.st1410/cols.js`,
-`.st1410/worst.js`, `.st1410/sheet.js`, `.st1410/worstsheet.js`.
+`.st1410/worst.js`, `.st1410/sheet.js`, `.st1410/worstsheet.js` og — nytt i runde 2 —
+`.st1410/laster.js` (lastetilstanden, med sin egen måling i `laster-probe.json`).
+`st1410-shoot.js` tar nå `ST1410_ONLY=<side>` så én side kan tegnes om igjen alene.
 
 ## Tallene Astrid sjekker
 
@@ -67,8 +69,33 @@ tilstanden der regelen faktisk gjelder, tegnet i begge halvdeler på samme måte
 | Med reglene | `rules-mine-oppgaver-barn-laster-1440.png` | **tre plassholderrader**: hvite kort på **880 @ x 280**, hver **68 px høy med 13 px hjørne**, med en grå strek der oppgavenavnet kommer | **128** |
 
 Det er regel 7s andre setning, ordrett: «While loading, it shows grey placeholder rows, not a
-sentence.» Radene har samme bredde, høyde og hjørne som oppgaveradene de er i ferd med å bli.
-`scrollWidth = 1440` i begge.
+sentence.» Radene har samme **bredde, høyde og hjørne** som oppgaveradene de er i ferd med å bli
+(880 @ x 280, 68 px, hjørne 13, 8 px mellom) — men ikke samme **plass**: de står øverst på siden,
+der oppgavene får en seksjonsetikett over seg. `scrollWidth = 1440` i begge.
+
+**Luften over radene er sidens egen, 21 px** (runde 2, Astrid). Regel 7 sier ingenting om plassen
+over radene, så den skal ikke endres av regelen. Jeg målte den innlastede siden i nettleseren:
+feltet slutter på **269,8**, `.page-content` begynner i samme punkt, og luften kommer fra det
+første elementet i spalta — seksjonsetiketten, med `margin-top: 21px` (boks 290,8, blekk 294, altså
+Astrids 24 px til blekket; første kort 314,6 = 44,8). De 21 pikslene er altså et tall som allerede
+står i sidens CSS, ikke et jeg har funnet på. Plassholderradene tar nå den samme luften:
+
+| Bilde | Felt slutter | Første hvite kort | Luft |
+| --- | --- | --- | --- |
+| **med reglene (rettet)** | 128 | **149** | **21 px** |
+| med reglene (forrige runde) | 128 | 128 | 0 px |
+| i dag, samme tilstand | 128 | snurrering 186,5 | 58,5 px |
+
+Målt i pikslene på selve fila (DPR 2, kolonne x 700): siste gule rad 128, første hvite 149, og
+imellom sidens papir `#F6F6F4`. Det andre tallet — 44,8, der første kort lander når siden er
+innlastet — ville reservert plass til en etikett som ikke er tegnet mens det laster, så jeg valgte
+sidens første-element-luft.
+
+Regelen er skrudd til der den gjelder: `.page-content > .r7-skeleton:first-child`. **Kontroll på
+del 1s side** (forelderens «Belønninger», fanen «Ønsker», godkjent bilde): feltet 191, radene
+**262,6**, `margin-top: 0px`, og velgeren treffer **0 elementer** der — radene ligger i
+`.requests-tab`, bak fanerada, så del 1s bilde kan ikke flytte seg. Målingen ligger i
+`.st1410/luft3.js` → `luft-etter.json`.
 
 **Én ting jeg fant da jeg målte dette, og som ingen av de 8 reglene retter:** mens siden laster,
 bærer det gule feltet bare underlinja («søndag 18. oktober») og ingen tittel, så feltet er **128 px**

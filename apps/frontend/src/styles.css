@@ -1106,6 +1106,15 @@ app-reward-card + app-reward-card {
     gap: 8px;
   }
 
+  /* When the rows are the first thing under the yellow band they take the page's own air:
+     21 px, the margin the section label has once the page has loaded (ink 24 px under the
+     band on /my-tasks, measured). Rule 7 says nothing about the space above the rows, so it
+     stays the page's. Where something else already stands between the band and the rows —
+     the tab row on Belønninger — that page's own spacing still decides, hence :first-child. */
+  .page-content > .r7-skeleton:first-child {
+    margin-top: 21px;
+  }
+
   .r7-skeleton i {
     display: block;
     height: 68px;

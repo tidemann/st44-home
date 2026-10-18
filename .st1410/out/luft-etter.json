@@ -1,0 +1,130 @@
+{
+ "laster": {
+  "band": {
+   "top": 80,
+   "bottom": 128,
+   "x": 0,
+   "w": 1440,
+   "h": 48,
+   "mt": "0px",
+   "radius": "0px"
+  },
+  "bandBottom": 128,
+  "skeleton": {
+   "top": 149,
+   "bottom": 369,
+   "x": 280,
+   "w": 880,
+   "h": 220,
+   "mt": "21px",
+   "radius": "0px"
+  },
+  "rows": [
+   {
+    "top": 149,
+    "bottom": 217,
+    "x": 280,
+    "w": 880,
+    "h": 68,
+    "mt": "0px",
+    "radius": "13px"
+   },
+   {
+    "top": 225,
+    "bottom": 293,
+    "x": 280,
+    "w": 880,
+    "h": 68,
+    "mt": "0px",
+    "radius": "13px"
+   },
+   {
+    "top": 301,
+    "bottom": 369,
+    "x": 280,
+    "w": 880,
+    "h": 68,
+    "mt": "0px",
+    "radius": "13px"
+   }
+  ],
+  "skeletonParent": "page-content",
+  "scopedMatches": 1,
+  "tabRow": null,
+  "scrollW": 1440,
+  "text": "Diddit Hjem Belønninger J søndag 18. oktober"
+ },
+ "kontroll": {
+  "band": {
+   "top": 80,
+   "bottom": 191,
+   "x": 0,
+   "w": 1440,
+   "h": 111,
+   "mt": "0px",
+   "radius": "0px"
+  },
+  "bandBottom": 191,
+  "skeleton": {
+   "top": 262.6,
+   "bottom": 482.6,
+   "x": 280,
+   "w": 880,
+   "h": 220,
+   "mt": "0px",
+   "radius": "0px"
+  },
+  "rows": [
+   {
+    "top": 262.6,
+    "bottom": 330.6,
+    "x": 280,
+    "w": 880,
+    "h": 68,
+    "mt": "0px",
+    "radius": "13px"
+   },
+   {
+    "top": 338.6,
+    "bottom": 406.6,
+    "x": 280,
+    "w": 880,
+    "h": 68,
+    "mt": "0px",
+    "radius": "13px"
+   },
+   {
+    "top": 414.6,
+    "bottom": 482.6,
+    "x": 280,
+    "w": 880,
+    "h": 68,
+    "mt": "0px",
+    "radius": "13px"
+   }
+  ],
+  "skeletonParent": "requests-tab",
+  "scopedMatches": 0,
+  "tabRow": {
+   "top": 195,
+   "bottom": 246.6,
+   "x": 280,
+   "w": 880,
+   "h": 51.6,
+   "mt": "4px",
+   "radius": "0px"
+  },
+  "scrollW": 1440,
+  "text": "Diddit Hjem Oppgaver Familie Fremgang Belønninger K Belønninger Svar på ønsker og lag belønninger for familien Ønsker Be"
+ },
+ "summary": {
+  "laster_band_bottom": 128,
+  "laster_luft": 21,
+  "laster_first_row_top": 149,
+  "kontroll_band_bottom": 191,
+  "kontroll_skeleton_top": 262.6,
+  "kontroll_skeleton_mt": "0px",
+  "kontroll_scopedMatches": 0,
+  "kontroll_parent": "requests-tab"
+ }
+}
