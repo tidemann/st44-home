@@ -647,6 +647,23 @@ describe('Tasks API', () => {
       assert.deepStrictEqual(rows.rows, [{ status: 'completed' }]);
     });
 
+    test('counts a task that is already deleted as deleted, and drops duplicate ids', async () => {
+      const id = await createDailyTask('Already gone');
+      await pool.query('UPDATE tasks SET active = false WHERE id = $1', [id]);
+
+      const response = await app.inject({
+        method: 'POST',
+        url: `/api/households/${householdId}/tasks/bulk-delete`,
+        headers: { Authorization: `Bearer ${adminToken}` },
+        payload: { taskIds: [id, id] },
+      });
+
+      assert.strictEqual(response.statusCode, 200, response.body);
+      const body = JSON.parse(response.body);
+      assert.deepStrictEqual(body.deleted, [id]);
+      assert.deepStrictEqual(body.failed, []);
+    });
+
     test('rejects an empty list', async () => {
       const response = await app.inject({
         method: 'POST',
