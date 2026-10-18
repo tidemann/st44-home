@@ -1997,7 +1997,8 @@ edge; the content edges are the first and last column under the band that is not
 - **Content x 280…1160 (880 px)** on every two-column page and **x 280…708 (428 px)** on every
   one-column page. **x 280 on all sixteen** — the Diddit mark's own left edge, which is rule 1.
   «Logg inn» and «Opprett konto» are the two that do not have a band or an 880 px page: their form
-  column measures 380 px at x 847, the login picture's own frame, untouched.
+  column measures 382 px at x 846, the login picture's own frame, untouched. (The rows that read
+  380 px at x 847 are the field's rounded corner, not the column.)
 - **The 191 px is the 20 px rule, not a new number.** The band's general bottom padding is 17 px
   (`layout.brandBandPadBottom`), but when the sub-line is the lowest thing in the band, **The Air
   Under The Sub-Line** gives it 20 px — see that section and the "No children yet" row under
@@ -2029,9 +2030,9 @@ them. They are as binding as the rules, and changing one is a change to the look
    panel; rule 3 gives the exception to «Logg inn» and «Opprett konto» only, which is the same thing
    said about the title.
 3. **«Logg inn» and «Opprett konto» are untouched.** They keep the 634 px brand panel, their 382 px
-   form column and their **34 px / 800** title (`login.css`, the ≥ 1024 px block) — rules 1 and 2 do
-   not reach them, and rules 5–8 already held there. Their pictures are in the set to show that the
-   rules let them stand.
+   form column and their **34 px / 800** title (`login.css`, the ≥ 1024 px block) — rules 1, 2 and 4
+   do not reach them (rule 4's columns sit under a band, and these two pages have none), and rules
+   5–8 already held there. Their pictures are in the set to show that the rules let them stand.
 
 ### Where this section replaces something the guide said before
 
@@ -2067,7 +2068,7 @@ because a reader comparing this section with layout A will notice them.
 Rule 7's picture of what is wrong is "a white stripe across the full window". **No white area on any
 of the 18 pages reaches past the 880 px page**: measured on every file, every white run below the
 band starts at or after x 280 and ends at or before x 1160 (and on «Logg inn» / «Opprett konto»
-inside their own 380 px column). Inside that, the card is as wide as the thing it stands in:
+inside their own 382 px column). Inside that, the card is as wide as the thing it stands in:
 
 - **880 px** where the page's whole content is the one list that is loading — the three placeholder
   rows on «Mine oppgaver» measure 880 px at x 280, each 68 px tall with a 13 px corner, 8 px apart,
