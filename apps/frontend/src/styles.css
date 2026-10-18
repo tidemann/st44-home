@@ -1006,16 +1006,11 @@ app-reward-card + app-reward-card {
     font-weight: 500;
   }
 
-  /* The nav tabs and the initial badge are the menu, not page buttons. */
-  .top-tabs.top-tabs.top-tabs .tab.tab.tab,
-  .initial-badge.initial-badge.initial-badge,
-  .page-title-menu.page-title-menu.page-title-menu {
-    min-height: 0;
-    border-radius: revert;
-    font-size: revert;
-    font-weight: revert;
-    padding-block: revert;
-  }
+  /* The menu's own controls — the tab row, the initial badge and the household-name
+     title — are not page buttons and are not in the list above, so nothing here
+     touches them. (An earlier version reverted their font and dropped the title
+     button to the browser default 13.3 px / 400; `revert` rolls past the component's
+     own `all: unset`, so it does not come back to 26 px / 800.) */
 
   /* The one main action on a page: 49 px, 13 px corners, 16.5 px label, its column's
      width. The outline button is the same size. */
