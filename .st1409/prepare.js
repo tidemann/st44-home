@@ -14,10 +14,13 @@ const PAGES=[
  ['husholdningsinnstillinger','household-settings','Husholdningsinnstillinger'],
  ['invitasjoner','invitations','Invitasjoner'],
 ];
-// crop to a common height so the pair reads at one scale
+// crop to a common height so the pair reads at one scale. Both halves are shot at
+// deviceScaleFactor 2 (ST-1409 round 2), so the crop is in CSS px times the scale.
 const CROP=1100;
-const crop=(src,dst,h)=>{
+const crop=(src,dst,cssH)=>{
   const p=PNG.sync.read(fs.readFileSync(src));
+  const sf=p.width/1440;
+  const h=Math.round(cssH*sf);
   const H=Math.min(h,p.height);
   const o=new PNG({width:p.width,height:h});
   o.data.fill(246); // #F6F6F4-ish paper under a short page
@@ -27,12 +30,13 @@ const crop=(src,dst,h)=>{
     else {o.data[d]=246;o.data[d+1]=246;o.data[d+2]=244;o.data[d+3]=255;}
   }
   fs.writeFileSync(dst,PNG.sync.write(o));
-  return {full:p.height};
+  return {full:Math.round(p.height/sf)};
 };
 const rows=[];
 for(const [slug,name,label] of PAGES){
   const now=`${S}/final/${name}-1440.png`;
-  const todaySrc=name==='progress'?`${S}/today/progress-loaded-1440.png`:`${S}/today/${name}-1440.png`;
+  const todayLoaded=`${S}/today/${name}-loaded-1440.png`;
+  const todaySrc=fs.existsSync(todayLoaded)?todayLoaded:`${S}/today/${name}-1440.png`;
   fs.copyFileSync(now,`${OUT}/rules-${slug}-1440.png`);
   const a=crop(todaySrc,`${OUT}/t-today-${slug}.png`,CROP);
   const b=crop(now,`${OUT}/t-rules-${slug}.png`,CROP);

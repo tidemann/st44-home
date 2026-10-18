@@ -288,3 +288,14 @@
     white-space: nowrap;
   }
 }
+
+/* ===== ST-1409 round 2 (Astrid): the page had main buttons at two widths — 378 in
+   the household card, 346 here, because this component adds its own 16 px inside the
+   card the page already pads. Same inset as the rest of the page, so all three main
+   buttons on Husholdningsinnstillinger are one width. ===== */
+@media (min-width: 1024px) {
+  .children-management {
+    max-width: none;
+    padding: 0;
+  }
+}

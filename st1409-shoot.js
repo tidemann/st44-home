@@ -113,13 +113,19 @@ async function parentApi(route, p, q) {
 }
 
 const iso = (d) => { const t = new Date(); t.setDate(t.getDate() + d); return t.toISOString().slice(0, 10); };
-const daily = (seed) => [...Array(7)].map((_, i) => ({ date: iso(i - 6), totalTasks: 3, completedTasks: (seed + i) % 4 > 2 ? 3 : (seed + i) % 3, completionRate: 50, pointsEarned: 5 * ((seed + i) % 4) }));
-const kids = [['22222222-2222-4222-8222-222222222221', 'Emma', 340], ['22222222-2222-4222-8222-222222222222', 'Jonas', 215], ['22222222-2222-4222-8222-222222222223', 'Mathea', 180]];
+// ST-1409 round 2 (Astrid): «Ukens ledere» ranks by points, so the fixture's chore
+// counts must fall in the same order — and sum to the 12 the band shows for the week.
+const daily = (done, pts) => [...Array(7)].map((_, i) => {
+  const c = Math.floor(done / 7) + (i >= 7 - (done % 7) ? 1 : 0);
+  const base = Math.round(pts / 7);
+  return { date: iso(i - 6), totalTasks: 3, completedTasks: c, completionRate: Math.round((c / 3) * 100), pointsEarned: i === 6 ? pts - base * 6 : base };
+});
+const kids = [['22222222-2222-4222-8222-222222222221', 'Emma', 340, 5], ['22222222-2222-4222-8222-222222222222', 'Jonas', 215, 4], ['22222222-2222-4222-8222-222222222223', 'Mathea', 180, 3]];
 // ST-1345 shot Fremgang's ERROR state because its synthetic analytics payload was rejected.
 // This is the payload the page accepts (st1345-progress.js), so the picture is the real page.
 const ANALYTICS = { householdId: HH, period: 'week',
   periodComparison: { current: { totalTasks: 21, completedTasks: 12, completionRate: 57, totalPoints: 735 }, previous: { totalTasks: 21, completedTasks: 9, completionRate: 43, totalPoints: 610 }, change: { completionRateDelta: 14, pointsDelta: 125, tasksDelta: 3 } },
-  childrenProgress: kids.map(([id, n, p], i) => ({ childId: id, childName: n, dailyData: daily(i), totalPointsEarned: p, averageCompletionRate: 50 + 10 * i })),
+  childrenProgress: kids.map(([id, n, p, d], i) => ({ childId: id, childName: n, dailyData: daily(d, p), totalPointsEarned: p, averageCompletionRate: 50 + 10 * i })),
   streaks: kids.map(([id, n], i) => ({ childId: id, childName: n, currentStreak: 3 - i, longestStreak: 7 - i, lastCompletionDate: iso(0) })),
   taskPopularity: [{ taskId: '33333333-3333-4333-8333-333333333301', taskName: 'Tømme oppvaskmaskin', totalAssignments: 7, completedCount: 5, completionRate: 71, averagePoints: 5 }],
   generatedAt: now };
@@ -237,12 +243,32 @@ const PAGES = [
   ['invitations', '/invitations', 'parent'],
 ];
 
+
+// ST-1409 round 2 (Astrid): the fixed 2.6 s wait fired before the mocked API answered
+// on two pages, so «i dag» showed a loading / empty card against a full one. Wait for
+// the page to settle instead — network idle, then no loading text and no skeleton.
+const LOADING = /Laster|Henter|Vent litt|Et øyeblikk/i;
+async function settle(page, ms = 14000) {
+  const t0 = Date.now();
+  try { await page.waitForLoadState('networkidle', { timeout: 9000 }); } catch (e) {}
+  while (Date.now() - t0 < ms) {
+    const s = await page.evaluate(() => ({
+      txt: document.body.innerText || '',
+      skel: document.querySelectorAll('.skeleton,[aria-busy="true"],.spinner,.loading-spinner').length,
+    }));
+    if (!LOADING.test(s.txt) && s.skel === 0 && s.txt.trim().length > 40) break;
+    await page.waitForTimeout(250);
+  }
+  try { await page.evaluate(() => document.fonts && document.fonts.ready); } catch (e) {}
+  await page.waitForTimeout(700);
+}
+
 (async () => {
   const browser = await chromium.launch({ executablePath: EXE });
   const out = {};
   for (const w of [1440]) {
     for (const [name, p, role] of PAGES) {
-      const ctx = await browser.newContext({ viewport: { width: w, height: 900 }, deviceScaleFactor: 1, locale: 'nb-NO' });
+      const ctx = await browser.newContext({ viewport: { width: w, height: 900 }, deviceScaleFactor: 2, locale: 'nb-NO' });
       const tok = role === 'parent' ? parentToken : role === 'child' ? childToken : null;
       await ctx.addInitScript((t) => {
         if (t) { localStorage.setItem('accessToken', t); sessionStorage.setItem('accessToken', t); }
@@ -252,7 +278,7 @@ const PAGES = [
       await page.route('**/api/**', api);
       try {
         await page.goto(BASE + p, { waitUntil: 'domcontentloaded' });
-        await page.waitForTimeout(2600);
+        await settle(page);
         await page.screenshot({ path: path.join(OUT, `${name}-${w}.png`), fullPage: true });
         out[`${name}@${w}`] = await page.evaluate(FINGERPRINT);
       } catch (e) {
@@ -262,6 +288,28 @@ const PAGES = [
       await ctx.close();
     }
   }
+
+  // ST-1409 round 2 (Astrid): rule 7 says a loading list shows grey placeholder rows.
+  // The document claimed that on Belønninger with no picture of it, so here it is: the
+  // redemptions call is held open while the page is shot; everything else answers.
+  if (process.env.ST1409_LOADING === '1') {
+    const ctx = await browser.newContext({ viewport: { width: 1440, height: 900 }, deviceScaleFactor: 2, locale: 'nb-NO' });
+    await ctx.addInitScript((t) => {
+      localStorage.setItem('accessToken', t); sessionStorage.setItem('accessToken', t);
+      localStorage.setItem('activeHouseholdId', '11111111-1111-4111-8111-111111111111');
+    }, parentToken);
+    const page = await ctx.newPage();
+    await page.route('**/api/**', (route) => {
+      if (route.request().url().includes('/redemptions')) return; // held open on purpose
+      return api(route);
+    });
+    await page.goto(BASE + '/rewards', { waitUntil: 'domcontentloaded' });
+    await page.waitForTimeout(2800);
+    await page.screenshot({ path: path.join(OUT, 'rewards-loading-1440.png'), fullPage: true });
+    console.log('done rewards-loading (rule 7, placeholder rows)');
+    await ctx.close().catch(() => {});
+  }
+
   fs.writeFileSync(path.join(OUT, 'fingerprint.json'), JSON.stringify(out, null, 1));
   await browser.close();
 })();

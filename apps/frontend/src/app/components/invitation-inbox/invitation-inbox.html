@@ -78,8 +78,9 @@
                  «admin», «child») was printed through `titlecase`, so this line read
                  «Rolle: Parent» on a Norwegian page. -->
             <p class="role">
-              <ng-container i18n="@@invitationInbox.role">Rolle:</ng-container>
-              <strong>{{ roleLabel(invitation.role) }}</strong>
+              <ng-container i18n="@@invitationInbox.role">Rolle:</ng-container>&ngsp;<strong>{{
+                roleLabel(invitation.role)
+              }}</strong>
             </p>
             <p class="dates">
               <ng-container i18n="@@invitationInbox.sent">Sendt:</ng-container>
