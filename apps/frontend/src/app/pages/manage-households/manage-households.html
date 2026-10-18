@@ -20,7 +20,14 @@
 
 <!-- Main Content -->
 @if (!loading()) {
-  <app-page title="Husholdninger" i18n-title="@@households.title" maxWidth="narrow">
+  <app-page
+    title="Husholdninger"
+    i18n-title="@@households.title"
+    maxWidth="narrow"
+    [deskBand]="true"
+    [deskSubtitle]="householdCount()"
+    [column]="true"
+  >
     <!-- Success Message -->
     @if (successMessage()) {
       <div class="alert alert-success" role="status" aria-live="polite">

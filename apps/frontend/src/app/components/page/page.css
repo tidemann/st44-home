@@ -148,6 +148,11 @@
   padding-bottom: 0;
 }
 
+/* The desktop band's sub-line (deskBand) is not on the phone */
+.page-subtitle--desk {
+  display: none;
+}
+
 /* ===== CONTENT ===== */
 
 .page-content {
@@ -161,8 +166,10 @@
    carries the initial badge, so the title row drops its own. */
 
 @media (min-width: 1024px) {
+  /* Rule 1 (guide: Desktop: rules for all pages): every page is 880 px, centred, so its left
+     edge is the Diddit mark's (x 280 at 1440, x 72 at 1024), whatever its width variant */
   .page-header {
-    padding: 32px 32px 0;
+    padding: 32px 0 0;
   }
 
   .page-header--band {
@@ -170,7 +177,38 @@
   }
 
   .page-content {
-    padding: 0 32px 32px;
+    padding: 0 0 32px;
+  }
+
+  .page .page-header-content,
+  .page .page-band,
+  .page .page-content {
+    max-width: 880px;
+  }
+
+  /* Rule 4: a form or a short list is one 428 px column at the page's left edge */
+  .page--column .page-content {
+    padding-right: 452px;
+  }
+
+  /* Rule 2 on a page that has no band on the phone: the same band, title and sub-line in ink,
+     ending 20 px under the sub-line (The Air Under The Sub-Line) */
+  .page-header--deskband {
+    display: flow-root;
+    padding-bottom: 0;
+    background: var(--yellow);
+    color: var(--ink);
+  }
+
+  .page-header--deskband .page-title {
+    color: var(--ink);
+  }
+
+  .page-header--deskband .page-subtitle--desk {
+    display: block;
+    margin: 0 0 20px;
+    padding-right: 0;
+    color: var(--ink);
   }
 
   .page-badge {
