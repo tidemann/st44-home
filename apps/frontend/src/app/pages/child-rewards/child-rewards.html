@@ -29,95 +29,102 @@
       </button>
     </div>
   } @else {
-    <section class="rewards" aria-labelledby="rewards-heading">
-      <h2 id="rewards-heading" class="visually-hidden" i18n="@@childRewards.rewardsHeading">
-        Dette kan du be om
-      </h2>
-      @if (childRewards().length === 0) {
-        <div class="empty">
-          <p class="empty-title" i18n="@@childRewards.empty">Ingen belønninger ennå!</p>
-          <p class="empty-sub" i18n="@@childRewards.emptyHint">
-            Spør en voksen om å lage noen til deg.
-          </p>
-        </div>
-      } @else {
-        @for (reward of childRewards(); track reward.id) {
-          <app-reward-card
-            [name]="reward.name"
-            [cost]="reward.pointsCost"
-            [balance]="pointsBalance()"
-            [available]="reward.available"
-            [waiting]="waitingRewardIds().has(reward.id)"
-            (ask)="ask(reward)"
-          />
-        }
-      }
-    </section>
-
-    <!-- Not drawn in the picture: requests waiting for an answer -->
-    @if (waiting().length > 0) {
-      <section aria-labelledby="waiting-heading">
-        <app-group-label
-          id="waiting-heading"
-          i18n-label="@@childRewards.waitingHeading"
-          label="Venter på svar"
-        />
-        <div class="hr"></div>
-        @for (request of waiting(); track request.id) {
-          <div class="hist">
-            <div class="top">
-              <span class="rname">{{ rewardName(request) }}</span>
-              <span class="cost" i18n="@@childRewards.heldPoints">{{ request.pointsSpent }} p</span>
-            </div>
-            <div class="m" i18n="@@childRewards.statusWaiting">Venter</div>
+    <!-- Rule 4: from 1024 px what can be asked for on the left, the requests on the right -->
+    <div class="cols">
+      <section class="rewards" aria-labelledby="rewards-heading">
+        <h2 id="rewards-heading" class="visually-hidden" i18n="@@childRewards.rewardsHeading">
+          Dette kan du be om
+        </h2>
+        @if (childRewards().length === 0) {
+          <div class="empty">
+            <p class="empty-title" i18n="@@childRewards.empty">Ingen belønninger ennå!</p>
+            <p class="empty-sub" i18n="@@childRewards.emptyHint">
+              Spør en voksen om å lage noen til deg.
+            </p>
           </div>
+        } @else {
+          @for (reward of childRewards(); track reward.id) {
+            <app-reward-card
+              [name]="reward.name"
+              [cost]="reward.pointsCost"
+              [balance]="pointsBalance()"
+              [available]="reward.available"
+              [waiting]="waitingRewardIds().has(reward.id)"
+              (ask)="ask(reward)"
+            />
+          }
         }
       </section>
-    }
 
-    @if (collected().length > 0) {
-      <section aria-labelledby="collected-heading">
-        <app-group-label
-          id="collected-heading"
-          i18n-label="@@childRewards.collectedHeading"
-          label="Hentet før"
-        />
-        <div class="hr"></div>
-        @for (request of collected(); track request.id) {
-          <div class="hist">
-            <div class="top">
-              <span class="rname">{{ rewardName(request) }}</span>
-              <span class="cost" i18n="@@childRewards.spentPoints"
-                >−{{ request.pointsSpent }} p</span
-              >
-            </div>
-            <div class="m">{{ historyMeta(request) }}</div>
-          </div>
-        }
-      </section>
-    }
-
-    @if (refused().length > 0) {
-      <section aria-labelledby="refused-heading">
-        <app-group-label
-          id="refused-heading"
-          i18n-label="@@childRewards.refusedHeading"
-          label="Nei denne gangen"
-        />
-        <div class="hr"></div>
-        @for (request of refused(); track request.id) {
-          <div class="hist">
-            <div class="top">
-              <span class="rname">{{ rewardName(request) }}</span>
-            </div>
-            <div class="m">{{ historyMeta(request) }}</div>
-            @if (request.rejectionReason) {
-              <div class="m reason">«{{ request.rejectionReason }}»</div>
+      <div class="col-b">
+        <!-- Not drawn in the picture: requests waiting for an answer -->
+        @if (waiting().length > 0) {
+          <section aria-labelledby="waiting-heading">
+            <app-group-label
+              id="waiting-heading"
+              i18n-label="@@childRewards.waitingHeading"
+              label="Venter på svar"
+            />
+            <div class="hr"></div>
+            @for (request of waiting(); track request.id) {
+              <div class="hist">
+                <div class="top">
+                  <span class="rname">{{ rewardName(request) }}</span>
+                  <span class="cost" i18n="@@childRewards.heldPoints"
+                    >{{ request.pointsSpent }} p</span
+                  >
+                </div>
+                <div class="m" i18n="@@childRewards.statusWaiting">Venter</div>
+              </div>
             }
-          </div>
+          </section>
         }
-      </section>
-    }
+
+        @if (collected().length > 0) {
+          <section aria-labelledby="collected-heading">
+            <app-group-label
+              id="collected-heading"
+              i18n-label="@@childRewards.collectedHeading"
+              label="Hentet før"
+            />
+            <div class="hr"></div>
+            @for (request of collected(); track request.id) {
+              <div class="hist">
+                <div class="top">
+                  <span class="rname">{{ rewardName(request) }}</span>
+                  <span class="cost" i18n="@@childRewards.spentPoints"
+                    >−{{ request.pointsSpent }} p</span
+                  >
+                </div>
+                <div class="m">{{ historyMeta(request) }}</div>
+              </div>
+            }
+          </section>
+        }
+
+        @if (refused().length > 0) {
+          <section aria-labelledby="refused-heading">
+            <app-group-label
+              id="refused-heading"
+              i18n-label="@@childRewards.refusedHeading"
+              label="Nei denne gangen"
+            />
+            <div class="hr"></div>
+            @for (request of refused(); track request.id) {
+              <div class="hist">
+                <div class="top">
+                  <span class="rname">{{ rewardName(request) }}</span>
+                </div>
+                <div class="m">{{ historyMeta(request) }}</div>
+                @if (request.rejectionReason) {
+                  <div class="m reason">«{{ request.rejectionReason }}»</div>
+                }
+              </div>
+            }
+          </section>
+        }
+      </div>
+    </div>
   }
 </app-page>
 

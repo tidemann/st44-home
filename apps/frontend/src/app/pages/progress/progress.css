@@ -277,3 +277,27 @@
     width: 109px;
   }
 }
+
+/* Rule 4 (guide: Desktop: rules for all pages): Fremgang has groups, so from 1024 px the
+   leaderboard and the badges are two independent 428 px stacks, 24 px apart */
+.cols {
+  display: contents;
+}
+
+@media (min-width: 1024px) {
+  .cols {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    column-gap: 24px;
+    align-items: start;
+  }
+
+  /* Both stacks start at the same y */
+  .cols > .section + .section {
+    margin-top: 4px;
+  }
+
+  .cols > .section {
+    min-width: 0;
+  }
+}
