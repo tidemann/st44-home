@@ -2,6 +2,8 @@ import '@angular/localize/init';
 import {
   Component,
   ChangeDetectionStrategy,
+  Injector,
+  afterNextRender,
   signal,
   computed,
   inject,
@@ -19,12 +21,30 @@ import {
   type TaskFormData,
 } from '../../components/modals/task-form-modal/task-form-modal';
 import { ReassignTaskModal } from '../../components/modals/reassign-task-modal/reassign-task-modal';
+import { Modal } from '../../components/modals/modal/modal';
 import { PageComponent } from '../../components/page/page';
 import { ChoreRow } from '../../components/poeng/chore-row/chore-row';
 import { GroupLabel } from '../../components/poeng/group-label/group-label';
 import { capitalize, clockTime, dayWord } from '../../utils/poeng-format';
 import { hasNoChildrenLeft } from '../../utils/task-children';
 import type { Task, Child, Assignment } from '@st44/types';
+
+/** "tre oppgaver" as drawn (ST-1343); digits from 13 up */
+const COUNT_WORDS = [
+  '',
+  'én',
+  'to',
+  'tre',
+  'fire',
+  'fem',
+  'seks',
+  'sju',
+  'åtte',
+  'ni',
+  'ti',
+  'elleve',
+  'tolv',
+];
 
 /**
  * "Oppgaver" — the parent's task list (Poeng screen 2, ST-777)
@@ -35,10 +55,14 @@ import type { Task, Child, Assignment } from '@st44/types';
  *
  * With one child selected, open rows offer «Bytt» (reassign), as the old
  * "By person" view did. Navigation is handled by the parent MainLayout.
+ *
+ * Select mode (ST-1343, ST-1391): «Velg» on «Alle oppgaver», or a 500 ms touch press
+ * on any row with a live template, shows the templates only, each a checkbox.
+ * «Slett n» asks once, deletes in one call and leaves a receipt in the page.
  */
 @Component({
   selector: 'app-tasks',
-  imports: [TaskFormModal, ReassignTaskModal, PageComponent, ChoreRow, GroupLabel],
+  imports: [TaskFormModal, ReassignTaskModal, Modal, PageComponent, ChoreRow, GroupLabel],
   templateUrl: './tasks.html',
   styleUrl: './tasks.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -50,6 +74,9 @@ export class Tasks implements OnInit {
   private readonly storage = inject(StorageService);
   private readonly router = inject(Router);
   private readonly route = inject(ActivatedRoute);
+  private readonly injector = inject(Injector);
+
+  protected readonly pageTitle = $localize`:@@tasks.pageTitle:Oppgaver`;
 
   protected readonly loading = signal(false);
   protected readonly error = signal<string | null>(null);
@@ -76,6 +103,17 @@ export class Tasks implements OnInit {
   protected readonly editingTask = signal<Task | null>(null);
   protected readonly reassignOpen = signal(false);
   protected readonly reassigning = signal<Assignment | null>(null);
+
+  // Select mode (ST-1343)
+  protected readonly selecting = signal(false);
+  /** Chosen template ids */
+  protected readonly chosen = signal<ReadonlySet<string>>(new Set());
+  protected readonly confirmOpen = signal(false);
+  protected readonly deleting = signal(false);
+  /** «3 oppgaver slettet», shown over «Alle oppgaver» after a delete */
+  protected readonly receipt = signal<string | null>(null);
+  /** Some of them did not go: what is left chosen is what failed */
+  protected readonly failure = signal<{ failed: number; asked: number } | null>(null);
 
   protected readonly householdId = computed(
     () => this.storage.getString(STORAGE_KEYS.ACTIVE_HOUSEHOLD_ID) || '',
@@ -117,21 +155,94 @@ export class Tasks implements OnInit {
   /** With one child selected, open rows offer «Bytt» */
   protected readonly canReassign = computed(() => this.selectedChildId() !== null);
 
+  /** Templates a long press can tick: only a row with a live template behind it answers */
+  private readonly liveIds = computed(() => new Set(this.templates().map((t) => t.id)));
+
+  /** Only templates still in the list count, also after a re-read */
+  protected readonly chosenCount = computed(() => this.chosenTasks().length);
+  protected readonly allChosen = computed(
+    () => this.templates().length > 0 && this.chosenCount() === this.templates().length,
+  );
+
+  /** «Velg oppgaver» with nothing chosen, then «3 valgt» */
+  protected readonly selectTitle = computed(() => {
+    const n = this.chosenCount();
+    return n === 0
+      ? $localize`:@@tasks.selectTitleEmpty:Velg oppgaver`
+      : $localize`:@@tasks.selectTitleCount:${n}:n: valgt`;
+  });
+
+  /** Desktop strip: «3 av 8 valgt» */
+  protected readonly selectSummary = computed(
+    () =>
+      $localize`:@@tasks.selectSummary:${this.chosenCount()}:n: av ${this.templates().length}:total: valgt`,
+  );
+
+  protected readonly deleteLabel = computed(() => {
+    const n = this.chosenCount();
+    return n === 0
+      ? $localize`:@@tasks.bulkDeleteNone:Slett`
+      : $localize`:@@tasks.bulkDelete:Slett ${n}:n:`;
+  });
+
+  /** The chosen templates in list order, for the confirm */
+  private readonly chosenTasks = computed(() =>
+    this.templates().filter((t) => this.chosen().has(t.id)),
+  );
+
+  protected readonly confirmTitle = computed(() => {
+    const n = this.chosenCount();
+    return n === 1
+      ? $localize`:@@tasks.bulkConfirmTitleOne:Slette 1 oppgave?`
+      : $localize`:@@tasks.bulkConfirmTitle:Slette ${n}:n: oppgaver?`;
+  });
+
+  protected readonly confirmBody = computed(() => {
+    const n = this.chosenCount();
+    if (n === 1) {
+      return $localize`:@@tasks.bulkConfirmBodyOne:Oppgaven forsvinner for hele familien. Poeng som alt er gitt, blir stående. Dette kan ikke angres.`;
+    }
+    const count = COUNT_WORDS[n] ?? String(n);
+    return $localize`:@@tasks.bulkConfirmBody:De ${count}:n: oppgavene forsvinner for hele familien. Poeng som alt er gitt, blir stående. Dette kan ikke angres.`;
+  });
+
+  /** Up to three names, then «+ 20 til» */
+  protected readonly confirmNames = computed(() =>
+    this.chosenTasks()
+      .slice(0, 3)
+      .map((t) => t.name),
+  );
+  protected readonly confirmMore = computed(() => {
+    const rest = this.chosenCount() - 3;
+    return rest > 0 ? $localize`:@@tasks.bulkConfirmMore:+ ${rest}:n: til` : '';
+  });
+
+  protected readonly failureTitle = computed(() => {
+    const f = this.failure();
+    if (!f) return '';
+    return f.failed === f.asked
+      ? $localize`:@@tasks.bulkNoneDeleted:Ingen av oppgavene ble slettet`
+      : $localize`:@@tasks.bulkPartial:${f.failed}:failed: av ${f.asked}:asked: ble ikke slettet`;
+  });
+
   ngOnInit(): void {
     const child = this.route.snapshot.queryParams['child'] as string | undefined;
     if (child) this.selectedChildId.set(child);
     void this.loadTasks();
   }
 
-  /** The day, the children for the chips and every template, in parallel */
-  protected async loadTasks(): Promise<void> {
+  /**
+   * The day, the children for the chips and every template, in parallel.
+   * `quiet` re-reads without the loading state, so the list stays where it is
+   */
+  protected async loadTasks(quiet = false): Promise<void> {
     const household = this.householdId();
     if (!household) {
       this.error.set($localize`:@@tasks.noHousehold:Ingen husstand valgt`);
       return;
     }
 
-    this.loading.set(true);
+    if (!quiet) this.loading.set(true);
     this.error.set(null);
     try {
       const [day, children] = await Promise.all([
@@ -183,9 +294,16 @@ export class Tasks implements OnInit {
     if (this.noChildTasks().includes(t)) {
       return $localize`:@@tasks.ruleNoChildren:Uten barn – velg et nytt`;
     }
-    return t.ruleType === 'single'
-      ? $localize`:@@tasks.ruleOnce:Én gang`
-      : $localize`:@@tasks.ruleRepeat:Gjentas`;
+    const rule =
+      t.ruleType === 'single'
+        ? $localize`:@@tasks.ruleOnce:Én gang`
+        : $localize`:@@tasks.ruleRepeat:Gjentas`;
+    // A parent deletes by name: «Gjentas – Jonas» says whose chore it is (ST-1343)
+    const ids = t.ruleConfig?.assignedChildren ?? [];
+    const names = this.children()
+      .filter((c) => ids.includes(c.id))
+      .map((c) => c.name);
+    return names.length > 0 ? `${rule} – ${names.join(', ')}` : rule;
   }
 
   protected points(value: number | undefined): string {
@@ -310,5 +428,113 @@ export class Tasks implements OnInit {
   protected closeReassign(): void {
     this.reassignOpen.set(false);
     this.reassigning.set(null);
+  }
+
+  /** A row a long press can start select mode from */
+  protected isLive(taskId: string): boolean {
+    return this.liveIds().has(taskId);
+  }
+
+  /** «Velg»: select mode with nothing chosen */
+  protected startSelect(): void {
+    this.receipt.set(null);
+    this.failure.set(null);
+    this.chosen.set(new Set());
+    this.selecting.set(true);
+  }
+
+  /**
+   * Long press (ST-1391): select mode with that chore's template ticked. Where the list
+   * is long enough, the ticked row is scrolled back under the finger
+   */
+  protected onLongPress(taskId: string, rowTop: number): void {
+    if (this.selecting() || !this.isLive(taskId)) return;
+    this.startSelect();
+    this.chosen.set(new Set([taskId]));
+    afterNextRender(
+      () => {
+        const row = document.querySelector(`[data-select-id="${taskId}"]`);
+        if (!row) return;
+        window.scrollBy(0, row.getBoundingClientRect().top - rowTop);
+      },
+      { injector: this.injector },
+    );
+  }
+
+  protected toggleChosen(taskId: string): void {
+    this.failure.set(null);
+    this.chosen.update((set) => {
+      const next = new Set(set);
+      if (next.has(taskId)) next.delete(taskId);
+      else next.add(taskId);
+      return next;
+    });
+  }
+
+  /** «Velg alle» / «Fjern alle»: every template, also the ones below the fold */
+  protected toggleAll(): void {
+    this.failure.set(null);
+    this.chosen.set(this.allChosen() ? new Set() : new Set(this.templates().map((t) => t.id)));
+  }
+
+  protected cancelSelect(): void {
+    this.selecting.set(false);
+    this.chosen.set(new Set());
+    this.failure.set(null);
+  }
+
+  /** «Slett n»: one blocking confirm. «Prøv igjen» after a partial failure skips it */
+  protected onDeleteChosen(): void {
+    if (this.chosenCount() === 0 || this.deleting()) return;
+    if (this.failure()) {
+      void this.deleteChosen();
+      return;
+    }
+    this.confirmOpen.set(true);
+  }
+
+  protected closeConfirm(): void {
+    if (this.deleting()) return;
+    this.confirmOpen.set(false);
+  }
+
+  /** One call; then the list is re-read from the server, never patched optimistically */
+  protected async deleteChosen(): Promise<void> {
+    const ids = this.chosenTasks().map((t) => t.id);
+    if (ids.length === 0) return;
+    this.deleting.set(true);
+    try {
+      const result = await firstValueFrom(
+        this.taskService.bulkDeleteTasks(this.householdId(), ids),
+      );
+      this.afterDelete(
+        ids.length,
+        result.deleted,
+        result.failed.map((f) => f.taskId),
+      );
+    } catch (err) {
+      console.error('Bulk delete error:', err);
+      this.afterDelete(ids.length, [], ids);
+    } finally {
+      this.deleting.set(false);
+      this.confirmOpen.set(false);
+    }
+  }
+
+  private afterDelete(asked: number, deleted: string[], failed: string[]): void {
+    if (failed.length === 0) {
+      const n = deleted.length;
+      this.receipt.set(
+        n === 1
+          ? $localize`:@@tasks.bulkDeletedOne:1 oppgave slettet`
+          : $localize`:@@tasks.bulkDeleted:${n}:n: oppgaver slettet`,
+      );
+      this.cancelSelect();
+    } else {
+      // What went is gone; what failed stays chosen, so «Prøv igjen» is one tap
+      this.chosen.set(new Set(failed));
+      this.failure.set({ failed: failed.length, asked });
+    }
+    void this.loadTasks(true);
   }
 }

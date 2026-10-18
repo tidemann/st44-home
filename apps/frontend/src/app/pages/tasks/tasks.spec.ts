@@ -23,6 +23,7 @@ describe('Tasks (Poeng task list)', () => {
     updateTask: ReturnType<typeof vi.fn>;
     deleteTask: ReturnType<typeof vi.fn>;
     reassignTask: ReturnType<typeof vi.fn>;
+    bulkDeleteTasks: ReturnType<typeof vi.fn>;
   };
   let mockChildren: { listChildren: ReturnType<typeof vi.fn> };
   let mockDay: { load: ReturnType<typeof vi.fn> };
@@ -88,6 +89,7 @@ describe('Tasks (Poeng task list)', () => {
       updateTask: vi.fn().mockReturnValue(of(task)),
       deleteTask: vi.fn().mockReturnValue(of(undefined)),
       reassignTask: vi.fn().mockReturnValue(of({})),
+      bulkDeleteTasks: vi.fn().mockReturnValue(of({ deleted: [], failed: [] })),
     };
     mockChildren = { listChildren: vi.fn().mockResolvedValue([emma, jonas]) };
     mockDay = {
@@ -225,7 +227,8 @@ describe('Tasks (Poeng task list)', () => {
 
     it('marks the chore under Alle oppgaver too', () => {
       expect(component['templateMeta'](orphan)).toBe('Uten barn – velg et nytt');
-      expect(component['templateMeta'](shared)).toBe('Gjentas');
+      // A parent deletes by name: the children still on it are named (ST-1343)
+      expect(component['templateMeta'](shared)).toBe('Gjentas – Jonas');
     });
 
     it('opens the chore for editing when tapped', () => {
@@ -364,6 +367,199 @@ describe('Tasks (Poeng task list)', () => {
       expect(mockTaskService.reassignTask).toHaveBeenCalledWith('open-emma', 'child-2');
       expect(component['reassignOpen']()).toBe(false);
       expect(component['reassigning']()).toBeNull();
+    });
+  });
+
+  describe('select and delete several (ST-1343, ST-1391)', () => {
+    const t2: Task = { ...task, id: 'task-2', name: 'Dekke bord', points: 5 };
+    const t3: Task = { ...task, id: 'task-3', name: 'Gå med Luna' };
+    const t4: Task = { ...task, id: 'task-4', name: 'Vanne blomstene' };
+    const t5: Task = { ...task, id: 'task-5', name: 'Brette håndklær' };
+
+    const el = () => fixture.nativeElement as HTMLElement;
+    const text = () => el().textContent as string;
+    const button = (label: string) =>
+      [...el().querySelectorAll('button')].find((b) => b.textContent?.trim() === label);
+    const selectRows = () => [...el().querySelectorAll<HTMLElement>('[role="checkbox"]')];
+
+    beforeEach(async () => {
+      mockTaskService.tasks.set([task, t2, t3, t4, t5]);
+      fixture.detectChanges();
+      await component['loadTasks']();
+      fixture.detectChanges();
+    });
+
+    it('shows «Velg» on Alle oppgaver, and select mode shows the templates only', () => {
+      button('Velg')!.click();
+      fixture.detectChanges();
+
+      expect(component['selecting']()).toBe(true);
+      expect(text()).toContain('Velg oppgaver');
+      expect(text()).toContain('Trykk på oppgavene du vil slette');
+      expect(text()).not.toContain('I dag');
+      expect(text()).not.toContain('Forfalt');
+      expect(selectRows().length).toBe(5);
+      expect(selectRows().every((r) => r.getAttribute('aria-checked') === 'false')).toBe(true);
+    });
+
+    it('ticks rows with a tap and counts them in the title', () => {
+      button('Velg')!.click();
+      fixture.detectChanges();
+      selectRows()[1].click();
+      selectRows()[3].click();
+      fixture.detectChanges();
+
+      expect(selectRows()[1].getAttribute('aria-checked')).toBe('true');
+      expect(text()).toContain('2 valgt');
+      expect(button('Slett 2')).toBeTruthy();
+
+      selectRows()[1].click();
+      fixture.detectChanges();
+      expect(text()).toContain('1 valgt');
+    });
+
+    it('«Velg alle» ticks every template and flips to «Fjern alle»', () => {
+      component['startSelect']();
+      fixture.detectChanges();
+      button('Velg alle')!.click();
+      fixture.detectChanges();
+
+      expect(component['chosenCount']()).toBe(5);
+      expect(text()).toContain('5 valgt');
+      button('Fjern alle')!.click();
+      fixture.detectChanges();
+      expect(component['chosenCount']()).toBe(0);
+    });
+
+    it('«Slett» with nothing chosen does not open the confirm', () => {
+      component['startSelect']();
+      fixture.detectChanges();
+      const del = button('Slett')!;
+      expect(del.getAttribute('aria-disabled')).toBe('true');
+      del.click();
+      expect(component['confirmOpen']()).toBe(false);
+    });
+
+    it('«Avbryt» leaves select mode and brings the day back', () => {
+      component['startSelect']();
+      component['toggleChosen']('task-2');
+      fixture.detectChanges();
+      button('Avbryt')!.click();
+      fixture.detectChanges();
+
+      expect(component['selecting']()).toBe(false);
+      expect(component['chosenCount']()).toBe(0);
+      expect(text()).toContain('I dag');
+    });
+
+    it('the confirm counts, names up to three and counts the rest', () => {
+      component['startSelect']();
+      for (const id of ['task-1', 'task-2', 'task-3', 'task-4', 'task-5']) {
+        component['toggleChosen'](id);
+      }
+      component['onDeleteChosen']();
+      fixture.detectChanges();
+
+      expect(component['confirmOpen']()).toBe(true);
+      expect(component['confirmTitle']()).toBe('Slette 5 oppgaver?');
+      expect(component['confirmBody']()).toContain('De fem oppgavene forsvinner for hele familien');
+      expect(component['confirmBody']()).toContain('Dette kan ikke angres.');
+      expect(component['confirmNames']()).toEqual(['Rydde rommet', 'Dekke bord', 'Gå med Luna']);
+      expect(component['confirmMore']()).toBe('+ 2 til');
+    });
+
+    it('speaks in the singular for one task', () => {
+      component['startSelect']();
+      component['toggleChosen']('task-2');
+      expect(component['confirmTitle']()).toBe('Slette 1 oppgave?');
+      expect(component['confirmBody']()).toMatch(/^Oppgaven forsvinner for hele familien/);
+    });
+
+    it('deletes in one call, leaves select mode, re-reads the list and shows the receipt', async () => {
+      mockTaskService.bulkDeleteTasks.mockReturnValue(
+        of({ deleted: ['task-2', 'task-3'], failed: [] }),
+      );
+      component['startSelect']();
+      component['toggleChosen']('task-2');
+      component['toggleChosen']('task-3');
+      mockDay.load.mockClear();
+
+      await component['deleteChosen']();
+      fixture.detectChanges();
+
+      expect(mockTaskService.bulkDeleteTasks).toHaveBeenCalledTimes(1);
+      expect(mockTaskService.bulkDeleteTasks).toHaveBeenCalledWith('household-1', [
+        'task-2',
+        'task-3',
+      ]);
+      expect(mockDay.load).toHaveBeenCalled();
+      expect(component['selecting']()).toBe(false);
+      expect(component['confirmOpen']()).toBe(false);
+      const receipt = el().querySelector('.receipt');
+      expect(receipt?.getAttribute('role')).toBe('status');
+      expect(receipt?.textContent).toContain('2 oppgaver slettet');
+    });
+
+    it('keeps what failed chosen and offers «Prøv igjen» without a second confirm', async () => {
+      mockTaskService.bulkDeleteTasks.mockReturnValue(
+        of({ deleted: ['task-2'], failed: [{ taskId: 'task-3', reason: 'not_found' }] }),
+      );
+      component['startSelect']();
+      component['toggleChosen']('task-2');
+      component['toggleChosen']('task-3');
+
+      await component['deleteChosen']();
+      fixture.detectChanges();
+
+      expect(component['selecting']()).toBe(true);
+      expect([...component['chosen']()]).toEqual(['task-3']);
+      expect(el().querySelector('.bulk-failed')?.getAttribute('role')).toBe('alert');
+      expect(text()).toContain('1 av 2 ble ikke slettet');
+
+      mockTaskService.bulkDeleteTasks.mockReturnValue(of({ deleted: ['task-3'], failed: [] }));
+      button('Prøv igjen')!.click();
+      await Promise.resolve();
+      expect(component['confirmOpen']()).toBe(false);
+      expect(mockTaskService.bulkDeleteTasks).toHaveBeenLastCalledWith('household-1', ['task-3']);
+    });
+
+    it('says none went when the call fails', async () => {
+      mockTaskService.bulkDeleteTasks.mockReturnValue(throwError(() => new Error('down')));
+      component['startSelect']();
+      component['toggleChosen']('task-2');
+
+      await component['deleteChosen']();
+
+      expect(component['failureTitle']()).toBe('Ingen av oppgavene ble slettet');
+      expect([...component['chosen']()]).toEqual(['task-2']);
+    });
+
+    it('a long press on a template row opens select mode with that task ticked', () => {
+      component['onLongPress']('task-3', 300);
+      fixture.detectChanges();
+
+      expect(component['selecting']()).toBe(true);
+      expect([...component['chosen']()]).toEqual(['task-3']);
+      expect(text()).toContain('1 valgt');
+    });
+
+    it('a long press on a day row ticks the template behind it', () => {
+      // The «I dag» rows come from task-1
+      component['onLongPress']('task-1', 300);
+      expect([...component['chosen']()]).toEqual(['task-1']);
+    });
+
+    it('a long press on a row with no live template does nothing', () => {
+      component['onLongPress']('task-off', 300);
+      expect(component['selecting']()).toBe(false);
+      expect(component['isLive']('task-off')).toBe(false);
+    });
+
+    it('the single delete in the edit modal is unchanged', () => {
+      component['onEdit']('task-2');
+      component['onTaskDelete']();
+      expect(mockTaskService.deleteTask).toHaveBeenCalledWith('household-1', 'task-2');
+      expect(mockTaskService.bulkDeleteTasks).not.toHaveBeenCalled();
     });
   });
 });

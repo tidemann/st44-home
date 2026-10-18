@@ -59,6 +59,27 @@ const meta: Meta<ChoreRow> = {
       action: 'open',
       description: 'Emitted when the title area is tapped',
     },
+    selectable: {
+      control: 'boolean',
+      description: 'Select mode: the whole row is one checkbox (ST-1343)',
+    },
+    selected: {
+      control: 'boolean',
+      description: 'Ticked in select mode',
+    },
+    pressable: {
+      control: 'boolean',
+      description:
+        'A 500 ms touch press starts select mode; a 2 px Ink line shows while held (ST-1391)',
+    },
+    pick: {
+      action: 'pick',
+      description: 'Emitted when the row is tapped in select mode',
+    },
+    longPress: {
+      action: 'longPress',
+      description: "Emitted after a 500 ms touch press, with the card's top edge",
+    },
   },
   args: {
     meta: '',
@@ -69,6 +90,9 @@ const meta: Meta<ChoreRow> = {
     busy: false,
     openable: false,
     note: null,
+    selectable: false,
+    selected: false,
+    pressable: false,
   },
   decorators: [
     moduleMetadata({ imports: [GroupLabel] }),
@@ -156,6 +180,38 @@ export const Done: Story = {
     meta: 'Gjort 16.10',
     points: '+10',
     done: true,
+  },
+};
+
+/** Select mode, not ticked: the whole row is the checkbox (ST-1343) */
+export const Selectable: Story = {
+  args: {
+    title: 'Dekke bord',
+    meta: 'Gjentas – Mathea',
+    points: '5 p',
+    selectable: true,
+  },
+};
+
+/** Select mode, ticked: Ink box with a white tick */
+export const Selected: Story = {
+  args: {
+    title: 'Støvsuge stua',
+    meta: 'Gjentas – Emma',
+    points: '15 p',
+    selectable: true,
+    selected: true,
+  },
+};
+
+/** Pressable: hold it 500 ms on a touch screen (device toolbar) to see the held line and the event */
+export const Pressable: Story = {
+  args: {
+    title: 'Rydde rommet',
+    meta: 'Gjentas – Jonas',
+    points: '10 p',
+    openable: true,
+    pressable: true,
   },
 };
 
