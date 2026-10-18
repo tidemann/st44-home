@@ -61,6 +61,9 @@ export class ChoreRow {
   /** The title area opens the chore (edit) */
   openable = input<boolean>(false);
 
+  /** Draws the empty box when the row is neither checkable nor done. Off for template rows (ST-1413) */
+  box = input<boolean>(true);
+
   /**
    * A line under the row, inside the card: «Påminnelse sendt 16.49» with a green
    * tick, or a failure in rust with a warning sign (ST-1066, option C). Null hides it

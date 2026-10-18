@@ -67,7 +67,7 @@
         [attr.aria-label]="checkLabel(title())"
         (click)="check.emit()"
       ></button>
-    } @else {
+    } @else if (box()) {
       <span class="cb" aria-hidden="true"></span>
     }
 

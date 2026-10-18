@@ -39,6 +39,18 @@ describe('ChoreRow', () => {
     vi.useRealTimers();
   });
 
+  describe('box (ST-1413)', () => {
+    it('shows the empty box by default', () => {
+      expect(fixture.nativeElement.querySelector('.cb')).not.toBeNull();
+    });
+
+    it('hides the empty box when box is false', () => {
+      fixture.componentRef.setInput('box', false);
+      fixture.detectChanges();
+      expect(fixture.nativeElement.querySelector('.cb')).toBeNull();
+    });
+  });
+
   describe('long press (ST-1391)', () => {
     it('draws the held line at once and fires after 500 ms', () => {
       title().dispatchEvent(pointer('pointerdown', 'touch'));
