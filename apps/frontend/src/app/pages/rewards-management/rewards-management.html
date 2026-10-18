@@ -42,15 +42,24 @@
       }
 
       @if (redemptionsLoading()) {
-        <div class="state" role="status" i18n="@@rewards.loadingRequests">Henter ønsker…</div>
+        <!-- ST-1409 rule 7: placeholder rows of what is coming, not a sentence. -->
+        <div class="r7-skeleton" role="status">
+          <i></i><i></i><i></i>
+          <span class="visually-hidden" i18n="@@rewards.loadingRequests">Henter ønsker…</span>
+        </div>
       } @else if (waiting().length === 0 && toGive().length === 0 && history().length === 0) {
-        <div class="empty-state">
-          <p i18n="@@rewards.noRequests">Ingen ønsker ennå.</p>
-          <p class="empty-hint" i18n="@@rewards.noRequestsHint">
+        <!-- ST-1409 rule 7: one white card — a title line and one sentence. -->
+        <div class="r7-card" role="status">
+          <p class="r7-title" i18n="@@rewards.noRequests">Ingen ønsker ennå</p>
+          <p class="r7-line" i18n="@@rewards.noRequestsHint">
             Når et barn ber om en belønning, kommer den her.
           </p>
         </div>
       } @else {
+        <!-- ST-1409 rule 4: two 428 px columns, 24 px between them — what is waiting
+             for an answer on the left, what is answered on the right. -->
+        <div class="r4-cols">
+          <div class="r4-col">
         <!-- Waiting, and fresh answers that can be undone -->
         @if (waiting().length > 0) {
           <section aria-labelledby="waiting-heading">
@@ -165,7 +174,8 @@
             </div>
           </section>
         }
-
+          </div>
+          <div class="r4-col">
         <!-- Said yes, not given yet -->
         @if (toGive().length > 0) {
           <section aria-labelledby="give-heading">
@@ -211,6 +221,8 @@
             </ul>
           </section>
         }
+          </div>
+        </div>
       }
     </div>
   }

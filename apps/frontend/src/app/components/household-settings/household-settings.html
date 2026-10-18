@@ -1,17 +1,23 @@
+<!-- ST-1409 rules 2 + 3: the title and a short sub-line move into the yellow band, in the
+     one title style (26 px / 800 ink) — the page's own 32 px / 600 heading is gone. Rule 1
+     gives it the 880 container on the menu's left edge. -->
+<app-page
+  title="Husholdningsinnstillinger"
+  i18n-title="@@householdSettings.title"
+  [subtitle]="settingsSubline()"
+  [band]="true"
+>
 <div class="household-settings">
   @if (isLoading()) {
-    <div class="loading" aria-live="polite" i18n="@@householdSettings.loading">
-      Laster husholdningsinnstillinger...
+    <!-- ST-1409 rule 7: grey placeholder rows while loading, not a sentence. -->
+    <div class="r7-skeleton" aria-live="polite">
+      <i></i><i></i><i></i>
+      <span class="visually-hidden" i18n="@@householdSettings.loading"
+        >Laster husholdningsinnstillinger …</span
+      >
     </div>
   } @else if (household()) {
-    <div class="household-settings__header">
-      <h1 i18n="@@householdSettings.title">Husholdningsinnstillinger</h1>
-      <p class="household-settings__subtitle" i18n="@@householdSettings.subtitle">
-        Administrer husholdningsdetaljer og medlemmer
-      </p>
-    </div>
-
-    <div class="household-settings__content">
+    <div class="household-settings__content r4-col">
       <!-- Household Name Section -->
       <section class="settings-section">
         <h2 i18n="@@householdSettings.detailsTitle">Husholdningsdetaljer</h2>
@@ -147,3 +153,4 @@
     }
   }
 </div>
+</app-page>

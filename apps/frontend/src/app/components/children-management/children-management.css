@@ -268,3 +268,17 @@
     transition: none;
   }
 }
+
+/* ===== ST-1409 rule 5: this card's one creating action is the main button —
+   49 px, 13 px corners, 16.5 px label (pictures only, ST-1370) ===== */
+@media (min-width: 1024px) {
+  .header .btn-primary {
+    min-height: 49px;
+    height: 49px;
+    border-radius: var(--r-button);
+    font-size: 16.5px;
+    font-weight: 600;
+    padding: 0 22px;
+    width: auto;
+  }
+}

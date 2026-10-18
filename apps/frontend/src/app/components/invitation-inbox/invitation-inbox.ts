@@ -1,4 +1,11 @@
-import { Component, inject, signal, OnInit, ChangeDetectionStrategy } from '@angular/core';
+import {
+  Component,
+  inject,
+  signal,
+  computed,
+  OnInit,
+  ChangeDetectionStrategy,
+} from '@angular/core';
 import { CommonModule, DatePipe, TitleCasePipe } from '@angular/common';
 import { Router } from '@angular/router';
 import {
@@ -7,10 +14,11 @@ import {
   AcceptInvitationResponse,
 } from '../../services/invitation.service';
 import { ConfirmDialogService } from '../../services/confirm-dialog.service';
+import { PageComponent } from '../page/page';
 
 @Component({
   selector: 'app-invitation-inbox',
-  imports: [CommonModule, DatePipe, TitleCasePipe],
+  imports: [CommonModule, DatePipe, TitleCasePipe, PageComponent],
   templateUrl: './invitation-inbox.html',
   styleUrl: './invitation-inbox.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -25,6 +33,13 @@ export class InvitationInboxComponent implements OnInit {
   protected readonly successMessage = signal<string | null>(null);
   protected readonly errorMessage = signal<string | null>(null);
   protected readonly processingId = signal<string | null>(null);
+
+  // ST-1409 rule 2: the band carries a title and one short sub-line.
+  protected readonly inboxSubline = computed(() => {
+    const n = this.invitations().length;
+    if (n === 0) return 'Ingen ventende';
+    return n === 1 ? '1 invitasjon' : `${n} invitasjoner`;
+  });
 
   ngOnInit() {
     this.loadInvitations();

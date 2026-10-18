@@ -385,3 +385,71 @@
   gap: var(--space-sm);
   margin-top: var(--space-lg);
 }
+
+/* ===== ST-1409 — the eight desktop page rules (pictures only, ST-1370) ===== */
+@media (min-width: 1024px) {
+  /* Rule 1 + 4: left-aligned on the 880 container, one 428 px column — this is a short
+     list, not a page of groups. Nothing here is centred any more. */
+  .create-section,
+  .households-list {
+    width: 428px;
+  }
+
+  .create-section {
+    margin-bottom: 15px;
+  }
+
+  .households-list {
+    display: grid;
+    gap: 8px;
+  }
+
+  .household-card {
+    text-align: left;
+    border-radius: var(--r-card);
+    padding: 15px;
+  }
+
+  .household-header,
+  .household-info,
+  .household-stats,
+  .household-actions {
+    justify-content: flex-start;
+  }
+
+  .stat-icon {
+    display: inline-flex;
+    align-items: center;
+  }
+
+  .stat-icon svg {
+    width: 16px;
+    height: 16px;
+  }
+
+  /* Rule 5: the main action is the main button — 49 px, 13 px corners, its column's
+     width. The card's own actions are row buttons — 36 px, 10 px corners. */
+  .create-section .btn-primary {
+    min-height: 49px;
+    width: 100%;
+    border-radius: var(--r-button);
+    font-size: 16.5px;
+    padding-block: 0;
+  }
+
+  .household-actions .btn {
+    min-height: 36px;
+    border-radius: var(--r-row-action);
+    font-size: 16px;
+    padding-inline: 14px;
+  }
+
+  /* Rule 7: the empty state is the white card, left-aligned, in the column's width. */
+  .empty-state {
+    width: 428px;
+    text-align: left;
+    background: var(--surface);
+    border-radius: var(--r-card);
+    padding: 15px;
+  }
+}

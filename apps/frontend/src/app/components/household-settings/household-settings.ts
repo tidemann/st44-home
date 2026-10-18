@@ -19,6 +19,7 @@ import { AuthService } from '../../services/auth.service';
 import { ChildrenManagementComponent } from '../children-management/children-management';
 import { InviteUserComponent } from '../invite-user/invite-user';
 import { InvitationsSentListComponent } from '../invitations-sent-list/invitations-sent-list';
+import { PageComponent } from '../page/page';
 
 @Component({
   selector: 'app-household-settings',
@@ -28,6 +29,7 @@ import { InvitationsSentListComponent } from '../invitations-sent-list/invitatio
     ChildrenManagementComponent,
     InviteUserComponent,
     InvitationsSentListComponent,
+    PageComponent,
   ],
   templateUrl: './household-settings.html',
   styleUrl: './household-settings.css',
@@ -49,6 +51,12 @@ export class HouseholdSettingsComponent implements OnInit {
   isSaving = signal(false);
   errorMessage = signal('');
   successMessage = signal('');
+
+  // ST-1409 rule 2: the band carries a title and one short sub-line.
+  settingsSubline = computed(() => {
+    const n = this.members().length;
+    return n === 1 ? '1 medlem' : `${n} medlemmer`;
+  });
 
   // Admin role has household admin privileges
   isAdmin = computed(() => this.currentUserRole() === 'admin');

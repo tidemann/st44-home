@@ -971,34 +971,93 @@ app-reward-card + app-reward-card {
   }
 
   /* RULE 5 — four button types only.
-     Main and outline: 49 px, 13 px corners, 16.5 px label, as wide as its column.
-     Row button: 36 px, 10 px corners. Chip: 9 px corners. Everything else hugs its label.
-     No other corner sizes: the invented 4, 6 and 8 px are gone. */
-  .btn {
-    border-radius: var(--r-button);
-  }
+     Main button: 49 px tall, 13 px corners, 16.5 px label, as wide as its column.
+     Outline button: the same size. Row button: 36 px, 10 px corners. Chip: 9 px.
+     Other buttons fit their label. No other corner sizes — the app had nine of them
+     (4, 6, 7, 8, 9, 10, 13, 14 and the pill), three of which were invented.
 
-  .btn-sm,
-  .btn-row {
+     This is written as «every button is the row button unless it is named as the
+     page's one main action», because the drifted pages set their heights and radii
+     in their own stylesheets and there is no single class to reach them by. */
+  body button.btn-x-none,
+  .btn.btn.btn,
+  .btn-sm.btn-sm.btn-sm,
+  .btn-row.btn-row.btn-row,
+  .rbtn.rbtn.rbtn,
+  .btn-invite.btn-invite.btn-invite,
+  .btn-qr.btn-qr.btn-qr,
+  .btn-retry.btn-retry.btn-retry,
+  .retry-button.retry-button.retry-button,
+  .alert-dismiss.alert-dismiss.alert-dismiss {
     min-height: 36px;
+    height: auto;
     border-radius: var(--r-row-action);
     font-size: 16px;
-    padding-inline: 14px;
+    font-weight: 600;
+    padding-block: 0;
   }
 
-  .r5-main,
-  .r5-outline {
+  /* The chip keeps its own 33 px / 9 px; it is the fourth type, not a row button. */
+  .chip.chip.chip,
+  .filter-chip.filter-chip.filter-chip {
+    min-height: 33px;
+    border-radius: var(--r-chip, 9px);
+    font-size: 15px;
+    font-weight: 500;
+  }
+
+  /* The nav tabs and the initial badge are the menu, not page buttons. */
+  .top-tabs.top-tabs.top-tabs .tab.tab.tab,
+  .initial-badge.initial-badge.initial-badge,
+  .page-title-menu.page-title-menu.page-title-menu {
+    min-height: 0;
+    border-radius: revert;
+    font-size: revert;
+    font-weight: revert;
+    padding-block: revert;
+  }
+
+  /* The one main action on a page: 49 px, 13 px corners, 16.5 px label, its column's
+     width. The outline button is the same size. */
+  .r5-main.r5-main.r5-main,
+  .r5-outline.r5-outline.r5-outline,
+  .poeng-primary.poeng-primary.poeng-primary,
+  .new-slot.new-slot.new-slot .poeng-primary.poeng-primary.poeng-primary,
+  .create-section.create-section.create-section .btn-primary.btn-primary.btn-primary,
+  .settings-form.settings-form.settings-form .btn-primary.btn-primary.btn-primary,
+  .household-form.household-form.household-form .btn-primary.btn-primary.btn-primary,
+  .form-actions.form-actions.form-actions .btn-primary.btn-primary.btn-primary {
     min-height: 49px;
     border-radius: var(--r-button);
     font-size: 16.5px;
+    font-weight: 600;
     padding-block: 0;
     width: 100%;
   }
 
-  .r5-outline {
+  .r5-outline.r5-outline.r5-outline {
     background: var(--surface);
     color: var(--text);
     border: 2px solid var(--text-muted);
+  }
+
+  /* Nothing on a page carries an invented corner size any more. */
+  .settings-section.settings-section.settings-section,
+  .settings-card.settings-card.settings-card,
+  .household-card.household-card.household-card,
+  .invitation-card.invitation-card.invitation-card,
+  .member-item.member-item.member-item,
+  .child-item.child-item.child-item,
+  .children-management.children-management.children-management .card.card.card,
+  .invite-user.invite-user.invite-user .card.card.card,
+  .form-input.form-input.form-input,
+  input[type='text'],
+  input[type='email'],
+  input[type='password'],
+  input[type='number'],
+  select,
+  textarea {
+    border-radius: var(--r-card);
   }
 
   /* RULE 6 — the main button is never pale. It keeps the yellow and the dark label; the

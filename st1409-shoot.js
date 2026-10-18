@@ -57,7 +57,12 @@ async function parentApi(route, p, q) {
   if (p === `/households/${HH}`) return json(route, { id: HH, name: 'Familien Nordmann', createdAt: now, updatedAt: now, role: 'admin' });
   if (p === `/households/${HH}/members`) return json(route, F.members);
   if (p === `/households/${HH}/children`) return json(route, { children: F.children });
-  if (p === `/households/${HH}/tasks`) return json(route, { tasks: F.tasks, total: F.tasks.length });
+  // The fixture calls it `title`; the Oppgaver template reads `name`, so «Alle oppgaver»
+  // rendered as six nameless «Gjentas» rows. Same data, the field the page reads.
+  if (p === `/households/${HH}/tasks`) {
+    const ts = F.tasks.map((t) => ({ ...t, name: t.name || t.title }));
+    return json(route, { tasks: ts, total: ts.length });
+  }
   if (p === `/households/${HH}/rewards`) return json(route, { rewards: F.rewards });
   if (p === `/households/${HH}/assignments`) {
     const date = q.get('date');
@@ -79,17 +84,42 @@ async function parentApi(route, p, q) {
       weekSummary: { total: 14, completed: 6, pending: 7, overdue: 1, completionRate: 43 },
       children: F.members.filter((m) => m.role === 'child').map((m) => ({ id: m.userId, name: m.displayName, tasksCompleted: m.tasksCompleted, tasksTotal: m.totalTasks, completionRate: 50 })),
     });
-  if (p.includes('/analytics'))
+  if (p.includes('/analytics')) return json(route, ANALYTICS);
+  if (false)
     return json(route, {
       householdId: HH, weekProgress: prog(14, 6, 55), monthProgress: prog(40, 28, 210),
       children: F.children.map((c, i) => ({ childId: c.id, childName: c.firstName || c.displayName || `Barn ${i}`, currentStreak: 2 + i, longestStreak: 5, weekProgress: prog(8, 4 + i, 30 + 10 * i), monthProgress: prog(30, 20, 150), dailyPoints: [] })),
       daily: [], weekly: [], totals: {}, generatedAt: now,
     });
-  if (p === '/users/me/invitations') return json(route, { invitations: [] });
+  // Belønninger hung on «Henter ønsker…» in ST-1345 because /redemptions was not mocked.
+  if (p === `/households/${HH}/redemptions`)
+    return json(route, { redemptions: [
+      { id: 'dddddddd-dddd-4ddd-8ddd-000000000001', rewardId: 'cccccccc-cccc-4ccc-8ccc-000000000001', rewardName: 'Kinokveld', childId: '22222222-2222-4222-8222-222222222221', childName: 'Emma', pointsSpent: 60, status: 'pending', redeemedAt: new Date(Date.now() - 3600e3).toISOString(), decidedAt: null, fulfilledAt: null },
+      { id: 'dddddddd-dddd-4ddd-8ddd-000000000002', rewardId: 'cccccccc-cccc-4ccc-8ccc-000000000003', rewardName: 'Ekstra skjermtid', childId: '22222222-2222-4222-8222-222222222222', childName: 'Jonas', pointsSpent: 30, status: 'approved', redeemedAt: new Date(Date.now() - 26 * 3600e3).toISOString(), decidedAt: new Date(Date.now() - 25 * 3600e3).toISOString(), fulfilledAt: null },
+      { id: 'dddddddd-dddd-4ddd-8ddd-000000000003', rewardId: 'cccccccc-cccc-4ccc-8ccc-000000000002', rewardName: 'Ny ball', childId: '22222222-2222-4222-8222-222222222223', childName: 'Mathea', pointsSpent: 120, status: 'fulfilled', redeemedAt: new Date(Date.now() - 72 * 3600e3).toISOString(), decidedAt: new Date(Date.now() - 71 * 3600e3).toISOString(), fulfilledAt: new Date(Date.now() - 70 * 3600e3).toISOString() },
+    ] });
+  // Invitasjoner: two waiting invitations, so the page is not only its empty card.
+  if (p === '/users/me/invitations')
+    return json(route, { invitations: [
+      { id: 'eeeeeeee-eeee-4eee-8eee-000000000001', householdId: HH, householdName: 'Familien Nordmann', inviterName: 'Kari Nordmann', inviterEmail: 'kari@example.test', role: 'parent', status: 'pending', createdAt: new Date(Date.now() - 2 * 86400e3).toISOString(), expiresAt: new Date(Date.now() + 5 * 86400e3).toISOString() },
+      { id: 'eeeeeeee-eeee-4eee-8eee-000000000002', householdId: '11111111-1111-4111-8111-111111111112', householdName: 'Hytta på Geilo', inviterName: 'Per Hansen', inviterEmail: 'per@example.test', role: 'parent', status: 'pending', createdAt: new Date(Date.now() - 9 * 86400e3).toISOString(), expiresAt: new Date(Date.now() - 1 * 86400e3).toISOString() },
+    ] });
   if (p === `/households/${HH}/invitations`) return json(route, { invitations: [] });
   if (p === '/push/config') return json(route, { publicKey: '', enabled: false });
   return json(route, {});
 }
+
+const iso = (d) => { const t = new Date(); t.setDate(t.getDate() + d); return t.toISOString().slice(0, 10); };
+const daily = (seed) => [...Array(7)].map((_, i) => ({ date: iso(i - 6), totalTasks: 3, completedTasks: (seed + i) % 4 > 2 ? 3 : (seed + i) % 3, completionRate: 50, pointsEarned: 5 * ((seed + i) % 4) }));
+const kids = [['22222222-2222-4222-8222-222222222221', 'Emma', 340], ['22222222-2222-4222-8222-222222222222', 'Jonas', 215], ['22222222-2222-4222-8222-222222222223', 'Mathea', 180]];
+// ST-1345 shot Fremgang's ERROR state because its synthetic analytics payload was rejected.
+// This is the payload the page accepts (st1345-progress.js), so the picture is the real page.
+const ANALYTICS = { householdId: HH, period: 'week',
+  periodComparison: { current: { totalTasks: 21, completedTasks: 12, completionRate: 57, totalPoints: 735 }, previous: { totalTasks: 21, completedTasks: 9, completionRate: 43, totalPoints: 610 }, change: { completionRateDelta: 14, pointsDelta: 125, tasksDelta: 3 } },
+  childrenProgress: kids.map(([id, n, p], i) => ({ childId: id, childName: n, dailyData: daily(i), totalPointsEarned: p, averageCompletionRate: 50 + 10 * i })),
+  streaks: kids.map(([id, n], i) => ({ childId: id, childName: n, currentStreak: 3 - i, longestStreak: 7 - i, lastCompletionDate: iso(0) })),
+  taskPopularity: [{ taskId: '33333333-3333-4333-8333-333333333301', taskName: 'Tømme oppvaskmaskin', totalAssignments: 7, completedCount: 5, completionRate: 71, averagePoints: 5 }],
+  generatedAt: now };
 
 const FINGERPRINT = () => {
   const vw = window.innerWidth;

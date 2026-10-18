@@ -292,3 +292,31 @@
   outline: 3px solid var(--ink);
   outline-offset: 2px;
 }
+
+/* ===== ST-1409 — the eight desktop page rules (pictures only, ST-1370) ===== */
+@media (min-width: 1024px) {
+  /* Rule 1: the 880 container owns the width now; the page's own 800 px box and its
+     side padding would push the content off the menu's left edge. */
+  .household-settings {
+    max-width: none;
+    margin: 0;
+    padding: 24px 0 0;
+  }
+
+  /* Rule 4: this page is a form and a short list, so it runs in ONE 428 px column. */
+  .household-settings__content {
+    gap: 24px;
+  }
+
+  /* Rule 5: no invented corner sizes — the page carried 4, 6 and 8 px. */
+  .settings-section,
+  .form-input,
+  .member-item,
+  .child-item {
+    border-radius: var(--r-card);
+  }
+
+  .btn {
+    border-radius: var(--r-button);
+  }
+}

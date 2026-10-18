@@ -1,21 +1,22 @@
+<app-page
+  title="Invitasjoner"
+  i18n-title="@@invitationInbox.pageTitle"
+  [subtitle]="inboxSubline()"
+  [band]="true"
+>
 <div
-  class="invitation-inbox"
+  class="invitation-inbox r4-col"
   role="region"
   i18n-aria-label="@@invitationInbox.region"
   aria-label="Innboks for invitasjoner"
 >
+  <!-- ST-1409 rule 2 + 3: the page title and its sub-line are in the yellow band now, in
+       the one title style; the page's own <h2> is gone (it was the only page title in the
+       app without an <h1>). Rule 5: «Oppdater» is the row button, 36 px / 10 px corners. -->
   <div class="header">
-    <h2 id="inbox-title">
-      <ng-container i18n="@@invitationInbox.title">Invitasjonsinnboks</ng-container>
-      @if (pendingCount > 0) {
-        <span class="badge badge-count" [attr.aria-label]="pendingCount + ' ventende invitasjoner'">
-          {{ pendingCount }}
-        </span>
-      }
-    </h2>
     <button
       type="button"
-      class="btn btn-secondary"
+      class="btn btn-secondary btn-row"
       (click)="loadInvitations()"
       [disabled]="isLoading()"
       i18n-aria-label="@@invitationInbox.refreshAria"
@@ -40,20 +41,22 @@
     </div>
   }
 
-  <!-- Loading state -->
+  <!-- ST-1409 rule 7: while loading, grey placeholder rows of what is coming — not a
+       sentence, and no emoji hourglass (rule 8). -->
   @if (isLoading()) {
-    <div class="loading" role="status" aria-live="polite">
-      <span aria-hidden="true">⏳</span>
-      <ng-container i18n="@@invitationInbox.loading">Laster invitasjoner...</ng-container>
+    <div class="r7-skeleton" role="status" aria-live="polite">
+      <i></i><i></i><i></i>
+      <span class="visually-hidden" i18n="@@invitationInbox.loading">Laster invitasjoner …</span>
     </div>
   }
 
-  <!-- Empty state -->
+  <!-- ST-1409 rule 7: one white card — a title line, one sentence, and nothing to press
+       because there is nothing to do here. -->
   @if (!isLoading() && invitations().length === 0) {
-    <div class="empty-state" role="status">
-      <p i18n="@@invitationInbox.noInvitations">Ingen ventende invitasjoner.</p>
-      <p i18n="@@invitationInbox.emptyStateHint">
-        Når noen inviterer deg til å bli med i husstanden deres, vil det vises her.
+    <div class="r7-card" role="status">
+      <p class="r7-title" i18n="@@invitationInbox.noInvitations">Ingen invitasjoner</p>
+      <p class="r7-line" i18n="@@invitationInbox.emptyStateHint">
+        Når noen inviterer deg til husstanden sin, kommer invitasjonen hit.
       </p>
     </div>
   }
@@ -138,3 +141,4 @@
     </ul>
   }
 </div>
+</app-page>

@@ -56,6 +56,11 @@
   }
 
   @if (!loading() && !error()) {
+    <!-- ST-1409 rule 4: two 428 px columns, 24 px between them, split the way desktop A
+         splits the family home — what is left today on the left, what is done and what is
+         coming on the right. -->
+    <div class="r4-cols">
+      <div class="r4-col">
     <!-- ST-914: chores whose children were all deleted get no new days until the parent acts -->
     @if (noChildTasks().length > 0) {
       <app-group-label
@@ -80,7 +85,6 @@
         />
       }
     }
-
     @if (overdueRows().length > 0) {
       <app-group-label
         i18n-label="@@tasks.overdueGroup"
@@ -114,7 +118,6 @@
         </app-chore-row>
       }
     }
-
     @if (openRows().length > 0) {
       <app-group-label
         i18n-label="@@tasks.todayGroup"
@@ -146,7 +149,29 @@
         </app-chore-row>
       }
     }
+    @if (!hasDay()) {
+      <div class="empty" role="status">
+        <p class="empty-title" i18n="@@tasks.emptyDay">Ingen oppgaver i dag</p>
+      </div>
+    }
 
+        <!-- The one creating action sits under its own column, as desktop A draws it. -->
+    <div class="new-slot">
+      <button type="button" class="poeng-primary" (click)="createOpen.set(true)">
+        <svg width="17" height="17" viewBox="0 0 17 17" fill="none" aria-hidden="true">
+          <path
+            d="M8.5 1.5v14M1.5 8.5h14"
+            stroke="currentColor"
+            stroke-width="2.2"
+            stroke-linecap="round"
+          />
+        </svg>
+        <span i18n="@@tasks.newTask">Ny oppgave</span>
+      </button>
+    </div>
+      </div>
+
+      <div class="r4-col">
     @if (doneRows().length > 0) {
       <app-group-label
         i18n-label="@@tasks.doneGroup"
@@ -163,12 +188,6 @@
           (open)="onEdit(a.taskId)"
         />
       }
-    }
-
-    @if (!hasDay()) {
-      <div class="empty" role="status">
-        <p class="empty-title" i18n="@@tasks.emptyDay">Ingen oppgaver i dag</p>
-      </div>
     }
 
     <!-- Below the picture: every template, so chores not due today can still be edited -->
@@ -188,19 +207,7 @@
         />
       }
     }
-
-    <div class="new-slot">
-      <button type="button" class="poeng-primary" (click)="createOpen.set(true)">
-        <svg width="17" height="17" viewBox="0 0 17 17" fill="none" aria-hidden="true">
-          <path
-            d="M8.5 1.5v14M1.5 8.5h14"
-            stroke="currentColor"
-            stroke-width="2.2"
-            stroke-linecap="round"
-          />
-        </svg>
-        <span i18n="@@tasks.newTask">Ny oppgave</span>
-      </button>
+      </div>
     </div>
   }
 

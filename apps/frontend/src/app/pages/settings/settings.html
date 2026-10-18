@@ -60,6 +60,10 @@
     }
 
     <!-- Profile: the card, then «Lagre endringer» right under the card it saves -->
+    <!-- ST-1409 rule 4: this page has groups, so two 428 px columns with 24 px
+         between them — profile and the household on the left, the rest on the right. -->
+    <div class="r4-cols">
+      <div class="r4-col">
     <section class="settings-section" aria-labelledby="profile-title">
       <h2 id="profile-title" class="section-label" i18n="@@settings.profileTitle">Profil</h2>
 
@@ -201,6 +205,8 @@
     }
 
     <!-- Notifications: the existing card, unchanged -->
+      </div>
+      <div class="r4-col">
     <section class="settings-section">
       <div class="settings-card notifications-card">
         <app-notification-settings audience="parent" />
@@ -242,5 +248,7 @@
         </div>
       </div>
     </section>
+      </div>
+    </div>
   </app-page>
 }

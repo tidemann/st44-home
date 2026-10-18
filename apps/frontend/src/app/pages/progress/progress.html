@@ -1,16 +1,24 @@
-<!-- Loading State -->
+<!-- ST-1409 rule 7: one card for empty, loading and error — a white card in the page
+     width, never the full-bleed white stripe this page drew across the window. Loading
+     shows the rows it is about to show. -->
 @if (loading()) {
-  <div class="loading-container" role="status" aria-live="polite">
-    <div class="loading-spinner" aria-hidden="true"></div>
-    <p i18n="@@progress.loading">Laster fremgang...</p>
+  <div class="r7-wrap">
+    <div class="r7-skeleton" role="status" aria-live="polite">
+      <i></i><i></i><i></i>
+      <span class="visually-hidden" i18n="@@progress.loading">Laster fremgang …</span>
+    </div>
   </div>
 }
 
-<!-- Error State -->
 @if (error()) {
-  <div class="error-container" role="alert" aria-live="assertive">
-    <p class="error-message">{{ error() }}</p>
-    <button class="retry-button" (click)="loadData()" i18n="@@progress.tryAgain">Prøv igjen</button>
+  <div class="r7-wrap">
+    <div class="r7-card" role="alert" aria-live="assertive">
+      <p class="r7-title" i18n="@@progress.errorTitle">Vi fikk ikke hentet fremgangen</p>
+      <p class="r7-line">{{ error() }}</p>
+      <button type="button" class="btn btn-primary r5-main" (click)="loadData()" i18n="@@progress.tryAgain">
+        Prøv igjen
+      </button>
+    </div>
   </div>
 }
 
@@ -49,6 +57,9 @@
     </div>
 
     <!-- Ukens ledere: rank, name with the week's chores, points -->
+    <!-- ST-1409 rule 4: two groups, so two 428 px columns with 24 px between them. -->
+    <div class="r4-cols">
+      <div class="r4-col">
     <section class="section">
       <app-group-label
         i18n-label="@@progress.leaderboardTitle"
@@ -79,6 +90,8 @@
     </section>
 
     <!-- Prestasjoner: one card each, the meter is ten pills -->
+      </div>
+      <div class="r4-col">
     <section class="section">
       <app-group-label i18n-label="@@progress.achievementsTitle" label="Prestasjoner" />
 
@@ -113,5 +126,7 @@
         }
       </ul>
     </section>
+      </div>
+    </div>
   </app-page>
 }

@@ -277,3 +277,18 @@
     width: 109px;
   }
 }
+
+/* ===== ST-1409 — rule 7: the empty/loading/error card sits in the page's own 880 px
+   container, left-aligned, not full-bleed across the window (pictures only, ST-1370) */
+@media (min-width: 1024px) {
+  .r7-wrap {
+    max-width: 880px;
+    margin: 0 auto;
+    padding-top: 112px;
+  }
+
+  .r7-wrap .r7-card,
+  .r7-wrap .r7-skeleton {
+    width: 428px;
+  }
+}
