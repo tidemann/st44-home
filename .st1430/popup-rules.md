@@ -8,12 +8,15 @@ approved 18 October — explicitly left popups out; this is that step 2.
 `#17120A` and the 30 % ink veil on a popup that blocks, the grey `#555E64` edge and no veil on one you
 may ignore, the shadow recipe, the 13 px radius, 15 px inside, title 27 px Bricolage 800, body 16 px
 Hanken 600, «Slett» filled with Overdue Rust `#A43A16`, and the safe action on the left. Those were
-approved on ST-880 and are not reopened here. What the guide never wrote down is what a popup does on
-a **1440 px window**: it gives 346 px at the phone's 22 px gutter and nothing for desktop. These 8
-rules fill that gap — and nothing else.
+approved on ST-880 and are not reopened here — **with one exception, and it is a question for Stig, not
+a rule: whether «Bytt husstand» blocks.** It is in its own section below, with both versions drawn.
+
+What the guide never wrote down is what a popup does on a **1440 px window**: it gives 346 px at the
+phone's 22 px gutter and nothing for desktop. These 8 rules fill that gap — and nothing else.
 
 Source: the popup findings in Ida's desktop review ([ST-1345](/ST/issues/ST-1345#document-review), F16),
-re-measured on 18 October on all 17 popups at 1440 × 900.
+re-measured on 18 October on all 17 popups at 1440 × 900, and re-measured again after Astrid's review
+([ST-1443](/ST/issues/ST-1443#document-review)).
 
 ## The 17 popups, and what opens them
 
@@ -23,7 +26,7 @@ re-measured on 18 October on all 17 popups at 1440 × 900.
 | 2 | «Rediger oppgave» | Oppgaver (a template row) | yes |
 | 3 | «Tilordne oppgave på nytt» | Oppgaver (row action «Bytt») | yes |
 | 4 | «Slette n oppgaver?» | Oppgaver, in select mode | yes |
-| 5 | «Bytt husstand» | Hjemme, the caret after the household name | yes |
+| 5 | «Bytt husstand» | Hjemme, the caret after the household name | **Stig's call — see the section below** |
 | 6 | «Legg til barn» | Familie | yes |
 | 7 | «Barnedetaljer» | Familie (click a child) | yes |
 | 8 | «Inviter familiemedlem» | Familie | yes |
@@ -46,12 +49,12 @@ they are dead code for Eirik, not design.
 
 | # | Rule | Today |
 |---|---|---|
-| **1** | **Popup width.** Every popup is 428 px wide — the same column a form gets on a page — and centred in the window. It never grows with the window and no popup has a width of its own. | 3 widths: 15 dialogs at 500 px, the two offers at 480 px, «Bytt husstand» 440 px. |
+| **1** | **Popup width.** Every popup is 428 px wide — the same column a form gets on a page — and centred in the window. It never grows with the window and no popup has a width of its own. | 3 widths: 14 dialogs at 500 px, the two offers at 480 px, «Bytt husstand» 440 px. |
 | **2** | **Height and place.** A popup is centred in the window with at least 48 px of air over and under it; when the content is taller, only the body scrolls — the title row and the action row stay. | The two tallest («Ny oppgave», «Barnedetaljer») stand 852 px tall in a 900 px window, 24 px from the edge. |
 | **3** | **The action row is two equal halves:** two buttons of 194 × 49 px, 13 px corners, 16.5 px label, 8 px apart, filling the 396 px inside the popup; the safe one outlined on the left, the one that acts filled on the right. One action fills all 396 px; three share the row in equal thirds of 126,7 px. | The buttons hug their labels: 17 different widths between 57 and 230 px, and labels in two sizes (14 and 16.5 px). |
-| **4** | **A popup's main action is never pale.** It keeps the yellow fill and its ink label (10,57:1). The form is checked when you press, and the error shows under the field — the same as the login page. | 6 popups dim it before you type: 2,63:1 on five of them and 3,46:1 on «Opprett». |
-| **5** | **One field inside a popup:** 49 px tall, 13 px corners, a 1,5 px `#555E64` edge — the login field. A text box is the same field, 76 px tall. | 5 field heights (48, 50, 51,6, 52, 53 px) and 4 edges, one of them `#E2E8F0`, a colour from outside the system. |
-| **6** | **No browser chrome inside a popup.** A choice is a Diddit field with the Diddit caret, never the operating system's own `<select>` menu or date picker. | 5 popups open the browser's own menu inside the Diddit frame. |
+| **4** | **A popup's main action is never pale — and never dead.** It keeps the yellow fill and its ink label (10,57:1) and is pressable from the first paint. The form is checked **when you press**: the field that is wrong takes a 2 px `#A43A16` edge and one `#A43A16` line, 15 px, stands under *that* field (6,57:1) — the login page's pattern. The only `disabled` left inside a popup is the moment it is working, and that keeps its yellow and swaps its label, as the login does. | 6 popups dim it before you have typed anything — 2,63:1 on five, 3,46:1 on «Opprett» — and all six are `disabled`, so the press does nothing at all. |
+| **5** | **One field inside a popup:** 49 px tall, 13 px corners, a 1,5 px `#555E64` edge, white, 16 px inside — the login field. A text box is that same field, the full 396 px wide and 76 px tall. | 5 field heights (48, 50, 51,6, 52, 53 px) and 4 edges, one of them `#E2E8F0`, a colour from outside the system; and a text box 183 px wide on Paper with its text 2 px from the edge. |
+| **6** | **No browser chrome inside a popup.** A choice is a Diddit field with the Diddit caret, never the operating system's own `<select>` menu or date picker. The pictures show the **closed** field, which is all a picture can hold; the open list is a Diddit menu Eirik builds. | 5 popups open the browser's own menu inside the Diddit frame. |
 | **7** | **A popup that blocks is a centred dialog, never a sheet off an edge.** On desktop there is no bottom nav to rise above, and a sheet glued to the window's edge loses the popup's own shape. | «Bytt husstand» rises from the bottom edge with 20 px corners and no edge at all, against 13 px and the ink edge on the other 14. |
 | **8** | **A popup you may ignore sits in the bottom right**, 428 px wide, 24 px clear of the window's right and bottom edge, grey edge, no veil. | Both offers float centred at the bottom of the window, 480 px wide, in a 16 px gutter meant for a phone. |
 
@@ -66,21 +69,26 @@ Every number under a pair was measured in the rendered pixels, not predicted.
 - **Sheet 2 — Familie (4):** «Legg til barn», «Barnedetaljer», «Inviter familiemedlem», «QR-kode innlogging».
 - **Sheet 3 — Belønninger og husholdninger (4):** «Slette belønningen?», «Vil du be om dette?», «Ny husholdning», «Endre husholdning».
 - **Sheet 4 — Husholdninger og de to tilbudene (4):** «Forlat husholdningen», «Slett husholdningen», «Slå på varsler?», «Legg Diddit på hjemskjermen».
+- **Sheet 5 — rule 4 alone, in three columns (6):** the main action today (pale *and* dead), with the rules (yellow and live), and pressed on a form that is not finished. This sheet is new in round 2: it is the one rule a two-column pair cannot show.
 
-**Two things to read correctly in the pictures.** «QR-kode innlogging» shows its frame only: the code
-itself is drawn from a server answer the mock does not give, so the pair shows the width, the place and
-the lone action, not the code. In «Barnedetaljer» the 362 px and 93 px buttons sit inside the body's own
-blocks («Opprett innlogging» in the notice, «Fjern barn» in «Faresone»); the action row is the 396 px
-«Lukk» at the bottom.
+**Three things to read correctly in the pictures.** «QR-kode innlogging» shows its frame only — the code
+is drawn from a server answer the mock does not give, and the popup has no action row at all, so that
+pair carries **rule 1 and rule 2 only**; its one pressable is the 40 × 40 px close cross. In
+«Barnedetaljer» the 362 px and 93 px buttons sit inside the body's own blocks («Opprett innlogging» in
+the notice, «Fjern barn» in «Faresone»); the action row is the 396 px «Lukk» at the bottom. And **every
+emoji draws as an empty square in both halves**: the drawing rig has no emoji font. That is not a
+design change — in the app they are a phone, a person, a warning triangle, a pencil, a tick, a cross
+and a bell.
 
+![Sheet 1 — Hjemme og Oppgaver](/api/attachments/4ef411cf-3c4c-419f-87ac-02b6ed2ef038/content)
 
-![Sheet 1 — Hjemme og Oppgaver](/api/attachments/a1463106-9f47-42b4-95cc-b8f3e6d2689d/content)
+![Sheet 2 — Familie](/api/attachments/1862d044-c304-4da3-bbcc-25d6027e44e9/content)
 
-![Sheet 2 — Familie](/api/attachments/09625d23-d35f-4fb6-ba08-7e235c7d9eba/content)
+![Sheet 3 — Belønninger og husholdninger](/api/attachments/55d456e9-a2ab-4053-bf9a-911ddbd49019/content)
 
-![Sheet 3 — Belønninger og husholdninger](/api/attachments/74be040c-5154-4650-b540-f4f9ea2f207e/content)
+![Sheet 4 — Husholdninger og de to tilbudene](/api/attachments/35557d9e-2ba4-4b36-9c00-34e0e7bf52fb/content)
 
-![Sheet 4 — Husholdninger og de to tilbudene](/api/attachments/d8089d47-64e2-4441-9bce-9ce85ebf8104/content)
+![Sheet 5 — rule 4 in three columns](/api/attachments/99c7e8a5-0b97-4750-a8aa-310c72982526/content)
 
 ### Where a rule left a choice open, this is the choice I made
 
@@ -88,36 +96,77 @@ blocks («Opprett innlogging» in the notice, «Fjern barn» in «Faresone»); t
    page below are the same width. The alternative — a second, wider popup for «Ny oppgave» and
    «Barnedetaljer» — would add a width to the system; those two scroll instead.
 2. **48 px of air** (rule 2) makes the tallest popup 804 px in a 900 px window, so the veil and the page
-   are visible on every side. 
+   are visible on every side.
 3. **Three actions share the row in equal thirds**, 126,7 px, with «Slett» in rust on the left
    («Rediger oppgave» is the only popup with three).
-4. **A lone action fills all 396 px** («QR-kode innlogging», «Barnedetaljer»).
-5. **The offers go to the bottom right corner** (rule 8), 24 px from both edges — the corner a desktop
+4. **A lone action fills all 396 px** («Barnedetaljer»).
+5. **The error is the login's error** (rule 4): one rust line under the field that is wrong, and a 2 px
+   rust edge on that field. Not a banner at the top of the popup, which is where «Tilordne oppgave på
+   nytt» put it, and not a message on the page behind the veil, which is where «Ny husholdning» put it.
+6. **The offers go to the bottom right corner** (rule 8), 24 px from both edges — the corner a desktop
    user expects a message in, and there is no bottom nav to keep clear of. Only one offer shows at a time.
-6. **«Bytt husstand» becomes a centred dialog on desktop only.** On the phone it stays the bottom sheet
+7. **«Bytt husstand» becomes a centred dialog on desktop only.** On the phone it stays the bottom sheet
    the picture draws.
+
+## One question for Stig before this is a rule: does «Bytt husstand» block?
+
+Rule 7 settles the **shape** — a centred 428 px dialog with 13 px corners, not a sheet glued to the
+bottom edge. That part is not in question. What rule 7 must not settle on its own is whether this
+popup **blocks**: the approved Popups section (ST-880) lists the household dropdown in the column you
+may ignore — grey `#555E64` edge, no veil — while the app today already paints the 30 % ink veil and
+draws no edge at all. The right-hand halves in sheet 1 currently show it blocking.
+
+Both versions are drawn, same render, one difference:
+
+![«Bytt husstand» — A blocks, B may be ignored](/api/attachments/b0c6f257-6774-45e5-85e5-f7d724c91ba0/content)
+
+- **A — it blocks:** ink edge `#17120A`, 30 % veil. One new line in the approved table moves the
+  household choice to the blocking column.
+- **B — you may ignore it:** grey `#555E64` edge, no veil. The approved table is untouched and the
+  right-hand half of sheet 1 is re-rendered.
+
+**Ida's recommendation: A.** «Bytt husstand» switches the active household for the whole app, covers
+the page and takes focus — it behaves like a dialog, and the app paints the whole veil today. The
+approved line was written about a *dropdown* at the name; what the code opens is a full sheet. Either
+way the shape is the same. This is Stig's call.
 
 ### What is not in this step
 
-- **Nothing on a single page.** The 📱 emoji and the «Faresone» block inside «Barnedetaljer», and the
-  empty «Velg barn» menu in «Tilordne oppgave på nytt», are step 3, each with its own decision.
+- **Nothing on a single page.** Inside «Barnedetaljer»: the emoji, the «Faresone» block, and
+  «✏️ Rediger», whose pressable box is **63,7 × 22,4 px** — under the 24 × 24 px floor of WCAG 2.5.8
+  that the guide quotes under **Hit area**. The empty «Velg barn» menu in «Tilordne oppgave på nytt»
+  is the same: step 3, each with its own decision. Everything else in the 17 clears the floor (the
+  close cross is 40 × 40, every action 49 px tall).
+- **The open menu list** (rule 6). The rule bans the OS menu; the Diddit menu that replaces it is a
+  component for Eirik, and only the closed field is in these pictures.
+- **Emoji as icons inside a popup.** Step 1's rule 8 was scoped to pages. The popups in this set carry
+  a phone, a person, a warning triangle, a pencil, a tick, a cross and a bell. Whether the page rule
+  reaches into popups is step 3.
+- **16 px or 18 px inside a field.** The guide's `field-text` token says 18 px; all 17 popups are
+  built with 16 px, and the pictures keep 16 px so every box in the set agrees. Which number is the
+  rule is a guide question, not a popup question.
 - **Nothing on the phone.** Every rule here is scoped to 1024 px and wider.
-- **Nothing in the approved Popups section.** Edge, veil, shadow, radius, padding, type and the rust
-  «Slett» are quoted above, not reopened.
+- **Nothing else in the approved Popups section.** Edge, veil, shadow, radius, padding, type and the
+  rust «Slett» are quoted above, not reopened.
 
 ## How this was measured
 
-`ng serve` on `origin/main` (3f56e0e), Playwright/Chromium at 1440 × 900, `deviceScaleFactor: 2`,
-`nb-NO`, a synthetic family (Kari, Emma, Jonas, Mathea) — **no real user data**. Each popup was opened
-by clicking the same buttons a parent or child clicks. Widths, heights, button boxes, field boxes and
-the label contrast of every action were read off the rendered DOM and pixels in both halves
-(`st1430-shoot.js`, `st1430-sheet.js` on branch `ida/st-1430-popup-rules`; the right-hand half is that
-branch's CSS, so every «after» picture is a real render, not a drawing).
+`ng serve`, Playwright/Chromium at 1440 × 900, `deviceScaleFactor: 2`, `nb-NO`, a synthetic family
+(Kari, Emma, Jonas, Mathea) — **no real user data**. Each popup was opened by clicking the same buttons
+a parent or child clicks, and in sheet 5 the main action was pressed the way a parent presses it.
+Widths, heights, button boxes, field boxes, fills and the label contrast of every action were read off
+the rendered DOM **and** the pixels in both halves.
+
+The left halves are `origin/main` at 3f56e0e. The right halves are branch
+`ida/st-1430-popup-rules` at **c8d6fb7** (`st1430-shoot.js`, `st1430-press.js`, `st1430-sheet.js`,
+`st1430-sheet4.js`, `st1430-b1.js`), so every «after» picture is a real render, not a drawing. The
+round-2 numbers are in `.st1430/round2-measurements.md` on that branch. All 1103 frontend tests pass
+on it. It is a prototype for the pictures, not a merge candidate — Eirik builds this for real.
 
 ## What happens when Stig approves
 
 1. Ida writes these 8 rules into the Diddit design guide under **Popups**, as a desktop section, with
-   the four sheets in `reference/`. Astrid checks them against the pictures.
+   the sheets in `reference/`. Astrid checks them against the pictures.
 2. Eirik changes the popups to look like the right-hand halves. Solveig checks them live at 1440 and
    1024 px, and checks that nothing moved on the phone.
 
