@@ -6819,6 +6819,20 @@
           <context context-type="linenumber">185</context>
         </context-group>
       </trans-unit>
+      <trans-unit id="tasks.bulkDeleteLongOne" datatype="html">
+        <source>Slett 1 oppgave</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/pages/tasks/tasks.ts</context>
+          <context context-type="linenumber">192</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="tasks.bulkDeleteLong" datatype="html">
+        <source>Slett <x id="n" equiv-text="n"/> oppgaver</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/pages/tasks/tasks.ts</context>
+          <context context-type="linenumber">193</context>
+        </context-group>
+      </trans-unit>
       <trans-unit id="tasks.bulkConfirmTitleOne" datatype="html">
         <source>Slette 1 oppgave?</source>
         <context-group purpose="location">

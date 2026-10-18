@@ -411,7 +411,9 @@ describe('Tasks (Poeng task list)', () => {
 
       expect(selectRows()[1].getAttribute('aria-checked')).toBe('true');
       expect(text()).toContain('2 valgt');
-      expect(button('Slett 2')).toBeTruthy();
+      const del = el().querySelector('.sbtn-delete')!;
+      expect(del.querySelector('.label-short')?.textContent?.trim()).toBe('Slett 2');
+      expect(del.querySelector('.label-long')?.textContent?.trim()).toBe('Slett 2 oppgaver');
 
       selectRows()[1].click();
       fixture.detectChanges();

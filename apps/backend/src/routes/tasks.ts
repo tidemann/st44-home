@@ -642,14 +642,11 @@ function todayIso(): string {
 }
 
 /**
- * Deleting a template also takes today's not-done chores of it off the day,
- * so «forsvinner for hele familien» is true. Done rows stay: points and history do not change.
- */
-/**
- * Soft delete templates of one household and take today's not-done chores of them off the
- * day, in one transaction. Deleting this household's own tasks is atomic, and repeating it is
- * harmless: a task that is already switched off counts as deleted, so a retry, or a second
- * parent deleting at the same time, never reports it as a failure. Returns the ids that are deleted.
+ * Soft delete templates of one household and take their not-done chores off the list, today's
+ * and earlier days', in one transaction, so «forsvinner for hele familien» is true and «Forfalt»
+ * agrees. Done rows stay: points and history do not change. Repeating it is harmless: a task that
+ * is already switched off counts as deleted, so a retry, or a second parent deleting at the same
+ * time, never reports it as a failure. Returns the ids that are deleted.
  */
 async function softDeleteTasks(householdId: string, taskIds: string[]): Promise<string[]> {
   const client = await db.connect();
@@ -662,7 +659,7 @@ async function softDeleteTasks(householdId: string, taskIds: string[]): Promise<
       [householdId, taskIds],
     );
     const deleted = result.rows.map((r) => r.id);
-    if (deleted.length > 0) await clearTodayOpenRows(client, householdId, deleted);
+    if (deleted.length > 0) await clearOpenRows(client, householdId, deleted);
     await client.query('COMMIT');
     return deleted;
   } catch (error) {
@@ -673,7 +670,7 @@ async function softDeleteTasks(householdId: string, taskIds: string[]): Promise<
   }
 }
 
-async function clearTodayOpenRows(
+async function clearOpenRows(
   client: PoolClient,
   householdId: string,
   taskIds: string[],
@@ -681,7 +678,7 @@ async function clearTodayOpenRows(
   await client.query(
     `DELETE FROM task_assignments
      WHERE household_id = $1 AND task_id = ANY($2::uuid[])
-       AND date = $3 AND status <> 'completed'`,
+       AND date <= $3 AND status <> 'completed'`,
     [householdId, taskIds, todayIso()],
   );
 }
