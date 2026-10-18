@@ -1,0 +1,56 @@
+[
+ {
+  "slug": "mine-oppgaver-barn",
+  "label": "Mine oppgaver (barn)",
+  "todayH": 900,
+  "rulesH": 900
+ },
+ {
+  "slug": "belonninger-barn",
+  "label": "Belønninger (barn)",
+  "todayH": 959,
+  "rulesH": 900
+ },
+ {
+  "slug": "ny-husstand",
+  "label": "Ny husstand (veiviser)",
+  "todayH": 980,
+  "rulesH": 900
+ },
+ {
+  "slug": "logg-inn",
+  "label": "Logg inn",
+  "todayH": 900,
+  "rulesH": 900
+ },
+ {
+  "slug": "opprett-konto",
+  "label": "Opprett konto",
+  "todayH": 900,
+  "rulesH": 900
+ },
+ {
+  "slug": "barnas-innlogging",
+  "label": "Barnas innlogging",
+  "todayH": 900,
+  "rulesH": 900
+ },
+ {
+  "slug": "glemt-passord",
+  "label": "Glemt passord",
+  "todayH": 900,
+  "rulesH": 900
+ },
+ {
+  "slug": "sett-nytt-passord",
+  "label": "Sett nytt passord",
+  "todayH": 900,
+  "rulesH": 900
+ },
+ {
+  "slug": "invitasjon",
+  "label": "Invitasjon (lenke)",
+  "todayH": 900,
+  "rulesH": 900
+ }
+]
