@@ -1,4 +1,11 @@
-import { Component, ChangeDetectionStrategy, signal, inject, OnInit } from '@angular/core';
+import {
+  Component,
+  ChangeDetectionStrategy,
+  signal,
+  computed,
+  inject,
+  OnInit,
+} from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { HouseholdService, type HouseholdListItem } from '../../services/household.service';
 import { HouseholdStore } from '../../stores/household.store';
@@ -35,6 +42,14 @@ export class ManageHouseholds implements OnInit {
   // Data
   protected readonly households = this.householdStore.households;
   protected readonly activeHouseholdId = this.householdStore.activeHouseholdId;
+
+  /** The desktop band's sub-line (rule 2): «1 husstand», «3 husstander» */
+  protected readonly householdCount = computed(() => {
+    const n = this.households().length;
+    return n === 1
+      ? $localize`:@@households.countOne:1 husstand`
+      : $localize`:@@households.countMany:${n}:count: husstander`;
+  });
 
   // Modal states
   protected readonly showCreateModal = signal(false);

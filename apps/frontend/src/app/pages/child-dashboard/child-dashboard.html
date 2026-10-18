@@ -26,7 +26,10 @@
 
   <!-- Loading State -->
   @if (isLoading()) {
-    <div class="state" role="status" aria-live="polite">
+    <!-- Rule 7: from 1024 px grey placeholder rows in the shape of the chores; the phone keeps
+         its spinner -->
+    <app-loading-rows i18n-label="@@childDashboard.loading" label="Laster oppgavene dine..." />
+    <div class="state state--phone" role="status" aria-live="polite">
       <span class="spinner" aria-hidden="true"></span>
       <p i18n="@@childDashboard.loading">Laster oppgavene dine...</p>
     </div>

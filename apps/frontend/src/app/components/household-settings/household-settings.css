@@ -292,3 +292,44 @@
   outline: 3px solid var(--ink);
   outline-offset: 2px;
 }
+
+/* ===== DESKTOP, 1024 px AND WIDER (guide: Desktop: rules for all pages) =====
+   The header is the yellow band (rule 2) with the member count as its sub-line, and the
+   content one 428 px column (rules 1 and 4). The cards inside cards are ST-1345 F12, a
+   drawing of its own, not this step. */
+@media (min-width: 1024px) {
+  .household-settings {
+    max-width: none;
+    padding: 0 0 32px;
+  }
+
+  .household-settings__header {
+    margin-bottom: 0;
+  }
+
+  /* Rule 3: the one title style (the global .desk-band h1 loses to this component's h1) */
+  .household-settings__header h1 {
+    margin: 0;
+    font-size: 26px;
+    font-weight: 800;
+    color: var(--ink);
+  }
+
+  .household-settings__subtitle {
+    display: none;
+  }
+
+  .household-settings__content {
+    padding-top: 20px;
+  }
+
+  /* Rule 5: the main button 49 px, 13 px corners, 16.5 px label, as wide as its column */
+  .btn-primary {
+    width: 100%;
+    height: 49px;
+    padding: 0 16px;
+    border-radius: var(--r-button);
+    font-size: 16.5px;
+    font-weight: 600;
+  }
+}

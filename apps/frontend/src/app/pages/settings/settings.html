@@ -59,188 +59,195 @@
       </div>
     }
 
-    <!-- Profile: the card, then «Lagre endringer» right under the card it saves -->
-    <section class="settings-section" aria-labelledby="profile-title">
-      <h2 id="profile-title" class="section-label" i18n="@@settings.profileTitle">Profil</h2>
+    <!-- Rule 4: from 1024 px profile and household on the left, the rest on the right; on the
+         phone the two columns are one list in the same order -->
+    <div class="settings-cols">
+      <div class="settings-col">
+        <!-- Profile: the card, then «Lagre endringer» right under the card it saves -->
+        <section class="settings-section" aria-labelledby="profile-title">
+          <h2 id="profile-title" class="section-label" i18n="@@settings.profileTitle">Profil</h2>
 
-      <form class="settings-form" (submit)="saveProfile(); $event.preventDefault()">
-        <div class="settings-card profile-card">
-          <div class="form-group">
-            <label for="firstName" i18n="@@settings.firstNameLabel">Fornavn</label>
-            <input
-              type="text"
-              id="firstName"
-              name="firstName"
-              class="field"
-              [(ngModel)]="firstName"
-              maxlength="100"
-              autocomplete="given-name"
-            />
-          </div>
+          <form class="settings-form" (submit)="saveProfile(); $event.preventDefault()">
+            <div class="settings-card profile-card">
+              <div class="form-group">
+                <label for="firstName" i18n="@@settings.firstNameLabel">Fornavn</label>
+                <input
+                  type="text"
+                  id="firstName"
+                  name="firstName"
+                  class="field"
+                  [(ngModel)]="firstName"
+                  maxlength="100"
+                  autocomplete="given-name"
+                />
+              </div>
 
-          <div class="form-group">
-            <label for="lastName" i18n="@@settings.lastNameLabel">Etternavn</label>
-            <input
-              type="text"
-              id="lastName"
-              name="lastName"
-              class="field"
-              [(ngModel)]="lastName"
-              maxlength="100"
-              autocomplete="family-name"
-            />
-          </div>
+              <div class="form-group">
+                <label for="lastName" i18n="@@settings.lastNameLabel">Etternavn</label>
+                <input
+                  type="text"
+                  id="lastName"
+                  name="lastName"
+                  class="field"
+                  [(ngModel)]="lastName"
+                  maxlength="100"
+                  autocomplete="family-name"
+                />
+              </div>
 
-          <div class="form-group">
-            <label for="email" i18n="@@settings.emailLabel">E-postadresse</label>
-            <input
-              type="email"
-              id="email"
-              name="email"
-              class="field"
-              [(ngModel)]="email"
-              autocomplete="email"
-              aria-describedby="profile-hint"
-              required
-            />
-            <small id="profile-hint" class="form-hint" i18n="@@settings.profileHint"
-              >Slik vises du for de andre i husstanden.</small
-            >
-          </div>
+              <div class="form-group">
+                <label for="email" i18n="@@settings.emailLabel">E-postadresse</label>
+                <input
+                  type="email"
+                  id="email"
+                  name="email"
+                  class="field"
+                  [(ngModel)]="email"
+                  autocomplete="email"
+                  aria-describedby="profile-hint"
+                  required
+                />
+                <small id="profile-hint" class="form-hint" i18n="@@settings.profileHint"
+                  >Slik vises du for de andre i husstanden.</small
+                >
+              </div>
 
-          <button type="button" class="btn-link" (click)="togglePasswordSection()">
-            @if (showPasswordSection()) {
-              <span i18n="@@settings.hidePasswordSection">- Skjul passordseksjon</span>
-            } @else {
-              <span i18n="@@settings.changePassword">+ Endre passord</span>
-            }
-          </button>
+              <button type="button" class="btn-link" (click)="togglePasswordSection()">
+                @if (showPasswordSection()) {
+                  <span i18n="@@settings.hidePasswordSection">- Skjul passordseksjon</span>
+                } @else {
+                  <span i18n="@@settings.changePassword">+ Endre passord</span>
+                }
+              </button>
 
-          @if (showPasswordSection()) {
-            <div class="form-group">
-              <label for="newPassword" i18n="@@settings.newPasswordLabel">Nytt passord</label>
-              <input
-                type="password"
-                id="newPassword"
-                name="newPassword"
-                class="field"
-                [(ngModel)]="newPassword"
-                minlength="8"
-                autocomplete="new-password"
-                aria-describedby="password-hint"
-              />
-              <small id="password-hint" class="form-hint" i18n="@@settings.passwordHint">
-                Minimum 8 tegn, må inneholde stor bokstav, liten bokstav og tall
-              </small>
+              @if (showPasswordSection()) {
+                <div class="form-group">
+                  <label for="newPassword" i18n="@@settings.newPasswordLabel">Nytt passord</label>
+                  <input
+                    type="password"
+                    id="newPassword"
+                    name="newPassword"
+                    class="field"
+                    [(ngModel)]="newPassword"
+                    minlength="8"
+                    autocomplete="new-password"
+                    aria-describedby="password-hint"
+                  />
+                  <small id="password-hint" class="form-hint" i18n="@@settings.passwordHint">
+                    Minimum 8 tegn, må inneholde stor bokstav, liten bokstav og tall
+                  </small>
+                </div>
+
+                <div class="form-group">
+                  <label for="confirmPassword" i18n="@@settings.confirmPasswordLabel"
+                    >Bekreft nytt passord</label
+                  >
+                  <input
+                    type="password"
+                    id="confirmPassword"
+                    name="confirmPassword"
+                    class="field"
+                    [(ngModel)]="confirmPassword"
+                    autocomplete="new-password"
+                  />
+                </div>
+              }
             </div>
 
-            <div class="form-group">
-              <label for="confirmPassword" i18n="@@settings.confirmPasswordLabel"
-                >Bekreft nytt passord</label
-              >
-              <input
-                type="password"
-                id="confirmPassword"
-                name="confirmPassword"
-                class="field"
-                [(ngModel)]="confirmPassword"
-                autocomplete="new-password"
-              />
+            <button type="submit" class="poeng-primary save-button" [disabled]="saving()">
+              @if (saving()) {
+                <span i18n="@@settings.saving">Lagrer...</span>
+              } @else {
+                <span i18n="@@settings.saveChanges">Lagre endringer</span>
+              }
+            </button>
+          </form>
+        </section>
+
+        <!-- Household: rows on a card. The current household's row opens the household list. -->
+        @if (activeHousehold()) {
+          <section class="settings-section" aria-labelledby="household-title">
+            <h2 id="household-title" class="section-label" i18n="@@settings.householdTitle">
+              Husstand
+            </h2>
+
+            <div class="settings-card">
+              <a routerLink="/households" class="settings-row">
+                <span class="row-title" i18n="@@settings.currentHouseholdLabel"
+                  >Nåværende husstand</span
+                >
+                <span class="row-value">{{ activeHousehold()?.name }}</span>
+                <svg class="row-chevron" viewBox="0 0 8 14" aria-hidden="true">
+                  <path d="m1 1 6 6-6 6" />
+                </svg>
+              </a>
+
+              <a routerLink="/household/settings" class="settings-row">
+                <span class="row-title" i18n="@@settings.householdSettingsLink"
+                  >Husstandsinnstillinger</span
+                >
+                <svg class="row-chevron" viewBox="0 0 8 14" aria-hidden="true">
+                  <path d="m1 1 6 6-6 6" />
+                </svg>
+              </a>
+
+              <a routerLink="/invitations" class="settings-row">
+                <span class="row-title" i18n="@@settings.invitationsLink">Invitasjoner</span>
+                @if (pendingInvitationsCount() > 0) {
+                  <span class="badge">{{ pendingInvitationsCount() }}</span>
+                }
+                <svg class="row-chevron" viewBox="0 0 8 14" aria-hidden="true">
+                  <path d="m1 1 6 6-6 6" />
+                </svg>
+              </a>
             </div>
-          }
-        </div>
+          </section>
+        }
+      </div>
+      <div class="settings-col">
+        <!-- Notifications: the existing card, unchanged -->
+        <section class="settings-section">
+          <div class="settings-card notifications-card">
+            <app-notification-settings audience="parent" />
+          </div>
+        </section>
 
-        <button type="submit" class="poeng-primary save-button" [disabled]="saving()">
-          @if (saving()) {
-            <span i18n="@@settings.saving">Lagrer...</span>
-          } @else {
-            <span i18n="@@settings.saveChanges">Lagre endringer</span>
-          }
-        </button>
-      </form>
-    </section>
+        <!-- Account -->
+        <section class="settings-section" aria-labelledby="account-title">
+          <h2 id="account-title" class="section-label" i18n="@@settings.accountTitle">Konto</h2>
 
-    <!-- Household: rows on a card. The current household's row opens the household list. -->
-    @if (activeHousehold()) {
-      <section class="settings-section" aria-labelledby="household-title">
-        <h2 id="household-title" class="section-label" i18n="@@settings.householdTitle">
-          Husstand
-        </h2>
-
-        <div class="settings-card">
-          <a routerLink="/households" class="settings-row">
-            <span class="row-title" i18n="@@settings.currentHouseholdLabel"
-              >Nåværende husstand</span
+          <div class="settings-card">
+            <div class="settings-row">
+              <span class="row-title" i18n="@@settings.memberSinceLabel">Medlem siden</span>
+              <span class="row-value">{{ profile()?.createdAt | date: 'mediumDate' }}</span>
+            </div>
+            <button
+              type="button"
+              class="settings-row row-danger"
+              (click)="logout()"
+              i18n="@@settings.logOutButton"
             >
-            <span class="row-value">{{ activeHousehold()?.name }}</span>
-            <svg class="row-chevron" viewBox="0 0 8 14" aria-hidden="true">
-              <path d="m1 1 6 6-6 6" />
-            </svg>
-          </a>
+              Logg ut
+            </button>
+          </div>
+        </section>
 
-          <a routerLink="/household/settings" class="settings-row">
-            <span class="row-title" i18n="@@settings.householdSettingsLink"
-              >Husstandsinnstillinger</span
-            >
-            <svg class="row-chevron" viewBox="0 0 8 14" aria-hidden="true">
-              <path d="m1 1 6 6-6 6" />
-            </svg>
-          </a>
+        <!-- About -->
+        <section class="settings-section" aria-labelledby="about-title">
+          <h2 id="about-title" class="section-label" i18n="@@settings.aboutTitle">Om</h2>
 
-          <a routerLink="/invitations" class="settings-row">
-            <span class="row-title" i18n="@@settings.invitationsLink">Invitasjoner</span>
-            @if (pendingInvitationsCount() > 0) {
-              <span class="badge">{{ pendingInvitationsCount() }}</span>
-            }
-            <svg class="row-chevron" viewBox="0 0 8 14" aria-hidden="true">
-              <path d="m1 1 6 6-6 6" />
-            </svg>
-          </a>
-        </div>
-      </section>
-    }
-
-    <!-- Notifications: the existing card, unchanged -->
-    <section class="settings-section">
-      <div class="settings-card notifications-card">
-        <app-notification-settings audience="parent" />
+          <div class="settings-card">
+            <div class="settings-row">
+              <span class="row-title" i18n="@@settings.versionLabel">Versjon</span>
+              <span class="row-value">{{ appVersion }}</span>
+            </div>
+            <div class="settings-row">
+              <span class="row-title" i18n="@@settings.buildLabel">Bygg</span>
+              <span class="row-value">{{ buildTime | date: 'medium' }}</span>
+            </div>
+          </div>
+        </section>
       </div>
-    </section>
-
-    <!-- Account -->
-    <section class="settings-section" aria-labelledby="account-title">
-      <h2 id="account-title" class="section-label" i18n="@@settings.accountTitle">Konto</h2>
-
-      <div class="settings-card">
-        <div class="settings-row">
-          <span class="row-title" i18n="@@settings.memberSinceLabel">Medlem siden</span>
-          <span class="row-value">{{ profile()?.createdAt | date: 'mediumDate' }}</span>
-        </div>
-        <button
-          type="button"
-          class="settings-row row-danger"
-          (click)="logout()"
-          i18n="@@settings.logOutButton"
-        >
-          Logg ut
-        </button>
-      </div>
-    </section>
-
-    <!-- About -->
-    <section class="settings-section" aria-labelledby="about-title">
-      <h2 id="about-title" class="section-label" i18n="@@settings.aboutTitle">Om</h2>
-
-      <div class="settings-card">
-        <div class="settings-row">
-          <span class="row-title" i18n="@@settings.versionLabel">Versjon</span>
-          <span class="row-value">{{ appVersion }}</span>
-        </div>
-        <div class="settings-row">
-          <span class="row-title" i18n="@@settings.buildLabel">Bygg</span>
-          <span class="row-value">{{ buildTime | date: 'medium' }}</span>
-        </div>
-      </div>
-    </section>
+    </div>
   </app-page>
 }

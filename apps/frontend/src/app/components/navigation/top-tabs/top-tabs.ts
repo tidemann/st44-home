@@ -32,4 +32,10 @@ export class TopTabs<T extends string = string> {
 
   /** Emitted with the tab's id when a tab is pressed */
   navigate = output<T>();
+
+  /**
+   * The sign-in pages without a menu (guide: Desktop: rules for all pages, choice 2): the same
+   * 80 px row with the mark and the wordmark, no tabs and no initial badge.
+   */
+  bare = input<boolean>(false);
 }

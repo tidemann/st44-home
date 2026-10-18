@@ -154,3 +154,23 @@ label.required::after {
 .btn-secondary:focus {
   outline: var(--focus-ring);
 }
+
+/* Desktop rule 5 (guide: Desktop: rules for all pages): «Send invitasjon» is the main
+   button, the link copy button a row button. Under 1024 px nothing changes. */
+@media (min-width: 1024px) {
+  .btn-primary {
+    width: 100%;
+    height: 49px;
+    padding: 0 16px;
+    border-radius: var(--r-button);
+    font-size: 16.5px;
+    font-weight: 600;
+    justify-content: center;
+  }
+
+  .btn-secondary {
+    height: 36px;
+    padding: 0 14px;
+    border-radius: var(--r-row-action);
+  }
+}

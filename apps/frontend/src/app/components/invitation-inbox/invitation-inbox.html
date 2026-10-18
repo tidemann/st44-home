@@ -4,6 +4,13 @@
   i18n-aria-label="@@invitationInbox.region"
   aria-label="Innboks for invitasjoner"
 >
+  <!-- From 1024 px the page title and its count in the yellow band (guide: Desktop: rules for
+       all pages, rule 2; it also gives the page its h1). The phone keeps its own header -->
+  <header class="inbox-band desk-band">
+    <h1 i18n="@@invitationInbox.pageTitle">Invitasjoner</h1>
+    <p class="desk-band-sub">{{ countLine() }}</p>
+  </header>
+
   <div class="header">
     <h2 id="inbox-title">
       <ng-container i18n="@@invitationInbox.title">Invitasjonsinnboks</ng-container>

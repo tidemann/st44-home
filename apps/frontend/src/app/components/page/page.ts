@@ -102,6 +102,20 @@ export class PageComponent {
   split = input<boolean>(false);
 
   /**
+   * Rule 4 (guide: "Desktop: rules for all pages"): from 1024 px the content is one 428 px
+   * column at the 880 px page's left edge, for a form or a short list. Under 1024 px nothing
+   * changes.
+   */
+  column = input<boolean>(false);
+
+  /**
+   * Rule 2 for a page that has no band on the phone: from 1024 px the title row becomes the
+   * yellow band with the title and `deskSubtitle` in it. Under 1024 px nothing changes.
+   */
+  deskBand = input<boolean>(false);
+  deskSubtitle = input<string>();
+
+  /**
    * The household name as the title (ST-1065): with 2 or more households the title is a
    * button with a caret right after the name, and a tap emits `titleMenuOpen`.
    */

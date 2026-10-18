@@ -59,6 +59,41 @@
   }
 }
 
+/* Rule 4 (guide: Desktop: rules for all pages): two independent 428 px stacks, 24 px apart.
+   Under 1024 px the column boxes are not there and the list reads as one */
+.col-a,
+.col-b {
+  display: contents;
+}
+
+@media (min-width: 1024px) {
+  .cols {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-rows: auto 1fr;
+    column-gap: 24px;
+    align-items: start;
+  }
+
+  .cols > .col-a,
+  .cols > .col-b {
+    display: block;
+    min-width: 0;
+  }
+
+  .cols > .col-a {
+    grid-area: 1 / 1;
+  }
+
+  .cols > .col-b {
+    grid-area: 1 / 2 / 3;
+  }
+
+  .cols > .new-slot {
+    grid-area: 2 / 1;
+  }
+}
+
 /* Select mode, the band (ST-1343, 03–06): the sub-line with «Velg alle» on its right,
    20 px of yellow under the underline, 21 under the sub-line (measured in 03/05). With no
    badge in the title row the line sits 4 px closer to the title: the band is 83 px, not 90 */

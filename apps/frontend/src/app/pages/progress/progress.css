@@ -277,3 +277,55 @@
     width: 109px;
   }
 }
+
+/* Rule 4 (guide: Desktop: rules for all pages): Fremgang has groups, so from 1024 px the
+   leaderboard and the badges are two independent 428 px stacks, 24 px apart */
+.cols {
+  display: contents;
+}
+
+@media (min-width: 1024px) {
+  .cols {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    column-gap: 24px;
+    align-items: start;
+  }
+
+  /* Both stacks start at the same y */
+  .cols > .section + .section {
+    margin-top: 4px;
+  }
+
+  .cols > .section {
+    min-width: 0;
+  }
+}
+
+/* Rule 7 (guide: Desktop: rules for all pages): the error is a white card inside the 880 px
+   page, never a stripe across the window; its button is the main button (rule 5) */
+@media (min-width: 1024px) {
+  .error-container {
+    box-sizing: border-box;
+    max-width: 880px;
+    margin: 20px auto 0;
+    padding: 18px 15px;
+    border-radius: var(--r-card);
+    text-align: left;
+  }
+
+  .error-message {
+    margin: 0 0 14px;
+    font-size: 15px;
+    font-weight: 500;
+    line-height: 1.4;
+  }
+
+  .retry-button {
+    width: 428px;
+    height: 49px;
+    min-height: 0;
+    padding: 0 16px;
+    font-size: 16.5px;
+  }
+}

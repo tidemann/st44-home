@@ -16,6 +16,7 @@ import { RewardService } from '../../services/reward.service';
 import { HouseholdService } from '../../services/household.service';
 import { ConfirmDialogService } from '../../services/confirm-dialog.service';
 import { PageComponent } from '../../components/page/page';
+import { LoadingRows } from '../../components/poeng/loading-rows/loading-rows';
 
 /**
  * Rewards Management Component (Parent/Admin, sketch 06)
@@ -28,7 +29,7 @@ import { PageComponent } from '../../components/page/page';
  */
 @Component({
   selector: 'app-rewards-management',
-  imports: [DatePipe, FormsModule, PageComponent],
+  imports: [DatePipe, FormsModule, PageComponent, LoadingRows],
   templateUrl: './rewards-management.html',
   styleUrls: ['./rewards-management.css'],
   changeDetection: ChangeDetectionStrategy.OnPush,

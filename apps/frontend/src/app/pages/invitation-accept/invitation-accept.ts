@@ -9,6 +9,7 @@ import {
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CommonModule } from '@angular/common';
+import { TopTabs } from '../../components/navigation/top-tabs/top-tabs';
 import { Router, ActivatedRoute, RouterLink } from '@angular/router';
 import { timer } from 'rxjs';
 import { InvitationService, AcceptInvitationResponse } from '../../services/invitation.service';
@@ -19,7 +20,7 @@ const REDIRECT_DELAY_MS = 2000;
 
 @Component({
   selector: 'app-invitation-accept',
-  imports: [CommonModule, RouterLink],
+  imports: [CommonModule, RouterLink, TopTabs],
   templateUrl: './invitation-accept.html',
   styleUrl: './invitation-accept.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -52,7 +53,9 @@ export class InvitationAcceptComponent implements OnInit {
   ngOnInit(): void {
     const token = this.route.snapshot.paramMap.get('token');
     if (!token) {
-      this.errorMessage.set('Invalid invitation link. No token provided.');
+      this.errorMessage.set(
+        $localize`:@@invitationAccept.invalidLink:Lenken til invitasjonen er ugyldig.`,
+      );
       return;
     }
     this.token.set(token);
@@ -70,7 +73,9 @@ export class InvitationAcceptComponent implements OnInit {
         await this.invitationService.acceptInvitation(token);
 
       this.householdName.set(response.household.name);
-      this.successMessage.set(`Successfully joined "${response.household.name}"!`);
+      this.successMessage.set(
+        $localize`:@@invitationAccept.joined:Du er nå med i «${response.household.name}:household:».`,
+      );
 
       // Redirect to home after a brief delay (with proper cleanup)
       this.redirectToHomeAfterDelay();
@@ -99,7 +104,7 @@ export class InvitationAcceptComponent implements OnInit {
 
     try {
       await this.invitationService.declineInvitation(token);
-      this.successMessage.set('Invitation declined.');
+      this.successMessage.set($localize`:@@invitationAccept.declined:Invitasjonen er avslått.`);
 
       // Redirect to home after a brief delay (with proper cleanup)
       this.redirectToHomeAfterDelay();
@@ -118,15 +123,27 @@ export class InvitationAcceptComponent implements OnInit {
     };
 
     if (err.status === 404) {
-      this.errorMessage.set('Invitation not found or has already been processed.');
+      this.errorMessage.set(
+        $localize`:@@invitationAccept.notFound:Fant ikke invitasjonen, eller den er allerede brukt.`,
+      );
     } else if (err.status === 403) {
-      this.errorMessage.set('This invitation is not for your email address.');
+      this.errorMessage.set(
+        $localize`:@@invitationAccept.wrongEmail:Denne invitasjonen er ikke til din e-postadresse.`,
+      );
     } else if (err.status === 400) {
-      this.errorMessage.set(err.error?.message || 'Invitation has expired or is no longer valid.');
+      this.errorMessage.set(
+        err.error?.message ||
+          $localize`:@@invitationAccept.expired:Invitasjonen har utløpt eller gjelder ikke lenger.`,
+      );
     } else if (err.status === 409) {
-      this.errorMessage.set('You are already a member of this household.');
+      this.errorMessage.set(
+        $localize`:@@invitationAccept.alreadyMember:Du er allerede med i denne husstanden.`,
+      );
     } else {
-      this.errorMessage.set(err.error?.message || 'Something went wrong. Please try again.');
+      this.errorMessage.set(
+        err.error?.message ||
+          $localize`:@@invitationAccept.genericError:Noe gikk galt. Prøv igjen.`,
+      );
     }
   }
 

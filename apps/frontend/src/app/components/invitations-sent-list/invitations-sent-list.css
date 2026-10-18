@@ -215,3 +215,15 @@
     margin-top: 0.5rem;
   }
 }
+
+/* Desktop rule 5 (guide: Desktop: rules for all pages): «Oppdater», «Send på nytt» and
+   «Avbryt» are row buttons. Under 1024 px nothing changes. */
+@media (min-width: 1024px) {
+  .btn,
+  .btn-sm {
+    height: 36px;
+    padding: 0 14px;
+    border-radius: var(--r-row-action);
+    font-size: 15px;
+  }
+}

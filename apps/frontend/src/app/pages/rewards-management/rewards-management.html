@@ -42,7 +42,11 @@
       }
 
       @if (redemptionsLoading()) {
-        <div class="state" role="status" i18n="@@rewards.loadingRequests">Henter ønsker…</div>
+        <!-- Rule 7: from 1024 px grey placeholder rows; the phone keeps its sentence -->
+        <app-loading-rows i18n-label="@@rewards.loadingRequests" label="Henter ønsker…" />
+        <div class="state state--phone" role="status" i18n="@@rewards.loadingRequests">
+          Henter ønsker…
+        </div>
       } @else if (waiting().length === 0 && toGive().length === 0 && history().length === 0) {
         <div class="empty-state">
           <p i18n="@@rewards.noRequests">Ingen ønsker ennå.</p>
@@ -53,7 +57,7 @@
       } @else {
         <!-- Waiting, and fresh answers that can be undone -->
         @if (waiting().length > 0) {
-          <section aria-labelledby="waiting-heading">
+          <section class="req-waiting" aria-labelledby="waiting-heading">
             <h2 id="waiting-heading" i18n="@@rewards.waitingHeading">Venter på svar</h2>
             <div class="request-list">
               @for (redemption of waiting(); track redemption.id) {
@@ -168,7 +172,7 @@
 
         <!-- Said yes, not given yet -->
         @if (toGive().length > 0) {
-          <section aria-labelledby="give-heading">
+          <section class="req-give" aria-labelledby="give-heading">
             <h2 id="give-heading" i18n="@@rewards.toGiveHeading">Skal gis</h2>
             <div class="request-list">
               @for (redemption of toGive(); track redemption.id) {
@@ -195,7 +199,7 @@
 
         <!-- Done -->
         @if (history().length > 0) {
-          <section aria-labelledby="history-heading">
+          <section class="req-history" aria-labelledby="history-heading">
             <h2 id="history-heading" i18n="@@rewards.historyHeading">Tidligere</h2>
             <ul class="history-list">
               @for (redemption of history(); track redemption.id) {

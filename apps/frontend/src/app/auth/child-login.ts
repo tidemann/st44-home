@@ -2,6 +2,7 @@ import { Component, signal, inject, ChangeDetectionStrategy } from '@angular/cor
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormGroup, FormControl, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
+import { TopTabs } from '../components/navigation/top-tabs/top-tabs';
 import { AuthService } from '../services/auth.service';
 import { lastValueFrom } from 'rxjs';
 
@@ -9,7 +10,7 @@ import { lastValueFrom } from 'rxjs';
   selector: 'app-child-login',
   templateUrl: './child-login.html',
   styleUrl: './child-login.css',
-  imports: [CommonModule, ReactiveFormsModule, RouterLink],
+  imports: [CommonModule, ReactiveFormsModule, RouterLink, TopTabs],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ChildLoginComponent {
@@ -38,7 +39,13 @@ export class ChildLoginComponent {
   }
 
   protected async onSubmit(): Promise<void> {
-    if (this.loginForm.invalid) return;
+    if (this.isLoading()) return;
+
+    // Validate on press: the button is never a greyed-out dead end (guide, rule 6)
+    if (this.loginForm.invalid) {
+      this.loginForm.markAllAsTouched();
+      return;
+    }
 
     this.isLoading.set(true);
     this.errorMessage.set(null);

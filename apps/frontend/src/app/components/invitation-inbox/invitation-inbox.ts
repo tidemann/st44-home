@@ -161,6 +161,14 @@ export class InvitationInboxComponent implements OnInit {
   /**
    * Get count of pending invitations (for badge display)
    */
+  /** The desktop band's sub-line: «1 invitasjon», «2 invitasjoner» */
+  protected countLine(): string {
+    const n = this.invitations().length;
+    return n === 1
+      ? $localize`:@@invitationInbox.countOne:1 invitasjon`
+      : $localize`:@@invitationInbox.countMany:${n}:count: invitasjoner`;
+  }
+
   get pendingCount(): number {
     return this.invitations().length;
   }

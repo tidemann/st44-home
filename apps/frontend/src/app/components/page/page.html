@@ -1,9 +1,19 @@
-<div class="page" [class]="containerClass()" [class.page--split]="split()">
+<div
+  class="page"
+  [class]="containerClass()"
+  [class.page--split]="split()"
+  [class.page--column]="column()"
+>
   <!-- Title row: screen name left, the person's initial badge right (guide: Initial badge).
        With [band], the title area is the yellow top (guide: A — the yellow top).
        With [split], from 1024 px the title and the band's content share one line (desktop A). -->
   @if (showHeader()) {
-    <header class="page-header" [class]="headerClass()" [class.page-header--band]="band()">
+    <header
+      class="page-header"
+      [class]="headerClass()"
+      [class.page-header--band]="band()"
+      [class.page-header--deskband]="deskBand()"
+    >
       <div class="page-header-inner">
         <div class="page-header-content">
           <div class="page-header-text">
@@ -41,6 +51,9 @@
               </h1>
             } @else {
               <h1 class="page-title">{{ title() }}</h1>
+              @if (deskBand() && deskSubtitle()) {
+                <p class="page-subtitle page-subtitle--desk">{{ deskSubtitle() }}</p>
+              }
             }
           </div>
           <div class="page-header-actions">

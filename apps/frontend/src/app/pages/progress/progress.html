@@ -48,70 +48,73 @@
       </ul>
     </div>
 
-    <!-- Ukens ledere: rank, name with the week's chores, points -->
-    <section class="section">
-      <app-group-label
-        i18n-label="@@progress.leaderboardTitle"
-        label="Ukens ledere"
-        [right]="weekLabel"
-      />
+    <!-- Rule 4: from 1024 px the leaderboard left, the badges right -->
+    <div class="cols">
+      <!-- Ukens ledere: rank, name with the week's chores, points -->
+      <section class="section">
+        <app-group-label
+          i18n-label="@@progress.leaderboardTitle"
+          label="Ukens ledere"
+          [right]="weekLabel"
+        />
 
-      @if (hasLeaderboard()) {
-        <ol class="rows">
-          @for (entry of leaderboard(); track entry.userId) {
-            <li class="leader">
-              <span class="leader-rank">{{ entry.rank }}</span>
-              <span class="leader-text">
-                <span class="leader-name">{{ entry.name }}</span>
-                <span class="leader-sub" i18n="@@progress.tasksCompleted"
-                  >{{ entry.tasksCompleted }} oppgaver fullført</span
-                >
-              </span>
-              <span class="leader-points" i18n="@@progress.points">{{ entry.points }} p</span>
+        @if (hasLeaderboard()) {
+          <ol class="rows">
+            @for (entry of leaderboard(); track entry.userId) {
+              <li class="leader">
+                <span class="leader-rank">{{ entry.rank }}</span>
+                <span class="leader-text">
+                  <span class="leader-name">{{ entry.name }}</span>
+                  <span class="leader-sub" i18n="@@progress.tasksCompleted"
+                    >{{ entry.tasksCompleted }} oppgaver fullført</span
+                  >
+                </span>
+                <span class="leader-points" i18n="@@progress.points">{{ entry.points }} p</span>
+              </li>
+            }
+          </ol>
+        } @else {
+          <p class="empty" role="status" i18n="@@progress.noLeaderboardData">
+            Ingen toppliste-data ennå. Fullfør noen oppgaver for å komme i gang!
+          </p>
+        }
+      </section>
+
+      <!-- Prestasjoner: one card each, the meter is ten pills -->
+      <section class="section">
+        <app-group-label i18n-label="@@progress.achievementsTitle" label="Prestasjoner" />
+
+        <ul class="rows">
+          @for (achievement of achievements(); track achievement.id) {
+            <li class="achievement" [attr.aria-label]="achievementLabel(achievement)">
+              <div class="achievement-head">
+                <span class="achievement-icon" aria-hidden="true">
+                  <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                    <path
+                      d="M10 2.2l2.4 4.9 5.4.8-3.9 3.8.9 5.4L10 14.6l-4.8 2.5.9-5.4-3.9-3.8 5.4-.8z"
+                      stroke="currentColor"
+                      stroke-width="1.6"
+                      stroke-linejoin="round"
+                    />
+                  </svg>
+                </span>
+                <span class="achievement-text">
+                  <span class="achievement-name">{{ achievement.name }}</span>
+                  <span class="achievement-desc">{{ achievement.description }}</span>
+                </span>
+              </div>
+              <div class="achievement-meter">
+                <span class="pills" aria-hidden="true">
+                  @for (pill of pillSlots; track pill) {
+                    <span class="pill" [class.on]="pill < filledPills(achievement)"></span>
+                  }
+                </span>
+                <span class="achievement-count">{{ achievementCount(achievement) }}</span>
+              </div>
             </li>
           }
-        </ol>
-      } @else {
-        <p class="empty" role="status" i18n="@@progress.noLeaderboardData">
-          Ingen toppliste-data ennå. Fullfør noen oppgaver for å komme i gang!
-        </p>
-      }
-    </section>
-
-    <!-- Prestasjoner: one card each, the meter is ten pills -->
-    <section class="section">
-      <app-group-label i18n-label="@@progress.achievementsTitle" label="Prestasjoner" />
-
-      <ul class="rows">
-        @for (achievement of achievements(); track achievement.id) {
-          <li class="achievement" [attr.aria-label]="achievementLabel(achievement)">
-            <div class="achievement-head">
-              <span class="achievement-icon" aria-hidden="true">
-                <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-                  <path
-                    d="M10 2.2l2.4 4.9 5.4.8-3.9 3.8.9 5.4L10 14.6l-4.8 2.5.9-5.4-3.9-3.8 5.4-.8z"
-                    stroke="currentColor"
-                    stroke-width="1.6"
-                    stroke-linejoin="round"
-                  />
-                </svg>
-              </span>
-              <span class="achievement-text">
-                <span class="achievement-name">{{ achievement.name }}</span>
-                <span class="achievement-desc">{{ achievement.description }}</span>
-              </span>
-            </div>
-            <div class="achievement-meter">
-              <span class="pills" aria-hidden="true">
-                @for (pill of pillSlots; track pill) {
-                  <span class="pill" [class.on]="pill < filledPills(achievement)"></span>
-                }
-              </span>
-              <span class="achievement-count">{{ achievementCount(achievement) }}</span>
-            </div>
-          </li>
-        }
-      </ul>
-    </section>
+        </ul>
+      </section>
+    </div>
   </app-page>
 }
