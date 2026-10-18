@@ -1,0 +1,1358 @@
+{
+ "ny-oppgave": {
+  "surface": {
+   "x": 506,
+   "y": 48,
+   "w": 428,
+   "h": 804,
+   "right": 506,
+   "bottom": 48
+  },
+  "radius": "13px",
+  "border": "1px rgb(23, 18, 10)",
+  "shadow": "yes",
+  "pad": "15px",
+  "maxWidth": "428px",
+  "veil": "rgba(23, 18, 10, 0.3)",
+  "title": {
+   "text": "Ny oppgave",
+   "size": "27px",
+   "weight": "800",
+   "family": "Bricolage Grotesque"
+  },
+  "scrollH": 802,
+  "nav": {
+   "y": 0,
+   "h": 80
+  },
+  "buttons": [
+   {
+    "t": "",
+    "w": 40,
+    "h": 40,
+    "x": 372,
+    "radius": "13px",
+    "fill": "rgba(0, 0, 0, 0)",
+    "label": "rgb(85, 94, 100)",
+    "font": "15px/500",
+    "disabled": false,
+    "opacity": 1,
+    "contrast": 3.17
+   },
+   {
+    "t": "Avbryt",
+    "w": 194,
+    "h": 49,
+    "x": 16,
+    "radius": "13px",
+    "fill": "rgb(255, 255, 255)",
+    "label": "rgb(21, 24, 28)",
+    "font": "16.5px/600",
+    "disabled": false,
+    "opacity": 1,
+    "contrast": 17.81
+   },
+   {
+    "t": "Legg til",
+    "w": 194,
+    "h": 49,
+    "x": 218,
+    "radius": "13px",
+    "fill": "rgb(246, 185, 59)",
+    "label": "rgb(23, 18, 10)",
+    "font": "16.5px/600",
+    "disabled": true,
+    "opacity": 1,
+    "contrast": 10.57
+   }
+  ],
+  "fields": [
+   {
+    "tag": "INPUT",
+    "type": "text",
+    "h": 49,
+    "w": 396,
+    "radius": "13px",
+    "border": "1px rgb(85, 94, 100)",
+    "appearance": "auto",
+    "caret": null
+   },
+   {
+    "tag": "TEXTAREA",
+    "type": "textarea",
+    "h": 76,
+    "w": 396,
+    "radius": "13px",
+    "border": "1px rgb(85, 94, 100)",
+    "appearance": "auto",
+    "caret": null
+   },
+   {
+    "tag": "INPUT",
+    "type": "number",
+    "h": 49,
+    "w": 120,
+    "radius": "13px",
+    "border": "1px rgb(85, 94, 100)",
+    "appearance": "auto",
+    "caret": null
+   },
+   {
+    "tag": "SELECT",
+    "type": "select-one",
+    "h": 49,
+    "w": 396,
+    "radius": "13px",
+    "border": "1px rgb(85, 94, 100)",
+    "appearance": "none",
+    "caret": "diddit"
+   },
+   {
+    "tag": "INPUT",
+    "type": "checkbox",
+    "h": 18,
+    "w": 18,
+    "radius": "0px",
+    "border": "0px rgb(21, 24, 28)",
+    "appearance": "auto",
+    "caret": null
+   },
+   {
+    "tag": "INPUT",
+    "type": "checkbox",
+    "h": 18,
+    "w": 18,
+    "radius": "0px",
+    "border": "0px rgb(21, 24, 28)",
+    "appearance": "auto",
+    "caret": null
+   },
+   {
+    "tag": "INPUT",
+    "type": "checkbox",
+    "h": 18,
+    "w": 18,
+    "radius": "0px",
+    "border": "0px rgb(21, 24, 28)",
+    "appearance": "auto",
+    "caret": null
+   }
+  ],
+  "natives": 1
+ },
+ "bytt-husstand": {
+  "surface": {
+   "x": 506,
+   "y": 298.3,
+   "w": 428,
+   "h": 303.4,
+   "right": 506,
+   "bottom": 298.3
+  },
+  "radius": "13px",
+  "border": "1px rgb(23, 18, 10)",
+  "shadow": "yes",
+  "pad": "15px",
+  "maxWidth": "none",
+  "veil": "rgba(23, 18, 10, 0.3)",
+  "title": {
+   "text": "Bytt husstand",
+   "size": "26px",
+   "weight": "800",
+   "family": "Bricolage Grotesque"
+  },
+  "scrollH": 301,
+  "nav": {
+   "y": 0,
+   "h": 80
+  },
+  "buttons": [
+   {
+    "t": "Familien Nordmann4 med",
+    "w": 396,
+    "h": 67.5,
+    "x": 16,
+    "radius": "13px",
+    "fill": "rgb(255, 255, 255)",
+    "label": "rgb(21, 24, 28)",
+    "font": "15px/500",
+    "disabled": false,
+    "opacity": 1,
+    "contrast": 17.81
+   },
+   {
+    "t": "Hytta på Geilo4 medlem",
+    "w": 396,
+    "h": 67.5,
+    "x": 16,
+    "radius": "13px",
+    "fill": "rgb(255, 255, 255)",
+    "label": "rgb(21, 24, 28)",
+    "font": "15px/500",
+    "disabled": false,
+    "opacity": 1,
+    "contrast": 17.81
+   },
+   {
+    "t": "Administrer husstander",
+    "w": 396,
+    "h": 49,
+    "x": 16,
+    "radius": "13px",
+    "fill": "rgb(255, 255, 255)",
+    "label": "rgb(23, 18, 10)",
+    "font": "16px/700",
+    "disabled": false,
+    "opacity": 1,
+    "contrast": 18.63
+   }
+  ],
+  "fields": [],
+  "natives": 0
+ },
+ "rediger-oppgave": {
+  "surface": {
+   "x": 506,
+   "y": 143.2,
+   "w": 428,
+   "h": 613.6,
+   "right": 506,
+   "bottom": 143.2
+  },
+  "radius": "13px",
+  "border": "1px rgb(23, 18, 10)",
+  "shadow": "yes",
+  "pad": "15px",
+  "maxWidth": "428px",
+  "veil": "rgba(23, 18, 10, 0.3)",
+  "title": {
+   "text": "Rediger oppgave",
+   "size": "27px",
+   "weight": "800",
+   "family": "Bricolage Grotesque"
+  },
+  "scrollH": 612,
+  "nav": {
+   "y": 0,
+   "h": 80
+  },
+  "buttons": [
+   {
+    "t": "",
+    "w": 40,
+    "h": 40,
+    "x": 372,
+    "radius": "13px",
+    "fill": "rgba(0, 0, 0, 0)",
+    "label": "rgb(85, 94, 100)",
+    "font": "15px/500",
+    "disabled": false,
+    "opacity": 1,
+    "contrast": 3.17
+   },
+   {
+    "t": "Slett",
+    "w": 126.7,
+    "h": 49,
+    "x": 16,
+    "radius": "13px",
+    "fill": "rgb(164, 58, 22)",
+    "label": "rgb(255, 255, 255)",
+    "font": "16.5px/600",
+    "disabled": false,
+    "opacity": 1,
+    "contrast": 6.57
+   },
+   {
+    "t": "Avbryt",
+    "w": 126.7,
+    "h": 49,
+    "x": 150.7,
+    "radius": "13px",
+    "fill": "rgb(255, 255, 255)",
+    "label": "rgb(21, 24, 28)",
+    "font": "16.5px/600",
+    "disabled": false,
+    "opacity": 1,
+    "contrast": 17.81
+   },
+   {
+    "t": "Lagre",
+    "w": 126.7,
+    "h": 49,
+    "x": 285.3,
+    "radius": "13px",
+    "fill": "rgb(246, 185, 59)",
+    "label": "rgb(23, 18, 10)",
+    "font": "16.5px/600",
+    "disabled": true,
+    "opacity": 1,
+    "contrast": 10.57
+   }
+  ],
+  "fields": [
+   {
+    "tag": "INPUT",
+    "type": "text",
+    "h": 49,
+    "w": 396,
+    "radius": "13px",
+    "border": "1px rgb(85, 94, 100)",
+    "appearance": "auto",
+    "caret": null
+   },
+   {
+    "tag": "TEXTAREA",
+    "type": "textarea",
+    "h": 76,
+    "w": 396,
+    "radius": "13px",
+    "border": "1px rgb(85, 94, 100)",
+    "appearance": "auto",
+    "caret": null
+   },
+   {
+    "tag": "INPUT",
+    "type": "number",
+    "h": 49,
+    "w": 120,
+    "radius": "13px",
+    "border": "1px rgb(85, 94, 100)",
+    "appearance": "auto",
+    "caret": null
+   },
+   {
+    "tag": "SELECT",
+    "type": "select-one",
+    "h": 49,
+    "w": 396,
+    "radius": "13px",
+    "border": "1px rgb(85, 94, 100)",
+    "appearance": "none",
+    "caret": "diddit"
+   }
+  ],
+  "natives": 1
+ },
+ "flytt-oppgave": {
+  "surface": {
+   "x": 506,
+   "y": 285.3,
+   "w": 428,
+   "h": 329.4,
+   "right": 506,
+   "bottom": 285.3
+  },
+  "radius": "13px",
+  "border": "1px rgb(23, 18, 10)",
+  "shadow": "yes",
+  "pad": "15px",
+  "maxWidth": "428px",
+  "veil": "rgba(23, 18, 10, 0.3)",
+  "title": {
+   "text": "Tilordne oppgave på nytt",
+   "size": "27px",
+   "weight": "800",
+   "family": "Bricolage Grotesque"
+  },
+  "scrollH": 327,
+  "nav": {
+   "y": 0,
+   "h": 80
+  },
+  "buttons": [
+   {
+    "t": "",
+    "w": 40,
+    "h": 40,
+    "x": 372,
+    "radius": "13px",
+    "fill": "rgba(0, 0, 0, 0)",
+    "label": "rgb(85, 94, 100)",
+    "font": "15px/500",
+    "disabled": false,
+    "opacity": 1,
+    "contrast": 3.17
+   },
+   {
+    "t": "Avbryt",
+    "w": 194,
+    "h": 49,
+    "x": 16,
+    "radius": "13px",
+    "fill": "rgb(255, 255, 255)",
+    "label": "rgb(85, 94, 100)",
+    "font": "16.5px/600",
+    "disabled": false,
+    "opacity": 1,
+    "contrast": 6.62
+   },
+   {
+    "t": "Tilordne på nytt",
+    "w": 194,
+    "h": 49,
+    "x": 218,
+    "radius": "13px",
+    "fill": "rgb(246, 185, 59)",
+    "label": "rgb(23, 18, 10)",
+    "font": "16.5px/600",
+    "disabled": true,
+    "opacity": 1,
+    "contrast": 10.57
+   }
+  ],
+  "fields": [
+   {
+    "tag": "SELECT",
+    "type": "select-one",
+    "h": 49,
+    "w": 396,
+    "radius": "13px",
+    "border": "1px rgb(85, 94, 100)",
+    "appearance": "none",
+    "caret": "diddit"
+   }
+  ],
+  "natives": 1
+ },
+ "slett-oppgaver": {
+  "surface": {
+   "x": 506,
+   "y": 338,
+   "w": 428,
+   "h": 223.9,
+   "right": 506,
+   "bottom": 338
+  },
+  "radius": "13px",
+  "border": "1px rgb(23, 18, 10)",
+  "shadow": "yes",
+  "pad": "15px",
+  "maxWidth": "428px",
+  "veil": "rgba(23, 18, 10, 0.3)",
+  "title": {
+   "text": "Slette 1 oppgave?",
+   "size": "27px",
+   "weight": "800",
+   "family": "Bricolage Grotesque"
+  },
+  "scrollH": 222,
+  "nav": {
+   "y": 0,
+   "h": 80
+  },
+  "buttons": [
+   {
+    "t": "Avbryt",
+    "w": 194,
+    "h": 49,
+    "x": 16,
+    "radius": "13px",
+    "fill": "rgb(255, 255, 255)",
+    "label": "rgb(21, 24, 28)",
+    "font": "16.5px/600",
+    "disabled": false,
+    "opacity": 1,
+    "contrast": 17.81
+   },
+   {
+    "t": "Slett 1",
+    "w": 194,
+    "h": 49,
+    "x": 218,
+    "radius": "13px",
+    "fill": "rgb(164, 58, 22)",
+    "label": "rgb(255, 255, 255)",
+    "font": "16.5px/600",
+    "disabled": false,
+    "opacity": 1,
+    "contrast": 6.57
+   }
+  ],
+  "fields": [],
+  "natives": 0
+ },
+ "legg-til-barn": {
+  "surface": {
+   "x": 506,
+   "y": 211.9,
+   "w": 428,
+   "h": 476.2,
+   "right": 506,
+   "bottom": 211.9
+  },
+  "radius": "13px",
+  "border": "1px rgb(23, 18, 10)",
+  "shadow": "yes",
+  "pad": "15px",
+  "maxWidth": "428px",
+  "veil": "rgba(23, 18, 10, 0.3)",
+  "title": {
+   "text": "Legg til barn",
+   "size": "27px",
+   "weight": "800",
+   "family": "Bricolage Grotesque"
+  },
+  "scrollH": 474,
+  "nav": {
+   "y": 0,
+   "h": 80
+  },
+  "buttons": [
+   {
+    "t": "",
+    "w": 40,
+    "h": 40,
+    "x": 372,
+    "radius": "13px",
+    "fill": "rgba(0, 0, 0, 0)",
+    "label": "rgb(85, 94, 100)",
+    "font": "15px/500",
+    "disabled": false,
+    "opacity": 1,
+    "contrast": 3.17
+   },
+   {
+    "t": "Avbryt",
+    "w": 194,
+    "h": 49,
+    "x": 16,
+    "radius": "13px",
+    "fill": "rgb(255, 255, 255)",
+    "label": "rgb(21, 24, 28)",
+    "font": "16.5px/600",
+    "disabled": false,
+    "opacity": 1,
+    "contrast": 17.81
+   },
+   {
+    "t": "Legg til barn",
+    "w": 194,
+    "h": 49,
+    "x": 218,
+    "radius": "13px",
+    "fill": "rgb(246, 185, 59)",
+    "label": "rgb(23, 18, 10)",
+    "font": "16.5px/600",
+    "disabled": true,
+    "opacity": 1,
+    "contrast": 10.57
+   }
+  ],
+  "fields": [
+   {
+    "tag": "INPUT",
+    "type": "text",
+    "h": 49,
+    "w": 396,
+    "radius": "13px",
+    "border": "1px rgb(85, 94, 100)",
+    "appearance": "auto",
+    "caret": null
+   },
+   {
+    "tag": "INPUT",
+    "type": "number",
+    "h": 49,
+    "w": 396,
+    "radius": "13px",
+    "border": "1px rgb(85, 94, 100)",
+    "appearance": "auto",
+    "caret": null
+   },
+   {
+    "tag": "SELECT",
+    "type": "select-one",
+    "h": 49,
+    "w": 396,
+    "radius": "13px",
+    "border": "1px rgb(85, 94, 100)",
+    "appearance": "none",
+    "caret": "diddit"
+   }
+  ],
+  "natives": 1
+ },
+ "barnedetaljer": {
+  "surface": {
+   "x": 506,
+   "y": 48,
+   "w": 428,
+   "h": 804,
+   "right": 506,
+   "bottom": 48
+  },
+  "radius": "13px",
+  "border": "1px rgb(23, 18, 10)",
+  "shadow": "yes",
+  "pad": "15px",
+  "maxWidth": "428px",
+  "veil": "rgba(23, 18, 10, 0.3)",
+  "title": {
+   "text": "Barnedetaljer",
+   "size": "27px",
+   "weight": "800",
+   "family": "Bricolage Grotesque"
+  },
+  "scrollH": 802,
+  "nav": {
+   "y": 0,
+   "h": 80
+  },
+  "buttons": [
+   {
+    "t": "",
+    "w": 40,
+    "h": 40,
+    "x": 372,
+    "radius": "13px",
+    "fill": "rgba(0, 0, 0, 0)",
+    "label": "rgb(85, 94, 100)",
+    "font": "15px/500",
+    "disabled": false,
+    "opacity": 1,
+    "contrast": 3.17
+   },
+   {
+    "t": "✏️ Rediger",
+    "w": 63.7,
+    "h": 22.4,
+    "x": 112,
+    "radius": "0px",
+    "fill": "rgba(0, 0, 0, 0)",
+    "label": "rgb(23, 18, 10)",
+    "font": "14px/500",
+    "disabled": false,
+    "opacity": 1,
+    "contrast": 1.13
+   },
+   {
+    "t": "Opprett innlogging",
+    "w": 362,
+    "h": 49,
+    "x": 33,
+    "radius": "13px",
+    "fill": "rgb(246, 185, 59)",
+    "label": "rgb(23, 18, 10)",
+    "font": "14px/600",
+    "disabled": false,
+    "opacity": 1,
+    "contrast": 10.57
+   },
+   {
+    "t": "Fjern barn",
+    "w": 93,
+    "h": 49,
+    "x": 33,
+    "radius": "13px",
+    "fill": "rgba(0, 0, 0, 0)",
+    "label": "rgb(164, 58, 22)",
+    "font": "14px/600",
+    "disabled": false,
+    "opacity": 1,
+    "contrast": 3.2
+   },
+   {
+    "t": "Lukk",
+    "w": 396,
+    "h": 49,
+    "x": 16,
+    "radius": "13px",
+    "fill": "rgb(255, 255, 255)",
+    "label": "rgb(21, 24, 28)",
+    "font": "16.5px/600",
+    "disabled": false,
+    "opacity": 1,
+    "contrast": 17.81
+   }
+  ],
+  "fields": [],
+  "natives": 0
+ },
+ "inviter": {
+  "surface": {
+   "x": 506,
+   "y": 179.7,
+   "w": 428,
+   "h": 540.6,
+   "right": 506,
+   "bottom": 179.7
+  },
+  "radius": "13px",
+  "border": "1px rgb(23, 18, 10)",
+  "shadow": "yes",
+  "pad": "15px",
+  "maxWidth": "428px",
+  "veil": "rgba(23, 18, 10, 0.3)",
+  "title": {
+   "text": "Inviter familiemedlem",
+   "size": "27px",
+   "weight": "800",
+   "family": "Bricolage Grotesque"
+  },
+  "scrollH": 539,
+  "nav": {
+   "y": 0,
+   "h": 80
+  },
+  "buttons": [
+   {
+    "t": "",
+    "w": 40,
+    "h": 40,
+    "x": 372,
+    "radius": "13px",
+    "fill": "rgba(0, 0, 0, 0)",
+    "label": "rgb(85, 94, 100)",
+    "font": "15px/500",
+    "disabled": false,
+    "opacity": 1,
+    "contrast": 3.17
+   },
+   {
+    "t": "Avbryt",
+    "w": 194,
+    "h": 49,
+    "x": 16,
+    "radius": "13px",
+    "fill": "rgb(255, 255, 255)",
+    "label": "rgb(21, 24, 28)",
+    "font": "16.5px/600",
+    "disabled": false,
+    "opacity": 1,
+    "contrast": 17.81
+   },
+   {
+    "t": "Send invitasjon",
+    "w": 194,
+    "h": 49,
+    "x": 218,
+    "radius": "13px",
+    "fill": "rgb(246, 185, 59)",
+    "label": "rgb(23, 18, 10)",
+    "font": "16.5px/600",
+    "disabled": true,
+    "opacity": 1,
+    "contrast": 10.57
+   }
+  ],
+  "fields": [
+   {
+    "tag": "INPUT",
+    "type": "email",
+    "h": 49,
+    "w": 396,
+    "radius": "13px",
+    "border": "1px rgb(85, 94, 100)",
+    "appearance": "auto",
+    "caret": null
+   },
+   {
+    "tag": "SELECT",
+    "type": "select-one",
+    "h": 49,
+    "w": 396,
+    "radius": "13px",
+    "border": "1px rgb(85, 94, 100)",
+    "appearance": "none",
+    "caret": "diddit"
+   },
+   {
+    "tag": "TEXTAREA",
+    "type": "textarea",
+    "h": 76,
+    "w": 183,
+    "radius": "13px",
+    "border": "1px rgb(85, 94, 100)",
+    "appearance": "auto",
+    "caret": null
+   }
+  ],
+  "natives": 1
+ },
+ "qr-kode": {
+  "surface": {
+   "x": 506,
+   "y": 382,
+   "w": 428,
+   "h": 136,
+   "right": 506,
+   "bottom": 382
+  },
+  "radius": "13px",
+  "border": "1px rgb(23, 18, 10)",
+  "shadow": "yes",
+  "pad": "15px",
+  "maxWidth": "428px",
+  "veil": "rgba(23, 18, 10, 0.3)",
+  "title": {
+   "text": "QR-kode innlogging",
+   "size": "27px",
+   "weight": "800",
+   "family": "Bricolage Grotesque"
+  },
+  "scrollH": 134,
+  "nav": {
+   "y": 0,
+   "h": 80
+  },
+  "buttons": [
+   {
+    "t": "",
+    "w": 40,
+    "h": 40,
+    "x": 372,
+    "radius": "13px",
+    "fill": "rgba(0, 0, 0, 0)",
+    "label": "rgb(85, 94, 100)",
+    "font": "15px/500",
+    "disabled": false,
+    "opacity": 1,
+    "contrast": 3.17
+   }
+  ],
+  "fields": [],
+  "natives": 0
+ },
+ "slette-belonningen": {
+  "surface": {
+   "x": 506,
+   "y": 367.8,
+   "w": 428,
+   "h": 164.5,
+   "right": 506,
+   "bottom": 367.8
+  },
+  "radius": "13px",
+  "border": "1px rgb(23, 18, 10)",
+  "shadow": "yes",
+  "pad": "15px",
+  "maxWidth": "428px",
+  "veil": "rgba(23, 18, 10, 0.3)",
+  "title": {
+   "text": "Slette belønningen?",
+   "size": "27px",
+   "weight": "800",
+   "family": "Bricolage Grotesque"
+  },
+  "scrollH": 162,
+  "nav": {
+   "y": 0,
+   "h": 80
+  },
+  "buttons": [
+   {
+    "t": "Avbryt",
+    "w": 194,
+    "h": 49,
+    "x": 16,
+    "radius": "13px",
+    "fill": "rgb(255, 255, 255)",
+    "label": "rgb(21, 24, 28)",
+    "font": "16.5px/600",
+    "disabled": false,
+    "opacity": 1,
+    "contrast": 17.81
+   },
+   {
+    "t": "Slett",
+    "w": 194,
+    "h": 49,
+    "x": 218,
+    "radius": "13px",
+    "fill": "rgb(164, 58, 22)",
+    "label": "rgb(255, 255, 255)",
+    "font": "16.5px/600",
+    "disabled": false,
+    "opacity": 1,
+    "contrast": 6.57
+   }
+  ],
+  "fields": [],
+  "natives": 0
+ },
+ "be-om-belonning": {
+  "surface": {
+   "x": 506,
+   "y": 261.7,
+   "w": 428,
+   "h": 376.6,
+   "right": 506,
+   "bottom": 261.7
+  },
+  "radius": "13px",
+  "border": "1px rgb(23, 18, 10)",
+  "shadow": "yes",
+  "pad": "15px",
+  "maxWidth": "428px",
+  "veil": "rgba(23, 18, 10, 0.3)",
+  "title": {
+   "text": "Vil du be om dette?",
+   "size": "27px",
+   "weight": "800",
+   "family": "Bricolage Grotesque"
+  },
+  "scrollH": 375,
+  "nav": {
+   "y": 0,
+   "h": 80
+  },
+  "buttons": [
+   {
+    "t": "",
+    "w": 40,
+    "h": 40,
+    "x": 372,
+    "radius": "13px",
+    "fill": "rgba(0, 0, 0, 0)",
+    "label": "rgb(85, 94, 100)",
+    "font": "15px/500",
+    "disabled": false,
+    "opacity": 1,
+    "contrast": 3.17
+   },
+   {
+    "t": "Avbryt",
+    "w": 194,
+    "h": 49,
+    "x": 16,
+    "radius": "13px",
+    "fill": "rgb(255, 255, 255)",
+    "label": "rgb(21, 24, 28)",
+    "font": "16.5px/600",
+    "disabled": false,
+    "opacity": 1,
+    "contrast": 17.81
+   },
+   {
+    "t": "Be om",
+    "w": 194,
+    "h": 49,
+    "x": 218,
+    "radius": "13px",
+    "fill": "rgb(246, 185, 59)",
+    "label": "rgb(23, 18, 10)",
+    "font": "16.5px/600",
+    "disabled": false,
+    "opacity": 1,
+    "contrast": 10.57
+   }
+  ],
+  "fields": [],
+  "natives": 0
+ },
+ "ny-husholdning": {
+  "surface": {
+   "x": 506,
+   "y": 278.1,
+   "w": 428,
+   "h": 343.8,
+   "right": 506,
+   "bottom": 278.1
+  },
+  "radius": "13px",
+  "border": "1px rgb(23, 18, 10)",
+  "shadow": "yes",
+  "pad": "15px",
+  "maxWidth": "428px",
+  "veil": "rgba(23, 18, 10, 0.3)",
+  "title": {
+   "text": "Ny husholdning",
+   "size": "27px",
+   "weight": "800",
+   "family": "Bricolage Grotesque"
+  },
+  "scrollH": 342,
+  "nav": {
+   "y": 0,
+   "h": 80
+  },
+  "buttons": [
+   {
+    "t": "",
+    "w": 40,
+    "h": 40,
+    "x": 372,
+    "radius": "13px",
+    "fill": "rgba(0, 0, 0, 0)",
+    "label": "rgb(85, 94, 100)",
+    "font": "15px/500",
+    "disabled": false,
+    "opacity": 1,
+    "contrast": 3.17
+   },
+   {
+    "t": "Avbryt",
+    "w": 194,
+    "h": 49,
+    "x": 16,
+    "radius": "13px",
+    "fill": "rgba(0, 0, 0, 0)",
+    "label": "rgb(21, 24, 28)",
+    "font": "16.5px/600",
+    "disabled": false,
+    "opacity": 1,
+    "contrast": 1.18
+   },
+   {
+    "t": "Opprett",
+    "w": 194,
+    "h": 49,
+    "x": 218,
+    "radius": "13px",
+    "fill": "rgb(246, 185, 59)",
+    "label": "rgb(23, 18, 10)",
+    "font": "16.5px/600",
+    "disabled": true,
+    "opacity": 1,
+    "contrast": 10.57
+   }
+  ],
+  "fields": [
+   {
+    "tag": "INPUT",
+    "type": "text",
+    "h": 49,
+    "w": 396,
+    "radius": "13px",
+    "border": "1px rgb(85, 94, 100)",
+    "appearance": "auto"
+   }
+  ],
+  "natives": 0
+ },
+ "endre-husholdning": {
+  "surface": {
+   "x": 506,
+   "y": 292.5,
+   "w": 428,
+   "h": 315,
+   "right": 506,
+   "bottom": 292.5
+  },
+  "radius": "13px",
+  "border": "1px rgb(23, 18, 10)",
+  "shadow": "yes",
+  "pad": "15px",
+  "maxWidth": "428px",
+  "veil": "rgba(23, 18, 10, 0.3)",
+  "title": {
+   "text": "Endre husholdning",
+   "size": "27px",
+   "weight": "800",
+   "family": "Bricolage Grotesque"
+  },
+  "scrollH": 313,
+  "nav": {
+   "y": 0,
+   "h": 80
+  },
+  "buttons": [
+   {
+    "t": "",
+    "w": 40,
+    "h": 40,
+    "x": 372,
+    "radius": "13px",
+    "fill": "rgba(0, 0, 0, 0)",
+    "label": "rgb(85, 94, 100)",
+    "font": "15px/500",
+    "disabled": false,
+    "opacity": 1,
+    "contrast": 3.17
+   },
+   {
+    "t": "Avbryt",
+    "w": 194,
+    "h": 49,
+    "x": 16,
+    "radius": "13px",
+    "fill": "rgba(0, 0, 0, 0)",
+    "label": "rgb(21, 24, 28)",
+    "font": "16.5px/600",
+    "disabled": false,
+    "opacity": 1,
+    "contrast": 1.18
+   },
+   {
+    "t": "Lagre",
+    "w": 194,
+    "h": 49,
+    "x": 218,
+    "radius": "13px",
+    "fill": "rgb(246, 185, 59)",
+    "label": "rgb(23, 18, 10)",
+    "font": "16.5px/600",
+    "disabled": false,
+    "opacity": 1,
+    "contrast": 10.57
+   }
+  ],
+  "fields": [
+   {
+    "tag": "INPUT",
+    "type": "text",
+    "h": 49,
+    "w": 396,
+    "radius": "13px",
+    "border": "1px rgb(85, 94, 100)",
+    "appearance": "auto"
+   }
+  ],
+  "natives": 0
+ },
+ "forlat-husholdningen": {
+  "surface": {
+   "x": 506,
+   "y": 244.3,
+   "w": 428,
+   "h": 411.4,
+   "right": 506,
+   "bottom": 244.3
+  },
+  "radius": "13px",
+  "border": "1px rgb(23, 18, 10)",
+  "shadow": "yes",
+  "pad": "15px",
+  "maxWidth": "428px",
+  "veil": "rgba(23, 18, 10, 0.3)",
+  "title": {
+   "text": "Forlat husholdningen",
+   "size": "27px",
+   "weight": "800",
+   "family": "Bricolage Grotesque"
+  },
+  "scrollH": 409,
+  "nav": {
+   "y": 0,
+   "h": 80
+  },
+  "buttons": [
+   {
+    "t": "",
+    "w": 40,
+    "h": 40,
+    "x": 372,
+    "radius": "13px",
+    "fill": "rgba(0, 0, 0, 0)",
+    "label": "rgb(85, 94, 100)",
+    "font": "15px/500",
+    "disabled": false,
+    "opacity": 1,
+    "contrast": 3.17
+   },
+   {
+    "t": "Avbryt",
+    "w": 194,
+    "h": 49,
+    "x": 16,
+    "radius": "13px",
+    "fill": "rgba(0, 0, 0, 0)",
+    "label": "rgb(21, 24, 28)",
+    "font": "16.5px/600",
+    "disabled": false,
+    "opacity": 1,
+    "contrast": 1.18
+   },
+   {
+    "t": "Forlat husholdningen",
+    "w": 194,
+    "h": 49,
+    "x": 218,
+    "radius": "13px",
+    "fill": "rgb(246, 185, 59)",
+    "label": "rgb(23, 18, 10)",
+    "font": "16.5px/600",
+    "disabled": false,
+    "opacity": 1,
+    "contrast": 10.57
+   }
+  ],
+  "fields": [],
+  "natives": 0
+ },
+ "slett-husholdningen": {
+  "surface": {
+   "x": 506,
+   "y": 254.8,
+   "w": 428,
+   "h": 390.4,
+   "right": 506,
+   "bottom": 254.8
+  },
+  "radius": "13px",
+  "border": "1px rgb(23, 18, 10)",
+  "shadow": "yes",
+  "pad": "15px",
+  "maxWidth": "428px",
+  "veil": "rgba(23, 18, 10, 0.3)",
+  "title": {
+   "text": "Slett husholdningen",
+   "size": "27px",
+   "weight": "800",
+   "family": "Bricolage Grotesque"
+  },
+  "scrollH": 388,
+  "nav": {
+   "y": 0,
+   "h": 80
+  },
+  "buttons": [
+   {
+    "t": "",
+    "w": 40,
+    "h": 40,
+    "x": 372,
+    "radius": "13px",
+    "fill": "rgba(0, 0, 0, 0)",
+    "label": "rgb(85, 94, 100)",
+    "font": "15px/500",
+    "disabled": false,
+    "opacity": 1,
+    "contrast": 3.17
+   },
+   {
+    "t": "Avbryt",
+    "w": 194,
+    "h": 49,
+    "x": 16,
+    "radius": "13px",
+    "fill": "rgba(0, 0, 0, 0)",
+    "label": "rgb(21, 24, 28)",
+    "font": "16.5px/600",
+    "disabled": false,
+    "opacity": 1,
+    "contrast": 1.18
+   },
+   {
+    "t": "Slett for godt",
+    "w": 194,
+    "h": 49,
+    "x": 218,
+    "radius": "13px",
+    "fill": "rgb(164, 58, 22)",
+    "label": "rgb(255, 255, 255)",
+    "font": "16.5px/600",
+    "disabled": false,
+    "opacity": 1,
+    "contrast": 6.57
+   }
+  ],
+  "fields": [],
+  "natives": 0
+ },
+ "varsler": {
+  "surface": {
+   "x": 988,
+   "y": 688.1,
+   "w": 428,
+   "h": 187.9,
+   "right": 24,
+   "bottom": 24
+  },
+  "radius": "13px",
+  "border": "1px rgb(85, 94, 100)",
+  "shadow": "yes",
+  "pad": "15px",
+  "maxWidth": "428px",
+  "veil": null,
+  "title": {
+   "text": "Slå på varsler?",
+   "size": "27px",
+   "weight": "800",
+   "family": "Bricolage Grotesque"
+  },
+  "scrollH": 186,
+  "nav": {
+   "y": 0,
+   "h": 80
+  },
+  "buttons": [
+   {
+    "t": "Ikke nå",
+    "w": 194,
+    "h": 49,
+    "x": 16,
+    "radius": "13px",
+    "fill": "rgb(255, 255, 255)",
+    "label": "rgb(21, 24, 28)",
+    "font": "16.5px/600",
+    "disabled": false,
+    "opacity": 1,
+    "contrast": 17.81
+   },
+   {
+    "t": "Slå på varsler",
+    "w": 194,
+    "h": 49,
+    "x": 218,
+    "radius": "13px",
+    "fill": "rgb(246, 185, 59)",
+    "label": "rgb(23, 18, 10)",
+    "font": "16.5px/600",
+    "disabled": false,
+    "opacity": 1,
+    "contrast": 10.57
+   }
+  ],
+  "fields": [],
+  "natives": 0
+ },
+ "hjemskjerm": {
+  "surface": {
+   "x": 988,
+   "y": 658,
+   "w": 428,
+   "h": 218,
+   "right": 24,
+   "bottom": 24
+  },
+  "radius": "13px",
+  "border": "1px rgb(85, 94, 100)",
+  "shadow": "yes",
+  "pad": "15px",
+  "maxWidth": "428px",
+  "veil": null,
+  "title": {
+   "text": "Legg Diddit på hjemskjermen",
+   "size": "27px",
+   "weight": "800",
+   "family": "Bricolage Grotesque"
+  },
+  "scrollH": 216,
+  "nav": {
+   "y": 0,
+   "h": 80
+  },
+  "buttons": [
+   {
+    "t": "Ikke nå",
+    "w": 194,
+    "h": 49,
+    "x": 16,
+    "radius": "13px",
+    "fill": "rgb(255, 255, 255)",
+    "label": "rgb(21, 24, 28)",
+    "font": "16.5px/600",
+    "disabled": false,
+    "opacity": 1,
+    "contrast": 17.81
+   },
+   {
+    "t": "Installer",
+    "w": 194,
+    "h": 49,
+    "x": 218,
+    "radius": "13px",
+    "fill": "rgb(246, 185, 59)",
+    "label": "rgb(23, 18, 10)",
+    "font": "16.5px/600",
+    "disabled": false,
+    "opacity": 1,
+    "contrast": 10.57
+   }
+  ],
+  "fields": [],
+  "natives": 0
+ }
+}
