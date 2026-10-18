@@ -2,6 +2,7 @@ import { Component, signal, inject, ChangeDetectionStrategy, OnInit } from '@ang
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormGroup, FormControl, Validators } from '@angular/forms';
 import { Router, ActivatedRoute, RouterLink } from '@angular/router';
+import { TopTabs } from '../components/navigation/top-tabs/top-tabs';
 import { lastValueFrom } from 'rxjs';
 import { AuthService } from '../services/auth.service';
 import {
@@ -13,7 +14,7 @@ import {
   selector: 'app-reset-password',
   templateUrl: './reset-password.html',
   styleUrl: './reset-password.css',
-  imports: [CommonModule, ReactiveFormsModule, RouterLink],
+  imports: [CommonModule, ReactiveFormsModule, RouterLink, TopTabs],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ResetPasswordComponent implements OnInit {
