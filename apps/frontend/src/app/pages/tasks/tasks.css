@@ -119,6 +119,10 @@
   display: none;
 }
 
+.label-long {
+  display: none;
+}
+
 @media (min-width: 1024px) {
   .select-slot {
     display: flex;
@@ -141,6 +145,14 @@
 
   .sbtn {
     padding: 0 22px;
+  }
+
+  .label-short {
+    display: none;
+  }
+
+  .label-long {
+    display: inline;
   }
 }
 
