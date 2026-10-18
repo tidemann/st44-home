@@ -9,6 +9,7 @@ import {
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CommonModule } from '@angular/common';
+import { TopTabs } from '../../components/navigation/top-tabs/top-tabs';
 import { Router, ActivatedRoute, RouterLink } from '@angular/router';
 import { timer } from 'rxjs';
 import { InvitationService, AcceptInvitationResponse } from '../../services/invitation.service';
@@ -19,7 +20,7 @@ const REDIRECT_DELAY_MS = 2000;
 
 @Component({
   selector: 'app-invitation-accept',
-  imports: [CommonModule, RouterLink],
+  imports: [CommonModule, RouterLink, TopTabs],
   templateUrl: './invitation-accept.html',
   styleUrl: './invitation-accept.css',
   changeDetection: ChangeDetectionStrategy.OnPush,

@@ -1,7 +1,14 @@
 <div class="invitation-accept-container">
+  <!-- From 1024 px (guide: Desktop: rules for all pages, choice 2): the 80 px row with the
+       mark, the band with the title, and the page on the paper in the 428 px column -->
+  <app-top-tabs [bare]="true" [tabs]="[]" activeId="none" />
+
   <div class="invitation-accept-card">
-    <div class="card-header">
+    <div class="card-header desk-band">
       <h1 i18n="@@invitationAccept.title">Invitasjon</h1>
+      <p class="desk-band-sub" i18n="@@invitationAccept.subtitle">
+        Du er invitert inn i en husstand
+      </p>
     </div>
 
     <div class="card-content">
