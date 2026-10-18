@@ -179,7 +179,7 @@
 
   /* 3 · the action row: equal halves of the 396 px row inside the popup, 8 px apart.
      A grid, not flex: with flex the outlined button's 2 px edge made it 4 px wider. */
-  .modal :is(.modal-body, .modal-footer) ::ng-deep :is(.modal-actions, .modal-actions-right, .modal-actions-split, .popup-actions, .confirm-actions) {
+  .modal :is(.modal-body, .modal-footer) ::ng-deep :is(.modal-actions, .modal-actions-right, .modal-actions-split, .popup-actions, .confirm-actions, .form-actions) {
     display: grid;
     grid-auto-flow: column;
     grid-auto-columns: 1fr;
@@ -191,7 +191,7 @@
     display: contents;
   }
 
-  .modal :is(.modal-body, .modal-footer) ::ng-deep :is(.modal-actions, .modal-actions-right, .modal-actions-split, .popup-actions, .confirm-actions) > :is(.btn, button) {
+  .modal :is(.modal-body, .modal-footer) ::ng-deep :is(.modal-actions, .modal-actions-right, .modal-actions-split, .popup-actions, .confirm-actions, .form-actions) > :is(.btn, button) {
     width: auto;
     min-width: 0;
     height: 49px;
@@ -209,15 +209,17 @@
   }
 
   /* 5 · one field: 49 px, 13 px corners, the login field's edge */
-  .modal ::ng-deep :is(input:not([type='checkbox']):not([type='radio']), select, textarea) {
+  .modal ::ng-deep :is(input:not([type='checkbox']):not([type='radio']), select) {
     height: 49px;
     min-height: 49px;
+  }
+
+  .modal ::ng-deep :is(input:not([type='checkbox']):not([type='radio']), select, textarea) {
     border: 1.5px solid var(--text-muted);
     border-radius: var(--r-card);
   }
 
   .modal ::ng-deep textarea {
-    height: auto;
     min-height: 76px;
   }
 
