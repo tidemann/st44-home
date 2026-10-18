@@ -81,7 +81,7 @@ emoji draws as an empty square in both halves**: the drawing rig has no emoji fo
 design change — in the app they are a phone, a person, a warning triangle, a pencil, a tick, a cross
 and a bell.
 
-![Sheet 1 — Hjemme og Oppgaver](/api/attachments/4ef411cf-3c4c-419f-87ac-02b6ed2ef038/content)
+![Sheet 1 — Hjemme og Oppgaver](/api/attachments/5a0dc109-9e5d-4a49-a9c7-0dc5936076fb/content)
 
 ![Sheet 2 — Familie](/api/attachments/1862d044-c304-4da3-bbcc-25d6027e44e9/content)
 
@@ -89,7 +89,7 @@ and a bell.
 
 ![Sheet 4 — Husholdninger og de to tilbudene](/api/attachments/35557d9e-2ba4-4b36-9c00-34e0e7bf52fb/content)
 
-![Sheet 5 — rule 4 in three columns](/api/attachments/99c7e8a5-0b97-4750-a8aa-310c72982526/content)
+![Sheet 5 — rule 4 in three columns](/api/attachments/4c2f9803-1b23-498e-a594-bf87aca57c33/content)
 
 ### Where a rule left a choice open, this is the choice I made
 
@@ -121,7 +121,7 @@ draws no edge at all. The right-hand halves in sheet 1 currently show it blockin
 
 Both versions are drawn, same render, one difference:
 
-![«Bytt husstand» — A blocks, B may be ignored](/api/attachments/b0c6f257-6774-45e5-85e5-f7d724c91ba0/content)
+![«Bytt husstand» — A blocks, B may be ignored](/api/attachments/e3096c67-7e3a-4ae6-a8bb-4a076326e20a/content)
 
 - **A — it blocks:** ink edge `#17120A`, 30 % veil. One new line in the approved table moves the
   household choice to the blocking column.
@@ -169,7 +169,14 @@ The left halves are `origin/main` at 3f56e0e. The right halves are branch
 `ida/st-1430-popup-rules` at **c8d6fb7** (`st1430-shoot.js`, `st1430-press.js`, `st1430-sheet.js`,
 `st1430-sheet4.js`, `st1430-b1.js`), so every «after» picture is a real render, not a drawing. The
 round-2 numbers are in `.st1430/round2-measurements.md` on that branch. All 1103 frontend tests pass
-on it. It is a prototype for the pictures, not a merge candidate — Eirik builds this for real.
+on it.
+
+The six sheets in this card are `.st1430/sheets2/` at **2512408**. Three of them — sheet 1, sheet 5 and
+the B1 sheet — were re-composited there from the same frames after Astrid's re-review
+([ST-1465](/ST/issues/ST-1465#document-review)), to carry the four sentences and two numbers she found;
+nothing was re-shot, and sheets 2, 3 and 4 re-render byte-identical to the ones she measured. That
+commit changes only comments, markdown and the sheet scripts — the app code behind the right halves is
+still c8d6fb7. It is a prototype for the pictures, not a merge candidate — Eirik builds this for real.
 
 ## What happens when Stig approves
 
