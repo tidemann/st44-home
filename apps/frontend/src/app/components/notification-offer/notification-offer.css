@@ -36,3 +36,17 @@
     max-height: calc(100dvh - 2 * var(--gutter));
   }
 }
+
+/* Desktop (ST-1430, rule 8): a popup you may ignore sits in the bottom right corner,
+   428 px wide, 24 px clear of the window — there is no bottom nav to keep clear of. */
+@media (min-width: 1024px) {
+  .notify-card {
+    left: auto;
+    right: 24px;
+    bottom: 24px;
+    width: 428px;
+    max-width: 428px;
+    margin: 0;
+    max-height: calc(100dvh - 48px);
+  }
+}
