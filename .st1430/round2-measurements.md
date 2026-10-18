@@ -60,11 +60,17 @@ Control, the e-post field in the same popup: **396 × 49 px** at x 522, first in
 | Popup | main action | fill | `disabled` | field in error | the line under that field |
 | --- | --- | --- | --- | --- | --- |
 | ny-oppgave | «Legg til» 194 × 49 px | #F6B93B, label 10.57:1 | **false** | #task-name 2px rgb(164, 58, 22) | «Oppgavenavn er obligatorisk» 15px/500 rgb(164, 58, 22), 6.57:1 |
-| rediger-oppgave | «Lagre» 126.7 × 49 px | #F6B93B, label 10.57:1 | **false** | #task-name 2px rgb(164, 58, 22) | «Oppgavenavn er obligatorisk» 15px/500 rgb(164, 58, 22), 6.57:1 |
+| rediger-oppgave | «Lagre» 126.7 × 49 px | #F6B93B, label 10.57:1 | **false** | **two:** #task-name (y 102.4) and #points (y 370.2), both 2px rgb(164, 58, 22) | **two:** «Oppgavenavn er obligatorisk» (y 157.4) and «Poeng må være mellom 1 og 1000» (y 425.2), both 15px/500 rgb(164, 58, 22), 6.57:1 |
 | flytt-oppgave | «Tilordne på nytt» 194 × 49 px | #F6B93B, label 10.57:1 | **false** | #child-select 2px rgb(164, 58, 22) | «Velg et barn» 15px/500 rgb(164, 58, 22), 6.57:1 |
 | legg-til-barn | «Legg til barn» 194 × 49 px | #F6B93B, label 10.57:1 | **false** | #child-name 2px rgb(164, 58, 22) | «Barnets navn er obligatorisk» 15px/500 rgb(164, 58, 22), 6.57:1 |
 | inviter | «Send invitasjon» 194 × 49 px | #F6B93B, label 10.57:1 | **false** | #invite-email 2px rgb(164, 58, 22) | «E-postadresse er obligatorisk» 15px/500 rgb(164, 58, 22), 6.57:1 |
 | ny-husholdning | «Opprett» 194 × 49 px | #F6B93B, label 10.57:1 | **false** | #create-name 2px rgb(164, 58, 22) | «Skriv inn et navn på husholdningen» 15px/500 rgb(164, 58, 22), 6.57:1 |
+
+**«Rediger oppgave» is the one frame with two errors at once** (finding 4 on ST-1465): the empty name
+*and* a «Poeng» value outside 1–1000. Each wrong field keeps its own 2 px edge and its own line under
+it; nothing is gathered into a banner. The five others have one field wrong, so they show one line. The
+error is the guide's `field-text-error` (2 px rust, no icon) — not the approved login's form-level
+error, which marks both its fields and carries a warning icon above the action.
 
 ## Rule 6 — the closed field, which is all a picture can hold
 

@@ -33,14 +33,20 @@ const facts = (k, label) => {
   const live = R[k].buttons.find((x) => /rgb\(246, 185, 59\)/.test(x.fill));
   const p = P[k] || {};
   const m = (p.mainAction || [])[0];
-  const er = (p.errors || []).find((x) => x.color === 'rgb(164, 58, 22)');
-  const fl = (p.flaggedFields || [])[0];
+  // ST-1465, finding 4: «Rediger oppgave» draws two errors at once — count them, never
+  // report only the first
+  const er = (p.errors || []).filter((x) => x.color === 'rgb(164, 58, 22)');
+  const fl = p.flaggedFields || [];
   const out = [];
   out.push(
     `${label}: ${pale ? pale.contrast + ':1 og <b>disabled</b>' : 'disabled'} → ${live ? live.contrast + ':1' : '10,57:1'}, ${m ? (m.disabled ? '<b>fortsatt disabled</b>' : 'trykkbar') : 'trykkbar'}`.replace(/\./g, ','),
   );
-  if (fl) out.push(`feltet får 2 px rustkant`);
-  if (er) out.push(`«${er.t}» 15 px rust under feltet, 6,57:1`);
+  if (fl.length === 1) out.push(`feltet får 2 px rustkant`);
+  if (fl.length > 1) out.push(`<b>${fl.length} felt</b> får hver sin 2 px rustkant`);
+  if (er.length)
+    out.push(
+      `${er.map((x) => `«${x.t}»`).join(' og ')} 15 px rust under ${er.length > 1 ? 'hvert av dem' : 'feltet'}, 6,57:1${er.length > 1 ? ' — ingen banner samler dem' : ''}`,
+    );
   return out.join(' · ');
 };
 
@@ -76,7 +82,7 @@ figcaption{font-size:13px;font-weight:600;color:#555E64;margin-bottom:5px}
 .foot{margin-top:10px;font-size:13px;font-weight:500;color:#555E64;line-height:1.5;max-width:1180px}
 </style></head><body><div class="sheet">
 <h1>Regel 4, tegnet: hovedhandlingen er aldri blek – og aldri død</h1>
-<p class="lede">De 6 popup-ene regel 4 handler om. Venstre: i dag er knappen blek <em>og</em> avslått før du har skrevet noe. Midten: med reglene er den gul (10,57:1) og trykkbar fra første bilde. Høyre: trykker du den på et skjema som ikke er ferdig, får feltet en 2 px rustkant og én rustlinje står under <em>det</em> feltet — samme mønster som den godkjente innloggingen (login-16). Alle tre er renderinger, 1440 × 900 px; tallene er målt i bildene.</p>
+<p class="lede">De 6 popup-ene regel 4 handler om. Venstre: i dag er knappen blek <em>og</em> avslått før du har skrevet noe. Midten: med reglene er den gul (10,57:1) og trykkbar fra første bilde. Høyre: trykker du den på et skjema som ikke er ferdig, får feltet en 2 px rustkant og én rustlinje står under <em>det</em> feltet — veilederens <code>field-text-error</code>, 2 px rust og ingen ikon. En feil på <em>ett</em> felt merker bare det feltet: innloggingen (login-16) merker begge sine felt fordi feilen der gjelder hele skjemaet («Feil e-post eller passord») og plasseringen ikke skal avsløre hvilket felt som var feil — den grunnen gjelder ikke her. Er to felt feil samtidig, som i «Rediger oppgave», får hvert felt sin egen kant og sin egen linje. Alle tre er renderinger, 1440 × 900 px; tallene er målt i bildene.</p>
 ${ROWS.map(card).join('')}
 <p class="foot">Dette er hele regel 4: ingen gul knapp i settet er <code>disabled</code> (kontrollert i alle 17 popup-ene), og den eneste <code>disabled</code> som er igjen inni en popup er øyeblikket den jobber — da beholder den gulfargen og bytter tekst, som innloggingen (login-18). Emoji står som tomme ruter i alle halvdeler: tegneriggen har ingen emoji-font, og det er ikke en designendring.</p>
 </div></body></html>`;

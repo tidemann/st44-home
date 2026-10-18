@@ -212,8 +212,10 @@
     cursor: progress;
   }
 
-  /* 4 · and the error the press produces is the login's error: the field takes its 2 px
-     rust edge, and one rust line sits under that field. Never the raw red of
+  /* 4 · and the error the press produces is the guide's `field-text-error`: the field takes
+     its 2 px rust edge, no icon, and one rust line sits under that field. An error on one
+     field marks only that field — the approved login marks both of its fields because its
+     error is on the whole form, and that reason does not apply here. Never the raw red of
      `.form-error`, which reads 3,76:1 on white. */
   .modal ::ng-deep :is(.form-error, .error-message) {
     margin-top: 6px;
@@ -247,9 +249,11 @@
     background-color: var(--color-surface);
   }
 
-  /* 5 · a text box is that same field, only taller: the whole 396 px column, the login
-     field's 18 px inset and its white fill. Never the browser's 20-column box with the
-     text against the edge, and never Paper (A2, A3 on ST-1443). */
+  /* 5 · a text box is that same field, only taller: the whole 396 px column, the 16 px
+     inset the other fields in these popups are built with, and the same white fill. Never
+     the browser's 20-column box with the text against the edge (A2, A3 on ST-1443). The
+     guide's `field-text` token says 18 px; which number is the rule is a guide question,
+     listed under «What is not in this step». */
   .modal ::ng-deep :is(textarea, .form-textarea) {
     box-sizing: border-box;
     width: 100%;

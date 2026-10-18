@@ -17,6 +17,18 @@ const img = (p) => `data:image/png;base64,${fs.readFileSync(p).toString('base64'
 const F = JSON.parse(fs.readFileSync(path.join(B1, 'b1-fingerprint.json'), 'utf8'));
 const A = F['bytt-husstand-A-blokkerer'];
 const B = F['bytt-husstand-B-kan-overses'];
+// ST-1465, nit 3: one notation on a card that goes to Stig — the fingerprint's CSS rgb()
+// becomes the hex the guide and the other sheets use
+const hex = (s) => {
+  const m = s.match(/rgba?\((\d+),\s*(\d+),\s*(\d+)/);
+  return m
+    ? '#' +
+        m
+          .slice(1, 4)
+          .map((n) => Number(n).toString(16).padStart(2, '0').toUpperCase())
+          .join('')
+    : s;
+};
 
 const html = `<!doctype html><html lang="nb"><head><meta charset="utf-8"><style>
 ${FONTS}
@@ -40,14 +52,14 @@ figcaption{font-family:'Bricolage Grotesque';font-size:17px;font-weight:800;marg
   <figure><figcaption>I dag</figcaption><div class="sub">ark fra bunnkanten, 440 px, 20 px hjørner, ingen kant — og sløret er malt</div>
     <div class="shot"><img src="${img(path.join(TODAY, 'bytt-husstand.png'))}"></div>
     <p class="m">Hverken form eller kant følger noen regel i dag.</p></figure>
-  <figure><figcaption>A — den blokkerer</figcaption><div class="sub">blekkant ${A.border.split(' ').slice(1).join(' ')}, 30 % slør</div>
+  <figure><figcaption>A — den blokkerer</figcaption><div class="sub">blekkant ${hex(A.border.split(' ').slice(1).join(' '))}, 30 % slør</div>
     <div class="shot"><img src="${img(path.join(B1, 'bytt-husstand-A-blokkerer.png'))}"></div>
-    <p class="m">${A.surface.w} × ${A.surface.h} px på x ${A.surface.x}, ${A.radius} hjørner, slør ${A.veil}. Dette er det bildene i kortet viser nå — og det er det appen gjør i dag.</p></figure>
+    <p class="m">${A.surface.w} × ${A.surface.h} px på x ${A.surface.x}, ${A.radius} hjørner, slør ${hex(A.veil)} 30 %. Dette er det bildene i kortet viser nå — og det er det appen gjør i dag.</p></figure>
   <figure><figcaption>B — du kan overse den</figcaption><div class="sub">grå kant #555E64, ingen slør</div>
     <div class="shot"><img src="${img(path.join(B1, 'bytt-husstand-B-kan-overses.png'))}"></div>
     <p class="m">${B.surface.w} × ${B.surface.h} px på x ${B.surface.x}, ${B.radius} hjørner, ingen slør. Dette er den godkjente Popups-delen tatt på ordet.</p></figure>
 </div>
-<p class="foot"><b>Idas anbefaling: A.</b> «Bytt husstand» bytter aktiv husstand for hele appen, dekker siden og tar fokus — den oppfører seg som en dialog, og appen maler alt sløret i dag. Linjen i den godkjente tabellen ble skrevet om et <em>nedtrekk</em> ved navnet; det koden åpner er et helt ark. Velges A, får den godkjente tabellen én ny linje som flytter husstandsvalget til blokkerende. Velges B, rendres høyrehalvdelen på nytt med grå kant og uten slør — formen (midtstilt dialog på 428 px) er den samme uansett. <b>Dette er Stigs valg, ikke mitt.</b></p>
+<p class="foot"><b>Idas anbefaling: A.</b> «Bytt husstand» bytter aktiv husstand for hele appen, dekker siden og tar fokus — den oppfører seg som en dialog, og appen maler alt sløret i dag. Linjen i den godkjente tabellen ble skrevet om et <em>nedtrekk</em> ved navnet; det koden åpner er et helt ark. Velges A, får den godkjente tabellen én ny linje som flytter husstandsvalget til blokkerende. Velges B, rendres høyrehalvdelen på nytt med grå kant og uten slør — formen (midtstilt dialog på 428 px) er den samme uansett — og reglene sier nå det samme: regel 7 avgjør formen uten å spørre om svaret, og hjørnet nede til høyre i regel 8 er bare de to tilbudene, så et B-svar flytter ikke husstandsvelgeren dit. <b>Dette er Stigs valg, ikke mitt.</b></p>
 </div></body></html>`;
 
 (async () => {

@@ -15,8 +15,9 @@ What the guide never wrote down is what a popup does on a **1440 px window**: it
 phone's 22 px gutter and nothing for desktop. These 8 rules fill that gap — and nothing else.
 
 Source: the popup findings in Ida's desktop review ([ST-1345](/ST/issues/ST-1345#document-review), F16),
-re-measured on 18 October on all 17 popups at 1440 × 900, and re-measured again after Astrid's review
-([ST-1443](/ST/issues/ST-1443#document-review)).
+re-measured on 18 October on all 17 popups at 1440 × 900, and re-measured again after Astrid's two
+reviews ([ST-1443](/ST/issues/ST-1443#document-review) and
+[ST-1465](/ST/issues/ST-1465#document-review), which accepted the set).
 
 ## The 17 popups, and what opens them
 
@@ -52,11 +53,11 @@ they are dead code for Eirik, not design.
 | **1** | **Popup width.** Every popup is 428 px wide — the same column a form gets on a page — and centred in the window. It never grows with the window and no popup has a width of its own. | 3 widths: 14 dialogs at 500 px, the two offers at 480 px, «Bytt husstand» 440 px. |
 | **2** | **Height and place.** A popup is centred in the window with at least 48 px of air over and under it; when the content is taller, only the body scrolls — the title row and the action row stay. | The two tallest («Ny oppgave», «Barnedetaljer») stand 852 px tall in a 900 px window, 24 px from the edge. |
 | **3** | **The action row is two equal halves:** two buttons of 194 × 49 px, 13 px corners, 16.5 px label, 8 px apart, filling the 396 px inside the popup; the safe one outlined on the left, the one that acts filled on the right. One action fills all 396 px; three share the row in equal thirds of 126,7 px. | The buttons hug their labels: 17 different widths between 57 and 230 px, and labels in two sizes (14 and 16.5 px). |
-| **4** | **A popup's main action is never pale — and never dead.** It keeps the yellow fill and its ink label (10,57:1) and is pressable from the first paint. The form is checked **when you press**: the field that is wrong takes a 2 px `#A43A16` edge and one `#A43A16` line, 15 px, stands under *that* field (6,57:1) — the login page's pattern. The only `disabled` left inside a popup is the moment it is working, and that keeps its yellow and swaps its label, as the login does. | 6 popups dim it before you have typed anything — 2,63:1 on five, 3,46:1 on «Opprett» — and all six are `disabled`, so the press does nothing at all. |
-| **5** | **One field inside a popup:** 49 px tall, 13 px corners, a 1,5 px `#555E64` edge, white, 16 px inside — the login field. A text box is that same field, the full 396 px wide and 76 px tall. | 5 field heights (48, 50, 51,6, 52, 53 px) and 4 edges, one of them `#E2E8F0`, a colour from outside the system; and a text box 183 px wide on Paper with its text 2 px from the edge. |
+| **4** | **A popup's main action is never pale — and never dead.** It keeps the yellow fill and its ink label (10,57:1) and is pressable from the first paint. The form is checked **when you press**: the field that is wrong takes a 2 px `#A43A16` edge and one `#A43A16` line, 15 px, stands under *that* field (6,57:1) — the guide's `field-text-error` token, 2 px rust and no icon. An error on **one** field marks only that field; the approved login marks *both* of its fields because its error is on the whole form («Feil e-post eller passord») and the placement must not say which field was wrong — that reason does not apply here. The only `disabled` left inside a popup is the moment it is working, and that keeps its yellow and swaps its label, as the login does. | 6 popups dim it before you have typed anything — 2,63:1 on five, 3,46:1 on «Opprett» — and all six are `disabled`, so the press does nothing at all. |
+| **5** | **One field inside a popup:** 49 px tall, 13 px corners, a 1,5 px `#555E64` edge, white, 16 px inside — otherwise the login field (whose own inset is 18 px; see «What is not in this step»). A text box is that same field, the full 396 px wide and 76 px tall. | 5 field heights (48, 50, 51,6, 52, 53 px) and 4 edges, one of them `#E2E8F0`, a colour from outside the system; and text boxes in two shapes — 468 × 76 px with a 2 px `#DFDFD9` edge in the two task popups, and «Personlig melding» in «Inviter familiemedlem» **181 × 72 px, 0 px corners, no edge at all**: a white box on a white surface. |
 | **6** | **No browser chrome inside a popup.** A choice is a Diddit field with the Diddit caret, never the operating system's own `<select>` menu or date picker. The pictures show the **closed** field, which is all a picture can hold; the open list is a Diddit menu Eirik builds. | 5 popups open the browser's own menu inside the Diddit frame. |
-| **7** | **A popup that blocks is a centred dialog, never a sheet off an edge.** On desktop there is no bottom nav to rise above, and a sheet glued to the window's edge loses the popup's own shape. | «Bytt husstand» rises from the bottom edge with 20 px corners and no edge at all, against 13 px and the ink edge on the other 14. |
-| **8** | **A popup you may ignore sits in the bottom right**, 428 px wide, 24 px clear of the window's right and bottom edge, grey edge, no veil. | Both offers float centred at the bottom of the window, 480 px wide, in a 16 px gutter meant for a phone. |
+| **7** | **A popup is a centred dialog, never a sheet off an edge.** On desktop there is no bottom nav to rise above, and a sheet glued to the window's edge loses the popup's own shape. The shape does not depend on whether the popup blocks: it holds whichever way the question below goes, and the only popups that stand off-centre are the two offers in rule 8. | «Bytt husstand» rises from the bottom edge with 20 px corners and no edge at all, against 13 px and the ink edge on the other 14. |
+| **8** | **An offer sits in the bottom right** — in this set «Slå på varsler?» and «Legg Diddit på hjemskjermen» (rows 16 and 17), and no other popup: 428 px wide, 24 px clear of the window's right and bottom edge, grey edge, no veil. A popup that asks you something stays centred (rule 7) even if you may ignore it, so this corner does not pick up «Bytt husstand» whichever way Stig answers below. | Both offers float centred at the bottom of the window, 480 px wide, in a 16 px gutter meant for a phone. |
 
 ## The pictures: every popup with the 8 rules
 
@@ -69,7 +70,7 @@ Every number under a pair was measured in the rendered pixels, not predicted.
 - **Sheet 2 — Familie (4):** «Legg til barn», «Barnedetaljer», «Inviter familiemedlem», «QR-kode innlogging».
 - **Sheet 3 — Belønninger og husholdninger (4):** «Slette belønningen?», «Vil du be om dette?», «Ny husholdning», «Endre husholdning».
 - **Sheet 4 — Husholdninger og de to tilbudene (4):** «Forlat husholdningen», «Slett husholdningen», «Slå på varsler?», «Legg Diddit på hjemskjermen».
-- **Sheet 5 — rule 4 alone, in three columns (6):** the main action today (pale *and* dead), with the rules (yellow and live), and pressed on a form that is not finished. This sheet is new in round 2: it is the one rule a two-column pair cannot show.
+- **Sheet 5 — rule 4 alone, in three columns (6):** the main action today (pale *and* dead), with the rules (yellow and live), and pressed on a form that is not finished. This sheet is new in round 2: it is the one rule a two-column pair cannot show. In «Rediger oppgave» the press finds **two** fields wrong at once («Oppgavenavn» and «Poeng»), so that frame also shows what the rule does when an error is not alone: each wrong field takes its own rust edge and its own line, and nothing is collected into a banner.
 
 **Three things to read correctly in the pictures.** «QR-kode innlogging» shows its frame only — the code
 is drawn from a server answer the mock does not give, and the popup has no action row at all, so that
@@ -100,9 +101,11 @@ and a bell.
 3. **Three actions share the row in equal thirds**, 126,7 px, with «Slett» in rust on the left
    («Rediger oppgave» is the only popup with three).
 4. **A lone action fills all 396 px** («Barnedetaljer»).
-5. **The error is the login's error** (rule 4): one rust line under the field that is wrong, and a 2 px
-   rust edge on that field. Not a banner at the top of the popup, which is where «Tilordne oppgave på
-   nytt» put it, and not a message on the page behind the veil, which is where «Ny husholdning» put it.
+5. **The error stands under the field that is wrong** (rule 4): the guide's `field-text-error` — a 2 px
+   rust edge on that field and one rust line under it, no icon. Not a banner at the top of the popup,
+   which is where «Tilordne oppgave på nytt» put it, and not a message on the page behind the veil,
+   which is where «Ny husholdning» put it. The login's own error marks both fields and stands above the
+   action because it is an error on the whole form; a popup's is an error on one field.
 6. **The offers go to the bottom right corner** (rule 8), 24 px from both edges — the corner a desktop
    user expects a message in, and there is no bottom nav to keep clear of. Only one offer shows at a time.
 7. **«Bytt husstand» becomes a centred dialog on desktop only.** On the phone it stays the bottom sheet
@@ -123,7 +126,8 @@ Both versions are drawn, same render, one difference:
 - **A — it blocks:** ink edge `#17120A`, 30 % veil. One new line in the approved table moves the
   household choice to the blocking column.
 - **B — you may ignore it:** grey `#555E64` edge, no veil. The approved table is untouched and the
-  right-hand half of sheet 1 is re-rendered.
+  right-hand half of sheet 1 is re-rendered. It stays a centred 428 px dialog in that case too: the
+  corner in rule 8 belongs to the two offers, and rule 7's shape does not depend on this answer.
 
 **Ida's recommendation: A.** «Bytt husstand» switches the active household for the whole app, covers
 the page and takes focus — it behaves like a dialog, and the app paints the whole veil today. The
@@ -145,6 +149,10 @@ way the shape is the same. This is Stig's call.
 - **16 px or 18 px inside a field.** The guide's `field-text` token says 18 px; all 17 popups are
   built with 16 px, and the pictures keep 16 px so every box in the set agrees. Which number is the
   rule is a guide question, not a popup question.
+- **The two error lines Diddit now has.** The approved login draws a *form-level* error: both fields
+  marked, one line with a warning icon above the action. Rule 4 draws a *field-level* one: the wrong
+  field marked, one line without an icon under it. Both are in the app; naming them as two patterns in
+  the guide is step 3, and nothing here decides it.
 - **Nothing on the phone.** Every rule here is scoped to 1024 px and wider.
 - **Nothing else in the approved Popups section.** Edge, veil, shadow, radius, padding, type and the
   rust «Slett» are quoted above, not reopened.

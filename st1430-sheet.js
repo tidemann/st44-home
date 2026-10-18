@@ -27,7 +27,7 @@ const SHEETS = [
       ['rediger-oppgave', '«Rediger oppgave»', 'Oppgaver', 'Valg: tre handlinger deler raden i like tredjedeler, 126,7 px, «Slett» i rust til venstre.'],
       ['flytt-oppgave', '«Tilordne oppgave på nytt»', 'Oppgaver', ''],
       ['slett-oppgaver', '«Slette n oppgaver?»', 'Oppgaver, i velgemodus', ''],
-      ['bytt-husstand', '«Bytt husstand»', 'Hjemme, pila ved navnet', 'Valg: arket blir en midtstilt dialog på skjerm (regel 7); på telefon er det fortsatt et ark.'],
+      ['bytt-husstand', '«Bytt husstand»', 'Hjemme, pila ved navnet', 'Valg: arket blir en midtstilt dialog på skjerm (regel 7); på telefon er det fortsatt et ark. Formen er avgjort uansett svar — om den blokkerer (blekkant + 30 % slør, som her) eller kan overses (grå kant, uten slør) er Stigs valg, tegnet på sitt eget ark.'],
     ],
   },
   {
@@ -65,7 +65,9 @@ const facts = (k) => {
   const pale = (v) => v.buttons.filter((x) => x.opacity < 1);
   const f = [];
   f.push(`bredde ${Math.round(a.surface.w)} → ${Math.round(b.surface.w)} px`);
-  if (k === 'bytt-husstand') f.push('fra bunnkanten (20 px hjørner, ingen kant) til midtstilt dialog (13 px, blekkant)');
+  // ST-1465, nit 4: sheet 1 travels on its own, so the caption must say that the edge and
+  // the veil are the open question — only the shape is settled here
+  if (k === 'bytt-husstand') f.push('fra bunnkanten (20 px hjørner, ingen kant) til midtstilt dialog, 13 px hjørner (regel 7) — <b>blekkant og slør: Stigs valg, se eget ark</b>');
   if (k === 'varsler' || k === 'hjemskjerm') f.push(`fra midtstilt nederst til ${Math.round(b.surface.right)} px fra høyre og ${Math.round(b.surface.bottom)} px fra bunnen`);
   const aa = act(a), bb = act(b);
   // the «Bytt husstand» list rows are not an action row: same width before and after
