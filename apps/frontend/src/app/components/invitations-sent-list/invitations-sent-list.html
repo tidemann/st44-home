@@ -86,10 +86,10 @@
       @for (invitation of invitations(); track invitation.id) {
         <div class="table-row" role="row">
           <div class="cell email" role="cell">{{ invitation.invitedEmail }}</div>
-          <div class="cell role" role="cell">{{ invitation.role | titlecase }}</div>
+          <div class="cell role" role="cell">{{ getRoleLabel(invitation.role) }}</div>
           <div class="cell status" role="cell">
             <span class="badge" [class]="getStatusClass(invitation.status)">
-              {{ invitation.status | titlecase }}
+              {{ getStatusLabel(invitation.status) }}
             </span>
           </div>
           <div class="cell date" role="cell">
