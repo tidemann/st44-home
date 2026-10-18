@@ -44,17 +44,6 @@
   color: var(--color-text-primary, #1f2937);
 }
 
-.user-button__settings-icon {
-  font-size: 18px;
-  color: var(--color-text-secondary, #6b7280);
-  transition: color 0.2s ease;
-  flex-shrink: 0;
-}
-
-.user-button:hover .user-button__settings-icon {
-  color: var(--color-text-primary, #1f2937);
-}
-
 /* Hide user name on mobile screens */
 @media (max-width: 640px) {
   .user-button__name {
@@ -76,9 +65,5 @@
     width: 36px;
     height: 36px;
     font-size: 13px;
-  }
-
-  .user-button__settings-icon {
-    font-size: 16px;
   }
 }

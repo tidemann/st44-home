@@ -236,7 +236,8 @@
 }
 
 .stat-icon {
-  font-size: 16px;
+  flex: none;
+  color: var(--text-muted);
 }
 
 /* Actions */
@@ -384,4 +385,26 @@
   justify-content: flex-end;
   gap: var(--space-sm);
   margin-top: var(--space-lg);
+}
+
+@media (min-width: 1024px) {
+  /* Rule 5: «+ Ny husholdning» is the main button, as wide as its column */
+  .create-section .btn-primary {
+    width: 100%;
+    min-height: 0;
+    height: 49px;
+    padding: 0 16px;
+    border-radius: var(--r-button);
+    font-size: 16.5px;
+    font-weight: 600;
+  }
+
+  /* Rule 5: «Bytt til», «Endre», «Slett» are row buttons, 36 px with 10 px corners */
+  .household-actions .btn {
+    min-height: 0;
+    height: 36px;
+    padding: 0 14px;
+    border-radius: var(--r-row-action);
+    font-size: 15px;
+  }
 }
