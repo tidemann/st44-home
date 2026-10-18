@@ -53,7 +53,9 @@ export class InvitationAcceptComponent implements OnInit {
   ngOnInit(): void {
     const token = this.route.snapshot.paramMap.get('token');
     if (!token) {
-      this.errorMessage.set('Lenken til invitasjonen er ugyldig.');
+      this.errorMessage.set(
+        $localize`:@@invitationAccept.invalidLink:Lenken til invitasjonen er ugyldig.`,
+      );
       return;
     }
     this.token.set(token);
@@ -71,7 +73,9 @@ export class InvitationAcceptComponent implements OnInit {
         await this.invitationService.acceptInvitation(token);
 
       this.householdName.set(response.household.name);
-      this.successMessage.set(`Du er nå med i «${response.household.name}».`);
+      this.successMessage.set(
+        $localize`:@@invitationAccept.joined:Du er nå med i «${response.household.name}:household:».`,
+      );
 
       // Redirect to home after a brief delay (with proper cleanup)
       this.redirectToHomeAfterDelay();
@@ -100,7 +104,7 @@ export class InvitationAcceptComponent implements OnInit {
 
     try {
       await this.invitationService.declineInvitation(token);
-      this.successMessage.set('Invitasjonen er avslått.');
+      this.successMessage.set($localize`:@@invitationAccept.declined:Invitasjonen er avslått.`);
 
       // Redirect to home after a brief delay (with proper cleanup)
       this.redirectToHomeAfterDelay();
@@ -119,17 +123,27 @@ export class InvitationAcceptComponent implements OnInit {
     };
 
     if (err.status === 404) {
-      this.errorMessage.set('Fant ikke invitasjonen, eller den er allerede brukt.');
+      this.errorMessage.set(
+        $localize`:@@invitationAccept.notFound:Fant ikke invitasjonen, eller den er allerede brukt.`,
+      );
     } else if (err.status === 403) {
-      this.errorMessage.set('Denne invitasjonen er ikke til din e-postadresse.');
+      this.errorMessage.set(
+        $localize`:@@invitationAccept.wrongEmail:Denne invitasjonen er ikke til din e-postadresse.`,
+      );
     } else if (err.status === 400) {
       this.errorMessage.set(
-        err.error?.message || 'Invitasjonen har utløpt eller gjelder ikke lenger.',
+        err.error?.message ||
+          $localize`:@@invitationAccept.expired:Invitasjonen har utløpt eller gjelder ikke lenger.`,
       );
     } else if (err.status === 409) {
-      this.errorMessage.set('Du er allerede med i denne husstanden.');
+      this.errorMessage.set(
+        $localize`:@@invitationAccept.alreadyMember:Du er allerede med i denne husstanden.`,
+      );
     } else {
-      this.errorMessage.set(err.error?.message || 'Noe gikk galt. Prøv igjen.');
+      this.errorMessage.set(
+        err.error?.message ||
+          $localize`:@@invitationAccept.genericError:Noe gikk galt. Prøv igjen.`,
+      );
     }
   }
 
