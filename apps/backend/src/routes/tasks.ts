@@ -22,6 +22,7 @@ import { householdTaskParamsSchema, householdIdParamSchema } from '../schemas/va
 import { stripResponseValidation } from '../schemas/common.js';
 import type { TaskRow } from '../types/database.js';
 import { todayInTimeZone } from '../services/assignment-scheduler.js';
+import type { PoolClient } from 'pg';
 
 interface HouseholdParams {
   householdId: string;
@@ -644,8 +645,36 @@ function todayIso(): string {
  * Deleting a template also takes today's not-done chores of it off the day,
  * so «forsvinner for hele familien» is true. Done rows stay: points and history do not change.
  */
+/**
+ * Soft delete templates of one household and take today's not-done chores of them off the
+ * day, in one transaction. Deleting this household's own tasks is atomic, and repeating it is
+ * harmless: a task that is already switched off counts as deleted, so a retry, or a second
+ * parent deleting at the same time, never reports it as a failure. Returns the ids that are deleted.
+ */
+async function softDeleteTasks(householdId: string, taskIds: string[]): Promise<string[]> {
+  const client = await db.connect();
+  try {
+    await client.query('BEGIN');
+    const result = await client.query<{ id: string }>(
+      `UPDATE tasks SET active = false, updated_at = NOW()
+       WHERE household_id = $1 AND id = ANY($2::uuid[])
+       RETURNING id`,
+      [householdId, taskIds],
+    );
+    const deleted = result.rows.map((r) => r.id);
+    if (deleted.length > 0) await clearTodayOpenRows(client, householdId, deleted);
+    await client.query('COMMIT');
+    return deleted;
+  } catch (error) {
+    await client.query('ROLLBACK');
+    throw error;
+  } finally {
+    client.release();
+  }
+}
+
 async function clearTodayOpenRows(
-  client: { query: typeof db.query },
+  client: PoolClient,
   householdId: string,
   taskIds: string[],
 ): Promise<void> {
@@ -666,29 +695,11 @@ async function bulkDeleteTasks(
     const { taskIds } = validateRequest(bulkDeleteBodySchema, request.body);
     const unique = [...new Set(taskIds)];
 
-    const client = await db.connect();
-    try {
-      await client.query('BEGIN');
-      const result = await client.query<{ id: string }>(
-        `UPDATE tasks SET active = false, updated_at = NOW()
-         WHERE household_id = $1 AND id = ANY($2::uuid[]) AND active = true
-         RETURNING id`,
-        [householdId, unique],
-      );
-      const deleted = result.rows.map((r) => r.id);
-      if (deleted.length > 0) await clearTodayOpenRows(client, householdId, deleted);
-      await client.query('COMMIT');
-
-      const failed = unique
-        .filter((id) => !deleted.includes(id))
-        .map((taskId) => ({ taskId, reason: 'not_found' as const }));
-      return reply.send({ deleted, failed });
-    } catch (error) {
-      await client.query('ROLLBACK');
-      throw error;
-    } finally {
-      client.release();
-    }
+    const deleted = await softDeleteTasks(householdId, unique);
+    const failed = unique
+      .filter((id) => !deleted.includes(id))
+      .map((taskId) => ({ taskId, reason: 'not_found' as const }));
+    return reply.send({ deleted, failed });
   } catch (error) {
     if (error instanceof z.ZodError) {
       return handleZodError(error, reply);
@@ -712,23 +723,15 @@ async function deleteTask(request: FastifyRequest<{ Params: TaskParams }>, reply
     // Validate params with Zod schema
     const { householdId, taskId } = validateParams(householdTaskParamsSchema, request);
 
-    const result = await db.query(
-      `UPDATE tasks
-       SET active = false, updated_at = NOW()
-       WHERE id = $1 AND household_id = $2
-       RETURNING id`,
-      [taskId, householdId],
-    );
+    const deleted = await softDeleteTasks(householdId, [taskId]);
 
-    if (result.rows.length === 0) {
+    if (deleted.length === 0) {
       return reply.status(404).send({
         statusCode: 404,
         error: 'Not Found',
         message: 'Task not found in this household',
       });
     }
-
-    await clearTodayOpenRows(db, householdId, [taskId]);
 
     return reply.send({
       success: true,
