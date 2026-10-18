@@ -274,11 +274,16 @@ async function settle(page, ms = 14000) {
   await page.waitForTimeout(700);
 }
 
+// ST-1410 round 2 (Astrid): one page had to be re-shot on its own (the invitation's lead
+// stopped repeating the band's sub-line), so the page list can be narrowed from the shell.
+const ONLY = process.env.ST1410_ONLY ? process.env.ST1410_ONLY.split(',') : null;
+const SHOOT = ONLY ? PAGES.filter(([n]) => ONLY.includes(n)) : PAGES;
+
 (async () => {
   const browser = await chromium.launch({ executablePath: EXE });
   const out = {};
   for (const w of [1440]) {
-    for (const [name, p, role] of PAGES) {
+    for (const [name, p, role] of SHOOT) {
       const ctx = await browser.newContext({ viewport: { width: w, height: 900 }, deviceScaleFactor: 2, locale: 'nb-NO' });
       const tok = role === 'parent' ? parentToken : role === 'child' ? childToken : null;
       await ctx.addInitScript((t) => {
@@ -321,6 +326,6 @@ async function settle(page, ms = 14000) {
     await ctx.close().catch(() => {});
   }
 
-  fs.writeFileSync(path.join(OUT, 'fingerprint.json'), JSON.stringify(out, null, 1));
+  fs.writeFileSync(path.join(OUT, ONLY ? 'fingerprint-only.json' : 'fingerprint.json'), JSON.stringify(out, null, 1));
   await browser.close();
 })();

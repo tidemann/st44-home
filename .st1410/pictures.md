@@ -9,6 +9,13 @@
 Ni bilder, ett per side, 1440 px, lys modus, norsk innhold, samme oppdiktede familie som i del 1.
 De 8 reglene fra [ST-1370](/ST/issues/ST-1370) er lagt på, og ingenting annet.
 
+> **Runde 2 (Astrids gjennomgang).** Tre ting er endret siden første innlevering, ingenting annet:
+> (1) regel 7 på «Mine oppgaver (barn)» har fått sitt eget par bilder — lastetilstanden, i dag mot
+> med reglene; (2) det hvite skjemakortet som er borte på fem sider står nå under **Valgene som
+> skal til Maria**, med grunnen; (3) invitasjonens ledetekst gjentok ikke lenger underlinja ordrett,
+> og de to småtingene Astrid noterte er skrevet inn. Arkene sier nå under hvert like par at
+> halvdelene er like med vilje.
+
 ## Hvordan de er laget
 
 Som i del 1: sidene er **appen selv**, ikke en tegning. `ng serve` på `origin/main` (51f41dc) i to
@@ -45,7 +52,31 @@ Målt i pikslene på DPR 2-filene (felt, tittelblekk) og i DOM-en (bredde, spalt
 
 Oversikt i dag mot med reglene: `rules-overview-1.png` (Mine oppgaver, Belønninger, Ny husstand,
 Logg inn, Opprett konto) og `rules-overview-2.png` (Barnas innlogging, Glemt passord, Sett nytt
-passord, Invitasjon).
+passord, Invitasjon). Under de tre parene som er like — «Mine oppgaver», «Logg inn» og «Opprett
+konto» — står det nå én linje om at halvdelene er like med vilje, og hvor endringen er å se.
+
+### Regel 7 på «Mine oppgaver (barn)»: det tiende og ellevte bildet
+
+Astrid hadde rett: regel 7 var den eneste endringen jeg hevdet på den siden, og ingen fil viste
+den — den innlastede siden traff reglene 1–4 fra før, så paret i arket er identisk. Her er
+tilstanden der regelen faktisk gjelder, tegnet i begge halvdeler på samme måte som resten:
+
+| | Fil | Hva som står der | Felt |
+| --- | --- | --- | --- |
+| I dag (51f41dc) | `today-mine-oppgaver-barn-laster-1440.png` | en snurrende ring og setningen «Laster oppgavene dine...» | **128** |
+| Med reglene | `rules-mine-oppgaver-barn-laster-1440.png` | **tre plassholderrader**: hvite kort på **880 @ x 280**, hver **68 px høy med 13 px hjørne**, med en grå strek der oppgavenavnet kommer | **128** |
+
+Det er regel 7s andre setning, ordrett: «While loading, it shows grey placeholder rows, not a
+sentence.» Radene har samme bredde, høyde og hjørne som oppgaveradene de er i ferd med å bli.
+`scrollWidth = 1440` i begge.
+
+**Én ting jeg fant da jeg målte dette, og som ingen av de 8 reglene retter:** mens siden laster,
+bærer det gule feltet bare underlinja («søndag 18. oktober») og ingen tittel, så feltet er **128 px**
+i stedet for 270. Grunnen er at barnets navn — som *er* tittelen på den siden (desktop-12) —
+kommer i det samme svaret som oppgavelista. Jeg målte begge halvdelene: **128 px i dag og 128 px
+med reglene**, altså uendret av regel 7, og det er ikke noe jeg har innført. Regel 2 sier likevel at
+hver side bærer tittel og underlinje i feltet. Hva feltet skal vise før navnet er kjent, er et
+spørsmål til Maria, ikke noe de 8 reglene svarer på.
 
 ## Én linje per side: hvilke regler endret den, og hva jeg valgte
 
@@ -61,9 +92,43 @@ passord, Invitasjon).
 | **Sett nytt passord** | 1 (400 på x 552 → 880 på x 280), 2 (felt 191), 3 (**24/600 `#15181C`, midtstilt** — appens letteste sidetittel → 26/800 blekk, venstre), 4 (ett 428-skjema), 5 (knappen var 336 × 49,6 med **6 px hjørne**), 6 (og **grå `#ECECE8`** — nå gul fra start), 7 (kvitteringen er det hvite kortet), 8 (👁️ / 👁️‍🗨️ → det tegnede øyet). | Underlinja: **«Velg et passord du husker»**. Knappen heter «Sett passordet» (samme handling som «Tilbakestill passord», i sidens egen tittelform). |
 | **Invitasjon (lenke)** | 1 (440 på x 532 → 880 på x 280), 2 (felt 191), 3 (ingen 26/800-tittel → «Invitasjon»), 4 (én 428-spalte med de to handlingene), 5 (begge knappene 49/13/16,5 — hovedknapp og omriss), 7 (feil og kvittering er det samme hvite kortet), 8 (**hele siden var engelsk**: «Household Invitation», «You've been invited…», «Accept Invitation», «Decline»). | Begge halvdelene i paret viser **innlogget** tilstand (godta/avslå), ikke «logg inn først». Underlinja: «Du er invitert inn i en husstand». |
 
-## Det ene valget som er verdt et blikk
+## Valgene som skal til Maria
 
-**De fire innloggingssidene får Diddit-merket i sitt eget gule felt.** Regel 1 sier at en sides
+### 1. Det hvite kortet rundt skjemaet er borte på fem sider
+
+**«Ny husstand», «Barnas innlogging», «Glemt passord», «Sett nytt passord» og «Invitasjon» legger
+feltene rett på papiret.** Ingen av de 8 reglene ber om det, og jeg skrev det ikke ned første
+gang. Her er det, som det valget det er.
+
+I dag står hver av de fem i sitt eget hvite kort (veiviseren i et 480 px kort, barnas innlogging i
+et 480 px, og så videre). Med reglene er kortet borte: `r4-form` setter etikett, felt og knapp
+rett i 428-spalta, med `background: transparent` der kortet var.
+
+**Hvorfor jeg valgte det:**
+
+- **Det signerte innloggingsbildet gjør det samme.** `login-19` har ikke noe kort rundt skjemaet:
+  `main.paper > .column > h1 + form` legger feltene rett på papiret. Disse fem er skjemaer av
+  samme slag, og rett ved siden av «Logg inn» i settet.
+- **Regel 7 gir det hvite kortet en jobb.** Kortet er tomt-, laste- og feiltilstanden. Bruker
+  skjemaet det også, betyr hvitt kort to ting på samme side. På «Glemt passord» og «Sett nytt
+  passord» står begge på skjermen etter hverandre — skjemaet, så kvitteringen.
+- **Regel 4 nevner bare spalta**, ikke noe kort: «One 428 px column for a form or a short list.»
+
+**Hvorfor det likevel er Marias avgjørelse:** del 1, som er godkjent, **beholder kortet rundt
+skjemagruppa** — «Profil» på Innstillinger står i sin `settings-card`. Stig ser de to settene
+sammen, og da leser forskjellen som en inkonsekvens og ikke som et valg. De to utfallene:
+
+| | Hva som skjer | Følge |
+| --- | --- | --- |
+| **A — som nå** | de fem skjemasidene uten kort, som `login-19` | del 1s «Profil» har kort, del 2s skjemaer ikke |
+| **B — kortet tilbake** | de fem skjemaene i et hvitt 428-kort | likt del 1; men da må regel 7 få en annen form for tomt/laster/feil, ellers er hvitt kort to ting |
+
+Jeg anbefaler **A** og er klar til å tegne **B** på en halvtime hvis Maria vil ha det. Dette er en
+endring av utseendet, så det er ikke min avgjørelse.
+
+### 2. De fire innloggingssidene får Diddit-merket i sitt eget gule felt
+
+Regel 1 sier at en sides
 venstre kant er venstre kant av Diddit-merket **i menyen** — og disse fire sidene har ingen meny.
 Jeg lot dem bære merket selv: den samme 80 px gule raden som menyens fanerad, samme 880 px, samme
 oppsett (merke 36 + ordmerke 26/800 blekk), uten faner og uten initialmerke, siden ingen er logget
@@ -96,6 +161,16 @@ kontoen, husstandsnavn på 44 tegn i veiviseren, og de tre innloggingsskjemaene 
 2. **Fanestripa «Ønsker / Belønninger»** finnes ikke på barnets side; den er foreldrenes (del 1).
 3. **Veiviserens steg 2–5** (QR-koder, oppgavevalg, påminnelser) er de samme sidene som i dag, med
    reglenes ramme rundt. Bildet viser steg 1, som er det siden åpner på.
+   **Vær klar over** (Astrids notat): 🔔-en over «Slå på påminnelser» er tatt bort i koden som
+   regel 8 ber om, men den sto på **påminnelsessteget**, og det steget er ikke tegnet. Påstanden
+   står derfor i teksten uten et bilde bak seg. De andre emojiene i punktet (📧 🔐 🙈, raketten,
+   👁️) er på sider som *er* tegnet.
+
+**Og én ting jeg rettet etter Astrids notat:** invitasjonens ledetekst sto «Du er invitert inn i en
+husstand. Vil du godta invitasjonen?» rett under en underlinje som sa «Du er invitert inn i en
+husstand» — den samme setningen to ganger. Regel 2 er den som flyttet setningen opp i feltet, så
+gjentakelsen er min; ledeteksten er nå bare spørsmålet: **«Vil du godta invitasjonen?»**
+`rules-invitasjon-1440.png` og `rules-overview-2.png` er tegnet på nytt etter den rettelsen.
 
 ## WCAG
 

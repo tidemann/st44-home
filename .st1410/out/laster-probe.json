@@ -1,0 +1,44 @@
+{
+ "url": "/my-tasks",
+ "band": {
+  "x": 0,
+  "w": 1440,
+  "h": 80
+ },
+ "title": {
+  "text": "",
+  "x": 280,
+  "size": "26px",
+  "weight": "800"
+ },
+ "skeleton": {
+  "x": 280,
+  "w": 880,
+  "rows": 3
+ },
+ "rows": [
+  {
+   "x": 280,
+   "w": 880,
+   "h": 68,
+   "bg": "rgb(255, 255, 255)",
+   "radius": "13px"
+  },
+  {
+   "x": 280,
+   "w": 880,
+   "h": 68,
+   "bg": "rgb(255, 255, 255)",
+   "radius": "13px"
+  },
+  {
+   "x": 280,
+   "w": 880,
+   "h": 68,
+   "bg": "rgb(255, 255, 255)",
+   "radius": "13px"
+  }
+ ],
+ "text": "Diddit Hjem Belønninger J søndag 18. oktober",
+ "scrollW": 1440
+}

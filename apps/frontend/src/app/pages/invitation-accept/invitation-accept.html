@@ -36,9 +36,9 @@
     </div>
   } @else {
     <div class="r4-form">
-      <p class="f-lead" i18n="@@invitationAccept.acceptLead">
-        Du er invitert inn i en husstand. Vil du godta invitasjonen?
-      </p>
+      <!-- ST-1410 round 2 (Astrid): rule 2 put «Du er invitert inn i en husstand» in the
+           band, so this lead repeated it word for word. The question alone is left. -->
+      <p class="f-lead" i18n="@@invitationAccept.acceptLead">Vil du godta invitasjonen?</p>
       <!-- Rule 6: the main button keeps its yellow while the answer is on its way -->
       <button type="button" class="r5-main" (click)="acceptInvitation()">
         @if (isProcessing()) {

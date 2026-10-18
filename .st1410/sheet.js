@@ -16,6 +16,14 @@ const img=(p)=>`data:image/png;base64,${fs.readFileSync(p).toString('base64')}`;
 
 const GROUPS=[rows.slice(0,5),rows.slice(5)];
 
+// ST-1410 round 2 (Astrid): three pairs are identical, and a sheet that does not say so
+// reads like a mistake. One line under each, naming why — and where the change is shown.
+const SAME={
+ 'mine-oppgaver-barn':'<strong>Halvdelene er like med vilje.</strong> Siden traff reglene 1–4 fra før (880 @ x 280, 26/800, felt 270, to 428-spalter). Den eneste endringen er regel 7, som bare er synlig mens siden laster eller feiler: se <strong>rules-mine-oppgaver-barn-laster-1440.png</strong>.',
+ 'logg-inn':'<strong>Halvdelene er like med vilje.</strong> Reglene 5–8 holdt allerede her, og regel 3 lar siden beholde sin 34 px-tittel og sitt gule panel. Bildet er med for å vise at reglene lar innloggingen stå.',
+ 'opprett-konto':'<strong>Halvdelene er like med vilje.</strong> Samme som «Logg inn» — sidene deler <code>login.css</code>.',
+};
+
 const card=(r)=>`
   <div class="pair">
     <h2>${r.label}</h2>
@@ -27,6 +35,7 @@ const card=(r)=>`
         <div class="shot"><img src="${img(`${OUT}/t-rules-${r.slug}.png`)}"></div>
         <p class="h">hele siden ${r.rulesH} px</p></figure>
     </div>
+    ${SAME[r.slug]?`<p class="same">${SAME[r.slug]}</p>`:''}
   </div>`;
 
 const html=(group,n,total)=>`<!doctype html><html lang="nb"><head><meta charset="utf-8"><style>
@@ -43,6 +52,9 @@ figcaption{font-size:13px;font-weight:600;color:#555E64;margin-bottom:5px}
 .shot{width:470px;height:359px;overflow:hidden;border:1px solid #DFDFD9;border-radius:8px;background:#F6F6F4}
 .shot img{width:1440px;transform:scale(0.3264);transform-origin:0 0;display:block}
 .h{font-size:12px;font-weight:500;color:#555E64;margin-top:5px}
+.same{margin-top:9px;max-width:954px;font-size:12.5px;font-weight:500;line-height:1.45;color:#555E64;border-left:3px solid #F6B93B;padding-left:10px}
+.same strong{color:#15181C}
+.same code{font-family:ui-monospace,monospace;font-size:11.5px}
 .foot{margin-top:30px;font-size:13px;font-weight:500;color:#555E64;line-height:1.5;max-width:1180px}
 </style></head><body><div class="sheet">
 <h1>Diddit på skjerm – de 8 sidereglene, tegnet – barne-, oppsett- og innloggingssidene (${n} av ${total})</h1>

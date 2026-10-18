@@ -1,0 +1,18 @@
+{
+ "url": "/my-tasks",
+ "band": {
+  "x": 0,
+  "w": 1440,
+  "h": 80
+ },
+ "title": {
+  "text": "",
+  "x": 280,
+  "size": "26px",
+  "weight": "800"
+ },
+ "skeleton": null,
+ "rows": [],
+ "text": "Diddit Hjem Belønninger J søndag 18. oktober Laster oppgavene dine...",
+ "scrollW": 1440
+}
