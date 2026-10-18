@@ -29,7 +29,13 @@ export class ForgotPasswordComponent {
   }
 
   protected async onSubmit(): Promise<void> {
-    if (this.forgotPasswordForm.invalid) return;
+    if (this.isLoading()) return;
+
+    // Validate on press: the button is never a greyed-out dead end (guide, rule 6)
+    if (this.forgotPasswordForm.invalid) {
+      this.forgotPasswordForm.markAllAsTouched();
+      return;
+    }
 
     this.isLoading.set(true);
     this.errorMessage.set(null);
