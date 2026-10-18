@@ -272,3 +272,55 @@
 .alert {
   margin: 0;
 }
+
+/* =====================================================================================
+   ST-1410 (pictures only) — the 8 page rules on desktop. Rule 1 puts the page in the
+   880 px frame and rule 2 moves the step's question and «Steg N av 4» into the band, so
+   the card's own 480 px box, its own title and its full-height stretch all go away.
+   ===================================================================================== */
+
+@media (min-width: 1024px) {
+  .wizard {
+    min-height: 0;
+    display: block;
+    padding: 0;
+    background: transparent;
+  }
+
+  /* RULE 4 — one 428 px column: the wizard is a form */
+  .wizard-card {
+    width: 428px;
+    max-width: none;
+    min-height: 0;
+    padding: 24px 0 0;
+    gap: 15px;
+    background: transparent;
+    border-radius: 0;
+  }
+
+  /* RULE 2 + 3 — the question stands in the band now, in one style, so the card does
+     not draw it a second time */
+  .step-title {
+    display: none;
+  }
+
+  .step,
+  .step-body {
+    gap: 15px;
+  }
+
+  .step-actions {
+    margin-top: 15px;
+    padding: 0;
+  }
+
+  /* RULE 5 — the main button is its column's width, 49 px, 13 px corners, 16.5 px label */
+  .wizard .r5-main {
+    width: 100%;
+    min-height: 49px;
+    height: 49px;
+    border-radius: var(--r-button);
+    font-size: 16.5px;
+    padding-block: 0;
+  }
+}

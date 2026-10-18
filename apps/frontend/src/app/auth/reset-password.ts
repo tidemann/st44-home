@@ -8,12 +8,14 @@ import {
   passwordStrengthValidator,
   passwordMatchValidator,
 } from '../utils/password-validation.utils';
+import { PageComponent } from '../components/page/page';
+import { AuthTop } from '../components/navigation/auth-top/auth-top';
 
 @Component({
   selector: 'app-reset-password',
   templateUrl: './reset-password.html',
   styleUrl: './reset-password.css',
-  imports: [CommonModule, ReactiveFormsModule, RouterLink],
+  imports: [CommonModule, ReactiveFormsModule, RouterLink, PageComponent, AuthTop],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ResetPasswordComponent implements OnInit {
@@ -91,7 +93,11 @@ export class ResetPasswordComponent implements OnInit {
   }
 
   protected async onSubmit(): Promise<void> {
-    if (this.resetPasswordForm.invalid || !this.resetToken()) return;
+    // ST-1410 rule 6: the button is never pale, so the press is what checks the form
+    if (this.resetPasswordForm.invalid || !this.resetToken()) {
+      this.resetPasswordForm.markAllAsTouched();
+      return;
+    }
 
     this.isLoading.set(true);
     this.errorMessage.set(null);

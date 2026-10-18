@@ -14,12 +14,14 @@ import { timer } from 'rxjs';
 import { InvitationService, AcceptInvitationResponse } from '../../services/invitation.service';
 import { AuthService } from '../../services/auth.service';
 import { ConfirmDialogService } from '../../services/confirm-dialog.service';
+import { PageComponent } from '../../components/page/page';
+import { AuthTop } from '../../components/navigation/auth-top/auth-top';
 
 const REDIRECT_DELAY_MS = 2000;
 
 @Component({
   selector: 'app-invitation-accept',
-  imports: [CommonModule, RouterLink],
+  imports: [CommonModule, RouterLink, PageComponent, AuthTop],
   templateUrl: './invitation-accept.html',
   styleUrl: './invitation-accept.css',
   changeDetection: ChangeDetectionStrategy.OnPush,

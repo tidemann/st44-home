@@ -16,27 +16,34 @@
     <p class="notice" role="status">{{ successMessage() }}</p>
   }
 
+  <!-- ST-1410 rule 7: one card for empty, loading and error. While it loads it shows the
+       rows it is about to show, not a sentence. -->
   @if (loading()) {
-    <div class="state" role="status" aria-live="polite">
-      <span class="spinner" aria-hidden="true"></span>
-      <span i18n="@@childRewards.loading">Henter belønninger…</span>
+    <div class="r7-skeleton" role="status" aria-live="polite" aria-busy="true">
+      <i></i><i></i><i></i>
     </div>
   } @else if (error()) {
-    <div class="state" role="alert">
-      <span i18n="@@childRewards.loadFailed">Vi fikk ikke hentet belønningene.</span>
-      <button type="button" class="btn btn-primary" (click)="load()" i18n="@@childRewards.tryAgain">
+    <div class="r7-card r7-wide" role="alert">
+      <p class="r7-title" i18n="@@childRewards.loadFailedTitle">Vi fikk ikke hentet ønskene</p>
+      <p class="r7-line" i18n="@@childRewards.loadFailed">Vi fikk ikke hentet belønningene.</p>
+      <button type="button" class="r5-main" (click)="load()" i18n="@@childRewards.tryAgain">
         Prøv igjen
       </button>
     </div>
   } @else {
+    <!-- ST-1410 rule 4: the page has groups, so two 428 px columns with 24 px between
+         them — what you can ask for on the left, what you have asked for on the right -->
+    <div class="r4-cols">
+    <div class="r4-col">
     <section class="rewards" aria-labelledby="rewards-heading">
       <h2 id="rewards-heading" class="visually-hidden" i18n="@@childRewards.rewardsHeading">
         Dette kan du be om
       </h2>
       @if (childRewards().length === 0) {
-        <div class="empty">
-          <p class="empty-title" i18n="@@childRewards.empty">Ingen belønninger ennå!</p>
-          <p class="empty-sub" i18n="@@childRewards.emptyHint">
+        <!-- ST-1410 rule 7: the same white card, one title line and one sentence -->
+        <div class="r7-card">
+          <p class="r7-title" i18n="@@childRewards.empty">Ingen belønninger ennå!</p>
+          <p class="r7-line" i18n="@@childRewards.emptyHint">
             Spør en voksen om å lage noen til deg.
           </p>
         </div>
@@ -53,6 +60,8 @@
         }
       }
     </section>
+    </div>
+    <div class="r4-col">
 
     <!-- Not drawn in the picture: requests waiting for an answer -->
     @if (waiting().length > 0) {
@@ -118,6 +127,8 @@
         }
       </section>
     }
+    </div>
+    </div>
   }
 </app-page>
 

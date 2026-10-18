@@ -4,12 +4,14 @@ import { ReactiveFormsModule, FormGroup, FormControl, Validators } from '@angula
 import { Router, RouterLink } from '@angular/router';
 import { AuthService } from '../services/auth.service';
 import { lastValueFrom } from 'rxjs';
+import { PageComponent } from '../components/page/page';
+import { AuthTop } from '../components/navigation/auth-top/auth-top';
 
 @Component({
   selector: 'app-child-login',
   templateUrl: './child-login.html',
   styleUrl: './child-login.css',
-  imports: [CommonModule, ReactiveFormsModule, RouterLink],
+  imports: [CommonModule, ReactiveFormsModule, RouterLink, PageComponent, AuthTop],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ChildLoginComponent {
@@ -38,7 +40,11 @@ export class ChildLoginComponent {
   }
 
   protected async onSubmit(): Promise<void> {
-    if (this.loginForm.invalid) return;
+    // ST-1410 rule 6: the button is never pale, so the press is what checks the form
+    if (this.loginForm.invalid) {
+      this.loginForm.markAllAsTouched();
+      return;
+    }
 
     this.isLoading.set(true);
     this.errorMessage.set(null);

@@ -24,19 +24,21 @@
     }
   </div>
 
-  <!-- Loading State -->
+  <!-- Loading State — ST-1410 rule 7: the rows it is about to show, not a sentence -->
   @if (isLoading()) {
-    <div class="state" role="status" aria-live="polite">
-      <span class="spinner" aria-hidden="true"></span>
-      <p i18n="@@childDashboard.loading">Laster oppgavene dine...</p>
+    <div class="r7-skeleton" role="status" aria-live="polite" aria-busy="true">
+      <i></i><i></i><i></i>
     </div>
   }
 
-  <!-- Error State -->
+  <!-- Error State — ST-1410 rule 7: one white card, one title line, one sentence -->
   @if (!isLoading() && errorMessage()) {
-    <div class="state" role="alert">
-      <p class="error-message">{{ errorMessage() }}</p>
-      <button class="btn btn-primary" (click)="loadMyTasks()" i18n="@@childDashboard.tryAgain">
+    <div class="r7-card r7-wide" role="alert">
+      <p class="r7-title" i18n="@@childDashboard.loadFailedTitle">
+        Vi fikk ikke hentet oppgavene dine
+      </p>
+      <p class="r7-line">{{ errorMessage() }}</p>
+      <button class="r5-main" (click)="loadMyTasks()" i18n="@@childDashboard.tryAgain">
         Prøv igjen
       </button>
     </div>
@@ -47,9 +49,10 @@
     <div class="cols">
       <div class="col">
         @if (!hasTasks()) {
-          <div class="empty" role="status">
-            <p class="empty-title" i18n="@@childDashboard.noTasksToday">Ingen oppgaver i dag!</p>
-            <p class="empty-sub" i18n="@@childDashboard.enjoyFreeTime">Nyt fritiden din!</p>
+          <!-- ST-1410 rule 7: the same white card, one title line and one sentence -->
+          <div class="r7-card" role="status">
+            <p class="r7-title" i18n="@@childDashboard.noTasksToday">Ingen oppgaver i dag!</p>
+            <p class="r7-line" i18n="@@childDashboard.enjoyFreeTime">Nyt fritiden din!</p>
           </div>
         }
 

@@ -18,6 +18,7 @@ import { PushNotificationService } from '../../services/push-notification.servic
 import { StorageService } from '../../services/storage.service';
 import { STORAGE_KEYS } from '../../services/storage-keys';
 import { QrCodeDisplayComponent } from '../../components/qr-code-display/qr-code-display';
+import { PageComponent } from '../../components/page/page';
 
 /** A setup left halfway can be picked up again for a day */
 const SETUP_RESUME_MS = 24 * 60 * 60 * 1000;
@@ -63,7 +64,7 @@ export function choreSuggestions(): ChoreChoice[] {
  */
 @Component({
   selector: 'app-setup-wizard',
-  imports: [QrCodeDisplayComponent],
+  imports: [PageComponent, QrCodeDisplayComponent],
   templateUrl: './setup-wizard.html',
   styleUrl: './setup-wizard.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -107,6 +108,22 @@ export class SetupWizard implements OnInit {
 
   /** The progress line counts 4a and 4b as step 4 */
   readonly progressStep = computed(() => Math.min(this.step(), 4));
+
+  /** ST-1410 rule 2 + 3: the step's own question is the page title, in the band, with
+      «Steg N av 4» as the sub-line. Same words as the step drew inside its card. */
+  readonly stepTitle = computed(
+    () =>
+      ({
+        1: $localize`:@@setupWizard.familyTitle:Hva heter familien?`,
+        2: $localize`:@@setupWizard.childrenTitle:Legg til barna`,
+        3: $localize`:@@setupWizard.choresTitle:Velg de første oppgavene`,
+        4: $localize`:@@setupWizard.remindersTitle:Slå på påminnelser`,
+        5: $localize`:@@setupWizard.doneTitle:Klart`,
+      })[this.step()] ?? '',
+  );
+  readonly stepSub = computed(() =>
+    this.step() > 4 ? '' : $localize`:@@setupWizard.progress:Steg ${this.progressStep()}:step: av 4`,
+  );
   /** Chores the step 3 button will make now (not the ones already made) */
   readonly chosenCount = computed(() => this.chores().filter((c) => c.chosen && !c.created).length);
 

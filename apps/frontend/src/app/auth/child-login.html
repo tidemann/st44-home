@@ -1,98 +1,109 @@
-<div class="child-login-container">
-  <div class="login-card">
-    <!-- Header with fun title -->
-    <div class="header">
-      <h1 class="title" i18n="@@childLogin.title">Velkommen tilbake!</h1>
-      <p class="subtitle" i18n="@@childLogin.subtitle">La oss komme i gang med oppgavene dine</p>
-    </div>
-
-    <!-- Login Form -->
-    <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="login-form">
-      <!-- Email Input -->
-      <div class="form-group">
-        <label for="email" class="form-label">
-          <span class="icon">📧</span>
-          <ng-container i18n="@@childLogin.email.label">Din e-post</ng-container>
-        </label>
-        <input
-          type="email"
-          id="email"
-          formControlName="email"
-          class="form-input"
-          i18n-placeholder="@@childLogin.email.placeholder"
-          placeholder="deg@eksempel.no"
-          [class.error]="emailControl.invalid && emailControl.touched"
-        />
-        @if (emailControl.invalid && emailControl.touched) {
-          <div class="error-text" i18n="@@error.email.invalid">
-            Vennligst oppgi en gyldig e-postadresse
-          </div>
-        }
-      </div>
-
-      <!-- Password Input -->
-      <div class="form-group">
-        <label for="password" class="form-label">
-          <span class="icon">🔐</span>
-          <ng-container i18n="@@childLogin.password.label">Ditt passord</ng-container>
-        </label>
-        <div class="password-input-wrapper">
-          <input
-            [type]="showPassword() ? 'text' : 'password'"
-            id="password"
-            formControlName="password"
-            class="form-input"
-            i18n-placeholder="@@childLogin.password.placeholder"
-            placeholder="Skriv inn passordet ditt"
-            [class.error]="passwordControl.invalid && passwordControl.touched"
-          />
-          <button
-            type="button"
-            class="toggle-password"
-            (click)="togglePasswordVisibility()"
-            [attr.aria-label]="showPassword() ? 'Skjul passord' : 'Vis passord'"
-          >
-            @if (showPassword()) {
-              👁️
-            } @else {
-              🙈
-            }
-          </button>
-        </div>
-        @if (passwordControl.invalid && passwordControl.touched) {
-          <div class="error-text" i18n="@@error.password.enterYours">
-            Vennligst skriv inn passordet ditt
-          </div>
-        }
-      </div>
-
-      <!-- Error Message -->
-      @if (errorMessage()) {
-        <div class="error-message" role="alert">
-          <span class="error-icon">⚠️</span>
-          {{ errorMessage() }}
-        </div>
+<!-- ST-1410, pictures only: the 8 page rules on barnas innlogging.
+     1 + 2 — the yellow top with the mark, then the title and one sub-line in the band.
+     3 — 26/800 ink (only «Logg inn» and «Opprett konto» keep 34).
+     4 — one 428 px column: it is a form.
+     5 + 6 — one main button, 49/13/16.5, column width, never pale.
+     8 — the emoji field icons, the rocket in the button and the 🙈 eye are gone. -->
+<app-auth-top />
+<app-page
+  i18n-title="@@childLogin.title"
+  title="Velkommen tilbake!"
+  i18n-subtitle="@@childLogin.subtitle"
+  subtitle="La oss komme i gang med oppgavene dine"
+  [band]="true"
+  [showUserButton]="false"
+>
+  <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="r4-form">
+    <div>
+      <label for="email" class="f-label" i18n="@@childLogin.email.label">Din e-post</label>
+      <input
+        type="email"
+        id="email"
+        formControlName="email"
+        class="f-field"
+        i18n-placeholder="@@childLogin.email.placeholder"
+        placeholder="deg@eksempel.no"
+        [class.is-wrong]="emailControl.invalid && emailControl.touched"
+      />
+      @if (emailControl.invalid && emailControl.touched) {
+        <p class="f-error" role="alert">
+          <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true" focusable="false">
+            <path
+              d="M8 2.4 14.4 13.6H1.6L8 2.4Z"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.6"
+              stroke-linejoin="round"
+            />
+            <path d="M8 6.4v3.2" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" />
+            <circle cx="8" cy="11.6" r="0.6" fill="currentColor" />
+          </svg>
+          <span i18n="@@error.email.invalid">Vennligst oppgi en gyldig e-postadresse</span>
+        </p>
       }
-
-      <!-- Submit Button -->
-      <button type="submit" class="submit-button" [disabled]="loginForm.invalid || isLoading()">
-        @if (isLoading()) {
-          <span class="spinner"></span>
-          <span i18n="@@childLogin.submit.loading">Logger inn...</span>
-        } @else {
-          <span i18n="@@childLogin.submit.button">🚀 Logg inn</span>
-        }
-      </button>
-    </form>
-
-    <!-- Help Section -->
-    <div class="help-section">
-      <p class="help-text">
-        <ng-container i18n="@@childLogin.help.needHelp">Trenger du hjelp?</ng-container>
-        <a routerLink="/login" class="help-link" i18n="@@childLogin.help.askParent"
-          >Spor en forelder</a
-        >
-      </p>
     </div>
-  </div>
-</div>
+
+    <div>
+      <label for="password" class="f-label" i18n="@@childLogin.password.label">Ditt passord</label>
+      <div class="f-wrap">
+        <input
+          [type]="showPassword() ? 'text' : 'password'"
+          id="password"
+          formControlName="password"
+          class="f-field"
+          i18n-placeholder="@@childLogin.password.placeholder"
+          placeholder="Skriv inn passordet ditt"
+          [class.is-wrong]="passwordControl.invalid && passwordControl.touched"
+        />
+        <button
+          type="button"
+          class="f-eye"
+          (click)="togglePasswordVisibility()"
+          [attr.aria-label]="showPassword() ? 'Skjul passord' : 'Vis passord'"
+        >
+          <svg width="20" height="20" viewBox="0 0 20 20" aria-hidden="true" focusable="false">
+            <path
+              d="M1.8 10S4.8 4.8 10 4.8 18.2 10 18.2 10 15.2 15.2 10 15.2 1.8 10 1.8 10Z"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.6"
+              stroke-linejoin="round"
+            />
+            <circle cx="10" cy="10" r="2.6" fill="none" stroke="currentColor" stroke-width="1.6" />
+            @if (showPassword()) {
+              <path
+                d="M4 16 16 4"
+                stroke="currentColor"
+                stroke-width="1.6"
+                stroke-linecap="round"
+              />
+            }
+          </svg>
+        </button>
+      </div>
+      @if (passwordControl.invalid && passwordControl.touched) {
+        <p class="f-error" role="alert">
+          <span i18n="@@error.password.enterYours">Vennligst skriv inn passordet ditt</span>
+        </p>
+      }
+    </div>
+
+    @if (errorMessage()) {
+      <p class="f-error" role="alert">{{ errorMessage() }}</p>
+    }
+
+    <!-- Rule 6: enabled from the start, the form is checked on press -->
+    <button type="submit" class="r5-main">
+      @if (isLoading()) {
+        <span i18n="@@childLogin.submit.loading">Logger inn …</span>
+      } @else {
+        <span i18n="@@childLogin.submit.button">Logg inn</span>
+      }
+    </button>
+
+    <p class="f-foot">
+      <ng-container i18n="@@childLogin.help.needHelp">Trenger du hjelp?</ng-container>&ngsp;
+      <a routerLink="/login" i18n="@@childLogin.help.askParent">Spør en forelder</a>
+    </p>
+  </form>
+</app-page>

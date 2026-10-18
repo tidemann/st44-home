@@ -1131,3 +1131,156 @@ app-reward-card + app-reward-card {
     width: 45%;
   }
 }
+
+/* =====================================================================================
+   ST-1410 — the eight page rules on the child, setup and sign-in pages (ST-1370).
+   Pictures only: this block is not pushed to main. Every value is one the guide already
+   carries — the login form's own label/field/button spec and the 428 px column.
+   ===================================================================================== */
+
+@media (min-width: 1024px) {
+  /* RULE 4 — one 428 px column for a form or a short list. The sign-in pages and the
+     wizard are forms, so they get one column, left-aligned on the page's left edge. */
+  .r4-form {
+    width: 428px;
+    padding-top: 24px;
+  }
+
+  .r4-form > * + * {
+    margin-top: 15px;
+  }
+
+  /* The login's own form vocabulary (guide: The login screen → The form): the label
+     stands above the field and stays there, 13 px; the field is 49 px, 13 px corners,
+     white, 1.5 px #555E64; the value is Body 16. No placeholder-as-label. */
+  .r4-form .f-label {
+    display: block;
+    font-family: var(--font-text);
+    font-size: 13px;
+    font-weight: 600;
+    line-height: 1.3;
+    color: #15181c;
+    margin: 0 0 6px;
+  }
+
+  .r4-form .f-field {
+    display: block;
+    width: 100%;
+    height: 49px;
+    padding: 0 18px;
+    font-family: var(--font-text);
+    font-size: 16px;
+    font-weight: 500;
+    color: #15181c;
+    background: #ffffff;
+    border: 1.5px solid #555e64;
+    border-radius: var(--r-button);
+    box-shadow: none;
+  }
+
+  .r4-form .f-field::placeholder {
+    color: var(--text-muted);
+  }
+
+  .r4-form .f-field:focus {
+    outline: 2px solid var(--ink);
+    outline-offset: 1px;
+    border-color: #555e64;
+    box-shadow: none;
+  }
+
+  /* RULE 6 — the form is checked when the button is pressed and the error shows under
+     the field. One line, rust, with the warning glyph, exactly as the login draws it. */
+  .r4-form .f-error {
+    display: flex;
+    align-items: flex-start;
+    gap: 6px;
+    margin-top: 8px;
+    font-family: var(--font-text);
+    font-size: 15px;
+    font-weight: 500;
+    line-height: 1.4;
+    color: #a43a16;
+  }
+
+  .r4-form .f-field.is-wrong {
+    border: 2px solid #a43a16;
+  }
+
+  /* The sentence that leads a form, and the foot link line under it */
+  .r4-form .f-lead,
+  .r4-form .f-foot {
+    font-family: var(--font-text);
+    font-size: 15px;
+    font-weight: 500;
+    line-height: 1.4;
+    color: var(--text-muted);
+    margin: 0;
+  }
+
+  .r4-form .f-foot a,
+  .r4-form .f-lead a {
+    color: #8a5a00;
+    text-decoration: underline;
+  }
+
+  /* The password field's eye is a row-sized control inside the field (rule 5: 10 px) */
+  .r4-form .f-wrap {
+    position: relative;
+  }
+
+  .r4-form .f-eye {
+    position: absolute;
+    top: 50%;
+    right: 7px;
+    width: 36px;
+    height: 36px;
+    margin-top: -18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 0;
+    border-radius: var(--r-row-action);
+    background: transparent;
+    color: var(--text);
+    cursor: pointer;
+  }
+
+  /* RULE 5 — the main button is as wide as its column, 49 px, 13 px corners, 16.5 px
+     label; the outline button is the same size. Both keep the yellow (rule 6). */
+  .r4-form .r5-main,
+  .r4-form .r5-outline {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    min-height: 49px;
+    border: 0;
+    border-radius: var(--r-button);
+    font-family: var(--font-text);
+    font-size: 16.5px;
+    font-weight: 600;
+    line-height: 1.35;
+    background: var(--yellow);
+    color: var(--ink);
+    opacity: 1;
+    cursor: pointer;
+  }
+
+  .r4-form .r5-outline {
+    background: var(--surface);
+    color: #15181c;
+    border: 1.5px solid #555e64;
+  }
+
+  /* RULE 7 — one card for empty, loading and error, in the page width: a title line, a
+     sentence, and a main button when there is something to do. */
+  .r7-wide {
+    width: 880px;
+  }
+
+  .r7-wide .r5-main {
+    width: auto;
+    padding-inline: 22px;
+  }
+}

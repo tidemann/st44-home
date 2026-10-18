@@ -1,90 +1,55 @@
-<div class="invitation-accept-container">
-  <div class="invitation-accept-card">
-    <div class="card-header">
-      <h1>Household Invitation</h1>
+<!-- ST-1410, pictures only: the 8 page rules on «Invitasjon» (the link in the e-mail).
+     1 + 2 — 880 at x 280 (it was 440 at x 532), title and one sub-line in the band.
+     3 — 26/800 ink. 4 — one 428 px column: a short list of two actions.
+     5 — «Godta invitasjonen» and «Avslå» are the main and the outline button, 49/13/16.5.
+     7 — the error and the done state are the same white card, one title line and one sentence.
+     8 — the page was English («Household Invitation», «Accept Invitation», «Decline»). -->
+<app-auth-top />
+<app-page
+  i18n-title="@@invitationAccept.title"
+  title="Invitasjon"
+  i18n-subtitle="@@invitationAccept.sub"
+  subtitle="Du er invitert inn i en husstand"
+  [band]="true"
+  [showUserButton]="false"
+>
+  @if (errorMessage()) {
+    <div class="r7-card r7-wide" role="alert">
+      <p class="r7-title" i18n="@@invitationAccept.errorTitle">Invitasjonen kan ikke brukes</p>
+      <p class="r7-line">{{ errorMessage() }}</p>
+      <a routerLink="/home" class="r5-main" i18n="@@invitationAccept.toHome">Til Hjemme</a>
     </div>
-
-    <div class="card-content">
-      @if (errorMessage()) {
-        <div class="error-message">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="20"
-            height="20"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-          >
-            <circle cx="12" cy="12" r="10"></circle>
-            <line x1="12" y1="8" x2="12" y2="12"></line>
-            <line x1="12" y1="16" x2="12.01" y2="16"></line>
-          </svg>
-          <span>{{ errorMessage() }}</span>
-        </div>
-        <div class="actions">
-          <a routerLink="/home" class="btn btn-secondary">Go to Home</a>
-        </div>
-      } @else if (successMessage()) {
-        <div class="success-message">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="20"
-            height="20"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-          >
-            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
-            <polyline points="22 4 12 14.01 9 11.01"></polyline>
-          </svg>
-          <span>{{ successMessage() }}</span>
-        </div>
-        <p class="redirect-note">Redirecting you to the home page...</p>
-      } @else if (!isAuthenticated()) {
-        <p class="invitation-text">
-          You've been invited to join a household. Please sign in or create an account to accept
-          this invitation.
-        </p>
-
-        <div class="actions">
-          <a [href]="loginUrl()" class="btn btn-primary">Sign In</a>
-          <a [href]="registerUrl()" class="btn btn-secondary">Create Account</a>
-        </div>
-      } @else {
-        <p class="invitation-text">
-          You've been invited to join a household. Would you like to accept this invitation?
-        </p>
-
-        <div class="actions">
-          <button
-            type="button"
-            class="btn btn-primary"
-            [disabled]="isProcessing()"
-            (click)="acceptInvitation()"
-          >
-            @if (isProcessing()) {
-              <span class="spinner"></span>
-              Processing...
-            } @else {
-              Accept Invitation
-            }
-          </button>
-          <button
-            type="button"
-            class="btn btn-secondary"
-            [disabled]="isProcessing()"
-            (click)="declineInvitation()"
-          >
-            Decline
-          </button>
-        </div>
-      }
+  } @else if (successMessage()) {
+    <div class="r7-card r7-wide" role="status">
+      <p class="r7-title" i18n="@@invitationAccept.doneTitle">Du er med i husstanden</p>
+      <p class="r7-line">{{ successMessage() }}</p>
     </div>
-  </div>
-</div>
+  } @else if (!isAuthenticated()) {
+    <div class="r4-form">
+      <p class="f-lead" i18n="@@invitationAccept.signInLead">
+        Logg inn eller opprett en konto for å godta invitasjonen.
+      </p>
+      <a [href]="loginUrl()" class="r5-main" i18n="@@invitationAccept.signIn">Logg inn</a>
+      <a [href]="registerUrl()" class="r5-outline" i18n="@@invitationAccept.createAccount"
+        >Opprett konto</a
+      >
+    </div>
+  } @else {
+    <div class="r4-form">
+      <p class="f-lead" i18n="@@invitationAccept.acceptLead">
+        Du er invitert inn i en husstand. Vil du godta invitasjonen?
+      </p>
+      <!-- Rule 6: the main button keeps its yellow while the answer is on its way -->
+      <button type="button" class="r5-main" (click)="acceptInvitation()">
+        @if (isProcessing()) {
+          <span i18n="@@invitationAccept.processing">Sender svaret …</span>
+        } @else {
+          <span i18n="@@invitationAccept.accept">Godta invitasjonen</span>
+        }
+      </button>
+      <button type="button" class="r5-outline" (click)="declineInvitation()">
+        <span i18n="@@invitationAccept.decline">Avslå</span>
+      </button>
+    </div>
+  }
+</app-page>

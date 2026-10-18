@@ -1,8 +1,19 @@
+<!-- ST-1410, pictures only: the 8 page rules on «Ny husstand» (veiviseren).
+     1 — 880 at x 280 (it was 480 at x 504). 2 — the step's question and «Steg N av 4» in
+     the band (it had the tab row only, 80). 3 — 26/800 ink (it was 30/800 inside the card).
+     4 — one 428 px column: it is a form. 5 + 6 — «Neste» 49/13/16.5 in the column's width,
+     and it keeps its yellow (it was 60.8 tall and went pale, 2.67:1, before you typed).
+     8 — the 🔔 above «Slå på påminnelser» is gone. -->
+<app-page
+  [title]="stepTitle()"
+  [subtitle]="stepSub()"
+  [band]="true"
+  [showUserButton]="false"
+>
 <main class="wizard">
   <div class="wizard-card">
     <!-- Progress line -->
     <div class="progress">
-      <p class="progress-label" i18n="@@setupWizard.progress">Steg {{ progressStep() }} av 4</p>
       <div
         class="progress-line"
         role="progressbar"
@@ -49,8 +60,7 @@
           <div class="step-actions">
             <button
               type="submit"
-              class="btn btn-primary btn-lg btn-block"
-              [disabled]="!familyName().trim() || busy()"
+              class="btn btn-primary btn-lg btn-block r5-main"
               [attr.aria-busy]="busy()"
               i18n="@@setupWizard.next"
             >
@@ -126,7 +136,7 @@
           <div class="step-actions">
             <button
               type="button"
-              class="btn btn-primary btn-lg btn-block"
+              class="btn btn-primary btn-lg btn-block r5-main"
               [disabled]="busy()"
               (click)="childrenDone()"
               i18n="@@setupWizard.next"
@@ -203,7 +213,7 @@
           <div class="step-actions">
             <button
               type="button"
-              class="btn btn-primary btn-lg btn-block"
+              class="btn btn-primary btn-lg btn-block r5-main"
               [disabled]="busy()"
               [attr.aria-busy]="busy()"
               (click)="saveChores()"
@@ -225,7 +235,6 @@
       @case (4) {
         <div class="step">
           <div class="step-body">
-            <div class="step-icon" aria-hidden="true">🔔</div>
             <h1 class="step-title" i18n="@@setupWizard.remindersTitle">Slå på påminnelser</h1>
             <p class="step-lead" i18n="@@setupWizard.remindersLead">
               Du får beskjed når et barn er ferdig med en oppgave eller ønsker seg en belønning.
@@ -242,7 +251,7 @@
             @if (pushUnavailable() || remindersOn()) {
               <button
                 type="button"
-                class="btn btn-primary btn-lg btn-block"
+                class="btn btn-primary btn-lg btn-block r5-main"
                 (click)="skipReminders()"
                 i18n="@@setupWizard.next"
               >
@@ -251,7 +260,7 @@
             } @else {
               <button
                 type="button"
-                class="btn btn-primary btn-lg btn-block"
+                class="btn btn-primary btn-lg btn-block r5-main"
                 [disabled]="busy()"
                 [attr.aria-busy]="busy()"
                 (click)="turnOnReminders()"
@@ -318,7 +327,7 @@
           <div class="step-actions">
             <button
               type="button"
-              class="btn btn-primary btn-lg btn-block"
+              class="btn btn-primary btn-lg btn-block r5-main"
               (click)="finish()"
               i18n="@@setupWizard.goHome"
             >
@@ -334,3 +343,4 @@
     }
   </div>
 </main>
+</app-page>

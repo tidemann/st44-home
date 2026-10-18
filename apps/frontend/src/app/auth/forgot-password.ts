@@ -4,12 +4,14 @@ import { ReactiveFormsModule, FormGroup, FormControl, Validators } from '@angula
 import { Router, RouterLink } from '@angular/router';
 import { lastValueFrom } from 'rxjs';
 import { AuthService } from '../services/auth.service';
+import { PageComponent } from '../components/page/page';
+import { AuthTop } from '../components/navigation/auth-top/auth-top';
 
 @Component({
   selector: 'app-forgot-password',
   templateUrl: './forgot-password.html',
   styleUrl: './forgot-password.css',
-  imports: [CommonModule, ReactiveFormsModule, RouterLink],
+  imports: [CommonModule, ReactiveFormsModule, RouterLink, PageComponent, AuthTop],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ForgotPasswordComponent {
@@ -29,7 +31,11 @@ export class ForgotPasswordComponent {
   }
 
   protected async onSubmit(): Promise<void> {
-    if (this.forgotPasswordForm.invalid) return;
+    // ST-1410 rule 6: the button is never pale, so the press is what checks the form
+    if (this.forgotPasswordForm.invalid) {
+      this.forgotPasswordForm.markAllAsTouched();
+      return;
+    }
 
     this.isLoading.set(true);
     this.errorMessage.set(null);
