@@ -85,6 +85,8 @@ export class SetupWizard implements OnInit {
 
   // Step 1
   readonly familyName = signal('');
+  /** Shown under the field when «Neste» is pressed with no name (rule 6: never a pale button) */
+  readonly familyNameError = signal(false);
   readonly householdId = signal<string | null>(null);
 
   // Step 2
@@ -121,7 +123,14 @@ export class SetupWizard implements OnInit {
 
   async saveFamily(): Promise<void> {
     const name = this.familyName().trim();
-    if (!name || this.busy()) return;
+    if (this.busy()) return;
+
+    // Validate on press: the button is never a greyed-out dead end (guide, rule 6)
+    if (!name) {
+      this.familyNameError.set(true);
+      return;
+    }
+    this.familyNameError.set(false);
 
     await this.run(
       async () => {

@@ -42,15 +42,26 @@
                 i18n-placeholder="@@setupWizard.familyPlaceholder"
                 placeholder="f.eks. Familien Dahl"
                 [value]="familyName()"
-                (input)="familyName.set(inputValue($event))"
+                [attr.aria-invalid]="familyNameError()"
+                [attr.aria-describedby]="familyNameError() ? 'family-name-error' : null"
+                (input)="familyName.set(inputValue($event)); familyNameError.set(false)"
               />
+              @if (familyNameError()) {
+                <p
+                  id="family-name-error"
+                  class="field-error"
+                  role="alert"
+                  i18n="@@setupWizard.familyRequired"
+                >
+                  Skriv inn navnet på familien
+                </p>
+              }
             </div>
           </div>
           <div class="step-actions">
             <button
               type="submit"
               class="btn btn-primary btn-lg btn-block"
-              [disabled]="!familyName().trim() || busy()"
               [attr.aria-busy]="busy()"
               i18n="@@setupWizard.next"
             >
@@ -225,7 +236,6 @@
       @case (4) {
         <div class="step">
           <div class="step-body">
-            <div class="step-icon" aria-hidden="true">🔔</div>
             <h1 class="step-title" i18n="@@setupWizard.remindersTitle">Slå på påminnelser</h1>
             <p class="step-lead" i18n="@@setupWizard.remindersLead">
               Du får beskjed når et barn er ferdig med en oppgave eller ønsker seg en belønning.
