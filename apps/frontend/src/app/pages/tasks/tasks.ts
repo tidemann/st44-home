@@ -185,6 +185,14 @@ export class Tasks implements OnInit {
       : $localize`:@@tasks.bulkDelete:Slett ${n}:n:`;
   });
 
+  /** Desktop strip spells it out as d1 draws it: «Slett 3 oppgaver», «Slett 1 oppgave» */
+  protected readonly deleteLabelLong = computed(() => {
+    const n = this.chosenCount();
+    return n === 1
+      ? $localize`:@@tasks.bulkDeleteLongOne:Slett 1 oppgave`
+      : $localize`:@@tasks.bulkDeleteLong:Slett ${n}:n: oppgaver`;
+  });
+
   /** The chosen templates in list order, for the confirm */
   private readonly chosenTasks = computed(() =>
     this.templates().filter((t) => this.chosen().has(t.id)),

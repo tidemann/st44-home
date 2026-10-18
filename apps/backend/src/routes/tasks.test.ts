@@ -647,6 +647,46 @@ describe('Tasks API', () => {
       assert.deepStrictEqual(rows.rows, [{ status: 'completed' }]);
     });
 
+    test('removes an overdue open row from 2 days back, keeps the done row of that day', async () => {
+      const d = await createDailyTask('Bulk D overdue');
+      const twoDaysBack = new Date(`${today()}T00:00:00Z`);
+      twoDaysBack.setUTCDate(twoDaysBack.getUTCDate() - 2);
+      const past = twoDaysBack.toISOString().slice(0, 10);
+      await pool.query(
+        `INSERT INTO task_assignments (household_id, task_id, child_id, date, status)
+         VALUES ($1, $2, $3, $4, 'pending'), ($1, $2, $5, $4, 'completed')`,
+        [householdId, d, childId1, past, childId2],
+      );
+      const response = await app.inject({
+        method: 'POST',
+        url: `/api/households/${householdId}/tasks/bulk-delete`,
+        headers: { Authorization: `Bearer ${adminToken}` },
+        payload: { taskIds: [d] },
+      });
+      assert.strictEqual(response.statusCode, 200, response.body);
+      const rows = await pool.query('SELECT status FROM task_assignments WHERE task_id = $1', [d]);
+      assert.deepStrictEqual(rows.rows, [{ status: 'completed' }]);
+    });
+
+    test('single DELETE also removes an overdue open row from 2 days back', async () => {
+      const e = await createDailyTask('Single E overdue');
+      const twoDaysBack = new Date(`${today()}T00:00:00Z`);
+      twoDaysBack.setUTCDate(twoDaysBack.getUTCDate() - 2);
+      await pool.query(
+        `INSERT INTO task_assignments (household_id, task_id, child_id, date, status)
+         VALUES ($1, $2, $3, $4, 'pending')`,
+        [householdId, e, childId1, twoDaysBack.toISOString().slice(0, 10)],
+      );
+      const response = await app.inject({
+        method: 'DELETE',
+        url: `/api/households/${householdId}/tasks/${e}`,
+        headers: { Authorization: `Bearer ${adminToken}` },
+      });
+      assert.strictEqual(response.statusCode, 200, response.body);
+      const rows = await pool.query('SELECT status FROM task_assignments WHERE task_id = $1', [e]);
+      assert.deepStrictEqual(rows.rows, []);
+    });
+
     test('counts a task that is already deleted as deleted, and drops duplicate ids', async () => {
       const id = await createDailyTask('Already gone');
       await pool.query('UPDATE tasks SET active = false WHERE id = $1', [id]);
