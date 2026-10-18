@@ -18,6 +18,7 @@ import { SingleTaskService } from '../../services/single-task.service';
 import { AvailableTasksSectionComponent } from '../../components/available-tasks-section/available-tasks-section';
 import { StreakCounter } from '../../components/streak-counter/streak-counter';
 import { ProgressSummary } from '../../components/progress-summary/progress-summary';
+import { LoadingRows } from '../../components/poeng/loading-rows/loading-rows';
 import { DailyPointsChart } from '../../components/daily-points-chart/daily-points-chart';
 import { NotificationSettings } from '../../components/notification-settings/notification-settings';
 import { PageComponent } from '../../components/page/page';
@@ -53,6 +54,7 @@ interface TickState {
   selector: 'app-child-dashboard',
   imports: [
     PageComponent,
+    LoadingRows,
     ChoreRow,
     GroupLabel,
     PointsMeter,

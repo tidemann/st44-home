@@ -298,3 +298,11 @@ h2 {
     grid-row: 2;
   }
 }
+
+/* Rule 7: from 1024 px the placeholder rows replace the loading sentence */
+@media (min-width: 1024px) {
+  .state--phone {
+    display: none;
+  }
+
+}

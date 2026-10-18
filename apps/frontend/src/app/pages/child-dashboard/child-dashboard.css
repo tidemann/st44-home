@@ -149,3 +149,15 @@
     margin-bottom: 7px;
   }
 }
+
+/* Rule 7: from 1024 px the placeholder rows replace the spinner and its sentence */
+@media (min-width: 1024px) {
+  .state--phone {
+    display: none;
+  }
+}
+
+/* The rows start 21 px under the band, as in the loading picture */
+app-loading-rows {
+  margin-top: 21px;
+}

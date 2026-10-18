@@ -42,7 +42,11 @@
       }
 
       @if (redemptionsLoading()) {
-        <div class="state" role="status" i18n="@@rewards.loadingRequests">Henter ønsker…</div>
+        <!-- Rule 7: from 1024 px grey placeholder rows; the phone keeps its sentence -->
+        <app-loading-rows i18n-label="@@rewards.loadingRequests" label="Henter ønsker…" />
+        <div class="state state--phone" role="status" i18n="@@rewards.loadingRequests">
+          Henter ønsker…
+        </div>
       } @else if (waiting().length === 0 && toGive().length === 0 && history().length === 0) {
         <div class="empty-state">
           <p i18n="@@rewards.noRequests">Ingen ønsker ennå.</p>
