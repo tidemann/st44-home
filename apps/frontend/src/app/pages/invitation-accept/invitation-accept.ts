@@ -52,7 +52,7 @@ export class InvitationAcceptComponent implements OnInit {
   ngOnInit(): void {
     const token = this.route.snapshot.paramMap.get('token');
     if (!token) {
-      this.errorMessage.set('Invalid invitation link. No token provided.');
+      this.errorMessage.set('Lenken til invitasjonen er ugyldig.');
       return;
     }
     this.token.set(token);
@@ -70,7 +70,7 @@ export class InvitationAcceptComponent implements OnInit {
         await this.invitationService.acceptInvitation(token);
 
       this.householdName.set(response.household.name);
-      this.successMessage.set(`Successfully joined "${response.household.name}"!`);
+      this.successMessage.set(`Du er nå med i «${response.household.name}».`);
 
       // Redirect to home after a brief delay (with proper cleanup)
       this.redirectToHomeAfterDelay();
@@ -99,7 +99,7 @@ export class InvitationAcceptComponent implements OnInit {
 
     try {
       await this.invitationService.declineInvitation(token);
-      this.successMessage.set('Invitation declined.');
+      this.successMessage.set('Invitasjonen er avslått.');
 
       // Redirect to home after a brief delay (with proper cleanup)
       this.redirectToHomeAfterDelay();
@@ -118,15 +118,17 @@ export class InvitationAcceptComponent implements OnInit {
     };
 
     if (err.status === 404) {
-      this.errorMessage.set('Invitation not found or has already been processed.');
+      this.errorMessage.set('Fant ikke invitasjonen, eller den er allerede brukt.');
     } else if (err.status === 403) {
-      this.errorMessage.set('This invitation is not for your email address.');
+      this.errorMessage.set('Denne invitasjonen er ikke til din e-postadresse.');
     } else if (err.status === 400) {
-      this.errorMessage.set(err.error?.message || 'Invitation has expired or is no longer valid.');
+      this.errorMessage.set(
+        err.error?.message || 'Invitasjonen har utløpt eller gjelder ikke lenger.',
+      );
     } else if (err.status === 409) {
-      this.errorMessage.set('You are already a member of this household.');
+      this.errorMessage.set('Du er allerede med i denne husstanden.');
     } else {
-      this.errorMessage.set(err.error?.message || 'Something went wrong. Please try again.');
+      this.errorMessage.set(err.error?.message || 'Noe gikk galt. Prøv igjen.');
     }
   }
 

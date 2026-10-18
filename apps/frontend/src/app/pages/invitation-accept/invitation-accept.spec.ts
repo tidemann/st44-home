@@ -73,7 +73,7 @@ describe('InvitationAcceptComponent', () => {
       component = fixture.componentInstance;
       fixture.detectChanges();
 
-      expect(component['errorMessage']()).toBe('Invalid invitation link. No token provided.');
+      expect(component['errorMessage']()).toBe('Lenken til invitasjonen er ugyldig.');
     });
 
     it('should initialize signals with default values', () => {
@@ -157,7 +157,7 @@ describe('InvitationAcceptComponent', () => {
 
       await component['acceptInvitation']();
 
-      expect(component['successMessage']()).toBe('Successfully joined "Test Household"!');
+      expect(component['successMessage']()).toBe('Du er nå med i «Test Household».');
       expect(component['householdName']()).toBe('Test Household');
     });
 
@@ -243,7 +243,7 @@ describe('InvitationAcceptComponent', () => {
     it('should set success message on successful decline', async () => {
       mockInvitationService.declineInvitation.mockResolvedValue({});
       await component['declineInvitation']();
-      expect(component['successMessage']()).toBe('Invitation declined.');
+      expect(component['successMessage']()).toBe('Invitasjonen er avslått.');
     });
 
     it('should navigate to home after successful decline', async () => {
@@ -265,14 +265,14 @@ describe('InvitationAcceptComponent', () => {
       mockInvitationService.acceptInvitation.mockRejectedValue({ status: 404 });
       await component['acceptInvitation']();
       expect(component['errorMessage']()).toBe(
-        'Invitation not found or has already been processed.',
+        'Fant ikke invitasjonen, eller den er allerede brukt.',
       );
     });
 
     it('should handle 403 error (wrong email)', async () => {
       mockInvitationService.acceptInvitation.mockRejectedValue({ status: 403 });
       await component['acceptInvitation']();
-      expect(component['errorMessage']()).toBe('This invitation is not for your email address.');
+      expect(component['errorMessage']()).toBe('Denne invitasjonen er ikke til din e-postadresse.');
     });
 
     it('should handle 400 error with message', async () => {
@@ -287,13 +287,15 @@ describe('InvitationAcceptComponent', () => {
     it('should handle 400 error without message', async () => {
       mockInvitationService.acceptInvitation.mockRejectedValue({ status: 400 });
       await component['acceptInvitation']();
-      expect(component['errorMessage']()).toBe('Invitation has expired or is no longer valid.');
+      expect(component['errorMessage']()).toBe(
+        'Invitasjonen har utløpt eller gjelder ikke lenger.',
+      );
     });
 
     it('should handle 409 error (already member)', async () => {
       mockInvitationService.acceptInvitation.mockRejectedValue({ status: 409 });
       await component['acceptInvitation']();
-      expect(component['errorMessage']()).toBe('You are already a member of this household.');
+      expect(component['errorMessage']()).toBe('Du er allerede med i denne husstanden.');
     });
 
     it('should handle unknown error with message', async () => {
@@ -308,7 +310,7 @@ describe('InvitationAcceptComponent', () => {
     it('should handle unknown error without message', async () => {
       mockInvitationService.acceptInvitation.mockRejectedValue({ status: 500 });
       await component['acceptInvitation']();
-      expect(component['errorMessage']()).toBe('Something went wrong. Please try again.');
+      expect(component['errorMessage']()).toBe('Noe gikk galt. Prøv igjen.');
     });
 
     it('should reset isProcessing on error', async () => {

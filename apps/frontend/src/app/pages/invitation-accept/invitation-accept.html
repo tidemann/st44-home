@@ -1,7 +1,7 @@
 <div class="invitation-accept-container">
   <div class="invitation-accept-card">
     <div class="card-header">
-      <h1>Household Invitation</h1>
+      <h1 i18n="@@invitationAccept.title">Invitasjon</h1>
     </div>
 
     <div class="card-content">
@@ -25,7 +25,7 @@
           <span>{{ errorMessage() }}</span>
         </div>
         <div class="actions">
-          <a routerLink="/home" class="btn btn-secondary">Go to Home</a>
+          <a routerLink="/home" class="btn btn-secondary">Gå til Hjem</a>
         </div>
       } @else if (successMessage()) {
         <div class="success-message">
@@ -45,21 +45,19 @@
           </svg>
           <span>{{ successMessage() }}</span>
         </div>
-        <p class="redirect-note">Redirecting you to the home page...</p>
+        <p class="redirect-note">Sender deg til Hjem …</p>
       } @else if (!isAuthenticated()) {
         <p class="invitation-text">
-          You've been invited to join a household. Please sign in or create an account to accept
-          this invitation.
+          Du er invitert inn i en husstand. Logg inn eller opprett en konto for å godta
+          invitasjonen.
         </p>
 
         <div class="actions">
-          <a [href]="loginUrl()" class="btn btn-primary">Sign In</a>
-          <a [href]="registerUrl()" class="btn btn-secondary">Create Account</a>
+          <a [href]="loginUrl()" class="btn btn-primary">Logg inn</a>
+          <a [href]="registerUrl()" class="btn btn-secondary">Opprett konto</a>
         </div>
       } @else {
-        <p class="invitation-text">
-          You've been invited to join a household. Would you like to accept this invitation?
-        </p>
+        <p class="invitation-text">Vil du godta invitasjonen?</p>
 
         <div class="actions">
           <button
@@ -70,9 +68,9 @@
           >
             @if (isProcessing()) {
               <span class="spinner"></span>
-              Processing...
+              Godtar …
             } @else {
-              Accept Invitation
+              Godta invitasjonen
             }
           </button>
           <button
@@ -81,7 +79,7 @@
             [disabled]="isProcessing()"
             (click)="declineInvitation()"
           >
-            Decline
+            Avslå
           </button>
         </div>
       }
