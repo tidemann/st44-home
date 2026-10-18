@@ -228,6 +228,12 @@ export class TaskFormModal {
   protected readonly errorMessage = signal<string | null>(null);
 
   /**
+   * The main action has been pressed on a form that is not complete (ST-1430 rule 4):
+   * the unmet rules turn from hint to error, each under the field it concerns.
+   */
+  protected readonly submitAttempted = signal(false);
+
+  /**
    * Delete confirmation state (edit mode only)
    */
   protected readonly showDeleteConfirm = signal(false);
@@ -534,10 +540,19 @@ export class TaskFormModal {
    * Handle form submission
    */
   onSubmit(): void {
-    if (!this.isFormValid() || this.submitting()) {
+    if (this.submitting()) {
       return;
     }
 
+    // ST-1430 rule 4: the main action is never pale — the form is checked when you
+    // press it, and every unmet rule shows under its own field.
+    if (!this.isFormValid()) {
+      this.submitAttempted.set(true);
+      this.form.markAllAsTouched();
+      return;
+    }
+
+    this.submitAttempted.set(false);
     this.submitting.set(true);
     this.errorMessage.set(null);
 

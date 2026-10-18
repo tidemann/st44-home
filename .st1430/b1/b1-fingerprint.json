@@ -1,0 +1,24 @@
+{
+ "bytt-husstand-A-blokkerer": {
+  "surface": {
+   "x": 506,
+   "y": 297.7,
+   "w": 428,
+   "h": 304.5
+  },
+  "border": "1px rgb(23, 18, 10)",
+  "radius": "13px",
+  "veil": "rgba(23, 18, 10, 0.3)"
+ },
+ "bytt-husstand-B-kan-overses": {
+  "surface": {
+   "x": 506,
+   "y": 297.7,
+   "w": 428,
+   "h": 304.5
+  },
+  "border": "1px rgb(85, 94, 100)",
+  "radius": "13px",
+  "veil": "rgba(0, 0, 0, 0)"
+ }
+}

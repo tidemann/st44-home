@@ -34,9 +34,9 @@ const SHEETS = [
     title: 'Familie',
     rows: [
       ['legg-til-barn', '«Legg til barn»', 'Familie', ''],
-      ['barnedetaljer', '«Barnedetaljer»', 'Familie, klikk på et barn', 'Merk: emojien og «Faresone» inni er enkeltside-punkter (steg 3), ikke rørt her.'],
+      ['barnedetaljer', '«Barnedetaljer»', 'Familie, klikk på et barn', 'Merk: 362 px og 93 px er knapper inne i brødteksten, ikke handlingsraden — handlingsraden er «Lukk» på 396 px. Emojien, «Faresone» og «Rediger»-knappen på 63,7 × 22,4 px er enkeltside-punkter (steg 3), ikke rørt her.'],
       ['inviter', '«Inviter familiemedlem»', 'Familie', ''],
-      ['qr-kode', '«QR-kode innlogging»', 'Familie, QR-knappen på et barn', 'Valg: én handling fyller hele raden på 396 px; her er det bare lukkekrysset.'],
+      ['qr-kode', '«QR-kode innlogging»', 'Familie, QR-knappen på et barn', 'Dette paret bærer bare regel 1 og 2: selve koden kommer fra et serversvar mock-en ikke gir, og popup-en har ingen handlingsrad — bare lukkekrysset på 40 × 40 px.'],
     ],
   },
   {
@@ -72,10 +72,16 @@ const facts = (k) => {
   const listRows = aa.length > 2 && aa.every((w) => w > 300) && aa.join() === bb.join();
   if (aa.length && !listRows) f.push(`handlinger ${aa.join('+')} → ${bb.join('+')} px`);
   if (pale(a).length) f.push(`hovedknapp ${pale(a)[0].contrast}:1 → ${b.buttons.find((x) => x.t === pale(a)[0].t) ? b.buttons.find((x) => x.t === pale(a)[0].t).contrast : '10.57'}:1`);
-  const na = a.natives, nb = b.natives;
-  if (na) f.push(`${na} nettlesermeny → Diddit-felt`);
-  const fa = a.fields.filter((x) => x.h > 30).map((x) => x.h);
-  if (fa.length) f.push(`felt ${[...new Set(fa)].join('/')} → 49 px`);
+  // A4 on ST-1443: a picture can only show the closed field. Say so, and say who owns
+  // the open list.
+  const na = a.natives;
+  if (na) f.push(`${na} lukket nettlesermeny → Diddit-felt (den åpne listen bygges av Eirik)`);
+  // A6 on ST-1443: the heights of the one-line fields and of a text box are two rules,
+  // 49 px and 76 px — the old caption sent the text box to 49 px
+  const line = (v) => [...new Set(v.fields.filter((x) => x.h > 30 && x.tag !== 'TEXTAREA').map((x) => x.h))];
+  const area = (v) => [...new Set(v.fields.filter((x) => x.tag === 'TEXTAREA').map((x) => x.h))];
+  if (line(a).length) f.push(`felt ${line(a).join('/')} → ${line(b).join('/')} px`);
+  if (area(a).length) f.push(`tekstboks ${area(a).join('/')} → ${area(b).join('/')} px, bredde ${Math.round(a.fields.find((x) => x.tag === 'TEXTAREA').w)} → ${Math.round(b.fields.find((x) => x.tag === 'TEXTAREA').w)} px`);
   return f.join(' · ');
 };
 
@@ -113,7 +119,7 @@ figcaption{font-size:13px;font-weight:600;color:#555E64;margin-bottom:5px}
 <h1>Diddit på skjerm – de 8 popup-reglene, tegnet (${n} av ${total}): ${s.title}</h1>
 <p class="lede">Venstre: popup-en i dag. Høyre: den samme popup-en med de 8 reglene og ingenting annet — siden bak er den samme i begge halvdeler, for sidereglene er steg 1 og endres ikke her. 1440 × 900 px, lys modus, samme oppdiktede familie. Tallene under hvert par er målt i bildene, ikke regnet ut.</p>
 <div class="grid">${s.rows.map(card).join('')}</div>
-<p class="foot">Alle popup-ene: 428 px brede og midtstilte (1), minst 48 px luft over og under (2), handlingsraden to like halvdeler på 194 × 49 px med 8 px mellom (3), hovedknappen gul 10,57:1 (4), felt 49 px med 13 px hjørner og 1,5 px kant #555E64 (5), ingen nettlesermeny (6), ingen ark fra en kant (7), tilbud nede til høyre (8). Kant, slør, skygge, 13 px radius, 15 px innvendig, tittel 27 px og «Slett» i rust er den godkjente Popups-delen, uendret.</p>
+<p class="foot">Emoji står som tomme ruter i <em>begge</em> halvdeler: tegneriggen har ingen emoji-font. Det er ikke en designendring — i appen er det telefon, person, varseltrekant, blyant, hake, kryss og bjelle. Alle popup-ene: 428 px brede og midtstilte (1), minst 48 px luft over og under (2), handlingsraden to like halvdeler på 194 × 49 px med 8 px mellom (3), hovedknappen gul 10,57:1 (4), felt 49 px med 13 px hjørner og 1,5 px kant #555E64 (5), ingen nettlesermeny (6), ingen ark fra en kant (7), tilbud nede til høyre (8). Kant, slør, skygge, 13 px radius, 15 px innvendig, tittel 27 px og «Slett» i rust er den godkjente Popups-delen, uendret.</p>
 </div></body></html>`;
 
 (async () => {

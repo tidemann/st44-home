@@ -67,6 +67,13 @@ Every number under a pair was measured in the rendered pixels, not predicted.
 - **Sheet 3 — Belønninger og husholdninger (4):** «Slette belønningen?», «Vil du be om dette?», «Ny husholdning», «Endre husholdning».
 - **Sheet 4 — Husholdninger og de to tilbudene (4):** «Forlat husholdningen», «Slett husholdningen», «Slå på varsler?», «Legg Diddit på hjemskjermen».
 
+**Two things to read correctly in the pictures.** «QR-kode innlogging» shows its frame only: the code
+itself is drawn from a server answer the mock does not give, so the pair shows the width, the place and
+the lone action, not the code. In «Barnedetaljer» the 362 px and 93 px buttons sit inside the body's own
+blocks («Opprett innlogging» in the notice, «Fjern barn» in «Faresone»); the action row is the 396 px
+«Lukk» at the bottom.
+
+
 ![Sheet 1 — Hjemme og Oppgaver](/api/attachments/a1463106-9f47-42b4-95cc-b8f3e6d2689d/content)
 
 ![Sheet 2 — Familie](/api/attachments/09625d23-d35f-4fb6-ba08-7e235c7d9eba/content)

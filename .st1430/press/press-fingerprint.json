@@ -1,0 +1,257 @@
+{
+ "ny-oppgave": {
+  "surface": {
+   "x": 506,
+   "y": 48,
+   "w": 428,
+   "h": 804
+  },
+  "errors": [
+   {
+    "t": "Oppgavenavn er obligatorisk",
+    "y": 157.4,
+    "x": 16,
+    "h": 21,
+    "color": "rgb(164, 58, 22)",
+    "size": "15px/500"
+   }
+  ],
+  "flaggedFields": [
+   {
+    "tag": "INPUT",
+    "id": "task-name",
+    "y": 102.4,
+    "h": 49,
+    "border": "2px rgb(164, 58, 22)"
+   }
+  ],
+  "mainAction": [
+   {
+    "t": "Legg til",
+    "w": 194,
+    "h": 49,
+    "x": 724,
+    "y": 787,
+    "fill": "rgb(246, 185, 59)",
+    "label": "rgb(23, 18, 10)",
+    "disabled": false,
+    "cursor": "pointer"
+   }
+  ]
+ },
+ "rediger-oppgave": {
+  "surface": {
+   "x": 506,
+   "y": 116.2,
+   "w": 428,
+   "h": 667.6
+  },
+  "errors": [
+   {
+    "t": "Oppgavenavn er obligatorisk",
+    "y": 157.4,
+    "x": 16,
+    "h": 21,
+    "color": "rgb(164, 58, 22)",
+    "size": "15px/500"
+   },
+   {
+    "t": "Poeng må være mellom 1 og 1000",
+    "y": 425.2,
+    "x": 16,
+    "h": 21,
+    "color": "rgb(164, 58, 22)",
+    "size": "15px/500"
+   }
+  ],
+  "flaggedFields": [
+   {
+    "tag": "INPUT",
+    "id": "task-name",
+    "y": 102.4,
+    "h": 49,
+    "border": "2px rgb(164, 58, 22)"
+   },
+   {
+    "tag": "INPUT",
+    "id": "points",
+    "y": 370.2,
+    "h": 49,
+    "border": "2px rgb(164, 58, 22)"
+   }
+  ],
+  "mainAction": [
+   {
+    "t": "Lagre",
+    "w": 126.7,
+    "h": 49,
+    "x": 791.3,
+    "y": 714.8,
+    "fill": "rgb(246, 185, 59)",
+    "label": "rgb(23, 18, 10)",
+    "disabled": false,
+    "cursor": "pointer"
+   }
+  ]
+ },
+ "flytt-oppgave": {
+  "surface": {
+   "x": 506,
+   "y": 267.8,
+   "w": 428,
+   "h": 364.4
+  },
+  "errors": [
+   {
+    "t": "Velg et barn",
+    "y": 213.4,
+    "x": 16,
+    "h": 21,
+    "color": "rgb(164, 58, 22)",
+    "size": "15px/500"
+   }
+  ],
+  "flaggedFields": [
+   {
+    "tag": "SELECT",
+    "id": "child-select",
+    "y": 150.4,
+    "h": 49,
+    "border": "2px rgb(164, 58, 22)"
+   }
+  ],
+  "mainAction": [
+   {
+    "t": "Tilordne på nytt",
+    "w": 194,
+    "h": 49,
+    "x": 724,
+    "y": 567.2,
+    "fill": "rgb(246, 185, 59)",
+    "label": "rgb(23, 18, 10)",
+    "disabled": false,
+    "cursor": "pointer"
+   }
+  ]
+ },
+ "legg-til-barn": {
+  "surface": {
+   "x": 506,
+   "y": 198.4,
+   "w": 428,
+   "h": 503.2
+  },
+  "errors": [
+   {
+    "t": "Barnets navn er obligatorisk",
+    "y": 157.4,
+    "x": 16,
+    "h": 21,
+    "color": "rgb(164, 58, 22)",
+    "size": "15px/500"
+   }
+  ],
+  "flaggedFields": [
+   {
+    "tag": "INPUT",
+    "id": "child-name",
+    "y": 102.4,
+    "h": 49,
+    "border": "2px rgb(164, 58, 22)"
+   }
+  ],
+  "mainAction": [
+   {
+    "t": "Legg til barn",
+    "w": 194,
+    "h": 49,
+    "x": 724,
+    "y": 632.6,
+    "fill": "rgb(246, 185, 59)",
+    "label": "rgb(23, 18, 10)",
+    "disabled": false,
+    "cursor": "pointer"
+   }
+  ]
+ },
+ "inviter": {
+  "surface": {
+   "x": 506,
+   "y": 166.2,
+   "w": 428,
+   "h": 567.6
+  },
+  "errors": [
+   {
+    "t": "E-postadresse er obligatorisk",
+    "y": 157.4,
+    "x": 16,
+    "h": 21,
+    "color": "rgb(164, 58, 22)",
+    "size": "15px/500"
+   }
+  ],
+  "flaggedFields": [
+   {
+    "tag": "INPUT",
+    "id": "invite-email",
+    "y": 102.4,
+    "h": 49,
+    "border": "2px rgb(164, 58, 22)"
+   }
+  ],
+  "mainAction": [
+   {
+    "t": "Send invitasjon",
+    "w": 194,
+    "h": 49,
+    "x": 724,
+    "y": 664.8,
+    "fill": "rgb(246, 185, 59)",
+    "label": "rgb(23, 18, 10)",
+    "disabled": false,
+    "cursor": "pointer"
+   }
+  ]
+ },
+ "ny-husholdning": {
+  "surface": {
+   "x": 506,
+   "y": 275,
+   "w": 428,
+   "h": 350
+  },
+  "errors": [
+   {
+    "t": "Skriv inn et navn på husholdningen",
+    "y": 167,
+    "x": 16,
+    "h": 21,
+    "color": "rgb(164, 58, 22)",
+    "size": "15px/500"
+   }
+  ],
+  "flaggedFields": [
+   {
+    "tag": "INPUT",
+    "id": "create-name",
+    "y": 104,
+    "h": 49,
+    "border": "2px rgb(164, 58, 22)"
+   }
+  ],
+  "mainAction": [
+   {
+    "t": "Opprett",
+    "w": 194,
+    "h": 49,
+    "x": 724,
+    "y": 560,
+    "fill": "rgb(246, 185, 59)",
+    "label": "rgb(23, 18, 10)",
+    "disabled": false,
+    "cursor": "pointer"
+   }
+  ]
+ }
+}

@@ -9,12 +9,6 @@
       Tilordne <strong>{{ taskName() }}</strong> til et annet barn.
     </p>
 
-    @if (error()) {
-      <div class="error-message" role="alert">
-        {{ error() }}
-      </div>
-    }
-
     <div class="form-group">
       <label for="child-select" i18n="@@reassignModal.selectChildLabel">Velg barn</label>
       <select
@@ -23,6 +17,9 @@
         [ngModel]="selectedChildId()"
         (ngModelChange)="onChildChange($event)"
         required
+        [class.error]="!!error()"
+        [attr.aria-invalid]="!!error()"
+        [attr.aria-describedby]="error() ? 'child-select-error' : null"
       >
         <option value="" disabled selected i18n="@@reassignModal.chooseChildPlaceholder">
           Velg et barn...
@@ -33,6 +30,9 @@
           }
         }
       </select>
+      @if (error()) {
+        <div id="child-select-error" class="form-error" role="alert">{{ error() }}</div>
+      }
     </div>
 
     <div class="form-actions">
@@ -48,7 +48,6 @@
         type="button"
         class="btn btn-primary"
         (click)="onSubmit()"
-        [disabled]="!selectedChildId()"
         i18n="@@reassignModal.submitButton"
       >
         Tilordne på nytt

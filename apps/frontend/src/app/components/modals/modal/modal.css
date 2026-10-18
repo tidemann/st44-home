@@ -201,11 +201,36 @@
     font-weight: 600;
   }
 
-  /* 4 · the main action is never pale: it is checked when you press it */
+  /* 4 · the main action is never pale. It is live from the first paint and checked on the
+     press; the only `disabled` left inside a popup is the moment it is working, and that
+     keeps its yellow and swaps its label, exactly as the approved login does (login-18).
+     The validity bindings are gone from the templates — this is not paint over a dead
+     button. */
   .modal :is(.modal-body, .modal-footer) ::ng-deep :is(.btn, button)[disabled],
   .modal :is(.modal-body, .modal-footer) ::ng-deep :is(.btn, button)[aria-disabled='true'] {
     opacity: 1;
-    cursor: pointer;
+    cursor: progress;
+  }
+
+  /* 4 · and the error the press produces is the login's error: the field takes its 2 px
+     rust edge, and one rust line sits under that field. Never the raw red of
+     `.form-error`, which reads 3,76:1 on white. */
+  .modal ::ng-deep :is(.form-error, .error-message) {
+    margin-top: 6px;
+    font-family: var(--font-text);
+    font-size: 15px;
+    font-weight: 500;
+    line-height: 1.4;
+    color: var(--overdue);
+  }
+
+  .modal
+    ::ng-deep
+    :is(input:not([type='checkbox']):not([type='radio']), select, textarea):is(
+      .error,
+      [aria-invalid='true']
+    ) {
+    border: 2px solid var(--overdue);
   }
 
   /* 5 · one field: 49 px, 13 px corners, the login field's edge */
@@ -217,10 +242,26 @@
   .modal ::ng-deep :is(input:not([type='checkbox']):not([type='radio']), select, textarea) {
     border: 1.5px solid var(--text-muted);
     border-radius: var(--r-card);
+    /* white, stated: «Ny husholdning» left its field transparent and only looked white
+       because the surface behind it is */
+    background-color: var(--color-surface);
   }
 
-  .modal ::ng-deep textarea {
+  /* 5 · a text box is that same field, only taller: the whole 396 px column, the login
+     field's 18 px inset and its white fill. Never the browser's 20-column box with the
+     text against the edge, and never Paper (A2, A3 on ST-1443). */
+  .modal ::ng-deep :is(textarea, .form-textarea) {
+    box-sizing: border-box;
+    width: 100%;
+    height: 76px;
     min-height: 76px;
+    /* 16 px, the inset the other fields in these popups are built with */
+    padding: 13px 16px;
+    background-color: var(--color-surface);
+    font-family: var(--font-text);
+    font-size: 16px;
+    line-height: 1.4;
+    resize: vertical;
   }
 
   /* 6 · no OS chrome: a choice is a Diddit field with the Diddit caret */

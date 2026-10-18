@@ -132,7 +132,7 @@ const FP = () => {
   const fields = [...surface.querySelectorAll('input,select,textarea')].filter(vis).map((e) => {
     const b = e.getBoundingClientRect();
     const s = getComputedStyle(e);
-    return { tag: e.tagName, type: e.type || '', h: r(b.height), w: r(b.width), radius: s.borderRadius.split(' ')[0], border: `${s.borderTopWidth} ${s.borderTopColor}`, appearance: s.appearance, caret: e.tagName === 'SELECT' ? (s.backgroundImage === 'none' ? 'NONE' : 'diddit') : null };
+    return { tag: e.tagName, type: e.type || '', h: r(b.height), w: r(b.width), x: r(b.left), y: r(b.top), fill: s.backgroundColor, padLeft: s.paddingLeft, radius: s.borderRadius.split(' ')[0], border: `${s.borderTopWidth} ${s.borderTopColor}`, appearance: s.appearance, caret: e.tagName === 'SELECT' ? (s.backgroundImage === 'none' ? 'NONE' : 'diddit') : null };
   });
 
   const title = surface.querySelector('h1,h2,h3');
