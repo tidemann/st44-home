@@ -265,3 +265,36 @@ h2 {
   background: var(--color-danger-light);
   color: var(--color-danger-dark);
 }
+
+/* Rule 4 (guide: Desktop: rules for all pages): the requests are groups, so from 1024 px
+   «Venter på svar» is the left 428 px column and «Skal gis» / «Tidligere» the right one */
+@media (min-width: 1024px) {
+  .requests-tab {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-rows: auto 1fr;
+    column-gap: 24px;
+    align-items: start;
+  }
+
+  .requests-tab > * {
+    grid-column: 1 / -1;
+    min-width: 0;
+  }
+
+  .requests-tab > .req-waiting {
+    grid-area: 1 / 1 / 3;
+  }
+
+  .requests-tab > .req-give {
+    grid-area: 1 / 2;
+  }
+
+  .requests-tab > .req-history {
+    grid-area: 2 / 2;
+  }
+
+  .requests-tab > .req-give + .req-history {
+    grid-row: 2;
+  }
+}

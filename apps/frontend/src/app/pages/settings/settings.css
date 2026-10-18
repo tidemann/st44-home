@@ -339,3 +339,24 @@ button.settings-row:focus-visible {
     transform: translateY(0);
   }
 }
+
+/* Rule 4 (guide: Desktop: rules for all pages): two independent 428 px stacks, 24 px apart.
+   Under 1024 px the column boxes are not there */
+.settings-cols,
+.settings-col {
+  display: contents;
+}
+
+@media (min-width: 1024px) {
+  .settings-cols {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    column-gap: 24px;
+    align-items: start;
+  }
+
+  .settings-col {
+    display: block;
+    min-width: 0;
+  }
+}

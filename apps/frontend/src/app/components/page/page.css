@@ -204,9 +204,15 @@
     color: var(--ink);
   }
 
+  /* The same y as on a band page: there the title is centred in the 38 px title row (4 px over
+     and under it) and the sub-line starts under that row → band 191 */
+  .page-header--deskband .page-header-text {
+    padding-top: 4px;
+  }
+
   .page-header--deskband .page-subtitle--desk {
     display: block;
-    margin: 0 0 20px;
+    margin: 4px 0 20px;
     padding-right: 0;
     color: var(--ink);
   }
