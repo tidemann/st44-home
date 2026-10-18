@@ -255,7 +255,7 @@
             [points]="points(t.points)"
             [selectable]="true"
             [selected]="chosen().has(t.id)"
-            (toggle)="toggleChosen(t.id)"
+            (pick)="toggleChosen(t.id)"
           />
         } @else {
           <app-chore-row

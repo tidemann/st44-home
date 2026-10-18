@@ -162,7 +162,7 @@ describe('ChoreRow', () => {
 
     it('a tap toggles, it does not open', () => {
       let toggled = 0;
-      row.toggle.subscribe(() => toggled++);
+      row.pick.subscribe(() => toggled++);
       (fixture.nativeElement.querySelector('[role="checkbox"]') as HTMLElement).click();
       expect(toggled).toBe(1);
       expect(opened).toBe(0);

@@ -80,7 +80,7 @@ export class ChoreRow {
   pressable = input<boolean>(false);
 
   /** Tapped the row in select mode */
-  toggle = output<void>();
+  pick = output<void>();
 
   /** Held for 500 ms; carries the card's top edge in the viewport, so the page can keep it there */
   longPress = output<number>();
