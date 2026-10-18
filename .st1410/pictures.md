@@ -22,10 +22,11 @@ Som i del 1: sidene er **appen selv**, ikke en tegning. `ng serve` på `origin/m
 arbeidstrær — ett uten reglene (venstre halvdel i arkene) og ett med dem — API-et mokket med
 oppdiktede data, `deviceScaleFactor: 2`, og den samme *settle*-ventingen som i runde 2 av del 1
 (nettverket i ro, ingen «Laster/Henter», ingen plassholderrad). Begge halvdelene i hvert par er
-tegnet i samme kjøring. Gren `ida/st-1410-rules-pictures` (**04a950f**, runde 2) — **ikke for main.**
+tegnet i samme kjøring. Gren `ida/st-1410-rules-pictures` (**f88962a**, runde 3) — **ikke for main.**
 Skriptene: `st1410-shoot.js`, `.st1410/measure.js`, `.st1410/audit.js`, `.st1410/cols.js`,
 `.st1410/worst.js`, `.st1410/sheet.js`, `.st1410/worstsheet.js` og — nytt i runde 2 —
-`.st1410/laster.js` (lastetilstanden, med sin egen måling i `laster-probe.json`).
+`.st1410/laster.js` (lastetilstanden) og — nytt i runde 3 — `.st1410/luft2.js` / `.st1410/luft3.js`
+(luften under feltet, med målingene i `luft-probe.json` og `luft-etter.json`).
 `st1410-shoot.js` tar nå `ST1410_ONLY=<side>` så én side kan tegnes om igjen alene.
 
 ## Tallene Astrid sjekker
