@@ -1,0 +1,56 @@
+[
+ {
+  "slug": "hjemme",
+  "label": "Hjemme",
+  "todayH": 900,
+  "rulesH": 900
+ },
+ {
+  "slug": "oppgaver",
+  "label": "Oppgaver",
+  "todayH": 1517,
+  "rulesH": 968
+ },
+ {
+  "slug": "familie",
+  "label": "Familie",
+  "todayH": 900,
+  "rulesH": 900
+ },
+ {
+  "slug": "belonninger",
+  "label": "Belønninger (forelder)",
+  "todayH": 900,
+  "rulesH": 900
+ },
+ {
+  "slug": "innstillinger",
+  "label": "Innstillinger",
+  "todayH": 1274,
+  "rulesH": 900
+ },
+ {
+  "slug": "fremgang",
+  "label": "Fremgang",
+  "todayH": 1203,
+  "rulesH": 936
+ },
+ {
+  "slug": "husholdninger",
+  "label": "Husholdninger",
+  "todayH": 900,
+  "rulesH": 900
+ },
+ {
+  "slug": "husholdningsinnstillinger",
+  "label": "Husholdningsinnstillinger",
+  "todayH": 2287,
+  "rulesH": 2273
+ },
+ {
+  "slug": "invitasjoner",
+  "label": "Invitasjoner",
+  "todayH": 900,
+  "rulesH": 900
+ }
+]
