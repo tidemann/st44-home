@@ -4,14 +4,17 @@
       Laster husholdningsinnstillinger...
     </div>
   } @else if (household()) {
-    <div class="household-settings__header">
+    <div class="household-settings__header desk-band">
       <h1 i18n="@@householdSettings.title">Husholdningsinnstillinger</h1>
       <p class="household-settings__subtitle" i18n="@@householdSettings.subtitle">
         Administrer husholdningsdetaljer og medlemmer
       </p>
+      <p class="desk-band-sub" i18n="@@householdSettings.memberCount">
+        {{ members().length }} medlemmer
+      </p>
     </div>
 
-    <div class="household-settings__content">
+    <div class="household-settings__content desk-column">
       <!-- Household Name Section -->
       <section class="settings-section">
         <h2 i18n="@@householdSettings.detailsTitle">Husholdningsdetaljer</h2>

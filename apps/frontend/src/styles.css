@@ -944,3 +944,55 @@ app-chore-row + app-chore-row,
 app-reward-card + app-reward-card {
   margin-top: 8px;
 }
+
+/* ===== DESKTOP PAGE RULES FOR PAGES WITHOUT <app-page> (guide: Desktop: rules for all pages) =====
+   The same values as app-page's band and frame, for the pages that draw their own header.
+   Nothing here applies under 1024 px. */
+.desk-band-sub {
+  display: none;
+}
+
+@media (min-width: 1024px) {
+  /* Rule 2: full-bleed yellow, title + sub-line at the 880 px page's left edge, ending 20 px
+     under the sub-line (191 px under the 80 px tab row) */
+  .desk-band {
+    display: flow-root;
+    margin: 0;
+    padding: 32px max(0px, calc((100% - 880px) / 2)) 0;
+    background: var(--yellow);
+    color: var(--ink);
+  }
+
+  /* Rule 3: one title style */
+  .desk-band h1 {
+    margin: 0;
+    padding-top: 4px;
+    font-family: var(--font-display);
+    font-size: 26px;
+    font-weight: 800;
+    line-height: 1.15;
+    letter-spacing: -0.01em;
+    color: var(--ink);
+    text-align: left;
+  }
+
+  .desk-band-sub {
+    display: block;
+    margin: 4px 0 20px;
+    font-family: var(--font-text);
+    font-size: 15px;
+    font-weight: 500;
+    line-height: 1.4;
+    color: var(--ink);
+  }
+
+  /* Rules 1 and 4: one 428 px column at the 880 px page's left edge */
+  .desk-column {
+    box-sizing: border-box;
+    width: 100%;
+    max-width: 880px;
+    margin-left: auto;
+    margin-right: auto;
+    padding-right: 452px;
+  }
+}

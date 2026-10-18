@@ -2,6 +2,7 @@ import { Component, signal, inject, ChangeDetectionStrategy } from '@angular/cor
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormGroup, FormControl, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
+import { TopTabs } from '../components/navigation/top-tabs/top-tabs';
 import { lastValueFrom } from 'rxjs';
 import { AuthService } from '../services/auth.service';
 
@@ -9,7 +10,7 @@ import { AuthService } from '../services/auth.service';
   selector: 'app-forgot-password',
   templateUrl: './forgot-password.html',
   styleUrl: './forgot-password.css',
-  imports: [CommonModule, ReactiveFormsModule, RouterLink],
+  imports: [CommonModule, ReactiveFormsModule, RouterLink, TopTabs],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ForgotPasswordComponent {
