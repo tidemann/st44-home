@@ -50,10 +50,12 @@
 
   <!-- Empty state -->
   @if (!isLoading() && invitations().length === 0) {
-    <div class="empty-state">
-      <p i18n="@@invitationsSent.noInvitations">Ingen invitasjoner sendt ennå.</p>
-      <p i18n="@@invitationsSent.emptyStateHint">
-        Bruk skjemaet "Inviter noen" ovenfor for å invitere noen til husstanden din.
+    <!-- ST-1409 rule 7: one white card — a title line and one sentence, left-aligned,
+         not a grey centred box. -->
+    <div class="r7-card">
+      <p class="r7-title" i18n="@@invitationsSent.noInvitations">Ingen invitasjoner sendt</p>
+      <p class="r7-line" i18n="@@invitationsSent.emptyStateHint">
+        Bruk skjemaet «Inviter noen» over for å invitere noen til husstanden din.
       </p>
     </div>
   }

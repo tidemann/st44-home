@@ -81,3 +81,29 @@
 .push-actions .btn {
   min-height: 48px;
 }
+
+/* ===== ST-1409 rule 7: when notifications are not ready, this card IS the
+   empty/error card — a title line and one sentence, in the group-label voice the rest
+   of Innstillinger uses, not a 20 px display heading (pictures only, ST-1370) ===== */
+@media (min-width: 1024px) {
+  .push-title {
+    font-family: var(--font-display);
+    font-size: 17px;
+    font-weight: 800;
+    line-height: 1.2;
+    color: var(--text);
+    margin: 0;
+    border: none;
+    padding: 0;
+  }
+
+  .push-text,
+  .push-status {
+    font-family: var(--font-text);
+    font-size: 15px;
+    font-weight: 500;
+    line-height: 1.4;
+    color: var(--text-muted);
+    margin: 6px 0 0;
+  }
+}

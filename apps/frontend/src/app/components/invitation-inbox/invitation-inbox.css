@@ -239,3 +239,22 @@
     padding-inline: 14px;
   }
 }
+
+/* The card stacks in a 428 px column: the details, then the two row buttons under
+   them, so a date line never has to wrap around a button (ST-1409, rule 4). */
+@media (min-width: 1024px) {
+  .invitation-card {
+    display: grid;
+    gap: 12px;
+  }
+
+  .invitation-actions {
+    display: flex;
+    gap: 8px;
+  }
+
+  /* An expired invitation keeps the card; only its words go quiet. */
+  .invitation-card.expired {
+    background: var(--surface);
+  }
+}

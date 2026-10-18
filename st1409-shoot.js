@@ -106,6 +106,9 @@ async function parentApi(route, p, q) {
     ] });
   if (p === `/households/${HH}/invitations`) return json(route, { invitations: [] });
   if (p === '/push/config') return json(route, { publicKey: '', enabled: false });
+  // Innstillinger draws the signed-in parent's own profile; empty fields are a mock gap.
+  if (p === '/users/me' || p === '/auth/me')
+    return json(route, { id: '44444444-4444-4444-8444-444444444441', email: 'kari@example.test', firstName: 'Kari', lastName: 'Nordmann', role: 'parent', createdAt: '2026-08-19T09:00:00.000Z' });
   return json(route, {});
 }
 

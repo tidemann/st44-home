@@ -395,7 +395,11 @@
     width: 428px;
   }
 
+  /* The band is new on this page (rule 2), so the first thing under it needs the air
+     its siblings already have: 22 px, the same as Oppgaver. Desktop A draws 23.5 px
+     from the band to the first group label's ink. */
   .create-section {
+    margin-top: 22px;
     margin-bottom: 15px;
   }
 

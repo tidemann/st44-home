@@ -34,6 +34,16 @@ export class InvitationInboxComponent implements OnInit {
   protected readonly errorMessage = signal<string | null>(null);
   protected readonly processingId = signal<string | null>(null);
 
+  // ST-1409 rule 8: the role in Norwegian, not the raw API word.
+  protected roleLabel(role: string): string {
+    const n: Record<string, string> = {
+      admin: 'Administrator',
+      parent: 'Forelder',
+      child: 'Barn',
+    };
+    return n[role] ?? role;
+  }
+
   // ST-1409 rule 2: the band carries a title and one short sub-line.
   protected readonly inboxSubline = computed(() => {
     const n = this.invitations().length;

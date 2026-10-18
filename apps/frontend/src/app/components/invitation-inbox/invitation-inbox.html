@@ -74,9 +74,12 @@
               <ng-container i18n="@@invitationInbox.invitedBy">Invitert av:</ng-container>
               {{ invitation.inviterName || invitation.inviterEmail || 'Ukjent' }}
             </p>
+            <!-- ST-1409 rule 8: all text is Norwegian. The raw role («parent»,
+                 «admin», «child») was printed through `titlecase`, so this line read
+                 «Rolle: Parent» on a Norwegian page. -->
             <p class="role">
               <ng-container i18n="@@invitationInbox.role">Rolle:</ng-container>
-              <strong>{{ invitation.role | titlecase }}</strong>
+              <strong>{{ roleLabel(invitation.role) }}</strong>
             </p>
             <p class="dates">
               <ng-container i18n="@@invitationInbox.sent">Sendt:</ng-container>
