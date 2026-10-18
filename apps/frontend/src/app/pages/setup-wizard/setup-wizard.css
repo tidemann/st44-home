@@ -50,6 +50,74 @@
   background: var(--color-primary);
 }
 
+/* ===== DESKTOP, 1024 px AND WIDER (guide: Desktop: rules for all pages) =====
+   The step's question is the page title in a 111 px yellow band under the tab row (rules 2
+   and 3, band end 191), «Steg 1 av 4» its sub-line; the card goes (choice 1: a form page has
+   no white card) and the step stands on the paper in one 428 px column (rules 1 and 4).
+   Every step title is one short line, so the band can be drawn behind them at a fixed height. */
+@media (min-width: 1024px) {
+  .wizard {
+    position: relative;
+    display: block;
+    min-height: 0;
+    padding: 0 0 32px;
+    background: var(--bg);
+  }
+
+  .wizard::before {
+    content: '';
+    display: block;
+    height: 111px;
+    background: var(--yellow);
+  }
+
+  .wizard .wizard-card {
+    box-sizing: border-box;
+    max-width: 428px;
+    min-height: 0;
+    margin-left: max(0px, calc((100% - 880px) / 2));
+    padding: 20px 0 0;
+    background: none;
+    border-radius: 0;
+  }
+
+  .wizard .step-title,
+  .wizard .progress-label {
+    position: absolute;
+    left: max(0px, calc((100% - 880px) / 2));
+    right: max(0px, calc((100% - 880px) / 2));
+    margin: 0;
+    color: var(--ink);
+  }
+
+  .wizard .step-title {
+    top: 36px;
+    font-family: var(--font-display);
+    font-size: 26px;
+    font-weight: 800;
+    line-height: 1.15;
+    letter-spacing: -0.01em;
+  }
+
+  .wizard .progress-label {
+    top: 70px;
+    font-family: var(--font-text);
+    font-size: 15px;
+    font-weight: 500;
+    line-height: 1.4;
+  }
+
+  /* Rule 5: the main button 49 px, 13 px corners, 16.5 px label, as wide as its column */
+  .step-actions .btn-primary {
+    height: 49px;
+    min-height: 0;
+    padding: 0 16px;
+    border-radius: var(--r-button);
+    font-size: 16.5px;
+    font-weight: 600;
+  }
+}
+
 /* ===== Step layout: content on top, actions at the bottom ===== */
 .step {
   flex: 1;

@@ -194,3 +194,46 @@
     gap: 1rem;
   }
 }
+
+/* The desktop band is not on the phone */
+.inbox-band {
+  display: none;
+}
+
+/* ===== DESKTOP, 1024 px AND WIDER (guide: Desktop: rules for all pages) =====
+   The band carries the title and the count (rules 2 and 3); the old heading goes, «Oppdater»
+   stays as a row button above the cards; everything else is one 428 px column (rules 1, 4) */
+@media (min-width: 1024px) {
+  .invitation-inbox {
+    max-width: none;
+    padding: 0 0 32px;
+  }
+
+  .inbox-band {
+    display: flow-root;
+  }
+
+  .invitation-inbox > :not(.inbox-band) {
+    max-width: 428px;
+    margin-left: max(0px, calc((100% - 880px) / 2));
+    margin-right: auto;
+  }
+
+  .header {
+    justify-content: flex-start;
+    margin-top: 20px;
+    margin-bottom: 12px;
+  }
+
+  .header h2 {
+    display: none;
+  }
+
+  /* Rule 5: «Oppdater», «Godta» and «Avslå» are row buttons, 36 px with 10 px corners */
+  .btn,
+  .btn-secondary {
+    height: 36px;
+    padding: 0 14px;
+    border-radius: var(--r-row-action);
+  }
+}
