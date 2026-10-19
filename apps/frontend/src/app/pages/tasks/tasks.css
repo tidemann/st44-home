@@ -94,6 +94,28 @@
   }
 }
 
+/* Rule 7: an empty group's card is a desktop thing; the phone list does not change */
+.desk-empty {
+  display: none;
+}
+
+@media (min-width: 1024px) {
+  .desk-empty {
+    display: block;
+  }
+
+  /* Frame d1: select mode keeps the page's two 428 px columns, 8 px between rows */
+  .select-rows {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px 24px;
+  }
+
+  .select-rows > app-chore-row {
+    margin-top: 0;
+  }
+}
+
 /* Select mode, the band (ST-1343, 03–06): the sub-line with «Velg alle» on its right,
    20 px of yellow under the underline, 21 under the sub-line (measured in 03/05). With no
    badge in the title row the line sits 4 px closer to the title: the band is 83 px, not 90 */
@@ -318,6 +340,17 @@
   font-size: 16px;
   font-weight: 600;
   color: var(--text);
+}
+
+/* The rule-7 card in a column (desktop-14): left-aligned, one title line and one sentence */
+.empty--left {
+  text-align: left;
+}
+
+.empty-sub {
+  margin-top: 4px;
+  font-size: 13px;
+  color: var(--text-muted);
 }
 
 .state {
