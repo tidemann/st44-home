@@ -114,6 +114,42 @@ describe('Diddit menus in popups (ST-1489, rule 6)', () => {
       expect(root.querySelector('.diddit-date')).toBeNull();
     });
 
+    it('moves between days with the arrow keys, across the month edge', () => {
+      const { root, date, fixture } = mount();
+      fixture.componentInstance.deadline.setValue('2030-05-30T18:30');
+      press(date);
+      const key = (k: string): void => {
+        document.activeElement?.dispatchEvent(
+          new KeyboardEvent('keydown', { key: k, bubbles: true, cancelable: true }),
+        );
+      };
+      const focused = (): string | null | undefined => document.activeElement?.textContent;
+      expect(focused()).toBe('30');
+      key('ArrowLeft');
+      expect(focused()).toBe('29');
+      key('ArrowUp');
+      expect(focused()).toBe('22');
+      key('ArrowDown');
+      expect(focused()).toBe('29');
+      key('ArrowRight');
+      key('ArrowRight');
+      key('ArrowRight');
+      expect(focused()).toBe('1'); // 1 June
+      expect(root.querySelectorAll('.diddit-date-day')).toHaveLength(30);
+      expect(fixture.componentInstance.deadline.value).toBe('2030-05-30T18:30');
+    });
+
+    it('keeps focus when an arrow would move to a day before min', () => {
+      const { date, fixture } = mount();
+      fixture.componentInstance.deadline.setValue('2030-05-12T18:30');
+      press(date);
+      expect(document.activeElement?.textContent).toBe('12');
+      document.activeElement?.dispatchEvent(
+        new KeyboardEvent('keydown', { key: 'ArrowUp', bubbles: true, cancelable: true }),
+      );
+      expect(document.activeElement?.textContent).toBe('12');
+    });
+
     it('starts a deadline picked today after 23:00 at tomorrow 00:00', () => {
       vi.useFakeTimers({ toFake: ['Date'] });
       vi.setSystemTime(new Date(2030, 4, 14, 23, 30));

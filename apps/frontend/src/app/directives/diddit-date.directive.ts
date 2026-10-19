@@ -109,8 +109,10 @@ export class DidditDate {
     document.addEventListener('mousedown', this.onOutside, true);
     window.addEventListener('resize', this.onReflow);
     window.addEventListener('scroll', this.onReflow, true);
+    // The chosen day first, else the first day that can be chosen
     (
-      menu.querySelector<HTMLElement>('[aria-pressed="true"], .diddit-date-day:not(:disabled)') ??
+      menu.querySelector<HTMLElement>('[aria-pressed="true"]') ??
+      menu.querySelector<HTMLElement>('.diddit-date-day:not(:disabled)') ??
       menu
     ).focus();
   }
@@ -152,6 +154,27 @@ export class DidditDate {
 
     const grid = document.createElement('div');
     grid.className = 'diddit-date-grid';
+    // Left/right one day, up/down one week; past the edge the next or previous month shows
+    grid.addEventListener('keydown', (event) => {
+      const by = (
+        { ArrowLeft: -1, ArrowRight: 1, ArrowUp: -7, ArrowDown: 7 } as Record<string, number>
+      )[event.key];
+      const from = (event.target as HTMLElement).dataset['day'];
+      if (!by || !from) return;
+      event.preventDefault();
+      const [y, m, d] = from.split('-').map(Number);
+      const to = new Date(y, m - 1, d + by);
+      // A day before min cannot take focus: stay put
+      if (min && isoDay(to) < min) return;
+      if (
+        to.getMonth() !== this.month.getMonth() ||
+        to.getFullYear() !== this.month.getFullYear()
+      ) {
+        this.month = new Date(to.getFullYear(), to.getMonth(), 1);
+        this.render();
+      }
+      this.menu?.querySelector<HTMLElement>(`.diddit-date-day[data-day="${isoDay(to)}"]`)?.focus();
+    });
     const weekday = new Intl.DateTimeFormat(this.locale, { weekday: 'short' });
     for (let i = 0; i < 7; i++) {
       const name = document.createElement('span');
@@ -181,6 +204,7 @@ export class DidditDate {
         this.menu?.querySelector<HTMLElement>('.diddit-date-day[aria-pressed="true"]')?.focus();
       });
       button.setAttribute('aria-label', label.format(date));
+      button.dataset['day'] = iso;
       button.setAttribute('aria-pressed', String(iso === chosen));
       button.classList.toggle('today', iso === today);
       button.disabled = !!min && iso < min;
