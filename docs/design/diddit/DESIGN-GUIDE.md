@@ -2086,8 +2086,14 @@ So "in the page width" rules out the window-wide stripe; it does not widen a col
 Recorded so a review does not read them as faults, and so they are not quietly fixed inside this
 step. Each is somebody's decision, not a builder's:
 
-1. **The tab strip inside Belønninger** (ST-1345 F10) — still an underlined strip, now 880 px wide
-   because rule 1 moved the frame. Two tab patterns on one page is a separate decision.
+1. **The tab strip inside Belønninger** (ST-1345 F10) — **decided.** Stig chose option A on ST-1528
+   (2026-10-19): from 1024 px «Ønsker | Belønninger» is the chip row «Oppgaver» uses (33 px, 9 px
+   corners, ink fill on the chosen chip, the count badge inside the «Ønsker» chip), and the
+   underline strip and its rule across the page are gone. **`desktop-rules-belonninger-1440.png` is
+   superseded on its tab row**; the rest of that picture still holds. The same decision puts the
+   reward list in two 428 px columns, «Endre / Sett på pause / Slett» as 36 px row buttons on one
+   line, and «Ny belønning» and «Slå på varsler» at the main button's 49 px and column width (ST-1565).
+   No new sketch. The phone keeps its underline strip.
 2. **Husholdningsinnstillinger has cards inside cards and doubled headings** — the page needs its own
    drawing (ST-1345 F12). The rules fix its frame and its buttons, not its content.
 3. **«Alder: 0 (Født )»** on the same page is a broken string, not a layout fault.
