@@ -316,3 +316,88 @@ h2 {
     font-size: 15px;
   }
 }
+
+/* ST-1565 (Stig, ST-1528 option A): from 1024 px Belønninger is built like the other pages */
+@media (min-width: 1024px) {
+  /* The tab strip becomes the chip row «Oppgaver» uses: 33 px, 9 px corners, 7 px apart,
+     Meta 15; the chosen one ink with a white label. The pill's top sits 22 px under the band */
+  .tabs {
+    gap: 7px;
+    margin-top: 22px;
+    margin-bottom: 16px;
+    border-bottom: 0;
+  }
+
+  .tabs button {
+    position: relative;
+    flex: none;
+    min-height: 0;
+    height: 33px;
+    padding: 0 12px;
+    margin-bottom: 0;
+    border: 0;
+    border-radius: var(--r-chip);
+    background: var(--surface);
+    color: var(--text);
+    font-family: var(--font-text);
+    font-size: 15px;
+    font-weight: 500;
+    letter-spacing: -0.02em;
+  }
+
+  /* 44 px pressed, as the chips */
+  .tabs button::after {
+    content: '';
+    position: absolute;
+    inset: -6px 0;
+  }
+
+  .tabs button.active {
+    background: var(--text);
+    color: var(--surface);
+    font-weight: 500;
+  }
+
+  .tabs button:focus-visible {
+    outline: var(--focus-ring);
+    outline-offset: 2px;
+  }
+
+  /* Rule 4: two 428 px columns, 24 px apart */
+  .rewards-list {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    column-gap: 24px;
+  }
+
+  /* Rule 5: «Ny belønning» is the main button, 49 px and as wide as the left column */
+  .header-actions {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    column-gap: 24px;
+  }
+
+  .header-actions .btn-primary {
+    width: 100%;
+    min-height: 0;
+    height: 49px;
+    padding: 0 16px;
+    border-radius: var(--r-button);
+    font-size: 16.5px;
+    font-weight: 600;
+  }
+
+  /* Rule 5: «Endre», «Sett på pause», «Slett» are row buttons, 36 px with 10 px corners, on one line */
+  .reward-actions {
+    flex-wrap: nowrap;
+    gap: 8px;
+  }
+
+  .reward-actions .btn {
+    min-height: 0;
+    height: 36px;
+    padding: 0 14px;
+    border-radius: var(--r-row-action);
+    font-size: 15px;
+    white-space: nowrap;
+  }
+}
