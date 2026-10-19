@@ -115,7 +115,7 @@
                 <button
                   type="submit"
                   class="btn btn-primary btn-sm"
-                  [disabled]="form.invalid || saving()"
+                  [disabled]="saving() || (!desktop() && form.invalid)"
                 >
                   @if (saving()) {
                     <span i18n="@@childDetailsModal.savingButton">Lagrer...</span>

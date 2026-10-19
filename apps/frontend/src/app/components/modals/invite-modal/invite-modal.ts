@@ -1,6 +1,8 @@
 import { Component, input, output, signal, inject, ChangeDetectionStrategy } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Modal } from '../modal/modal';
+import { DidditMenu } from '../../../directives/diddit-menu.directive';
+import { isDesktopSignal } from '../../../utils/desktop-query';
 
 /**
  * Data structure for invite member submission
@@ -23,12 +25,14 @@ export interface InviteMemberData {
  */
 @Component({
   selector: 'app-invite-modal',
-  imports: [Modal, ReactiveFormsModule],
+  imports: [Modal, DidditMenu, ReactiveFormsModule],
   templateUrl: './invite-modal.html',
   styleUrl: './invite-modal.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class InviteModal {
+  /** Popup rule 4 is desktop-only: on the phone the main action still waits for a valid form */
+  protected readonly desktop = isDesktopSignal();
   /**
    * Whether the modal is open
    */
@@ -75,7 +79,14 @@ export class InviteModal {
    * Handle form submission
    */
   onSubmit(): void {
-    if (this.form.invalid || this.submitting()) {
+    if (this.submitting()) {
+      return;
+    }
+
+    // ST-1430 rule 4: the main action is never pale — the form is checked when you
+    // press it, and the error shows under the field.
+    if (this.form.invalid) {
+      this.form.markAllAsTouched();
       return;
     }
 

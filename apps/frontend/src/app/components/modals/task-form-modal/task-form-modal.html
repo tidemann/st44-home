@@ -96,7 +96,7 @@
         <label class="form-label" for="rule-type" i18n="@@taskFormModal.taskTypeLabel"
           >Oppgavetype *</label
         >
-        <select id="rule-type" class="form-select" formControlName="ruleType">
+        <select appDidditMenu id="rule-type" class="form-select" formControlName="ruleType">
           @for (type of taskTypes; track type.value) {
             <option [value]="type.value">{{ type.label }} - {{ type.description }}</option>
           }
@@ -122,7 +122,12 @@
             }
           </div>
           @if (repeatDaysArray.length === 0) {
-            <div class="form-hint" i18n="@@taskFormModal.selectAtLeastOneDay">
+            <div
+              class="form-hint"
+              [class.form-error]="submitAttempted()"
+              [attr.role]="submitAttempted() ? 'alert' : null"
+              i18n="@@taskFormModal.selectAtLeastOneDay"
+            >
               Vennligst velg minst én dag
             </div>
           }
@@ -135,7 +140,12 @@
           <label class="form-label" for="rotation-type" i18n="@@taskFormModal.rotationTypeLabel"
             >Rotasjonstype *</label
           >
-          <select id="rotation-type" class="form-select" formControlName="rotationType">
+          <select
+            appDidditMenu
+            id="rotation-type"
+            class="form-select"
+            formControlName="rotationType"
+          >
             @for (type of rotationTypes; track type.value) {
               <option [value]="type.value">{{ type.label }}</option>
             }
@@ -165,7 +175,12 @@
             }
           </div>
           @if (assignedChildrenArray.length < 2 && assignedChildrenArray.length > 0) {
-            <div class="form-hint" i18n="@@taskFormModal.selectAtLeastTwoForRotation">
+            <div
+              class="form-hint"
+              [class.form-error]="submitAttempted()"
+              [attr.role]="submitAttempted() ? 'alert' : null"
+              i18n="@@taskFormModal.selectAtLeastTwoForRotation"
+            >
               Velg minst 2 barn for rotasjon
             </div>
           }
@@ -180,6 +195,7 @@
           >
           <input
             type="datetime-local"
+            appDidditDate
             id="deadline"
             class="form-input"
             formControlName="deadline"
@@ -214,7 +230,12 @@
             }
           </div>
           @if (assignedChildrenArray.length === 0) {
-            <div class="form-hint" i18n="@@taskFormModal.selectAtLeastOneCandidate">
+            <div
+              class="form-hint"
+              [class.form-error]="submitAttempted()"
+              [attr.role]="submitAttempted() ? 'alert' : null"
+              i18n="@@taskFormModal.selectAtLeastOneCandidate"
+            >
               Velg minst én kandidat
             </div>
           }
@@ -249,7 +270,14 @@
             }
           </div>
           @if (childrenGone() && assignedChildrenArray.length === 0) {
-            <div class="form-hint" i18n="@@taskFormModal.pickNewChild">Velg minst ett barn</div>
+            <div
+              class="form-hint"
+              [class.form-error]="submitAttempted()"
+              [attr.role]="submitAttempted() ? 'alert' : null"
+              i18n="@@taskFormModal.pickNewChild"
+            >
+              Velg minst ett barn
+            </div>
           }
         </fieldset>
       }
@@ -278,7 +306,7 @@
             <button
               type="submit"
               class="btn btn-primary"
-              [disabled]="!isFormValid() || submitting()"
+              [disabled]="submitting() || (!desktop() && !isFormValid())"
             >
               {{ submitButtonText() }}
             </button>
@@ -295,7 +323,11 @@
           >
             Avbryt
           </button>
-          <button type="submit" class="btn btn-primary" [disabled]="!isFormValid() || submitting()">
+          <button
+            type="submit"
+            class="btn btn-primary"
+            [disabled]="submitting() || (!desktop() && !isFormValid())"
+          >
             {{ submitButtonText() }}
           </button>
         </div>

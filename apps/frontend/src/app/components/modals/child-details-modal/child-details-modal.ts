@@ -12,6 +12,7 @@ import type { Child } from '@st44/types';
 import { Modal } from '../modal/modal';
 import { CreateChildAccountComponent } from '../../create-child-account/create-child-account';
 import { ChildrenService } from '../../../services/children.service';
+import { isDesktopSignal } from '../../../utils/desktop-query';
 
 /**
  * Child Details Modal
@@ -33,6 +34,8 @@ import { ChildrenService } from '../../../services/children.service';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ChildDetailsModal {
+  /** Popup rule 4 is desktop-only: on the phone the main action still waits for a valid form */
+  protected readonly desktop = isDesktopSignal();
   /**
    * Whether the modal is open
    */
@@ -206,7 +209,13 @@ export class ChildDetailsModal {
    */
   async saveEdit(): Promise<void> {
     const child = this.child();
-    if (!child || this.form.invalid || this.saving()) {
+    if (!child || this.saving()) {
+      return;
+    }
+
+    // ST-1430 rule 4: checked on the press, the error under the field.
+    if (this.form.invalid) {
+      this.form.markAllAsTouched();
       return;
     }
 

@@ -1,7 +1,9 @@
 import { Component, input, output, signal, ChangeDetectionStrategy } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Modal } from '../modal/modal';
+import { DidditMenu } from '../../../directives/diddit-menu.directive';
 import type { Child } from '@st44/types';
+import { isDesktopSignal } from '../../../utils/desktop-query';
 
 /**
  * Reassign Task Modal
@@ -13,12 +15,14 @@ import type { Child } from '@st44/types';
  */
 @Component({
   selector: 'app-reassign-task-modal',
-  imports: [Modal, FormsModule],
+  imports: [Modal, DidditMenu, FormsModule],
   templateUrl: './reassign-task-modal.html',
   styleUrl: './reassign-task-modal.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ReassignTaskModal {
+  /** Popup rule 4 is desktop-only: on the phone the main action still waits for a valid form */
+  protected readonly desktop = isDesktopSignal();
   /**
    * Whether the modal is open
    */
@@ -73,8 +77,10 @@ export class ReassignTaskModal {
   protected onSubmit(): void {
     const childId = this.selectedChildId();
 
+    // ST-1430 rule 4: the action is never pale — it is checked on the press, and the
+    // error shows under the field (the login page's pattern).
     if (!childId) {
-      this.error.set('Please select a child');
+      this.error.set($localize`:@@reassignModal.chooseChildError:Velg et barn`);
       return;
     }
 

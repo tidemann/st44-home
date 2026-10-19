@@ -20,7 +20,10 @@ import {
   AbstractControl,
 } from '@angular/forms';
 import { Modal } from '../modal/modal';
+import { DidditMenu } from '../../../directives/diddit-menu.directive';
+import { DidditDate } from '../../../directives/diddit-date.directive';
 import type { Task, TaskRuleType, Child, CreateTaskRequest } from '@st44/types';
+import { isDesktopSignal } from '../../../utils/desktop-query';
 
 /**
  * Mode for the task form
@@ -66,12 +69,14 @@ export interface TaskFormData {
  */
 @Component({
   selector: 'app-task-form-modal',
-  imports: [Modal, ReactiveFormsModule],
+  imports: [Modal, DidditMenu, DidditDate, ReactiveFormsModule],
   templateUrl: './task-form-modal.html',
   styleUrl: './task-form-modal.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TaskFormModal {
+  /** Popup rule 4 is desktop-only: on the phone the main action still waits for a valid form */
+  protected readonly desktop = isDesktopSignal();
   /**
    * Whether the modal is open
    */
@@ -226,6 +231,12 @@ export class TaskFormModal {
    * Error message
    */
   protected readonly errorMessage = signal<string | null>(null);
+
+  /**
+   * The main action has been pressed on a form that is not complete (ST-1430 rule 4):
+   * the unmet rules turn from hint to error, each under the field it concerns.
+   */
+  protected readonly submitAttempted = signal(false);
 
   /**
    * Delete confirmation state (edit mode only)
@@ -534,10 +545,19 @@ export class TaskFormModal {
    * Handle form submission
    */
   onSubmit(): void {
-    if (!this.isFormValid() || this.submitting()) {
+    if (this.submitting()) {
       return;
     }
 
+    // ST-1430 rule 4: the main action is never pale — the form is checked when you
+    // press it, and every unmet rule shows under its own field.
+    if (!this.isFormValid()) {
+      this.submitAttempted.set(true);
+      this.form.markAllAsTouched();
+      return;
+    }
+
+    this.submitAttempted.set(false);
     this.submitting.set(true);
     this.errorMessage.set(null);
 

@@ -37,6 +37,7 @@
     <div class="form-group">
       <label class="form-label" for="invite-role" i18n="@@inviteModal.roleLabel">Rolle *</label>
       <select
+        appDidditMenu
         id="invite-role"
         class="form-select"
         formControlName="role"
@@ -83,7 +84,7 @@
       <button
         type="submit"
         class="btn btn-primary"
-        [disabled]="form.invalid || submitting()"
+        [disabled]="submitting() || (!desktop() && form.invalid)"
         i18n="@@inviteModal.submitButton"
       >
         Send invitasjon
