@@ -306,7 +306,7 @@ h2 {
 }
 
 @media (min-width: 1024px) {
-  .requests-tab > .desk-empty {
+  .desk-empty {
     display: block;
   }
 

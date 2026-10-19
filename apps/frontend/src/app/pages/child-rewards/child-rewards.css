@@ -198,7 +198,7 @@ app-group-label + .hr {
     min-width: 0;
   }
 
-  .col-b > .desk-empty {
+  .desk-empty {
     display: block;
   }
 
