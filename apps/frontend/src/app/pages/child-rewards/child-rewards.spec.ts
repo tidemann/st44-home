@@ -84,6 +84,23 @@ describe('ChildRewards', () => {
     expect(component.rewardName(redemption({ rewardId: 'gone' }))).toBe('');
   });
 
+  it('keeps the three request groups with the rule-7 card when there is no history (desktop only)', () => {
+    childRewards.set([reward({})]);
+    fixture.detectChanges();
+
+    const empty = Array.from(
+      fixture.nativeElement.querySelectorAll('.col-b > .desk-empty') as NodeListOf<HTMLElement>,
+    );
+    expect(empty.map((s) => s.querySelector('h2')?.textContent?.trim())).toEqual([
+      'Venter på svar',
+      'Hentet før',
+      'Nei denne gangen',
+    ]);
+    expect(empty[0].textContent).toContain('Du venter ikke på svar nå');
+    expect(empty[1].textContent).toContain('Du har ikke hentet noe ennå');
+    expect(empty[2].textContent).toContain('Ingen har sagt nei');
+  });
+
   it('opens the confirm sheet only for a reward the child can get', () => {
     component.ask(reward({ canAfford: false }));
     expect(component.confirming()).toBeNull();

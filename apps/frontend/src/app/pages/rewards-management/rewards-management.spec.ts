@@ -139,6 +139,34 @@ describe('RewardsManagementComponent', () => {
     expect(mockRewardService.undoRedemption).toHaveBeenCalledWith('h-1', 'r-1');
   });
 
+  it('keeps «Skal gis» and «Tidligere» with the rule-7 card when only a wish waits (desktop only)', () => {
+    redemptions.set([redemption({})]);
+    fixture.detectChanges();
+
+    const empty = Array.from(
+      fixture.nativeElement.querySelectorAll('.desk-empty') as NodeListOf<HTMLElement>,
+    );
+    expect(empty.map((s) => s.querySelector('h2')?.textContent?.trim())).toEqual([
+      'Skal gis',
+      'Tidligere',
+    ]);
+    expect(empty[0].classList).toContain('req-give');
+    expect(empty[1].classList).toContain('req-history');
+    expect(empty[0].textContent).toContain('Ingenting skal gis nå');
+    expect(empty[1].textContent).toContain('Ingen ønsker er avgjort ennå');
+  });
+
+  it('shows no empty cards when every group has something', () => {
+    redemptions.set([
+      redemption({ id: 'pending' }),
+      redemption({ id: 'old-yes', status: 'approved', decidedAt: minutesAgo(10) }),
+      redemption({ id: 'given', status: 'fulfilled', decidedAt: minutesAgo(60) }),
+    ]);
+    fixture.detectChanges();
+
+    expect(fixture.nativeElement.querySelector('.desk-empty')).toBeNull();
+  });
+
   it('shows a message when an answer fails', () => {
     mockRewardService.approveRedemption.mockReturnValue(throwError(() => new Error('409')));
     component.approve(redemption({}));

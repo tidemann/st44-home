@@ -201,4 +201,17 @@ app-group-label + .hr {
   .col-b > .desk-empty {
     display: block;
   }
+
+  /* The same card as the parent's empty groups: 13 / 15 px inside, no paragraph margins */
+  .desk-empty .empty {
+    padding: 13px 15px 15px;
+  }
+
+  .desk-empty .empty-title {
+    margin: 0;
+  }
+
+  .desk-empty .empty-sub {
+    margin: 4px 0 0;
+  }
 }

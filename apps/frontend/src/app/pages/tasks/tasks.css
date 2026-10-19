@@ -104,6 +104,19 @@
     display: block;
   }
 
+  /* The same card as Belønninger's empty groups: 13 / 15 px inside, no paragraph margins */
+  .desk-empty .empty {
+    padding: 13px 15px 15px;
+  }
+
+  .desk-empty .empty-title {
+    margin: 0;
+  }
+
+  .desk-empty .empty-sub {
+    margin: 4px 0 0;
+  }
+
   /* Frame d1: select mode keeps the page's two 428 px columns, 8 px between rows */
   .select-rows {
     display: grid;
