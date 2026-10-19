@@ -114,31 +114,13 @@ canvas {
   width: 100%;
 }
 
-.btn {
-  padding: 0.5rem 1rem;
-  border: none;
-  border-radius: 6px;
-  font-size: 0.875rem;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all 0.2s;
-  display: inline-flex;
-  align-items: center;
-  gap: 0.25rem;
-}
-
-.btn-secondary {
-  background: var(--track);
-  color: var(--text);
-}
-
-.btn-secondary:hover:not(:disabled) {
-  background: var(--track);
-}
-
-.btn-secondary:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
+/* Popup secondary, as «Avbryt»: the global .btn-secondary gives the white surface, the 2 px
+   --text-muted edge and the --track hover; here only the popup's 49 px and 13 px corners */
+.qr-actions .btn {
+  height: 49px;
+  min-height: 49px;
+  border-radius: var(--r-card);
+  box-shadow: none;
 }
 
 /* Popup rule 3 on desktop: one row of equal parts across the popup's content width */

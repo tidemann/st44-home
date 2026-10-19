@@ -7,10 +7,23 @@ const pad = (n: number): string => String(n).padStart(2, '0');
 const isoDay = (d: Date): string =>
   `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
 
+/** «18», «1800», «930», «18:00» and «18.00» all read as a 24-hour `HH:mm`; anything else is null */
+export const parseTime = (text: string): string | null => {
+  const match = /^(\d{1,2})(?:[:.]?(\d{2}))?$/.exec(text.trim());
+  if (!match) return null;
+  const hours = Number(match[1]);
+  const minutes = Number(match[2] ?? 0);
+  return hours < 24 && minutes < 60 ? `${pad(hours)}:${pad(minutes)}` : null;
+};
+
 /**
  * Guide: Desktop rules for all popups, rule 6 — no browser date picker inside a popup. On desktop
- * pressing the host `datetime-local` field opens a Diddit menu: the month as a grid of days and a
- * time field under it. The phone keeps the native picker, unchanged.
+ * pressing the host `datetime-local` field opens a Diddit menu: the month as a grid of days and
+ * Diddit's own 24-hour time field under it. The phone keeps the native picker.
+ *
+ * The closed field shows Diddit text on every width, never the browser's own format (ST-1520):
+ * «Velg dato og klokkeslett» when empty, «man. 20. oktober, kl. 18.00» when chosen. The text
+ * lies over the input; the input's own text is transparent.
  *
  * The input stays the form control: every choice writes its `YYYY-MM-DDTHH:mm` value and fires
  * `input` and `change`. The keyboard can still type straight into the field.
@@ -21,6 +34,7 @@ export class DidditDate {
   private readonly locale = inject(LOCALE_ID);
   private readonly desktop = isDesktopSignal();
   private readonly menuId = `diddit-date-${nextDateId++}`;
+  private readonly text = document.createElement('span');
   private menu: HTMLElement | null = null;
   /** First day of the month on show */
   private month = new Date();
@@ -42,8 +56,41 @@ export class DidditDate {
         this.open();
       }
     };
+    const onInput = (): void => this.showText();
     this.input.addEventListener('mousedown', onMouseDown);
     this.input.addEventListener('keydown', onKeyDown);
+    this.input.addEventListener('input', onInput);
+
+    // Before the input in the flow, as tall as it and pulled back over it by the same height
+    this.text.className = 'diddit-date-text';
+    this.text.setAttribute('aria-hidden', 'true');
+    this.input.classList.add('diddit-date-field');
+    this.input.insertAdjacentElement('beforebegin', this.text);
+    const fit = (): void => {
+      const height = this.input.offsetHeight;
+      const style = getComputedStyle(this.input);
+      this.text.style.height = `${height}px`;
+      this.text.style.marginBottom = `${-height}px`;
+      // The text starts where the field's own text would: its edge plus its inset
+      this.text.style.paddingLeft = `calc(${style.borderLeftWidth} + ${style.paddingLeft})`;
+    };
+    const resize = typeof ResizeObserver === 'undefined' ? null : new ResizeObserver(fit);
+    resize?.observe(this.input);
+    // The form writes its value without an event (edit, reset), and an OnPush popup is not
+    // checked after it: follow the input's own `value` setter instead
+    const native = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value');
+    if (native?.get && native.set) {
+      const { get, set } = native;
+      Object.defineProperty(this.input, 'value', {
+        configurable: true,
+        get: () => get.call(this.input),
+        set: (value: string) => {
+          set.call(this.input, value);
+          this.showText();
+        },
+      });
+    }
+    this.showText();
 
     effect(() => {
       if (!this.desktop()) this.close(false);
@@ -52,8 +99,28 @@ export class DidditDate {
     inject(DestroyRef).onDestroy(() => {
       this.input.removeEventListener('mousedown', onMouseDown);
       this.input.removeEventListener('keydown', onKeyDown);
+      this.input.removeEventListener('input', onInput);
+      resize?.disconnect();
+      delete (this.input as { value?: string }).value;
+      this.text.remove();
       this.close(false);
     });
+  }
+
+  private showText(): void {
+    const { day, time } = this.value();
+    this.text.classList.toggle('empty', !day);
+    if (!day) {
+      this.text.textContent = $localize`:@@didditDate.label:Velg dato og klokkeslett`;
+      return;
+    }
+    const date = new Intl.DateTimeFormat(this.locale, {
+      weekday: 'short',
+      day: 'numeric',
+      month: 'long',
+    }).format(new Date(`${day}T00:00`));
+    const [hours = '00', minutes = '00'] = time.split(':');
+    this.text.textContent = $localize`:@@didditDate.closed:${date}:date:, kl. ${hours}:hours:.${minutes}:minutes:`;
   }
 
   private value(): { day: string; time: string } {
@@ -215,12 +282,30 @@ export class DidditDate {
     timeRow.className = 'diddit-date-time';
     const timeLabel = document.createElement('span');
     timeLabel.textContent = $localize`:@@didditDate.time:Klokkeslett`;
+    // Diddit's own 24-hour field, never the browser's `type=time`: that one follows the browser's
+    // language and draws «06:00 AM» in a Norwegian app (ST-1520)
     const timeField = document.createElement('input');
-    timeField.type = 'time';
-    timeField.className = 'form-input';
+    timeField.type = 'text';
+    timeField.className = 'form-input diddit-date-clock';
+    timeField.inputMode = 'numeric';
+    timeField.autocomplete = 'off';
+    timeField.maxLength = 5;
     timeField.value = time || this.start(today).time;
-    timeField.addEventListener('change', () => {
-      if (timeField.value) this.write(this.value().day || today, timeField.value);
+    const commit = (): void => {
+      const chosen = parseTime(timeField.value);
+      if (chosen) {
+        timeField.value = chosen;
+        this.write(this.value().day || today, chosen);
+      } else {
+        timeField.value = this.value().time || this.start(today).time;
+      }
+    };
+    timeField.addEventListener('change', commit);
+    timeField.addEventListener('keydown', (event) => {
+      if (event.key === 'Enter') {
+        event.preventDefault();
+        commit();
+      }
     });
     timeRow.append(timeLabel, timeField);
 

@@ -1,8 +1,8 @@
-import { Component } from '@angular/core';
+import { Component, LOCALE_ID } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { DidditMenu } from './diddit-menu.directive';
-import { DidditDate } from './diddit-date.directive';
+import { DidditDate, parseTime } from './diddit-date.directive';
 
 @Component({
   imports: [DidditMenu, DidditDate, ReactiveFormsModule],
@@ -163,6 +163,45 @@ describe('Diddit menus in popups (ST-1489, rule 6)', () => {
         vi.useRealTimers();
       }
     });
+
+    it('takes the time in a 24-hour Diddit field, not the browser time field (ST-1520)', () => {
+      const { root, date, fixture } = mount();
+      fixture.componentInstance.deadline.setValue('2030-05-14T18:30');
+      press(date);
+      expect(root.querySelector('.diddit-date input[type="time"]')).toBeNull();
+      const clock = root.querySelector('.diddit-date-clock') as HTMLInputElement;
+      expect(clock.type).toBe('text');
+      expect(clock.value).toBe('18:30');
+
+      clock.value = '7';
+      clock.dispatchEvent(new Event('change'));
+      expect(clock.value).toBe('07:00');
+      expect(fixture.componentInstance.deadline.value).toBe('2030-05-14T07:00');
+
+      clock.value = '25:00';
+      clock.dispatchEvent(new Event('change'));
+      expect(clock.value).toBe('07:00');
+      expect(fixture.componentInstance.deadline.value).toBe('2030-05-14T07:00');
+    });
+  });
+
+  describe('the closed field', () => {
+    beforeEach(() => {
+      setDesktop(false);
+      TestBed.configureTestingModule({ providers: [{ provide: LOCALE_ID, useValue: 'no' }] });
+    });
+
+    it('reads Diddit text, empty or chosen, never the browser format (ST-1520)', () => {
+      const { root, fixture } = mount();
+      const text = root.querySelector('.diddit-date-text') as HTMLElement;
+      expect(text.textContent).toBe('Velg dato og klokkeslett');
+      expect(text.classList).toContain('empty');
+
+      // No change detection: an OnPush popup is not checked after a form write
+      fixture.componentInstance.deadline.setValue('2030-05-20T18:00');
+      expect(text.textContent).toBe('man. 20. mai, kl. 18.00');
+      expect(text.classList).not.toContain('empty');
+    });
   });
 
   describe('on the phone', () => {
@@ -174,5 +213,25 @@ describe('Diddit menus in popups (ST-1489, rule 6)', () => {
       expect(press(date)).toBe(true);
       expect(root.querySelector('.diddit-menu')).toBeNull();
     });
+  });
+});
+
+describe('parseTime', () => {
+  it('reads what a person types as a 24-hour time', () => {
+    expect(['18', '1800', '930', '18:00', '18.00', ' 6:05 '].map(parseTime)).toEqual([
+      '18:00',
+      '18:00',
+      '09:30',
+      '18:00',
+      '18:00',
+      '06:05',
+    ]);
+    expect(['24:00', '12:60', 'kl', '', '6 PM'].map(parseTime)).toEqual([
+      null,
+      null,
+      null,
+      null,
+      null,
+    ]);
   });
 });
