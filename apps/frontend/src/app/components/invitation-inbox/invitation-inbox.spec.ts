@@ -92,5 +92,9 @@ describe('InvitationInboxComponent', () => {
       (fixture.nativeElement as HTMLElement).querySelectorAll('.inviter .email-part'),
     ).map((p) => p.textContent);
     expect(parts).toEqual(['lang.adresse.for.test', '@example.com']);
+    // the space after «Invitert av:» survives the split
+    expect(fixture.nativeElement.querySelector('.inviter').textContent.trim()).toBe(
+      'Invitert av: lang.adresse.for.test@example.com',
+    );
   });
 });
