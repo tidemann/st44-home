@@ -236,8 +236,8 @@
   /* 4 · the main action is never pale. It is live from the first paint and checked on the
      press; the only `disabled` left inside a popup is the moment it is working, and that
      keeps its yellow and swaps its label, exactly as the approved login does (login-18).
-     The validity bindings are gone from the templates — this is not paint over a dead
-     button. */
+     The templates bind validity to `disabled` only below 1024 px (`!desktop() && …`), so
+     this is not paint over a dead button. */
   .modal :is(.modal-body, .modal-footer) ::ng-deep :is(.btn, button)[disabled],
   .modal :is(.modal-body, .modal-footer) ::ng-deep :is(.btn, button)[aria-disabled='true'] {
     opacity: 1;
