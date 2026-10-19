@@ -61,9 +61,12 @@ export class DidditDate {
     return { day, time };
   }
 
-  /** The time a new deadline starts at: the next whole hour */
-  private defaultTime(): string {
-    return `${pad((new Date().getHours() + 1) % 24)}:00`;
+  /** A new deadline starts at the next whole hour; after 23:00 today that is tomorrow 00:00 */
+  private start(day: string): { day: string; time: string } {
+    const next = new Date();
+    next.setHours(next.getHours() + 1, 0, 0, 0);
+    const time = `${pad(next.getHours())}:00`;
+    return { day: day === isoDay(new Date()) ? isoDay(next) : day, time };
   }
 
   private write(day: string, time: string): void {
@@ -170,7 +173,10 @@ export class DidditDate {
       const date = new Date(this.month.getFullYear(), this.month.getMonth(), d);
       const iso = isoDay(date);
       const button = this.button('diddit-date-day', String(d), () => {
-        this.write(iso, this.value().time || this.defaultTime());
+        const start = this.start(iso);
+        const time = this.value().time;
+        if (time) this.write(iso, time);
+        else this.write(start.day, start.time);
         this.render();
         this.menu?.querySelector<HTMLElement>('.diddit-date-day[aria-pressed="true"]')?.focus();
       });
@@ -188,7 +194,7 @@ export class DidditDate {
     const timeField = document.createElement('input');
     timeField.type = 'time';
     timeField.className = 'form-input';
-    timeField.value = time || this.defaultTime();
+    timeField.value = time || this.start(today).time;
     timeField.addEventListener('change', () => {
       if (timeField.value) this.write(this.value().day || today, timeField.value);
     });
