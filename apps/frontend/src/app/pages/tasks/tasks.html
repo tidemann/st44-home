@@ -213,6 +213,20 @@
                 (longPress)="onLongPress(a.taskId, $event)"
               />
             }
+          } @else {
+            <!-- Rule 7: from 1024 px an empty group keeps its label and gets the white card, so
+                 «Alle oppgaver» stays where the picture draws it; the phone shows nothing here -->
+            <div class="desk-empty">
+              <app-group-label i18n-label="@@tasks.doneGroup" label="Gjort i dag" />
+              <div class="empty empty--left" role="status">
+                <p class="empty-title" i18n="@@tasks.noneDoneToday">
+                  Ingen oppgaver er haket av i dag
+                </p>
+                <p class="empty-sub" i18n="@@tasks.noneDoneTodayHint">
+                  Når noen haker av en oppgave, dukker den opp her.
+                </p>
+              </div>
+            </div>
           }
 
           <!-- After a delete: the receipt sits where the work happened, in the page (ST-1343, 08) -->
@@ -254,18 +268,23 @@
               </button>
             }
           </app-group-label>
-          @for (t of templates(); track t.id) {
-            @if (selecting()) {
-              <app-chore-row
-                [attr.data-select-id]="t.id"
-                [title]="t.name"
-                [meta]="templateMeta(t)"
-                [points]="points(t.points)"
-                [selectable]="true"
-                [selected]="chosen().has(t.id)"
-                (pick)="toggleChosen(t.id)"
-              />
-            } @else {
+          @if (selecting()) {
+            <!-- Frame d1: from 1024 px the rows run in two 428 px columns under the one label -->
+            <div class="select-rows">
+              @for (t of templates(); track t.id) {
+                <app-chore-row
+                  [attr.data-select-id]="t.id"
+                  [title]="t.name"
+                  [meta]="templateMeta(t)"
+                  [points]="points(t.points)"
+                  [selectable]="true"
+                  [selected]="chosen().has(t.id)"
+                  (pick)="toggleChosen(t.id)"
+                />
+              }
+            </div>
+          } @else {
+            @for (t of templates(); track t.id) {
               <app-chore-row
                 [title]="t.name"
                 [meta]="templateMeta(t)"

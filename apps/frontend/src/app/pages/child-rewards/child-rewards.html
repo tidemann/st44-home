@@ -78,6 +78,21 @@
               </div>
             }
           </section>
+        } @else {
+          <!-- Rule 7: from 1024 px an empty group keeps its label and gets the white card -->
+          <section class="desk-empty" aria-labelledby="waiting-empty-heading">
+            <app-group-label
+              id="waiting-empty-heading"
+              i18n-label="@@childRewards.waitingHeading"
+              label="Venter på svar"
+            />
+            <div class="empty empty--left" role="status">
+              <p class="empty-title" i18n="@@childRewards.noneWaiting">Du venter ikke på svar nå</p>
+              <p class="empty-sub" i18n="@@childRewards.noneWaitingHint">
+                Når du ber om en belønning, ser du den her.
+              </p>
+            </div>
+          </section>
         }
 
         @if (collected().length > 0) {
@@ -100,6 +115,22 @@
               </div>
             }
           </section>
+        } @else {
+          <section class="desk-empty" aria-labelledby="collected-empty-heading">
+            <app-group-label
+              id="collected-empty-heading"
+              i18n-label="@@childRewards.collectedHeading"
+              label="Hentet før"
+            />
+            <div class="empty empty--left" role="status">
+              <p class="empty-title" i18n="@@childRewards.noneCollected">
+                Du har ikke hentet noe ennå
+              </p>
+              <p class="empty-sub" i18n="@@childRewards.noneCollectedHint">
+                Det du har fått, samles her.
+              </p>
+            </div>
+          </section>
         }
 
         @if (refused().length > 0) {
@@ -121,6 +152,20 @@
                 }
               </div>
             }
+          </section>
+        } @else {
+          <section class="desk-empty" aria-labelledby="refused-empty-heading">
+            <app-group-label
+              id="refused-empty-heading"
+              i18n-label="@@childRewards.refusedHeading"
+              label="Nei denne gangen"
+            />
+            <div class="empty empty--left" role="status">
+              <p class="empty-title" i18n="@@childRewards.noneRefused">Ingen har sagt nei</p>
+              <p class="empty-sub" i18n="@@childRewards.noneRefusedHint">
+                Hvis en voksen sier nei, ser du det her.
+              </p>
+            </div>
           </section>
         }
       </div>

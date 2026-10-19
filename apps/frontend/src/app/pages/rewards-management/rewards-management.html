@@ -168,6 +168,19 @@
               }
             </div>
           </section>
+        } @else {
+          <!-- Rule 7: from 1024 px an empty group keeps its heading and gets the white card -->
+          <section class="req-waiting desk-empty" aria-labelledby="waiting-empty-heading">
+            <h2 id="waiting-empty-heading" i18n="@@rewards.waitingHeading">Venter på svar</h2>
+            <div class="empty-card" role="status">
+              <p class="empty-card-title" i18n="@@rewards.noneWaiting">
+                Ingen ønsker venter på svar
+              </p>
+              <p class="empty-card-sub" i18n="@@rewards.noneWaitingHint">
+                Når et barn ber om en belønning, kommer den her.
+              </p>
+            </div>
+          </section>
         }
 
         <!-- Said yes, not given yet -->
@@ -195,6 +208,16 @@
               }
             </div>
           </section>
+        } @else {
+          <section class="req-give desk-empty" aria-labelledby="give-empty-heading">
+            <h2 id="give-empty-heading" i18n="@@rewards.toGiveHeading">Skal gis</h2>
+            <div class="empty-card" role="status">
+              <p class="empty-card-title" i18n="@@rewards.noneToGive">Ingenting skal gis nå</p>
+              <p class="empty-card-sub" i18n="@@rewards.noneToGiveHint">
+                Når du sier ja til et ønske, ligger det her til du har gitt det.
+              </p>
+            </div>
+          </section>
         }
 
         <!-- Done -->
@@ -213,6 +236,18 @@
                 </li>
               }
             </ul>
+          </section>
+        } @else {
+          <section class="req-history desk-empty" aria-labelledby="history-empty-heading">
+            <h2 id="history-empty-heading" i18n="@@rewards.historyHeading">Tidligere</h2>
+            <div class="empty-card" role="status">
+              <p class="empty-card-title" i18n="@@rewards.noHistory">
+                Ingen ønsker er avgjort ennå
+              </p>
+              <p class="empty-card-sub" i18n="@@rewards.noHistoryHint">
+                Det du har gitt eller sagt nei til, samles her.
+              </p>
+            </div>
           </section>
         }
       }

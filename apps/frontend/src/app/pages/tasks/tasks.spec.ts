@@ -171,6 +171,28 @@ describe('Tasks (Poeng task list)', () => {
       expect(component['hasDay']()).toBe(true);
     });
 
+    it('keeps «Gjort i dag» with the rule-7 card when nothing is done (desktop only)', async () => {
+      mockDay.load.mockResolvedValue({ today: [day.today[0]], overdue: [] });
+      fixture.detectChanges();
+      await component['loadTasks']();
+      fixture.detectChanges();
+
+      const empty = (fixture.nativeElement as HTMLElement).querySelector('.col-b .desk-empty')!;
+      expect(empty.textContent).toContain('Gjort i dag');
+      expect(empty.textContent).toContain('Ingen oppgaver er haket av i dag');
+      expect(empty.textContent).toContain('Når noen haker av en oppgave, dukker den opp her.');
+    });
+
+    it('shows no empty card when something is done today', async () => {
+      fixture.detectChanges();
+      await component['loadTasks']();
+      fixture.detectChanges();
+      expect(
+        (fixture.nativeElement as HTMLElement).querySelector('.col-b app-group-label'),
+      ).not.toBeNull();
+      expect((fixture.nativeElement as HTMLElement).querySelector('.desk-empty')).toBeNull();
+    });
+
     it('counts the day and the overdue chores in the subtitle', () => {
       expect(component['subtitle']()).toBe('4 i dag – 1 forfalt');
     });
@@ -400,6 +422,15 @@ describe('Tasks (Poeng task list)', () => {
       expect(text()).not.toContain('Forfalt');
       expect(selectRows().length).toBe(5);
       expect(selectRows().every((r) => r.getAttribute('aria-checked') === 'false')).toBe(true);
+    });
+
+    it('puts the select rows in one grid, so desktop lays them in two columns (frame d1)', () => {
+      button('Velg')!.click();
+      fixture.detectChanges();
+
+      const grid = el().querySelector('.select-rows')!;
+      expect(grid.querySelectorAll('app-chore-row').length).toBe(5);
+      expect(el().querySelector('.cols')).toBeNull();
     });
 
     it('ticks rows with a tap and counts them in the title', () => {

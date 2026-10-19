@@ -299,6 +299,37 @@ h2 {
   }
 }
 
+/* Rule 7: an empty group keeps its heading and gets the white card, from 1024 px only; the
+   phone list does not change. One title line, one sentence, 13 px corners, the column's width */
+.desk-empty {
+  display: none;
+}
+
+@media (min-width: 1024px) {
+  .desk-empty {
+    display: block;
+  }
+
+  .empty-card {
+    padding: 13px 15px 15px;
+    background: var(--surface);
+    border-radius: var(--r-card);
+  }
+
+  .empty-card-title {
+    margin: 0;
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--text);
+  }
+
+  .empty-card-sub {
+    margin: 4px 0 0;
+    font-size: 13px;
+    color: var(--text-muted);
+  }
+}
+
 /* Rule 7: from 1024 px the placeholder rows replace the loading sentence */
 @media (min-width: 1024px) {
   .state--phone {
