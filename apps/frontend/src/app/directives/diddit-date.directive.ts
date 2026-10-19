@@ -68,8 +68,11 @@ export class DidditDate {
     this.input.insertAdjacentElement('beforebegin', this.text);
     const fit = (): void => {
       const height = this.input.offsetHeight;
+      const style = getComputedStyle(this.input);
       this.text.style.height = `${height}px`;
       this.text.style.marginBottom = `${-height}px`;
+      // The text starts where the field's own text would: its edge plus its inset
+      this.text.style.paddingLeft = `calc(${style.borderLeftWidth} + ${style.paddingLeft})`;
     };
     const resize = typeof ResizeObserver === 'undefined' ? null : new ResizeObserver(fit);
     resize?.observe(this.input);
