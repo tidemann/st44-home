@@ -182,8 +182,9 @@ describe('ManageHouseholds', () => {
       await callProtected('createHousehold');
       fixture.detectChanges();
 
-      // Should show error for empty name
-      expect(getProtected<WritableSignal<string | null>>('error')()).toBe(
+      // ST-1430 rule 4: the error belongs under the field inside the popup, not on the
+      // page behind the veil
+      expect(getProtected<WritableSignal<string | null>>('createError')()).toBe(
         'Skriv inn et navn på husholdningen',
       );
       expect(mockHouseholdService.createHousehold).not.toHaveBeenCalled();
@@ -249,7 +250,7 @@ describe('ManageHouseholds', () => {
 
       await callProtected<Promise<void>>('createHousehold');
 
-      expect(getProtected<WritableSignal<string | null>>('error')()).toBe(
+      expect(getProtected<WritableSignal<string | null>>('createError')()).toBe(
         'Kunne ikke opprette husholdningen. Prøv igjen.',
       );
     });
@@ -327,7 +328,7 @@ describe('ManageHouseholds', () => {
 
       await callProtected<Promise<void>>('saveHousehold');
 
-      expect(getProtected<WritableSignal<string | null>>('error')()).toBe(
+      expect(getProtected<WritableSignal<string | null>>('editError')()).toBe(
         'Skriv inn et navn på husholdningen',
       );
       expect(mockHouseholdService.updateHousehold).not.toHaveBeenCalled();

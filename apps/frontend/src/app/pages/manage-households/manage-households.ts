@@ -59,6 +59,15 @@ export class ManageHouseholds implements OnInit {
 
   // Form data
   protected createHouseholdName = '';
+
+  /**
+   * «Ny husholdning»: the error the press produces, shown under the field inside the
+   * popup (ST-1430 rule 4) — not on the page behind the veil.
+   */
+  protected readonly createError = signal<string | null>(null);
+
+  /** «Endre husholdning»: the same, under its own field. */
+  protected readonly editError = signal<string | null>(null);
   protected editHouseholdName = '';
   protected selectedHousehold = signal<HouseholdListItem | null>(null);
 
@@ -116,16 +125,18 @@ export class ManageHouseholds implements OnInit {
 
   protected openCreateModal(): void {
     this.createHouseholdName = '';
+    this.createError.set(null);
     this.showCreateModal.set(true);
   }
 
   protected closeCreateModal(): void {
+    this.createError.set(null);
     this.showCreateModal.set(false);
   }
 
   protected async createHousehold(): Promise<void> {
     if (!this.createHouseholdName.trim()) {
-      this.error.set(
+      this.createError.set(
         $localize`:@@households.error.nameRequired:Skriv inn et navn på husholdningen`,
       );
       return;
@@ -133,6 +144,7 @@ export class ManageHouseholds implements OnInit {
 
     try {
       this.actionInProgress.set(true);
+      this.createError.set(null);
       this.error.set(null);
 
       await this.householdService.createHousehold(this.createHouseholdName.trim());
@@ -140,7 +152,7 @@ export class ManageHouseholds implements OnInit {
       this.showSuccess($localize`:@@households.created:Husholdningen er opprettet`);
     } catch (err) {
       console.error('Failed to create household:', err);
-      this.error.set(
+      this.createError.set(
         $localize`:@@households.error.create:Kunne ikke opprette husholdningen. Prøv igjen.`,
       );
     } finally {
@@ -153,12 +165,14 @@ export class ManageHouseholds implements OnInit {
   // ==================
 
   protected openEditModal(household: HouseholdListItem): void {
+    this.editError.set(null);
     this.selectedHousehold.set(household);
     this.editHouseholdName = household.name;
     this.showEditModal.set(true);
   }
 
   protected closeEditModal(): void {
+    this.editError.set(null);
     this.showEditModal.set(false);
     this.selectedHousehold.set(null);
   }
@@ -168,7 +182,7 @@ export class ManageHouseholds implements OnInit {
     if (!household) return;
 
     if (!this.editHouseholdName.trim()) {
-      this.error.set(
+      this.editError.set(
         $localize`:@@households.error.nameRequired:Skriv inn et navn på husholdningen`,
       );
       return;
@@ -176,6 +190,7 @@ export class ManageHouseholds implements OnInit {
 
     try {
       this.actionInProgress.set(true);
+      this.editError.set(null);
       this.error.set(null);
 
       await this.householdService.updateHousehold(household.id, this.editHouseholdName.trim());

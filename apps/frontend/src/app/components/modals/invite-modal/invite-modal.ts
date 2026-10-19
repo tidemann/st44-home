@@ -75,7 +75,14 @@ export class InviteModal {
    * Handle form submission
    */
   onSubmit(): void {
-    if (this.form.invalid || this.submitting()) {
+    if (this.submitting()) {
+      return;
+    }
+
+    // ST-1430 rule 4: the main action is never pale — the form is checked when you
+    // press it, and the error shows under the field.
+    if (this.form.invalid) {
+      this.form.markAllAsTouched();
       return;
     }
 

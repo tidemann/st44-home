@@ -61,3 +61,16 @@
     max-height: calc(100dvh - 2 * var(--gutter));
   }
 }
+
+/* Desktop (ST-1430, rule 8): bottom right, 428 px, 24 px clear of the window. */
+@media (min-width: 1024px) {
+  .install-card {
+    left: auto;
+    right: 24px;
+    bottom: 24px;
+    width: 428px;
+    max-width: 428px;
+    margin: 0;
+    max-height: calc(100dvh - 48px);
+  }
+}

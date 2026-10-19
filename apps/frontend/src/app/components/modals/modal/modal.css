@@ -161,3 +161,117 @@
     animation: none;
   }
 }
+
+/* ------------------------------------------------------------------------- */
+/* Desktop popup rules, step 2 (ST-1430). Everything else — ink edge, 30 % veil,
+   shadow, 13 px radius, 15 px inside, title 27 / body 16, «Slett» in rust, the safe
+   action on the left — is the approved Popups section, unchanged. */
+@media (min-width: 1024px) {
+  /* 1 · one width: the page's form column */
+  .modal {
+    max-width: 428px;
+  }
+
+  /* 2 · centred, 48 px of air over and under; taller content scrolls in the body */
+  .modal-overlay {
+    padding: 48px 24px;
+  }
+
+  /* 3 · the action row: equal halves of the 396 px row inside the popup, 8 px apart.
+     A grid, not flex: with flex the outlined button's 2 px edge made it 4 px wider. */
+  .modal :is(.modal-body, .modal-footer) ::ng-deep :is(.modal-actions, .modal-actions-right, .modal-actions-split, .popup-actions, .confirm-actions, .form-actions) {
+    display: grid;
+    grid-auto-flow: column;
+    grid-auto-columns: 1fr;
+    gap: 8px;
+  }
+
+  /* «Slett» + «Avbryt» + «Lagre»: three actions share one row in equal thirds */
+  .modal :is(.modal-body, .modal-footer) ::ng-deep .modal-actions-split > .modal-actions-right {
+    display: contents;
+  }
+
+  .modal :is(.modal-body, .modal-footer) ::ng-deep :is(.modal-actions, .modal-actions-right, .modal-actions-split, .popup-actions, .confirm-actions, .form-actions) > :is(.btn, button) {
+    width: auto;
+    min-width: 0;
+    height: 49px;
+    min-height: 49px;
+    border-radius: var(--r-card);
+    font-size: 16.5px;
+    font-weight: 600;
+  }
+
+  /* 4 · the main action is never pale. It is live from the first paint and checked on the
+     press; the only `disabled` left inside a popup is the moment it is working, and that
+     keeps its yellow and swaps its label, exactly as the approved login does (login-18).
+     The validity bindings are gone from the templates — this is not paint over a dead
+     button. */
+  .modal :is(.modal-body, .modal-footer) ::ng-deep :is(.btn, button)[disabled],
+  .modal :is(.modal-body, .modal-footer) ::ng-deep :is(.btn, button)[aria-disabled='true'] {
+    opacity: 1;
+    cursor: progress;
+  }
+
+  /* 4 · and the error the press produces is the login's error: the field takes its 2 px
+     rust edge, and one rust line sits under that field. Never the raw red of
+     `.form-error`, which reads 3,76:1 on white. */
+  .modal ::ng-deep :is(.form-error, .error-message) {
+    margin-top: 6px;
+    font-family: var(--font-text);
+    font-size: 15px;
+    font-weight: 500;
+    line-height: 1.4;
+    color: var(--overdue);
+  }
+
+  .modal
+    ::ng-deep
+    :is(input:not([type='checkbox']):not([type='radio']), select, textarea):is(
+      .error,
+      [aria-invalid='true']
+    ) {
+    border: 2px solid var(--overdue);
+  }
+
+  /* 5 · one field: 49 px, 13 px corners, the login field's edge */
+  .modal ::ng-deep :is(input:not([type='checkbox']):not([type='radio']), select) {
+    height: 49px;
+    min-height: 49px;
+  }
+
+  .modal ::ng-deep :is(input:not([type='checkbox']):not([type='radio']), select, textarea) {
+    border: 1.5px solid var(--text-muted);
+    border-radius: var(--r-card);
+    /* white, stated: «Ny husholdning» left its field transparent and only looked white
+       because the surface behind it is */
+    background-color: var(--color-surface);
+  }
+
+  /* 5 · a text box is that same field, only taller: the whole 396 px column, the login
+     field's 18 px inset and its white fill. Never the browser's 20-column box with the
+     text against the edge, and never Paper (A2, A3 on ST-1443). */
+  .modal ::ng-deep :is(textarea, .form-textarea) {
+    box-sizing: border-box;
+    width: 100%;
+    height: 76px;
+    min-height: 76px;
+    /* 16 px, the inset the other fields in these popups are built with */
+    padding: 13px 16px;
+    background-color: var(--color-surface);
+    font-family: var(--font-text);
+    font-size: 16px;
+    line-height: 1.4;
+    resize: vertical;
+  }
+
+  /* 6 · no OS chrome: a choice is a Diddit field with the Diddit caret */
+  .modal ::ng-deep select {
+    appearance: none;
+    -webkit-appearance: none;
+    background-color: var(--color-surface);
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='14' height='9' viewBox='0 0 14 9' fill='none'><path d='M1.5 1.5 7 7l5.5-5.5' stroke='%2317120A' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/></svg>");
+    background-repeat: no-repeat;
+    background-position: right 15px center;
+    padding-right: 40px;
+  }
+}

@@ -234,10 +234,17 @@
         i18n-placeholder="@@households.createPlaceholder"
         maxlength="100"
         required
+        [class.error]="!!createError()"
+        [attr.aria-invalid]="!!createError()"
+        [attr.aria-describedby]="createError() ? 'create-name-error' : null"
       />
-      <small class="form-hint" i18n="@@households.nameHint"
-        >Gi husholdningen et navn (1–100 tegn)</small
-      >
+      @if (createError()) {
+        <div id="create-name-error" class="form-error" role="alert">{{ createError() }}</div>
+      } @else {
+        <small class="form-hint" i18n="@@households.nameHint"
+          >Gi husholdningen et navn (1–100 tegn)</small
+        >
+      }
     </div>
 
     <div class="modal-actions">
@@ -253,7 +260,7 @@
       <button
         type="submit"
         class="btn btn-primary"
-        [disabled]="actionInProgress() || !createHouseholdName.trim()"
+        [disabled]="actionInProgress()"
       >
         @if (actionInProgress()) {
           <ng-container i18n="@@households.creating">Oppretter …</ng-container>
@@ -284,7 +291,13 @@
         i18n-placeholder="@@households.nameLabel"
         maxlength="100"
         required
+        [class.error]="!!editError()"
+        [attr.aria-invalid]="!!editError()"
+        [attr.aria-describedby]="editError() ? 'edit-name-error' : null"
       />
+      @if (editError()) {
+        <div id="edit-name-error" class="form-error" role="alert">{{ editError() }}</div>
+      }
     </div>
 
     <div class="modal-actions">
@@ -300,7 +313,7 @@
       <button
         type="submit"
         class="btn btn-primary"
-        [disabled]="actionInProgress() || !editHouseholdName.trim()"
+        [disabled]="actionInProgress()"
       >
         @if (actionInProgress()) {
           <ng-container i18n="@@households.saving">Lagrer …</ng-container>

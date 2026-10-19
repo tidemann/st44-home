@@ -206,7 +206,13 @@ export class ChildDetailsModal {
    */
   async saveEdit(): Promise<void> {
     const child = this.child();
-    if (!child || this.form.invalid || this.saving()) {
+    if (!child || this.saving()) {
+      return;
+    }
+
+    // ST-1430 rule 4: checked on the press, the error under the field.
+    if (this.form.invalid) {
+      this.form.markAllAsTouched();
       return;
     }
 

@@ -33,11 +33,34 @@
   background: #dfdfd9;
 }
 
-/* Desktop: the same sheet, as wide as the content column, centred */
+/* Desktop (ST-1430, rule 7): a popup that blocks is a centred dialog, not a sheet off an
+   edge — 428 px, 13 px corners, the ink edge and the blocking shadow, 15 px inside. */
 @media (min-width: 1024px) {
   .sheet {
-    width: 440px;
-    margin-inline: auto;
+    left: 50%;
+    right: auto;
+    bottom: auto;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    width: 428px;
+    max-height: calc(100% - 96px);
+    background: var(--color-surface);
+    border: var(--popup-edge-block);
+    border-radius: var(--r-card);
+    box-shadow: var(--popup-shadow-block);
+    padding: var(--popup-pad);
+    animation: none;
+  }
+
+  .sheet-grabber {
+    display: none;
+  }
+
+  /* Once it is a dialog its title is a popup title: 27 px, the same as the other 16.
+     26 px is the page-title size it carried as a sheet (A8 on ST-1443). The extra
+     `.sheet` is needed because the 26 px rule is declared further down this file. */
+  .sheet .sheet-title {
+    font-size: 27px;
   }
 }
 

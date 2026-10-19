@@ -73,8 +73,10 @@ export class ReassignTaskModal {
   protected onSubmit(): void {
     const childId = this.selectedChildId();
 
+    // ST-1430 rule 4: the action is never pale — it is checked on the press, and the
+    // error shows under the field (the login page's pattern).
     if (!childId) {
-      this.error.set('Please select a child');
+      this.error.set($localize`:@@reassignModal.chooseChildError:Velg et barn`);
       return;
     }
 

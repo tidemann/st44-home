@@ -122,7 +122,12 @@
             }
           </div>
           @if (repeatDaysArray.length === 0) {
-            <div class="form-hint" i18n="@@taskFormModal.selectAtLeastOneDay">
+            <div
+              class="form-hint"
+              [class.form-error]="submitAttempted()"
+              [attr.role]="submitAttempted() ? 'alert' : null"
+              i18n="@@taskFormModal.selectAtLeastOneDay"
+            >
               Vennligst velg minst én dag
             </div>
           }
@@ -165,7 +170,12 @@
             }
           </div>
           @if (assignedChildrenArray.length < 2 && assignedChildrenArray.length > 0) {
-            <div class="form-hint" i18n="@@taskFormModal.selectAtLeastTwoForRotation">
+            <div
+              class="form-hint"
+              [class.form-error]="submitAttempted()"
+              [attr.role]="submitAttempted() ? 'alert' : null"
+              i18n="@@taskFormModal.selectAtLeastTwoForRotation"
+            >
               Velg minst 2 barn for rotasjon
             </div>
           }
@@ -214,7 +224,12 @@
             }
           </div>
           @if (assignedChildrenArray.length === 0) {
-            <div class="form-hint" i18n="@@taskFormModal.selectAtLeastOneCandidate">
+            <div
+              class="form-hint"
+              [class.form-error]="submitAttempted()"
+              [attr.role]="submitAttempted() ? 'alert' : null"
+              i18n="@@taskFormModal.selectAtLeastOneCandidate"
+            >
               Velg minst én kandidat
             </div>
           }
@@ -249,7 +264,14 @@
             }
           </div>
           @if (childrenGone() && assignedChildrenArray.length === 0) {
-            <div class="form-hint" i18n="@@taskFormModal.pickNewChild">Velg minst ett barn</div>
+            <div
+              class="form-hint"
+              [class.form-error]="submitAttempted()"
+              [attr.role]="submitAttempted() ? 'alert' : null"
+              i18n="@@taskFormModal.pickNewChild"
+            >
+              Velg minst ett barn
+            </div>
           }
         </fieldset>
       }
@@ -278,7 +300,7 @@
             <button
               type="submit"
               class="btn btn-primary"
-              [disabled]="!isFormValid() || submitting()"
+              [disabled]="submitting()"
             >
               {{ submitButtonText() }}
             </button>
@@ -295,7 +317,7 @@
           >
             Avbryt
           </button>
-          <button type="submit" class="btn btn-primary" [disabled]="!isFormValid() || submitting()">
+          <button type="submit" class="btn btn-primary" [disabled]="submitting()">
             {{ submitButtonText() }}
           </button>
         </div>
