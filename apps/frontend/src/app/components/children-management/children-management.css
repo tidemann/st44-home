@@ -270,6 +270,11 @@
 }
 
 @media (min-width: 1024px) {
+  /* Inside the «Barn» card the card's own padding is the only one, as drawn (378 px button) */
+  .children-management {
+    padding: 0;
+  }
+
   /* Rule 5: «+ Legg til barn» is the main button, as wide as its column */
   .header {
     flex-direction: column;
