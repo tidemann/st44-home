@@ -86,12 +86,12 @@
               i18n-label="@@childRewards.waitingHeading"
               label="Venter på svar"
             />
-            <div class="empty empty--left" role="status">
-              <p class="empty-title" i18n="@@childRewards.noneWaiting">Du venter ikke på svar nå</p>
-              <p class="empty-sub" i18n="@@childRewards.noneWaitingHint">
-                Når du ber om en belønning, ser du den her.
-              </p>
-            </div>
+            <app-empty-group
+              i18n-heading="@@childRewards.noneWaiting"
+              heading="Du venter ikke på svar nå"
+              i18n-hint="@@childRewards.noneWaitingHint"
+              hint="Når du ber om en belønning, ser du den her."
+            />
           </section>
         }
 
@@ -122,14 +122,12 @@
               i18n-label="@@childRewards.collectedHeading"
               label="Hentet før"
             />
-            <div class="empty empty--left" role="status">
-              <p class="empty-title" i18n="@@childRewards.noneCollected">
-                Du har ikke hentet noe ennå
-              </p>
-              <p class="empty-sub" i18n="@@childRewards.noneCollectedHint">
-                Det du har fått, samles her.
-              </p>
-            </div>
+            <app-empty-group
+              i18n-heading="@@childRewards.noneCollected"
+              heading="Du har ikke hentet noe ennå"
+              i18n-hint="@@childRewards.noneCollectedHint"
+              hint="Det du har fått, samles her."
+            />
           </section>
         }
 
@@ -160,12 +158,12 @@
               i18n-label="@@childRewards.refusedHeading"
               label="Nei denne gangen"
             />
-            <div class="empty empty--left" role="status">
-              <p class="empty-title" i18n="@@childRewards.noneRefused">Ingen har sagt nei</p>
-              <p class="empty-sub" i18n="@@childRewards.noneRefusedHint">
-                Hvis en voksen sier nei, ser du det her.
-              </p>
-            </div>
+            <app-empty-group
+              i18n-heading="@@childRewards.noneRefused"
+              heading="Ingen har sagt nei"
+              i18n-hint="@@childRewards.noneRefusedHint"
+              hint="Hvis en voksen sier nei, ser du det her."
+            />
           </section>
         }
       </div>

@@ -13,6 +13,7 @@ import { Modal } from '../../components/modals/modal/modal';
 import { PageComponent } from '../../components/page/page';
 import { RewardCard } from '../../components/poeng/reward-card/reward-card';
 import { GroupLabel } from '../../components/poeng/group-label/group-label';
+import { EmptyGroup } from '../../components/poeng/empty-group/empty-group';
 import { capitalize, dayWord, isoDay } from '../../utils/poeng-format';
 
 /**
@@ -26,7 +27,7 @@ import { capitalize, dayWord, isoDay } from '../../utils/poeng-format';
  */
 @Component({
   selector: 'app-child-rewards',
-  imports: [Modal, PageComponent, RewardCard, GroupLabel],
+  imports: [Modal, PageComponent, RewardCard, GroupLabel, EmptyGroup],
   templateUrl: './child-rewards.html',
   styleUrls: ['./child-rewards.css'],
   changeDetection: ChangeDetectionStrategy.OnPush,

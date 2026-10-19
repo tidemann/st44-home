@@ -95,11 +95,6 @@ app-group-label + .hr {
   color: var(--text-muted);
 }
 
-/* The rule-7 card in a column (desktop-14): left-aligned, one title line and one sentence */
-.empty--left {
-  text-align: left;
-}
-
 /* Rule 7: an empty group's card is a desktop thing; the phone list does not change */
 .desk-empty {
   display: none;
@@ -200,18 +195,5 @@ app-group-label + .hr {
 
   .desk-empty {
     display: block;
-  }
-
-  /* The same card as the parent's empty groups: 13 / 15 px inside, no paragraph margins */
-  .desk-empty .empty {
-    padding: 13px 15px 15px;
-  }
-
-  .desk-empty .empty-title {
-    margin: 0;
-  }
-
-  .desk-empty .empty-sub {
-    margin: 4px 0 0;
   }
 }
