@@ -285,10 +285,18 @@
     resize: vertical;
   }
 
-  /* 6 · no OS chrome: a choice is a Diddit field with the Diddit caret */
+  /* 6 · no OS chrome: a choice is a Diddit field with the Diddit caret. Pressing it opens the
+     Diddit menu (appDidditMenu, appDidditDate), and the date field loses the calendar icon. */
   .modal ::ng-deep select {
     appearance: none;
     -webkit-appearance: none;
+  }
+
+  .modal ::ng-deep input[type='datetime-local']::-webkit-calendar-picker-indicator {
+    display: none;
+  }
+
+  .modal ::ng-deep :is(select, input[type='datetime-local']) {
     background-color: var(--color-surface);
     background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='14' height='9' viewBox='0 0 14 9' fill='none'><path d='M1.5 1.5 7 7l5.5-5.5' stroke='%2317120A' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/></svg>");
     background-repeat: no-repeat;
