@@ -46,7 +46,9 @@ export class InviteUserComponent {
       const link = `${baseUrl}/invite/${response.token}`;
       this.invitationLink.set(link);
 
-      this.successMessage.set(`Invitation sent to ${email}!`);
+      this.successMessage.set(
+        $localize`:@@inviteUser.sent:Invitasjonen er sendt til ${email}:email:.`,
+      );
       this.invitationSent.emit(response);
 
       // Reset form
@@ -62,14 +64,14 @@ export class InviteUserComponent {
       } else if (httpError?.status === 403) {
         message = $localize`:@@inviteUser.noPermission:Du har ikke tillatelse til å invitere brukere til denne husholdningen.`;
       } else if (httpError?.status === 409) {
-        if (httpError.error?.message?.includes('already a household member')) {
+        // The backend's messages are English: map them, never show them (rule 8)
+        const backendMessage = httpError.error?.message?.toLowerCase() ?? '';
+        if (backendMessage.includes('already a household member')) {
           message = $localize`:@@inviteUser.alreadyMember:Denne brukeren er allerede medlem av husholdningen din.`;
-        } else if (httpError.error?.message?.includes('pending invitation')) {
+        } else if (backendMessage.includes('pending invitation')) {
           message = $localize`:@@inviteUser.pendingInvitation:En ventende invitasjon eksisterer allerede for denne e-posten.`;
         } else {
-          message =
-            httpError.error?.message ||
-            $localize`:@@inviteUser.cannotInvite:Denne brukeren kan ikke inviteres.`;
+          message = $localize`:@@inviteUser.cannotInvite:Denne brukeren kan ikke inviteres.`;
         }
       }
 
@@ -86,10 +88,12 @@ export class InviteUserComponent {
     navigator.clipboard
       .writeText(link)
       .then(() => {
-        this.successMessage.set('Invitation link copied to clipboard!');
+        const sent = this.successMessage();
+        const copied = $localize`:@@inviteUser.linkCopied:Invitasjonslenken er kopiert.`;
+        this.successMessage.set(copied);
         setTimeout(() => {
-          if (this.successMessage() === 'Invitation link copied to clipboard!') {
-            this.successMessage.set(`Invitation sent to ${this.inviteForm.value.email}!`);
+          if (this.successMessage() === copied) {
+            this.successMessage.set(sent);
           }
         }, 2000);
       })
@@ -116,10 +120,10 @@ export class InviteUserComponent {
     if (!control?.touched || !control.invalid) return '';
 
     if (control.errors?.['required']) {
-      return 'Email is required';
+      return $localize`:@@inviteUser.emailRequired:Skriv inn e-postadressen.`;
     }
     if (control.errors?.['email']) {
-      return 'Please enter a valid email address';
+      return $localize`:@@inviteUser.emailInvalid:Skriv inn en gyldig e-postadresse.`;
     }
     return '';
   }

@@ -275,13 +275,15 @@ describe('InvitationAcceptComponent', () => {
       expect(component['errorMessage']()).toBe('Denne invitasjonen er ikke til din e-postadresse.');
     });
 
-    it('should handle 400 error with message', async () => {
+    it('shows Norwegian, not the backend English, on a 400 with message', async () => {
       mockInvitationService.acceptInvitation.mockRejectedValue({
         status: 400,
         error: { message: 'Token expired' },
       });
       await component['acceptInvitation']();
-      expect(component['errorMessage']()).toBe('Token expired');
+      expect(component['errorMessage']()).toBe(
+        'Invitasjonen har utløpt eller gjelder ikke lenger.',
+      );
     });
 
     it('should handle 400 error without message', async () => {
@@ -298,13 +300,13 @@ describe('InvitationAcceptComponent', () => {
       expect(component['errorMessage']()).toBe('Du er allerede med i denne husstanden.');
     });
 
-    it('should handle unknown error with message', async () => {
+    it('shows Norwegian, not the backend English, on an unknown error with message', async () => {
       mockInvitationService.acceptInvitation.mockRejectedValue({
         status: 500,
         error: { message: 'Server error' },
       });
       await component['acceptInvitation']();
-      expect(component['errorMessage']()).toBe('Server error');
+      expect(component['errorMessage']()).toBe('Noe gikk galt. Prøv igjen.');
     });
 
     it('should handle unknown error without message', async () => {
