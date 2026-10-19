@@ -11,9 +11,13 @@
   margin-bottom: 1.5rem;
 }
 
+/* «Invitasjonsinnboks» alone fills a 360 px phone; the count wraps under it rather than past
+   the edge (ST-1551) */
 .header h2 {
   margin: 0;
   display: flex;
+  flex-wrap: wrap;
+  max-width: 100%;
   align-items: center;
   gap: 0.5rem;
 }

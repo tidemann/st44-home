@@ -59,3 +59,59 @@ describe('InvitationsSentListComponent (rule 8: Norwegian)', () => {
     expect(component.successMessage()).toBe('1 gammel invitasjon er fjernet.');
   });
 });
+
+describe('InvitationsSentListComponent e-mail (ST-1551: break only before «@»)', () => {
+  let component: InvitationsSentListComponent;
+
+  beforeEach(() => {
+    TestBed.configureTestingModule({
+      imports: [InvitationsSentListComponent],
+      providers: [
+        {
+          provide: InvitationService,
+          useValue: {
+            listSentInvitations: vi.fn().mockResolvedValue({
+              invitations: [
+                {
+                  id: 'inv-1',
+                  invitedEmail: 'eirik-st1542-invitasjon-test@example.com',
+                  status: 'pending',
+                  role: 'parent',
+                  createdAt: '2026-10-19T08:00:00Z',
+                  expiresAt: '2026-10-26T08:00:00Z',
+                },
+              ],
+            }),
+          },
+        },
+        { provide: HouseholdService, useValue: { getActiveHouseholdId: () => 'h1' } },
+        { provide: ConfirmDialogService, useValue: { confirm: vi.fn() } },
+      ],
+    });
+    component = TestBed.createComponent(InvitationsSentListComponent).componentInstance;
+  });
+
+  it('splits the address before its last «@»', () => {
+    expect(component.emailParts('a.b@example.com')).toEqual(['a.b', '@example.com']);
+    expect(component.emailParts('"a@b"@example.com')).toEqual(['"a@b"', '@example.com']);
+  });
+
+  it('keeps an address without a local part whole', () => {
+    expect(component.emailParts('example.com')).toEqual(['example.com', '']);
+    expect(component.emailParts('@example.com')).toEqual(['@example.com', '']);
+  });
+
+  it('renders the two parts as unbreakable pieces, with the full address as title', async () => {
+    const fixture = TestBed.createComponent(InvitationsSentListComponent);
+    fixture.detectChanges();
+    await fixture.whenStable();
+    fixture.detectChanges();
+    const cell = (fixture.nativeElement as HTMLElement).querySelector(
+      '.table-row .cell.email',
+    ) as HTMLElement;
+    const parts = [...cell.querySelectorAll('.email-part')].map((p) => p.textContent);
+    expect(parts).toEqual(['eirik-st1542-invitasjon-test', '@example.com']);
+    expect(cell.getAttribute('title')).toBe('eirik-st1542-invitasjon-test@example.com');
+    expect(cell.textContent?.trim()).toBe('eirik-st1542-invitasjon-test@example.com');
+  });
+});
