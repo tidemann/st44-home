@@ -24,7 +24,7 @@ class Host {
 function setDesktop(matches: boolean): void {
   Object.defineProperty(window, 'matchMedia', {
     configurable: true,
-    value: () => ({ matches, addEventListener: () => {}, removeEventListener: () => {} }),
+    value: () => ({ matches, addEventListener: vi.fn(), removeEventListener: vi.fn() }),
   });
 }
 
