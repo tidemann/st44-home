@@ -652,6 +652,17 @@ input.diddit-date-field::-webkit-datetime-edit {
   opacity: 0;
 }
 
+/* High contrast forces the input's text visible: show only that, never both */
+@media (forced-colors: active) {
+  .diddit-date-text {
+    display: none;
+  }
+
+  input.diddit-date-field::-webkit-datetime-edit {
+    opacity: 1;
+  }
+}
+
 .diddit-date-done {
   width: 100%;
   height: 49px;
