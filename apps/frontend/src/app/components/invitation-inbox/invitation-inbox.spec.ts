@@ -50,4 +50,26 @@ describe('InvitationInboxComponent', () => {
     ).map((el) => (el.textContent ?? '').replace(/\s+/g, ' ').trim());
     expect(roles).toEqual(['Rolle: Forelder', 'Rolle: Administrator']);
   });
+
+  it('says you joined in Norwegian after «Bli med»', async () => {
+    const service = TestBed.inject(InvitationService) as unknown as Record<string, unknown>;
+    service['acceptInvitation'] = vi
+      .fn()
+      .mockResolvedValue({ household: { id: 'h1', name: 'Familien Test' } });
+    vi.mocked(TestBed.inject(ConfirmDialogService).confirm).mockResolvedValue(true);
+    const component = TestBed.createComponent(InvitationInboxComponent).componentInstance;
+
+    await component.acceptInvitation(invitation('parent'));
+    expect(component['successMessage']()).toBe('Du er nå med i «Familien Test».');
+  });
+
+  it('says the invitation was declined in Norwegian', async () => {
+    const service = TestBed.inject(InvitationService) as unknown as Record<string, unknown>;
+    service['declineInvitation'] = vi.fn().mockResolvedValue(undefined);
+    vi.mocked(TestBed.inject(ConfirmDialogService).confirm).mockResolvedValue(true);
+    const component = TestBed.createComponent(InvitationInboxComponent).componentInstance;
+
+    await component.declineInvitation(invitation('parent'));
+    expect(component['successMessage']()).toBe('Invitasjonen er avslått.');
+  });
 });

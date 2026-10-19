@@ -95,7 +95,9 @@ export class InvitationsSentListComponent implements OnInit {
 
     try {
       await this.invitationService.cancelInvitation(householdId, invitation.id);
-      this.showSuccessMessage(`Invitation to ${invitation.invitedEmail} cancelled`);
+      this.showSuccessMessage(
+        $localize`:@@invitationsSent.cancelled:Invitasjonen til ${invitation.invitedEmail}:email: er trukket tilbake.`,
+      );
       await this.loadInvitations();
     } catch (error) {
       console.error('Failed to cancel invitation:', error);
@@ -193,7 +195,11 @@ export class InvitationsSentListComponent implements OnInit {
 
     try {
       const result = await this.invitationService.cleanupInvitations(householdId);
-      this.showSuccessMessage(result.message);
+      this.showSuccessMessage(
+        result.deleted === 1
+          ? $localize`:@@invitationsSent.cleanedUpOne:1 gammel invitasjon er fjernet.`
+          : $localize`:@@invitationsSent.cleanedUp:${result.deleted}:count: gamle invitasjoner er fjernet.`,
+      );
       await this.loadInvitations();
     } catch (error) {
       console.error('Failed to cleanup invitations:', error);

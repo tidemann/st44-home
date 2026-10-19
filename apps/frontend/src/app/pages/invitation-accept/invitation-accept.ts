@@ -116,11 +116,9 @@ export class InvitationAcceptComponent implements OnInit {
     }
   }
 
+  /** The backend's messages are English, so only the status picks the text (rule 8) */
   private handleError(error: unknown): void {
-    const err = error as {
-      error?: { error?: string; message?: string };
-      status?: number;
-    };
+    const err = error as { status?: number };
 
     if (err.status === 404) {
       this.errorMessage.set(
@@ -132,18 +130,14 @@ export class InvitationAcceptComponent implements OnInit {
       );
     } else if (err.status === 400) {
       this.errorMessage.set(
-        err.error?.message ||
-          $localize`:@@invitationAccept.expired:Invitasjonen har utløpt eller gjelder ikke lenger.`,
+        $localize`:@@invitationAccept.expired:Invitasjonen har utløpt eller gjelder ikke lenger.`,
       );
     } else if (err.status === 409) {
       this.errorMessage.set(
         $localize`:@@invitationAccept.alreadyMember:Du er allerede med i denne husstanden.`,
       );
     } else {
-      this.errorMessage.set(
-        err.error?.message ||
-          $localize`:@@invitationAccept.genericError:Noe gikk galt. Prøv igjen.`,
-      );
+      this.errorMessage.set($localize`:@@invitationAccept.genericError:Noe gikk galt. Prøv igjen.`);
     }
   }
 

@@ -94,7 +94,9 @@ export class InvitationInboxComponent implements OnInit {
         invitation.token,
       );
 
-      this.showSuccessMessage(`Successfully joined "${response.household.name}"! Redirecting...`);
+      this.showSuccessMessage(
+        $localize`:@@invitationInbox.joined:Du er nå med i «${response.household.name}:household:».`,
+      );
 
       // Remove from list immediately
       this.invitations.update((list) => list.filter((inv) => inv.id !== invitation.id));
@@ -142,7 +144,7 @@ export class InvitationInboxComponent implements OnInit {
     try {
       await this.invitationService.declineInvitation(invitation.token);
 
-      this.showSuccessMessage('Invitation declined');
+      this.showSuccessMessage($localize`:@@invitationInbox.declined:Invitasjonen er avslått.`);
 
       // Remove from list immediately
       this.invitations.update((list) => list.filter((inv) => inv.id !== invitation.id));
