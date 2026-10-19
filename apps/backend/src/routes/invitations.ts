@@ -354,7 +354,7 @@ async function listReceivedInvitations(request: FastifyRequest, reply: FastifyRe
 
   try {
     const result = await db.query(
-      `SELECT i.id, i.token, i.role, i.expires_at, i.created_at,
+      `SELECT i.id, i.token, i.role, i.status, i.expires_at, i.created_at,
               h.id as household_id, h.name as household_name,
               u.email as inviter_email
        FROM invitations i
@@ -373,6 +373,7 @@ async function listReceivedInvitations(request: FastifyRequest, reply: FastifyRe
         householdName: row.household_name,
         inviterEmail: row.inviter_email,
         role: row.role,
+        status: row.status,
         expiresAt: row.expires_at,
         createdAt: row.created_at,
       })),

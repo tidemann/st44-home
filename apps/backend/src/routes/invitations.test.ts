@@ -404,6 +404,7 @@ describe('Invitation API', () => {
       assert.ok(invitation);
       assert.ok(invitation.householdName);
       assert.ok(invitation.token);
+      assert.strictEqual(invitation.status, 'pending');
     });
 
     test('should not show invitations for other users', async () => {
