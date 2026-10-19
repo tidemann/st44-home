@@ -49,6 +49,7 @@
         type="button"
         class="btn btn-primary"
         (click)="onSubmit()"
+        [disabled]="!desktop() && !selectedChildId()"
         i18n="@@reassignModal.submitButton"
       >
         Tilordne på nytt

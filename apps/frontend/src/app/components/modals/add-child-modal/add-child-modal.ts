@@ -2,6 +2,7 @@ import { Component, input, output, signal, inject, ChangeDetectionStrategy } fro
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Modal } from '../modal/modal';
 import { DidditMenu } from '../../../directives/diddit-menu.directive';
+import { isDesktopSignal } from '../../../utils/desktop-query';
 
 /**
  * Data structure for add child submission
@@ -30,6 +31,8 @@ export interface AddChildData {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AddChildModal {
+  /** Popup rule 4 is desktop-only: on the phone the main action still waits for a valid form */
+  protected readonly desktop = isDesktopSignal();
   /**
    * Whether the modal is open
    */

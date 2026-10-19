@@ -3,6 +3,7 @@ import { FormsModule } from '@angular/forms';
 import { Modal } from '../modal/modal';
 import { DidditMenu } from '../../../directives/diddit-menu.directive';
 import type { Child } from '@st44/types';
+import { isDesktopSignal } from '../../../utils/desktop-query';
 
 /**
  * Reassign Task Modal
@@ -20,6 +21,8 @@ import type { Child } from '@st44/types';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ReassignTaskModal {
+  /** Popup rule 4 is desktop-only: on the phone the main action still waits for a valid form */
+  protected readonly desktop = isDesktopSignal();
   /**
    * Whether the modal is open
    */

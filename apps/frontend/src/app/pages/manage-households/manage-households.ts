@@ -11,6 +11,7 @@ import { HouseholdService, type HouseholdListItem } from '../../services/househo
 import { HouseholdStore } from '../../stores/household.store';
 import { PageComponent } from '../../components/page/page';
 import { Modal } from '../../components/modals/modal/modal';
+import { isDesktopSignal } from '../../utils/desktop-query';
 
 /**
  * Manage Households Page
@@ -30,6 +31,8 @@ import { Modal } from '../../components/modals/modal/modal';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ManageHouseholds implements OnInit {
+  /** Popup rule 4 is desktop-only: on the phone the main action still waits for a valid form */
+  protected readonly desktop = isDesktopSignal();
   private readonly householdService = inject(HouseholdService);
   private readonly householdStore = inject(HouseholdStore);
 

@@ -112,7 +112,11 @@
                 >
                   Avbryt
                 </button>
-                <button type="submit" class="btn btn-primary btn-sm" [disabled]="saving()">
+                <button
+                  type="submit"
+                  class="btn btn-primary btn-sm"
+                  [disabled]="saving() || (!desktop() && form.invalid)"
+                >
                   @if (saving()) {
                     <span i18n="@@childDetailsModal.savingButton">Lagrer...</span>
                   } @else {

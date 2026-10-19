@@ -260,7 +260,7 @@
       <button
         type="submit"
         class="btn btn-primary"
-        [disabled]="actionInProgress()"
+        [disabled]="actionInProgress() || (!desktop() && !createHouseholdName.trim())"
       >
         @if (actionInProgress()) {
           <ng-container i18n="@@households.creating">Oppretter …</ng-container>
@@ -313,7 +313,7 @@
       <button
         type="submit"
         class="btn btn-primary"
-        [disabled]="actionInProgress()"
+        [disabled]="actionInProgress() || (!desktop() && !editHouseholdName.trim())"
       >
         @if (actionInProgress()) {
           <ng-container i18n="@@households.saving">Lagrer …</ng-container>

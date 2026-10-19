@@ -303,7 +303,11 @@
             >
               Avbryt
             </button>
-            <button type="submit" class="btn btn-primary" [disabled]="submitting()">
+            <button
+              type="submit"
+              class="btn btn-primary"
+              [disabled]="submitting() || (!desktop() && !isFormValid())"
+            >
               {{ submitButtonText() }}
             </button>
           </div>
@@ -319,7 +323,11 @@
           >
             Avbryt
           </button>
-          <button type="submit" class="btn btn-primary" [disabled]="submitting()">
+          <button
+            type="submit"
+            class="btn btn-primary"
+            [disabled]="submitting() || (!desktop() && !isFormValid())"
+          >
             {{ submitButtonText() }}
           </button>
         </div>

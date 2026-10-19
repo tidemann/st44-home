@@ -23,6 +23,7 @@ import { Modal } from '../modal/modal';
 import { DidditMenu } from '../../../directives/diddit-menu.directive';
 import { DidditDate } from '../../../directives/diddit-date.directive';
 import type { Task, TaskRuleType, Child, CreateTaskRequest } from '@st44/types';
+import { isDesktopSignal } from '../../../utils/desktop-query';
 
 /**
  * Mode for the task form
@@ -74,6 +75,8 @@ export interface TaskFormData {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TaskFormModal {
+  /** Popup rule 4 is desktop-only: on the phone the main action still waits for a valid form */
+  protected readonly desktop = isDesktopSignal();
   /**
    * Whether the modal is open
    */
