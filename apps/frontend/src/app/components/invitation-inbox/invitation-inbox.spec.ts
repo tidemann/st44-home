@@ -72,4 +72,21 @@ describe('InvitationInboxComponent', () => {
     await component.declineInvitation(invitation('parent'));
     expect(component['successMessage']()).toBe('Invitasjonen er avslått.');
   });
+
+  it('splits a name-less inviter address before «@» (ST-1557)', () => {
+    const fixture = TestBed.createComponent(InvitationInboxComponent);
+    fixture.componentInstance['invitations'].set([
+      {
+        ...invitation('parent'),
+        inviterName: undefined,
+        inviterEmail: 'lang.adresse.for.test@example.com',
+      },
+    ]);
+    fixture.detectChanges();
+
+    const parts = [
+      ...fixture.nativeElement.querySelectorAll('.inviter .email-part'),
+    ].map((p: Element) => p.textContent);
+    expect(parts).toEqual(['lang.adresse.for.test', '@example.com']);
+  });
 });
