@@ -954,6 +954,7 @@ altogether. It is the only circle in the system.
   ("Lørdag – Mor sa ja").
 - **Inset on yellow** (`card-inset-on-yellow`): `#DBA434` block on the yellow screen carrying the
   next chore.
+- The title inside a card is body text, 16 px (desktop ≥ 1024 px), the same as a chore row title (ST-1583).
 
 ### Meters
 

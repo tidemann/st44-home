@@ -254,4 +254,10 @@
     padding: 0 14px;
     border-radius: var(--r-row-action);
   }
+  /* ST-1583: the title inside a card is body text, 16 px, as a chore row title */
+  .household-name {
+    font-family: var(--font-body);
+    font-size: 16px;
+    font-weight: 600;
+  }
 }
