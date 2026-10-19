@@ -164,6 +164,12 @@ export class HouseholdSettingsComponent implements OnInit {
     }
   }
 
+  /** The address split before its last «@», so it can break only there (ST-1557) */
+  protected emailParts(email: string): [string, string] {
+    const at = email.lastIndexOf('@');
+    return at > 0 ? [email.slice(0, at), email.slice(at)] : [email, ''];
+  }
+
   /** Role as shown to the user (never the raw key) */
   protected roleLabel(role: string): string {
     switch (role) {
