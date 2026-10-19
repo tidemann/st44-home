@@ -1,6 +1,13 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { AddChildModal, AddChildData } from './add-child-modal';
 
+function setDesktop(matches: boolean): void {
+  Object.defineProperty(window, 'matchMedia', {
+    configurable: true,
+    value: () => ({ matches, addEventListener: vi.fn(), removeEventListener: vi.fn() }),
+  });
+}
+
 describe('AddChildModal', () => {
   let component: AddChildModal;
   let fixture: ComponentFixture<AddChildModal>;
@@ -57,5 +64,45 @@ describe('AddChildModal', () => {
     expect(emittedData!.name).toBe('Emma');
     expect(emittedData!.age).toBe(12);
     expect(emittedData!.avatar).toBe('🎨');
+  });
+
+  it('keeps the main button disabled on the phone while the form is empty (ST-1489)', () => {
+    component['form'].patchValue({ name: '' });
+    fixture.componentRef.setInput('open', true);
+    fixture.detectChanges();
+    const button: HTMLButtonElement = fixture.nativeElement.querySelector('button[type="submit"]');
+    expect(button.disabled).toBe(true);
+  });
+
+  describe('on desktop (ST-1489 rule 4)', () => {
+    const realMatchMedia = window.matchMedia;
+
+    beforeEach(() => {
+      setDesktop(true);
+      fixture = TestBed.createComponent(AddChildModal);
+      component = fixture.componentInstance;
+      fixture.detectChanges();
+    });
+    afterEach(() => {
+      Object.defineProperty(window, 'matchMedia', { configurable: true, value: realMatchMedia });
+    });
+
+    it('keeps the main button live while the form is empty (ST-1489 rule 4)', () => {
+      component['form'].patchValue({ name: '' });
+      fixture.componentRef.setInput('open', true);
+      fixture.detectChanges();
+      const button: HTMLButtonElement =
+        fixture.nativeElement.querySelector('button[type="submit"]');
+      expect(button.disabled).toBe(false);
+    });
+
+    it('marks the fields and emits nothing when pressed on an invalid form (ST-1489 rule 4)', () => {
+      let emitted = false;
+      component.childAdded.subscribe(() => (emitted = true));
+      component['form'].patchValue({ name: '' });
+      component.onSubmit();
+      expect(emitted).toBe(false);
+      expect(component['form'].controls['name'].touched).toBe(true);
+    });
   });
 });
