@@ -2489,6 +2489,23 @@ decision sheet is deliberately not in `reference/`.
 with it. The line it replaces was written about a _dropdown_ at the household name; what the code
 opens is a full sheet.
 
+#### The two parts no drawing holds (Astrid, ST-1520, approved 2026-10-19)
+
+**«QR-kode innlogging»: the three buttons are popup secondaries.** They keep rule 3's equal thirds
+(3 × 126.7 × 49 px, 8 px apart in the 396 px column), and each one is the secondary button, as
+«Avbryt»: white `--surface`, a 2 px `--text-muted` `#555E64` edge (6.62:1), an ink `--text`
+`#15181C` label at 16.5 px/600, 13 px corners, no shadow, `--track` `#ECECE8` on hover. None of them
+is yellow and none carries an emoji. The labels are «Last ned», «Skriv ut» and «Ny kode»; the third
+keeps the accessible name «Generer QR-kode på nytt».
+
+**Rule 6, the open date menu: a 24-hour Diddit time field.** The «Klokkeslett» row under the month
+ends in Diddit's own time field, never the browser's `<input type="time">`: 107 px wide at the right
+of the row, otherwise rule 5's field (49 px, 13 px corners, 1.5 px `#555E64` edge, white). It reads
+24 hours — «18:00», never «AM/PM» — and a new deadline still starts at the next whole hour. The
+closed «Frist» field shows Diddit text, never the browser's own format: empty, «Velg dato og
+klokkeslett» in `#555E64`; chosen, for example «man. 20. oktober, kl. 18.00» in `#15181C`. It reads
+the same in a browser set to English.
+
 #### Where this section replaces something the guide said before
 
 Nothing is deleted; these are the places a reader will see two numbers and needs to know which one
