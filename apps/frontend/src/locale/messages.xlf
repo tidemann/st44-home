@@ -2,6 +2,132 @@
 <xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
   <file source-language="no" datatype="plaintext" original="ng2.template">
     <body>
+      <trans-unit id="routeTitle.login" datatype="html">
+        <source>Logg inn - Diddit!</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/app.routes.ts</context>
+          <context context-type="linenumber">8</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="routeTitle.register" datatype="html">
+        <source>Registrer deg - Diddit!</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/app.routes.ts</context>
+          <context context-type="linenumber">13</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="routeTitle.childLogin" datatype="html">
+        <source>Logg inn for barn - Diddit!</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/app.routes.ts</context>
+          <context context-type="linenumber">18</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="routeTitle.forgotPassword" datatype="html">
+        <source>Glemt passord - Diddit!</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/app.routes.ts</context>
+          <context context-type="linenumber">23</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="routeTitle.resetPassword" datatype="html">
+        <source>Nytt passord - Diddit!</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/app.routes.ts</context>
+          <context context-type="linenumber">28</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="routeTitle.acceptInvitation" datatype="html">
+        <source>Godta invitasjon - Diddit!</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/app.routes.ts</context>
+          <context context-type="linenumber">33</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="routeTitle.home" datatype="html">
+        <source>Hjem - Diddit!</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/app.routes.ts</context>
+          <context context-type="linenumber">48</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="routeTitle.tasks" datatype="html">
+        <source>Oppgaver - Diddit!</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/app.routes.ts</context>
+          <context context-type="linenumber">54</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="routeTitle.family" datatype="html">
+        <source>Familie - Diddit!</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/app.routes.ts</context>
+          <context context-type="linenumber">60</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="routeTitle.progress" datatype="html">
+        <source>Fremgang - Diddit!</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/app.routes.ts</context>
+          <context context-type="linenumber">66</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="routeTitle.rewards" datatype="html">
+        <source>Belønninger - Diddit!</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/app.routes.ts</context>
+          <context context-type="linenumber">72</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="routeTitle.createHousehold" datatype="html">
+        <source>Opprett husstand - Diddit!</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/app.routes.ts</context>
+          <context context-type="linenumber">81</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="routeTitle.householdSettings" datatype="html">
+        <source>Husstandsinnstillinger - Diddit!</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/app.routes.ts</context>
+          <context context-type="linenumber">86</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="routeTitle.invitations" datatype="html">
+        <source>Invitasjoner - Diddit!</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/app.routes.ts</context>
+          <context context-type="linenumber">94</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="routeTitle.settings" datatype="html">
+        <source>Innstillinger - Diddit!</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/app.routes.ts</context>
+          <context context-type="linenumber">102</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="routeTitle.manageHouseholds" datatype="html">
+        <source>Administrer husstander - Diddit!</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/app.routes.ts</context>
+          <context context-type="linenumber">108</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="routeTitle.myTasks" datatype="html">
+        <source>Mine oppgaver - Diddit!</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/app.routes.ts</context>
+          <context context-type="linenumber">130</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="routeTitle.myRewards" datatype="html">
+        <source>Mine belønninger - Diddit!</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/app.routes.ts</context>
+          <context context-type="linenumber">136</context>
+        </context-group>
+      </trans-unit>
       <trans-unit id="childLogin.title" datatype="html">
         <source>Velkommen tilbake!</source>
         <context-group purpose="location">
@@ -2135,7 +2261,7 @@
         <source> Avbryt </source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/invitations-sent-list/invitations-sent-list.html</context>
-          <context context-type="linenumber">111,112</context>
+          <context context-type="linenumber">117,118</context>
         </context-group>
       </trans-unit>
       <trans-unit id="invitationsSent.noActiveHousehold" datatype="html">
@@ -2150,7 +2276,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/invitations-sent-list/invitations-sent-list.ts</context>
-          <context context-type="linenumber">188</context>
+          <context context-type="linenumber">194</context>
         </context-group>
       </trans-unit>
       <trans-unit id="invitationsSent.loadFailed" datatype="html">
@@ -2199,98 +2325,98 @@
         <source>Administrator</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/invitations-sent-list/invitations-sent-list.ts</context>
-          <context context-type="linenumber">136</context>
+          <context context-type="linenumber">142</context>
         </context-group>
       </trans-unit>
       <trans-unit id="invitationsSent.roleParent" datatype="html">
         <source>Forelder</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/invitations-sent-list/invitations-sent-list.ts</context>
-          <context context-type="linenumber">138</context>
+          <context context-type="linenumber">144</context>
         </context-group>
       </trans-unit>
       <trans-unit id="invitationsSent.roleChild" datatype="html">
         <source>Barn</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/invitations-sent-list/invitations-sent-list.ts</context>
-          <context context-type="linenumber">140</context>
+          <context context-type="linenumber">146</context>
         </context-group>
       </trans-unit>
       <trans-unit id="invitationsSent.statusPending" datatype="html">
         <source>Venter</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/invitations-sent-list/invitations-sent-list.ts</context>
-          <context context-type="linenumber">150</context>
+          <context context-type="linenumber">156</context>
         </context-group>
       </trans-unit>
       <trans-unit id="invitationsSent.statusAccepted" datatype="html">
         <source>Godtatt</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/invitations-sent-list/invitations-sent-list.ts</context>
-          <context context-type="linenumber">152</context>
+          <context context-type="linenumber">158</context>
         </context-group>
       </trans-unit>
       <trans-unit id="invitationsSent.statusDeclined" datatype="html">
         <source>Avslått</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/invitations-sent-list/invitations-sent-list.ts</context>
-          <context context-type="linenumber">154</context>
+          <context context-type="linenumber">160</context>
         </context-group>
       </trans-unit>
       <trans-unit id="invitationsSent.statusCancelled" datatype="html">
         <source>Avbrutt</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/invitations-sent-list/invitations-sent-list.ts</context>
-          <context context-type="linenumber">156</context>
+          <context context-type="linenumber">162</context>
         </context-group>
       </trans-unit>
       <trans-unit id="invitationsSent.statusExpired" datatype="html">
         <source>Utløpt</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/invitations-sent-list/invitations-sent-list.ts</context>
-          <context context-type="linenumber">158</context>
+          <context context-type="linenumber">164</context>
         </context-group>
       </trans-unit>
       <trans-unit id="invitationsSent.cleanupTitle" datatype="html">
         <source>Rydde i invitasjonene?</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/invitations-sent-list/invitations-sent-list.ts</context>
-          <context context-type="linenumber">176</context>
+          <context context-type="linenumber">182</context>
         </context-group>
       </trans-unit>
       <trans-unit id="invitationsSent.cleanupMessage" datatype="html">
         <source>Alle tilbaketrukne, avslåtte og utløpte invitasjoner fjernes fra listen.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/invitations-sent-list/invitations-sent-list.ts</context>
-          <context context-type="linenumber">177</context>
+          <context context-type="linenumber">183</context>
         </context-group>
       </trans-unit>
       <trans-unit id="invitationsSent.cleanupConfirm" datatype="html">
         <source>Rydd</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/invitations-sent-list/invitations-sent-list.ts</context>
-          <context context-type="linenumber">178</context>
+          <context context-type="linenumber">184</context>
         </context-group>
       </trans-unit>
       <trans-unit id="invitationsSent.cleanedUpOne" datatype="html">
         <source>1 gammel invitasjon er fjernet.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/invitations-sent-list/invitations-sent-list.ts</context>
-          <context context-type="linenumber">200</context>
+          <context context-type="linenumber">206</context>
         </context-group>
       </trans-unit>
       <trans-unit id="invitationsSent.cleanedUp" datatype="html">
         <source><x id="count" equiv-text="result.deleted"/> gamle invitasjoner er fjernet.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/invitations-sent-list/invitations-sent-list.ts</context>
-          <context context-type="linenumber">201</context>
+          <context context-type="linenumber">207</context>
         </context-group>
       </trans-unit>
       <trans-unit id="invitationsSent.cleanupFailed" datatype="html">
         <source>Kunne ikke rydde opp i invitasjoner. Vennligst prøv igjen.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/invitations-sent-list/invitations-sent-list.ts</context>
-          <context context-type="linenumber">207</context>
+          <context context-type="linenumber">213</context>
         </context-group>
       </trans-unit>
       <trans-unit id="inviteUser.title" datatype="html">

@@ -129,6 +129,12 @@ export class InvitationsSentListComponent implements OnInit {
     }
   }
 
+  /** The address split before its last «@», so a narrow row breaks there and nowhere else */
+  emailParts(email: string): [string, string] {
+    const at = email.lastIndexOf('@');
+    return at > 0 ? [email.slice(0, at), email.slice(at)] : [email, ''];
+  }
+
   /** Role in Norwegian (rule 8) */
   getRoleLabel(role: string): string {
     switch (role) {

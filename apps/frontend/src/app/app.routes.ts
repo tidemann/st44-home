@@ -5,32 +5,32 @@ export const routes: Routes = [
   // Public routes (no layout)
   {
     path: 'login',
-    title: 'Login - Diddit!',
+    title: $localize`:@@routeTitle.login:Logg inn - Diddit!`,
     loadComponent: () => import('./auth/login').then((m) => m.LoginComponent),
   },
   {
     path: 'register',
-    title: 'Register - Diddit!',
+    title: $localize`:@@routeTitle.register:Registrer deg - Diddit!`,
     loadComponent: () => import('./auth/register').then((m) => m.RegisterComponent),
   },
   {
     path: 'child-login',
-    title: 'Child Login - Diddit!',
+    title: $localize`:@@routeTitle.childLogin:Logg inn for barn - Diddit!`,
     loadComponent: () => import('./auth/child-login').then((m) => m.ChildLoginComponent),
   },
   {
     path: 'forgot-password',
-    title: 'Forgot Password - Diddit!',
+    title: $localize`:@@routeTitle.forgotPassword:Glemt passord - Diddit!`,
     loadComponent: () => import('./auth/forgot-password').then((m) => m.ForgotPasswordComponent),
   },
   {
     path: 'reset-password',
-    title: 'Reset Password - Diddit!',
+    title: $localize`:@@routeTitle.resetPassword:Nytt passord - Diddit!`,
     loadComponent: () => import('./auth/reset-password').then((m) => m.ResetPasswordComponent),
   },
   {
     path: 'invitations/accept/:token',
-    title: 'Accept Invitation - Diddit!',
+    title: $localize`:@@routeTitle.acceptInvitation:Godta invitasjon - Diddit!`,
     loadComponent: () =>
       import('./pages/invitation-accept/invitation-accept').then(
         (m) => m.InvitationAcceptComponent,
@@ -45,31 +45,31 @@ export const routes: Routes = [
     children: [
       {
         path: 'home',
-        title: 'Home - Diddit!',
+        title: $localize`:@@routeTitle.home:Hjem - Diddit!`,
         data: { ownHead: true },
         loadComponent: () => import('./pages/home/home').then((m) => m.Home),
       },
       {
         path: 'tasks',
-        title: 'Tasks - Diddit!',
+        title: $localize`:@@routeTitle.tasks:Oppgaver - Diddit!`,
         data: { ownHead: true },
         loadComponent: () => import('./pages/tasks/tasks').then((m) => m.Tasks),
       },
       {
         path: 'family',
-        title: 'Family - Diddit!',
+        title: $localize`:@@routeTitle.family:Familie - Diddit!`,
         data: { ownHead: true },
         loadComponent: () => import('./pages/family/family').then((m) => m.Family),
       },
       {
         path: 'progress',
-        title: 'Progress - Diddit!',
+        title: $localize`:@@routeTitle.progress:Fremgang - Diddit!`,
         data: { ownHead: true },
         loadComponent: () => import('./pages/progress/progress').then((m) => m.Progress),
       },
       {
         path: 'rewards',
-        title: 'Rewards - Diddit!',
+        title: $localize`:@@routeTitle.rewards:Belønninger - Diddit!`,
         data: { ownHead: true },
         loadComponent: () =>
           import('./pages/rewards-management/rewards-management').then(
@@ -78,12 +78,12 @@ export const routes: Routes = [
       },
       {
         path: 'household/create',
-        title: 'Create Household - Diddit!',
+        title: $localize`:@@routeTitle.createHousehold:Opprett husstand - Diddit!`,
         loadComponent: () => import('./pages/setup-wizard/setup-wizard').then((m) => m.SetupWizard),
       },
       {
         path: 'household/settings',
-        title: 'Household Settings - Diddit!',
+        title: $localize`:@@routeTitle.householdSettings:Husstandsinnstillinger - Diddit!`,
         loadComponent: () =>
           import('./components/household-settings/household-settings').then(
             (m) => m.HouseholdSettingsComponent,
@@ -91,7 +91,7 @@ export const routes: Routes = [
       },
       {
         path: 'invitations',
-        title: 'Invitations - Diddit!',
+        title: $localize`:@@routeTitle.invitations:Invitasjoner - Diddit!`,
         loadComponent: () =>
           import('./components/invitation-inbox/invitation-inbox').then(
             (m) => m.InvitationInboxComponent,
@@ -99,13 +99,13 @@ export const routes: Routes = [
       },
       {
         path: 'settings',
-        title: 'Settings - Diddit!',
+        title: $localize`:@@routeTitle.settings:Innstillinger - Diddit!`,
         data: { ownHead: true },
         loadComponent: () => import('./pages/settings/settings').then((m) => m.Settings),
       },
       {
         path: 'households',
-        title: 'Manage Households - Diddit!',
+        title: $localize`:@@routeTitle.manageHouseholds:Administrer husstander - Diddit!`,
         data: { ownHead: true },
         loadComponent: () =>
           import('./pages/manage-households/manage-households').then((m) => m.ManageHouseholds),
@@ -127,13 +127,13 @@ export const routes: Routes = [
     children: [
       {
         path: 'my-tasks',
-        title: 'My Tasks - Diddit!',
+        title: $localize`:@@routeTitle.myTasks:Mine oppgaver - Diddit!`,
         loadComponent: () =>
           import('./pages/child-dashboard/child-dashboard').then((m) => m.ChildDashboardComponent),
       },
       {
         path: 'my-rewards',
-        title: 'My Rewards - Diddit!',
+        title: $localize`:@@routeTitle.myRewards:Mine belønninger - Diddit!`,
         loadComponent: () =>
           import('./pages/child-rewards/child-rewards').then((m) => m.ChildRewards),
       },

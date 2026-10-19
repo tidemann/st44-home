@@ -1,5 +1,6 @@
 .invitations-sent-list {
   padding: 1rem 0;
+  container: sent-list / inline-size;
 }
 
 .header {
@@ -94,8 +95,24 @@
   align-items: center;
 }
 
+/* The address breaks only before «@»; a part wider than the row ends in an ellipsis
+   (the full address is in the title) instead of breaking mid-word (ST-1551) */
 .cell.email {
-  word-break: break-word;
+  min-width: 0;
+}
+
+.email-parts {
+  display: flex;
+  flex-wrap: wrap;
+  min-width: 0;
+}
+
+.email-part {
+  min-width: 0;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 /* Status badges */
@@ -185,10 +202,12 @@
 }
 
 /* Responsive */
-@media (max-width: 768px) {
+/* By the list's own width, not the screen's: on desktop the list sits in the 428 px settings
+   column, where six columns broke every word letter by letter (ST-1551) */
+@container sent-list (max-width: 768px) {
   .table-header,
   .table-row {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr);
   }
 
   .table-header {
