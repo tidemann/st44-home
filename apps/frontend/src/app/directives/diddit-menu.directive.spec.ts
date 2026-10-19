@@ -113,6 +113,20 @@ describe('Diddit menus in popups (ST-1489, rule 6)', () => {
       (root.querySelector('.diddit-date-done') as HTMLElement).click();
       expect(root.querySelector('.diddit-date')).toBeNull();
     });
+
+    it('starts a deadline picked today after 23:00 at tomorrow 00:00', () => {
+      vi.useFakeTimers({ toFake: ['Date'] });
+      vi.setSystemTime(new Date(2030, 4, 14, 23, 30));
+      try {
+        const { root, date, fixture } = mount();
+        press(date);
+        const days = root.querySelectorAll<HTMLButtonElement>('.diddit-date-day');
+        days[13].click(); // 14 May = today
+        expect(fixture.componentInstance.deadline.value).toBe('2030-05-15T00:00');
+      } finally {
+        vi.useRealTimers();
+      }
+    });
   });
 
   describe('on the phone', () => {
