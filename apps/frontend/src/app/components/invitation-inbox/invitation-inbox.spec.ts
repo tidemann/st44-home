@@ -97,4 +97,26 @@ describe('InvitationInboxComponent', () => {
       'Invitert av: lang.adresse.for.test@example.com',
     );
   });
+
+  it('shows «Utløpt» as a plain word, not a button (ST-1572)', async () => {
+    vi.mocked(TestBed.inject(InvitationService).listReceivedInvitations).mockResolvedValue({
+      invitations: [
+        { ...invitation('parent'), expiresAt: new Date(Date.now() - 86400000).toISOString() },
+      ],
+    });
+    const fixture = TestBed.createComponent(InvitationInboxComponent);
+    fixture.detectChanges();
+    await fixture.whenStable();
+    fixture.detectChanges();
+
+    const word = (fixture.nativeElement as HTMLElement).querySelector(
+      '.invitation-actions .expired-word',
+    );
+    expect(word?.tagName).toBe('SPAN');
+    expect(word?.textContent?.trim()).toBe('Utløpt');
+    expect(word?.hasAttribute('tabindex')).toBe(false);
+    expect(
+      (fixture.nativeElement as HTMLElement).querySelector('.invitation-actions button'),
+    ).toBeNull();
+  });
 });

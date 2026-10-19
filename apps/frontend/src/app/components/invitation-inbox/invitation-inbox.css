@@ -79,12 +79,7 @@
   padding: 1.25rem;
   background: white;
   border: 1px solid var(--hairline);
-  border-radius: 8px;
-}
-
-.invitation-card.expired {
-  opacity: 0.7;
-  background: var(--bg);
+  border-radius: var(--r-card);
 }
 
 /* min-width 0: a long inviter address must not push «Godta»/«Avslå» out of the card (ST-1557) */
@@ -190,12 +185,11 @@
   cursor: not-allowed;
 }
 
-.expired-badge {
-  padding: 0.5rem 1rem;
-  background: var(--track);
-  color: var(--text-muted);
-  border-radius: 4px;
+/* An expired invitation can't be acted on: «Utløpt» is a plain rust word, not a button (ST-1572) */
+.expired-word {
+  color: var(--overdue);
   font-size: 0.875rem;
+  font-weight: 600;
 }
 
 /* Responsive design */
