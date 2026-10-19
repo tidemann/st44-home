@@ -42,7 +42,9 @@ describe('QrCodeDisplayComponent', () => {
     fixture.detectChanges();
 
     const buttons = Array.from(
-      (fixture.nativeElement as HTMLElement).querySelectorAll<HTMLButtonElement>('.qr-actions button'),
+      (fixture.nativeElement as HTMLElement).querySelectorAll<HTMLButtonElement>(
+        '.qr-actions button',
+      ),
     );
     expect(buttons.length).toBe(3);
     expect(buttons.map((button) => button.textContent?.trim())).toEqual([

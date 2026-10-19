@@ -3936,21 +3936,21 @@
         </context-group>
       </trans-unit>
       <trans-unit id="qrCodeDisplay.download" datatype="html">
-        <source> 📥 Last ned </source>
+        <source> Last ned </source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/qr-code-display/qr-code-display.html</context>
           <context context-type="linenumber">51,53</context>
         </context-group>
       </trans-unit>
       <trans-unit id="qrCodeDisplay.print" datatype="html">
-        <source> 🖨️ Skriv ut </source>
+        <source> Skriv ut </source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/qr-code-display/qr-code-display.html</context>
           <context context-type="linenumber">59,61</context>
         </context-group>
       </trans-unit>
       <trans-unit id="qrCodeDisplay.regenerate" datatype="html">
-        <source> 🔄 Generer på nytt </source>
+        <source> Ny kode </source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/qr-code-display/qr-code-display.html</context>
           <context context-type="linenumber">68,70</context>
@@ -4305,35 +4305,46 @@
         <source>Velg dato og klokkeslett</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/directives/diddit-date.directive.ts</context>
-          <context context-type="linenumber">85</context>
+          <context context-type="linenumber">111</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/directives/diddit-date.directive.ts</context>
+          <context context-type="linenumber">152</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="didditDate.closed" datatype="html">
+        <source><x id="date" equiv-text="date"/>, kl. <x id="hours" equiv-text="hours"/>.<x id="minutes" equiv-text="minutes"/></source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/directives/diddit-date.directive.ts</context>
+          <context context-type="linenumber">120</context>
         </context-group>
       </trans-unit>
       <trans-unit id="didditDate.previous" datatype="html">
         <source>Forrige måned</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/directives/diddit-date.directive.ts</context>
-          <context context-type="linenumber">145</context>
+          <context context-type="linenumber">214</context>
         </context-group>
       </trans-unit>
       <trans-unit id="didditDate.next" datatype="html">
         <source>Neste måned</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/directives/diddit-date.directive.ts</context>
-          <context context-type="linenumber">147</context>
+          <context context-type="linenumber">216</context>
         </context-group>
       </trans-unit>
       <trans-unit id="didditDate.time" datatype="html">
         <source>Klokkeslett</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/directives/diddit-date.directive.ts</context>
-          <context context-type="linenumber">187</context>
+          <context context-type="linenumber">281</context>
         </context-group>
       </trans-unit>
       <trans-unit id="didditDate.done" datatype="html">
         <source>Ferdig</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/directives/diddit-date.directive.ts</context>
-          <context context-type="linenumber">199</context>
+          <context context-type="linenumber">311</context>
         </context-group>
       </trans-unit>
       <trans-unit id="nav.progress" datatype="html">

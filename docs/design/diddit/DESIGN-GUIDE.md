@@ -2503,7 +2503,7 @@ ends in Diddit's own time field, never the browser's `<input type="time">`: 107 
 of the row, otherwise rule 5's field (49 px, 13 px corners, 1.5 px `#555E64` edge, white). It reads
 24 hours — «18:00», never «AM/PM» — and a new deadline still starts at the next whole hour. The
 closed «Frist» field shows Diddit text, never the browser's own format: empty, «Velg dato og
-klokkeslett» in `#555E64`; chosen, for example «man. 20. oktober, kl. 18.00» in `#15181C`. It reads
+klokkeslett» in `#555E64`; chosen, for example «tir. 20. oktober, kl. 18.00» in `#15181C`. It reads
 the same in a browser set to English.
 
 #### Where this section replaces something the guide said before
