@@ -1,5 +1,5 @@
 import { Component, inject, signal, OnInit, ChangeDetectionStrategy } from '@angular/core';
-import { CommonModule, DatePipe, TitleCasePipe } from '@angular/common';
+import { CommonModule, DatePipe } from '@angular/common';
 import { Router } from '@angular/router';
 import {
   InvitationService,
@@ -10,7 +10,7 @@ import { ConfirmDialogService } from '../../services/confirm-dialog.service';
 
 @Component({
   selector: 'app-invitation-inbox',
-  imports: [CommonModule, DatePipe, TitleCasePipe],
+  imports: [CommonModule, DatePipe],
   templateUrl: './invitation-inbox.html',
   styleUrl: './invitation-inbox.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -25,6 +25,18 @@ export class InvitationInboxComponent implements OnInit {
   protected readonly successMessage = signal<string | null>(null);
   protected readonly errorMessage = signal<string | null>(null);
   protected readonly processingId = signal<string | null>(null);
+
+  /** Role in Norwegian (rule 8) */
+  protected roleLabel(role: string): string {
+    switch (role) {
+      case 'admin':
+        return $localize`:@@invitationInbox.roleAdmin:Administrator`;
+      case 'parent':
+        return $localize`:@@invitationInbox.roleParent:Forelder`;
+      default:
+        return role;
+    }
+  }
 
   ngOnInit() {
     this.loadInvitations();
@@ -60,7 +72,7 @@ export class InvitationInboxComponent implements OnInit {
       invitation.householdName || $localize`:@@invitationInbox.theHousehold:husstanden`;
     const confirmed = await this.confirmDialog.confirm({
       title: $localize`:@@invitationInbox.acceptTitle:Bli med i husstanden?`,
-      message: $localize`:@@invitationInbox.acceptMessage:Du blir med i «${householdName}:householdName:» som ${invitation.role}:role:.`,
+      message: $localize`:@@invitationInbox.acceptMessage:Du blir med i «${householdName}:householdName:» som ${this.roleLabel(invitation.role).toLowerCase()}:role:.`,
       confirmLabel: $localize`:@@invitationInbox.acceptConfirm:Bli med`,
     });
     if (!confirmed) {

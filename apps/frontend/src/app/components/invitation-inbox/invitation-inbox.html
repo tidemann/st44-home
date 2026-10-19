@@ -79,8 +79,9 @@
               {{ invitation.inviterName || invitation.inviterEmail || 'Ukjent' }}
             </p>
             <p class="role">
-              <ng-container i18n="@@invitationInbox.role">Rolle:</ng-container>
-              <strong>{{ invitation.role | titlecase }}</strong>
+              <ng-container i18n="@@invitationInbox.roleLine"
+                >Rolle: <strong>{{ roleLabel(invitation.role) }}</strong></ng-container
+              >
             </p>
             <p class="dates">
               <ng-container i18n="@@invitationInbox.sent">Sendt:</ng-container>
