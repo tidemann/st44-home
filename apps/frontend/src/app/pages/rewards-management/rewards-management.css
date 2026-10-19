@@ -431,4 +431,10 @@ h2 {
     font-size: 15px;
     white-space: nowrap;
   }
+  /* ST-1583: the title inside a card is body text, 16 px, as a chore row title */
+  .reward-header h3 {
+    font-family: var(--font-body);
+    font-size: 16px;
+    font-weight: 600;
+  }
 }
