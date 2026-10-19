@@ -210,9 +210,10 @@
     border-top: 1px solid var(--hairline);
   }
 
-  /* The strip takes no room in the flow: keep the last row 16 px clear of it */
+  /* The strip takes no room in the flow: keep the last row 16 px clear of it
+     (78 strip + 16 gap - the page's own 32 px bottom padding) */
   .selecting {
-    padding-bottom: 94px;
+    padding-bottom: 62px;
   }
 
   .select-summary {
@@ -227,7 +228,9 @@
     grid-template-columns: auto auto;
   }
 
-  .sbtn {
+  /* d1: «Avbryt» 97 px, «Slett 3 oppgaver» 168 px. Scoped so the base .sbtn rule below,
+     which comes later in the file, does not win back its 12 px */
+  .select-actions .sbtn {
     padding: 0 22px;
   }
 
