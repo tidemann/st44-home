@@ -81,3 +81,14 @@
 .push-actions .btn {
   min-height: 48px;
 }
+
+/* Rule 5 (ST-1565): on Innstillinger from 1024 px «Slå på varsler» is the main button, 49 px and
+   as wide as its column. The child's compact card keeps its own size */
+@media (min-width: 1024px) {
+  .push-card:not(.compact) .push-actions .btn-primary {
+    width: 100%;
+    min-height: 0;
+    height: 49px;
+    padding: 0 16px;
+  }
+}
