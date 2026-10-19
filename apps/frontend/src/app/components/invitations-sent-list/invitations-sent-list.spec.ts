@@ -46,4 +46,16 @@ describe('InvitationsSentListComponent (rule 8: Norwegian)', () => {
     await component.cleanupInvitations();
     expect(component.successMessage()).toBe('3 gamle invitasjoner er fjernet.');
   });
+
+  it('uses the singular when one invitation was removed', async () => {
+    const service = TestBed.inject(InvitationService) as unknown as {
+      cleanupInvitations: ReturnType<typeof vi.fn>;
+    };
+    service.cleanupInvitations.mockResolvedValue({
+      deleted: 1,
+      message: 'Removed 1 old invitation(s)',
+    });
+    await component.cleanupInvitations();
+    expect(component.successMessage()).toBe('1 gammel invitasjon er fjernet.');
+  });
 });

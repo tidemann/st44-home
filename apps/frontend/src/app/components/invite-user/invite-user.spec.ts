@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { TestBed, type ComponentFixture } from '@angular/core/testing';
 import { InviteUserComponent } from './invite-user';
 import { InvitationService } from '../../services/invitation.service';
@@ -57,16 +57,34 @@ describe('InviteUserComponent (rule 8: Norwegian)', () => {
     expect(component.errorMessage()).toBe('Denne brukeren kan ikke inviteres.');
   });
 
-  it('says the link was copied in Norwegian', async () => {
-    await submit();
-    Object.defineProperty(navigator, 'clipboard', {
-      value: { writeText: vi.fn().mockResolvedValue(undefined) },
-      configurable: true,
+  describe('copy link', () => {
+    const original = Object.getOwnPropertyDescriptor(navigator, 'clipboard');
+
+    beforeEach(() => {
+      vi.useFakeTimers();
+      Object.defineProperty(navigator, 'clipboard', {
+        value: { writeText: vi.fn().mockResolvedValue(undefined) },
+        configurable: true,
+      });
     });
-    component.copyInvitationLink();
-    await Promise.resolve();
-    await Promise.resolve();
-    expect(component.successMessage()).toBe('Invitasjonslenken er kopiert.');
+
+    afterEach(() => {
+      vi.useRealTimers();
+      if (original) {
+        Object.defineProperty(navigator, 'clipboard', original);
+      } else {
+        delete (navigator as { clipboard?: unknown }).clipboard;
+      }
+    });
+
+    it('says the link was copied in Norwegian, then shows the sent text again', async () => {
+      await submit();
+      component.copyInvitationLink();
+      await vi.advanceTimersByTimeAsync(0);
+      expect(component.successMessage()).toBe('Invitasjonslenken er kopiert.');
+      await vi.advanceTimersByTimeAsync(2000);
+      expect(component.successMessage()).toBe('Invitasjonen er sendt til b@example.com.');
+    });
   });
 
   it('shows the e-mail field errors in Norwegian', () => {
