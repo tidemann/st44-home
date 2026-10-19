@@ -388,6 +388,16 @@
 }
 
 @media (min-width: 1024px) {
+  /* Rule 1: the button starts 22 px under the band and the list 15 px under it, as drawn */
+  .create-section {
+    margin: 22px 0 15px;
+  }
+
+  /* The card's inside padding is 16 px, as drawn (146 px card at 1440) */
+  .household-card {
+    padding: 16px;
+  }
+
   /* Rule 5: «+ Ny husholdning» is the main button, as wide as its column */
   .create-section .btn-primary {
     width: 100%;
