@@ -70,7 +70,12 @@
       <label class="form-label" for="child-avatar" i18n="@@addChildModal.avatarLabel"
         >Avatar-emoji</label
       >
-      <select id="child-avatar" class="form-select avatar-select" formControlName="avatar">
+      <select
+        appDidditMenu
+        id="child-avatar"
+        class="form-select avatar-select"
+        formControlName="avatar"
+      >
         @for (option of avatarOptions; track option.value) {
           <option [value]="option.value">{{ option.label }}</option>
         }

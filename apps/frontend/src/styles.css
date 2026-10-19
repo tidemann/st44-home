@@ -493,6 +493,44 @@ h6 {
   color: #ef4444;
 }
 
+/* The Diddit menu a popup's <select> opens on desktop (appDidditMenu; popup rule 6). It is a
+   dropdown, so it takes the edge and shadow of a popup you may ignore. */
+.diddit-menu {
+  position: fixed;
+  inset: auto;
+  margin: 0;
+  box-sizing: border-box;
+  max-height: 280px;
+  overflow-y: auto;
+  padding: 6px;
+  background: var(--surface);
+  color: var(--ink);
+  border: var(--popup-edge);
+  border-radius: var(--r-card);
+  box-shadow: var(--popup-shadow);
+  outline: none;
+}
+
+.diddit-menu-option {
+  display: flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 0 10px;
+  border-radius: 9px;
+  font-family: var(--font-text);
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.diddit-menu-option.active {
+  background: var(--bg);
+}
+
+.diddit-menu-option[aria-selected='true'] {
+  font-weight: 800;
+}
+
 /* ===== BUTTON STYLES ===== */
 /* Guide: primary = yellow fill, ink label, 13 px radius, no border, no shadow. */
 

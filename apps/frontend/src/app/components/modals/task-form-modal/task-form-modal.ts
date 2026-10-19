@@ -20,6 +20,7 @@ import {
   AbstractControl,
 } from '@angular/forms';
 import { Modal } from '../modal/modal';
+import { DidditMenu } from '../../../directives/diddit-menu.directive';
 import type { Task, TaskRuleType, Child, CreateTaskRequest } from '@st44/types';
 
 /**
@@ -66,7 +67,7 @@ export interface TaskFormData {
  */
 @Component({
   selector: 'app-task-form-modal',
-  imports: [Modal, ReactiveFormsModule],
+  imports: [Modal, DidditMenu, ReactiveFormsModule],
   templateUrl: './task-form-modal.html',
   styleUrl: './task-form-modal.css',
   changeDetection: ChangeDetectionStrategy.OnPush,

@@ -1,6 +1,7 @@
 import { Component, input, output, signal, inject, ChangeDetectionStrategy } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Modal } from '../modal/modal';
+import { DidditMenu } from '../../../directives/diddit-menu.directive';
 
 /**
  * Data structure for add child submission
@@ -23,7 +24,7 @@ export interface AddChildData {
  */
 @Component({
   selector: 'app-add-child-modal',
-  imports: [Modal, ReactiveFormsModule],
+  imports: [Modal, DidditMenu, ReactiveFormsModule],
   templateUrl: './add-child-modal.html',
   styleUrl: './add-child-modal.css',
   changeDetection: ChangeDetectionStrategy.OnPush,

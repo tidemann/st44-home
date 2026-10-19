@@ -96,7 +96,7 @@
         <label class="form-label" for="rule-type" i18n="@@taskFormModal.taskTypeLabel"
           >Oppgavetype *</label
         >
-        <select id="rule-type" class="form-select" formControlName="ruleType">
+        <select appDidditMenu id="rule-type" class="form-select" formControlName="ruleType">
           @for (type of taskTypes; track type.value) {
             <option [value]="type.value">{{ type.label }} - {{ type.description }}</option>
           }
@@ -140,7 +140,12 @@
           <label class="form-label" for="rotation-type" i18n="@@taskFormModal.rotationTypeLabel"
             >Rotasjonstype *</label
           >
-          <select id="rotation-type" class="form-select" formControlName="rotationType">
+          <select
+            appDidditMenu
+            id="rotation-type"
+            class="form-select"
+            formControlName="rotationType"
+          >
             @for (type of rotationTypes; track type.value) {
               <option [value]="type.value">{{ type.label }}</option>
             }
@@ -297,11 +302,7 @@
             >
               Avbryt
             </button>
-            <button
-              type="submit"
-              class="btn btn-primary"
-              [disabled]="submitting()"
-            >
+            <button type="submit" class="btn btn-primary" [disabled]="submitting()">
               {{ submitButtonText() }}
             </button>
           </div>

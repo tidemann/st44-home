@@ -179,7 +179,17 @@
 
   /* 3 · the action row: equal halves of the 396 px row inside the popup, 8 px apart.
      A grid, not flex: with flex the outlined button's 2 px edge made it 4 px wider. */
-  .modal :is(.modal-body, .modal-footer) ::ng-deep :is(.modal-actions, .modal-actions-right, .modal-actions-split, .popup-actions, .confirm-actions, .form-actions) {
+  .modal
+    :is(.modal-body, .modal-footer)
+    ::ng-deep
+    :is(
+      .modal-actions,
+      .modal-actions-right,
+      .modal-actions-split,
+      .popup-actions,
+      .confirm-actions,
+      .form-actions
+    ) {
     display: grid;
     grid-auto-flow: column;
     grid-auto-columns: 1fr;
@@ -191,7 +201,18 @@
     display: contents;
   }
 
-  .modal :is(.modal-body, .modal-footer) ::ng-deep :is(.modal-actions, .modal-actions-right, .modal-actions-split, .popup-actions, .confirm-actions, .form-actions) > :is(.btn, button) {
+  .modal
+    :is(.modal-body, .modal-footer)
+    ::ng-deep
+    :is(
+      .modal-actions,
+      .modal-actions-right,
+      .modal-actions-split,
+      .popup-actions,
+      .confirm-actions,
+      .form-actions
+    )
+    > :is(.btn, button) {
     width: auto;
     min-width: 0;
     height: 49px;

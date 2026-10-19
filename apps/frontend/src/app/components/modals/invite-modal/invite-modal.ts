@@ -1,6 +1,7 @@
 import { Component, input, output, signal, inject, ChangeDetectionStrategy } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Modal } from '../modal/modal';
+import { DidditMenu } from '../../../directives/diddit-menu.directive';
 
 /**
  * Data structure for invite member submission
@@ -23,7 +24,7 @@ export interface InviteMemberData {
  */
 @Component({
   selector: 'app-invite-modal',
-  imports: [Modal, ReactiveFormsModule],
+  imports: [Modal, DidditMenu, ReactiveFormsModule],
   templateUrl: './invite-modal.html',
   styleUrl: './invite-modal.css',
   changeDetection: ChangeDetectionStrategy.OnPush,

@@ -1,6 +1,7 @@
 import { Component, input, output, signal, ChangeDetectionStrategy } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Modal } from '../modal/modal';
+import { DidditMenu } from '../../../directives/diddit-menu.directive';
 import type { Child } from '@st44/types';
 
 /**
@@ -13,7 +14,7 @@ import type { Child } from '@st44/types';
  */
 @Component({
   selector: 'app-reassign-task-modal',
-  imports: [Modal, FormsModule],
+  imports: [Modal, DidditMenu, FormsModule],
   templateUrl: './reassign-task-modal.html',
   styleUrl: './reassign-task-modal.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
