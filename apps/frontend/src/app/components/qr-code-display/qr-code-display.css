@@ -141,6 +141,23 @@ canvas {
   cursor: not-allowed;
 }
 
+/* Popup rule 3 on desktop: one row of equal parts across the popup's content width */
+@media (min-width: 1024px) {
+  :host-context(app-qr-code-modal) .qr-actions {
+    flex-wrap: nowrap;
+    width: calc(100% + 3rem);
+    margin-inline: -1.5rem;
+  }
+
+  :host-context(app-qr-code-modal) .qr-actions .btn {
+    flex: 1 1 0;
+    min-width: 0;
+    justify-content: center;
+    padding-inline: 0.5rem;
+    white-space: nowrap;
+  }
+}
+
 /* Mobile responsiveness */
 @media (max-width: 640px) {
   .qr-display-container {
