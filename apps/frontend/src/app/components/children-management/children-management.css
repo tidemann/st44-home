@@ -301,4 +301,15 @@
     border-radius: var(--r-row-action);
     font-size: 15px;
   }
+
+  /* «Rediger» 88 px and «Slett» 62 px wide, as drawn (ST-1511) */
+  .child-actions .btn-secondary {
+    width: 88px;
+    padding: 0;
+  }
+
+  .child-actions .btn-danger {
+    width: 62px;
+    padding: 0;
+  }
 }
