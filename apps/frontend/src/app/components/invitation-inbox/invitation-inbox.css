@@ -87,8 +87,27 @@
   background: var(--bg);
 }
 
+/* min-width 0: a long inviter address must not push «Godta»/«Avslå» out of the card (ST-1557) */
 .invitation-details {
   flex: 1;
+  min-width: 0;
+}
+
+/* The inviter address breaks only before «@»; a part wider than the card ends in an ellipsis
+   (the full address is in the title), as in the sent list (ST-1551) */
+.email-parts {
+  display: inline-flex;
+  flex-wrap: wrap;
+  max-width: 100%;
+  vertical-align: top;
+}
+
+.email-part {
+  min-width: 0;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .household-name {

@@ -75,8 +75,16 @@
               {{ invitation.householdName || 'Ukjent husstand' }}
             </h3>
             <p class="inviter">
-              <ng-container i18n="@@invitationInbox.invitedBy">Invitert av:</ng-container>
-              {{ invitation.inviterName || invitation.inviterEmail || 'Ukjent' }}
+              <ng-container i18n="@@invitationInbox.invitedBy">Invitert av:</ng-container>&ngsp;
+              @if (invitation.inviterName || !invitation.inviterEmail) {
+                {{ invitation.inviterName || 'Ukjent' }}
+              } @else {
+                @let email = emailParts(invitation.inviterEmail);
+                <span class="email-parts" [title]="invitation.inviterEmail"
+                  ><span class="email-part">{{ email[0] }}</span
+                  ><span class="email-part">{{ email[1] }}</span></span
+                >
+              }
             </p>
             <p class="role">
               <ng-container i18n="@@invitationInbox.roleLine"

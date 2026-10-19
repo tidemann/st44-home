@@ -114,7 +114,11 @@
                   </span>
                 </div>
                 <div class="member-meta">
-                  <span class="member-email">{{ member.email }}</span>
+                  @let email = emailParts(member.email ?? '');
+                  <span class="member-email" [title]="member.email"
+                    ><span class="email-part">{{ email[0] }}</span
+                    ><span class="email-part">{{ email[1] }}</span></span
+                  >
                   <span class="member-joined" i18n="@@householdSettings.joinedDate">
                     Ble med {{ member.joinedAt | date: 'mediumDate' }}
                   </span>

@@ -72,4 +72,29 @@ describe('InvitationInboxComponent', () => {
     await component.declineInvitation(invitation('parent'));
     expect(component['successMessage']()).toBe('Invitasjonen er avslått.');
   });
+
+  it('splits a name-less inviter address before «@» (ST-1557)', async () => {
+    vi.mocked(TestBed.inject(InvitationService).listReceivedInvitations).mockResolvedValue({
+      invitations: [
+        {
+          ...invitation('parent'),
+          inviterName: undefined,
+          inviterEmail: 'lang.adresse.for.test@example.com',
+        },
+      ],
+    });
+    const fixture = TestBed.createComponent(InvitationInboxComponent);
+    fixture.detectChanges();
+    await fixture.whenStable();
+    fixture.detectChanges();
+
+    const parts = Array.from(
+      (fixture.nativeElement as HTMLElement).querySelectorAll('.inviter .email-part'),
+    ).map((p) => p.textContent);
+    expect(parts).toEqual(['lang.adresse.for.test', '@example.com']);
+    // the space after «Invitert av:» survives the split
+    expect(fixture.nativeElement.querySelector('.inviter').textContent.trim()).toBe(
+      'Invitert av: lang.adresse.for.test@example.com',
+    );
+  });
 });

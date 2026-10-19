@@ -172,6 +172,12 @@ export class InvitationInboxComponent implements OnInit {
     return this.processingId() === invitation.id;
   }
 
+  /** The address split before its last «@», so it can break only there (ST-1557) */
+  protected emailParts(email: string): [string, string] {
+    const at = email.lastIndexOf('@');
+    return at > 0 ? [email.slice(0, at), email.slice(at)] : [email, ''];
+  }
+
   /**
    * Get count of pending invitations (for badge display)
    */

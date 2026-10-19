@@ -127,6 +127,7 @@
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
+  min-width: 0;
 }
 
 .member-info {
@@ -167,10 +168,25 @@
   gap: 0.25rem;
   font-size: 0.875rem;
   color: var(--text-muted);
+  min-width: 0;
 }
 
+/* The address breaks only before «@»; a part wider than the card ends in an ellipsis
+   (the full address is in the title) instead of pushing the page sideways (ST-1557) */
 .member-email {
   font-family: monospace;
+  display: flex;
+  flex-wrap: wrap;
+  min-width: 0;
+  max-width: 100%;
+}
+
+.email-part {
+  min-width: 0;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 /* Form Actions */
