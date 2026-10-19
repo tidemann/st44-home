@@ -433,6 +433,18 @@ describe('Tasks (Poeng task list)', () => {
       expect(el().querySelector('.cols')).toBeNull();
     });
 
+    it('marks the list while selecting, so desktop can keep rows clear of the fixed strip (frame d1)', () => {
+      expect(el().querySelector('.selecting')).toBeNull();
+
+      button('Velg')!.click();
+      fixture.detectChanges();
+
+      const list = el().querySelector('.selecting')!;
+      expect(list).not.toBeNull();
+      expect(list.querySelector('.select-slot')).not.toBeNull();
+      expect(list.querySelector('.select-rows')).not.toBeNull();
+    });
+
     it('ticks rows with a tap and counts them in the title', () => {
       button('Velg')!.click();
       fixture.detectChanges();

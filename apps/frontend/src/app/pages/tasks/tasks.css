@@ -194,11 +194,26 @@
 }
 
 @media (min-width: 1024px) {
+  /* Frame d1: the strip is fixed to the window bottom, full width behind a hairline,
+     its content on the page's 880 px column; 1 + 14 + 49 + 14 = 78 px high */
   .select-slot {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
     display: flex;
     align-items: center;
     justify-content: space-between;
     gap: 16px;
+    margin: 0;
+    padding: 14px max(0px, calc((100% - 880px) / 2));
+    border-top: 1px solid var(--hairline);
+  }
+
+  /* The strip takes no room in the flow: keep the last row 16 px clear of it
+     (78 strip + 16 gap - the page's own 32 px bottom padding) */
+  .selecting {
+    padding-bottom: 62px;
   }
 
   .select-summary {
@@ -213,7 +228,9 @@
     grid-template-columns: auto auto;
   }
 
-  .sbtn {
+  /* d1: «Avbryt» 97 px, «Slett 3 oppgaver» 168 px. Scoped so the base .sbtn rule below,
+     which comes later in the file, does not win back its 12 px */
+  .select-actions .sbtn {
     padding: 0 22px;
   }
 

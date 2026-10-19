@@ -75,7 +75,7 @@
   @if (!loading() && !error()) {
     <!-- Rule 4: from 1024 px today's work on the left, what is done and every chore on the right;
          on the phone the two columns are one list in the same order -->
-    <div [class.cols]="!selecting()">
+    <div [class.cols]="!selecting()" [class.selecting]="selecting()">
       <div class="col-a">
         @if (selecting()) {
           <!-- Some did not go: the overdue card, and what failed stays chosen (ST-1343, e2) -->
