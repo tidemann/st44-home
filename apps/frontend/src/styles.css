@@ -609,15 +609,46 @@ h6 {
   font-weight: 600;
 }
 
+/* Diddit's own 24-hour time field (ST-1520): rule 5's field, 107 px at the right of the row */
 .diddit-date-time .form-input {
-  width: auto;
+  flex: none;
+  width: 107px;
   height: 49px;
+  padding: 0 16px;
   border: 1.5px solid var(--text-muted);
   border-radius: var(--r-card);
+  background: var(--surface);
+  color: var(--text);
+  font-size: 16px;
+  font-variant-numeric: tabular-nums;
 }
 
-.diddit-date-time .form-input::-webkit-calendar-picker-indicator {
-  display: none;
+/* The closed «Frist» field shows Diddit text, never the browser's own format (ST-1520). The
+   text lies over the input (the directive sizes it); the input's own text is transparent. */
+.diddit-date-text {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  padding: 0 40px 0 calc(var(--space-md) + 2px);
+  overflow: hidden;
+  color: var(--text);
+  font-family: var(--font-body);
+  font-size: var(--font-size-base);
+  white-space: nowrap;
+  pointer-events: none;
+}
+
+.diddit-date-text.empty {
+  color: var(--text-muted);
+}
+
+input.diddit-date-field {
+  color: transparent;
+}
+
+input.diddit-date-field::-webkit-datetime-edit {
+  opacity: 0;
 }
 
 .diddit-date-done {
