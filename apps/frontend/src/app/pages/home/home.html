@@ -155,14 +155,13 @@
               (open)="onEditTask(task.id)"
             />
           } @empty {
-            <div class="empty empty--left">
-              <p class="empty-title" i18n="@@home.noneDoneToday">
-                Ingen oppgaver er haket av i dag
-              </p>
-              <p class="empty-sub" i18n="@@home.noneDoneTodayDescription">
-                Når noen haker av en oppgave, dukker den opp her.
-              </p>
-            </div>
+            <app-empty-group
+              [roomy]="true"
+              i18n-heading="@@home.noneDoneToday"
+              heading="Ingen oppgaver er haket av i dag"
+              i18n-hint="@@home.noneDoneTodayDescription"
+              hint="Når noen haker av en oppgave, dukker den opp her."
+            />
           }
           <ng-container
             *ngTemplateOutlet="showMore; context: { group: 'done', tasks: doneToday() }"

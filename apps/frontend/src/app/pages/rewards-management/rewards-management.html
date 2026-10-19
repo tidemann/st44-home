@@ -172,14 +172,12 @@
           <!-- Rule 7: from 1024 px an empty group keeps its heading and gets the white card -->
           <section class="req-waiting desk-empty" aria-labelledby="waiting-empty-heading">
             <h2 id="waiting-empty-heading" i18n="@@rewards.waitingHeading">Venter på svar</h2>
-            <div class="empty-card" role="status">
-              <p class="empty-card-title" i18n="@@rewards.noneWaiting">
-                Ingen ønsker venter på svar
-              </p>
-              <p class="empty-card-sub" i18n="@@rewards.noneWaitingHint">
-                Når et barn ber om en belønning, kommer den her.
-              </p>
-            </div>
+            <app-empty-group
+              i18n-heading="@@rewards.noneWaiting"
+              heading="Ingen ønsker venter på svar"
+              i18n-hint="@@rewards.noneWaitingHint"
+              hint="Når et barn ber om en belønning, kommer den her."
+            />
           </section>
         }
 
@@ -211,12 +209,12 @@
         } @else {
           <section class="req-give desk-empty" aria-labelledby="give-empty-heading">
             <h2 id="give-empty-heading" i18n="@@rewards.toGiveHeading">Skal gis</h2>
-            <div class="empty-card" role="status">
-              <p class="empty-card-title" i18n="@@rewards.noneToGive">Ingenting skal gis nå</p>
-              <p class="empty-card-sub" i18n="@@rewards.noneToGiveHint">
-                Når du sier ja til et ønske, ligger det her til du har gitt det.
-              </p>
-            </div>
+            <app-empty-group
+              i18n-heading="@@rewards.noneToGive"
+              heading="Ingenting skal gis nå"
+              i18n-hint="@@rewards.noneToGiveHint"
+              hint="Når du sier ja til et ønske, ligger det her til du har gitt det."
+            />
           </section>
         }
 
@@ -240,14 +238,12 @@
         } @else {
           <section class="req-history desk-empty" aria-labelledby="history-empty-heading">
             <h2 id="history-empty-heading" i18n="@@rewards.historyHeading">Tidligere</h2>
-            <div class="empty-card" role="status">
-              <p class="empty-card-title" i18n="@@rewards.noHistory">
-                Ingen ønsker er avgjort ennå
-              </p>
-              <p class="empty-card-sub" i18n="@@rewards.noHistoryHint">
-                Det du har gitt eller sagt nei til, samles her.
-              </p>
-            </div>
+            <app-empty-group
+              i18n-heading="@@rewards.noHistory"
+              heading="Ingen ønsker er avgjort ennå"
+              i18n-hint="@@rewards.noHistoryHint"
+              hint="Det du har gitt eller sagt nei til, samles her."
+            />
           </section>
         }
       }

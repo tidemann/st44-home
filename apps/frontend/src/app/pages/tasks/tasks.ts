@@ -25,6 +25,7 @@ import { Modal } from '../../components/modals/modal/modal';
 import { PageComponent } from '../../components/page/page';
 import { ChoreRow } from '../../components/poeng/chore-row/chore-row';
 import { GroupLabel } from '../../components/poeng/group-label/group-label';
+import { EmptyGroup } from '../../components/poeng/empty-group/empty-group';
 import { capitalize, clockTime, dayWord } from '../../utils/poeng-format';
 import { hasNoChildrenLeft } from '../../utils/task-children';
 import type { Task, Child, Assignment } from '@st44/types';
@@ -62,7 +63,15 @@ const COUNT_WORDS = [
  */
 @Component({
   selector: 'app-tasks',
-  imports: [TaskFormModal, ReassignTaskModal, Modal, PageComponent, ChoreRow, GroupLabel],
+  imports: [
+    TaskFormModal,
+    ReassignTaskModal,
+    Modal,
+    PageComponent,
+    ChoreRow,
+    GroupLabel,
+    EmptyGroup,
+  ],
   templateUrl: './tasks.html',
   styleUrl: './tasks.css',
   changeDetection: ChangeDetectionStrategy.OnPush,

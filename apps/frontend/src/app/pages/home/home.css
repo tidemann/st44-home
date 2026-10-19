@@ -139,11 +139,6 @@ app-failed-tasks-section {
 
 /* ===== DESKTOP A, 1024 px AND WIDER (guide: Desktop and tablet — layout A) ===== */
 
-/* The empty "Gjort i dag" card (desktop-14): left-aligned, 70 px, in the column's width */
-.empty--left {
-  text-align: left;
-}
-
 @media (min-width: 1024px) {
   /* Two independent stacks, 428 + 24 + 428, starting at the same y */
   .cols {

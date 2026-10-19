@@ -218,14 +218,12 @@
                  «Alle oppgaver» stays where the picture draws it; the phone shows nothing here -->
             <div class="desk-empty">
               <app-group-label i18n-label="@@tasks.doneGroup" label="Gjort i dag" />
-              <div class="empty empty--left" role="status">
-                <p class="empty-title" i18n="@@tasks.noneDoneToday">
-                  Ingen oppgaver er haket av i dag
-                </p>
-                <p class="empty-sub" i18n="@@tasks.noneDoneTodayHint">
-                  Når noen haker av en oppgave, dukker den opp her.
-                </p>
-              </div>
+              <app-empty-group
+                i18n-heading="@@tasks.noneDoneToday"
+                heading="Ingen oppgaver er haket av i dag"
+                i18n-hint="@@tasks.noneDoneTodayHint"
+                hint="Når noen haker av en oppgave, dukker den opp her."
+              />
             </div>
           }
 

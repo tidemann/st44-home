@@ -18,6 +18,7 @@ import { FailedTasksSectionComponent } from '../../components/failed-tasks-secti
 import { PageComponent } from '../../components/page/page';
 import { ChoreRow } from '../../components/poeng/chore-row/chore-row';
 import { GroupLabel } from '../../components/poeng/group-label/group-label';
+import { EmptyGroup } from '../../components/poeng/empty-group/empty-group';
 import { ChildPointsCard } from '../../components/poeng/child-points-card/child-points-card';
 import type { ChoreState } from '../../components/poeng/chore-meter/chore-meter';
 import { TaskService } from '../../services/task.service';
@@ -72,6 +73,7 @@ export function childCardColumns(count: number): number {
     PageComponent,
     ChoreRow,
     GroupLabel,
+    EmptyGroup,
     ChildPointsCard,
     TaskFormModal,
     FailedTasksSectionComponent,
