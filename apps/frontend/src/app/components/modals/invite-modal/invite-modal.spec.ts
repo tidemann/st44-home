@@ -4,6 +4,7 @@ import { InviteModal, InviteMemberData } from './invite-modal';
 function setDesktop(matches: boolean): void {
   Object.defineProperty(window, 'matchMedia', {
     configurable: true,
+    writable: true,
     value: () => ({ matches, addEventListener: vi.fn(), removeEventListener: vi.fn() }),
   });
 }
@@ -91,7 +92,11 @@ describe('InviteModal', () => {
       fixture.detectChanges();
     });
     afterEach(() => {
-      Object.defineProperty(window, 'matchMedia', { configurable: true, value: realMatchMedia });
+      Object.defineProperty(window, 'matchMedia', {
+        configurable: true,
+        writable: true,
+        value: realMatchMedia,
+      });
     });
 
     it('keeps the main button live while the form is empty (ST-1489 rule 4)', () => {

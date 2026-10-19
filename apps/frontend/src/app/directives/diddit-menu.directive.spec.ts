@@ -24,6 +24,7 @@ class Host {
 function setDesktop(matches: boolean): void {
   Object.defineProperty(window, 'matchMedia', {
     configurable: true,
+    writable: true,
     value: () => ({ matches, addEventListener: vi.fn(), removeEventListener: vi.fn() }),
   });
 }
@@ -47,7 +48,11 @@ describe('Diddit menus in popups (ST-1489, rule 6)', () => {
   const realMatchMedia = window.matchMedia;
 
   afterEach(() => {
-    Object.defineProperty(window, 'matchMedia', { configurable: true, value: realMatchMedia });
+    Object.defineProperty(window, 'matchMedia', {
+      configurable: true,
+      writable: true,
+      value: realMatchMedia,
+    });
   });
 
   describe('on desktop', () => {
