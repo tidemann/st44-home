@@ -5,9 +5,9 @@
 //   -> give the child a login -> log in as the child (form)
 //
 // It goes through the public address and the gate (BASE), with the one-off gate
-// login the workflow makes (SMOKE_PASS); Stig's password is his alone. A screenshot of every step goes to
-// OUT, uploaded as the run's artifact. Leaves its test family in staging; a reset
-// removes it.
+// login the workflow makes (SMOKE_PASS); Stig's password is his alone. A screenshot
+// of every step goes to OUT, uploaded as the run's artifact. Leaves its test family
+// in staging; a reset removes it.
 const fs = require('fs');
 const path = require('path');
 const { chromium } = require('playwright');
