@@ -4,15 +4,15 @@
 //   register a parent (form) -> log in (form) -> family -> add a child and a task
 //   -> give the child a login -> log in as the child (form)
 //
-// It talks to the staging frontend through an ssh tunnel (BASE), not through the
-// gate: the gate's password is Stig's alone. A screenshot of every step goes to
+// It goes through the public address and the gate (BASE), with the one-off gate
+// login the workflow makes (SMOKE_PASS); Stig's password is his alone. A screenshot of every step goes to
 // OUT, uploaded as the run's artifact. Leaves its test family in staging; a reset
 // removes it.
 const fs = require('fs');
 const path = require('path');
 const { chromium } = require('playwright');
 
-const BASE = process.env.BASE || 'http://localhost:18080';
+const BASE = process.env.BASE || 'https://home-staging.st44.no';
 const OUT = process.env.OUT || 'smoke-out';
 fs.mkdirSync(OUT, { recursive: true });
 
@@ -61,6 +61,7 @@ async function api(page, method, url, body) {
     locale: 'nb-NO',
     timezoneId: 'Europe/Oslo',
     serviceWorkers: 'block',
+    httpCredentials: { username: 'smoke', password: process.env.SMOKE_PASS || '' },
   };
   try {
     // 1. Register a new parent with the form.

@@ -255,9 +255,8 @@ jobs:
           } >> "$GITHUB_STEP_SUMMARY"
 
   # The path Stig tests, from the parent's sign-up to the child's login, with a
-  # screenshot of each step (artifact `staging-smoke`). It reaches the staging
-  # frontend container over an ssh tunnel, so it needs no gate password; the
-  # public gate is checked separately above. Leaves one test family behind.
+  # screenshot of each step (artifact `staging-smoke`). It goes through the public
+  # address and the gate, with a one-off gate login. Leaves one test family behind.
   smoke:
     needs: deploy
     if: inputs.smoke
@@ -286,25 +285,20 @@ jobs:
           EOF2
           chmod 600 ~/.ssh/config
 
-      # The host cannot reach container IPs directly, so a throw-away socat on
-      # the staging network listens on the host's loopback only, and the runner
-      # reaches that over ssh. Removed again in the last step.
-      - name: Open a tunnel to the staging frontend
+      # A one-off gate login for this run only, next to Stig's: random, masked,
+      # never stored, and removed again in the last step. The htpasswd file is
+      # bind-mounted, so it is rewritten in place (same inode), never replaced.
+      - name: Add a one-off smoke login to the gate
         run: |
           set -euo pipefail
-          ssh deploy-target 'set -e
-            net="$(docker inspect -f "{{range \$k, \$v := .NetworkSettings.Networks}}{{\$k}}{{end}}" st44-staging-frontend)"
-            docker rm -f st44-staging-smoke >/dev/null 2>&1 || true
-            docker run -d --rm --name st44-staging-smoke --network "$net" -p 127.0.0.1:3211:80 \
-              alpine/socat tcp-listen:80,fork,reuseaddr tcp-connect:frontend:80 >/dev/null
-            sleep 1
-            echo "socat on $net, host sees: $(curl -fsS http://127.0.0.1:3211/health)"'
-          ssh -f -N -o ExitOnForwardFailure=yes -L 18080:127.0.0.1:3211 deploy-target
-          for i in $(seq 1 10); do
-            curl -fsS http://localhost:18080/health && exit 0
-            sleep 2
-          done
-          exit 1
+          pass="$(openssl rand -hex 16)"
+          echo "::add-mask::${pass}"
+          echo "SMOKE_PASS=${pass}" >> "$GITHUB_ENV"
+          printf 'smoke:%s\n' "$(openssl passwd -apr1 "${pass}")" | ssh deploy-target \
+            'cd ~/st44-staging && { grep -v "^smoke:" htpasswd || true; cat; } > htpasswd.new && cat htpasswd.new > htpasswd && rm htpasswd.new'
+          code="$(curl -sS -o /dev/null -w '%{http_code}' -u "smoke:${pass}" "https://${STAGING_HOST}/no/")"
+          echo "public /no/ with the smoke login: ${code}"
+          [ "${code}" = "200" ]
 
       - name: Install Playwright
         working-directory: infra/staging
@@ -316,7 +310,7 @@ jobs:
       - name: Run the smoke path
         working-directory: infra/staging
         env:
-          BASE: http://localhost:18080
+          BASE: https://${{ env.STAGING_HOST }}
           OUT: smoke-out
         run: node smoke.cjs
 
@@ -328,6 +322,8 @@ jobs:
           path: infra/staging/smoke-out/
           if-no-files-found: warn
 
-      - name: Remove the tunnel
+      - name: Remove the smoke login
         if: always()
-        run: ssh deploy-target 'docker rm -f st44-staging-smoke >/dev/null 2>&1 || true'
+        run: |
+          ssh deploy-target \
+            'cd ~/st44-staging && { grep -v "^smoke:" htpasswd || true; } > htpasswd.new && cat htpasswd.new > htpasswd && rm htpasswd.new'
