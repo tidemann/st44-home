@@ -94,7 +94,9 @@
           </div>
           <div class="cell role" role="cell">{{ getRoleLabel(invitation.role) }}</div>
           <div class="cell status" role="cell">
-            <span class="badge" [class]="getStatusClass(invitation.status)">
+            <span
+              [class]="desktop() ? 'chip' : 'badge ' + getStatusClass(invitation.status)"
+            >
               {{ getStatusLabel(invitation.status) }}
             </span>
           </div>

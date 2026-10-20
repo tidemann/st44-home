@@ -114,4 +114,33 @@ describe('InvitationsSentListComponent e-mail (ST-1551: break only before «@»)
     expect(cell.getAttribute('title')).toBe('eirik-st1542-invitasjon-test@example.com');
     expect(cell.textContent?.trim()).toBe('eirik-st1542-invitasjon-test@example.com');
   });
+
+  // ST-1621: from 1024 px the status badge is the guide's chip; the phone keeps its badge
+  for (const [desktop, expected] of [
+    [true, 'chip'],
+    [false, 'badge badge-pending'],
+  ] as const) {
+    it(`renders «Venter» as ${expected} when desktop is ${desktop}`, async () => {
+      const original = window.matchMedia;
+      window.matchMedia = vi.fn((query: string) => ({
+        matches: desktop,
+        media: query,
+        addEventListener: vi.fn(),
+        removeEventListener: vi.fn(),
+      })) as unknown as typeof window.matchMedia;
+      try {
+        const fixture = TestBed.createComponent(InvitationsSentListComponent);
+        fixture.detectChanges();
+        await fixture.whenStable();
+        fixture.detectChanges();
+        const badge = (fixture.nativeElement as HTMLElement).querySelector(
+          '.table-row .cell.status span',
+        ) as HTMLElement;
+        expect(badge.className).toBe(expected);
+        expect(badge.textContent?.trim()).toBe('Venter');
+      } finally {
+        window.matchMedia = original;
+      }
+    });
+  }
 });
