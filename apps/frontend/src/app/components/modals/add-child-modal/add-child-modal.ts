@@ -1,7 +1,6 @@
 import { Component, input, output, signal, inject, ChangeDetectionStrategy } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Modal } from '../modal/modal';
-import { DidditMenu } from '../../../directives/diddit-menu.directive';
 import { isDesktopSignal } from '../../../utils/desktop-query';
 
 /**
@@ -10,7 +9,6 @@ import { isDesktopSignal } from '../../../utils/desktop-query';
 export interface AddChildData {
   name: string;
   age: number | null;
-  avatar: string;
 }
 
 /**
@@ -19,15 +17,13 @@ export interface AddChildData {
  * Allows parents to add children to the household:
  * - Child name (required)
  * - Age (optional, 1-18)
- * - Avatar emoji (optional, default: 😊)
  *
  * Emits child data for parent component to handle API call.
  */
 @Component({
   selector: 'app-add-child-modal',
-  imports: [Modal, DidditMenu, ReactiveFormsModule],
+  imports: [Modal, ReactiveFormsModule],
   templateUrl: './add-child-modal.html',
-  styleUrl: './add-child-modal.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AddChildModal {
@@ -59,29 +55,12 @@ export class AddChildModal {
   protected readonly form = this.fb.group({
     name: ['', [Validators.required, Validators.minLength(1), Validators.maxLength(255)]],
     age: [null as number | null, [Validators.min(1), Validators.max(18)]],
-    avatar: ['😊'],
   });
 
   /**
    * Submission loading state
    */
   protected readonly submitting = signal(false);
-
-  /**
-   * Available avatar emojis
-   */
-  protected readonly avatarOptions: { value: string; label: string }[] = [
-    { value: '😊', label: '😊 Happy' },
-    { value: '🎮', label: '🎮 Gamer' },
-    { value: '⚽', label: '⚽ Sports' },
-    { value: '📚', label: '📚 Bookworm' },
-    { value: '🎨', label: '🎨 Artist' },
-    { value: '🎵', label: '🎵 Music' },
-    { value: '🚀', label: '🚀 Space' },
-    { value: '🐶', label: '🐶 Dog Lover' },
-    { value: '🐱', label: '🐱 Cat Lover' },
-    { value: '🌟', label: '🌟 Star' },
-  ];
 
   /**
    * Handle form submission
@@ -104,18 +83,17 @@ export class AddChildModal {
     this.childAdded.emit({
       name: formValue.name!.trim(),
       age: formValue.age ?? null,
-      avatar: formValue.avatar!,
     });
 
     // Reset form
-    this.form.reset({ age: null, avatar: '😊' });
+    this.form.reset({ age: null });
   }
 
   /**
    * Handle modal closeRequested
    */
   onClose(): void {
-    this.form.reset({ age: null, avatar: '😊' });
+    this.form.reset({ age: null });
     this.closeRequested.emit();
   }
 
