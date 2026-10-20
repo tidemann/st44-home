@@ -176,6 +176,19 @@ jobs:
             sleep 2
           done
           docker exec st44-staging-db /usr/local/bin/run-migrations.sh
+          # The gate's host port must be free (another service may hold it).
+          # Stop our own gate first, then name the holder and some free ports.
+          docker compose rm -sf gate
+          if [ -n "$(ss -ltnH "( sport = :${STAGING_PORT} )")" ]; then
+            echo "::error::host port ${STAGING_PORT} is already in use:"
+            ss -ltnH "( sport = :${STAGING_PORT} )"
+            echo "free ports in 3201-3299:"
+            for p in $(seq 3201 3299); do
+              [ -z "$(ss -ltnH "( sport = :${p} )")" ] && printf '%s ' "$p"
+            done
+            echo
+            exit 1
+          fi
           docker compose up -d --force-recreate backend frontend gate
           for i in $(seq 1 30); do
             if curl -fsS "http://localhost:${STAGING_PORT}/health" >/dev/null 2>&1; then
