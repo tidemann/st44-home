@@ -13,7 +13,7 @@ runs on the same host as live and shares nothing with it.
 | secrets    | `JWT_SECRET`, host `.env`                      | `STAGING_JWT_SECRET`, `STAGING_DB_PASSWORD`, `STAGING_BASIC_AUTH`   |
 | e-mail     | SendGrid                                       | none, see below                                                     |
 | deploy     | push to `main` (`deploy.yml`)                  | by hand (`deploy-staging.yml`)                                      |
-| host port  | 3100                                           | 3200 (the gate only)                                                |
+| host port  | none (nginx reaches the containers by name)    | 3210 (the gate only; 3200 is taken on the host)                     |
 
 Files: `infra/staging/docker-compose.yml`, `infra/staging/gate.conf.template`,
 `.github/workflows/deploy-staging.yml`.
@@ -94,7 +94,7 @@ Done once; the workflow fails with a clear message until it is.
    `*.home.st44.no`, so `staging.home.st44.no` would need a paid or separate
    certificate.
 3. **Host TLS proxy:** a site for `home-staging.st44.no` that forwards to
-   `http://<host>:3200`, the same way `home.st44.no` forwards to 3100, passing the
+   `http://host.docker.internal:3210` with one `location /` (no upstreams), passing the
    `Host` and `CF-Visitor` headers through. No auth in the proxy; the gate does it.
 4. Run the workflow once with `reset=true`.
 

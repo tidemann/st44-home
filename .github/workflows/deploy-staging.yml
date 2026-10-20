@@ -34,7 +34,7 @@ env:
   IMAGE_PREFIX: ghcr.io/${{ github.repository_owner }}/${{ github.event.repository.name }}
   STAGING_DIR: st44-staging
   STAGING_HOST: home-staging.st44.no
-  STAGING_PORT: '3200'
+  STAGING_PORT: '3210'
 
 jobs:
   build:

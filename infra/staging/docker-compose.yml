@@ -105,7 +105,7 @@ services:
       - ./gate.conf.template:/etc/nginx/templates/default.conf.template:ro
       - ./htpasswd:/etc/nginx/htpasswd:ro
     ports:
-      - '${STAGING_PORT:-3200}:80'
+      - '${STAGING_PORT:-3210}:80'
     depends_on:
       - frontend
     logging: *logging
