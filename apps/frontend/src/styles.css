@@ -1132,6 +1132,11 @@ input.diddit-date-field::-webkit-datetime-edit {
   white-space: nowrap;
 }
 
+/* On a white card the unselected chip takes the track fill, or it has no edge (ST-1621) */
+.chip.in-card {
+  background: var(--track);
+}
+
 .chip.on {
   background: var(--text);
   color: var(--surface);

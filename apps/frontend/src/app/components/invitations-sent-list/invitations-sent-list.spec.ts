@@ -117,7 +117,7 @@ describe('InvitationsSentListComponent e-mail (ST-1551: break only before «@»)
 
   // ST-1621: from 1024 px the status badge is the guide's chip; the phone keeps its badge
   for (const [desktop, expected] of [
-    [true, 'chip'],
+    [true, 'chip in-card'],
     [false, 'badge badge-pending'],
   ] as const) {
     it(`renders «Venter» as ${expected} when desktop is ${desktop}`, async () => {
