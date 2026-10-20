@@ -101,6 +101,27 @@ describe('ChildDetailsModal', () => {
       expect(component['editMode']()).toBe(false);
     });
 
+    it('saves an emptied birth year as null, so the age is removed (ST-1624)', async () => {
+      component.enterEditMode();
+      component['form'].patchValue({ name: 'Test Child', birthYear: null });
+      fixture.detectChanges();
+
+      await component.saveEdit();
+
+      expect(mockChildrenService.updateChild).toHaveBeenCalledWith('household-1', 'child-1', {
+        name: 'Test Child',
+        birthYear: null,
+      });
+    });
+
+    it('opens a child without a birth year with the field empty, not a made-up year', () => {
+      fixture.componentRef.setInput('child', { ...mockChild, birthYear: null });
+      component.enterEditMode();
+
+      expect(component['form'].value.birthYear).toBeNull();
+      expect(component['form'].valid).toBe(true);
+    });
+
     it('should not save if form is invalid', async () => {
       component.enterEditMode();
       component['form'].patchValue({ name: '', birthYear: 2015 });

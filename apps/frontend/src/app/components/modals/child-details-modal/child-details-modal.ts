@@ -115,8 +115,8 @@ export class ChildDetailsModal {
   protected readonly form = this.fb.group({
     name: ['', [Validators.required, Validators.minLength(1), Validators.maxLength(100)]],
     birthYear: [
-      2015,
-      [Validators.required, Validators.min(1900), Validators.max(new Date().getFullYear())],
+      null as number | null,
+      [Validators.min(1900), Validators.max(new Date().getFullYear())],
     ],
   });
 
@@ -189,7 +189,7 @@ export class ChildDetailsModal {
     if (child) {
       this.form.patchValue({
         name: child.name,
-        birthYear: child.birthYear || this.currentYear - 10,
+        birthYear: child.birthYear ?? null,
       });
       this.editMode.set(true);
       this.errorMessage.set(null);
@@ -225,7 +225,7 @@ export class ChildDetailsModal {
     try {
       await this.childrenService.updateChild(this.householdId(), child.id, {
         name: this.form.value.name!.trim(),
-        birthYear: this.form.value.birthYear!,
+        birthYear: this.form.value.birthYear ?? null,
       });
 
       this.editMode.set(false);

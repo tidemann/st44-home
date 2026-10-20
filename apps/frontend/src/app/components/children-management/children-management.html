@@ -65,7 +65,9 @@
       </div>
 
       <div class="form-group">
-        <label for="add-birth-year" i18n="@@childrenManagement.birthYearLabel">Fødselsår *</label>
+        <label for="add-birth-year" i18n="@@childrenManagement.birthYearLabel"
+          >Fødselsår (valgfritt)</label
+        >
         <input
           id="add-birth-year"
           type="number"
@@ -73,13 +75,9 @@
           [min]="2000"
           [max]="currentYear"
           [class.invalid]="addForm.get('birthYear')?.invalid && addForm.get('birthYear')?.touched"
-          aria-required="true"
         />
         @if (addForm.get('birthYear')?.invalid && addForm.get('birthYear')?.touched) {
           <span class="error-text" role="alert">
-            @if (addForm.get('birthYear')?.errors?.['required']) {
-              <span i18n="@@childrenManagement.birthYearRequired">Fødselsår er påkrevd</span>
-            }
             @if (
               addForm.get('birthYear')?.errors?.['min'] || addForm.get('birthYear')?.errors?.['max']
             ) {
@@ -170,7 +168,7 @@
                 <label
                   [attr.for]="'edit-birth-year-' + child.id"
                   i18n="@@childrenManagement.birthYearLabel"
-                  >Fødselsår *</label
+                  >Fødselsår (valgfritt)</label
                 >
                 <input
                   [id]="'edit-birth-year-' + child.id"
@@ -181,7 +179,6 @@
                   [class.invalid]="
                     editForm.get('birthYear')?.invalid && editForm.get('birthYear')?.touched
                   "
-                  aria-required="true"
                 />
                 @if (editForm.get('birthYear')?.invalid && editForm.get('birthYear')?.touched) {
                   <span class="error-text" role="alert" i18n="@@childrenManagement.birthYearRange">

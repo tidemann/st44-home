@@ -9,7 +9,7 @@ import { isDesktopSignal } from '../../../utils/desktop-query';
  */
 export interface AddChildData {
   name: string;
-  age: number;
+  age: number | null;
   avatar: string;
 }
 
@@ -18,7 +18,7 @@ export interface AddChildData {
  *
  * Allows parents to add children to the household:
  * - Child name (required)
- * - Age (required, 1-18)
+ * - Age (optional, 1-18)
  * - Avatar emoji (optional, default: 😊)
  *
  * Emits child data for parent component to handle API call.
@@ -58,7 +58,7 @@ export class AddChildModal {
    */
   protected readonly form = this.fb.group({
     name: ['', [Validators.required, Validators.minLength(1), Validators.maxLength(255)]],
-    age: [10, [Validators.required, Validators.min(1), Validators.max(18)]],
+    age: [null as number | null, [Validators.min(1), Validators.max(18)]],
     avatar: ['😊'],
   });
 
@@ -103,19 +103,19 @@ export class AddChildModal {
     // Emit child data
     this.childAdded.emit({
       name: formValue.name!.trim(),
-      age: formValue.age!,
+      age: formValue.age ?? null,
       avatar: formValue.avatar!,
     });
 
     // Reset form
-    this.form.reset({ age: 10, avatar: '😊' });
+    this.form.reset({ age: null, avatar: '😊' });
   }
 
   /**
    * Handle modal closeRequested
    */
   onClose(): void {
-    this.form.reset({ age: 10, avatar: '😊' });
+    this.form.reset({ age: null, avatar: '😊' });
     this.closeRequested.emit();
   }
 

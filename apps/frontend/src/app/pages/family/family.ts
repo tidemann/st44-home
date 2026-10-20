@@ -298,13 +298,10 @@ export class Family implements OnInit {
     }
 
     try {
-      // Convert age to birth year
-      const currentYear = new Date().getFullYear();
-      const birthYear = currentYear - data.age;
-
+      // Convert age to birth year; no age means no birth year (ST-1624)
       await this.childrenService.createChild(householdId, {
         name: data.name,
-        birthYear,
+        birthYear: data.age == null ? undefined : new Date().getFullYear() - data.age,
       });
       this.addChildModalOpen.set(false);
 

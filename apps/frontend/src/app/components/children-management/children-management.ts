@@ -30,19 +30,13 @@ export class ChildrenManagementComponent implements OnInit {
   // Add child form
   addForm = this.fb.group({
     name: ['', [Validators.required, Validators.minLength(2), Validators.maxLength(100)]],
-    birthYear: [
-      this.currentYear - 5,
-      [Validators.required, Validators.min(2000), Validators.max(this.currentYear)],
-    ],
+    birthYear: [null as number | null, [Validators.min(2000), Validators.max(this.currentYear)]],
   });
 
   // Edit child form
   editForm = this.fb.group({
     name: ['', [Validators.required, Validators.minLength(2), Validators.maxLength(100)]],
-    birthYear: [
-      this.currentYear,
-      [Validators.required, Validators.min(2000), Validators.max(this.currentYear)],
-    ],
+    birthYear: [null as number | null, [Validators.min(2000), Validators.max(this.currentYear)]],
   });
 
   ngOnInit() {
@@ -85,7 +79,7 @@ export class ChildrenManagementComponent implements OnInit {
     if (!this.isAdding()) {
       this.addForm.reset({
         name: '',
-        birthYear: this.currentYear - 5,
+        birthYear: null,
       });
     }
   }
@@ -116,14 +110,14 @@ export class ChildrenManagementComponent implements OnInit {
     try {
       const data = {
         name: this.addForm.value.name!,
-        birthYear: this.addForm.value.birthYear!,
+        birthYear: this.addForm.value.birthYear ?? undefined,
       };
 
       await this.childrenService.createChild(householdId, data);
       this.showSuccessMessage($localize`:@@childrenManagement.childAdded:Barn lagt til`);
       this.addForm.reset({
         name: '',
-        birthYear: this.currentYear - 5,
+        birthYear: null,
       });
       this.isAdding.set(false);
       await this.loadChildren();
@@ -144,7 +138,7 @@ export class ChildrenManagementComponent implements OnInit {
     this.editingId.set(child.id);
     this.editForm.patchValue({
       name: child.name,
-      birthYear: child.birthYear,
+      birthYear: child.birthYear ?? null,
     });
   }
 
@@ -179,7 +173,7 @@ export class ChildrenManagementComponent implements OnInit {
     try {
       const data = {
         name: this.editForm.value.name!,
-        birthYear: this.editForm.value.birthYear!,
+        birthYear: this.editForm.value.birthYear ?? null,
       };
 
       await this.childrenService.updateChild(householdId, childId, data);
