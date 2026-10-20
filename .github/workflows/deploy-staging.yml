@@ -6,6 +6,7 @@ name: Deploy staging
 #
 #   gh workflow run deploy-staging.yml -f ref=<branch>               # deploy a branch
 #   gh workflow run deploy-staging.yml -f ref=main -f reset=true     # wipe to empty
+#   gh workflow run deploy-staging.yml -f ref=main -f smoke=true     # and run the sign-up path
 #
 # This workflow never touches the live stack: it writes only to ~/st44-staging in
 # the deploy user's home and only runs `docker compose -p st44-staging`. It never
@@ -20,6 +21,10 @@ on:
         default: main
       reset:
         description: 'Delete the staging database and start empty.'
+        type: boolean
+        default: false
+      smoke:
+        description: 'Then register a parent, add a child and a task, log in as the child; screenshots as artifact.'
         type: boolean
         default: false
 
@@ -248,3 +253,65 @@ jobs:
             echo "| reset | \`${RESET}\` |"
             echo "| address | https://${STAGING_HOST} |"
           } >> "$GITHUB_STEP_SUMMARY"
+
+  # The path Stig tests, from the parent's sign-up to the child's login, with a
+  # screenshot of each step (artifact `staging-smoke`). It reaches the staging
+  # frontend container over an ssh tunnel, so it needs no gate password; the
+  # public gate is checked separately above. Leaves one test family behind.
+  smoke:
+    needs: deploy
+    if: inputs.smoke
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout this workflow's ref
+        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+
+      - name: Configure ssh
+        run: |
+          set -euo pipefail
+          mkdir -p ~/.ssh
+          chmod 700 ~/.ssh
+          printf '%s\n' "${{ secrets.DEPLOY_KEY }}" > ~/.ssh/id_deploy
+          chmod 600 ~/.ssh/id_deploy
+          ssh-keyscan -H '${{ secrets.SERVER_HOST }}' >> ~/.ssh/known_hosts
+          test -s ~/.ssh/known_hosts
+          cat > ~/.ssh/config <<EOF2
+          Host deploy-target
+            HostName ${{ secrets.SERVER_HOST }}
+            User ${{ secrets.SERVER_USER }}
+            IdentityFile ~/.ssh/id_deploy
+            IdentitiesOnly yes
+            StrictHostKeyChecking yes
+            BatchMode yes
+          EOF2
+          chmod 600 ~/.ssh/config
+
+      - name: Open a tunnel to the staging frontend
+        run: |
+          set -euo pipefail
+          ip="$(ssh deploy-target "docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' st44-staging-frontend")"
+          echo "staging frontend at ${ip}"
+          ssh -f -N -o ExitOnForwardFailure=yes -L "18080:${ip}:80" deploy-target
+          curl -fsS http://localhost:18080/health
+
+      - name: Install Playwright
+        working-directory: infra/staging
+        run: |
+          npm init -y >/dev/null
+          npm install --no-save --no-audit --no-fund playwright@1.57.0
+          npx playwright install --with-deps chromium
+
+      - name: Run the smoke path
+        working-directory: infra/staging
+        env:
+          BASE: http://localhost:18080
+          OUT: smoke-out
+        run: node smoke.cjs
+
+      - name: Upload the screenshots
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: staging-smoke
+          path: infra/staging/smoke-out/
+          if-no-files-found: warn
