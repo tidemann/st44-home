@@ -90,6 +90,7 @@ leaves staging**:
   ```bash
   docker logs st44-staging-backend 2>&1 | grep 'Invitation email'
   ```
+
 - There is no e-mail verification step in Diddit today.
 
 ## One-time setup
