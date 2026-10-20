@@ -286,13 +286,25 @@ jobs:
           EOF2
           chmod 600 ~/.ssh/config
 
+      # The host cannot reach container IPs directly, so a throw-away socat on
+      # the staging network listens on the host's loopback only, and the runner
+      # reaches that over ssh. Removed again in the last step.
       - name: Open a tunnel to the staging frontend
         run: |
           set -euo pipefail
-          ip="$(ssh deploy-target "docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' st44-staging-frontend")"
-          echo "staging frontend at ${ip}"
-          ssh -f -N -o ExitOnForwardFailure=yes -L "18080:${ip}:80" deploy-target
-          curl -fsS http://localhost:18080/health
+          ssh deploy-target 'set -e
+            net="$(docker inspect -f "{{range \$k, \$v := .NetworkSettings.Networks}}{{\$k}}{{end}}" st44-staging-frontend)"
+            docker rm -f st44-staging-smoke >/dev/null 2>&1 || true
+            docker run -d --rm --name st44-staging-smoke --network "$net" -p 127.0.0.1:3211:80 \
+              alpine/socat tcp-listen:80,fork,reuseaddr tcp-connect:frontend:80 >/dev/null
+            sleep 1
+            echo "socat on $net, host sees: $(curl -fsS http://127.0.0.1:3211/health)"'
+          ssh -f -N -o ExitOnForwardFailure=yes -L 18080:127.0.0.1:3211 deploy-target
+          for i in $(seq 1 10); do
+            curl -fsS http://localhost:18080/health && exit 0
+            sleep 2
+          done
+          exit 1
 
       - name: Install Playwright
         working-directory: infra/staging
@@ -315,3 +327,7 @@ jobs:
           name: staging-smoke
           path: infra/staging/smoke-out/
           if-no-files-found: warn
+
+      - name: Remove the tunnel
+        if: always()
+        run: ssh deploy-target 'docker rm -f st44-staging-smoke >/dev/null 2>&1 || true'
