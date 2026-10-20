@@ -31,13 +31,12 @@ describe('AddChildModal', () => {
     expect(component['form']).toBeTruthy();
     expect(component['form'].controls['name']).toBeTruthy();
     expect(component['form'].controls['age']).toBeTruthy();
-    expect(component['form'].controls['avatar']).toBeTruthy();
+    expect(component['form'].contains('avatar')).toBe(false);
   });
 
-  it('starts with an empty, optional age and avatar 😊 (ST-1624)', () => {
+  it('starts with an empty, optional age (ST-1624)', () => {
     expect(component['form'].value.age).toBeNull();
     expect(component['form'].controls['age'].valid).toBe(true);
-    expect(component['form'].value.avatar).toBe('😊');
   });
 
   it('emits age null when a child is added without an age (ST-1624)', () => {
@@ -49,7 +48,7 @@ describe('AddChildModal', () => {
     component['form'].patchValue({ name: 'Emma' });
     component.onSubmit();
 
-    expect(emittedData).toEqual({ name: 'Emma', age: null, avatar: '😊' });
+    expect(emittedData).toEqual({ name: 'Emma', age: null });
   });
 
   it('should validate age range (1-18)', () => {
@@ -71,13 +70,17 @@ describe('AddChildModal', () => {
       emittedData = data;
     });
 
-    component['form'].patchValue({ name: 'Emma', age: 12, avatar: '🎨' });
+    component['form'].patchValue({ name: 'Emma', age: 12 });
     component.onSubmit();
 
     expect(emittedData).toBeTruthy();
-    expect(emittedData!.name).toBe('Emma');
-    expect(emittedData!.age).toBe(12);
-    expect(emittedData!.avatar).toBe('🎨');
+    expect(emittedData).toEqual({ name: 'Emma', age: 12 });
+  });
+
+  it('shows no avatar emoji field', () => {
+    fixture.componentRef.setInput('open', true);
+    fixture.detectChanges();
+    expect(document.querySelector('#child-avatar')).toBeNull();
   });
 
   it('keeps the main button disabled on the phone while the form is empty (ST-1489)', () => {

@@ -44,7 +44,6 @@ export class FamilyPage extends BasePage {
   readonly addChildModal: Locator;
   readonly childNameInput: Locator;
   readonly childAgeInput: Locator;
-  readonly childAvatarSelect: Locator;
   readonly addChildSubmitButton: Locator;
   readonly addChildCancelButton: Locator;
 
@@ -101,9 +100,6 @@ export class FamilyPage extends BasePage {
     );
     this.childAgeInput = this.addChildModal.locator(
       'input[name="age"], input[type="number"], [data-testid="child-age-input"]',
-    );
-    this.childAvatarSelect = this.addChildModal.locator(
-      '.avatar-selector, [data-testid="avatar-selector"]',
     );
     this.addChildSubmitButton = this.addChildModal.locator(
       'button[type="submit"], button:has-text("Add"), button:has-text("Create")',
@@ -232,18 +228,10 @@ export class FamilyPage extends BasePage {
   /**
    * Add a child
    */
-  async addChild(name: string, age: number, avatar?: string): Promise<void> {
+  async addChild(name: string, age: number): Promise<void> {
     await this.openAddChildModal();
     await this.childNameInput.fill(name);
     await this.childAgeInput.fill(age.toString());
-
-    // Select avatar if provided and selector is available
-    if (avatar && (await this.childAvatarSelect.isVisible())) {
-      const avatarOption = this.childAvatarSelect.locator(`[data-avatar="${avatar}"]`);
-      if (await avatarOption.isVisible()) {
-        await avatarOption.click();
-      }
-    }
 
     await this.addChildSubmitButton.click();
     await this.addChildModal.waitFor({ state: 'hidden' });

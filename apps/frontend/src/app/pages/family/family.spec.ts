@@ -332,7 +332,6 @@ describe('Family', () => {
       const childData: AddChildData = {
         name: 'New Child',
         age: 10,
-        avatar: 'smile',
       };
 
       await component['onChildAdded'](childData);
@@ -350,7 +349,7 @@ describe('Family', () => {
     it('sends no birth year when the child is added without an age (ST-1624)', async () => {
       await component.ngOnInit();
 
-      await component['onChildAdded']({ name: 'No Age', age: null, avatar: 'smile' });
+      await component['onChildAdded']({ name: 'No Age', age: null });
 
       const payload = mockChildrenService.createChild.mock.calls.at(-1)![1];
       expect(payload).toEqual({ name: 'No Age' });
@@ -366,7 +365,6 @@ describe('Family', () => {
       const childData: AddChildData = {
         name: 'New Child',
         age: 8,
-        avatar: 'game',
       };
 
       await component['onChildAdded'](childData);
@@ -382,7 +380,6 @@ describe('Family', () => {
       const childData: AddChildData = {
         name: 'New Child',
         age: 10,
-        avatar: 'smile',
       };
 
       await component['onChildAdded'](childData);
