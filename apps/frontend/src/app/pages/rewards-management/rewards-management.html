@@ -365,7 +365,7 @@
             <div class="reward-card" [class.inactive]="!reward.active">
               <div class="reward-header">
                 <h3>{{ reward.name }}</h3>
-                <span class="points-badge" i18n="@@rewards.points"
+                <span [class]="desktop() ? 'chip in-card' : 'points-badge'" i18n="@@rewards.points"
                   >{{ reward.pointsCost }} poeng</span
                 >
               </div>

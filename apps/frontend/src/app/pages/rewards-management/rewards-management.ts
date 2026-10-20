@@ -18,6 +18,7 @@ import { ConfirmDialogService } from '../../services/confirm-dialog.service';
 import { PageComponent } from '../../components/page/page';
 import { LoadingRows } from '../../components/poeng/loading-rows/loading-rows';
 import { EmptyGroup } from '../../components/poeng/empty-group/empty-group';
+import { isDesktopSignal } from '../../utils/desktop-query';
 
 /**
  * Rewards Management Component (Parent/Admin, sketch 06)
@@ -41,6 +42,9 @@ export class RewardsManagementComponent implements OnInit {
   private router = inject(Router);
   private destroyRef = inject(DestroyRef);
   private confirmDialog = inject(ConfirmDialogService);
+
+  /** From 1024 px the points badge is the guide's chip (ST-1621) */
+  protected readonly desktop = isDesktopSignal();
 
   // Component state signals
   showCreateForm = signal(false);

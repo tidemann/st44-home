@@ -895,6 +895,8 @@ is why 14.21 on the reward and child cards is read as 14 and not 15. No value he
 - **Filter chips** ("Alle / Emma / Jonas / Mathea"): **33 px tall**, 9 px radius, 7 px apart,
   Meta 15 px. Selected is a `#15181C` fill with a white label; unselected is a white fill with
   `#15181C` label. Selection is a fill change, not a colour-only tint.
+- On a white card the unselected chip is `#ECECE8` with a `#15181C` label (14.9:1); on the paper
+  it is white.
 - 33 px is below 44 px, as the row buttons are. It still passes WCAG 2.2 AA (2.5.8 asks for 24 px),
   but give each chip a padded target so the touch area reaches 44 px without changing the drawn
   height.
@@ -1952,6 +1954,8 @@ findings — **do not renumber them**.
 | **7** | **One card for empty, loading and error.** A white card in the page width: one title line, one sentence, and a main button if there is something to do. While loading, it shows grey placeholder rows, not a sentence.                                          | [`desktop-rules-mine-oppgaver-barn-laster-1440.png`](reference/desktop-rules-mine-oppgaver-barn-laster-1440.png) and [`desktop-rules-belonninger-laster-1440.png`](reference/desktop-rules-belonninger-laster-1440.png) — the placeholder rows |
 | **8** | **Norwegian text and Diddit icons.** All text is Norwegian. No emoji as icons.                                                                                                                                                                                  | [`desktop-rules-glemt-passord-1440.png`](reference/desktop-rules-glemt-passord-1440.png) — the whole page was English; [`desktop-rules-husholdninger-1440.png`](reference/desktop-rules-husholdninger-1440.png) — 👥 👶 🏠 are gone            |
 
+**Badges use the chip** (ST-1609, approved 2026-10-20). From 1024 px every small label — «Administrator» and «Aktiv» on Husholdninger, the invitation status («Venter») on Husholdningsinnstillinger, «60 poeng» on Belønninger — is the chip from **Chips**: 33 px tall, 9 px corners, Meta 15 / 500. They sit on white cards, so the fill is `#ECECE8` with an ink label (see **Chips**); ink fill with a white label for the one that is on («Aktiv»). The phone keeps its badges.
+
 ### The pictures
 
 Each pair is **the page today on the left and the same page with the 8 rules on the right**, nothing
@@ -2103,7 +2107,7 @@ step. Each is somebody's decision, not a builder's:
    one of the 8 rules, and the fix inside the look is a darker grey text instead of `opacity` on the
    whole card. **Open for Maria.**
 5. **The «Administrator» chip on Husholdninger is still pink**, a colour that is not in the palette
-   (ST-1345 F11). Rule 5 names the chip's corner, not its colour.
+   (ST-1345 F11). Rule 5 names the chip's corner, not its colour. **Fixed by ST-1621:** badges use the chip (above).
 6. **A child's two bands still differ** (ST-1345 F8): «Mine oppgaver» puts the points total beside
    the name, «Belønninger» stacks it under the sub-line — hence 270 against 282. No rule says where
    in the band the total goes.

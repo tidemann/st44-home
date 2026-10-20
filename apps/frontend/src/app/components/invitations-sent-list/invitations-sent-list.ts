@@ -3,6 +3,7 @@ import { CommonModule, DatePipe } from '@angular/common';
 import { InvitationService, Invitation } from '../../services/invitation.service';
 import { HouseholdService } from '../../services/household.service';
 import { ConfirmDialogService } from '../../services/confirm-dialog.service';
+import { isDesktopSignal } from '../../utils/desktop-query';
 
 @Component({
   selector: 'app-invitations-sent-list',
@@ -15,6 +16,8 @@ export class InvitationsSentListComponent implements OnInit {
   private householdService = inject(HouseholdService);
   private confirmDialog = inject(ConfirmDialogService);
 
+  /** From 1024 px the status badge is the guide's chip (ST-1621) */
+  protected readonly desktop = isDesktopSignal();
   invitations = signal<Invitation[]>([]);
   isLoading = signal(false);
   successMessage = signal<string | null>(null);

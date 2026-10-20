@@ -1113,6 +1113,35 @@ input.diddit-date-field::-webkit-datetime-edit {
   outline-offset: 2px;
 }
 
+/* The chip (guide: Chips): 33 px drawn, 9 px radius, Meta 15; ink with a white label when on.
+   «Oppgaver»'s filter chips, and from 1024 px every badge (ST-1621) */
+.chip {
+  display: inline-flex;
+  align-items: center;
+  box-sizing: border-box;
+  height: 33px;
+  padding: 0 12px;
+  border: 0;
+  border-radius: var(--r-chip);
+  background: var(--surface);
+  color: var(--text);
+  font-family: var(--font-text);
+  font-size: 15px;
+  font-weight: 500;
+  letter-spacing: -0.02em;
+  white-space: nowrap;
+}
+
+/* On a white card the unselected chip takes the track fill, or it has no edge (ST-1621) */
+.chip.in-card {
+  background: var(--track);
+}
+
+.chip.on {
+  background: var(--text);
+  color: var(--surface);
+}
+
 /* Poeng rows and reward cards sit 8 px apart. Set here because a component
    cannot see its sibling hosts under emulated encapsulation. */
 app-chore-row + app-chore-row,

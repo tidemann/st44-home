@@ -80,12 +80,14 @@
               <div class="household-info">
                 <h3 class="household-name">{{ household.name }}</h3>
                 @if (roleLabel(household.role)) {
-                  <span [class]="getRoleBadgeClass(household.role)">
+                  <span [class]="desktop() ? 'chip in-card' : getRoleBadgeClass(household.role)">
                     {{ roleLabel(household.role) }}
                   </span>
                 }
                 @if (household.id === activeHouseholdId()) {
-                  <span class="active-badge" i18n="@@households.active">Aktiv</span>
+                  <span [class]="desktop() ? 'chip on' : 'active-badge'" i18n="@@households.active"
+                    >Aktiv</span
+                  >
                 }
               </div>
             </div>

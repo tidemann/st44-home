@@ -1,6 +1,6 @@
 /* Poeng screen 2 (screens-v2 #s2) */
 
-/* Child chips: 33 px drawn, 9 px radius, 7 px apart, Meta 15; 44 px pressed */
+/* Child chips: the global .chip (styles.css), 7 px apart; 44 px pressed */
 .chips {
   display: flex;
   gap: 7px;
@@ -14,16 +14,6 @@
 .chip {
   position: relative;
   flex: none;
-  height: 33px;
-  padding: 0 12px;
-  border: 0;
-  border-radius: var(--r-chip);
-  background: var(--surface);
-  color: var(--text);
-  font-family: var(--font-text);
-  font-size: 15px;
-  font-weight: 500;
-  letter-spacing: -0.02em;
   cursor: pointer;
 }
 
@@ -31,11 +21,6 @@
   content: '';
   position: absolute;
   inset: -6px 0;
-}
-
-.chip.on {
-  background: var(--text);
-  color: var(--surface);
 }
 
 .chip:focus-visible {
