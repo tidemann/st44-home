@@ -41,6 +41,22 @@ This runs `docker compose down --volumes` for the staging project only, then sta
 it again: the database is created new from `init.sql` plus the migrations, with no
 users and no families. Live is not touched.
 
+## Smoke run: sign-up to child login
+
+```bash
+gh workflow run deploy-staging.yml -f ref=main -f reset=true -f smoke=true
+```
+
+After the deploy, `infra/staging/smoke.cjs` goes through the public address and
+registers a parent with the form, logs in, adds a child with a login and a task,
+then logs in as the child with the child form. A screenshot of every step is the
+run's `staging-smoke` artifact (`gh run download <run id> -n staging-smoke`).
+
+It gets past the gate with a one-off `smoke` login. The workflow adds it to the
+gate's htpasswd file next to Stig's line and removes it again in its last step. It
+is random and masked, and nothing stores it. The test family stays until the next
+reset.
+
 ## Getting in
 
 The browser asks for a user name and password (basic auth). They are the
@@ -74,6 +90,7 @@ leaves staging**:
   ```bash
   docker logs st44-staging-backend 2>&1 | grep 'Invitation email'
   ```
+
 - There is no e-mail verification step in Diddit today.
 
 ## One-time setup
