@@ -347,6 +347,16 @@ describe('Family', () => {
       expect(mockHouseholdService.getHouseholdMembers).toHaveBeenCalled();
     });
 
+    it('sends no birth year when the child is added without an age (ST-1624)', async () => {
+      await component.ngOnInit();
+
+      await component['onChildAdded']({ name: 'No Age', age: null, avatar: 'smile' });
+
+      const payload = mockChildrenService.createChild.mock.calls.at(-1)![1];
+      expect(payload).toEqual({ name: 'No Age' });
+      expect(payload.birthYear).toBeUndefined();
+    });
+
     it('should close modal after child added', async () => {
       // First load data to set householdId
       await component.ngOnInit();

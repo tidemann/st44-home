@@ -34,9 +34,22 @@ describe('AddChildModal', () => {
     expect(component['form'].controls['avatar']).toBeTruthy();
   });
 
-  it('should have default age of 10 and avatar of 😊', () => {
-    expect(component['form'].value.age).toBe(10);
+  it('starts with an empty, optional age and avatar 😊 (ST-1624)', () => {
+    expect(component['form'].value.age).toBeNull();
+    expect(component['form'].controls['age'].valid).toBe(true);
     expect(component['form'].value.avatar).toBe('😊');
+  });
+
+  it('emits age null when a child is added without an age (ST-1624)', () => {
+    let emittedData: AddChildData | undefined;
+    component.childAdded.subscribe((data) => {
+      emittedData = data;
+    });
+
+    component['form'].patchValue({ name: 'Emma' });
+    component.onSubmit();
+
+    expect(emittedData).toEqual({ name: 'Emma', age: null, avatar: '😊' });
   });
 
   it('should validate age range (1-18)', () => {

@@ -35,7 +35,9 @@
     </div>
 
     <div class="form-group">
-      <label class="form-label" for="child-age" i18n="@@addChildModal.ageLabel">Alder *</label>
+      <label class="form-label" for="child-age" i18n="@@addChildModal.ageLabel"
+        >Alder (valgfritt)</label
+      >
       <input
         type="number"
         id="child-age"
@@ -53,9 +55,6 @@
       />
       @if (form.controls.age.invalid && form.controls.age.touched) {
         <div id="child-age-error" class="form-error" role="alert">
-          @if (form.controls.age.errors?.['required']) {
-            <span i18n="@@addChildModal.ageRequired">Alder er obligatorisk</span>
-          }
           @if (form.controls.age.errors?.['min']) {
             <span i18n="@@addChildModal.ageMin">Alder må være minst 1</span>
           }

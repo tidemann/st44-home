@@ -30,19 +30,13 @@ export class ChildrenManagementComponent implements OnInit {
   // Add child form
   addForm = this.fb.group({
     name: ['', [Validators.required, Validators.minLength(2), Validators.maxLength(100)]],
-    birthYear: [
-      null as number | null,
-      [Validators.min(2000), Validators.max(this.currentYear)],
-    ],
+    birthYear: [null as number | null, [Validators.min(2000), Validators.max(this.currentYear)]],
   });
 
   // Edit child form
   editForm = this.fb.group({
     name: ['', [Validators.required, Validators.minLength(2), Validators.maxLength(100)]],
-    birthYear: [
-      null as number | null,
-      [Validators.min(2000), Validators.max(this.currentYear)],
-    ],
+    birthYear: [null as number | null, [Validators.min(2000), Validators.max(this.currentYear)]],
   });
 
   ngOnInit() {

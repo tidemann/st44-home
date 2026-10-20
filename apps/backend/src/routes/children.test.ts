@@ -98,6 +98,20 @@ describe('Children API', () => {
       assert.strictEqual(body.name, 'Test Child Admin');
     });
 
+    test('should create a child without birthYear (age optional)', async () => {
+      const response = await app.inject({
+        method: 'POST',
+        url: `/api/households/${householdId}/children`,
+        headers: { Authorization: `Bearer ${adminToken}` },
+        payload: { name: 'No Age Child' },
+      });
+
+      assert.strictEqual(response.statusCode, 201);
+      const body = JSON.parse(response.body);
+      assert.strictEqual(body.name, 'No Age Child');
+      assert.strictEqual(body.birthYear, null);
+    });
+
     test('should create a child (parent)', async () => {
       const response = await app.inject({
         method: 'POST',
@@ -303,6 +317,28 @@ describe('Children API', () => {
         2019,
         'birthYear should be preserved on empty update',
       );
+    });
+
+    test('should clear birthYear when null is sent (age optional)', async () => {
+      const createResponse = await app.inject({
+        method: 'POST',
+        url: `/api/households/${householdId}/children`,
+        headers: { Authorization: `Bearer ${adminToken}` },
+        payload: { name: 'Clear Age Test', birthYear: 2014 },
+      });
+      assert.strictEqual(createResponse.statusCode, 201);
+      const createdChild = JSON.parse(createResponse.body);
+
+      const updateResponse = await app.inject({
+        method: 'PUT',
+        url: `/api/households/${householdId}/children/${createdChild.id}`,
+        headers: { Authorization: `Bearer ${adminToken}` },
+        payload: { name: 'Clear Age Test', birthYear: null },
+      });
+      assert.strictEqual(updateResponse.statusCode, 200);
+      const updatedChild = JSON.parse(updateResponse.body);
+      assert.strictEqual(updatedChild.birthYear, null);
+      assert.strictEqual(updatedChild.name, 'Clear Age Test');
     });
   });
 

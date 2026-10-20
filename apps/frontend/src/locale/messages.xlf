@@ -1058,7 +1058,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/children-management/children-management.html</context>
-          <context context-type="linenumber">146,148</context>
+          <context context-type="linenumber">142,144</context>
         </context-group>
       </trans-unit>
       <trans-unit id="childrenManagement.namePlaceholder" datatype="html">
@@ -1076,7 +1076,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/children-management/children-management.html</context>
-          <context context-type="linenumber">158,160</context>
+          <context context-type="linenumber">154,156</context>
         </context-group>
       </trans-unit>
       <trans-unit id="childrenManagement.nameMinLength" datatype="html">
@@ -1087,7 +1087,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/children-management/children-management.html</context>
-          <context context-type="linenumber">162,164</context>
+          <context context-type="linenumber">158,160</context>
         </context-group>
       </trans-unit>
       <trans-unit id="childrenManagement.nameMaxLength" datatype="html">
@@ -1098,134 +1098,127 @@
         </context-group>
       </trans-unit>
       <trans-unit id="childrenManagement.birthYearLabel" datatype="html">
-        <source>Fødselsår *</source>
+        <source>Fødselsår (valgfritt)</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/children-management/children-management.html</context>
           <context context-type="linenumber">68,70</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/children-management/children-management.html</context>
-          <context context-type="linenumber">173,175</context>
-        </context-group>
-      </trans-unit>
-      <trans-unit id="childrenManagement.birthYearRequired" datatype="html">
-        <source>Fødselsår er påkrevd</source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/children-management/children-management.html</context>
-          <context context-type="linenumber">81,84</context>
+          <context context-type="linenumber">169,171</context>
         </context-group>
       </trans-unit>
       <trans-unit id="childrenManagement.birthYearRange" datatype="html">
         <source>Fødselsår må være mellom 2000 og <x id="INTERPOLATION" equiv-text="{{ currentYear }}"/></source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/children-management/children-management.html</context>
-          <context context-type="linenumber">87,88</context>
+          <context context-type="linenumber">83,84</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/children-management/children-management.html</context>
-          <context context-type="linenumber">188,189</context>
+          <context context-type="linenumber">183,184</context>
         </context-group>
       </trans-unit>
       <trans-unit id="childrenManagement.addChildToHouseholdAriaLabel" datatype="html">
         <source>Legg til barn i husstanden</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/children-management/children-management.html</context>
-          <context context-type="linenumber">100,103</context>
+          <context context-type="linenumber">96,99</context>
         </context-group>
       </trans-unit>
       <trans-unit id="childrenManagement.adding" datatype="html">
         <source>Legger til...</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/children-management/children-management.html</context>
-          <context context-type="linenumber">103,105</context>
+          <context context-type="linenumber">99,101</context>
         </context-group>
       </trans-unit>
       <trans-unit id="childrenManagement.addChildButton" datatype="html">
         <source>Legg til barn</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/children-management/children-management.html</context>
-          <context context-type="linenumber">105,108</context>
+          <context context-type="linenumber">101,104</context>
         </context-group>
       </trans-unit>
       <trans-unit id="childrenManagement.cancelAddingAriaLabel" datatype="html">
         <source>Avbryt å legge til barn</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/children-management/children-management.html</context>
-          <context context-type="linenumber">114,116</context>
+          <context context-type="linenumber">110,112</context>
         </context-group>
       </trans-unit>
       <trans-unit id="childrenManagement.cancelButton" datatype="html">
         <source> Avbryt </source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/children-management/children-management.html</context>
-          <context context-type="linenumber">117,120</context>
+          <context context-type="linenumber">113,116</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/children-management/children-management.html</context>
-          <context context-type="linenumber">209,211</context>
+          <context context-type="linenumber">204,206</context>
         </context-group>
       </trans-unit>
       <trans-unit id="childrenManagement.loading" datatype="html">
         <source>Laster barn...</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/children-management/children-management.html</context>
-          <context context-type="linenumber">125,129</context>
+          <context context-type="linenumber">121,125</context>
         </context-group>
       </trans-unit>
       <trans-unit id="childrenManagement.noChildrenYet" datatype="html">
         <source>Ingen barn lagt til ennå.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/children-management/children-management.html</context>
-          <context context-type="linenumber">131,132</context>
+          <context context-type="linenumber">127,128</context>
         </context-group>
       </trans-unit>
       <trans-unit id="childrenManagement.clickToAdd" datatype="html">
         <source>Klikk &quot;Legg til barn&quot; for å komme i gang.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/children-management/children-management.html</context>
-          <context context-type="linenumber">132,136</context>
+          <context context-type="linenumber">128,132</context>
         </context-group>
       </trans-unit>
       <trans-unit id="childrenManagement.save" datatype="html">
         <source> Lagre </source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/children-management/children-management.html</context>
-          <context context-type="linenumber">200,201</context>
+          <context context-type="linenumber">195,196</context>
         </context-group>
       </trans-unit>
       <trans-unit id="childrenManagement.age" datatype="html">
         <source>Alder: <x id="INTERPOLATION" equiv-text="{{ getAge(child.birthYear) }}"/> (Født <x id="INTERPOLATION_1" equiv-text="{{ child.birthYear }}"/>)</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/children-management/children-management.html</context>
-          <context context-type="linenumber">221,223</context>
+          <context context-type="linenumber">216,218</context>
         </context-group>
       </trans-unit>
       <trans-unit id="childrenManagement.editAriaLabel" datatype="html">
         <source>Rediger <x id="INTERPOLATION" equiv-text="{{ child.name }}"/></source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/children-management/children-management.html</context>
-          <context context-type="linenumber">233,234</context>
+          <context context-type="linenumber">228,229</context>
         </context-group>
       </trans-unit>
       <trans-unit id="childrenManagement.edit" datatype="html">
         <source> Rediger </source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/children-management/children-management.html</context>
-          <context context-type="linenumber">237,238</context>
+          <context context-type="linenumber">232,233</context>
         </context-group>
       </trans-unit>
       <trans-unit id="childrenManagement.deleteAriaLabel" datatype="html">
         <source>Slett <x id="INTERPOLATION" equiv-text="{{ child.name }}"/></source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/children-management/children-management.html</context>
-          <context context-type="linenumber">244,245</context>
+          <context context-type="linenumber">239,240</context>
         </context-group>
       </trans-unit>
       <trans-unit id="childrenManagement.delete" datatype="html">
         <source> Slett </source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/children-management/children-management.html</context>
-          <context context-type="linenumber">248,249</context>
+          <context context-type="linenumber">243,244</context>
         </context-group>
       </trans-unit>
       <trans-unit id="childrenManagement.noActiveHousehold" datatype="html">
@@ -2261,162 +2254,162 @@
         <source> Avbryt </source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/invitations-sent-list/invitations-sent-list.html</context>
-          <context context-type="linenumber">117,118</context>
+          <context context-type="linenumber">119,120</context>
         </context-group>
       </trans-unit>
       <trans-unit id="invitationsSent.noActiveHousehold" datatype="html">
         <source>Ingen aktiv husstand valgt</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/invitations-sent-list/invitations-sent-list.ts</context>
-          <context context-type="linenumber">50</context>
+          <context context-type="linenumber">53</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/invitations-sent-list/invitations-sent-list.ts</context>
-          <context context-type="linenumber">88</context>
+          <context context-type="linenumber">91</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/invitations-sent-list/invitations-sent-list.ts</context>
-          <context context-type="linenumber">194</context>
+          <context context-type="linenumber">197</context>
         </context-group>
       </trans-unit>
       <trans-unit id="invitationsSent.loadFailed" datatype="html">
         <source>Kunne ikke laste invitasjoner. Vennligst prøv igjen.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/invitations-sent-list/invitations-sent-list.ts</context>
-          <context context-type="linenumber">64</context>
+          <context context-type="linenumber">67</context>
         </context-group>
       </trans-unit>
       <trans-unit id="invitationsSent.cancelTitle" datatype="html">
         <source>Trekke tilbake invitasjonen?</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/invitations-sent-list/invitations-sent-list.ts</context>
-          <context context-type="linenumber">76</context>
+          <context context-type="linenumber">79</context>
         </context-group>
       </trans-unit>
       <trans-unit id="invitationsSent.cancelMessage" datatype="html">
         <source>Invitasjonen til <x id="email" equiv-text="invitation.invitedEmail"/> slutter å virke.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/invitations-sent-list/invitations-sent-list.ts</context>
-          <context context-type="linenumber">77</context>
+          <context context-type="linenumber">80</context>
         </context-group>
       </trans-unit>
       <trans-unit id="invitationsSent.cancelConfirm" datatype="html">
         <source>Trekk tilbake</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/invitations-sent-list/invitations-sent-list.ts</context>
-          <context context-type="linenumber">78</context>
+          <context context-type="linenumber">81</context>
         </context-group>
       </trans-unit>
       <trans-unit id="invitationsSent.cancelled" datatype="html">
         <source>Invitasjonen til <x id="email" equiv-text="invitation.invitedEmail"/> er trukket tilbake.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/invitations-sent-list/invitations-sent-list.ts</context>
-          <context context-type="linenumber">99</context>
+          <context context-type="linenumber">102</context>
         </context-group>
       </trans-unit>
       <trans-unit id="invitationsSent.cancelFailed" datatype="html">
         <source>Kunne ikke kansellere invitasjon. Vennligst prøv igjen.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/invitations-sent-list/invitations-sent-list.ts</context>
-          <context context-type="linenumber">105</context>
+          <context context-type="linenumber">108</context>
         </context-group>
       </trans-unit>
       <trans-unit id="invitationsSent.roleAdmin" datatype="html">
         <source>Administrator</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/invitations-sent-list/invitations-sent-list.ts</context>
-          <context context-type="linenumber">142</context>
+          <context context-type="linenumber">145</context>
         </context-group>
       </trans-unit>
       <trans-unit id="invitationsSent.roleParent" datatype="html">
         <source>Forelder</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/invitations-sent-list/invitations-sent-list.ts</context>
-          <context context-type="linenumber">144</context>
+          <context context-type="linenumber">147</context>
         </context-group>
       </trans-unit>
       <trans-unit id="invitationsSent.roleChild" datatype="html">
         <source>Barn</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/invitations-sent-list/invitations-sent-list.ts</context>
-          <context context-type="linenumber">146</context>
+          <context context-type="linenumber">149</context>
         </context-group>
       </trans-unit>
       <trans-unit id="invitationsSent.statusPending" datatype="html">
         <source>Venter</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/invitations-sent-list/invitations-sent-list.ts</context>
-          <context context-type="linenumber">156</context>
+          <context context-type="linenumber">159</context>
         </context-group>
       </trans-unit>
       <trans-unit id="invitationsSent.statusAccepted" datatype="html">
         <source>Godtatt</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/invitations-sent-list/invitations-sent-list.ts</context>
-          <context context-type="linenumber">158</context>
+          <context context-type="linenumber">161</context>
         </context-group>
       </trans-unit>
       <trans-unit id="invitationsSent.statusDeclined" datatype="html">
         <source>Avslått</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/invitations-sent-list/invitations-sent-list.ts</context>
-          <context context-type="linenumber">160</context>
+          <context context-type="linenumber">163</context>
         </context-group>
       </trans-unit>
       <trans-unit id="invitationsSent.statusCancelled" datatype="html">
         <source>Avbrutt</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/invitations-sent-list/invitations-sent-list.ts</context>
-          <context context-type="linenumber">162</context>
+          <context context-type="linenumber">165</context>
         </context-group>
       </trans-unit>
       <trans-unit id="invitationsSent.statusExpired" datatype="html">
         <source>Utløpt</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/invitations-sent-list/invitations-sent-list.ts</context>
-          <context context-type="linenumber">164</context>
+          <context context-type="linenumber">167</context>
         </context-group>
       </trans-unit>
       <trans-unit id="invitationsSent.cleanupTitle" datatype="html">
         <source>Rydde i invitasjonene?</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/invitations-sent-list/invitations-sent-list.ts</context>
-          <context context-type="linenumber">182</context>
+          <context context-type="linenumber">185</context>
         </context-group>
       </trans-unit>
       <trans-unit id="invitationsSent.cleanupMessage" datatype="html">
         <source>Alle tilbaketrukne, avslåtte og utløpte invitasjoner fjernes fra listen.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/invitations-sent-list/invitations-sent-list.ts</context>
-          <context context-type="linenumber">183</context>
+          <context context-type="linenumber">186</context>
         </context-group>
       </trans-unit>
       <trans-unit id="invitationsSent.cleanupConfirm" datatype="html">
         <source>Rydd</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/invitations-sent-list/invitations-sent-list.ts</context>
-          <context context-type="linenumber">184</context>
+          <context context-type="linenumber">187</context>
         </context-group>
       </trans-unit>
       <trans-unit id="invitationsSent.cleanedUpOne" datatype="html">
         <source>1 gammel invitasjon er fjernet.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/invitations-sent-list/invitations-sent-list.ts</context>
-          <context context-type="linenumber">206</context>
+          <context context-type="linenumber">209</context>
         </context-group>
       </trans-unit>
       <trans-unit id="invitationsSent.cleanedUp" datatype="html">
         <source><x id="count" equiv-text="result.deleted"/> gamle invitasjoner er fjernet.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/invitations-sent-list/invitations-sent-list.ts</context>
-          <context context-type="linenumber">207</context>
+          <context context-type="linenumber">210</context>
         </context-group>
       </trans-unit>
       <trans-unit id="invitationsSent.cleanupFailed" datatype="html">
         <source>Kunne ikke rydde opp i invitasjoner. Vennligst prøv igjen.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/invitations-sent-list/invitations-sent-list.ts</context>
-          <context context-type="linenumber">213</context>
+          <context context-type="linenumber">216</context>
         </context-group>
       </trans-unit>
       <trans-unit id="inviteUser.title" datatype="html">
@@ -2672,7 +2665,7 @@
         </context-group>
       </trans-unit>
       <trans-unit id="addChildModal.ageLabel" datatype="html">
-        <source>Alder *</source>
+        <source>Alder (valgfritt)</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/modals/add-child-modal/add-child-modal.html</context>
           <context context-type="linenumber">38,40</context>
@@ -2685,46 +2678,39 @@
           <context context-type="linenumber">45,48</context>
         </context-group>
       </trans-unit>
-      <trans-unit id="addChildModal.ageRequired" datatype="html">
-        <source>Alder er obligatorisk</source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/components/modals/add-child-modal/add-child-modal.html</context>
-          <context context-type="linenumber">57,59</context>
-        </context-group>
-      </trans-unit>
       <trans-unit id="addChildModal.ageMin" datatype="html">
         <source>Alder må være minst 1</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/modals/add-child-modal/add-child-modal.html</context>
-          <context context-type="linenumber">60,62</context>
+          <context context-type="linenumber">57,59</context>
         </context-group>
       </trans-unit>
       <trans-unit id="addChildModal.ageMax" datatype="html">
         <source>Alder må være maks 18</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/modals/add-child-modal/add-child-modal.html</context>
-          <context context-type="linenumber">63,66</context>
+          <context context-type="linenumber">60,63</context>
         </context-group>
       </trans-unit>
       <trans-unit id="addChildModal.avatarLabel" datatype="html">
         <source>Avatar-emoji</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/modals/add-child-modal/add-child-modal.html</context>
-          <context context-type="linenumber">71,74</context>
+          <context context-type="linenumber">68,71</context>
         </context-group>
       </trans-unit>
       <trans-unit id="addChildModal.cancelButton" datatype="html">
         <source> Avbryt </source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/modals/add-child-modal/add-child-modal.html</context>
-          <context context-type="linenumber">92,95</context>
+          <context context-type="linenumber">89,92</context>
         </context-group>
       </trans-unit>
       <trans-unit id="addChildModal.submitButton" datatype="html">
         <source> Legg til barn </source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/modals/add-child-modal/add-child-modal.html</context>
-          <context context-type="linenumber">100,103</context>
+          <context context-type="linenumber">97,100</context>
         </context-group>
       </trans-unit>
       <trans-unit id="childDetailsModal.title" datatype="html">
@@ -2784,7 +2770,7 @@
         </context-group>
       </trans-unit>
       <trans-unit id="childDetailsModal.birthYearLabel" datatype="html">
-        <source>Fødselsår</source>
+        <source>Fødselsår (valgfritt)</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/modals/child-details-modal/child-details-modal.html</context>
           <context context-type="linenumber">87,89</context>
@@ -4839,14 +4825,14 @@
         <source>Du venter ikke på svar nå</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/child-rewards/child-rewards.html</context>
-          <context context-type="linenumber">90,91</context>
+          <context context-type="linenumber">91,92</context>
         </context-group>
       </trans-unit>
       <trans-unit id="childRewards.noneWaitingHint" datatype="html">
-        <source> Når du ber om en belønning, ser du den her. </source>
+        <source>Når du ber om en belønning, ser du den her.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/child-rewards/child-rewards.html</context>
-          <context context-type="linenumber">92,94</context>
+          <context context-type="linenumber">93,96</context>
         </context-group>
       </trans-unit>
       <trans-unit id="childRewards.collectedHeading" datatype="html">
@@ -4868,161 +4854,161 @@
         </context-group>
       </trans-unit>
       <trans-unit id="childRewards.noneCollected" datatype="html">
-        <source> Du har ikke hentet noe ennå </source>
+        <source>Du har ikke hentet noe ennå</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/child-rewards/child-rewards.html</context>
-          <context context-type="linenumber">127,129</context>
+          <context context-type="linenumber">127,128</context>
         </context-group>
       </trans-unit>
       <trans-unit id="childRewards.noneCollectedHint" datatype="html">
-        <source> Det du har fått, samles her. </source>
+        <source>Det du har fått, samles her.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/child-rewards/child-rewards.html</context>
-          <context context-type="linenumber">130,132</context>
+          <context context-type="linenumber">129,132</context>
         </context-group>
       </trans-unit>
       <trans-unit id="childRewards.refusedHeading" datatype="html">
         <source>Nei denne gangen</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/child-rewards/child-rewards.html</context>
-          <context context-type="linenumber">141,143</context>
+          <context context-type="linenumber">139,141</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/child-rewards/child-rewards.html</context>
-          <context context-type="linenumber">161,163</context>
+          <context context-type="linenumber">159,161</context>
         </context-group>
       </trans-unit>
       <trans-unit id="childRewards.noneRefused" datatype="html">
         <source>Ingen har sagt nei</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/child-rewards/child-rewards.html</context>
-          <context context-type="linenumber">164,165</context>
+          <context context-type="linenumber">163,164</context>
         </context-group>
       </trans-unit>
       <trans-unit id="childRewards.noneRefusedHint" datatype="html">
-        <source> Hvis en voksen sier nei, ser du det her. </source>
+        <source>Hvis en voksen sier nei, ser du det her.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/child-rewards/child-rewards.html</context>
-          <context context-type="linenumber">166,168</context>
+          <context context-type="linenumber">165,168</context>
         </context-group>
       </trans-unit>
       <trans-unit id="childRewards.confirmTitle" datatype="html">
         <source>Vil du be om dette?</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/child-rewards/child-rewards.html</context>
-          <context context-type="linenumber">181,184</context>
+          <context context-type="linenumber">179,182</context>
         </context-group>
       </trans-unit>
       <trans-unit id="childRewards.confirmCost" datatype="html">
         <source>Det koster</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/child-rewards/child-rewards.html</context>
-          <context context-type="linenumber">188,189</context>
+          <context context-type="linenumber">186,187</context>
         </context-group>
       </trans-unit>
       <trans-unit id="childRewards.confirmPoints" datatype="html">
         <source><x id="INTERPOLATION" equiv-text="{{ reward.pointsCost }}"/> poeng</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/child-rewards/child-rewards.html</context>
-          <context context-type="linenumber">189,190</context>
+          <context context-type="linenumber">187,188</context>
         </context-group>
       </trans-unit>
       <trans-unit id="childRewards.confirmLeft" datatype="html">
         <source>Igjen etterpå</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/child-rewards/child-rewards.html</context>
-          <context context-type="linenumber">192,193</context>
+          <context context-type="linenumber">190,191</context>
         </context-group>
       </trans-unit>
       <trans-unit id="childRewards.confirmLeftPoints" datatype="html">
         <source> <x id="INTERPOLATION" equiv-text="{{ pointsBalance() - reward.pointsCost }}"/> poeng </source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/child-rewards/child-rewards.html</context>
-          <context context-type="linenumber">194,196</context>
+          <context context-type="linenumber">192,194</context>
         </context-group>
       </trans-unit>
       <trans-unit id="childRewards.confirmNote" datatype="html">
         <source> En voksen må si ja først. Poengene holdes av mens du venter, og du får dem tilbake hvis svaret er nei. </source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/child-rewards/child-rewards.html</context>
-          <context context-type="linenumber">199,202</context>
+          <context context-type="linenumber">197,200</context>
         </context-group>
       </trans-unit>
       <trans-unit id="childRewards.cancel" datatype="html">
         <source> Avbryt </source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/child-rewards/child-rewards.html</context>
-          <context context-type="linenumber">215,217</context>
+          <context context-type="linenumber">213,215</context>
         </context-group>
       </trans-unit>
       <trans-unit id="childRewards.sending" datatype="html">
         <source>Sender…</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/child-rewards/child-rewards.html</context>
-          <context context-type="linenumber">219,221</context>
+          <context context-type="linenumber">217,219</context>
         </context-group>
       </trans-unit>
       <trans-unit id="childRewards.confirmAsk" datatype="html">
         <source>Be om</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/child-rewards/child-rewards.html</context>
-          <context context-type="linenumber">221,224</context>
+          <context context-type="linenumber">219,222</context>
         </context-group>
       </trans-unit>
       <trans-unit id="childRewards.subtitle" datatype="html">
         <source><x id="ready" equiv-text="ready"/> av <x id="total" equiv-text="rewards.length"/> kan hentes nå</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/child-rewards/child-rewards.ts</context>
-          <context context-type="linenumber">84</context>
+          <context context-type="linenumber">85</context>
         </context-group>
       </trans-unit>
       <trans-unit id="childRewards.balanceAria" datatype="html">
         <source><x id="points" equiv-text="this.pointsBalance()"/> poeng å bruke</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/child-rewards/child-rewards.ts</context>
-          <context context-type="linenumber">88</context>
+          <context context-type="linenumber">89</context>
         </context-group>
       </trans-unit>
       <trans-unit id="childRewards.historyNoBy" datatype="html">
         <source><x id="day" equiv-text="day"/> – <x id="who" equiv-text="who"/> sa nei</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/child-rewards/child-rewards.ts</context>
-          <context context-type="linenumber">106</context>
+          <context context-type="linenumber">107</context>
         </context-group>
       </trans-unit>
       <trans-unit id="childRewards.historyNo" datatype="html">
         <source><x id="day" equiv-text="day"/> – Nei denne gangen</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/child-rewards/child-rewards.ts</context>
-          <context context-type="linenumber">107</context>
+          <context context-type="linenumber">108</context>
         </context-group>
       </trans-unit>
       <trans-unit id="childRewards.historyYesBy" datatype="html">
         <source><x id="day" equiv-text="day"/> – <x id="who" equiv-text="who"/> sa ja</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/child-rewards/child-rewards.ts</context>
-          <context context-type="linenumber">110</context>
+          <context context-type="linenumber">111</context>
         </context-group>
       </trans-unit>
       <trans-unit id="childRewards.historyYes" datatype="html">
         <source><x id="day" equiv-text="day"/> – Ja</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/child-rewards/child-rewards.ts</context>
-          <context context-type="linenumber">111</context>
+          <context context-type="linenumber">112</context>
         </context-group>
       </trans-unit>
       <trans-unit id="childRewards.askedMessage" datatype="html">
         <source>Du har bedt om «<x id="rewardName" equiv-text="reward.name"/>». Nå må en voksen svare.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/child-rewards/child-rewards.ts</context>
-          <context context-type="linenumber">154</context>
+          <context context-type="linenumber">155</context>
         </context-group>
       </trans-unit>
       <trans-unit id="childRewards.askFailed" datatype="html">
         <source>Det gikk ikke å sende ønsket. Prøv igjen om litt.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/child-rewards/child-rewards.ts</context>
-          <context context-type="linenumber">165</context>
+          <context context-type="linenumber">166</context>
         </context-group>
       </trans-unit>
       <trans-unit id="family.loading" datatype="html">
@@ -5131,7 +5117,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/family/family.ts</context>
-          <context context-type="linenumber">392</context>
+          <context context-type="linenumber">389</context>
         </context-group>
       </trans-unit>
       <trans-unit id="family.memberUnknown" datatype="html">
@@ -5177,7 +5163,7 @@
         <source>Kunne ikke legge til barnet. Prøv igjen.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/family/family.ts</context>
-          <context context-type="linenumber">316</context>
+          <context context-type="linenumber">313</context>
         </context-group>
       </trans-unit>
       <trans-unit id="home.moreChildren" datatype="html">
@@ -5265,186 +5251,186 @@
         </context-group>
       </trans-unit>
       <trans-unit id="home.noneDoneToday" datatype="html">
-        <source> Ingen oppgaver er haket av i dag </source>
+        <source>Ingen oppgaver er haket av i dag</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/home/home.html</context>
-          <context context-type="linenumber">160,161</context>
+          <context context-type="linenumber">161,162</context>
         </context-group>
       </trans-unit>
       <trans-unit id="home.noneDoneTodayDescription" datatype="html">
-        <source> Når noen haker av en oppgave, dukker den opp her. </source>
+        <source>Når noen haker av en oppgave, dukker den opp her.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/home/home.html</context>
-          <context context-type="linenumber">163,165</context>
+          <context context-type="linenumber">163,166</context>
         </context-group>
       </trans-unit>
       <trans-unit id="home.comingUp" datatype="html">
         <source>Kommende</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/home/home.html</context>
-          <context context-type="linenumber">178,179</context>
+          <context context-type="linenumber">177,178</context>
         </context-group>
       </trans-unit>
       <trans-unit id="home.toProgress" datatype="html">
         <source>Se fremgang for uken</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/home/home.html</context>
-          <context context-type="linenumber">193,196</context>
+          <context context-type="linenumber">192,195</context>
         </context-group>
       </trans-unit>
       <trans-unit id="home.showMore" datatype="html">
         <source> Vis flere (<x id="INTERPOLATION" equiv-text="{{ hiddenCount(group, tasks) }}"/>) </source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/home/home.html</context>
-          <context context-type="linenumber">202,204</context>
+          <context context-type="linenumber">201,203</context>
         </context-group>
       </trans-unit>
       <trans-unit id="home.title" datatype="html">
         <source>Hjemme</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/home/home.ts</context>
-          <context context-type="linenumber">111</context>
+          <context context-type="linenumber">113</context>
         </context-group>
       </trans-unit>
       <trans-unit id="home.householdDay" datatype="html">
         <source><x id="done" equiv-text="done"/> av <x id="total" equiv-text="total"/> gjort i dag</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/home/home.ts</context>
-          <context context-type="linenumber">122</context>
+          <context context-type="linenumber">124</context>
         </context-group>
       </trans-unit>
       <trans-unit id="home.householdNoTasks" datatype="html">
         <source>ingen oppgaver i dag</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/home/home.ts</context>
-          <context context-type="linenumber">123</context>
+          <context context-type="linenumber">125</context>
         </context-group>
       </trans-unit>
       <trans-unit id="home.subtitle" datatype="html">
         <source><x id="date" equiv-text="date"/> – <x id="done" equiv-text="done"/> av <x id="total" equiv-text="total"/> gjort</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/home/home.ts</context>
-          <context context-type="linenumber">165</context>
+          <context context-type="linenumber">167</context>
         </context-group>
       </trans-unit>
       <trans-unit id="home.leftToday" datatype="html">
         <source><x id="count" equiv-text="open.length"/> oppgaver – <x id="points" equiv-text="points"/> poeng</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/home/home.ts</context>
-          <context context-type="linenumber">173</context>
+          <context context-type="linenumber">175</context>
         </context-group>
       </trans-unit>
       <trans-unit id="home.anyone" datatype="html">
         <source>Alle</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/home/home.ts</context>
-          <context context-type="linenumber">326</context>
+          <context context-type="linenumber">328</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/home/home.ts</context>
-          <context context-type="linenumber">334</context>
+          <context context-type="linenumber">336</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/home/home.ts</context>
-          <context context-type="linenumber">341</context>
+          <context context-type="linenumber">343</context>
         </context-group>
       </trans-unit>
       <trans-unit id="home.overdueMeta" datatype="html">
         <source><x id="who" equiv-text="who"/> – forfalt <x id="day" equiv-text="dayWord(a.date)"/></source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/home/home.ts</context>
-          <context context-type="linenumber">328</context>
+          <context context-type="linenumber">330</context>
         </context-group>
       </trans-unit>
       <trans-unit id="home.openMeta" datatype="html">
         <source><x id="who" equiv-text="who"/> – <x id="day" equiv-text="dayWord(a.date)"/></source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/home/home.ts</context>
-          <context context-type="linenumber">329</context>
+          <context context-type="linenumber">331</context>
         </context-group>
       </trans-unit>
       <trans-unit id="home.doneMeta" datatype="html">
         <source><x id="who" equiv-text="who"/> – gjort<x id="at" equiv-text="at"/></source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/home/home.ts</context>
-          <context context-type="linenumber">336</context>
+          <context context-type="linenumber">338</context>
         </context-group>
       </trans-unit>
       <trans-unit id="home.upcomingMeta" datatype="html">
         <source><x id="who" equiv-text="who"/> – i morgen</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/home/home.ts</context>
-          <context context-type="linenumber">342</context>
+          <context context-type="linenumber">344</context>
         </context-group>
       </trans-unit>
       <trans-unit id="home.points" datatype="html">
         <source><x id="points" equiv-text="a.points"/> p</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/home/home.ts</context>
-          <context context-type="linenumber">346</context>
+          <context context-type="linenumber">348</context>
         </context-group>
       </trans-unit>
       <trans-unit id="home.remindAria" datatype="html">
         <source>Minn <x id="name" equiv-text="a.childName ?? &apos;&apos;"/> på <x id="title" equiv-text="a.title"/></source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/home/home.ts</context>
-          <context context-type="linenumber">362</context>
+          <context context-type="linenumber">364</context>
         </context-group>
       </trans-unit>
       <trans-unit id="home.remindSentAria" datatype="html">
         <source>Påminnelse sendt til <x id="name" equiv-text="a.childName ?? &apos;&apos;"/> om <x id="title" equiv-text="a.title"/></source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/home/home.ts</context>
-          <context context-type="linenumber">367</context>
+          <context context-type="linenumber">369</context>
         </context-group>
       </trans-unit>
       <trans-unit id="home.remindFallbackName" datatype="html">
         <source>Barnet</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/home/home.ts</context>
-          <context context-type="linenumber">405</context>
+          <context context-type="linenumber">407</context>
         </context-group>
       </trans-unit>
       <trans-unit id="home.remindSent" datatype="html">
         <source>Påminnelse sendt til <x id="name" equiv-text="name"/>.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/home/home.ts</context>
-          <context context-type="linenumber">421</context>
+          <context context-type="linenumber">423</context>
         </context-group>
       </trans-unit>
       <trans-unit id="home.remindNoPhone" datatype="html">
         <source><x id="name" equiv-text="name"/> har ikke slått på varsler på telefonen ennå.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/home/home.ts</context>
-          <context context-type="linenumber">426</context>
+          <context context-type="linenumber">428</context>
         </context-group>
       </trans-unit>
       <trans-unit id="home.createFailed" datatype="html">
         <source>Kunne ikke lage oppgaven. Prøv igjen.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/home/home.ts</context>
-          <context context-type="linenumber">543</context>
+          <context context-type="linenumber">545</context>
         </context-group>
       </trans-unit>
       <trans-unit id="home.remindNotOpen" datatype="html">
         <source>Oppgaven er ikke åpen lenger.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/home/home.ts</context>
-          <context context-type="linenumber">566</context>
+          <context context-type="linenumber">568</context>
         </context-group>
       </trans-unit>
       <trans-unit id="home.remindServerOff" datatype="html">
         <source>Påminnelser er ikke slått på i Diddit ennå.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/home/home.ts</context>
-          <context context-type="linenumber">569</context>
+          <context context-type="linenumber">571</context>
         </context-group>
       </trans-unit>
       <trans-unit id="home.remindFailed" datatype="html">
         <source>Kunne ikke sende påminnelsen. Prøv igjen.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/home/home.ts</context>
-          <context context-type="linenumber">572</context>
+          <context context-type="linenumber">574</context>
         </context-group>
       </trans-unit>
       <trans-unit id="invitationAccept.title" datatype="html">
@@ -5602,188 +5588,188 @@
         <source>Aktiv</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/manage-households/manage-households.html</context>
-          <context context-type="linenumber">88,90</context>
+          <context context-type="linenumber">89,91</context>
         </context-group>
       </trans-unit>
       <trans-unit id="households.memberCount" datatype="html">
         <source>{VAR_PLURAL, plural, =1 {1 medlem} other {<x id="INTERPOLATION"/> medlemmer}}</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/manage-households/manage-households.html</context>
-          <context context-type="linenumber">120,122</context>
+          <context context-type="linenumber">122,124</context>
         </context-group>
       </trans-unit>
       <trans-unit id="households.childrenCount" datatype="html">
         <source>{VAR_PLURAL, plural, =1 {1 barn} other {<x id="INTERPOLATION"/> barn}}</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/manage-households/manage-households.html</context>
-          <context context-type="linenumber">145,147</context>
+          <context context-type="linenumber">147,149</context>
         </context-group>
       </trans-unit>
       <trans-unit id="households.switchAriaLabel" datatype="html">
         <source>Bytt til <x id="INTERPOLATION" equiv-text="{{ household.name }}"/></source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/manage-households/manage-households.html</context>
-          <context context-type="linenumber">158,159</context>
+          <context context-type="linenumber">160,161</context>
         </context-group>
       </trans-unit>
       <trans-unit id="households.switchButton" datatype="html">
         <source> Bytt til </source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/manage-households/manage-households.html</context>
-          <context context-type="linenumber">162,163</context>
+          <context context-type="linenumber">164,165</context>
         </context-group>
       </trans-unit>
       <trans-unit id="households.editAriaLabel" datatype="html">
         <source>Endre <x id="INTERPOLATION" equiv-text="{{ household.name }}"/></source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/manage-households/manage-households.html</context>
-          <context context-type="linenumber">170,171</context>
+          <context context-type="linenumber">172,173</context>
         </context-group>
       </trans-unit>
       <trans-unit id="households.editButton" datatype="html">
         <source> Endre </source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/manage-households/manage-households.html</context>
-          <context context-type="linenumber">174,175</context>
+          <context context-type="linenumber">176,177</context>
         </context-group>
       </trans-unit>
       <trans-unit id="households.leaveAriaLabel" datatype="html">
         <source>Forlat <x id="INTERPOLATION" equiv-text="{{ household.name }}"/></source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/manage-households/manage-households.html</context>
-          <context context-type="linenumber">182,183</context>
+          <context context-type="linenumber">184,185</context>
         </context-group>
       </trans-unit>
       <trans-unit id="households.leaveButton" datatype="html">
         <source> Forlat </source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/manage-households/manage-households.html</context>
-          <context context-type="linenumber">186,187</context>
+          <context context-type="linenumber">188,189</context>
         </context-group>
       </trans-unit>
       <trans-unit id="households.onlyAdminTitle" datatype="html">
         <source>Du er eneste administrator</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/manage-households/manage-households.html</context>
-          <context context-type="linenumber">191,192</context>
+          <context context-type="linenumber">193,194</context>
         </context-group>
       </trans-unit>
       <trans-unit id="households.onlyAdmin" datatype="html">
         <source> Eneste administrator </source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/manage-households/manage-households.html</context>
-          <context context-type="linenumber">195,196</context>
+          <context context-type="linenumber">197,198</context>
         </context-group>
       </trans-unit>
       <trans-unit id="households.deleteAriaLabel" datatype="html">
         <source>Slett <x id="INTERPOLATION" equiv-text="{{ household.name }}"/></source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/manage-households/manage-households.html</context>
-          <context context-type="linenumber">203,204</context>
+          <context context-type="linenumber">205,206</context>
         </context-group>
       </trans-unit>
       <trans-unit id="households.deleteButton" datatype="html">
         <source> Slett </source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/manage-households/manage-households.html</context>
-          <context context-type="linenumber">207,208</context>
+          <context context-type="linenumber">209,210</context>
         </context-group>
       </trans-unit>
       <trans-unit id="households.createTitle" datatype="html">
         <source>Ny husholdning</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/manage-households/manage-households.html</context>
-          <context context-type="linenumber">222,223</context>
+          <context context-type="linenumber">224,225</context>
         </context-group>
       </trans-unit>
       <trans-unit id="households.nameLabel" datatype="html">
         <source>Navn på husholdningen</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/manage-households/manage-households.html</context>
-          <context context-type="linenumber">227,229</context>
+          <context context-type="linenumber">229,231</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/manage-households/manage-households.html</context>
-          <context context-type="linenumber">284,286</context>
+          <context context-type="linenumber">286,288</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/manage-households/manage-households.html</context>
-          <context context-type="linenumber">290,291</context>
+          <context context-type="linenumber">292,293</context>
         </context-group>
       </trans-unit>
       <trans-unit id="households.createPlaceholder" datatype="html">
         <source>For eksempel Familien Hansen</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/manage-households/manage-households.html</context>
-          <context context-type="linenumber">233,234</context>
+          <context context-type="linenumber">235,236</context>
         </context-group>
       </trans-unit>
       <trans-unit id="households.nameHint" datatype="html">
         <source>Gi husholdningen et navn (1–100 tegn)</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/manage-households/manage-households.html</context>
-          <context context-type="linenumber">245,248</context>
+          <context context-type="linenumber">247,250</context>
         </context-group>
       </trans-unit>
       <trans-unit id="households.cancel" datatype="html">
         <source> Avbryt </source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/manage-households/manage-households.html</context>
-          <context context-type="linenumber">258,260</context>
+          <context context-type="linenumber">260,262</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/manage-households/manage-households.html</context>
-          <context context-type="linenumber">311,313</context>
+          <context context-type="linenumber">313,315</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/manage-households/manage-households.html</context>
-          <context context-type="linenumber">355,358</context>
+          <context context-type="linenumber">357,360</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/manage-households/manage-households.html</context>
-          <context context-type="linenumber">398,401</context>
+          <context context-type="linenumber">400,403</context>
         </context-group>
       </trans-unit>
       <trans-unit id="households.creating" datatype="html">
         <source>Oppretter …</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/manage-households/manage-households.html</context>
-          <context context-type="linenumber">266,268</context>
+          <context context-type="linenumber">268,270</context>
         </context-group>
       </trans-unit>
       <trans-unit id="households.create" datatype="html">
         <source>Opprett</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/manage-households/manage-households.html</context>
-          <context context-type="linenumber">268,270</context>
+          <context context-type="linenumber">270,272</context>
         </context-group>
       </trans-unit>
       <trans-unit id="households.editTitle" datatype="html">
         <source>Endre husholdning</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/manage-households/manage-households.html</context>
-          <context context-type="linenumber">279,280</context>
+          <context context-type="linenumber">281,282</context>
         </context-group>
       </trans-unit>
       <trans-unit id="households.saving" datatype="html">
         <source>Lagrer …</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/manage-households/manage-households.html</context>
-          <context context-type="linenumber">319,320</context>
+          <context context-type="linenumber">321,322</context>
         </context-group>
       </trans-unit>
       <trans-unit id="households.save" datatype="html">
         <source>Lagre</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/manage-households/manage-households.html</context>
-          <context context-type="linenumber">321,323</context>
+          <context context-type="linenumber">323,325</context>
         </context-group>
       </trans-unit>
       <trans-unit id="households.leaveTitle" datatype="html">
         <source>Forlat husholdningen</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/manage-households/manage-households.html</context>
-          <context context-type="linenumber">332,333</context>
+          <context context-type="linenumber">334,335</context>
         </context-group>
       </trans-unit>
       <trans-unit id="households.leaveQuestion" datatype="html">
@@ -5791,63 +5777,63 @@
       &gt;"/>? </source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/manage-households/manage-households.html</context>
-          <context context-type="linenumber">338,341</context>
+          <context context-type="linenumber">340,343</context>
         </context-group>
       </trans-unit>
       <trans-unit id="households.leaveDetail" datatype="html">
         <source> Du mister tilgang til alle oppgaver, belønninger og data i denne husholdningen. En administrator kan invitere deg igjen hvis du ombestemmer deg. </source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/manage-households/manage-households.html</context>
-          <context context-type="linenumber">342,347</context>
+          <context context-type="linenumber">344,349</context>
         </context-group>
       </trans-unit>
       <trans-unit id="households.leaving" datatype="html">
         <source>Forlater …</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/manage-households/manage-households.html</context>
-          <context context-type="linenumber">364,366</context>
+          <context context-type="linenumber">366,368</context>
         </context-group>
       </trans-unit>
       <trans-unit id="households.leaveConfirm" datatype="html">
         <source>Forlat husholdningen</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/manage-households/manage-households.html</context>
-          <context context-type="linenumber">366,369</context>
+          <context context-type="linenumber">368,371</context>
         </context-group>
       </trans-unit>
       <trans-unit id="households.deleteTitle" datatype="html">
         <source>Slett husholdningen</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/manage-households/manage-households.html</context>
-          <context context-type="linenumber">376,377</context>
+          <context context-type="linenumber">378,379</context>
         </context-group>
       </trans-unit>
       <trans-unit id="households.deleteQuestion" datatype="html">
         <source> Vil du slette <x id="START_TAG_STRONG" ctype="x-strong" equiv-text="&lt;strong&gt;"/><x id="INTERPOLATION" equiv-text="{{ selectedHousehold()?.name }}"/><x id="CLOSE_TAG_STRONG" ctype="x-strong" equiv-text="&lt;/strong&gt;"/> for godt? </source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/manage-households/manage-households.html</context>
-          <context context-type="linenumber">382,384</context>
+          <context context-type="linenumber">384,386</context>
         </context-group>
       </trans-unit>
       <trans-unit id="households.deleteDetail" datatype="html">
         <source><x id="START_TAG_STRONG" ctype="x-strong" equiv-text="&lt;strong&gt;"/>Dette kan ikke angres.<x id="CLOSE_TAG_STRONG" ctype="x-strong" equiv-text="&lt;/strong&gt;"/> Alle medlemmer, barn, oppgaver, belønninger og fremgang blir slettet for godt. </source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/manage-households/manage-households.html</context>
-          <context context-type="linenumber">385,388</context>
+          <context context-type="linenumber">387,390</context>
         </context-group>
       </trans-unit>
       <trans-unit id="households.deleting" datatype="html">
         <source>Sletter …</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/manage-households/manage-households.html</context>
-          <context context-type="linenumber">407,409</context>
+          <context context-type="linenumber">409,411</context>
         </context-group>
       </trans-unit>
       <trans-unit id="households.deleteConfirm" datatype="html">
         <source>Slett for godt</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/manage-households/manage-households.html</context>
-          <context context-type="linenumber">409,412</context>
+          <context context-type="linenumber">411,414</context>
         </context-group>
       </trans-unit>
       <trans-unit id="households.countOne" datatype="html">
@@ -6300,7 +6286,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/rewards-management/rewards-management.html</context>
-          <context context-type="linenumber">174,175</context>
+          <context context-type="linenumber">174,176</context>
         </context-group>
       </trans-unit>
       <trans-unit id="rewards.childAsks" datatype="html">
@@ -6346,11 +6332,11 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/rewards-management/rewards-management.html</context>
-          <context context-type="linenumber">263,265</context>
+          <context context-type="linenumber">259,261</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/rewards-management/rewards-management.html</context>
-          <context context-type="linenumber">339,340</context>
+          <context context-type="linenumber">335,336</context>
         </context-group>
       </trans-unit>
       <trans-unit id="rewards.sayYes" datatype="html">
@@ -6396,309 +6382,309 @@
         </context-group>
       </trans-unit>
       <trans-unit id="rewards.noneWaiting" datatype="html">
-        <source> Ingen ønsker venter på svar </source>
+        <source>Ingen ønsker venter på svar</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/rewards-management/rewards-management.html</context>
           <context context-type="linenumber">177,178</context>
         </context-group>
       </trans-unit>
       <trans-unit id="rewards.noneWaitingHint" datatype="html">
-        <source> Når et barn ber om en belønning, kommer den her. </source>
+        <source>Når et barn ber om en belønning, kommer den her.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/rewards-management/rewards-management.html</context>
-          <context context-type="linenumber">180,182</context>
+          <context context-type="linenumber">179,182</context>
         </context-group>
       </trans-unit>
       <trans-unit id="rewards.toGiveHeading" datatype="html">
         <source>Skal gis</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/rewards-management/rewards-management.html</context>
-          <context context-type="linenumber">189,190</context>
+          <context context-type="linenumber">187,188</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/rewards-management/rewards-management.html</context>
-          <context context-type="linenumber">213,214</context>
+          <context context-type="linenumber">211,213</context>
         </context-group>
       </trans-unit>
       <trans-unit id="rewards.toGiveTitle" datatype="html">
         <source><x id="START_TAG_STRONG" ctype="x-strong" equiv-text="&lt;strong&gt;"/><x id="INTERPOLATION" equiv-text="{{ redemption.rewardName }}"/><x id="CLOSE_TAG_STRONG" ctype="x-strong" equiv-text="&lt;/strong&gt;"/> til <x id="INTERPOLATION_1" equiv-text="{{ redemption.childName }}"/> </source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/rewards-management/rewards-management.html</context>
-          <context context-type="linenumber">194,195</context>
+          <context context-type="linenumber">192,193</context>
         </context-group>
       </trans-unit>
       <trans-unit id="rewards.markGiven" datatype="html">
         <source> Gitt </source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/rewards-management/rewards-management.html</context>
-          <context context-type="linenumber">204,205</context>
+          <context context-type="linenumber">202,203</context>
         </context-group>
       </trans-unit>
       <trans-unit id="rewards.noneToGive" datatype="html">
         <source>Ingenting skal gis nå</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/rewards-management/rewards-management.html</context>
-          <context context-type="linenumber">215,216</context>
+          <context context-type="linenumber">214,215</context>
         </context-group>
       </trans-unit>
       <trans-unit id="rewards.noneToGiveHint" datatype="html">
-        <source> Når du sier ja til et ønske, ligger det her til du har gitt det. </source>
+        <source>Når du sier ja til et ønske, ligger det her til du har gitt det.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/rewards-management/rewards-management.html</context>
-          <context context-type="linenumber">217,219</context>
+          <context context-type="linenumber">216,218</context>
         </context-group>
       </trans-unit>
       <trans-unit id="rewards.historyHeading" datatype="html">
         <source>Tidligere</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/rewards-management/rewards-management.html</context>
-          <context context-type="linenumber">226,227</context>
+          <context context-type="linenumber">224,225</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/rewards-management/rewards-management.html</context>
-          <context context-type="linenumber">242,243</context>
+          <context context-type="linenumber">240,242</context>
         </context-group>
       </trans-unit>
       <trans-unit id="rewards.statusGiven" datatype="html">
         <source>Gitt</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/rewards-management/rewards-management.html</context>
-          <context context-type="linenumber">232,233</context>
+          <context context-type="linenumber">230,231</context>
         </context-group>
       </trans-unit>
       <trans-unit id="rewards.statusNo" datatype="html">
         <source>Nei</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/rewards-management/rewards-management.html</context>
-          <context context-type="linenumber">234,236</context>
+          <context context-type="linenumber">232,234</context>
         </context-group>
       </trans-unit>
       <trans-unit id="rewards.noHistory" datatype="html">
-        <source> Ingen ønsker er avgjort ennå </source>
+        <source>Ingen ønsker er avgjort ennå</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/rewards-management/rewards-management.html</context>
-          <context context-type="linenumber">245,246</context>
+          <context context-type="linenumber">243,244</context>
         </context-group>
       </trans-unit>
       <trans-unit id="rewards.noHistoryHint" datatype="html">
-        <source> Det du har gitt eller sagt nei til, samles her. </source>
+        <source>Det du har gitt eller sagt nei til, samles her.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/rewards-management/rewards-management.html</context>
-          <context context-type="linenumber">248,250</context>
+          <context context-type="linenumber">245,247</context>
         </context-group>
       </trans-unit>
       <trans-unit id="rewards.newReward" datatype="html">
         <source>Ny belønning</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/rewards-management/rewards-management.html</context>
-          <context context-type="linenumber">265,267</context>
+          <context context-type="linenumber">261,263</context>
         </context-group>
       </trans-unit>
       <trans-unit id="rewards.editHeading" datatype="html">
         <source>Endre belønning</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/rewards-management/rewards-management.html</context>
-          <context context-type="linenumber">275,277</context>
+          <context context-type="linenumber">271,273</context>
         </context-group>
       </trans-unit>
       <trans-unit id="rewards.createHeading" datatype="html">
         <source>Ny belønning</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/rewards-management/rewards-management.html</context>
-          <context context-type="linenumber">277,279</context>
+          <context context-type="linenumber">273,275</context>
         </context-group>
       </trans-unit>
       <trans-unit id="rewards.nameLabel" datatype="html">
         <source>Navn *</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/rewards-management/rewards-management.html</context>
-          <context context-type="linenumber">281,283</context>
+          <context context-type="linenumber">277,279</context>
         </context-group>
       </trans-unit>
       <trans-unit id="rewards.namePlaceholder" datatype="html">
         <source>For eksempel: Ekstra skjermtid</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/rewards-management/rewards-management.html</context>
-          <context context-type="linenumber">286,287</context>
+          <context context-type="linenumber">282,283</context>
         </context-group>
       </trans-unit>
       <trans-unit id="rewards.descriptionLabel" datatype="html">
         <source>Beskrivelse</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/rewards-management/rewards-management.html</context>
-          <context context-type="linenumber">292,294</context>
+          <context context-type="linenumber">288,290</context>
         </context-group>
       </trans-unit>
       <trans-unit id="rewards.optional" datatype="html">
         <source>Valgfritt</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/rewards-management/rewards-management.html</context>
-          <context context-type="linenumber">296,297</context>
+          <context context-type="linenumber">292,293</context>
         </context-group>
       </trans-unit>
       <trans-unit id="rewards.pointsLabel" datatype="html">
         <source>Koster poeng *</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/rewards-management/rewards-management.html</context>
-          <context context-type="linenumber">303,305</context>
+          <context context-type="linenumber">299,301</context>
         </context-group>
       </trans-unit>
       <trans-unit id="rewards.quantityLabel" datatype="html">
         <source>Antall (valgfritt)</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/rewards-management/rewards-management.html</context>
-          <context context-type="linenumber">313,315</context>
+          <context context-type="linenumber">309,311</context>
         </context-group>
       </trans-unit>
       <trans-unit id="rewards.quantityPlaceholder" datatype="html">
         <source>Tomt betyr ubegrenset</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/rewards-management/rewards-management.html</context>
-          <context context-type="linenumber">319,320</context>
+          <context context-type="linenumber">315,316</context>
         </context-group>
       </trans-unit>
       <trans-unit id="rewards.save" datatype="html">
         <source> Lagre </source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/rewards-management/rewards-management.html</context>
-          <context context-type="linenumber">331,332</context>
+          <context context-type="linenumber">327,328</context>
         </context-group>
       </trans-unit>
       <trans-unit id="rewards.create" datatype="html">
         <source> Lag belønning </source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/rewards-management/rewards-management.html</context>
-          <context context-type="linenumber">348,349</context>
+          <context context-type="linenumber">344,345</context>
         </context-group>
       </trans-unit>
       <trans-unit id="rewards.loadingRewards" datatype="html">
         <source>Henter belønninger…</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/rewards-management/rewards-management.html</context>
-          <context context-type="linenumber">357,359</context>
+          <context context-type="linenumber">353,355</context>
         </context-group>
       </trans-unit>
       <trans-unit id="rewards.loadFailed" datatype="html">
         <source> Vi fikk ikke hentet belønningene. </source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/rewards-management/rewards-management.html</context>
-          <context context-type="linenumber">360,362</context>
+          <context context-type="linenumber">356,358</context>
         </context-group>
       </trans-unit>
       <trans-unit id="rewards.noRewards" datatype="html">
         <source>Ingen belønninger ennå. Lag den første!</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/rewards-management/rewards-management.html</context>
-          <context context-type="linenumber">364,366</context>
+          <context context-type="linenumber">360,362</context>
         </context-group>
       </trans-unit>
       <trans-unit id="rewards.points" datatype="html">
         <source><x id="INTERPOLATION" equiv-text="{{ reward.pointsCost }}"/> poeng</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/rewards-management/rewards-management.html</context>
-          <context context-type="linenumber">373,374</context>
+          <context context-type="linenumber">369,370</context>
         </context-group>
       </trans-unit>
       <trans-unit id="rewards.quantityLeft" datatype="html">
         <source>Igjen: <x id="INTERPOLATION" equiv-text="{{ reward.quantity }}"/></source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/rewards-management/rewards-management.html</context>
-          <context context-type="linenumber">380,381</context>
+          <context context-type="linenumber">376,377</context>
         </context-group>
       </trans-unit>
       <trans-unit id="rewards.paused" datatype="html">
         <source>På pause – barna ser den ikke.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/rewards-management/rewards-management.html</context>
-          <context context-type="linenumber">383,385</context>
+          <context context-type="linenumber">379,381</context>
         </context-group>
       </trans-unit>
       <trans-unit id="rewards.edit" datatype="html">
         <source> Endre </source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/rewards-management/rewards-management.html</context>
-          <context context-type="linenumber">392,393</context>
+          <context context-type="linenumber">388,389</context>
         </context-group>
       </trans-unit>
       <trans-unit id="rewards.pause" datatype="html">
         <source>Sett på pause</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/rewards-management/rewards-management.html</context>
-          <context context-type="linenumber">400,401</context>
+          <context context-type="linenumber">396,397</context>
         </context-group>
       </trans-unit>
       <trans-unit id="rewards.resume" datatype="html">
         <source>Vis igjen</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/rewards-management/rewards-management.html</context>
-          <context context-type="linenumber">402,404</context>
+          <context context-type="linenumber">398,400</context>
         </context-group>
       </trans-unit>
       <trans-unit id="rewards.delete" datatype="html">
         <source> Slett </source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/rewards-management/rewards-management.html</context>
-          <context context-type="linenumber">411,412</context>
+          <context context-type="linenumber">407,408</context>
         </context-group>
       </trans-unit>
       <trans-unit id="rewards.actionFailed" datatype="html">
         <source>Det gikk ikke. Kanskje noen andre svarte først, eller tiden for å angre er ute. Last siden på nytt og prøv igjen.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/rewards-management/rewards-management.ts</context>
-          <context context-type="linenumber">178</context>
+          <context context-type="linenumber">183</context>
         </context-group>
       </trans-unit>
       <trans-unit id="rewards.fillRequired" datatype="html">
         <source>Skriv et navn og hvor mange poeng det koster.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/rewards-management/rewards-management.ts</context>
-          <context context-type="linenumber">199</context>
+          <context context-type="linenumber">204</context>
         </context-group>
       </trans-unit>
       <trans-unit id="rewards.createFailed" datatype="html">
         <source>Belønningen ble ikke lagret. Prøv igjen.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/rewards-management/rewards-management.ts</context>
-          <context context-type="linenumber">209</context>
+          <context context-type="linenumber">214</context>
         </context-group>
       </trans-unit>
       <trans-unit id="rewards.updateFailed" datatype="html">
         <source>Endringen ble ikke lagret. Prøv igjen.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/rewards-management/rewards-management.ts</context>
-          <context context-type="linenumber">235</context>
+          <context context-type="linenumber">240</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/rewards-management/rewards-management.ts</context>
-          <context context-type="linenumber">272</context>
+          <context context-type="linenumber">277</context>
         </context-group>
       </trans-unit>
       <trans-unit id="rewards.confirmDeleteTitle" datatype="html">
         <source>Slette belønningen?</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/rewards-management/rewards-management.ts</context>
-          <context context-type="linenumber">247</context>
+          <context context-type="linenumber">252</context>
         </context-group>
       </trans-unit>
       <trans-unit id="rewards.confirmDelete" datatype="html">
         <source>Vil du slette «<x id="rewardName" equiv-text="reward.name"/>»?</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/rewards-management/rewards-management.ts</context>
-          <context context-type="linenumber">248</context>
+          <context context-type="linenumber">253</context>
         </context-group>
       </trans-unit>
       <trans-unit id="rewards.confirmDeleteButton" datatype="html">
         <source>Slett</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/rewards-management/rewards-management.ts</context>
-          <context context-type="linenumber">249</context>
+          <context context-type="linenumber">254</context>
         </context-group>
       </trans-unit>
       <trans-unit id="rewards.deleteFailed" datatype="html">
         <source>Belønningen ble ikke slettet. Prøv igjen.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/rewards-management/rewards-management.ts</context>
-          <context context-type="linenumber">261</context>
+          <context context-type="linenumber">266</context>
         </context-group>
       </trans-unit>
       <trans-unit id="settings.loading" datatype="html">
@@ -7350,297 +7336,297 @@
         </context-group>
       </trans-unit>
       <trans-unit id="tasks.noneDoneToday" datatype="html">
-        <source> Ingen oppgaver er haket av i dag </source>
+        <source>Ingen oppgaver er haket av i dag</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/tasks/tasks.html</context>
           <context context-type="linenumber">223,224</context>
         </context-group>
       </trans-unit>
       <trans-unit id="tasks.noneDoneTodayHint" datatype="html">
-        <source> Når noen haker av en oppgave, dukker den opp her. </source>
+        <source>Når noen haker av en oppgave, dukker den opp her.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/tasks/tasks.html</context>
-          <context context-type="linenumber">226,227</context>
+          <context context-type="linenumber">225,228</context>
         </context-group>
       </trans-unit>
       <trans-unit id="tasks.allGroup" datatype="html">
         <source>Alle oppgaver</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/tasks/tasks.html</context>
-          <context context-type="linenumber">256,257</context>
+          <context context-type="linenumber">254,255</context>
         </context-group>
       </trans-unit>
       <trans-unit id="tasks.selectStart" datatype="html">
         <source> Velg </source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/tasks/tasks.html</context>
-          <context context-type="linenumber">267,268</context>
+          <context context-type="linenumber">265,266</context>
         </context-group>
       </trans-unit>
       <trans-unit id="tasks.selectCancel" datatype="html">
         <source> Avbryt </source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/tasks/tasks.html</context>
-          <context context-type="linenumber">313,314</context>
+          <context context-type="linenumber">311,312</context>
         </context-group>
       </trans-unit>
       <trans-unit id="tasks.bulkRetry" datatype="html">
         <source>Prøv igjen</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/tasks/tasks.html</context>
-          <context context-type="linenumber">323,324</context>
+          <context context-type="linenumber">321,322</context>
         </context-group>
       </trans-unit>
       <trans-unit id="tasks.newTask" datatype="html">
         <source>Ny oppgave</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/tasks/tasks.html</context>
-          <context context-type="linenumber">342,344</context>
+          <context context-type="linenumber">340,342</context>
         </context-group>
       </trans-unit>
       <trans-unit id="tasks.bulkConfirmCancel" datatype="html">
         <source> Avbryt </source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/tasks/tasks.html</context>
-          <context context-type="linenumber">375,378</context>
+          <context context-type="linenumber">373,376</context>
         </context-group>
       </trans-unit>
       <trans-unit id="tasks.bulkDeleting" datatype="html">
         <source>Sletter …</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/tasks/tasks.html</context>
-          <context context-type="linenumber">385,386</context>
+          <context context-type="linenumber">383,384</context>
         </context-group>
       </trans-unit>
       <trans-unit id="tasks.pageTitle" datatype="html">
         <source>Oppgaver</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/tasks/tasks.ts</context>
-          <context context-type="linenumber">79</context>
+          <context context-type="linenumber">88</context>
         </context-group>
       </trans-unit>
       <trans-unit id="tasks.subtitleLate" datatype="html">
         <source><x id="total" equiv-text="total"/> i dag – <x id="late" equiv-text="late"/> forfalt</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/tasks/tasks.ts</context>
-          <context context-type="linenumber">147</context>
+          <context context-type="linenumber">156</context>
         </context-group>
       </trans-unit>
       <trans-unit id="tasks.subtitle" datatype="html">
         <source><x id="total" equiv-text="total"/> i dag</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/tasks/tasks.ts</context>
-          <context context-type="linenumber">148</context>
+          <context context-type="linenumber">157</context>
         </context-group>
       </trans-unit>
       <trans-unit id="tasks.selectTitleEmpty" datatype="html">
         <source>Velg oppgaver</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/tasks/tasks.ts</context>
-          <context context-type="linenumber">171</context>
+          <context context-type="linenumber">180</context>
         </context-group>
       </trans-unit>
       <trans-unit id="tasks.selectTitleCount" datatype="html">
         <source><x id="n" equiv-text="n"/> valgt</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/tasks/tasks.ts</context>
-          <context context-type="linenumber">172</context>
+          <context context-type="linenumber">181</context>
         </context-group>
       </trans-unit>
       <trans-unit id="tasks.selectSummary" datatype="html">
         <source><x id="n" equiv-text="this.chosenCount()"/> av <x id="total" equiv-text="this.templates().length"/> valgt</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/tasks/tasks.ts</context>
-          <context context-type="linenumber">178</context>
+          <context context-type="linenumber">187</context>
         </context-group>
       </trans-unit>
       <trans-unit id="tasks.bulkDeleteNone" datatype="html">
         <source>Slett</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/tasks/tasks.ts</context>
-          <context context-type="linenumber">184</context>
+          <context context-type="linenumber">193</context>
         </context-group>
       </trans-unit>
       <trans-unit id="tasks.bulkDelete" datatype="html">
         <source>Slett <x id="n" equiv-text="n"/></source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/tasks/tasks.ts</context>
-          <context context-type="linenumber">185</context>
+          <context context-type="linenumber">194</context>
         </context-group>
       </trans-unit>
       <trans-unit id="tasks.bulkDeleteLongOne" datatype="html">
         <source>Slett 1 oppgave</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/tasks/tasks.ts</context>
-          <context context-type="linenumber">192</context>
+          <context context-type="linenumber">201</context>
         </context-group>
       </trans-unit>
       <trans-unit id="tasks.bulkDeleteLong" datatype="html">
         <source>Slett <x id="n" equiv-text="n"/> oppgaver</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/tasks/tasks.ts</context>
-          <context context-type="linenumber">193</context>
+          <context context-type="linenumber">202</context>
         </context-group>
       </trans-unit>
       <trans-unit id="tasks.bulkConfirmTitleOne" datatype="html">
         <source>Slette 1 oppgave?</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/tasks/tasks.ts</context>
-          <context context-type="linenumber">204</context>
+          <context context-type="linenumber">213</context>
         </context-group>
       </trans-unit>
       <trans-unit id="tasks.bulkConfirmTitle" datatype="html">
         <source>Slette <x id="n" equiv-text="n"/> oppgaver?</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/tasks/tasks.ts</context>
-          <context context-type="linenumber">205</context>
+          <context context-type="linenumber">214</context>
         </context-group>
       </trans-unit>
       <trans-unit id="tasks.bulkConfirmBodyOne" datatype="html">
         <source>Oppgaven forsvinner for hele familien. Poeng som alt er gitt, blir stående. Dette kan ikke angres.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/tasks/tasks.ts</context>
-          <context context-type="linenumber">211</context>
+          <context context-type="linenumber">220</context>
         </context-group>
       </trans-unit>
       <trans-unit id="tasks.bulkConfirmBody" datatype="html">
         <source>De <x id="n" equiv-text="count"/> oppgavene forsvinner for hele familien. Poeng som alt er gitt, blir stående. Dette kan ikke angres.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/tasks/tasks.ts</context>
-          <context context-type="linenumber">214</context>
+          <context context-type="linenumber">223</context>
         </context-group>
       </trans-unit>
       <trans-unit id="tasks.bulkConfirmMore" datatype="html">
         <source>+ <x id="n" equiv-text="rest"/> til</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/tasks/tasks.ts</context>
-          <context context-type="linenumber">225</context>
+          <context context-type="linenumber">234</context>
         </context-group>
       </trans-unit>
       <trans-unit id="tasks.bulkNoneDeleted" datatype="html">
         <source>Ingen av oppgavene ble slettet</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/tasks/tasks.ts</context>
-          <context context-type="linenumber">232</context>
+          <context context-type="linenumber">241</context>
         </context-group>
       </trans-unit>
       <trans-unit id="tasks.bulkPartial" datatype="html">
         <source><x id="failed" equiv-text="f.failed"/> av <x id="asked" equiv-text="f.asked"/> ble ikke slettet</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/tasks/tasks.ts</context>
-          <context context-type="linenumber">233</context>
+          <context context-type="linenumber">242</context>
         </context-group>
       </trans-unit>
       <trans-unit id="tasks.noHousehold" datatype="html">
         <source>Ingen husstand valgt</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/tasks/tasks.ts</context>
-          <context context-type="linenumber">249</context>
+          <context context-type="linenumber">258</context>
         </context-group>
       </trans-unit>
       <trans-unit id="tasks.loadFailed" datatype="html">
         <source>Kunne ikke laste oppgavene</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/tasks/tasks.ts</context>
-          <context context-type="linenumber">266</context>
+          <context context-type="linenumber">275</context>
         </context-group>
       </trans-unit>
       <trans-unit id="tasks.overdueMeta" datatype="html">
         <source><x id="who" equiv-text="this.who(a)"/> – Forfalt <x id="day" equiv-text="dayWord(a.date)"/></source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/tasks/tasks.ts</context>
-          <context context-type="linenumber">286</context>
+          <context context-type="linenumber">295</context>
         </context-group>
       </trans-unit>
       <trans-unit id="tasks.openMeta" datatype="html">
         <source><x id="who" equiv-text="this.who(a)"/> – <x id="day" equiv-text="capitalize(dayWord(a.date))"/></source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/tasks/tasks.ts</context>
-          <context context-type="linenumber">291</context>
+          <context context-type="linenumber">300</context>
         </context-group>
       </trans-unit>
       <trans-unit id="tasks.doneMeta" datatype="html">
         <source><x id="who" equiv-text="this.who(a)"/> – Gjort<x id="at" equiv-text="at"/></source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/tasks/tasks.ts</context>
-          <context context-type="linenumber">297</context>
+          <context context-type="linenumber">306</context>
         </context-group>
       </trans-unit>
       <trans-unit id="tasks.ruleNoChildren" datatype="html">
         <source>Uten barn – velg et nytt</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/tasks/tasks.ts</context>
-          <context context-type="linenumber">303</context>
+          <context context-type="linenumber">312</context>
         </context-group>
       </trans-unit>
       <trans-unit id="tasks.ruleOnce" datatype="html">
         <source>Én gang</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/tasks/tasks.ts</context>
-          <context context-type="linenumber">307</context>
+          <context context-type="linenumber">316</context>
         </context-group>
       </trans-unit>
       <trans-unit id="tasks.ruleRepeat" datatype="html">
         <source>Gjentas</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/tasks/tasks.ts</context>
-          <context context-type="linenumber">308</context>
+          <context context-type="linenumber">317</context>
         </context-group>
       </trans-unit>
       <trans-unit id="tasks.points" datatype="html">
         <source><x id="points" equiv-text="value"/> p</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/tasks/tasks.ts</context>
-          <context context-type="linenumber">318</context>
+          <context context-type="linenumber">327</context>
         </context-group>
       </trans-unit>
       <trans-unit id="tasks.anyone" datatype="html">
         <source>Alle</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/tasks/tasks.ts</context>
-          <context context-type="linenumber">322</context>
+          <context context-type="linenumber">331</context>
         </context-group>
       </trans-unit>
       <trans-unit id="tasks.completeFailed" datatype="html">
         <source>Kunne ikke merke oppgaven som ferdig</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/tasks/tasks.ts</context>
-          <context context-type="linenumber">337</context>
+          <context context-type="linenumber">346</context>
         </context-group>
       </trans-unit>
       <trans-unit id="tasks.updateFailed" datatype="html">
         <source>Kunne ikke lagre oppgaven</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/tasks/tasks.ts</context>
-          <context context-type="linenumber">371</context>
+          <context context-type="linenumber">380</context>
         </context-group>
       </trans-unit>
       <trans-unit id="tasks.deleteFailed" datatype="html">
         <source>Kunne ikke slette oppgaven</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/tasks/tasks.ts</context>
-          <context context-type="linenumber">386</context>
+          <context context-type="linenumber">395</context>
         </context-group>
       </trans-unit>
       <trans-unit id="tasks.reassignFailed" datatype="html">
         <source>Kunne ikke bytte hvem som har oppgaven</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/tasks/tasks.ts</context>
-          <context context-type="linenumber">431</context>
+          <context context-type="linenumber">440</context>
         </context-group>
       </trans-unit>
       <trans-unit id="tasks.bulkDeletedOne" datatype="html">
         <source>1 oppgave slettet</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/tasks/tasks.ts</context>
-          <context context-type="linenumber">537</context>
+          <context context-type="linenumber">546</context>
         </context-group>
       </trans-unit>
       <trans-unit id="tasks.bulkDeleted" datatype="html">
         <source><x id="n" equiv-text="n"/> oppgaver slettet</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/tasks/tasks.ts</context>
-          <context context-type="linenumber">538</context>
+          <context context-type="linenumber">547</context>
         </context-group>
       </trans-unit>
       <trans-unit id="settings.roleParent" datatype="html">

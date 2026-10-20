@@ -50,7 +50,7 @@ interface CreateChildRequest {
   Params: HouseholdParams;
   Body: {
     name: string;
-    birthYear: number;
+    birthYear?: number;
   };
 }
 
@@ -160,15 +160,22 @@ async function updateChild(request: FastifyRequest<UpdateChildRequest>, reply: F
 
     // Use COALESCE to preserve existing values when fields are not provided
     // This prevents data corruption from partial updates
+    // birthYear: absent keeps the year, null clears it (age is optional, ST-1624)
     const result = await db.query(
       `UPDATE children
        SET
          name = COALESCE($1, name),
-         birth_year = COALESCE($2, birth_year),
+         birth_year = CASE WHEN $5::boolean THEN $2::integer ELSE birth_year END,
          updated_at = NOW()
        WHERE id = $3 AND household_id = $4
        RETURNING id, household_id, user_id, name, birth_year, created_at, updated_at`,
-      [validatedData.name ?? null, validatedData.birthYear ?? null, id, householdId],
+      [
+        validatedData.name ?? null,
+        validatedData.birthYear ?? null,
+        id,
+        householdId,
+        validatedData.birthYear !== undefined,
+      ],
     );
 
     if (result.rows.length === 0) {
