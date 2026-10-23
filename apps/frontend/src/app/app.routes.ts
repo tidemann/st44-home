@@ -37,6 +37,13 @@ export const routes: Routes = [
       ),
   },
 
+  {
+    // ST-1678: a child sets their own password from the link a parent made
+    path: 'invitasjon/:token',
+    title: $localize`:@@routeTitle.childInvite:Lag passordet ditt - Diddit!`,
+    loadComponent: () => import('./auth/child-invite').then((m) => m.ChildInviteComponent),
+  },
+
   // Parent/Admin routes - wrapped in MainLayout
   {
     path: '',

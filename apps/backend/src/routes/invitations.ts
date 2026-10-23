@@ -235,7 +235,7 @@ async function listSentInvitations(
              u.email as inviter_email
       FROM invitations i
       JOIN users u ON i.invited_by = u.id
-      WHERE i.household_id = $1
+      WHERE i.household_id = $1 AND i.role <> 'child'
     `;
     const params: string[] = [householdId];
 
@@ -361,6 +361,7 @@ async function listReceivedInvitations(request: FastifyRequest, reply: FastifyRe
        JOIN households h ON i.household_id = h.id
        JOIN users u ON i.invited_by = u.id
        WHERE i.invited_email = $1 AND i.status = 'pending' AND i.expires_at > NOW()
+         AND i.role <> 'child'
        ORDER BY i.created_at DESC`,
       [userEmail.toLowerCase()],
     );
@@ -413,7 +414,7 @@ async function acceptInvitation(
                 h.name as household_name
          FROM invitations i
          JOIN households h ON i.household_id = h.id
-         WHERE i.token = $1`,
+         WHERE i.token = $1 AND i.role <> 'child'`,
         [token],
       );
 
@@ -523,7 +524,7 @@ async function declineInvitation(
     const result = await db.query(
       `UPDATE invitations
        SET status = 'declined', updated_at = NOW()
-       WHERE token = $1 AND invited_email = $2 AND status = 'pending'
+       WHERE token = $1 AND invited_email = $2 AND status = 'pending' AND role <> 'child'
        RETURNING id`,
       [token, userEmail.toLowerCase()],
     );

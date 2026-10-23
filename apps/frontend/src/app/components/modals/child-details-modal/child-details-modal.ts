@@ -5,13 +5,22 @@ import {
   signal,
   computed,
   inject,
+  effect,
+  untracked,
   ChangeDetectionStrategy,
 } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import type { Child } from '@st44/types';
 import { Modal } from '../modal/modal';
+import { ChildInviteModal } from '../child-invite-modal/child-invite-modal';
 import { CreateChildAccountComponent } from '../../create-child-account/create-child-account';
 import { ChildrenService } from '../../../services/children.service';
+import {
+  ChildInvitationService,
+  formatDayMonth,
+  formatWeekdayDate,
+  type ChildInvitation,
+} from '../../../services/child-invitation.service';
 import { isDesktopSignal } from '../../../utils/desktop-query';
 
 /**
@@ -28,7 +37,7 @@ import { isDesktopSignal } from '../../../utils/desktop-query';
  */
 @Component({
   selector: 'app-child-details-modal',
-  imports: [Modal, CreateChildAccountComponent, ReactiveFormsModule],
+  imports: [Modal, ChildInviteModal, CreateChildAccountComponent, ReactiveFormsModule],
   templateUrl: './child-details-modal.html',
   styleUrl: './child-details-modal.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -275,6 +284,110 @@ export class ChildDetailsModal {
       this.errorMessage.set('Failed to remove child. Please try again.');
     } finally {
       this.deleting.set(false);
+    }
+  }
+
+  // ---- ST-1678: invite the child by link -------------------------------------------------
+
+  private readonly invitations = inject(ChildInvitationService);
+
+  /** The newest invitation for this child, loaded each time the card opens */
+  protected readonly invitation = signal<ChildInvitation | null>(null);
+  protected readonly inviteOpen = signal(false);
+  protected readonly inviteEmail = signal('');
+  protected readonly inviteBusy = signal(false);
+  protected readonly inviteError = signal<string | null>(null);
+  protected readonly copied = signal(false);
+
+  protected readonly pendingInvitation = computed(() => {
+    const invitation = this.invitation();
+    return invitation?.status === 'pending' ? invitation : null;
+  });
+
+  protected readonly expiredInvitation = computed(() => {
+    const invitation = this.invitation();
+    return invitation?.status === 'expired' ? invitation : null;
+  });
+
+  protected readonly acceptedInvitation = computed(() => {
+    const invitation = this.invitation();
+    return invitation?.status === 'accepted' && invitation.acceptedAt ? invitation : null;
+  });
+
+  private readonly loadInvitation = effect(() => {
+    const child = this.child();
+    const householdId = this.householdId();
+    if (!this.open() || !child) return;
+    untracked(() => {
+      this.invitation.set(null);
+      this.inviteError.set(null);
+      this.copied.set(false);
+      this.invitations
+        .get(householdId, child.id)
+        .then((invitation) => {
+          if (this.child()?.id === child.id) this.invitation.set(invitation);
+        })
+        .catch((error) => console.error('Failed to load child invitation:', error));
+    });
+  });
+
+  protected readonly weekdayDate = formatWeekdayDate;
+  protected readonly dayMonth = formatDayMonth;
+
+  protected displayLink(token: string): string {
+    return this.invitations.displayLink(token);
+  }
+
+  openInvite(email: string): void {
+    this.inviteEmail.set(email);
+    this.inviteError.set(null);
+    this.inviteOpen.set(true);
+  }
+
+  onInvitationCreated(invitation: ChildInvitation): void {
+    this.invitation.set(invitation);
+  }
+
+  async copyLink(token: string): Promise<void> {
+    this.copied.set(false);
+    this.copied.set(await this.invitations.copyLink(token));
+  }
+
+  /** «Lag ny lenke»: a fresh link with 7 new days; the old one stops working */
+  async renewInvitation(email: string): Promise<void> {
+    const child = this.child();
+    if (!child || this.inviteBusy()) return;
+    this.inviteBusy.set(true);
+    this.inviteError.set(null);
+    try {
+      this.invitation.set(await this.invitations.create(this.householdId(), child.id, email));
+      this.copied.set(false);
+    } catch (error) {
+      console.error('Failed to renew child invitation:', error);
+      this.inviteError.set(
+        $localize`:@@childDetailsModal.newLinkFailed:Kunne ikke lage en ny lenke. Prøv igjen.`,
+      );
+    } finally {
+      this.inviteBusy.set(false);
+    }
+  }
+
+  /** «Avbryt invitasjonen»: the link stops; the profile, points and history are not touched */
+  async cancelInvitation(): Promise<void> {
+    const child = this.child();
+    if (!child || this.inviteBusy()) return;
+    this.inviteBusy.set(true);
+    this.inviteError.set(null);
+    try {
+      await this.invitations.cancel(this.householdId(), child.id);
+      this.invitation.set(null);
+    } catch (error) {
+      console.error('Failed to cancel child invitation:', error);
+      this.inviteError.set(
+        $localize`:@@childDetailsModal.cancelInviteFailed:Kunne ikke avbryte invitasjonen. Prøv igjen.`,
+      );
+    } finally {
+      this.inviteBusy.set(false);
     }
   }
 }

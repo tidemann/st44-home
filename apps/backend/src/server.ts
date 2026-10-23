@@ -11,6 +11,7 @@ import childrenRoutes from './routes/children.js';
 import taskRoutes from './routes/tasks.js';
 import singleTasksRoutes from './routes/single-tasks.js';
 import { invitationRoutes } from './routes/invitations.js';
+import { childInvitationRoutes } from './routes/child-invitations.js';
 import assignmentRoutes from './routes/assignments.js';
 import analyticsRoutes from './routes/analytics.js';
 import rewardRoutes from './routes/rewards.js';
@@ -233,6 +234,7 @@ async function buildApp() {
   await fastify.register(taskRoutes);
   await fastify.register(singleTasksRoutes);
   await fastify.register(invitationRoutes);
+  await fastify.register(childInvitationRoutes);
   await fastify.register(assignmentRoutes);
   await fastify.register(rewardRoutes);
   await fastify.register(analyticsRoutes);
