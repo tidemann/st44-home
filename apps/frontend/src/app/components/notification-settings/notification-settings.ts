@@ -26,6 +26,7 @@ export type NotificationAudience = 'parent' | 'child';
   templateUrl: './notification-settings.html',
   styleUrl: './notification-settings.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
+  host: { '[attr.data-state]': 'current()' },
 })
 export class NotificationSettings implements OnInit {
   private readonly push = inject(PushNotificationService);

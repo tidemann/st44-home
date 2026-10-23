@@ -52,6 +52,13 @@ describe('NotificationSettings', () => {
     expect(push.refresh).toHaveBeenCalledTimes(1);
   });
 
+  it('puts the push state on the host so the settings page can place its label', () => {
+    render('off');
+    expect(fixture.nativeElement.getAttribute('data-state')).toBe('off');
+    render('server-off');
+    expect(fixture.nativeElement.getAttribute('data-state')).toBe('server-off');
+  });
+
   it('turns push on from the off state', () => {
     const el = render('off');
     button(el, 'Slå på varsler').click();

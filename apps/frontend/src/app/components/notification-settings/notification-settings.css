@@ -91,4 +91,11 @@
     height: 49px;
     padding: 0 16px;
   }
+
+  /* ST-1677: on and off carry the page's small «Varsler» label above the card instead
+     (settings.css). Loading, blocked and error keep this title, as drawn */
+  :host([data-state='on']) .push-card:not(.compact) .push-title,
+  :host([data-state='off']) .push-card:not(.compact) .push-title {
+    display: none;
+  }
 }

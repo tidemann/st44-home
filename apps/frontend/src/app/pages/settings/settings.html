@@ -205,8 +205,15 @@
         }
       </div>
       <div class="settings-col">
-        <!-- Notifications: the existing card, unchanged -->
-        <section class="settings-section">
+        <!-- Notifications: from 1024 px on and off get the small label above the card (ST-1677) -->
+        <section class="settings-section notifications-section">
+          <h2
+            class="section-label notifications-label"
+            aria-hidden="true"
+            i18n="@@settings.notificationsTitle"
+          >
+            Varsler
+          </h2>
           <div class="settings-card notifications-card">
             <app-notification-settings audience="parent" />
           </div>
