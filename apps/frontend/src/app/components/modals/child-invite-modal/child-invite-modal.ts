@@ -61,9 +61,12 @@ export class ChildInviteModal {
 
   /** «mathea@eksempel.no»: the first name, as drawn */
   protected readonly placeholder = computed(() => {
-    const first = this.childName().trim().split(/[\s-]+/)[0] ?? "";
-    const local = first.toLowerCase().replace(/[^a-zæøå0-9]/g, "");
-    return `${local || "navn"}@eksempel.no`;
+    const first =
+      this.childName()
+        .trim()
+        .split(/[\s-]+/)[0] ?? '';
+    const local = first.toLowerCase().replace(/[^a-zæøå0-9]/g, '');
+    return `${local || 'navn'}@eksempel.no`;
   });
 
   constructor() {

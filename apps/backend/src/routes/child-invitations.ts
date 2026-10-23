@@ -135,11 +135,7 @@ async function createChildInvitation(
         [childId, householdId],
       );
       if (childResult.rows.length === 0) {
-        throw new TransactionValidationError(
-          404,
-          'Not Found',
-          'Child not found in this household',
-        );
+        throw new TransactionValidationError(404, 'Not Found', 'Child not found in this household');
       }
       if (childResult.rows[0].user_id) {
         throw new TransactionValidationError(409, 'Conflict', 'Child already has a user account');

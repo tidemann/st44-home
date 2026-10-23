@@ -297,7 +297,9 @@ describe('ChildDetailsModal', () => {
       expect(text).toContain('Invitasjon sendt');
       expect(text).toContain('alex@eksempel.no');
       expect(text).toContain('Utløper tirsdag 27. oktober');
-      const field = fixture.nativeElement.querySelector('#child-invite-link-card') as HTMLInputElement;
+      const field = fixture.nativeElement.querySelector(
+        '#child-invite-link-card',
+      ) as HTMLInputElement;
       expect(field.value).toBe('home.st44.no/no/invitasjon/abc123');
       expect(text).toContain('Kopier lenke');
       expect(text).toContain('Lag ny lenke');
@@ -314,7 +316,9 @@ describe('ChildDetailsModal', () => {
         'child-1',
         'alex@eksempel.no',
       );
-      const field = fixture.nativeElement.querySelector('#child-invite-link-card') as HTMLInputElement;
+      const field = fixture.nativeElement.querySelector(
+        '#child-invite-link-card',
+      ) as HTMLInputElement;
       expect(field.value).toBe('home.st44.no/no/invitasjon/new456');
     });
 

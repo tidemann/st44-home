@@ -90,7 +90,5 @@ export function formatWeekdayDate(iso: string): string {
 
 /** «18. oktober» */
 export function formatDayMonth(iso: string): string {
-  return new Intl.DateTimeFormat('nb-NO', { day: 'numeric', month: 'long' }).format(
-    new Date(iso),
-  );
+  return new Intl.DateTimeFormat('nb-NO', { day: 'numeric', month: 'long' }).format(new Date(iso));
 }

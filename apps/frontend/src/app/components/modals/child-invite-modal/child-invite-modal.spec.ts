@@ -60,7 +60,9 @@ describe('ChildInviteModal (popup 18)', () => {
   });
 
   it('the main action is live from the first paint and checks on the press', async () => {
-    const submit = fixture.nativeElement.querySelector('button[type="submit"]') as HTMLButtonElement;
+    const submit = fixture.nativeElement.querySelector(
+      'button[type="submit"]',
+    ) as HTMLButtonElement;
     expect(submit.disabled).toBe(false);
     expect(submit.textContent?.trim()).toBe('Lag invitasjon');
 

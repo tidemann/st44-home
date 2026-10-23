@@ -1,8 +1,4 @@
-<app-modal
-  [open]="open()"
-  (closeModal)="onClose()"
-  [title]="titleText()"
->
+<app-modal [open]="open()" (closeModal)="onClose()" [title]="titleText()">
   <div class="child-invite">
     @if (created(); as invitation) {
       <!-- Step 2: the link is ready -->
@@ -43,8 +39,8 @@
       </div>
 
       <p class="hint" i18n="@@childInviteModal.noEmailYet">
-        Diddit sender ingen e-post ennå. Send lenken til {{ childName() }} i en melding. Den virker i
-        7 dager.
+        Diddit sender ingen e-post ennå. Send lenken til {{ childName() }} i en melding. Den virker
+        i 7 dager.
       </p>
 
       <div class="modal-actions single-action" modal-actions>
@@ -103,11 +99,7 @@
           >
             Avbryt
           </button>
-          <button
-            type="submit"
-            class="action action-primary"
-            [attr.aria-busy]="submitting()"
-          >
+          <button type="submit" class="action action-primary" [attr.aria-busy]="submitting()">
             @if (submitting()) {
               <span i18n="@@childInviteModal.creating">Lager lenken …</span>
             } @else {
