@@ -329,6 +329,18 @@ button.settings-row:focus-visible {
   padding: 15px;
 }
 
+/* ST-1677: the «Varsler» label shows only on desktop, and only when the card drops its title */
+.notifications-label {
+  display: none;
+}
+
+@media (min-width: 1024px) {
+  .notifications-section:has(app-notification-settings[data-state='on']) .notifications-label,
+  .notifications-section:has(app-notification-settings[data-state='off']) .notifications-label {
+    display: block;
+  }
+}
+
 @keyframes fadeIn {
   from {
     opacity: 0;
