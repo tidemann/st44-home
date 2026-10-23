@@ -100,7 +100,7 @@ CREATE TABLE IF NOT EXISTS invitations (
   created_at TIMESTAMP NOT NULL DEFAULT NOW(),
   updated_at TIMESTAMP NOT NULL DEFAULT NOW(),
   
-  CONSTRAINT invitations_role_check CHECK (role IN ('admin', 'parent')),
+  CONSTRAINT invitations_role_check CHECK (role IN ('admin', 'parent', 'child')),
   CONSTRAINT invitations_status_check CHECK (status IN ('pending', 'accepted', 'declined', 'cancelled', 'expired')),
   CONSTRAINT invitations_expiry_check CHECK (expires_at > created_at)
 );
@@ -141,6 +141,13 @@ CREATE INDEX IF NOT EXISTS idx_children_household_name ON children(household_id,
 CREATE INDEX IF NOT EXISTS idx_children_user_id ON children(user_id); -- Added in migration 022 for auth performance
 CREATE UNIQUE INDEX IF NOT EXISTS idx_children_user_household_unique ON children(user_id, household_id) WHERE user_id IS NOT NULL; -- Added in migration 022 to prevent duplicate child profiles
 CREATE INDEX IF NOT EXISTS idx_children_qr_token ON children(qr_token) WHERE qr_token IS NOT NULL; -- Added in migration 051 for QR token lookups
+
+-- Child invitations (migration 055, ST-1678): an invitation can point at an existing
+-- child profile. Added here, after children exists, because invitations is created first.
+ALTER TABLE invitations ADD COLUMN IF NOT EXISTS child_id UUID REFERENCES children(id) ON DELETE CASCADE;
+ALTER TABLE invitations DROP CONSTRAINT IF EXISTS invitations_child_check;
+ALTER TABLE invitations ADD CONSTRAINT invitations_child_check CHECK ((role = 'child') = (child_id IS NOT NULL));
+CREATE INDEX IF NOT EXISTS idx_invitations_child ON invitations(child_id) WHERE child_id IS NOT NULL;
 
 -- Tasks table (templates/definitions for household chores)
 CREATE TABLE IF NOT EXISTS tasks (
