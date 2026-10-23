@@ -151,7 +151,7 @@
 /* The state block (ST-1678). The glyph sits beside the title; the detail lines (the address,
    the date) run the full width of the block, so a long address keeps every pixel. */
 .account-status {
-  padding: var(--space-sm) var(--space-md);
+  padding: var(--space-sm) 12px;
   border-radius: var(--r-row-action);
   margin-bottom: var(--space-md);
 }
@@ -175,7 +175,7 @@
 .status-label {
   display: flex;
   align-items: baseline;
-  gap: var(--space-sm);
+  gap: 6px;
   font-weight: var(--font-weight-semibold);
   color: var(--text);
   margin: 0 0 var(--space-xs) 0;

@@ -9,7 +9,7 @@ import {
   untracked,
   ChangeDetectionStrategy,
 } from '@angular/core';
-import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
+import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Modal } from '../modal/modal';
 import {
   ChildInvitationService,
@@ -50,6 +50,8 @@ export class ChildInviteModal {
     nonNullable: true,
     validators: [Validators.required, Validators.pattern(EMAIL_PATTERN)],
   });
+  /** The form directive owns the submit, so pressing «Lag invitasjon» never reloads the page */
+  protected readonly form = new FormGroup({ email: this.email });
   protected readonly submitting = signal(false);
   protected readonly serverError = signal<string | null>(null);
   protected readonly created = signal<ChildInvitation | null>(null);

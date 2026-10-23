@@ -55,7 +55,7 @@
       </div>
     } @else {
       <!-- Step 1: the address -->
-      <form (ngSubmit)="onSubmit()" novalidate>
+      <form [formGroup]="form" (ngSubmit)="onSubmit()" novalidate>
         <p class="lead" i18n="@@childInviteModal.lead">
           {{ childName() }} får en lenke på e-post, lager sitt eget passord og beholder poengene og
           historikken sin.

@@ -99,6 +99,18 @@ describe('ChildInviteModal (popup 18)', () => {
     expect(text()).toContain('Lenken er kopiert');
   });
 
+  it('pressing «Lag invitasjon» submits through the form, not a page load', async () => {
+    emailField().value = 'mathea@eksempel.no';
+    emailField().dispatchEvent(new Event('input'));
+    const submitEvent = new Event('submit', { cancelable: true });
+    fixture.nativeElement.querySelector('form').dispatchEvent(submitEvent);
+    await fixture.whenStable();
+    fixture.detectChanges();
+    expect(submitEvent.defaultPrevented).toBe(true);
+    expect(create).toHaveBeenCalledWith('h-1', 'c-1', 'mathea@eksempel.no');
+    expect(text()).toContain('Invitasjonen er klar');
+  });
+
   it('an address already in use is said under the field', async () => {
     create.mockRejectedValue({ status: 409 });
     emailField().value = 'mathea@eksempel.no';
