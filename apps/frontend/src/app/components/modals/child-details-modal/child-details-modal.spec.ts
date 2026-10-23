@@ -2,12 +2,23 @@ import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ChildDetailsModal } from './child-details-modal';
 import { ChildrenService } from '../../../services/children.service';
+import {
+  ChildInvitationService,
+  type ChildInvitation,
+} from '../../../services/child-invitation.service';
 import type { Child } from '@st44/types';
 
 describe('ChildDetailsModal', () => {
   let component: ChildDetailsModal;
   let fixture: ComponentFixture<ChildDetailsModal>;
   let mockChildrenService: Partial<ChildrenService>;
+  let mockInvitations: {
+    get: ReturnType<typeof vi.fn>;
+    create: ReturnType<typeof vi.fn>;
+    cancel: ReturnType<typeof vi.fn>;
+    displayLink: (token: string) => string;
+    copyLink: ReturnType<typeof vi.fn>;
+  };
 
   const mockChild: Child = {
     id: 'child-1',
@@ -24,9 +35,20 @@ describe('ChildDetailsModal', () => {
       deleteChild: vi.fn().mockResolvedValue({ success: true, message: 'Deleted' }),
     };
 
+    mockInvitations = {
+      get: vi.fn().mockResolvedValue(null),
+      create: vi.fn(),
+      cancel: vi.fn().mockResolvedValue(undefined),
+      displayLink: (token: string) => `home.st44.no/no/invitasjon/${token}`,
+      copyLink: vi.fn().mockResolvedValue(true),
+    };
+
     await TestBed.configureTestingModule({
       imports: [ChildDetailsModal],
-      providers: [{ provide: ChildrenService, useValue: mockChildrenService }],
+      providers: [
+        { provide: ChildrenService, useValue: mockChildrenService },
+        { provide: ChildInvitationService, useValue: mockInvitations },
+      ],
     }).compileComponents();
 
     fixture = TestBed.createComponent(ChildDetailsModal);
@@ -230,6 +252,110 @@ describe('ChildDetailsModal', () => {
       fixture.detectChanges();
 
       expect(component['hasAccount']()).toBe(true);
+    });
+  });
+
+  // ST-1678: the four states of «Innloggingskonto»
+  describe('Invite by link', () => {
+    const invitation = (over: Partial<ChildInvitation>): ChildInvitation => ({
+      id: 'inv-1',
+      email: 'alex@eksempel.no',
+      token: 'abc123',
+      status: 'pending',
+      expiresAt: '2026-10-27T10:00:00Z',
+      acceptedAt: null,
+      createdAt: '2026-10-20T10:00:00Z',
+      ...over,
+    });
+
+    async function openWith(found: ChildInvitation | null, child: Child = mockChild) {
+      mockInvitations.get.mockResolvedValue(found);
+      fixture.componentRef.setInput('child', child);
+      fixture.componentRef.setInput('open', true);
+      fixture.detectChanges();
+      await fixture.whenStable();
+      fixture.detectChanges();
+      return (fixture.nativeElement as HTMLElement).textContent ?? '';
+    }
+
+    it('no login: the invite leads, «Opprett innlogging» is the backup under «eller»', async () => {
+      const text = await openWith(null);
+      expect(mockInvitations.get).toHaveBeenCalledWith('household-1', 'child-1');
+      expect(text).toContain('Ingen innlogging');
+      expect(text).toContain('Alex kan ikke logge inn ennå.');
+      expect(text).toContain('Inviter Alex på e-post');
+      expect(text).toContain('eller');
+      expect(text).toContain('For barn uten e-post: du lager passordet.');
+      const primary = fixture.nativeElement.querySelector('.acct-btn-primary') as HTMLElement;
+      const outline = fixture.nativeElement.querySelector('.acct-btn-outline') as HTMLElement;
+      expect(primary.textContent?.trim()).toBe('Inviter Alex på e-post');
+      expect(outline.textContent?.trim()).toBe('Opprett innlogging');
+    });
+
+    it('invite sent: the address, the date, the link and the three actions', async () => {
+      const text = await openWith(invitation({}));
+      expect(text).toContain('Invitasjon sendt');
+      expect(text).toContain('alex@eksempel.no');
+      expect(text).toContain('Utløper tirsdag 27. oktober');
+      const field = fixture.nativeElement.querySelector('#child-invite-link-card') as HTMLInputElement;
+      expect(field.value).toBe('home.st44.no/no/invitasjon/abc123');
+      expect(text).toContain('Kopier lenke');
+      expect(text).toContain('Lag ny lenke');
+      expect(text).toContain('Avbryt invitasjonen');
+    });
+
+    it('«Lag ny lenke» makes a new link for the same address', async () => {
+      await openWith(invitation({}));
+      mockInvitations.create.mockResolvedValue(invitation({ token: 'new456' }));
+      await component.renewInvitation('alex@eksempel.no');
+      fixture.detectChanges();
+      expect(mockInvitations.create).toHaveBeenCalledWith(
+        'household-1',
+        'child-1',
+        'alex@eksempel.no',
+      );
+      const field = fixture.nativeElement.querySelector('#child-invite-link-card') as HTMLInputElement;
+      expect(field.value).toBe('home.st44.no/no/invitasjon/new456');
+    });
+
+    it('«Avbryt invitasjonen» goes back to no login', async () => {
+      await openWith(invitation({}));
+      await component.cancelInvitation();
+      fixture.detectChanges();
+      expect(mockInvitations.cancel).toHaveBeenCalledWith('household-1', 'child-1');
+      expect(fixture.nativeElement.textContent).toContain('Ingen innlogging');
+    });
+
+    it('expired: the rust word, «Inviter på nytt», and «Opprett innlogging» still there', async () => {
+      const text = await openWith(invitation({ status: 'expired' }));
+      expect(text).toContain('Invitasjonen er utløpt');
+      expect(text).toContain('Sendt 20. oktober til alex@eksempel.no');
+      expect(fixture.nativeElement.querySelector('.status-expired-word')?.textContent).toContain(
+        'Utløpt',
+      );
+      expect(text).toContain('Inviter Alex på nytt');
+      expect(text).toContain('Opprett innlogging');
+    });
+
+    it('account active: the accepted date and how the child logs in', async () => {
+      const text = await openWith(
+        invitation({ status: 'accepted', acceptedAt: '2026-10-18T10:00:00Z' }),
+        { ...mockChild, userId: 'user-1' },
+      );
+      expect(text).toContain('Konto aktiv');
+      expect(text).toContain('alex@eksempel.no');
+      expect(text).toContain('Invitasjonen ble godtatt 18. oktober');
+      expect(text).toContain('Alex logger inn med e-posten og sitt eget passord.');
+      expect(text).not.toContain('Kopier lenke');
+    });
+
+    it('opening the invite steps the card aside for popup 18', async () => {
+      await openWith(null);
+      component.openInvite('');
+      fixture.detectChanges();
+      expect(component['inviteOpen']()).toBe(true);
+      expect(fixture.nativeElement.textContent).toContain('Inviter Alex på e-post');
+      expect(fixture.nativeElement.textContent).toContain('E-postadresse *');
     });
   });
 });

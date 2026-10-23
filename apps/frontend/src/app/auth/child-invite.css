@@ -1,0 +1,49 @@
+/* «Lag passordet ditt» (ST-1678): the «Sett nytt passord» page (reset-password.css) with two
+   additions — the points line under the button and the one «Logg inn» on a used link. */
+
+.points-ready {
+  margin: 0;
+  text-align: center;
+  font-size: 0.875rem;
+  line-height: 1.5;
+  color: var(--text-muted);
+}
+
+/* «Logg inn» fills the column, as «Godta invitasjonen» does on the «Invitasjon» page */
+.login-link {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  width: 100%;
+  min-height: 49px;
+  padding: 0 16px;
+  background-color: var(--yellow);
+  color: var(--ink);
+  border-radius: var(--r-button);
+  font-size: 1rem;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.login-link:hover {
+  background-color: var(--yellow-inset);
+}
+
+.login-link:focus-visible {
+  outline: var(--focus-ring);
+  outline-offset: 2px;
+}
+
+@media (min-width: 1024px) {
+  .points-ready {
+    text-align: left;
+    font-family: var(--font-text);
+    font-size: 15px;
+  }
+
+  .login-link {
+    font-family: var(--font-text);
+    font-size: 16.5px;
+  }
+}

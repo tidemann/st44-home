@@ -1,0 +1,191 @@
+/* Popup 18, «Inviter [navn] på e-post» (ST-1678). The frame, veil and edge are <app-modal>'s.
+   What is set here holds at every width: the drawing applies popup rules 3–5 on the phone too
+   (138 × 49 px halves at 360 px, a live yellow action, the 49 px field, the error under it). */
+
+.child-invite {
+  display: flex;
+  flex-direction: column;
+}
+
+.child-invite form {
+  display: flex;
+  flex-direction: column;
+}
+
+.lead {
+  margin: 0 0 var(--space-md);
+  font-family: var(--font-text);
+  font-size: 16px;
+  line-height: 1.4;
+  color: var(--text);
+}
+
+.field-label {
+  display: block;
+  margin: 0 0 6px;
+  font-family: var(--font-text);
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text);
+}
+
+/* Guide, rule 5: 49 px, 13 px corners, the 1.5 px muted edge, white, 16 px inside */
+.field {
+  box-sizing: border-box;
+  display: block;
+  width: 100%;
+  height: 49px;
+  min-height: 49px;
+  padding: 0 16px;
+  font-family: var(--font-text);
+  font-size: 16px;
+  color: var(--text);
+  background: var(--color-surface);
+  border: 1.5px solid var(--text-muted);
+  border-radius: var(--r-card);
+}
+
+.field::placeholder {
+  color: var(--text-muted);
+}
+
+.field:focus-visible {
+  outline: var(--focus-ring);
+  outline-offset: 2px;
+}
+
+.field.error {
+  border: 2px solid var(--overdue);
+}
+
+.field[readonly] {
+  text-overflow: ellipsis;
+}
+
+/* One rust line under the field: no icon, no banner */
+.field-error {
+  margin: 6px 0 0;
+  font-family: var(--font-text);
+  font-size: 15px;
+  font-weight: 500;
+  line-height: 1.4;
+  color: var(--overdue);
+}
+
+.hint {
+  margin: 10px 0 0;
+  font-family: var(--font-text);
+  font-size: 14px;
+  line-height: 1.4;
+  color: var(--text-muted);
+}
+
+/* The four button types (guide rule 5): 49 px, 13 px corners, 16.5 px label */
+.action {
+  box-sizing: border-box;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-height: 49px;
+  padding: 6px var(--space-sm);
+  font-family: var(--font-body);
+  font-size: 16.5px;
+  font-weight: 600;
+  line-height: 1.2;
+  border-radius: var(--r-card);
+  cursor: pointer;
+  overflow-wrap: anywhere;
+}
+
+.action:focus-visible {
+  outline: var(--focus-ring);
+  outline-offset: 2px;
+}
+
+.action-primary {
+  background: var(--yellow);
+  color: var(--ink);
+  border: none;
+}
+
+.action-primary:hover {
+  background: var(--yellow-inset);
+}
+
+.action-primary[aria-busy='true'] {
+  cursor: progress;
+}
+
+.action-outline {
+  background: var(--color-surface);
+  color: var(--text);
+  border: 2px solid var(--text-muted);
+}
+
+.action-outline:hover {
+  background: var(--track);
+}
+
+/* Rule 3: two equal halves, 8 px apart; the safe one on the left */
+.modal-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-top: var(--space-md);
+  padding-top: var(--space-md);
+  border-top: 1px solid var(--hairline);
+}
+
+/* Step 2: «Lukk» alone fills the row, as in «Barnedetaljer» */
+.modal-actions.single-action {
+  grid-template-columns: 1fr;
+}
+
+/* Step 2: the state block, as in the child's card */
+.invite-status {
+  padding: 12px 14px;
+  margin-bottom: var(--space-md);
+  background: var(--color-success-light);
+  border-radius: var(--r-row-action);
+}
+
+.invite-status-label {
+  display: flex;
+  gap: 8px;
+  margin: 0;
+  font-family: var(--font-text);
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.invite-status-icon {
+  color: var(--done);
+  font-weight: 700;
+}
+
+.invite-status-detail {
+  margin: 4px 0 0;
+  font-family: var(--font-text);
+  font-size: 14px;
+  color: var(--text-muted);
+  overflow-wrap: anywhere;
+}
+
+/* On the phone the field and «Kopier lenke» stack; from 1024 px they share a line */
+.link-row {
+  display: grid;
+  gap: 8px;
+}
+
+@media (min-width: 1024px) {
+  .link-row {
+    grid-template-columns: 1fr auto;
+  }
+
+  .link-row .action {
+    width: auto;
+    padding-inline: var(--space-md);
+  }
+}

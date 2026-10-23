@@ -1,5 +1,5 @@
 <app-modal
-  [open]="open()"
+  [open]="open() && !inviteOpen()"
   (closeModal)="onClose()"
   i18n-title="@@childDetailsModal.title"
   title="Barnedetaljer"
@@ -154,47 +154,174 @@
               Innloggingskonto
             </h4>
 
+            <!-- ST-1678: four states — no login · invite sent · expired · account active -->
             @if (hasAccount()) {
-              <!-- Child has account -->
               <div class="account-status has-account">
-                <span class="status-icon">✓</span>
-                <div class="status-info">
-                  <p class="status-label" i18n="@@childDetailsModal.accountActive">Konto aktiv</p>
-                  @if (childEmail()) {
-                    <p class="status-detail">{{ childEmail() }}</p>
-                  }
-                </div>
+                <p class="status-label">
+                  <span class="status-icon" aria-hidden="true">✓</span>
+                  <span i18n="@@childDetailsModal.accountActive">Konto aktiv</span>
+                </p>
+                @if (childEmail() || acceptedInvitation()?.email; as email) {
+                  <p class="status-detail">{{ email }}</p>
+                }
+                @if (acceptedInvitation(); as accepted) {
+                  <p class="status-detail" i18n="@@childDetailsModal.inviteAccepted">
+                    Invitasjonen ble godtatt {{ dayMonth(accepted.acceptedAt!) }}
+                  </p>
+                }
               </div>
-            } @else {
-              <!-- Child does not have account -->
-              @if (!showCreateAccount()) {
-                <div class="account-status no-account">
-                  <span class="status-icon">✗</span>
-                  <div class="status-info">
-                    <p class="status-label" i18n="@@childDetailsModal.noAccount">Ingen konto</p>
-                    <p class="status-detail" i18n="@@childDetailsModal.noAccountDescription">
-                      Opprett innloggingsdetaljer slik at barnet kan logge inn
-                    </p>
-                  </div>
-                </div>
+              @if (acceptedInvitation()) {
+                <p class="account-hint" i18n="@@childDetailsModal.logsInWithOwnPassword">
+                  {{ child.name }} logger inn med e-posten og sitt eget passord.
+                </p>
+              }
+            } @else if (showCreateAccount()) {
+              <!-- Create Account Form -->
+              <app-create-child-account
+                [child]="child"
+                [householdId]="householdId()"
+                (accountCreated)="onAccountCreated()"
+                (cancelled)="onCreateAccountCancelled()"
+              />
+            } @else if (pendingInvitation(); as invitation) {
+              <div class="account-status invite-sent">
+                <p class="status-label">
+                  <span class="status-icon" aria-hidden="true">✓</span>
+                  <span i18n="@@childDetailsModal.inviteSent">Invitasjon sendt</span>
+                </p>
+                <p class="status-detail">{{ invitation.email }}</p>
+                <p class="status-detail" i18n="@@childDetailsModal.inviteExpires">
+                  Utløper {{ weekdayDate(invitation.expiresAt) }}
+                </p>
+              </div>
 
+              <label
+                class="link-label"
+                for="child-invite-link-card"
+                i18n="@@childDetailsModal.inviteLinkLabel"
+                >Invitasjonslenke</label
+              >
+              <div class="link-row">
+                <input
+                  id="child-invite-link-card"
+                  class="link-field"
+                  type="text"
+                  readonly
+                  [value]="displayLink(invitation.token)"
+                />
                 <button
                   type="button"
-                  class="btn btn-primary create-btn"
-                  (click)="toggleCreateAccount()"
-                  i18n="@@childDetailsModal.createLoginButton"
+                  class="acct-btn acct-btn-primary"
+                  (click)="copyLink(invitation.token)"
+                  i18n="@@childDetailsModal.copyLink"
                 >
-                  Opprett innlogging
+                  Kopier lenke
                 </button>
-              } @else {
-                <!-- Create Account Form -->
-                <app-create-child-account
-                  [child]="child"
-                  [householdId]="householdId()"
-                  (accountCreated)="onAccountCreated()"
-                  (cancelled)="onCreateAccountCancelled()"
-                />
-              }
+              </div>
+              <p class="visually-hidden" role="status" aria-live="polite">
+                @if (copied()) {
+                  <span i18n="@@childDetailsModal.linkCopied">Lenken er kopiert</span>
+                }
+              </p>
+              <p class="account-hint" i18n="@@childDetailsModal.sendLinkHint">
+                Send lenken til {{ child.name }} i en melding. Den virker i 7 dager.
+              </p>
+
+              <div class="or-divider"><span i18n="@@childDetailsModal.or">eller</span></div>
+
+              <div class="acct-stack">
+                <button
+                  type="button"
+                  class="acct-btn acct-btn-outline"
+                  (click)="renewInvitation(invitation.email)"
+                  [attr.aria-busy]="inviteBusy()"
+                  i18n="@@childDetailsModal.newLink"
+                >
+                  Lag ny lenke
+                </button>
+                <button
+                  type="button"
+                  class="acct-btn acct-btn-danger"
+                  (click)="cancelInvitation()"
+                  [attr.aria-busy]="inviteBusy()"
+                  i18n="@@childDetailsModal.cancelInvite"
+                >
+                  Avbryt invitasjonen
+                </button>
+              </div>
+            } @else if (expiredInvitation(); as invitation) {
+              <div class="account-status invite-expired">
+                <p class="status-label">
+                  <span class="status-icon" aria-hidden="true">!</span>
+                  <span i18n="@@childDetailsModal.inviteExpired">Invitasjonen er utløpt</span>
+                </p>
+                <p class="status-detail" i18n="@@childDetailsModal.inviteSentOnTo">
+                  Sendt {{ dayMonth(invitation.createdAt) }} til {{ invitation.email }}
+                </p>
+                <p class="status-expired-word" i18n="@@childDetailsModal.expiredWord">Utløpt</p>
+              </div>
+
+              <button
+                type="button"
+                class="acct-btn acct-btn-primary"
+                (click)="openInvite(invitation.email)"
+                i18n="@@childDetailsModal.inviteAgain"
+              >
+                Inviter {{ child.name }} på nytt
+              </button>
+              <p class="account-hint" i18n="@@childDetailsModal.expiredHint">
+                En lenke virker i 7 dager. {{ child.name }} har ikke laget noe passord.
+              </p>
+
+              <div class="or-divider"><span i18n="@@childDetailsModal.or">eller</span></div>
+
+              <button
+                type="button"
+                class="acct-btn acct-btn-outline"
+                (click)="toggleCreateAccount()"
+                i18n="@@childDetailsModal.createLoginButton"
+              >
+                Opprett innlogging
+              </button>
+            } @else {
+              <div class="account-status no-account">
+                <p class="status-label">
+                  <span class="status-icon" aria-hidden="true">✗</span>
+                  <span i18n="@@childDetailsModal.noLogin">Ingen innlogging</span>
+                </p>
+                <p class="status-detail" i18n="@@childDetailsModal.cannotLogInYet">
+                  {{ child.name }} kan ikke logge inn ennå.
+                </p>
+              </div>
+
+              <button
+                type="button"
+                class="acct-btn acct-btn-primary"
+                (click)="openInvite('')"
+                i18n="@@childDetailsModal.inviteByEmail"
+              >
+                Inviter {{ child.name }} på e-post
+              </button>
+              <p class="account-hint" i18n="@@childDetailsModal.inviteHint">
+                {{ child.name }} får en lenke, lager sitt eget passord og beholder poengene sine.
+              </p>
+
+              <div class="or-divider"><span i18n="@@childDetailsModal.or">eller</span></div>
+
+              <button
+                type="button"
+                class="acct-btn acct-btn-outline"
+                (click)="toggleCreateAccount()"
+                i18n="@@childDetailsModal.createLoginButton"
+              >
+                Opprett innlogging
+              </button>
+              <p class="account-hint" i18n="@@childDetailsModal.createLoginHint">
+                For barn uten e-post: du lager passordet.
+              </p>
+            }
+            @if (inviteError(); as message) {
+              <p class="account-error" role="alert">{{ message }}</p>
             }
           </div>
 
@@ -246,3 +373,16 @@
     </div>
   }
 </app-modal>
+
+<!-- Popup 18: the card steps aside while it is open and comes back with the new state -->
+@if (child(); as child) {
+  <app-child-invite-modal
+    [open]="open() && inviteOpen()"
+    [householdId]="householdId()"
+    [childId]="child.id"
+    [childName]="child.name"
+    [initialEmail]="inviteEmail()"
+    (invitationCreated)="onInvitationCreated($event)"
+    (closeRequested)="inviteOpen.set(false)"
+  />
+}

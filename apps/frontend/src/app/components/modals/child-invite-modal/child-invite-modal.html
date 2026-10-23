@@ -1,0 +1,121 @@
+<app-modal
+  [open]="open()"
+  (closeModal)="onClose()"
+  [title]="titleText()"
+>
+  <div class="child-invite">
+    @if (created(); as invitation) {
+      <!-- Step 2: the link is ready -->
+      <div class="invite-status">
+        <p class="invite-status-label">
+          <span class="invite-status-icon" aria-hidden="true">✓</span>
+          <span i18n="@@childInviteModal.ready">Invitasjonen er klar</span>
+        </p>
+        <p class="invite-status-detail">{{ invitation.email }}</p>
+      </div>
+
+      <div class="link-group">
+        <label class="field-label" for="child-invite-link" i18n="@@childInviteModal.linkLabel"
+          >Invitasjonslenke</label
+        >
+        <div class="link-row">
+          <input
+            id="child-invite-link"
+            class="field"
+            type="text"
+            readonly
+            [value]="displayLink(invitation.token)"
+          />
+          <button
+            type="button"
+            class="action action-primary"
+            (click)="copy()"
+            i18n="@@childInviteModal.copyLink"
+          >
+            Kopier lenke
+          </button>
+        </div>
+        <p class="visually-hidden" role="status" aria-live="polite">
+          @if (copied()) {
+            <span i18n="@@childInviteModal.copied">Lenken er kopiert</span>
+          }
+        </p>
+      </div>
+
+      <p class="hint" i18n="@@childInviteModal.noEmailYet">
+        Diddit sender ingen e-post ennå. Send lenken til {{ childName() }} i en melding. Den virker i
+        7 dager.
+      </p>
+
+      <div class="modal-actions single-action" modal-actions>
+        <button
+          type="button"
+          class="action action-outline"
+          (click)="onClose()"
+          i18n="@@childInviteModal.close"
+        >
+          Lukk
+        </button>
+      </div>
+    } @else {
+      <!-- Step 1: the address -->
+      <form (ngSubmit)="onSubmit()" novalidate>
+        <p class="lead" i18n="@@childInviteModal.lead">
+          {{ childName() }} får en lenke på e-post, lager sitt eget passord og beholder poengene og
+          historikken sin.
+        </p>
+
+        <label class="field-label" for="child-invite-email" i18n="@@childInviteModal.emailLabel"
+          >E-postadresse *</label
+        >
+        <input
+          id="child-invite-email"
+          class="field"
+          type="email"
+          autocomplete="off"
+          [formControl]="email"
+          [placeholder]="placeholder()"
+          [class.error]="showError"
+          [attr.aria-invalid]="showError"
+          [attr.aria-describedby]="showError ? 'child-invite-email-error' : 'child-invite-hint'"
+        />
+        @if (showError) {
+          <p id="child-invite-email-error" class="field-error" role="alert">
+            @if (serverError(); as message) {
+              {{ message }}
+            } @else {
+              <span i18n="@@childInviteModal.emailInvalid"
+                >Skriv en hel e-postadresse, for eksempel {{ placeholder() }}</span
+              >
+            }
+          </p>
+        }
+        <p id="child-invite-hint" class="hint" i18n="@@childInviteModal.hint">
+          Lenken virker i 7 dager. Du kan avbryte den når som helst.
+        </p>
+
+        <div class="modal-actions" modal-actions>
+          <button
+            type="button"
+            class="action action-outline"
+            (click)="onClose()"
+            i18n="@@childInviteModal.cancel"
+          >
+            Avbryt
+          </button>
+          <button
+            type="submit"
+            class="action action-primary"
+            [attr.aria-busy]="submitting()"
+          >
+            @if (submitting()) {
+              <span i18n="@@childInviteModal.creating">Lager lenken …</span>
+            } @else {
+              <span i18n="@@childInviteModal.create">Lag invitasjon</span>
+            }
+          </button>
+        </div>
+      </form>
+    }
+  </div>
+</app-modal>
