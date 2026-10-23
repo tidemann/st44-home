@@ -2379,7 +2379,7 @@ measurements are in Ida's desktop review on ST-1345 (F16), re-measured on 18 Oct
   both halves of every pair below.
 - **It does not fix what is inside a single popup** — see **What these 8 rules do not touch**.
 
-#### The 17 popups, and what opens them
+#### The 18 popups, and what opens them
 
 | #   | Popup                                         | Opened from                                                   | Blocks?                 |
 | --- | --------------------------------------------- | ------------------------------------------------------------- | ----------------------- |
@@ -2400,6 +2400,7 @@ measurements are in Ida's desktop review on ST-1345 (F16), re-measured on 18 Oct
 | 15  | «Slett husholdningen»                         | Husholdninger                                                 | yes                     |
 | 16  | «Slå på varsler?»                             | every page, as an offer                                       | no                      |
 | 17  | «Legg Diddit på hjemskjermen»                 | every page, as an offer                                       | no                      |
+| 18  | «Inviter [navn] på e-post»                    | Barnedetaljer, the block «Innloggingskonto»                   | yes                     |
 
 Not popups, as **Which popups block** above already says: the offline banner, the QR scanner's
 viewfinder and the celebration overlay. Five more modal components exist in the code but no page
@@ -2590,6 +2591,34 @@ read off the rendered DOM **and** the pixels in both halves. The left halves are
 3f56e0e; the right halves are a prototype branch at c8d6fb7 — **a real render, not a drawing**.
 `desktop-popups-bytt-husstand-a.png` is a crop of the signed-off decision sheet: the two renders in
 it are its own pixels, untouched, with the rejected B column removed.
+
+### Popup 18 and the child's login block (approved 2026-10-21)
+
+Stig approved the child-invite drawings on ST-1639 (the pictures and the measured text are the
+`child-invite` document on ST-1627, revision 2). Four things change from what the guide said before:
+
+1. **A new popup, number 18: «Inviter [navn] på e-post».** It is opened from «Barnedetaljer» →
+   «Innloggingskonto» and it blocks, like every `<app-modal>`. Step 1 asks one thing,
+   «E-postadresse \*». «Avbryt» (outlined) and «Lag invitasjon» (yellow, pressable from the first
+   paint) are two equal halves of the action row: 194 × 49 px on desktop, 138 × 49 px on a 360 px
+   phone. A wrong address takes the 2 px Rust edge and one Rust line under the field. It asks for
+   no role: this invitation is only ever for a child.
+2. **Step 2 puts the yellow «Kopier lenke» in the popup body**, under the read-only
+   «Invitasjonslenke» field, and **«Lukk» stands alone, outlined, in the action row** (396 px on
+   desktop), as «Barnedetaljer» already draws it. On a 360 px phone the field and «Kopier lenke»
+   stack; on desktop they share a line.
+3. **«Opprett innlogging» is the outlined 49 px button under «eller»**, no longer the yellow button
+   of the block. The yellow button in «Innloggingskonto» is «Inviter [navn] på e-post», or
+   «Inviter [navn] på nytt» when the link has run out. Both buttons are 49 px tall, 13 px corners,
+   16.5 px label.
+4. **«Lag ny lenke», not «Send på nytt».** Diddit sends no e-mail yet (ST-1362): a new link is made
+   and the old one stops working. When the mail server lands, the label becomes «Send på nytt».
+
+The block has four states, each carried by a word and never by the glyph alone: «Ingen innlogging»
+(warning light), «Invitasjon sendt» (track grey), «Invitasjonen er utløpt» (danger light, the word
+«Utløpt» in Rust — ST-1566 option A) and «Konto aktiv» (success light). «Avbryt invitasjonen» is the
+Rust outlined button. The child's page for the link is «Lag passordet ditt» on the `reset-password`
+form; a dead link shows «Lenken virker ikke lenger» (no button) or «Lenken er brukt» (one «Logg inn»).
 
 ## Innstillinger (approved 2026-10-14)
 
