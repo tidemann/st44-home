@@ -116,6 +116,29 @@ describe('Child invitation API', () => {
     assert.strictEqual(row.rows[0].child_id, childId);
   });
 
+  test('a child link stays out of the parent invitation endpoints', async () => {
+    const childId = await addChild('Skjult');
+    const { token } = JSON.parse(
+      (await invite(childId, generateTestEmail('cinv-hidden'))).body,
+    ).invitation;
+
+    const list = await app.inject({
+      method: 'GET',
+      url: `/api/households/${householdId}/invitations`,
+      headers: { Authorization: `Bearer ${parentToken}` },
+    });
+    assert.strictEqual(list.statusCode, 200);
+    const roles = JSON.parse(list.body).invitations.map((i: { role: string }) => i.role);
+    assert.ok(!roles.includes('child'));
+
+    const accept = await app.inject({
+      method: 'POST',
+      url: `/api/invitations/${token}/accept`,
+      headers: { Authorization: `Bearer ${outsiderToken}` },
+    });
+    assert.strictEqual(accept.statusCode, 404);
+  });
+
   test('a wrong e-mail is refused', async () => {
     const childId = await addChild('Feil');
     const response = await invite(childId, 'mathea@eksempel');
