@@ -93,6 +93,11 @@ export class ChildDashboardComponent implements OnInit {
   tasks = this.taskService.myTasks;
   balance = this.rewardService.pointsBalance;
 
+  /** The first rewards answer, which the meter needs; later refreshes keep the band as it is */
+  private rewardsLoading = signal(true);
+  /** The band (title, hero, meter) waits for both the tasks and the rewards (ST-1839) */
+  bandLoading = computed(() => this.isLoading() || this.rewardsLoading());
+
   protected readonly today = longDate();
 
   /** 1024 px and wider: desktop A, done chores move to their own column */
@@ -153,9 +158,9 @@ export class ChildDashboardComponent implements OnInit {
       await Promise.all([
         firstValueFrom(this.taskService.getMyTasks(undefined, isoDay())),
         this.loadOverdue(),
-        firstValueFrom(this.rewardService.loadChildRewards()).catch((err) =>
-          console.error('Failed to load points balance:', err),
-        ),
+        firstValueFrom(this.rewardService.loadChildRewards())
+          .catch((err) => console.error('Failed to load points balance:', err))
+          .finally(() => this.rewardsLoading.set(false)),
         this.analyticsService.getChildAnalytics('week').then((data) => this.analytics.set(data)),
       ]);
     } catch (error: unknown) {

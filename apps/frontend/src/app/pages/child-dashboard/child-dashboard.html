@@ -4,14 +4,14 @@
   maxWidth="narrow"
   [band]="true"
   [split]="true"
-  [titleLoading]="isLoading()"
+  [titleLoading]="bandLoading()"
 >
   <!-- A, the yellow top (brand-08): the hero, the word "poeng" and the reward meter sit in
        the band, in Ink, with the meter Ink on #C59430 as on the tick screen. From 1024 px they
        sit right-aligned beside the name (desktop A) -->
   <div page-band class="bandbox">
     <!-- Changing the rows of this block? Change the .bandhold copy below too (ST-1839) -->
-    @if (!isLoading() && !errorMessage()) {
+    @if (!bandLoading() && !errorMessage()) {
       <!-- The hero: the child's points, the largest thing on the screen -->
       <p class="hero" [attr.aria-label]="pointsLabel()">{{ balance() }}</p>
       <p class="herolab" aria-hidden="true" i18n="@@childDashboard.pointsWord">poeng</p>
@@ -25,8 +25,9 @@
       }
     }
     <!-- While loading (Stig, ST-1838 A): the loaded content, invisible, so the band has its
-         final height from the first moment and does not jump when the name arrives -->
-    @if (isLoading()) {
+         final height from the first moment and does not jump when the name arrives. It waits
+         for both the tasks and the rewards, whichever answers last -->
+    @if (bandLoading() && !errorMessage()) {
       <div class="bandhold" aria-hidden="true">
         <p class="hero">0</p>
         <p class="herolab">&nbsp;</p>
