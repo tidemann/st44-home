@@ -181,6 +181,25 @@ app-group-label + .hr {
 }
 
 @media (min-width: 1024px) {
+  /* Stig, ST-1840 A: the total beside the title, right-aligned in 345 px, at the size and y
+     of «Mine oppgaver». There is no meter here, so the box keeps the height of that band's
+     box (hero, "poeng", meter label and meter: 164.8 px), and both bands end at 270 */
+  .bandbox {
+    display: flow-root;
+    width: 345px;
+    min-height: 164.8px;
+    text-align: right;
+  }
+
+  .hero {
+    margin-top: 9px;
+    font-size: 83px;
+  }
+
+  .herolab {
+    margin-top: 12px;
+  }
+
   .cols {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));

@@ -4,10 +4,12 @@
   [subtitle]="subtitle()"
   maxWidth="narrow"
   [band]="true"
+  [split]="true"
 >
   <!-- A, the yellow top: the balance is this screen's one hero, smaller than the chore
-       screen's, and sits in the band in Ink -->
-  <div page-band>
+       screen's, and sits in the band in Ink. From 1024 px it sits right-aligned beside the
+       title at the chore screen's size, as on «Mine oppgaver» (Stig, ST-1840 A) -->
+  <div page-band class="bandbox">
     <p class="hero" [attr.aria-label]="balanceLabel()" aria-live="polite">{{ pointsBalance() }}</p>
     <p class="herolab" aria-hidden="true" i18n="@@childRewards.balanceWord">poeng å bruke</p>
   </div>

@@ -72,6 +72,15 @@ describe('ChildRewards', () => {
     vi.useRealTimers();
   });
 
+  it('puts the points total beside the title from 1024 px, as «Mine oppgaver» does (ST-1840 A)', () => {
+    fixture.detectChanges();
+
+    const page = fixture.nativeElement.querySelector('.page') as HTMLElement;
+    expect(page.classList).toContain('page--split');
+    const box = page.querySelector('.page-band-slot .bandbox') as HTMLElement;
+    expect(box.querySelector('.hero')?.textContent?.trim()).toBe('30');
+  });
+
   it('says how many points are missing', () => {
     expect(component.missing(reward({ pointsCost: 50 }))).toBe(20);
     expect(component.missing(reward({ pointsCost: 10 }))).toBe(0);
