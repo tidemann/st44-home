@@ -12,6 +12,7 @@ describe('ChildDashboardComponent', () => {
   let fixture: ComponentFixture<ChildDashboardComponent>;
   let taskDate: (offset: number) => string;
   let hold: Promise<void> | null = null;
+  let rewardsHold: Promise<void> | null = null;
 
   const task = (id: string, taskName: string, offset: number, status: string) => ({
     id,
@@ -37,7 +38,10 @@ describe('ChildDashboardComponent', () => {
             : [task('a1', 'Mate katten', 0, 'pending'), task('a2', 'Dekke bordet', 0, 'completed')],
         };
       }
-      if (endpoint.startsWith('/children/me/rewards')) return { rewards: [], pointsBalance: 35 };
+      if (endpoint.startsWith('/children/me/rewards')) {
+        if (rewardsHold) await rewardsHold;
+        return { rewards: [], pointsBalance: 35 };
+      }
       if (endpoint.startsWith('/children/me/analytics')) {
         const progress = { totalTasks: 0, completedTasks: 0, completionRate: 0, pointsEarned: 0 };
         return {
@@ -64,6 +68,7 @@ describe('ChildDashboardComponent', () => {
   beforeEach(async () => {
     taskDate = (offset) => isoDay(offset);
     hold = null;
+    rewardsHold = null;
     api.get.mockClear();
 
     await TestBed.configureTestingModule({
@@ -165,6 +170,28 @@ describe('ChildDashboardComponent', () => {
       await fixture.whenStable();
     }
     expect(el.querySelector('.bandhold')).toBeNull();
+    expect(el.querySelector('h1.page-title')!.textContent).toBe('Mathea');
+  });
+
+  // On a slow network the tasks may answer before the rewards the meter needs: the band keeps
+  // its hold until both are in, so it does not drop to the no-goal height and grow back
+  it('keeps the band hold until the rewards arrive after the tasks', async () => {
+    let release!: () => void;
+    rewardsHold = new Promise((r) => (release = r));
+    const el = await render();
+
+    expect(el.querySelector('.bandhold app-points-meter')).not.toBeNull();
+    expect(el.querySelector('h1.page-title .page-title-bar')).not.toBeNull();
+    expect(el.querySelector('.hero')?.closest('.bandhold')).not.toBeNull();
+
+    release();
+    await new Promise((r) => setTimeout(r));
+    for (let i = 0; i < 4; i++) {
+      fixture.detectChanges();
+      await fixture.whenStable();
+    }
+    expect(el.querySelector('.bandhold')).toBeNull();
+    expect(el.querySelector('.hero')!.textContent).toBe('35');
     expect(el.querySelector('h1.page-title')!.textContent).toBe('Mathea');
   });
 });
