@@ -107,6 +107,7 @@
   padding-right: 3.5rem;
 }
 
+/* As the parent login's eye: 44 × 44 target, 3 px in, so the 18 px drawing sits 16 px from the field edge */
 .toggle-password {
   position: absolute;
   top: 50%;
