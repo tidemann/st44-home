@@ -44,6 +44,10 @@
   margin-top: 10px;
 }
 
+.bandhold {
+  visibility: hidden;
+}
+
 .empty {
   margin-top: 24px;
   padding: 20px 15px;

@@ -2111,11 +2111,10 @@ step. Each is somebody's decision, not a builder's:
 6. **A child's two bands still differ** (ST-1345 F8): «Mine oppgaver» puts the points total beside
    the name, «Belønninger» stacks it under the sub-line — hence 270 against 282. No rule says where
    in the band the total goes.
-7. **What the band shows before the name has loaded.** On «Mine oppgaver» the child's name _is_ the
-   title and it arrives with the chore list, so while the page loads the band carries only the
-   sub-line and measures **128 px** — the same 128 px before and after the rules, so this is not
-   something they introduced. Rule 2 still says every page carries a title. **Open for Maria**, and
-   it is one of the step-3 items.
+7. **What the band shows before the name has loaded** (Stig, ST-1838, option A): on «Mine
+   oppgaver» the title line carries a grey bar in the loading rows' grey (`--track`, 72 px wide, as
+   tall as the name's capitals) and the band has its loaded height from the first moment (270 px at
+   1440), so nothing jumps when the name arrives. **Fixed by ST-1839.**
 
 ### Accessibility
 

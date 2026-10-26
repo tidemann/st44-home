@@ -123,6 +123,12 @@ export class PageComponent {
   titleMenuOpen = output<void>();
 
   /**
+   * While the title is still loading (ST-1839): the h1 shows a grey placeholder bar about the
+   * height of the name, in the loading rows' grey, so the band keeps its height.
+   */
+  titleLoading = input<boolean>(false);
+
+  /**
    * Computed CSS class for container width
    */
   protected containerClass = computed(() => {

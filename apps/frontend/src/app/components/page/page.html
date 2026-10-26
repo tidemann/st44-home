@@ -50,7 +50,11 @@
                 </button>
               </h1>
             } @else {
-              <h1 class="page-title">{{ title() }}</h1>
+              @if (titleLoading()) {
+                <h1 class="page-title"><span class="page-title-bar" aria-hidden="true"></span></h1>
+              } @else {
+                <h1 class="page-title">{{ title() }}</h1>
+              }
               @if (deskBand() && deskSubtitle()) {
                 <p class="page-subtitle page-subtitle--desk">{{ deskSubtitle() }}</p>
               }

@@ -71,6 +71,17 @@
   overflow-wrap: anywhere;
 }
 
+/* The title still loading (ST-1839): a bar in the loading rows' grey, as tall as the name's
+   capitals (0.72em) and sitting on its baseline, so the line keeps the title's height */
+.page-title-bar {
+  display: inline-block;
+  width: 72px;
+  height: 0.72em;
+  border-radius: 999px;
+  background: var(--track);
+  vertical-align: baseline;
+}
+
 /* The household name as a button (ST-1065): it looks like the title, the caret follows the
    last word 8 px after it, and the whole name is the tap target */
 .page-title-menu {
