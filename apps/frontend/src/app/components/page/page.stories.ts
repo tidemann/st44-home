@@ -420,3 +420,39 @@ export const TitleLoading: Story = {
     `,
   }),
 };
+
+/**
+ * Desktop A, the band split (Stig, ST-1840 option A)
+ *
+ * From 1024 px the title and sub-line sit on the left and the `page-band` content on the right,
+ * right-aligned beside the title. «Mine oppgaver» and the child's «Belønninger» both use it: the
+ * points total at 83 px, and a band that ends at 270 px at 1440. Under 1024 px the content stacks
+ * under the sub-line as in «YellowTop». View it at 1440 or 1024 px.
+ */
+export const SplitBand: Story = {
+  args: {
+    title: 'Belønninger',
+    subtitle: '1 av 2 kan hentes nå',
+    maxWidth: 'narrow',
+    band: true,
+    split: true,
+  },
+  argTypes: {
+    split: {
+      control: 'boolean',
+      description: 'Desktop A: from 1024 px the band content sits right-aligned beside the title',
+    },
+  },
+  render: (args) => ({
+    props: args,
+    template: `
+      <app-page [title]="title" [subtitle]="subtitle" [maxWidth]="maxWidth" [band]="band" [split]="split">
+        <div page-band style="width: 345px; min-height: 164.8px; text-align: right;">
+          <p style="margin: 9px 0 0; font: 800 83px/0.72 'Bricolage Grotesque', sans-serif; letter-spacing: -0.04em;">34</p>
+          <p style="margin: 12px 0 0; font: 500 15px/1.4 'Hanken Grotesk', sans-serif;">poeng å bruke</p>
+        </div>
+        ${sampleContent}
+      </app-page>
+    `,
+  }),
+};
