@@ -389,3 +389,34 @@ export const YellowTop: Story = {
     `,
   }),
 };
+
+/**
+ * The title still loading (ST-1839, Stig on ST-1838 option A)
+ *
+ * «Mine oppgaver» gets its title, the child's name, with the chore list. Until then the title
+ * line carries a grey bar in the loading rows' grey (--track), as tall as the name's capitals,
+ * so the band has its loaded height from the first moment.
+ */
+export const TitleLoading: Story = {
+  args: {
+    title: '',
+    subtitle: 'mandag 26. oktober',
+    maxWidth: 'narrow',
+    band: true,
+    titleLoading: true,
+  },
+  argTypes: {
+    titleLoading: {
+      control: 'boolean',
+      description: 'The title is still loading: a grey placeholder bar instead of the title',
+    },
+  },
+  render: (args) => ({
+    props: args,
+    template: `
+      <app-page [title]="title" [subtitle]="subtitle" [maxWidth]="maxWidth" [band]="band" [titleLoading]="titleLoading">
+        ${sampleContent}
+      </app-page>
+    `,
+  }),
+};
