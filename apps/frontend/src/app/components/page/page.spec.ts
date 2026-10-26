@@ -54,6 +54,25 @@ describe('PageComponent', () => {
   });
 
   describe('title input', () => {
+    it('shows a grey placeholder bar instead of the title while titleLoading (ST-1839)', () => {
+      fixture.componentRef.setInput('title', '');
+      fixture.componentRef.setInput('band', true);
+      fixture.componentRef.setInput('titleLoading', true);
+      fixture.detectChanges();
+
+      const h1 = fixture.debugElement.query(By.css('h1.page-title'));
+      const bar = h1.query(By.css('.page-title-bar'));
+      expect(bar).toBeTruthy();
+      expect(bar.nativeElement.getAttribute('aria-hidden')).toBe('true');
+
+      fixture.componentRef.setInput('title', 'Emma');
+      fixture.componentRef.setInput('titleLoading', false);
+      fixture.detectChanges();
+      const loaded = fixture.debugElement.query(By.css('h1.page-title'));
+      expect(loaded.query(By.css('.page-title-bar'))).toBeNull();
+      expect(loaded.nativeElement.textContent).toBe('Emma');
+    });
+
     it('should display the title in the header', () => {
       fixture.componentRef.setInput('title', 'Test Title');
       fixture.detectChanges();
