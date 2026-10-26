@@ -10,6 +10,7 @@
        the band, in Ink, with the meter Ink on #C59430 as on the tick screen. From 1024 px they
        sit right-aligned beside the name (desktop A) -->
   <div page-band class="bandbox">
+    <!-- Changing the rows of this block? Change the .bandhold copy below too (ST-1839) -->
     @if (!isLoading() && !errorMessage()) {
       <!-- The hero: the child's points, the largest thing on the screen -->
       <p class="hero" [attr.aria-label]="pointsLabel()">{{ balance() }}</p>

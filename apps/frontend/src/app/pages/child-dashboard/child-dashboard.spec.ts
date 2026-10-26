@@ -11,6 +11,7 @@ import { isoDay } from '../../utils/poeng-format';
 describe('ChildDashboardComponent', () => {
   let fixture: ComponentFixture<ChildDashboardComponent>;
   let taskDate: (offset: number) => string;
+  let hold: Promise<void> | null = null;
 
   const task = (id: string, taskName: string, offset: number, status: string) => ({
     id,
@@ -25,6 +26,7 @@ describe('ChildDashboardComponent', () => {
   const api = {
     get: vi.fn(async (endpoint: string) => {
       if (endpoint.startsWith('/children/me/tasks')) {
+        if (hold) await hold;
         const yesterday = endpoint.includes(`date=${isoDay(-1)}`);
         return {
           childName: 'Mathea',
@@ -61,6 +63,7 @@ describe('ChildDashboardComponent', () => {
 
   beforeEach(async () => {
     taskDate = (offset) => isoDay(offset);
+    hold = null;
     api.get.mockClear();
 
     await TestBed.configureTestingModule({
@@ -140,5 +143,28 @@ describe('ChildDashboardComponent', () => {
     expect(el.querySelector('app-notification-settings')).toBeNull();
     expect(el.querySelector('.analytics-section')).toBeNull();
     expect(el.textContent).toContain('Gjort i dag');
+  });
+
+  // ST-1839 (Stig, ST-1838 A): while the list loads, the title is a grey bar and an invisible
+  // copy of the band content holds the band at its loaded height
+  it('holds the band and shows the title bar until the name arrives', async () => {
+    let release!: () => void;
+    hold = new Promise((r) => (release = r));
+    fixture = TestBed.createComponent(ChildDashboardComponent);
+    fixture.detectChanges();
+    await Promise.resolve();
+    fixture.detectChanges();
+    const el = fixture.nativeElement as HTMLElement;
+
+    expect(el.querySelector('.bandhold app-points-meter')).not.toBeNull();
+    expect(el.querySelector('h1.page-title .page-title-bar')).not.toBeNull();
+
+    release();
+    for (let i = 0; i < 4; i++) {
+      fixture.detectChanges();
+      await fixture.whenStable();
+    }
+    expect(el.querySelector('.bandhold')).toBeNull();
+    expect(el.querySelector('h1.page-title')!.textContent).toBe('Mathea');
   });
 });
