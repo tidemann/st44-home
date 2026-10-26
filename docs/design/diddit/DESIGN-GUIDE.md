@@ -1998,8 +1998,7 @@ edge; the content edges are the first and last column under the band that is not
 | **191 px**   | Oppgaver, Familie, Belønninger, Innstillinger, Husholdninger, Husholdningsinnstillinger, Invitasjoner, Ny husstand, Barnas innlogging, Glemt passord, Sett nytt passord, Invitasjon | title + sub-line only — rule 2's own number |
 | 227 px       | Fremgang                                                                                                                                                                            | the three stat figures are the lowest item  |
 | 259 px       | Hjemme                                                                                                                                                                              | the child cards are the lowest item         |
-| 270 px       | Mine oppgaver (barn)                                                                                                                                                                | the hero number and the reward meter        |
-| 282 px       | Belønninger (barn)                                                                                                                                                                  | the points total under the sub-line         |
+| 270 px       | Mine oppgaver (barn), Belønninger (barn)                                                                                                                                            | the points total beside the title           |
 
 - **Content x 280…1160 (880 px)** on every two-column page and **x 280…708 (428 px)** on every
   one-column page. **x 280 on all sixteen** — the Diddit mark's own left edge, which is rule 1.
@@ -2108,9 +2107,9 @@ step. Each is somebody's decision, not a builder's:
    whole card. **Open for Maria.**
 5. **The «Administrator» chip on Husholdninger is still pink**, a colour that is not in the palette
    (ST-1345 F11). Rule 5 names the chip's corner, not its colour. **Fixed by ST-1621:** badges use the chip (above).
-6. **A child's two bands still differ** (ST-1345 F8): «Mine oppgaver» puts the points total beside
-   the name, «Belønninger» stacks it under the sub-line — hence 270 against 282. No rule says where
-   in the band the total goes.
+6. **A child's two bands** (ST-1345 F8): **closed** — Stig chose option A on ST-1840: «Belønninger»
+   puts the points total beside the title, right-aligned at 83 px, as «Mine oppgaver» does, and both
+   bands are 270 px at 1440. The phone keeps the total under the sub-line. **Fixed by ST-1847.**
 7. **What the band shows before the name has loaded** (Stig, ST-1838, option A): on «Mine
    oppgaver» the title line carries a grey bar in the loading rows' grey (`--track`, 72 px wide, as
    tall as the name's capitals) and the band has its loaded height from the first moment (270 px at
