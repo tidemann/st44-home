@@ -314,6 +314,25 @@ describe('Household API', () => {
       assert.strictEqual(child?.displayName, 'Prøvebarn');
     });
 
+    test('should give a child without a user account its join date', async () => {
+      await pool.query(
+        `INSERT INTO children (household_id, name, birth_year) VALUES ($1, 'Uten konto', 2016)`,
+        [householdId],
+      );
+
+      const response = await app.inject({
+        method: 'GET',
+        url: `/api/households/${householdId}/members`,
+        headers: { Authorization: `Bearer ${user1Token}` },
+      });
+
+      assert.strictEqual(response.statusCode, 200);
+      const body = JSON.parse(response.body) as Array<{ displayName: string; joinedAt: string }>;
+      const child = body.find((member) => member.displayName === 'Uten konto');
+      assert.strictEqual(typeof child?.joinedAt, 'string');
+      assert.ok(!Number.isNaN(Date.parse(child?.joinedAt ?? '')));
+    });
+
     test('should reject without authentication', async () => {
       const response = await app.inject({
         method: 'GET',

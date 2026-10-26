@@ -125,7 +125,9 @@
 .select-all {
   position: relative;
   flex: none;
-  padding: 0;
+  /* 45 px tall target from transparent padding; the negative margin keeps the text where it is drawn */
+  padding: 12px 8px;
+  margin: -12px -8px;
   border: 0;
   background: transparent;
   color: var(--ink);
@@ -136,13 +138,6 @@
   text-decoration: underline;
   text-underline-offset: 3px;
   cursor: pointer;
-}
-
-/* 44 px pressed */
-.select-all::after {
-  content: '';
-  position: absolute;
-  inset: -12px -8px;
 }
 
 .select-all:focus-visible {
