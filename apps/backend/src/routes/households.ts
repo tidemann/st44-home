@@ -507,6 +507,7 @@ async function getHouseholdMembers(
         c.user_id,
         c.id as child_id,
         c.name as child_name,
+        c.created_at as child_created_at,
         COALESCE(cpb.points_balance, 0) as points,
         COALESCE(today_stats.tasks_completed, 0) as tasks_completed,
         COALESCE(today_stats.total_tasks, 0) as total_tasks
@@ -535,6 +536,7 @@ async function getHouseholdMembers(
     interface UnlinkedChild {
       childId: string;
       childName: string;
+      createdAt: Date;
       tasksCompleted: number;
       totalTasks: number;
       points: number;
@@ -560,17 +562,18 @@ async function getHouseholdMembers(
           totalTasks: childData.totalTasks,
           points: childData.points,
           childName: childData.childName,
+          createdAt: row.child_created_at,
         });
       }
     }
 
-    // Define the member response type to allow nullable email/joinedAt
+    // email is null for children without a user account
     interface MemberResponse {
       userId: string;
       email: string | null;
       displayName: string | null;
       role: string;
-      joinedAt: string | null;
+      joinedAt: string;
       tasksCompleted: number;
       totalTasks: number;
       points: number;
@@ -605,7 +608,7 @@ async function getHouseholdMembers(
         email: null, // No email for unlinked children
         displayName: child.childName,
         role: 'child',
-        joinedAt: null, // No join date for unlinked children
+        joinedAt: toDateTimeString(child.createdAt), // the child joined when the profile was made
         tasksCompleted: child.tasksCompleted,
         totalTasks: child.totalTasks,
         points: child.points,
