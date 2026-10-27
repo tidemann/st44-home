@@ -2069,6 +2069,11 @@ because a reader comparing this section with layout A will notice them.
   button is not where the signed-off desktop picture puts it.
   [`desktop-rules-husholdninger-1440.png`](reference/desktop-rules-husholdninger-1440.png).
 
+### Oppgaver: «Velg» and the group labels (ST-1887)
+
+«Velg» sits under the «Alle oppgaver» list as a 36 px outline row button; select mode replaces the
+row checkbox. The four group-label lines are identical, count on the column edge.
+
 ### What rule 7's "page width" means, measured
 
 Rule 7's picture of what is wrong is "a white stripe across the full window". **No white area on any

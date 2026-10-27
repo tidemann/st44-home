@@ -424,6 +424,25 @@ describe('Tasks (Poeng task list)', () => {
       expect(selectRows().every((r) => r.getAttribute('aria-checked') === 'false')).toBe(true);
     });
 
+    it('puts «Velg» under the last «Alle oppgaver» row, not in its label line (ST-1887)', () => {
+      const velg = button('Velg')!;
+      expect(velg.classList).toContain('select-start');
+      expect(el().querySelector('app-group-label button')).toBeNull();
+      const rows = el().querySelectorAll('app-chore-row');
+      expect(rows[rows.length - 1].nextElementSibling).toBe(velg);
+
+      velg.click();
+      fixture.detectChanges();
+      expect(button('Velg')).toBeUndefined();
+    });
+
+    it('has no «Velg» when «Alle oppgaver» is empty (ST-1887)', async () => {
+      mockTaskService.tasks.set([]);
+      await component['loadTasks']();
+      fixture.detectChanges();
+      expect(button('Velg')).toBeUndefined();
+    });
+
     it('puts the select rows in one grid, so desktop lays them in two columns (frame d1)', () => {
       button('Velg')!.click();
       fixture.detectChanges();

@@ -79,6 +79,44 @@
   }
 }
 
+/* «Velg» under «Alle oppgaver» (ST-1887): the outline row button, 36 px, 10 px corners, as wide
+   as the rows and 8 px under the last one (guide: button-outline at row scale) */
+.select-start {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 36px;
+  margin-top: 8px;
+  padding: 0 11px;
+  border: 1.5px solid var(--text-muted);
+  border-radius: var(--r-row-action);
+  background: var(--surface);
+  color: var(--text);
+  font-family: var(--font-text);
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 1;
+  letter-spacing: -0.02em;
+  cursor: pointer;
+}
+
+/* 44 px pressed, like the row action */
+.select-start::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: -4px;
+  bottom: -4px;
+}
+
+.select-start:focus-visible {
+  outline: var(--focus-ring);
+  outline-offset: 2px;
+}
+
 /* Rule 7: an empty group's card is a desktop thing; the phone list does not change */
 .desk-empty {
   display: none;
