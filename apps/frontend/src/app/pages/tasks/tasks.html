@@ -253,19 +253,7 @@
             i18n-label="@@tasks.allGroup"
             label="Alle oppgaver"
             [right]="'' + templates().length"
-          >
-            @if (!selecting()) {
-              <button
-                label-action
-                type="button"
-                class="rbtn"
-                (click)="startSelect()"
-                i18n="@@tasks.selectStart"
-              >
-                Velg
-              </button>
-            }
-          </app-group-label>
+          />
           @if (selecting()) {
             <!-- Frame d1: from 1024 px the rows run in two 428 px columns under the one label -->
             <div class="select-rows">
@@ -294,6 +282,16 @@
                 (longPress)="onLongPress(t.id, $event)"
               />
             }
+            <!-- ST-1887 (Stig, option A on ST-1885): «Velg» under the rows it acts on, so the
+                 «Alle oppgaver» label line is the same as the other three -->
+            <button
+              type="button"
+              class="select-start"
+              (click)="startSelect()"
+              i18n="@@tasks.selectStart"
+            >
+              Velg
+            </button>
           }
         }
       </div>
