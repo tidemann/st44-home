@@ -150,6 +150,54 @@ describe('Tasks API', () => {
       taskId = body.id;
     });
 
+    test('ST-2036: a new daily chore has its chore for today at once', async () => {
+      const response = await app.inject({
+        method: 'POST',
+        url: `/api/households/${householdId}/tasks`,
+        headers: { Authorization: `Bearer ${adminToken}` },
+        payload: {
+          name: 'ST-2036 daily',
+          points: 5,
+          ruleType: 'daily',
+          ruleConfig: { assignedChildren: [childId1] },
+        },
+      });
+
+      assert.strictEqual(response.statusCode, 201, response.body);
+      const id = JSON.parse(response.body).id;
+      const todayIso = todayInTimeZone(new Date()).toISOString().slice(0, 10);
+      const assignments = await pool.query(
+        'SELECT child_id FROM task_assignments WHERE task_id = $1 AND date = $2',
+        [id, todayIso],
+      );
+      assert.strictEqual(assignments.rows.length, 1);
+      assert.strictEqual(assignments.rows[0].child_id, childId1);
+    });
+
+    test('ST-2036: a new weekly rotation gives this week\'s child today\'s chore at once', async () => {
+      const response = await app.inject({
+        method: 'POST',
+        url: `/api/households/${householdId}/tasks`,
+        headers: { Authorization: `Bearer ${adminToken}` },
+        payload: {
+          name: 'ST-2036 rotation',
+          points: 5,
+          ruleType: 'weekly_rotation',
+          ruleConfig: { rotationType: 'alternating', assignedChildren: [childId1, childId2] },
+        },
+      });
+
+      assert.strictEqual(response.statusCode, 201, response.body);
+      const id = JSON.parse(response.body).id;
+      const todayIso = todayInTimeZone(new Date()).toISOString().slice(0, 10);
+      const assignments = await pool.query(
+        'SELECT child_id FROM task_assignments WHERE task_id = $1 AND date = $2',
+        [id, todayIso],
+      );
+      assert.strictEqual(assignments.rows.length, 1);
+      assert.strictEqual(assignments.rows[0].child_id, childId1);
+    });
+
     test('should create a repeating task (parent)', async () => {
       const response = await app.inject({
         method: 'POST',
