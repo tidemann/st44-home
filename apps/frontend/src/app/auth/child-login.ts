@@ -150,9 +150,9 @@ export class ChildLoginComponent {
       this.router.navigate(['/my-tasks']);
     } catch (error: unknown) {
       this.credentialsRefused.set(true);
-      // Child-friendly error message
+      // The signed-off login's own sentence for a refused sign-in (ST-1999 W9)
       this.errorMessage.set(
-        $localize`:@@childLogin.loginFailed:Oops! Sjekk e-posten og passordet ditt og prøv igjen.`,
+        $localize`:@@childLogin.loginFailed:Feil e-post eller passord. Prøv igjen.`,
       );
       console.error('Login failed:', error);
     } finally {

@@ -10,7 +10,11 @@
   <!-- Camera Permission Denied -->
   @if (cameraPermissionDenied() && !loading()) {
     <div class="permission-denied" role="alert" aria-live="assertive">
-      <div class="icon" aria-hidden="true">📷</div>
+      <div class="icon" aria-hidden="true"><svg viewBox="0 0 18 18" width="48" height="48" focusable="false">
+  <circle cx="9" cy="9" r="7.8" />
+  <path d="M9 5.2 v5" />
+  <circle class="dot" cx="9" cy="12.6" r="0.9" />
+</svg></div>
       <h3 i18n="@@qrCodeScanner.cameraAccessRequired">Kameratilgang påkrevd</h3>
       <p i18n="@@qrCodeScanner.allowCameraMessage">
         Vennligst tillat kameratilgang for å skanne QR-koder.
@@ -40,16 +44,20 @@
   <!-- No Camera Available -->
   @if (noCameraAvailable() && !loading()) {
     <div class="no-camera" role="alert" aria-live="assertive">
-      <div class="icon" aria-hidden="true">📵</div>
+      <div class="icon" aria-hidden="true"><svg viewBox="0 0 18 18" width="48" height="48" focusable="false">
+  <circle cx="9" cy="9" r="7.8" />
+  <path d="M9 5.2 v5" />
+  <circle class="dot" cx="9" cy="12.6" r="0.9" />
+</svg></div>
       <h3 i18n="@@qrCodeScanner.noCameraFound">Ingen kamera funnet</h3>
       <p i18n="@@qrCodeScanner.noCameraMessage">
         Enheten din har ikke et kamera eller det er ikke tilgjengelig.
       </p>
       <p class="help-text" i18n="@@qrCodeScanner.alternativeLogin">
-        Du kan bruke passord/PIN-innlogging i stedet, eller prøve å skanne fra en annen enhet.
+        Logg inn med e-post i stedet, eller prøv å skanne fra en annen enhet.
       </p>
       <button class="btn btn-secondary" (click)="cancel()" i18n="@@qrCodeScanner.backToLogin">
-        Tilbake til innlogging
+        Logg inn med e-post
       </button>
     </div>
   }
@@ -57,14 +65,18 @@
   <!-- Camera turned off for the whole site (Permissions-Policy). Retrying cannot help -->
   @if (cameraBlocked() && !loading()) {
     <div class="camera-blocked" role="alert" aria-live="assertive">
-      <div class="icon" aria-hidden="true">🚫</div>
+      <div class="icon" aria-hidden="true"><svg viewBox="0 0 18 18" width="48" height="48" focusable="false">
+  <circle cx="9" cy="9" r="7.8" />
+  <path d="M9 5.2 v5" />
+  <circle class="dot" cx="9" cy="12.6" r="0.9" />
+</svg></div>
       <h3 i18n="@@qrCodeScanner.blockedTitle">QR-innlogging virker ikke akkurat nå</h3>
       <p>{{ error() }}</p>
       <p class="help-text" i18n="@@qrCodeScanner.blockedHelp">
         Logg inn med e-post og passord i stedet, eller be en voksen om hjelp.
       </p>
       <button class="btn btn-secondary" (click)="cancel()" i18n="@@qrCodeScanner.backToLogin2">
-        Tilbake til innlogging
+        Logg inn med e-post
       </button>
     </div>
   }
@@ -74,7 +86,11 @@
     error() && !loading() && !cameraPermissionDenied() && !noCameraAvailable() && !cameraBlocked()
   ) {
     <div class="error-state" role="alert" aria-live="assertive">
-      <div class="error-icon" aria-hidden="true">⚠️</div>
+      <div class="error-icon" aria-hidden="true"><svg viewBox="0 0 18 18" width="48" height="48" focusable="false">
+  <circle cx="9" cy="9" r="7.8" />
+  <path d="M9 5.2 v5" />
+  <circle class="dot" cx="9" cy="12.6" r="0.9" />
+</svg></div>
       <p>{{ error() }}</p>
       <div class="actions">
         <button class="btn btn-primary" (click)="retry()" i18n="@@qrCodeScanner.tryAgainButton">

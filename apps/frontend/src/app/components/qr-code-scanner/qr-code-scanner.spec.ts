@@ -78,6 +78,19 @@ describe('QrCodeScannerComponent', () => {
     expect(text).toContain('for å skanne');
   });
 
+  // ST-1999 W6: Diddit glyphs, no emoji as icons, and no PIN (Diddit has none)
+  it('draws its error states with a Diddit glyph, no emoji, and offers e-mail sign-in', async () => {
+    getUserMedia.mockRejectedValue(new DOMException('none', 'NotFoundError'));
+
+    await start();
+
+    const panel = fixture.nativeElement.querySelector('.no-camera') as HTMLElement;
+    expect(panel.querySelector('.icon svg')).not.toBeNull();
+    expect(panel.textContent).not.toMatch(/\p{Extended_Pictographic}/u);
+    expect(panel.textContent).not.toContain('PIN');
+    expect(panel.querySelector('.btn-secondary')?.textContent?.trim()).toBe('Logg inn med e-post');
+  });
+
   // ST-679: the live site sent `Permissions-Policy: camera=()`. The browser then
   // refused at once, and "Tillat kameratilgang" only made the screen flash.
   it('says the camera is off for the site, and never asks, when the page policy blocks it', async () => {
