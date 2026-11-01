@@ -16,7 +16,9 @@ const WEEK_MS = 7 * 24 * 60 * 60 * 1000;
  * Edit, weekly rotation (ST-2030): the saved order turned so row 1 is next week's child,
  * since a changed order starts next week, and the child who has this week. This reads the
  * rotation the way the server's generator does. A rotation with no start week (from
- * before ST-2030) keeps its order, and this week's child is not known.
+ * before ST-2030) keeps its order, and this week's child is not known. Nor is it for a
+ * rotation changed this week: the server kept this week's chores, and the new order says
+ * nothing about who has them.
  */
 export function rotationFromNextWeek(
   order: string[],
@@ -41,6 +43,6 @@ export function rotationFromNextWeek(
   const next = mod(weeks + 1);
   return {
     order: [...order.slice(next), ...order.slice(0, next)],
-    thisWeekChildId: order[mod(weeks)],
+    thisWeekChildId: weeks < 0 ? null : order[mod(weeks)],
   };
 }

@@ -53,10 +53,11 @@ describe('rotationFromNextWeek (ST-2030)', () => {
     expect(result.order).toEqual(['mathea', 'emma', 'jonas']);
   });
 
-  it('a rotation that starts next week is shown as saved', () => {
+  it('a rotation changed this week (starts next week) is shown as saved, this week unknown', () => {
+    // The server kept this week's chores; the new order cannot say who has them
     const result = rotationFromNextWeek(kids, 'alternating', '2026-11-09', new Date(2026, 10, 4));
     expect(result.order).toEqual(kids);
-    expect(result.thisWeekChildId).toBe('mathea');
+    expect(result.thisWeekChildId).toBeNull();
   });
 
   it('counts over the year end and across daylight saving', () => {

@@ -26,6 +26,7 @@ import type { Task, TaskRuleType, Child, CreateTaskRequest } from '@st44/types';
 import { isDesktopSignal } from '../../../utils/desktop-query';
 import { rotationFromNextWeek } from '../../../utils/rotation-weeks';
 import { RotationOrder } from '../../rotation-order/rotation-order';
+import { HouseholdDayService } from '../../../services/household-day.service';
 
 /**
  * Mode for the task form
@@ -128,6 +129,7 @@ export class TaskFormModal {
    * DestroyRef for subscription cleanup
    */
   private readonly destroyRef = inject(DestroyRef);
+  private readonly householdDay = inject(HouseholdDayService);
 
   /**
    * Task types configuration
@@ -350,6 +352,7 @@ export class TaskFormModal {
       remaining = rotation.order;
       const name = this.children().find((child) => child.id === rotation.thisWeekChildId)?.name;
       this.thisWeekName.set(name ?? null);
+      void this.loadThisWeekName(task);
     }
     const assignedChildrenArray = this.form.get('assignedChildren') as FormArray;
     remaining.forEach((childId: string) => assignedChildrenArray.push(this.fb.control(childId)));
@@ -373,6 +376,20 @@ export class TaskFormModal {
     // Update validators for current rule type
     this.updateValidators(task.ruleType);
     this.errorMessage.set(null);
+  }
+
+  /**
+   * Edit, weekly rotation: name the child who really has this week's chore. After a saved
+   * change the server keeps this week's chores, so the order alone cannot tell (ST-2030).
+   * Without a chore this week the name worked out from the order stays.
+   */
+  private async loadThisWeekName(task: Task): Promise<void> {
+    const childId = await this.householdDay
+      .thisWeekChildId(this.householdId() || task.householdId, task.id)
+      .catch(() => null);
+    if (!childId || this.task()?.id !== task.id || this.mode() !== 'edit') return;
+    const name = this.children().find((child) => child.id === childId)?.name;
+    if (name) this.thisWeekName.set(name);
   }
 
   /**

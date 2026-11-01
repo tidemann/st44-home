@@ -56,4 +56,30 @@ describe('HouseholdDayService', () => {
     expect(day.today.map((a) => a.title)).toEqual(['I dag']);
     expect(day.overdue.map((a) => a.title)).toEqual(['Eldre', 'I går']);
   });
+
+  it("ST-2030: reads this week's child from the task's chores, Monday to Sunday", async () => {
+    const taskId = crypto.randomUUID();
+    get.mockResolvedValue({
+      assignments: [
+        assignment({ childId: 'other', date: '2026-11-02' }),
+        assignment({ taskId, childId: null, date: '2026-11-02' }),
+        assignment({ taskId, childId: 'emma', date: '2026-11-03' }),
+        assignment({ taskId, childId: 'jonas', date: '2026-11-09' }),
+      ],
+    });
+    // Sunday 2026-11-08: still the week that began Monday 2026-11-02
+    const childId = await TestBed.inject(HouseholdDayService).thisWeekChildId(
+      'h1',
+      taskId,
+      new Date(2026, 10, 8, 23, 30),
+    );
+
+    expect(get).toHaveBeenCalledWith('/households/h1/assignments?date=2026-11-02&days=7');
+    expect(childId).toBe('emma');
+  });
+
+  it('ST-2030: no chore this week gives no child', async () => {
+    get.mockResolvedValue({ assignments: [] });
+    expect(await TestBed.inject(HouseholdDayService).thisWeekChildId('h1', 't1')).toBeNull();
+  });
 });
