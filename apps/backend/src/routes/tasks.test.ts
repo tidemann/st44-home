@@ -174,7 +174,7 @@ describe('Tasks API', () => {
       assert.strictEqual(assignments.rows[0].child_id, childId1);
     });
 
-    test('ST-2036: a new weekly rotation gives this week\'s child today\'s chore at once', async () => {
+    test("ST-2036: a new weekly rotation gives this week's child today's chore at once", async () => {
       const response = await app.inject({
         method: 'POST',
         url: `/api/households/${householdId}/tasks`,
@@ -549,7 +549,9 @@ describe('Tasks API', () => {
       // A new rotation starts this week with the first child
       assert.strictEqual(task.ruleConfig.rotationStart, iso(thisMonday));
 
-      // This week (and next Monday, generated ahead) belong to child 1 under the old order
+      // This week (and next Monday, generated ahead) belong to child 1 under the old order.
+      // Creating already made the chores from today (ST-2036); seed the whole week instead.
+      await pool.query('DELETE FROM task_assignments WHERE task_id = $1', [task.id]);
       for (let i = 0; i < 8; i++) {
         await pool.query(
           `INSERT INTO task_assignments (household_id, task_id, child_id, date, status)
@@ -711,7 +713,10 @@ describe('Tasks API', () => {
         payload: { name, ruleType: 'daily' },
       });
       assert.strictEqual(response.statusCode, 201, response.body);
-      return JSON.parse(response.body).id;
+      const id = JSON.parse(response.body).id;
+      // Creating makes the chores at once (ST-2036); these tests seed their own rows
+      await pool.query('DELETE FROM task_assignments WHERE task_id = $1', [id]);
+      return id;
     }
 
     async function seedTodayRows(id: string) {
