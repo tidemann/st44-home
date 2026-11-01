@@ -615,8 +615,9 @@ where they carry meaning.
 - **Background** (`#F6F6F4`): the screen behind the cards, and the bottom nav band — the nav is not
   a separate white bar.
 - **Track** (`#ECECE8`): the unfilled segments of a meter on a white screen.
-- **Hairline** (`#DFDFD9`): the structural dividers (above the bottom nav, under "Hentet før") and
-  the resting outline of an unchecked checkbox. See **Elevation & Depth** for what it may and may
+- **Hairline** (`#DFDFD9`): the structural dividers (above the bottom nav, under "Hentet før"), the
+  resting outline of an unchecked checkbox, and the edge of a control that is **inactive**
+  (unavailable) — the last approved 2026-11-01. See **Elevation & Depth** for what it may and may
   not be used for.
 
 ### On-yellow neutrals
@@ -807,9 +808,12 @@ Strokes do exist. There are exactly three kinds in the picture, and each one is 
 | Structural divider — above the nav, under a heading | `#DFDFD9`             | 1px   | All four light screens; "Hentet før"                                                               |
 | Layer boundary — the edge of a popup                | `#555E64` / `#17120A` | 1.5px | Not in the picture; approved 2026-10-11, see **Popups**                                            |
 | State — a row held under a finger (long press)      | `#17120A`             | 2px   | Inside the card (`box-shadow: inset 0 0 0 2px`). Not in the picture; approved 2026-10-18 (ST-1391) |
+| Control boundary — an **inactive** control          | `#DFDFD9`             | the control's own | Not in the picture; approved 2026-11-01 (ST-2029), see **The two approved exceptions to the picture** |
 
 The checkbox stroke is the picture's colour. **A build draws it in `#555E64` instead** — one of the
 two approved exceptions listed under Accessibility. Same width, same shape, same position.
+**That swap is for a control you can use.** A control drawn **inactive** — unavailable, not
+pressable — keeps the `#DFDFD9` edge; see **The two approved exceptions to the picture**.
 
 ### Named Rules
 
@@ -2419,12 +2423,47 @@ review findings — **do not renumber them**.
 | ----- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
 | **1** | **Popup width.** Every popup is **428 px** wide — the same column a form gets on a page — and centred in the window. It never grows with the window, and no popup has a width of its own.                                                                                                                                                                                                                                                                                                                                      | 3 widths today: 14 dialogs at 500 px, the two offers at 480 px, «Bytt husstand» at 440 px. [`desktop-popups-bytt-husstand-a.png`](reference/desktop-popups-bytt-husstand-a.png) — 440 → 428                                                                                                                                                                              |
 | **2** | **Height and place.** A popup is centred in the window with **at least 48 px of air** over and under it. When the content is taller, **only the body scrolls** — the title row and the action row stay.                                                                                                                                                                                                                                                                                                                        | The two tallest stand 852 px tall in a 900 px window, 24 px from the edge. [`desktop-popups-1`](reference/desktop-popups-1-hjemme-oppgaver.png) («Ny oppgave») and [`desktop-popups-2`](reference/desktop-popups-2-familie.png) («Barnedetaljer»)                                                                                                                        |
-| **3** | **The action row is two equal halves:** two buttons of **194 × 49 px**, 13 px corners, 16.5 px label, 8 px apart, filling the 396 px inside the popup; the safe one outlined on the left, the one that acts filled on the right. **One action fills all 396 px. Three share the row in equal thirds of 126.7 px.**                                                                                                                                                                                                             | The buttons hug their labels: 17 different widths between 57 and 230 px, in two label sizes (14 and 16.5 px). [`desktop-popups-1`](reference/desktop-popups-1-hjemme-oppgaver.png) («Rediger oppgave», three actions)                                                                                                                                                    |
+| **3** | **The action row is two equal halves:** two buttons of **193.5 × 49 px**, 13 px corners, 16.5 px label, 8 px apart, filling the **395 px** inside the popup; the safe one outlined on the left, the one that acts filled on the right. **One action fills all 395 px. Three share the row in equal thirds of 126.3 px.** The widths come from **One method, both widths** below.                                                                                                                                                                                                             | The buttons hug their labels: 17 different widths between 57 and 230 px, in two label sizes (14 and 16.5 px). [`desktop-popups-1`](reference/desktop-popups-1-hjemme-oppgaver.png) («Rediger oppgave», three actions)                                                                                                                                                    |
 | **4** | **A popup's main action is never pale — and never dead.** It keeps the yellow fill and its ink label (10.57:1) and is pressable from the first paint. The form is checked **when you press**: the field that is wrong takes a 2 px `#A43A16` edge, and one `#A43A16` line, 15 px, stands under **that** field (6.57:1) — the `field-text-error` token, no icon. An error on one field marks only that field. The only `disabled` left inside a popup is the moment it is working, and it keeps its yellow and swaps its label. | 6 popups dim it before you have typed anything — 2.63:1 on five, 3.46:1 on «Opprett» — and all six are `disabled`, so the press does nothing at all. [`desktop-popups-5-regel-4.png`](reference/desktop-popups-5-regel-4.png)                                                                                                                                            |
-| **5** | **One field inside a popup:** 49 px tall, 13 px corners, a 1.5 px `#555E64` edge, white, 16 px inside — otherwise the login field. A text box is that same field, the full 396 px wide and 76 px tall.                                                                                                                                                                                                                                                                                                                         | 5 field heights (48, 50, 51.6, 52, 53 px) and 4 edges, one of them `#E2E8F0`, a colour from outside the system. [`desktop-popups-2`](reference/desktop-popups-2-familie.png) — «Personlig melding» was 181 × 72 px, 0 px corners, **no edge at all**                                                                                                                     |
+| **5** | **One field inside a popup:** 49 px tall, 13 px corners, a 1.5 px `#555E64` edge, white, 16 px inside — otherwise the login field. A text box is that same field, the full 395 px wide and 76 px tall.                                                                                                                                                                                                                                                                                                                         | 5 field heights (48, 50, 51.6, 52, 53 px) and 4 edges, one of them `#E2E8F0`, a colour from outside the system. [`desktop-popups-2`](reference/desktop-popups-2-familie.png) — «Personlig melding» was 181 × 72 px, 0 px corners, **no edge at all**                                                                                                                     |
 | **6** | **No browser chrome inside a popup.** A choice is a Diddit field with the Diddit caret, never the operating system's own `<select>` menu or date picker. The pictures show the **closed** field, which is all a picture can hold; the open list is a Diddit menu the build supplies.                                                                                                                                                                                                                                           | 5 popups open the browser's own menu inside the Diddit frame — and the two task popups a `datetime-local` picker as well: [`desktop-popups-1`](reference/desktop-popups-1-hjemme-oppgaver.png) («Ny oppgave», «Rediger oppgave», «Tilordne oppgave på nytt») and [`desktop-popups-2`](reference/desktop-popups-2-familie.png) («Legg til barn», «Inviter familiemedlem») |
 | **7** | **A popup is a centred dialog, never a sheet off an edge.** On desktop there is no bottom nav to rise above, and a sheet glued to the window's edge loses the popup's own shape. The shape does not depend on whether the popup blocks; the only popups that stand off-centre are the two offers in rule 8.                                                                                                                                                                                                                    | «Bytt husstand» rises from the bottom edge with 20 px corners and no edge at all, against 13 px and the ink edge on the other 14. [`desktop-popups-bytt-husstand-a.png`](reference/desktop-popups-bytt-husstand-a.png)                                                                                                                                                   |
 | **8** | **An offer sits in the bottom right** — «Slå på varsler?» and «Legg Diddit på hjemskjermen», and no other popup: 428 px wide, **24 px** clear of the window's right and bottom edge, grey edge, no veil. A popup that asks you something stays centred (rule 7) even if you may ignore it.                                                                                                                                                                                                                                     | Both offers float centred at the bottom of the window, 480 px wide, in a 16 px gutter meant for a phone. [`desktop-popups-4`](reference/desktop-popups-4-husholdninger-tilbud.png)                                                                                                                                                                                       |
+
+#### One method, both widths (Maria, 2026-11-01, ST-2029)
+
+Rule 3 used to give the desktop halves as 194 px in a 396 px inside, which is 428 less 32 px — the
+30 px of padding plus the popup's edge **as Chromium draws it**, 1 px a side. The phone subtracts
+the guide's own token, **1.5 px a side**. That is two methods for one rule. **The phone's is the
+method**, on both widths:
+
+> The inside of a popup is its width, less **1.5 px of edge on each side** and **15 px of padding
+> on each side**. Each half is `(inside − 8) / 2`; each third is `(inside − 16) / 3`.
+
+Neither number is new: 1.5 px is the popup edge in **Elevation & Depth**, and 15 px is the
+"15 px inside the popup" the approved sheets print in their own summary.
+
+| Popup width                  | Inside     | Two halves        | Three thirds |
+| ---------------------------- | ---------- | ----------------- | ------------ |
+| **428 px**, desktop (rule 1) | **395 px** | **193.5 px** each | **126.3 px** |
+| 346 px, phone                | 313 px     | 152.5 px each     | —            |
+| 316 px, phone at 360 px wide | 283 px     | 137.5 px each     | —            |
+
+The two phone rows are unchanged — they are the numbers **The geometry, measured in the approved
+frames** and **What must not break** already carry, and this is the arithmetic they already use.
+
+**Nothing is redrawn, and no picture is contradicted.** 193.5 measures **194 px counted inclusive
+of the border pixel**, the same half-pixel as the phone's 152.5, so the old number is where a
+measurement lands rather than a second rule. In the approved sheets the drawn half-width button —
+the outlined one and the yellow one alike — is **126 sheet px** at **0.65 sheet px per CSS px**
+(the yellow band of a 1440 px window render spans 936 px; the 428 px popup spans 278.4 px), which
+is **193.8 px, ±1.5 px**, because one sheet pixel is 1.54 CSS px. The picture cannot tell 193.5 and
+194 apart, and the captions printed inside `desktop-popups-1` … `-4` still say "194 × 49 px": they
+are within their own resolution, not wrong, and they are not reprinted for half a pixel.
+
+**The build task quotes the old numbers.** ST-1489 and the review findings that cite rule 3 were
+written against 194 / 396 / 126.7. A build takes the three widths from the table above. The rule
+**numbers** 1–8 are untouched, as the note over the table requires.
 
 #### The pictures
 
@@ -2454,7 +2493,7 @@ collected into a banner.
   its one pressable is the 40 × 40 px close cross, which keeps that drawn size and takes a padded
   44 × 44 px target — see point 1 under **What these 8 rules do not touch**.
 - **In «Barnedetaljer» the 362 px and 93 px buttons sit inside the body's own blocks** («Opprett
-  innlogging» in the notice, «Fjern barn» in «Faresone»). The action row is the 396 px «Lukk» at the
+  innlogging» in the notice, «Fjern barn» in «Faresone»). The action row is the 395 px «Lukk» at the
   bottom.
 - **Every emoji draws as an empty square in both halves**: the drawing rig has no emoji font. That is
   not a design change — in the app they are a phone, a person, a warning triangle, a pencil, a tick,
@@ -2470,9 +2509,9 @@ them. They are as binding as the rules, and changing one is a change to the look
    «Barnedetaljer» — would add a width to the system; those two scroll instead.
 2. **48 px of air** (rule 2) makes the tallest popup **804 px in a 900 px window**, so the veil and
    the page are visible on every side.
-3. **Three actions share the row in equal thirds**, 126.7 px, with «Slett» in rust on the **left**.
+3. **Three actions share the row in equal thirds**, 126.3 px, with «Slett» in rust on the **left**.
    «Rediger oppgave» is the only popup with three.
-4. **A lone action fills all 396 px** («Barnedetaljer»).
+4. **A lone action fills all 395 px** («Barnedetaljer»).
 5. **The error stands under the field that is wrong** (rule 4) — the `field-text-error` token: a 2 px
    rust edge on that field and one rust line under it, no icon. Not a banner at the top of the popup,
    which is where «Tilordne oppgave på nytt» put it, and not a message on the page behind the veil,
@@ -2507,7 +2546,7 @@ opens is a full sheet.
 #### The two parts no drawing holds (Astrid, ST-1520, approved 2026-10-19)
 
 **«QR-kode innlogging»: the three buttons are popup secondaries.** They keep rule 3's equal thirds
-(3 × 126.7 × 49 px, 8 px apart in the 396 px column), and each one is the secondary button, as
+(3 × 126.3 × 49 px, 8 px apart in the 395 px column), and each one is the secondary button, as
 «Avbryt»: white `--surface`, a 2 px `--text-muted` `#555E64` edge (6.62:1), an ink `--text`
 `#15181C` label at 16.5 px/600, 13 px corners, no shadow, `--track` `#ECECE8` on hover. None of them
 is yellow and none carries an emoji. The labels are «Last ned», «Skriv ut» and «Ny kode»; the third
@@ -2530,7 +2569,7 @@ is which.
 | ------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | **Which popups block**: "The household dropdown" in the column you may ignore — grey edge, no veil                                    | **Replaced 2026-10-18 (ST-1482, option A).** «Bytt husstand» **blocks**: ink edge `#17120A` and the 30 % veil. The row is struck through above and the popup is listed in the blocking column.                                                           |
 | **«Bytt husstand», measured at 390 px** → "Desktop: the same sheet, 440 px wide, centred at the bottom of the window"                 | **Replaced by rules 1 and 7.** On desktop it is a **centred 428 px dialog** with 13 px corners and the ink edge, not a 440 px sheet at the bottom. **Everything else in that table is the phone and is unchanged.**                                      |
-| **The geometry, measured in the approved frames**: "346 px wide at the 22 px gutter", and the action row "two buttons, 152.5 × 49 px" | Those are the **phone's** numbers, measured in the 390 px frames, and they stay. On desktop rule 1 gives **428 px** and rule 3 gives **194 × 49 px**. 49 px tall, 13 px corners, 8 px apart and the safe action on the left are the same number on both. |
+| **The geometry, measured in the approved frames**: "346 px wide at the 22 px gutter", and the action row "two buttons, 152.5 × 49 px" | Those are the **phone's** numbers, measured in the 390 px frames, and they stay. On desktop rule 1 gives **428 px** and rule 3 gives **193.5 × 49 px**. 49 px tall, 13 px corners, 8 px apart and the safe action on the left are the same number on both. |
 | **What must not break** → "360 px wide: the column becomes 316 px and each button 137.5 px"                                           | Still the phone's worst case, unchanged. Desktop has no narrower case: below 1024 px **The breakpoint** hands the whole layout to the phone.                                                                                                             |
 
 #### What these 8 rules do not touch
@@ -2603,11 +2642,11 @@ Stig approved the child-invite drawings on ST-1639 (the pictures and the measure
 1. **A new popup, number 18: «Inviter [navn] på e-post».** It is opened from «Barnedetaljer» →
    «Innloggingskonto» and it blocks, like every `<app-modal>`. Step 1 asks one thing,
    «E-postadresse \*». «Avbryt» (outlined) and «Lag invitasjon» (yellow, pressable from the first
-   paint) are two equal halves of the action row: 194 × 49 px on desktop, 138 × 49 px on a 360 px
+   paint) are two equal halves of the action row: 193.5 × 49 px on desktop, 137.5 × 49 px on a 360 px
    phone. A wrong address takes the 2 px Rust edge and one Rust line under the field. It asks for
    no role: this invitation is only ever for a child.
 2. **Step 2 puts the yellow «Kopier lenke» in the popup body**, under the read-only
-   «Invitasjonslenke» field, and **«Lukk» stands alone, outlined, in the action row** (396 px on
+   «Invitasjonslenke» field, and **«Lukk» stands alone, outlined, in the action row** (395 px on
    desktop), as «Barnedetaljer» already draws it. On a 360 px phone the field and «Kopier lenke»
    stack; on desktop they share a line.
 3. **«Opprett innlogging» is the outlined 49 px button under «eller»**, no longer the yellow button
@@ -3077,7 +3116,9 @@ stays inside the look: same shape, same width, same position, same surface, no c
 
 Nothing else on this list. In particular the yellow is never changed, no surface is swapped for a
 neutral, and the `#DFDFD9` structural dividers keep their colour — they carry no state and bound no
-control. Any _further_ exception is a change to the look and goes to Maria first.
+control. **`#DFDFD9` is also the edge of a control that is inactive** — the paragraph under point 4
+below, approved 2026-11-01. Any _further_ exception is a change to the look and goes to Maria
+first.
 
 ### The detail behind those four
 
@@ -3099,7 +3140,24 @@ Two meters the picture leaves to implementation, then the two exceptions in full
    in the product. Draw
    the resting outline in Muted Text `#555E64` (6.62:1). The box stays 22 × 22 px and the look is
    unchanged at a glance. This applies to the checkbox only: `#DFDFD9` is correct for the
-   structural dividers, which are decoration-adjacent and carry no state.
+   structural dividers, which are decoration-adjacent and carry no state, and for the edge of an
+   inactive control (below).
+
+**`#DFDFD9` is the edge of an inactive control** (Maria, 2026-11-01, ST-2029). Exception 2 is about
+a control you can **use**. A control drawn **inactive** — unavailable, not pressable — keeps the
+Hairline edge: `#DFDFD9` is **1.34:1** on a white card and **1.24:1** on `#F6F6F4`, and both
+readings stand. **WCAG 1.4.11 exempts inactive components**, so this is not a failure to be fixed,
+and it is not a third exception to the picture — the colour is the picture's own. Taking the edge
+away is the worse answer for the same reader: the control is then a fill one step off its surface
+and nothing else, with no shape at all. Two conditions, both required:
+
+- **The state is also carried by words and by the fill**, never by the edge alone — the
+  "Never colour alone" rule below, which this does not bend.
+- **The control is genuinely inactive.** A control you can press is never `#DFDFD9`; that is
+  exception 2 above.
+
+The **width is the control's own** — 1 px where the live control rests on 1 px, 2 px where it rests
+on 2 px. Only the colour is Hairline.
 
 Also required of any build of these screens:
 
