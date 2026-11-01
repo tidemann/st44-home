@@ -1,0 +1,445 @@
+/* The weekly rotation list (ST-2030). Sizes are the ones measured in the signed-off
+   picture (ST-2025/ST-2028): the popup's own 68 px row, 13 px corners, 8 px apart. */
+
+:host {
+  display: block;
+}
+
+.rot {
+  border: 0;
+  margin: 0 0 17px;
+  padding: 0;
+  min-width: 0;
+}
+
+.rot legend {
+  padding: 0;
+}
+
+/* the hint that names the gesture, directly under the label */
+.hint {
+  margin: -2px 0 9px;
+  font-weight: 500;
+  font-size: 15px;
+  line-height: 1.4;
+  color: var(--text-muted);
+}
+
+.list {
+  position: relative;
+}
+
+/* the product's own chore row: tick box, two lines, one element at the right */
+.row {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  gap: 13px;
+  min-height: 68px;
+  margin-bottom: 8px;
+  padding: 0 15px;
+  box-sizing: border-box;
+  background: var(--surface);
+  border: 1.5px solid var(--text-muted);
+  border-radius: var(--r-card);
+  -webkit-touch-callout: none;
+  user-select: none;
+  touch-action: pan-y;
+}
+
+.row:last-child {
+  margin-bottom: 0;
+}
+
+.pick {
+  display: flex;
+  flex: 1 1 auto;
+  align-items: center;
+  gap: 13px;
+  min-width: 0;
+  align-self: stretch;
+  cursor: pointer;
+}
+
+/* the real checkbox stays for screen readers and keys; the box draws it */
+.cb {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+.box {
+  display: flex;
+  flex: 0 0 22px;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  box-sizing: border-box;
+  border: 2px solid var(--text-muted);
+  border-radius: 6px;
+}
+
+.box.on {
+  background: var(--text);
+  border-color: var(--text);
+}
+
+.box.on::after {
+  content: '';
+  width: 11px;
+  height: 6px;
+  margin-top: -3px;
+  border-left: 2.5px solid #fff;
+  border-bottom: 2.5px solid #fff;
+  transform: rotate(-45deg);
+}
+
+.cb:focus-visible + .box {
+  outline: var(--focus-ring);
+  outline-offset: 2px;
+}
+
+.txt {
+  flex: 1 1 auto;
+  min-width: 0;
+  padding: 11px 0;
+}
+
+.nm {
+  display: block;
+  font-weight: 600;
+  font-size: 16px;
+  line-height: 1.35;
+  color: var(--text);
+  overflow-wrap: anywhere;
+}
+
+.wk {
+  display: block;
+  font-weight: 500;
+  font-size: 13px;
+  line-height: 1.4;
+  color: var(--text-muted);
+  font-variant-numeric: tabular-nums;
+  overflow-wrap: anywhere;
+}
+
+/* the drag handle: six dots, drawn 24 px, pressed 44 px */
+.grip {
+  position: relative;
+  display: flex;
+  flex: 0 0 24px;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  padding: 0;
+  background: none;
+  border: 0;
+  border-radius: 6px;
+  cursor: grab;
+  touch-action: none;
+}
+
+.grip::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 44px;
+  height: 44px;
+  transform: translate(-50%, -50%);
+}
+
+.grip i {
+  display: block;
+  width: 3.5px;
+  height: 3.5px;
+  margin-top: -6.5px;
+  border-radius: 2px;
+  background: var(--text-muted);
+  box-shadow:
+    7.5px 0 0 var(--text-muted),
+    0 6.5px 0 var(--text-muted),
+    7.5px 6.5px 0 var(--text-muted),
+    0 13px 0 var(--text-muted),
+    7.5px 13px 0 var(--text-muted);
+}
+
+.grip:focus-visible {
+  outline: var(--focus-ring);
+  outline-offset: 2px;
+}
+
+/* ---- the moment of the drag: the guide bans shadows, so «lifted» is a tone step
+   (the ink fill of a chosen control, white label) and 6 px out of the column */
+.dragging .row {
+  transition: transform 150ms ease;
+}
+
+.row.held {
+  z-index: 3;
+  transition: none;
+  background: var(--text);
+  border-color: var(--text);
+  cursor: grabbing;
+}
+
+.row.held .nm,
+.row.held .wk {
+  color: #fff;
+}
+
+.row.held .box.on {
+  background: #fff;
+  border-color: #fff;
+}
+
+.row.held .box.on::after {
+  border-left-color: var(--text);
+  border-bottom-color: var(--text);
+}
+
+.row.held .grip i {
+  background: #fff;
+  box-shadow:
+    7.5px 0 0 #fff,
+    0 6.5px 0 #fff,
+    7.5px 6.5px 0 #fff,
+    0 13px 0 #fff,
+    7.5px 13px 0 #fff;
+}
+
+/* the place it will land: the row's own edge round an empty track-coloured slot */
+.slot {
+  position: absolute;
+  left: 0;
+  right: 0;
+  z-index: 0;
+  box-sizing: border-box;
+  background: var(--track);
+  border: 1.5px solid var(--text-muted);
+  border-radius: var(--r-card);
+}
+
+/* ---- the keyboard / one-finger way: only on the row being moved */
+.row.moving {
+  outline: var(--focus-ring);
+  outline-offset: 2px;
+}
+
+.arrows {
+  display: flex;
+  flex: 0 0 auto;
+  gap: 2px;
+  margin-right: -10px;
+}
+
+.arr {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  background: none;
+  border: 0;
+  border-radius: 10px;
+  cursor: pointer;
+}
+
+.arr:focus-visible {
+  outline: var(--focus-ring);
+  outline-offset: -2px;
+}
+
+.arr i {
+  position: relative;
+  display: block;
+  width: 14px;
+  height: 17px;
+}
+
+.arr i::before {
+  content: '';
+  position: absolute;
+  left: 5.75px;
+  width: 2.5px;
+  height: 11px;
+  background: var(--text);
+}
+
+.arr i::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  width: 0;
+  height: 0;
+  border-left: 7px solid transparent;
+  border-right: 7px solid transparent;
+}
+
+.arr.up i::before {
+  bottom: 0;
+}
+
+.arr.up i::after {
+  top: 0;
+  border-bottom: 7px solid var(--text);
+}
+
+.arr.dn i::before {
+  top: 0;
+}
+
+.arr.dn i::after {
+  bottom: 0;
+  border-top: 7px solid var(--text);
+}
+
+/* the arrow with nowhere to go keeps its place, so the other one does not jump */
+.arr.gone {
+  visibility: hidden;
+}
+
+/* ---- the odd/even switch: one row, the meaning written under it */
+.blk {
+  margin-bottom: 17px;
+}
+
+.swrow {
+  display: flex;
+  align-items: center;
+  gap: 13px;
+  width: 100%;
+  min-height: 49px;
+  padding: 0 15px;
+  box-sizing: border-box;
+  background: var(--surface);
+  border: 1.5px solid var(--text-muted);
+  border-radius: var(--r-card);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.swrow:focus-visible {
+  outline: var(--focus-ring);
+  outline-offset: 2px;
+}
+
+.swrow .nm {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.sw {
+  position: relative;
+  flex: 0 0 48px;
+  width: 48px;
+  height: 28px;
+  box-sizing: border-box;
+  background: var(--track);
+  border: 1.5px solid var(--text-muted);
+  border-radius: 14px;
+}
+
+.sw::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 3px;
+  width: 19px;
+  height: 19px;
+  border-radius: 10px;
+  background: var(--text-muted);
+  transform: translateY(-50%);
+}
+
+.sw.on {
+  background: var(--text);
+  border-color: var(--text);
+}
+
+.sw.on::before {
+  left: auto;
+  right: 3px;
+  background: #fff;
+}
+
+/* off with three or more: #DFDFD9 edge on an inactive control (Maria, ST-2025);
+   the words and the fill carry the state */
+.swrow.off {
+  background: var(--bg);
+  border-color: var(--hairline);
+  cursor: default;
+}
+
+.swrow.off .nm {
+  color: var(--text-muted);
+}
+
+.swrow.off .sw {
+  background: var(--bg);
+  border-color: var(--hairline);
+}
+
+.swrow.off .sw::before {
+  background: var(--hairline);
+}
+
+/* the reason line under a row */
+.why {
+  margin: 8px 0 0;
+  font-weight: 500;
+  font-size: 15px;
+  line-height: 1.4;
+  color: var(--text-muted);
+  overflow-wrap: anywhere;
+}
+
+/* «Denne uka» and «Neste uke», one line each */
+.prev {
+  margin: 0 0 17px;
+  font-weight: 500;
+  font-size: 15px;
+  line-height: 1.4;
+  color: var(--text-muted);
+}
+
+.prev .half {
+  display: block;
+}
+
+.prev b {
+  font-weight: 600;
+  color: var(--text);
+  overflow-wrap: anywhere;
+}
+
+/* rule 4's error: one 2 px rust ring round the list as one block, and one rust line */
+.bad .list {
+  padding: 8px;
+  border: 2px solid var(--overdue);
+  border-radius: 21px;
+}
+
+.why.err {
+  color: var(--overdue);
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
