@@ -106,10 +106,9 @@ export class ChildLoginComponent {
   }
 
   private focusAfterRender(selector: string): void {
-    afterNextRender(
-      () => this.host.nativeElement.querySelector<HTMLElement>(selector)?.focus(),
-      { injector: this.injector },
-    );
+    afterNextRender(() => this.host.nativeElement.querySelector<HTMLElement>(selector)?.focus(), {
+      injector: this.injector,
+    });
   }
 
   protected loginForm = new FormGroup({
