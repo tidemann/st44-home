@@ -21,7 +21,9 @@ import { validateRequest, validateParams, handleZodError } from '../utils/valida
 import { householdTaskParamsSchema, householdIdParamSchema } from '../schemas/validation.js';
 import { stripResponseValidation } from '../schemas/common.js';
 import type { TaskRow } from '../types/database.js';
-import { todayInTimeZone } from '../services/assignment-scheduler.js';
+import { todayInTimeZone, DAYS_AHEAD } from '../services/assignment-scheduler.js';
+import { generateAssignments } from '../services/assignment-generator.js';
+import { addWeeks, mondayOf, toIsoDate } from '../services/rotation.js';
 import type { PoolClient } from 'pg';
 
 interface HouseholdParams {
@@ -83,6 +85,7 @@ type NormalizedRuleConfig = {
   rotationType?: 'odd_even_week' | 'alternating';
   repeatDays?: number[];
   assignedChildren?: string[];
+  rotationStart?: string;
   deadline?: string;
 } | null;
 
@@ -120,8 +123,54 @@ function normalizeRuleConfig(ruleConfig: unknown): NormalizedRuleConfig | undefi
   if (typeof deadline === 'string') {
     normalized.deadline = deadline;
   }
+  if (typeof obj.rotationStart === 'string') {
+    normalized.rotationStart = obj.rotationStart;
+  }
 
   return normalized;
+}
+
+/** Monday (YYYY-MM-DD) of this week, or of a later week, in the household time zone */
+function osloMonday(weeksAhead: number = 0): string {
+  return toIsoDate(addWeeks(mondayOf(todayInTimeZone(new Date())), weeksAhead));
+}
+
+/**
+ * A new alternating rotation starts this week with the first child in the list (ST-2030)
+ */
+function withRotationStartForCreate(ruleType: string, config: NormalizedRuleConfig | undefined) {
+  if (ruleType !== 'weekly_rotation' || config?.rotationType !== 'alternating') return config;
+  return { ...config, rotationStart: config.rotationStart ?? osloMonday() };
+}
+
+/**
+ * Whether a saved rotation changes, so the weeks from next Monday must be made again.
+ * The form sends the order as it runs from next week, so a changed order or set of
+ * children starts next week; the child who has this week keeps it (rules 1 and 2, ST-2030).
+ */
+function rotationChanged(stored: NormalizedRuleConfig | undefined, sent: NormalizedRuleConfig) {
+  const before = stored ?? {};
+  const after = sent ?? {};
+  return (
+    before.rotationType !== after.rotationType ||
+    JSON.stringify(before.assignedChildren ?? []) !== JSON.stringify(after.assignedChildren ?? [])
+  );
+}
+
+/**
+ * Takes the not-done chores of a rotation off the list from next Monday and makes them again
+ * from the saved order. This week is left alone, done chores and points are never touched.
+ */
+async function regenerateRotationFromNextWeek(householdId: string, taskId: string) {
+  await db.query(
+    `DELETE FROM task_assignments
+     WHERE household_id = $1 AND task_id = $2 AND date >= $3 AND status = 'pending'`,
+    [householdId, taskId, osloMonday(1)],
+  );
+  const result = await generateAssignments(householdId, todayInTimeZone(new Date()), DAYS_AHEAD);
+  if (result.errors.length > 0) {
+    throw new Error(`Regenerating rotation failed: ${result.errors.join('; ')}`);
+  }
 }
 
 function toDateTimeString(value: unknown): string {
@@ -232,7 +281,10 @@ async function createTask(request: FastifyRequest<CreateTaskRequest>, reply: Fas
     // Validate request body with Zod schema
     const validatedData = validateRequest(CreateTaskRequestSchema, request.body);
     const { name, description, points, ruleType, ruleConfig } = validatedData;
-    const normalizedRuleConfig = normalizeRuleConfig(ruleConfig);
+    const normalizedRuleConfig = withRotationStartForCreate(
+      ruleType,
+      normalizeRuleConfig(ruleConfig),
+    );
 
     // Validate task data based on rule type
     const validationErrors = validateTaskData({
@@ -284,6 +336,9 @@ async function createTask(request: FastifyRequest<CreateTaskRequest>, reply: Fas
           ...(normalizedRuleConfig.repeatDays && { repeatDays: normalizedRuleConfig.repeatDays }),
           ...(normalizedRuleConfig.assignedChildren && {
             assignedChildren: normalizedRuleConfig.assignedChildren,
+          }),
+          ...(normalizedRuleConfig.rotationStart && {
+            rotationStart: normalizedRuleConfig.rotationStart,
           }),
         }
       : null;
@@ -491,6 +546,32 @@ async function updateTask(request: FastifyRequest<UpdateTaskRequest>, reply: Fas
       }
     }
 
+    // A rotation's start week is the server's to set: a changed order starts next Monday
+    let rotationNeedsRegenerating = false;
+    if (normalizedRuleConfig) {
+      const stored = await db.query<{ rule_type: string; rule_config: unknown }>(
+        'SELECT rule_type, rule_config FROM tasks WHERE id = $1 AND household_id = $2',
+        [taskId, householdId],
+      );
+      const storedRow = stored.rows[0];
+      if (storedRow && (ruleType ?? storedRow.rule_type) === 'weekly_rotation') {
+        const storedConfig = normalizeRuleConfig(storedRow.rule_config);
+        const changed =
+          storedRow.rule_type !== 'weekly_rotation' ||
+          rotationChanged(storedConfig, normalizedRuleConfig);
+        const rest = { ...normalizedRuleConfig };
+        delete rest.rotationStart;
+        const rotationStart =
+          normalizedRuleConfig.rotationType !== 'alternating'
+            ? undefined
+            : changed
+              ? osloMonday(1)
+              : storedConfig?.rotationStart;
+        normalizedRuleConfig = { ...rest, ...(rotationStart && { rotationStart }) };
+        rotationNeedsRegenerating = changed;
+      }
+    }
+
     // Validate assigned children if provided
     if (
       normalizedRuleConfig?.assignedChildren &&
@@ -614,6 +695,10 @@ async function updateTask(request: FastifyRequest<UpdateTaskRequest>, reply: Fas
       }
       // For multiple children (rotation), leave existing assignments unchanged
       // as the rotation logic is handled by the assignment generator
+    }
+
+    if (rotationNeedsRegenerating) {
+      await regenerateRotationFromNextWeek(householdId, taskId);
     }
 
     return reply.send(mapTaskRowToTask(task));

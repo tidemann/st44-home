@@ -26,6 +26,13 @@ export const TaskRuleConfigSchema = z
     // For weekly_rotation and single: children assigned to the task
     assignedChildren: z.array(z.string().uuid()).optional(),
 
+    // For alternating weekly_rotation: Monday (YYYY-MM-DD) of the week assignedChildren[0]
+    // has the chore. Set by the server; the order runs round the list from there.
+    rotationStart: z
+      .string()
+      .regex(/^\d{4}-\d{2}-\d{2}$/)
+      .optional(),
+
     // For single tasks: optional deadline
     deadline: z.string().datetime().optional(),
   })

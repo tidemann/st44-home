@@ -1,5 +1,5 @@
-import { getISOWeek } from 'date-fns';
 import { db } from '../database.js';
+import { alternatingChild, oddEvenChild, parseIsoDate } from './rotation.js';
 import type { PoolClient } from '../types/database.js';
 
 export interface AssignmentGenerationResult {
@@ -25,6 +25,8 @@ interface RuleConfig {
   rotationType?: 'odd_even_week' | 'alternating';
   repeatDays?: number[];
   assignedChildren?: string[];
+  /** Alternating: Monday (YYYY-MM-DD) of the week assignedChildren[0] has the chore */
+  rotationStart?: string;
 }
 
 const DAY_MS = 24 * 60 * 60 * 1000;
@@ -360,16 +362,15 @@ async function generateWeeklyRotationAssignments(
 
   let childForDate: (date: Date) => string;
 
+  const rotationStart = parseIsoDate(task.rule_config.rotationStart);
+
   if (rotationType === 'odd_even_week') {
-    // ISO week of each date: odd weeks (1, 3, 5...) index 0, even weeks index 1,
-    // 3+ children cycle with (weekNum - 1) % length
-    childForDate = (date) => {
-      const weekNum = getISOWeek(
-        new Date(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate()),
-      );
-      return assignedChildren[(weekNum - 1) % assignedChildren.length];
-    };
+    childForDate = (date) => oddEvenChild(assignedChildren, date);
+  } else if (rotationType === 'alternating' && rotationStart) {
+    // The order the parent set, counted from the week the first child starts (ST-2030)
+    childForDate = (date) => alternatingChild(assignedChildren, rotationStart, date);
   } else if (rotationType === 'alternating') {
+    // Rotations saved before ST-2030 and not yet moved by migration 056
     // Continue from the last child assigned BEFORE the first week in range, so a
     // rerun later in the same week computes the same child for that week.
     // Known edge case: if a parent reassigns the last day of a week whose following
@@ -443,6 +444,9 @@ export function readRuleConfig(raw: unknown): RuleConfig {
     config.assignedChildren = assignedChildren.filter(
       (c): c is string => typeof c === 'string' && c.length > 0,
     );
+  }
+  if (typeof obj.rotationStart === 'string') {
+    config.rotationStart = obj.rotationStart;
   }
   return config;
 }
