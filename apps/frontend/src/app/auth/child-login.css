@@ -169,8 +169,8 @@
   border: 0;
   background: transparent;
   cursor: pointer;
-  /* Ink, as the signed-off pictures and login.css draw the eye (ST-1999 W10) */
-  color: var(--ink);
+  /* #15181C, as the signed-off pictures draw the eye (ST-1999 W10) */
+  color: var(--text);
 }
 
 .toggle-password:focus-visible {
