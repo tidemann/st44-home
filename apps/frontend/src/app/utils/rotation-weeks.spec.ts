@@ -24,11 +24,13 @@ describe('mondayOf', () => {
     const monday = mondayOf(new Date(2026, 10, 8));
     const expected = new Date(2026, 10, 2);
     expect([monday.getFullYear(), monday.getMonth(), monday.getDate()]).toEqual([
-      expected.getFullYear(), expected.getMonth(), expected.getDate(),
+      expected.getFullYear(),
+      expected.getMonth(),
+      expected.getDate(),
     ]);
   });
 
-  it('returns the previous year\'s Monday for January 1, 2027', () => {
+  it("returns the previous year's Monday for January 1, 2027", () => {
     const monday = mondayOf(new Date(2027, 0, 1));
     expect([monday.getFullYear(), monday.getMonth(), monday.getDate()]).toEqual([2026, 11, 28]);
   });
@@ -70,10 +72,12 @@ describe('rotationFromNextWeek (ST-2030)', () => {
   });
 
   it('odd/even keeps the order (top row = odd weeks) and reads this week by parity', () => {
-    expect(rotationFromNextWeek(['emma', 'jonas'], 'odd_even_week', undefined, new Date(2026, 10, 4)))
-      .toEqual({ order: ['emma', 'jonas'], thisWeekChildId: 'emma' });
-    expect(rotationFromNextWeek(['emma', 'jonas'], 'odd_even_week', undefined, new Date(2026, 10, 9)))
-      .toEqual({ order: ['emma', 'jonas'], thisWeekChildId: 'jonas' });
+    expect(
+      rotationFromNextWeek(['emma', 'jonas'], 'odd_even_week', undefined, new Date(2026, 10, 4)),
+    ).toEqual({ order: ['emma', 'jonas'], thisWeekChildId: 'emma' });
+    expect(
+      rotationFromNextWeek(['emma', 'jonas'], 'odd_even_week', undefined, new Date(2026, 10, 9)),
+    ).toEqual({ order: ['emma', 'jonas'], thisWeekChildId: 'jonas' });
   });
 
   it('a rotation from before ST-2030 (no start week) keeps its order', () => {

@@ -19,7 +19,11 @@ const mathea = child('mathea', 'Mathea');
 const TODAY = new Date(2026, 10, 4, 12);
 
 function pointer(type: string, init: { clientY?: number; pointerType?: string } = {}): Event {
-  const event = new MouseEvent(type, { bubbles: true, cancelable: true, clientY: init.clientY ?? 0 });
+  const event = new MouseEvent(type, {
+    bubbles: true,
+    cancelable: true,
+    clientY: init.clientY ?? 0,
+  });
   Object.defineProperty(event, 'pointerId', { value: 1 });
   Object.defineProperty(event, 'pointerType', { value: init.pointerType ?? 'mouse' });
   return event;
@@ -32,7 +36,9 @@ describe('RotationOrder (ST-2030)', () => {
   let oddEvenEmitted: boolean[];
 
   const text = (selector: string) =>
-    Array.from(el.querySelectorAll(selector)).map((n) => n.textContent!.replace(/\s+/g, ' ').trim());
+    Array.from(el.querySelectorAll(selector)).map((n) =>
+      n.textContent!.replace(/\s+/g, ' ').trim(),
+    );
 
   function setup(order: string[], extra: Record<string, unknown> = {}) {
     fixture.componentRef.setInput('children', [emma, jonas, mathea]);

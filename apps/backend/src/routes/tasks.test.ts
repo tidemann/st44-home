@@ -478,6 +478,80 @@ describe('Tasks API', () => {
       assert.strictEqual(body.ruleConfig.rotationType, 'alternating');
     });
 
+    test('ST-2030: a changed rotation starts next Monday; this week keeps its child', async () => {
+      const day = 24 * 60 * 60 * 1000;
+      const today = todayInTimeZone(new Date());
+      const thisMonday = new Date(today.getTime() - ((today.getUTCDay() + 6) % 7) * day);
+      const nextMonday = new Date(thisMonday.getTime() + 7 * day);
+      const iso = (d: Date) => d.toISOString().slice(0, 10);
+
+      const created = await app.inject({
+        method: 'POST',
+        url: `/api/households/${householdId}/tasks`,
+        headers: { Authorization: `Bearer ${adminToken}` },
+        payload: {
+          name: 'Rotation rule 1',
+          points: 5,
+          ruleType: 'weekly_rotation',
+          ruleConfig: { rotationType: 'alternating', assignedChildren: [childId1, childId2] },
+        },
+      });
+      assert.strictEqual(created.statusCode, 201, created.body);
+      const task = JSON.parse(created.body);
+      // A new rotation starts this week with the first child
+      assert.strictEqual(task.ruleConfig.rotationStart, iso(thisMonday));
+
+      // This week (and next Monday, generated ahead) belong to child 1 under the old order
+      for (let i = 0; i < 8; i++) {
+        await pool.query(
+          `INSERT INTO task_assignments (household_id, task_id, child_id, date, status)
+           VALUES ($1, $2, $3, $4, 'pending')`,
+          [householdId, task.id, childId1, iso(new Date(thisMonday.getTime() + i * day))],
+        );
+      }
+
+      // The parent drags child 2 first
+      const updated = await app.inject({
+        method: 'PUT',
+        url: `/api/households/${householdId}/tasks/${task.id}`,
+        headers: { Authorization: `Bearer ${adminToken}` },
+        payload: {
+          ruleConfig: { rotationType: 'alternating', assignedChildren: [childId2, childId1] },
+        },
+      });
+      assert.strictEqual(updated.statusCode, 200, updated.body);
+      assert.strictEqual(JSON.parse(updated.body).ruleConfig.rotationStart, iso(nextMonday));
+
+      const rows = await pool.query<{ date: string; child_id: string }>(
+        `SELECT date::text AS date, child_id FROM task_assignments WHERE task_id = $1 ORDER BY date`,
+        [task.id],
+      );
+      const thisWeek = rows.rows.filter((r) => r.date < iso(nextMonday));
+      assert.strictEqual(thisWeek.length, 7, 'this week is left alone');
+      assert.ok(
+        thisWeek.every((r) => r.child_id === childId1),
+        'child 1 keeps this week',
+      );
+      const fromNextWeek = rows.rows.filter((r) => r.date >= iso(nextMonday));
+      assert.ok(
+        fromNextWeek.every((r) => r.child_id === childId2),
+        `next week is child 2's: ${JSON.stringify(fromNextWeek)}`,
+      );
+
+      // Saving the same order again does not move the start
+      const again = await app.inject({
+        method: 'PUT',
+        url: `/api/households/${householdId}/tasks/${task.id}`,
+        headers: { Authorization: `Bearer ${adminToken}` },
+        payload: {
+          name: 'Rotation rule 1, renamed',
+          ruleConfig: { rotationType: 'alternating', assignedChildren: [childId2, childId1] },
+        },
+      });
+      assert.strictEqual(again.statusCode, 200, again.body);
+      assert.strictEqual(JSON.parse(again.body).ruleConfig.rotationStart, iso(nextMonday));
+    });
+
     test('should return 404 for non-existent task', async () => {
       const response = await app.inject({
         method: 'PUT',

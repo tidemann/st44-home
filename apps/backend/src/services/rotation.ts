@@ -47,7 +47,7 @@ export function parseIsoDate(value: string | undefined): Date | null {
  */
 export function alternatingChild(children: string[], rotationStart: Date, date: Date): string {
   const n = children.length;
-  return children[(((weeksBetween(rotationStart, date) % n) + n) % n)];
+  return children[((weeksBetween(rotationStart, date) % n) + n) % n];
 }
 
 /**

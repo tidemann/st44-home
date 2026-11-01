@@ -6,7 +6,12 @@
 
   <div class="list" [class.dragging]="drag() !== null">
     @if (slot(); as s) {
-      <div class="slot" [style.top.px]="s.top" [style.height.px]="s.height" aria-hidden="true"></div>
+      <div
+        class="slot"
+        [style.top.px]="s.top"
+        [style.height.px]="s.height"
+        aria-hidden="true"
+      ></div>
     }
 
     <!-- Ticked rows by place, so a move keeps the DOM node and its focus where it was -->
@@ -127,7 +132,9 @@
 
   <p class="prev">
     @for (line of weekLines(); track line.label) {
-      <span class="half">{{ line.label }} <b>{{ line.name }}</b></span>
+      <span class="half"
+        >{{ line.label }} <b>{{ line.name }}</b></span
+      >
     }
   </p>
 }
