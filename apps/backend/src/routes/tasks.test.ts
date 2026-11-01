@@ -150,6 +150,54 @@ describe('Tasks API', () => {
       taskId = body.id;
     });
 
+    test('ST-2036: a new daily chore has its chore for today at once', async () => {
+      const response = await app.inject({
+        method: 'POST',
+        url: `/api/households/${householdId}/tasks`,
+        headers: { Authorization: `Bearer ${adminToken}` },
+        payload: {
+          name: 'ST-2036 daily',
+          points: 5,
+          ruleType: 'daily',
+          ruleConfig: { assignedChildren: [childId1] },
+        },
+      });
+
+      assert.strictEqual(response.statusCode, 201, response.body);
+      const id = JSON.parse(response.body).id;
+      const todayIso = todayInTimeZone(new Date()).toISOString().slice(0, 10);
+      const assignments = await pool.query(
+        'SELECT child_id FROM task_assignments WHERE task_id = $1 AND date = $2',
+        [id, todayIso],
+      );
+      assert.strictEqual(assignments.rows.length, 1);
+      assert.strictEqual(assignments.rows[0].child_id, childId1);
+    });
+
+    test("ST-2036: a new weekly rotation gives this week's child today's chore at once", async () => {
+      const response = await app.inject({
+        method: 'POST',
+        url: `/api/households/${householdId}/tasks`,
+        headers: { Authorization: `Bearer ${adminToken}` },
+        payload: {
+          name: 'ST-2036 rotation',
+          points: 5,
+          ruleType: 'weekly_rotation',
+          ruleConfig: { rotationType: 'alternating', assignedChildren: [childId1, childId2] },
+        },
+      });
+
+      assert.strictEqual(response.statusCode, 201, response.body);
+      const id = JSON.parse(response.body).id;
+      const todayIso = todayInTimeZone(new Date()).toISOString().slice(0, 10);
+      const assignments = await pool.query(
+        'SELECT child_id FROM task_assignments WHERE task_id = $1 AND date = $2',
+        [id, todayIso],
+      );
+      assert.strictEqual(assignments.rows.length, 1);
+      assert.strictEqual(assignments.rows[0].child_id, childId1);
+    });
+
     test('should create a repeating task (parent)', async () => {
       const response = await app.inject({
         method: 'POST',
@@ -501,7 +549,9 @@ describe('Tasks API', () => {
       // A new rotation starts this week with the first child
       assert.strictEqual(task.ruleConfig.rotationStart, iso(thisMonday));
 
-      // This week (and next Monday, generated ahead) belong to child 1 under the old order
+      // This week (and next Monday, generated ahead) belong to child 1 under the old order.
+      // Creating already made the chores from today (ST-2036); seed the whole week instead.
+      await pool.query('DELETE FROM task_assignments WHERE task_id = $1', [task.id]);
       for (let i = 0; i < 8; i++) {
         await pool.query(
           `INSERT INTO task_assignments (household_id, task_id, child_id, date, status)
@@ -663,7 +713,10 @@ describe('Tasks API', () => {
         payload: { name, ruleType: 'daily' },
       });
       assert.strictEqual(response.statusCode, 201, response.body);
-      return JSON.parse(response.body).id;
+      const id = JSON.parse(response.body).id;
+      // Creating makes the chores at once (ST-2036); these tests seed their own rows
+      await pool.query('DELETE FROM task_assignments WHERE task_id = $1', [id]);
+      return id;
     }
 
     async function seedTodayRows(id: string) {

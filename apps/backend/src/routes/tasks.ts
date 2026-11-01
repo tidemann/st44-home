@@ -383,6 +383,18 @@ async function createTask(request: FastifyRequest<CreateTaskRequest>, reply: Fas
       );
     }
 
+    // A new recurring chore gets its chores at once, so today's child sees it today (ST-2036)
+    if (ruleType !== 'single') {
+      const generated = await generateAssignments(
+        householdId,
+        todayInTimeZone(new Date()),
+        DAYS_AHEAD,
+      );
+      if (generated.errors.length > 0) {
+        request.log.error({ errors: generated.errors }, 'Generating chores for new task failed');
+      }
+    }
+
     return reply.status(201).send(mapTaskRowToTask(createdTask));
   } catch (error) {
     // Handle Zod validation errors
