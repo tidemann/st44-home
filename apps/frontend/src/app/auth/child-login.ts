@@ -3,19 +3,49 @@ import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormGroup, FormControl, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { TopTabs } from '../components/navigation/top-tabs/top-tabs';
+import { DidditMark } from '../components/diddit-mark/diddit-mark';
+import { QrCodeScannerComponent } from '../components/qr-code-scanner/qr-code-scanner';
 import { AuthService } from '../services/auth.service';
 import { lastValueFrom } from 'rxjs';
+
+/** ST-1999: QR first, e-mail second (Stig, option A on ST-1892) */
+type ChildLoginMode = 'choices' | 'form' | 'scan';
 
 @Component({
   selector: 'app-child-login',
   templateUrl: './child-login.html',
   styleUrl: './child-login.css',
-  imports: [CommonModule, ReactiveFormsModule, RouterLink, TopTabs],
+  imports: [
+    CommonModule,
+    ReactiveFormsModule,
+    RouterLink,
+    TopTabs,
+    DidditMark,
+    QrCodeScannerComponent,
+  ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ChildLoginComponent {
   private readonly authService = inject(AuthService);
   private readonly router = inject(Router);
+
+  protected mode = signal<ChildLoginMode>('choices');
+
+  protected chooseScan(): void {
+    this.mode.set('scan');
+  }
+
+  protected chooseEmail(): void {
+    this.mode.set('form');
+  }
+
+  protected back(): void {
+    this.mode.set('choices');
+  }
+
+  protected onQrCodeScanned(_token: string): void {
+    this.router.navigate(['/my-tasks']);
+  }
 
   protected showPassword = signal(false);
   protected isLoading = signal(false);
