@@ -423,10 +423,13 @@ export class RotationOrder {
     const maxDy = tops[last] + heights[last] - heights[drag.from] - tops[drag.from];
     const clamped = Math.min(Math.max(dy, minDy), maxDy);
     const centre = tops[drag.from] + heights[drag.from] / 2 + clamped;
-    // It lands after every other row whose middle it has passed
+    // It lands after every other row whose middle it has reached. Held against the end of
+    // the list its middle is exactly the end row's, so reaching counts going down and only
+    // passing counts going up: both ends can be reached.
     let to = 0;
     tops.forEach((top, i) => {
-      if (i !== drag.from && top + heights[i] / 2 < centre) to++;
+      const middle = top + heights[i] / 2;
+      if (i < drag.from ? middle < centre : i > drag.from && middle <= centre) to++;
     });
     this.drag.set({ from: drag.from, to, dy: clamped });
   }

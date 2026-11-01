@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { mondayOf, weekNumbers } from './rotation-weeks';
+import { mondayOf, rotationFromNextWeek, weekNumbers } from './rotation-weeks';
 
 describe('weekNumbers', () => {
   it('lists consecutive ISO weeks in November 2026', () => {
@@ -38,5 +38,48 @@ describe('mondayOf', () => {
     expect([monday.getFullYear(), monday.getMonth(), monday.getDate(), monday.getHours()]).toEqual([
       2026, 10, 2, 0,
     ]);
+  });
+});
+
+describe('rotationFromNextWeek (ST-2030)', () => {
+  const kids = ['emma', 'jonas', 'mathea'];
+
+  it('turns the order so row 1 is next week, and names this week', () => {
+    // Started week 45 (Mon 2026-11-02); today is in week 46, Jonas's week
+    const result = rotationFromNextWeek(kids, 'alternating', '2026-11-02', new Date(2026, 10, 11));
+    expect(result.thisWeekChildId).toBe('jonas');
+    expect(result.order).toEqual(['mathea', 'emma', 'jonas']);
+  });
+
+  it('a rotation that starts next week is shown as saved', () => {
+    const result = rotationFromNextWeek(kids, 'alternating', '2026-11-09', new Date(2026, 10, 4));
+    expect(result.order).toEqual(kids);
+    expect(result.thisWeekChildId).toBe('mathea');
+  });
+
+  it('counts over the year end and across daylight saving', () => {
+    // Start Mon 2026-10-19 (summer time), today Wed 2027-01-06: 11 weeks later
+    const result = rotationFromNextWeek(
+      ['emma', 'jonas'],
+      'alternating',
+      '2026-10-19',
+      new Date(2027, 0, 6),
+    );
+    expect(result.thisWeekChildId).toBe('jonas');
+    expect(result.order).toEqual(['emma', 'jonas']);
+  });
+
+  it('odd/even keeps the order (top row = odd weeks) and reads this week by parity', () => {
+    expect(rotationFromNextWeek(['emma', 'jonas'], 'odd_even_week', undefined, new Date(2026, 10, 4)))
+      .toEqual({ order: ['emma', 'jonas'], thisWeekChildId: 'emma' });
+    expect(rotationFromNextWeek(['emma', 'jonas'], 'odd_even_week', undefined, new Date(2026, 10, 9)))
+      .toEqual({ order: ['emma', 'jonas'], thisWeekChildId: 'jonas' });
+  });
+
+  it('a rotation from before ST-2030 (no start week) keeps its order', () => {
+    expect(rotationFromNextWeek(kids, 'alternating', undefined, new Date(2026, 10, 4))).toEqual({
+      order: kids,
+      thisWeekChildId: null,
+    });
   });
 });
