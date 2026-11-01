@@ -164,7 +164,7 @@ describe('RotationOrder (ST-2030)', () => {
     setup(['emma', 'jonas', 'mathea']);
     el.querySelectorAll<HTMLButtonElement>('.grip')[0].click();
     fixture.detectChanges();
-    const row = el.querySelector('.row.moving')!;
+    const row = el.querySelector('.row.moving [data-arrow="down"]')!;
     row.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowDown', bubbles: true }));
     expect(emitted.at(-1)).toEqual(['jonas', 'emma', 'mathea']);
     row.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true }));
