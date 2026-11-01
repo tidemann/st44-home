@@ -3,6 +3,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { TaskFormModal } from './task-form-modal';
 import { FormArray } from '@angular/forms';
 import type { Task, Child } from '@st44/types';
+import { HouseholdDayService } from '../../../services/household-day.service';
 
 describe('TaskFormModal', () => {
   let component: TaskFormModal;
@@ -38,9 +39,13 @@ describe('TaskFormModal', () => {
     updatedAt: '2024-01-01T00:00:00Z',
   };
 
+  let mockDay: { thisWeekChildId: ReturnType<typeof vi.fn> };
+
   beforeEach(async () => {
+    mockDay = { thisWeekChildId: vi.fn().mockResolvedValue(null) };
     await TestBed.configureTestingModule({
       imports: [TaskFormModal],
+      providers: [{ provide: HouseholdDayService, useValue: mockDay }],
     }).compileComponents();
 
     fixture = TestBed.createComponent(TaskFormModal);
@@ -169,6 +174,34 @@ describe('TaskFormModal', () => {
 
         expect(component['form'].get('assignedChildren')?.value).toEqual(['child-1', 'child-2']);
         expect(component['thisWeekName']()).toBe('Jordan');
+      } finally {
+        vi.useRealTimers();
+      }
+    });
+
+    it("ST-2030: after a change this week, names the child who has this week's chore", async () => {
+      // Alex had this week; the parent took Alex out of the rotation (rule 2). The server kept
+      // this week's chores on Alex, and the new order alone would have guessed Jordan
+      mockDay.thisWeekChildId.mockResolvedValue('child-1');
+      vi.useFakeTimers({ toFake: ['Date'] });
+      vi.setSystemTime(new Date(2026, 10, 4, 12));
+      try {
+        fixture.componentRef.setInput('task', {
+          ...mockTask,
+          ruleType: 'weekly_rotation',
+          ruleConfig: {
+            rotationType: 'alternating',
+            assignedChildren: ['child-2'],
+            rotationStart: '2026-11-09',
+          },
+        });
+        fixture.componentRef.setInput('mode', 'edit');
+        fixture.detectChanges();
+        expect(component['thisWeekName']()).toBeNull();
+
+        await vi.waitFor(() => expect(component['thisWeekName']()).toBe('Alex'));
+        expect(mockDay.thisWeekChildId).toHaveBeenCalledWith('household-1', 'task-1');
+        expect(component['form'].get('assignedChildren')?.value).toEqual(['child-2']);
       } finally {
         vi.useRealTimers();
       }
