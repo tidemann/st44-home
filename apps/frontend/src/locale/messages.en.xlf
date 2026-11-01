@@ -10,6 +10,14 @@
         <source>La oss komme i gang med oppgavene dine</source>
         <target>Let's get started with your tasks</target>
       </trans-unit>
+      <trans-unit id="childLogin.scanQr" datatype="html">
+        <source>Skann QR-kode</source>
+        <target>Scan QR code</target>
+      </trans-unit>
+      <trans-unit id="childLogin.useEmail" datatype="html">
+        <source>Logg inn med e-post</source>
+        <target>Log in with e-mail</target>
+      </trans-unit>
       <trans-unit id="childLogin.email.label" datatype="html">
         <source>Din e-post</source>
         <target>Your Email</target>

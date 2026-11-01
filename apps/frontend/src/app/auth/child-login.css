@@ -1,95 +1,142 @@
+/* «Barnas innlogging» with QR first, e-mail second, as drawn in ST-1999 (Stig, option A).
+   Phone first, the values of the signed-off login (login-15 / login-17) and of the guide's
+   «A — the yellow top». As in login.css, the 35 px status strip is the device's: the page's own
+   yellow starts at the top of the viewport. */
+
 .child-login-container {
   min-height: 100vh;
+  min-height: 100dvh;
   display: flex;
-  align-items: center;
-  justify-content: center;
+  flex-direction: column;
   background: var(--bg);
-  padding: 1.5rem;
+  padding: 0;
 }
 
 .login-card {
-  background: var(--surface);
-  border-radius: var(--r-card);
-  padding: 3rem 2rem;
-  max-width: 480px;
+  background: none;
+  border-radius: 0;
+  padding: 0;
+  max-width: none;
   width: 100%;
-  animation: slideIn 0.5s ease-out;
+  animation: none;
 }
 
-@keyframes slideIn {
-  from {
-    opacity: 0;
-    transform: translateY(-20px);
+/* ===== THE BAND: full-bleed yellow, 178 px with this content (20 px under the sub-line).
+   Phone only — from 1024 px the band is the global .desk-band, untouched by this drawing. ===== */
+
+@media (max-width: 1023.98px) {
+  .header {
+    box-sizing: border-box;
+    margin: 0;
+    padding: calc(env(safe-area-inset-top, 0px) + 34px) var(--gutter) 20px;
+    background: var(--yellow);
+    color: var(--ink);
+    text-align: left;
   }
-  to {
-    opacity: 1;
-    transform: translateY(0);
+
+  /* one 346 px column at x 22, first ink 22 px under the band */
+  .child-body {
+    padding: 22px var(--gutter) 25px;
+  }
+
+  /* text ink 16.5 px under the password field, as login-16 draws it (ST-1999 W9) */
+  .login-form .error-message {
+    margin-top: -7px;
   }
 }
 
-.header {
-  text-align: center;
-  margin-bottom: 2.5rem;
+/* The login's horizontal lockup: mark 44 + wordmark 37, 13 px apart (login-15) */
+.lockup {
+  display: flex;
+  align-items: center;
+  gap: 13px;
+}
+
+.wordmark {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: 37px;
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: -0.02em;
+  color: var(--ink);
 }
 
 .title {
-  font-size: 2.5rem;
+  margin: 24px 0 0;
+  padding: 0;
   font-family: var(--font-display);
+  font-size: 27px;
   font-weight: 800;
-  color: var(--text);
-  margin: 0 0 0.5rem 0;
+  line-height: 1.15;
+  letter-spacing: -0.01em;
+  color: var(--ink);
 }
 
 .subtitle {
-  font-size: 1.25rem;
-  color: var(--text-muted);
-  margin: 0;
+  margin: 4px 0 0;
+  font-family: var(--font-text);
+  font-size: 15px;
   font-weight: 500;
+  line-height: 1.4;
+  color: var(--ink);
+}
+
+/* ===== THE PAPER ===== */
+
+.choice-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
 }
 
 .login-form {
   display: flex;
   flex-direction: column;
-  gap: 1.75rem;
+  gap: 19px;
 }
 
 .form-group {
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
+  gap: 0;
+  margin: 0;
 }
 
 .form-label {
-  font-size: 1.125rem;
-  font-weight: 700;
+  display: block;
+  margin: 0;
+  font-family: var(--font-text);
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.3;
   color: var(--text);
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-}
-
-.icon {
-  font-size: 1.5rem;
 }
 
 .form-input {
-  padding: 1rem 1.25rem;
-  font-size: 1.125rem;
-  border: 3px solid var(--hairline);
-  border-radius: var(--r-card);
-  transition: all 0.3s ease;
-  font-family: inherit;
+  box-sizing: border-box;
+  width: 100%;
+  height: 49px;
+  padding: 0 18px;
+  border: 1.5px solid var(--text-muted);
+  border-radius: var(--r-button);
   background: var(--surface);
+  color: var(--text);
+  font-family: var(--font-text);
+  font-size: 16px;
+  transition: none;
 }
 
 .form-input:focus {
   outline: var(--focus-ring);
-  border-color: var(--ink);
-  transform: translateY(-2px);
+  outline-offset: 2px;
+  border-color: var(--text-muted);
+  transform: none;
 }
 
 .form-input.error {
-  border-color: var(--color-danger);
+  border: 2px solid var(--overdue);
+  padding: 0 17.5px;
 }
 
 .form-input::placeholder {
@@ -104,7 +151,7 @@
 
 .password-input-wrapper .form-input {
   flex: 1;
-  padding-right: 3.5rem;
+  padding-right: 48px;
 }
 
 /* As the parent login's eye: 44 × 44 target, 3 px in, so the 18 px drawing sits 16 px from the field edge */
@@ -122,70 +169,160 @@
   border: 0;
   background: transparent;
   cursor: pointer;
+  /* #15181C, as the signed-off pictures draw the eye (ST-1999 W10) */
+  color: var(--text);
 }
 
-.toggle-password:focus {
-  outline: 2px solid var(--ink);
+.toggle-password:focus-visible {
+  outline: var(--focus-ring);
   outline-offset: 2px;
-  border-radius: 0.5rem;
+  border-radius: 8px;
+}
+
+/* The login page's eye drawing (guide, rule 8: Diddit icons, no emoji) */
+.toggle-password svg {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
 }
 
 .error-text {
-  color: var(--color-danger);
-  font-size: 0.95rem;
-  font-weight: 600;
-  margin-top: 0.25rem;
+  margin-top: 4px;
+  font-family: var(--font-text);
+  font-size: 15px;
+  font-weight: 500;
+  line-height: 1.4;
+  color: var(--overdue);
 }
 
+/* The signed-off login's error line: rust text, warning glyph, no fill (login-16) */
 .error-message {
-  background: var(--color-danger-light);
-  color: var(--color-danger-dark);
-  padding: 1rem 1.25rem;
-  border-radius: var(--r-card);
   display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  font-weight: 600;
-  font-size: 1.05rem;
-  border: 2px solid var(--color-danger);
+  align-items: flex-start;
+  gap: 9px;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: none;
+  font-family: var(--font-text);
+  font-size: 15px;
+  font-weight: 500;
+  line-height: 1.4;
+  color: var(--overdue);
 }
 
-.error-icon {
-  font-size: 1.5rem;
+.error-glyph {
   flex-shrink: 0;
+  margin-top: 2px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.5;
+  stroke-linecap: round;
 }
+
+.error-glyph .dot {
+  fill: currentColor;
+}
+
+/* ===== THE TWO BUTTON TYPES (guide, rule 6 and login.css, value for value) ===== */
 
 .submit-button {
-  background: var(--yellow);
-  color: var(--ink);
-  font-size: 1.5rem;
-  font-weight: 800;
-  padding: 1.25rem 2rem;
-  border: none;
-  border-radius: var(--r-button);
-  cursor: pointer;
-  transition: all 0.3s ease;
+  box-sizing: border-box;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 0.75rem;
-  min-height: 60px;
-  margin-top: 0.5rem;
+  gap: 12px;
+  width: 100%;
+  height: 49px;
+  min-height: 0;
+  margin: 0;
+  padding: 0 16px;
+  border: 0;
+  border-radius: var(--r-button);
+  background: var(--yellow);
+  color: var(--ink);
+  font-family: var(--font-text);
+  font-size: 16.5px;
+  font-weight: 600;
+  line-height: 1.35;
+  cursor: pointer;
+  transition: none;
 }
 
 .submit-button:hover:not(:disabled) {
   background: var(--yellow-inset);
 }
 
-.submit-button:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
+.submit-button:focus-visible,
+.alt-button:focus-visible {
+  outline: var(--focus-ring);
+  outline-offset: 2px;
+}
+
+.alt-button {
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  width: 100%;
+  height: 49px;
+  padding: 0 16px;
+  border: 1.5px solid var(--text-muted);
+  border-radius: var(--r-button);
+  background: var(--surface);
+  color: var(--text);
+  font-family: var(--font-text);
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 1.35;
+  cursor: pointer;
+}
+
+/* The QR glyph the login already draws: 20 × 20, 1.6 px stroke, the dots at 2.2 */
+.submit-button svg,
+.alt-button svg {
+  flex-shrink: 0;
+}
+
+.submit-button svg rect,
+.submit-button svg .dots,
+.alt-button svg rect,
+.alt-button svg .dots {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.6;
+  stroke-linecap: round;
+}
+
+.submit-button svg .dots,
+.alt-button svg .dots {
+  stroke-width: 2.2;
+}
+
+/* A refused QR code: the same rust line, under the two choices */
+.choice-list .error-message {
+  margin-top: 6px;
+}
+
+/* Programmatic focus target only (W2); the scanner's own buttons carry the ring */
+.qr-scanner-section:focus {
+  outline: none;
+}
+
+/* The way back to the main action, 10 px under «Logg inn» as login-19 draws it */
+.qr-in-form {
+  margin-top: 10px;
 }
 
 .spinner {
-  width: 1.5rem;
-  height: 1.5rem;
-  border: 3px solid var(--yellow-track);
+  width: 17px;
+  height: 17px;
+  box-sizing: border-box;
+  border: 2px solid var(--yellow-track);
   border-top-color: var(--ink);
   border-radius: 50%;
   animation: spin 0.8s linear infinite;
@@ -197,88 +334,35 @@
   }
 }
 
+/* ===== THE HELP LINE: 16 px under the last control on the phone ===== */
+
 .help-section {
-  margin-top: 2rem;
-  text-align: center;
-  padding-top: 1.5rem;
-  border-top: 2px solid var(--hairline);
+  margin-top: 16px;
+  padding-top: 0;
+  border-top: 0;
+  text-align: left;
 }
 
 .help-text {
-  font-size: 1.1rem;
-  color: var(--text-muted);
   margin: 0;
+  font-family: var(--font-text);
+  font-size: 15px;
   font-weight: 500;
+  line-height: 1.3;
+  color: var(--text-muted);
 }
 
 .help-link {
-  color: var(--color-primary);
-  font-weight: 700;
-  text-decoration: none;
-  transition: all 0.2s ease;
-}
-
-.help-link:hover {
-  color: var(--color-primary);
+  color: var(--amber-ink);
+  font-weight: 500;
   text-decoration: underline;
+  text-underline-offset: 2px;
 }
 
-.help-link:focus {
-  outline: 2px solid var(--ink);
+.help-link:focus-visible {
+  outline: var(--focus-ring);
   outline-offset: 2px;
-  border-radius: 0.25rem;
-}
-
-/* Responsive Design for Tablets and Mobile */
-@media (max-width: 768px) {
-  .child-login-container {
-    padding: 1rem;
-  }
-
-  .login-card {
-    padding: 2rem 1.5rem;
-    border-radius: var(--r-card);
-  }
-
-  .title {
-    font-size: 2rem;
-  }
-
-  .subtitle {
-    font-size: 1.1rem;
-  }
-
-  .form-label {
-    font-size: 1rem;
-  }
-
-  .form-input {
-    padding: 0.875rem 1rem;
-    font-size: 1rem;
-  }
-
-  .submit-button {
-    font-size: 1.25rem;
-    padding: 1rem 1.5rem;
-  }
-}
-
-/* Large touch targets for accessibility */
-@media (pointer: coarse) {
-  .form-input,
-  .submit-button {
-    min-height: 44px;
-    min-width: 44px;
-  }
-}
-
-/* The login page's eye drawing (guide, rule 8: Diddit icons, no emoji) */
-.toggle-password svg {
-  fill: none;
-  stroke: currentColor;
-  stroke-width: 1.6;
-  stroke-linecap: round;
-  stroke-linejoin: round;
+  border-radius: 4px;
 }
 
 /* ===== DESKTOP, 1024 px AND WIDER (guide: Desktop: rules for all pages) =====
@@ -298,6 +382,11 @@
     background: none;
     border-radius: 0;
     animation: none;
+  }
+
+  /* The 80 px tab row above already carries the mark and the wordmark */
+  .lockup {
+    display: none;
   }
 
   .header {

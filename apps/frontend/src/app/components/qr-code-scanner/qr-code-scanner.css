@@ -6,7 +6,7 @@
   min-height: 400px;
   padding: 1.5rem;
   background: var(--ink);
-  border-radius: 12px;
+  border-radius: 13px;
   color: white;
 }
 
@@ -44,7 +44,22 @@
 
 .icon,
 .error-icon {
-  font-size: 4rem;
+  display: flex;
+  color: #ffffff;
+}
+
+.icon svg,
+.error-icon svg {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.6;
+  stroke-linecap: round;
+}
+
+.icon svg .dot,
+.error-icon svg .dot {
+  fill: currentColor;
+  stroke: none;
 }
 
 h3 {
@@ -95,7 +110,7 @@ p {
   width: 100%;
   aspect-ratio: 4 / 3;
   max-width: 500px;
-  border-radius: 12px;
+  border-radius: 13px;
   overflow: hidden;
   background: black;
 }
@@ -147,11 +162,12 @@ video {
 }
 
 .btn {
-  padding: 0.75rem 1.5rem;
+  min-height: 49px;
+  padding: 0 1.5rem;
   border: none;
-  border-radius: 8px;
+  border-radius: 13px;
   font-size: 1rem;
-  font-weight: 500;
+  font-weight: 600;
   cursor: pointer;
   transition: all 0.2s;
   min-width: 140px;
@@ -166,23 +182,17 @@ video {
   background: var(--yellow-inset);
 }
 
-.btn-secondary {
-  background: rgba(255, 255, 255, 0.1);
-  color: white;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-}
-
-.btn-secondary:hover {
-  background: rgba(255, 255, 255, 0.2);
-}
-
+/* The guide's outline button, inverted for the dark panel (1.5 px white on Ink) */
+.btn-secondary,
 .btn-cancel {
-  background: var(--color-danger);
-  color: white;
+  background: transparent;
+  color: #ffffff;
+  border: 1.5px solid #ffffff;
 }
 
+.btn-secondary:hover,
 .btn-cancel:hover {
-  background: var(--color-danger);
+  background: rgba(255, 255, 255, 0.1);
 }
 
 /* Mobile responsiveness */

@@ -396,91 +396,120 @@
         <source>Velkommen tilbake!</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/auth/child-login.html</context>
-          <context context-type="linenumber">9,10</context>
+          <context context-type="linenumber">15,16</context>
         </context-group>
       </trans-unit>
       <trans-unit id="childLogin.subtitle" datatype="html">
         <source>La oss komme i gang med oppgavene dine</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/auth/child-login.html</context>
-          <context context-type="linenumber">10,13</context>
+          <context context-type="linenumber">16,19</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="childLogin.scanQr" datatype="html">
+        <source>Skann QR-kode</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/auth/child-login.html</context>
+          <context context-type="linenumber">38,41</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/auth/child-login.html</context>
+          <context context-type="linenumber">183,185</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="childLogin.useEmail" datatype="html">
+        <source>Logg inn med e-post</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/auth/child-login.html</context>
+          <context context-type="linenumber">42,45</context>
         </context-group>
       </trans-unit>
       <trans-unit id="childLogin.email.label" datatype="html">
         <source>Din e-post</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/auth/child-login.html</context>
-          <context context-type="linenumber">19,21</context>
+          <context context-type="linenumber">74,76</context>
         </context-group>
       </trans-unit>
       <trans-unit id="childLogin.email.placeholder" datatype="html">
         <source>deg@eksempel.no</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/auth/child-login.html</context>
-          <context context-type="linenumber">27,28</context>
+          <context context-type="linenumber">83,84</context>
         </context-group>
       </trans-unit>
       <trans-unit id="error.email.invalid" datatype="html">
         <source> Vennligst oppgi en gyldig e-postadresse </source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/auth/child-login.html</context>
-          <context context-type="linenumber">32,34</context>
+          <context context-type="linenumber">88,89</context>
         </context-group>
       </trans-unit>
       <trans-unit id="childLogin.password.label" datatype="html">
         <source>Ditt passord</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/auth/child-login.html</context>
-          <context context-type="linenumber">40,42</context>
+          <context context-type="linenumber">96,98</context>
         </context-group>
       </trans-unit>
       <trans-unit id="childLogin.password.placeholder" datatype="html">
         <source>Skriv inn passordet ditt</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/auth/child-login.html</context>
-          <context context-type="linenumber">49,50</context>
+          <context context-type="linenumber">106,108</context>
         </context-group>
       </trans-unit>
       <trans-unit id="error.password.enterYours" datatype="html">
         <source> Vennligst skriv inn passordet ditt </source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/auth/child-login.html</context>
-          <context context-type="linenumber">72,74</context>
+          <context context-type="linenumber">137,139</context>
         </context-group>
       </trans-unit>
       <trans-unit id="childLogin.submit.loading" datatype="html">
         <source>Logger inn...</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/auth/child-login.html</context>
-          <context context-type="linenumber">88,90</context>
+          <context context-type="linenumber">165,167</context>
         </context-group>
       </trans-unit>
       <trans-unit id="childLogin.submit.button" datatype="html">
         <source>Logg inn</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/auth/child-login.html</context>
-          <context context-type="linenumber">90,93</context>
+          <context context-type="linenumber">167,169</context>
         </context-group>
       </trans-unit>
       <trans-unit id="childLogin.help.needHelp" datatype="html">
         <source>Trenger du hjelp?</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/auth/child-login.html</context>
-          <context context-type="linenumber">98,99</context>
+          <context context-type="linenumber">191,192</context>
         </context-group>
       </trans-unit>
       <trans-unit id="childLogin.help.askParent" datatype="html">
         <source>Spør en forelder</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/auth/child-login.html</context>
-          <context context-type="linenumber">102,105</context>
+          <context context-type="linenumber">193,196</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="login.qrLoginFailed" datatype="html">
+        <source>QR-koden virket ikke. Be en voksen om en ny, og prøv igjen.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/auth/child-login.ts</context>
+          <context context-type="linenumber">100</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/auth/login.ts</context>
+          <context context-type="linenumber">320</context>
         </context-group>
       </trans-unit>
       <trans-unit id="childLogin.loginFailed" datatype="html">
-        <source>Oops! Sjekk e-posten og passordet ditt og prøv igjen.</source>
+        <source>Feil e-post eller passord. Prøv igjen.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/auth/child-login.ts</context>
-          <context context-type="linenumber">62</context>
+          <context context-type="linenumber">155</context>
         </context-group>
       </trans-unit>
       <trans-unit id="forgotPassword.title" datatype="html">
@@ -797,13 +826,6 @@
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/auth/login.ts</context>
           <context context-type="linenumber">271</context>
-        </context-group>
-      </trans-unit>
-      <trans-unit id="login.qrLoginFailed" datatype="html">
-        <source>QR-koden virket ikke. Be en voksen om en ny, og prøv igjen.</source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/auth/login.ts</context>
-          <context context-type="linenumber">320</context>
         </context-group>
       </trans-unit>
       <trans-unit id="register.title" datatype="html">
@@ -3738,196 +3760,196 @@
         <source>Daglig</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/modals/task-form-modal/task-form-modal.ts</context>
-          <context context-type="linenumber">138</context>
+          <context context-type="linenumber">140</context>
         </context-group>
       </trans-unit>
       <trans-unit id="taskFormModal.typeDailyDescription" datatype="html">
         <source>hver dag</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/modals/task-form-modal/task-form-modal.ts</context>
-          <context context-type="linenumber">139</context>
+          <context context-type="linenumber">141</context>
         </context-group>
       </trans-unit>
       <trans-unit id="taskFormModal.typeRepeating" datatype="html">
         <source>Faste dager</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/modals/task-form-modal/task-form-modal.ts</context>
-          <context context-type="linenumber">143</context>
+          <context context-type="linenumber">145</context>
         </context-group>
       </trans-unit>
       <trans-unit id="taskFormModal.typeRepeatingDescription" datatype="html">
         <source>på valgte ukedager</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/modals/task-form-modal/task-form-modal.ts</context>
-          <context context-type="linenumber">144</context>
+          <context context-type="linenumber">146</context>
         </context-group>
       </trans-unit>
       <trans-unit id="taskFormModal.typeRotation" datatype="html">
         <source>Ukesrotasjon</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/modals/task-form-modal/task-form-modal.ts</context>
-          <context context-type="linenumber">148</context>
+          <context context-type="linenumber">150</context>
         </context-group>
       </trans-unit>
       <trans-unit id="taskFormModal.typeRotationDescription" datatype="html">
         <source>barna bytter på</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/modals/task-form-modal/task-form-modal.ts</context>
-          <context context-type="linenumber">149</context>
+          <context context-type="linenumber">151</context>
         </context-group>
       </trans-unit>
       <trans-unit id="taskFormModal.typeSingle" datatype="html">
         <source>Én gang</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/modals/task-form-modal/task-form-modal.ts</context>
-          <context context-type="linenumber">153</context>
+          <context context-type="linenumber">155</context>
         </context-group>
       </trans-unit>
       <trans-unit id="taskFormModal.typeSingleDescription" datatype="html">
         <source>med frist</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/modals/task-form-modal/task-form-modal.ts</context>
-          <context context-type="linenumber">154</context>
+          <context context-type="linenumber">156</context>
         </context-group>
       </trans-unit>
       <trans-unit id="taskFormModal.monday" datatype="html">
         <source>mandag</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/modals/task-form-modal/task-form-modal.ts</context>
-          <context context-type="linenumber">164</context>
+          <context context-type="linenumber">166</context>
         </context-group>
       </trans-unit>
       <trans-unit id="taskFormModal.mondayShort" datatype="html">
         <source>Man</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/modals/task-form-modal/task-form-modal.ts</context>
-          <context context-type="linenumber">165</context>
+          <context context-type="linenumber">167</context>
         </context-group>
       </trans-unit>
       <trans-unit id="taskFormModal.tuesday" datatype="html">
         <source>tirsdag</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/modals/task-form-modal/task-form-modal.ts</context>
-          <context context-type="linenumber">169</context>
+          <context context-type="linenumber">171</context>
         </context-group>
       </trans-unit>
       <trans-unit id="taskFormModal.tuesdayShort" datatype="html">
         <source>Tir</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/modals/task-form-modal/task-form-modal.ts</context>
-          <context context-type="linenumber">170</context>
+          <context context-type="linenumber">172</context>
         </context-group>
       </trans-unit>
       <trans-unit id="taskFormModal.wednesday" datatype="html">
         <source>onsdag</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/modals/task-form-modal/task-form-modal.ts</context>
-          <context context-type="linenumber">174</context>
+          <context context-type="linenumber">176</context>
         </context-group>
       </trans-unit>
       <trans-unit id="taskFormModal.wednesdayShort" datatype="html">
         <source>Ons</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/modals/task-form-modal/task-form-modal.ts</context>
-          <context context-type="linenumber">175</context>
+          <context context-type="linenumber">177</context>
         </context-group>
       </trans-unit>
       <trans-unit id="taskFormModal.thursday" datatype="html">
         <source>torsdag</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/modals/task-form-modal/task-form-modal.ts</context>
-          <context context-type="linenumber">179</context>
+          <context context-type="linenumber">181</context>
         </context-group>
       </trans-unit>
       <trans-unit id="taskFormModal.thursdayShort" datatype="html">
         <source>Tor</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/modals/task-form-modal/task-form-modal.ts</context>
-          <context context-type="linenumber">180</context>
+          <context context-type="linenumber">182</context>
         </context-group>
       </trans-unit>
       <trans-unit id="taskFormModal.friday" datatype="html">
         <source>fredag</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/modals/task-form-modal/task-form-modal.ts</context>
-          <context context-type="linenumber">184</context>
+          <context context-type="linenumber">186</context>
         </context-group>
       </trans-unit>
       <trans-unit id="taskFormModal.fridayShort" datatype="html">
         <source>Fre</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/modals/task-form-modal/task-form-modal.ts</context>
-          <context context-type="linenumber">185</context>
+          <context context-type="linenumber">187</context>
         </context-group>
       </trans-unit>
       <trans-unit id="taskFormModal.saturday" datatype="html">
         <source>lørdag</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/modals/task-form-modal/task-form-modal.ts</context>
-          <context context-type="linenumber">189</context>
+          <context context-type="linenumber">191</context>
         </context-group>
       </trans-unit>
       <trans-unit id="taskFormModal.saturdayShort" datatype="html">
         <source>Lør</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/modals/task-form-modal/task-form-modal.ts</context>
-          <context context-type="linenumber">190</context>
+          <context context-type="linenumber">192</context>
         </context-group>
       </trans-unit>
       <trans-unit id="taskFormModal.sunday" datatype="html">
         <source>søndag</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/modals/task-form-modal/task-form-modal.ts</context>
-          <context context-type="linenumber">194</context>
+          <context context-type="linenumber">196</context>
         </context-group>
       </trans-unit>
       <trans-unit id="taskFormModal.sundayShort" datatype="html">
         <source>Søn</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/modals/task-form-modal/task-form-modal.ts</context>
-          <context context-type="linenumber">195</context>
+          <context context-type="linenumber">197</context>
         </context-group>
       </trans-unit>
       <trans-unit id="taskFormModal.deleteTitle" datatype="html">
         <source>Slette oppgaven?</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/modals/task-form-modal/task-form-modal.ts</context>
-          <context context-type="linenumber">258</context>
+          <context context-type="linenumber">260</context>
         </context-group>
       </trans-unit>
       <trans-unit id="taskFormModal.createTitle" datatype="html">
         <source>Ny oppgave</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/modals/task-form-modal/task-form-modal.ts</context>
-          <context context-type="linenumber">261</context>
+          <context context-type="linenumber">263</context>
         </context-group>
       </trans-unit>
       <trans-unit id="taskFormModal.editTitle" datatype="html">
         <source>Rediger oppgave</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/modals/task-form-modal/task-form-modal.ts</context>
-          <context context-type="linenumber">262</context>
+          <context context-type="linenumber">264</context>
         </context-group>
       </trans-unit>
       <trans-unit id="taskFormModal.saving" datatype="html">
         <source>Lagrer …</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/modals/task-form-modal/task-form-modal.ts</context>
-          <context context-type="linenumber">270</context>
+          <context context-type="linenumber">272</context>
         </context-group>
       </trans-unit>
       <trans-unit id="taskFormModal.createButton" datatype="html">
         <source>Legg til</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/modals/task-form-modal/task-form-modal.ts</context>
-          <context context-type="linenumber">273</context>
+          <context context-type="linenumber">275</context>
         </context-group>
       </trans-unit>
       <trans-unit id="taskFormModal.saveButton" datatype="html">
         <source>Lagre</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/modals/task-form-modal/task-form-modal.ts</context>
-          <context context-type="linenumber">274</context>
+          <context context-type="linenumber">276</context>
         </context-group>
       </trans-unit>
       <trans-unit id="nav.mainNavigation" datatype="html">
@@ -4659,119 +4681,119 @@
         <source>Kameratilgang påkrevd</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/qr-code-scanner/qr-code-scanner.html</context>
-          <context context-type="linenumber">14,15</context>
+          <context context-type="linenumber">18,19</context>
         </context-group>
       </trans-unit>
       <trans-unit id="qrCodeScanner.allowCameraMessage" datatype="html">
         <source> Vennligst tillat kameratilgang for å skanne QR-koder. </source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/qr-code-scanner/qr-code-scanner.html</context>
-          <context context-type="linenumber">16,19</context>
+          <context context-type="linenumber">20,23</context>
         </context-group>
       </trans-unit>
       <trans-unit id="qrCodeScanner.stillDenied" datatype="html">
         <source>Kameraet er fortsatt sperret.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/qr-code-scanner/qr-code-scanner.html</context>
-          <context context-type="linenumber">19,21</context>
+          <context context-type="linenumber">23,25</context>
         </context-group>
       </trans-unit>
       <trans-unit id="qrCodeScanner.settingsHint" datatype="html">
         <source> Har du sagt nei før? Slå på kamera for home.st44.no i innstillingene til nettleseren eller telefonen, og trykk på knappen igjen. Du kan også logge inn med e-post og passord. </source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/qr-code-scanner/qr-code-scanner.html</context>
-          <context context-type="linenumber">22,25</context>
+          <context context-type="linenumber">26,29</context>
         </context-group>
       </trans-unit>
       <trans-unit id="qrCodeScanner.allowCameraButton" datatype="html">
         <source> Tillat kameratilgang </source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/qr-code-scanner/qr-code-scanner.html</context>
-          <context context-type="linenumber">31,33</context>
+          <context context-type="linenumber">35,37</context>
         </context-group>
       </trans-unit>
       <trans-unit id="qrCodeScanner.cancelButton" datatype="html">
         <source> Avbryt </source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/qr-code-scanner/qr-code-scanner.html</context>
-          <context context-type="linenumber">34,37</context>
+          <context context-type="linenumber">38,41</context>
         </context-group>
       </trans-unit>
       <trans-unit id="qrCodeScanner.noCameraFound" datatype="html">
         <source>Ingen kamera funnet</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/qr-code-scanner/qr-code-scanner.html</context>
-          <context context-type="linenumber">44,45</context>
+          <context context-type="linenumber">52,53</context>
         </context-group>
       </trans-unit>
       <trans-unit id="qrCodeScanner.noCameraMessage" datatype="html">
         <source> Enheten din har ikke et kamera eller det er ikke tilgjengelig. </source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/qr-code-scanner/qr-code-scanner.html</context>
-          <context context-type="linenumber">46,48</context>
+          <context context-type="linenumber">54,56</context>
         </context-group>
       </trans-unit>
       <trans-unit id="qrCodeScanner.alternativeLogin" datatype="html">
-        <source> Du kan bruke passord/PIN-innlogging i stedet, eller prøve å skanne fra en annen enhet. </source>
+        <source> Logg inn med e-post i stedet, eller prøv å skanne fra en annen enhet. </source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/qr-code-scanner/qr-code-scanner.html</context>
-          <context context-type="linenumber">49,51</context>
+          <context context-type="linenumber">57,59</context>
         </context-group>
       </trans-unit>
       <trans-unit id="qrCodeScanner.backToLogin" datatype="html">
-        <source> Tilbake til innlogging </source>
+        <source> Logg inn med e-post </source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/qr-code-scanner/qr-code-scanner.html</context>
-          <context context-type="linenumber">52,57</context>
+          <context context-type="linenumber">60,65</context>
         </context-group>
       </trans-unit>
       <trans-unit id="qrCodeScanner.blockedTitle" datatype="html">
         <source>QR-innlogging virker ikke akkurat nå</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/qr-code-scanner/qr-code-scanner.html</context>
-          <context context-type="linenumber">61,63</context>
+          <context context-type="linenumber">73,75</context>
         </context-group>
       </trans-unit>
       <trans-unit id="qrCodeScanner.blockedHelp" datatype="html">
         <source> Logg inn med e-post og passord i stedet, eller be en voksen om hjelp. </source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/qr-code-scanner/qr-code-scanner.html</context>
-          <context context-type="linenumber">64,66</context>
+          <context context-type="linenumber">76,78</context>
         </context-group>
       </trans-unit>
       <trans-unit id="qrCodeScanner.backToLogin2" datatype="html">
-        <source> Tilbake til innlogging </source>
+        <source> Logg inn med e-post </source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/qr-code-scanner/qr-code-scanner.html</context>
-          <context context-type="linenumber">67,72</context>
+          <context context-type="linenumber">79,84</context>
         </context-group>
       </trans-unit>
       <trans-unit id="qrCodeScanner.tryAgainButton" datatype="html">
         <source> Prøv igjen </source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/qr-code-scanner/qr-code-scanner.html</context>
-          <context context-type="linenumber">81,83</context>
+          <context context-type="linenumber">97,99</context>
         </context-group>
       </trans-unit>
       <trans-unit id="qrCodeScanner.cancelButton2" datatype="html">
         <source> Avbryt </source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/qr-code-scanner/qr-code-scanner.html</context>
-          <context context-type="linenumber">84,87</context>
+          <context context-type="linenumber">100,103</context>
         </context-group>
       </trans-unit>
       <trans-unit id="qrCodeScanner.positionQrCode" datatype="html">
         <source>Plasser QR-koden innenfor rammen</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/qr-code-scanner/qr-code-scanner.html</context>
-          <context context-type="linenumber">101,104</context>
+          <context context-type="linenumber">117,120</context>
         </context-group>
       </trans-unit>
       <trans-unit id="qrCodeScanner.cancelScanning" datatype="html">
         <source> Avbryt skanning </source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/qr-code-scanner/qr-code-scanner.html</context>
-          <context context-type="linenumber">105,109</context>
+          <context context-type="linenumber">121,125</context>
         </context-group>
       </trans-unit>
       <trans-unit id="qrCodeScanner.notSupported" datatype="html">
