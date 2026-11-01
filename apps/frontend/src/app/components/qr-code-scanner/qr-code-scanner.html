@@ -10,11 +10,13 @@
   <!-- Camera Permission Denied -->
   @if (cameraPermissionDenied() && !loading()) {
     <div class="permission-denied" role="alert" aria-live="assertive">
-      <div class="icon" aria-hidden="true"><svg viewBox="0 0 18 18" width="48" height="48" focusable="false">
-  <circle cx="9" cy="9" r="7.8" />
-  <path d="M9 5.2 v5" />
-  <circle class="dot" cx="9" cy="12.6" r="0.9" />
-</svg></div>
+      <div class="icon" aria-hidden="true">
+        <svg viewBox="0 0 18 18" width="48" height="48" focusable="false">
+          <circle cx="9" cy="9" r="7.8" />
+          <path d="M9 5.2 v5" />
+          <circle class="dot" cx="9" cy="12.6" r="0.9" />
+        </svg>
+      </div>
       <h3 i18n="@@qrCodeScanner.cameraAccessRequired">Kameratilgang påkrevd</h3>
       <p i18n="@@qrCodeScanner.allowCameraMessage">
         Vennligst tillat kameratilgang for å skanne QR-koder.
@@ -44,11 +46,13 @@
   <!-- No Camera Available -->
   @if (noCameraAvailable() && !loading()) {
     <div class="no-camera" role="alert" aria-live="assertive">
-      <div class="icon" aria-hidden="true"><svg viewBox="0 0 18 18" width="48" height="48" focusable="false">
-  <circle cx="9" cy="9" r="7.8" />
-  <path d="M9 5.2 v5" />
-  <circle class="dot" cx="9" cy="12.6" r="0.9" />
-</svg></div>
+      <div class="icon" aria-hidden="true">
+        <svg viewBox="0 0 18 18" width="48" height="48" focusable="false">
+          <circle cx="9" cy="9" r="7.8" />
+          <path d="M9 5.2 v5" />
+          <circle class="dot" cx="9" cy="12.6" r="0.9" />
+        </svg>
+      </div>
       <h3 i18n="@@qrCodeScanner.noCameraFound">Ingen kamera funnet</h3>
       <p i18n="@@qrCodeScanner.noCameraMessage">
         Enheten din har ikke et kamera eller det er ikke tilgjengelig.
@@ -65,11 +69,13 @@
   <!-- Camera turned off for the whole site (Permissions-Policy). Retrying cannot help -->
   @if (cameraBlocked() && !loading()) {
     <div class="camera-blocked" role="alert" aria-live="assertive">
-      <div class="icon" aria-hidden="true"><svg viewBox="0 0 18 18" width="48" height="48" focusable="false">
-  <circle cx="9" cy="9" r="7.8" />
-  <path d="M9 5.2 v5" />
-  <circle class="dot" cx="9" cy="12.6" r="0.9" />
-</svg></div>
+      <div class="icon" aria-hidden="true">
+        <svg viewBox="0 0 18 18" width="48" height="48" focusable="false">
+          <circle cx="9" cy="9" r="7.8" />
+          <path d="M9 5.2 v5" />
+          <circle class="dot" cx="9" cy="12.6" r="0.9" />
+        </svg>
+      </div>
       <h3 i18n="@@qrCodeScanner.blockedTitle">QR-innlogging virker ikke akkurat nå</h3>
       <p>{{ error() }}</p>
       <p class="help-text" i18n="@@qrCodeScanner.blockedHelp">
@@ -86,11 +92,13 @@
     error() && !loading() && !cameraPermissionDenied() && !noCameraAvailable() && !cameraBlocked()
   ) {
     <div class="error-state" role="alert" aria-live="assertive">
-      <div class="error-icon" aria-hidden="true"><svg viewBox="0 0 18 18" width="48" height="48" focusable="false">
-  <circle cx="9" cy="9" r="7.8" />
-  <path d="M9 5.2 v5" />
-  <circle class="dot" cx="9" cy="12.6" r="0.9" />
-</svg></div>
+      <div class="error-icon" aria-hidden="true">
+        <svg viewBox="0 0 18 18" width="48" height="48" focusable="false">
+          <circle cx="9" cy="9" r="7.8" />
+          <path d="M9 5.2 v5" />
+          <circle class="dot" cx="9" cy="12.6" r="0.9" />
+        </svg>
+      </div>
       <p>{{ error() }}</p>
       <div class="actions">
         <button class="btn btn-primary" (click)="retry()" i18n="@@qrCodeScanner.tryAgainButton">
