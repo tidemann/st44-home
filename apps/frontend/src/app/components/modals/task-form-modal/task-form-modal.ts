@@ -24,6 +24,8 @@ import { DidditMenu } from '../../../directives/diddit-menu.directive';
 import { DidditDate } from '../../../directives/diddit-date.directive';
 import type { Task, TaskRuleType, Child, CreateTaskRequest } from '@st44/types';
 import { isDesktopSignal } from '../../../utils/desktop-query';
+import { rotationFromNextWeek } from '../../../utils/rotation-weeks';
+import { RotationOrder } from '../../rotation-order/rotation-order';
 
 /**
  * Mode for the task form
@@ -69,7 +71,7 @@ export interface TaskFormData {
  */
 @Component({
   selector: 'app-task-form-modal',
-  imports: [Modal, DidditMenu, DidditDate, ReactiveFormsModule],
+  imports: [Modal, DidditMenu, DidditDate, ReactiveFormsModule, RotationOrder],
   templateUrl: './task-form-modal.html',
   styleUrl: './task-form-modal.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -195,20 +197,6 @@ export class TaskFormModal {
   ];
 
   /**
-   * Rotation types for weekly rotation tasks
-   */
-  readonly rotationTypes: { value: 'alternating' | 'odd_even_week'; label: string }[] = [
-    {
-      value: 'alternating',
-      label: $localize`:@@taskFormModal.rotationAlternating:Bytter hver uke`,
-    },
-    {
-      value: 'odd_even_week',
-      label: $localize`:@@taskFormModal.rotationOddEven:Partalls- og oddetallsuker (etter ukenummer)`,
-    },
-  ];
-
-  /**
    * Main form group
    */
   protected readonly form = this.fb.group({
@@ -255,6 +243,12 @@ export class TaskFormModal {
    * saving with no child would quietly turn it into a task for everyone.
    */
   protected readonly childrenGone = signal(false);
+
+  /**
+   * Edit, weekly rotation: the child who has this week. A changed order starts next week,
+   * and this child keeps the week (ST-2030 rule 1).
+   */
+  protected readonly thisWeekName = signal<string | null>(null);
 
   /**
    * Modal title based on mode
@@ -344,7 +338,19 @@ export class TaskFormModal {
     // Populate assignedChildren FormArray. Deleted children stay in the stored
     // config; leave them out so they are neither counted nor saved again
     const childIds = new Set(this.children().map((child) => child.id));
-    const remaining = assignedChildren.filter((childId: string) => childIds.has(childId));
+    let remaining = assignedChildren.filter((childId: string) => childIds.has(childId));
+    this.thisWeekName.set(null);
+    if (task.ruleType === 'weekly_rotation') {
+      const rotation = rotationFromNextWeek(
+        remaining,
+        rotationType,
+        ruleConfig.rotationStart,
+        new Date(),
+      );
+      remaining = rotation.order;
+      const name = this.children().find((child) => child.id === rotation.thisWeekChildId)?.name;
+      this.thisWeekName.set(name ?? null);
+    }
     const assignedChildrenArray = this.form.get('assignedChildren') as FormArray;
     remaining.forEach((childId: string) => assignedChildrenArray.push(this.fb.control(childId)));
     this.childrenGone.set(
@@ -433,6 +439,19 @@ export class TaskFormModal {
     this.errorMessage.set(null);
     this.showDeleteConfirm.set(false);
     this.childrenGone.set(false);
+    this.thisWeekName.set(null);
+  }
+
+  /** The rotation list: ticked children in their dragged order */
+  protected setRotationOrder(ids: string[]): void {
+    const assignedChildren = this.assignedChildrenArray;
+    assignedChildren.clear({ emitEvent: false });
+    ids.forEach((id) => assignedChildren.push(this.fb.control(id), { emitEvent: false }));
+    assignedChildren.updateValueAndValidity();
+  }
+
+  protected setOddEven(on: boolean): void {
+    this.form.controls.rotationType.setValue(on ? 'odd_even_week' : 'alternating');
   }
 
   /**
@@ -603,10 +622,13 @@ export class TaskFormModal {
         };
 
       case 'weekly_rotation':
+        // Odd/even is offered only with exactly two children; otherwise they take turns
         return {
           rotationType:
-            (this.form.get('rotationType')?.value as 'alternating' | 'odd_even_week') ||
-            'alternating',
+            this.form.get('rotationType')?.value === 'odd_even_week' &&
+            assignedChildren.length === 2
+              ? 'odd_even_week'
+              : 'alternating',
           assignedChildren,
         };
 

@@ -151,6 +151,29 @@ describe('TaskFormModal', () => {
       expect(assignedChildren.length).toBe(2);
     });
 
+    it('ST-2030: an alternating rotation opens with next week first and names this week', () => {
+      vi.useFakeTimers({ toFake: ['Date'] });
+      // Wednesday of week 46; the rotation started week 45 with Alex, so Jordan has this week
+      vi.setSystemTime(new Date(2026, 10, 11, 12));
+      try {
+        fixture.componentRef.setInput('task', {
+          ...mockTask,
+          ruleType: 'weekly_rotation',
+          ruleConfig: {
+            rotationType: 'alternating',
+            assignedChildren: ['child-1', 'child-2'],
+            rotationStart: '2026-11-02',
+          },
+        });
+        fixture.detectChanges();
+
+        expect(component['form'].get('assignedChildren')?.value).toEqual(['child-1', 'child-2']);
+        expect(component['thisWeekName']()).toBe('Jordan');
+      } finally {
+        vi.useRealTimers();
+      }
+    });
+
     it('leaves deleted children out of the form', () => {
       fixture.componentRef.setInput('task', {
         ...mockTask,
@@ -403,6 +426,34 @@ describe('TaskFormModal', () => {
             rotationType: 'alternating',
             assignedChildren: expect.arrayContaining(['child-1', 'child-2']),
           }),
+        }),
+      );
+    });
+
+    it('ST-2030: the dragged order is sent as it stands; odd/even only with two', () => {
+      const formSubmittedSpy = vi.spyOn(component.formSubmitted, 'emit');
+      fixture.componentRef.setInput('children', [
+        ...mockChildren,
+        { ...mockChildren[0], id: 'child-3', name: 'Kim' },
+      ]);
+      component['form'].patchValue({ name: 'Rotation', points: 5, ruleType: 'weekly_rotation' });
+      component['setOddEven'](true);
+      component['setRotationOrder'](['child-3', 'child-1', 'child-2']);
+      component.onSubmit();
+      expect(formSubmittedSpy).toHaveBeenLastCalledWith(
+        expect.objectContaining({
+          ruleConfig: {
+            rotationType: 'alternating',
+            assignedChildren: ['child-3', 'child-1', 'child-2'],
+          },
+        }),
+      );
+
+      component['setRotationOrder'](['child-2', 'child-1']);
+      component.onSubmit();
+      expect(formSubmittedSpy).toHaveBeenLastCalledWith(
+        expect.objectContaining({
+          ruleConfig: { rotationType: 'odd_even_week', assignedChildren: ['child-2', 'child-1'] },
         }),
       );
     });

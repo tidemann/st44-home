@@ -134,57 +134,18 @@
         </fieldset>
       }
 
-      <!-- Weekly Rotation: Rotation Type & Children -->
+      <!-- Weekly Rotation: one list, dragged into order (ST-2030, signed off on ST-2028) -->
       @if (ruleType === 'weekly_rotation') {
-        <div class="form-group">
-          <label class="form-label" for="rotation-type" i18n="@@taskFormModal.rotationTypeLabel"
-            >Rotasjonstype *</label
-          >
-          <select
-            appDidditMenu
-            id="rotation-type"
-            class="form-select"
-            formControlName="rotationType"
-          >
-            @for (type of rotationTypes; track type.value) {
-              <option [value]="type.value">{{ type.label }}</option>
-            }
-          </select>
-        </div>
-
-        <fieldset class="form-group">
-          <legend class="form-label" i18n="@@taskFormModal.selectChildrenRotationLabel">
-            Velg barn (2 eller flere) *
-          </legend>
-          <div class="child-selection">
-            @for (child of children(); track child.id) {
-              <label class="child-checkbox">
-                <input
-                  type="checkbox"
-                  [checked]="isChildSelected(child.id)"
-                  (change)="onChildChange(child.id, $any($event.target).checked)"
-                  [attr.aria-label]="'Tildel til ' + child.name"
-                />
-                <span class="child-name">{{ child.name }}</span>
-              </label>
-            }
-            @if (children().length === 0) {
-              <p class="no-children" i18n="@@taskFormModal.noChildrenYet">
-                Ingen barn i denne husholdningen ennå.
-              </p>
-            }
-          </div>
-          @if (assignedChildrenArray.length < 2 && assignedChildrenArray.length > 0) {
-            <div
-              class="form-hint"
-              [class.form-error]="submitAttempted()"
-              [attr.role]="submitAttempted() ? 'alert' : null"
-              i18n="@@taskFormModal.selectAtLeastTwoForRotation"
-            >
-              Velg minst 2 barn for rotasjon
-            </div>
-          }
-        </fieldset>
+        <app-rotation-order
+          [children]="children()"
+          [order]="assignedChildrenArray.value"
+          [oddEven]="form.controls.rotationType.value === 'odd_even_week'"
+          [startsNextWeek]="mode() === 'edit'"
+          [thisWeekName]="thisWeekName()"
+          [showError]="submitAttempted()"
+          (orderChange)="setRotationOrder($event)"
+          (oddEvenChange)="setOddEven($event)"
+        />
       }
 
       <!-- Single Task: Deadline & Candidates -->

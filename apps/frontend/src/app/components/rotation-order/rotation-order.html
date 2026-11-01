@@ -1,0 +1,144 @@
+<fieldset class="rot" [class.bad]="showError() && !canReorder()">
+  <legend class="form-label" i18n="@@rotationOrder.label">Hvem bytter på oppgaven? *</legend>
+  @if (canReorder()) {
+    <p class="hint" id="rotation-hint">{{ hint() }}</p>
+  }
+
+  <div class="list" [class.dragging]="drag() !== null">
+    @if (slot(); as s) {
+      <div
+        class="slot"
+        [style.top.px]="s.top"
+        [style.height.px]="s.height"
+        aria-hidden="true"
+      ></div>
+    }
+
+    <!-- Ticked rows by place, so a move keeps the DOM node and its focus where it was -->
+    @for (child of ticked(); track $index; let i = $index; let first = $first; let last = $last) {
+      <div
+        class="row"
+        data-ticked-row
+        [attr.data-row]="child.id"
+        [class.held]="drag()?.from === i"
+        [class.moving]="movingId() === child.id"
+        [style.transform]="rowTransform(i)"
+        (pointerdown)="onRowPointerDown(i, $event)"
+        (contextmenu)="onContextMenu($event)"
+      >
+        <label class="pick">
+          <input type="checkbox" class="cb" checked (click)="toggle(child, $event)" />
+          <span class="box on" aria-hidden="true"></span>
+          <span class="txt">
+            <span class="nm">{{ child.name }}</span>
+            <span class="wk">{{ weekLabel(placeOfRow()[i]) }}</span>
+          </span>
+        </label>
+        @if (canReorder()) {
+          @if (movingId() === child.id) {
+            <span class="arrows" data-arrows>
+              <button
+                type="button"
+                class="arr up"
+                data-arrow="up"
+                [class.gone]="first"
+                [attr.aria-hidden]="first ? 'true' : null"
+                [tabindex]="first ? -1 : 0"
+                (click)="moveBy(i, -1)"
+                (keydown)="onRowKeydown(i, child, $event)"
+                (focusout)="onRowFocusOut(child, $event)"
+                i18n-aria-label="@@rotationOrder.moveUp"
+                aria-label="Flytt {{ child.name }} opp"
+              >
+                <i></i>
+              </button>
+              <button
+                type="button"
+                class="arr dn"
+                data-arrow="down"
+                [class.gone]="last"
+                [attr.aria-hidden]="last ? 'true' : null"
+                [tabindex]="last ? -1 : 0"
+                (click)="moveBy(i, 1)"
+                (keydown)="onRowKeydown(i, child, $event)"
+                (focusout)="onRowFocusOut(child, $event)"
+                i18n-aria-label="@@rotationOrder.moveDown"
+                aria-label="Flytt {{ child.name }} ned"
+              >
+                <i></i>
+              </button>
+            </span>
+          } @else {
+            <button
+              type="button"
+              class="grip"
+              data-grip
+              aria-describedby="rotation-hint"
+              i18n-aria-label="@@rotationOrder.moveChild"
+              aria-label="Flytt {{ child.name }}, nummer {{ i + 1 }}"
+              (pointerdown)="onHandlePointerDown(i, $event)"
+              (click)="onHandleClick(child)"
+            >
+              <i></i>
+            </button>
+          }
+        }
+      </div>
+    }
+
+    @for (child of unticked(); track child.id) {
+      <div class="row out">
+        <label class="pick">
+          <input type="checkbox" class="cb" (click)="toggle(child, $event)" />
+          <span class="box" aria-hidden="true"></span>
+          <span class="txt">
+            <span class="nm">{{ child.name }}</span>
+            <span class="wk" i18n="@@rotationOrder.notIn">er ikke med</span>
+          </span>
+        </label>
+      </div>
+    }
+  </div>
+
+  @if (children().length === 0) {
+    <p class="why" i18n="@@rotationOrder.noChildren">Ingen barn i denne husholdningen ennå.</p>
+  } @else if (!canReorder()) {
+    <p
+      class="why"
+      [class.err]="showError()"
+      [attr.role]="showError() ? 'alert' : null"
+      i18n="@@rotationOrder.pickTwo"
+    >
+      Velg minst to barn – en rotasjon trenger noen å bytte med.
+    </p>
+  }
+</fieldset>
+
+@if (canReorder()) {
+  <div class="blk">
+    <button
+      type="button"
+      class="swrow"
+      role="switch"
+      [class.off]="!oddEvenAllowed()"
+      [attr.aria-checked]="oddEvenOn()"
+      [attr.aria-disabled]="!oddEvenAllowed() ? 'true' : null"
+      aria-describedby="rotation-switch-line"
+      (click)="toggleOddEven()"
+    >
+      <span class="nm" i18n="@@rotationOrder.oddEvenLabel">Oddetall/partall-uker</span>
+      <span class="sw" [class.on]="oddEvenOn()" aria-hidden="true"></span>
+    </button>
+    <p class="why" id="rotation-switch-line">{{ switchLine() }}</p>
+  </div>
+
+  <p class="prev">
+    @for (line of weekLines(); track line.label) {
+      <span class="half"
+        >{{ line.label }} <b>{{ line.name }}</b></span
+      >
+    }
+  </p>
+}
+
+<p class="sr-only" aria-live="polite">{{ announcement() }}</p>
