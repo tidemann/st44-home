@@ -1,7 +1,7 @@
-/* ST-1999 drawing (mock-up, not production): «Barnas innlogging» with QR first, e-mail second.
+/* «Barnas innlogging» with QR first, e-mail second, as drawn in ST-1999 (Stig, option A).
    Phone first, the values of the signed-off login (login-15 / login-17) and of the guide's
    «A — the yellow top». As in login.css, the 35 px status strip is the device's: the page's own
-   yellow starts at the top of the viewport, and the mock-up frame draws the strip above it. */
+   yellow starts at the top of the viewport. */
 
 .child-login-container {
   min-height: 100vh;
@@ -37,6 +37,11 @@
   /* one 346 px column at x 22, first ink 22 px under the band */
   .child-body {
     padding: 22px var(--gutter) 25px;
+  }
+
+  /* text ink 16.5 px under the password field, as login-16 draws it (ST-1999 W9) */
+  .login-form .error-message {
+    margin-top: -7px;
   }
 }
 
@@ -164,7 +169,8 @@
   border: 0;
   background: transparent;
   cursor: pointer;
-  color: var(--text-muted);
+  /* Ink, as the signed-off pictures and login.css draw the eye (ST-1999 W10) */
+  color: var(--ink);
 }
 
 .toggle-password:focus-visible {
@@ -295,6 +301,16 @@
 .submit-button svg .dots,
 .alt-button svg .dots {
   stroke-width: 2.2;
+}
+
+/* A refused QR code: the same rust line, under the two choices */
+.choice-list .error-message {
+  margin-top: 6px;
+}
+
+/* Programmatic focus target only (W2); the scanner's own buttons carry the ring */
+.qr-scanner-section:focus {
+  outline: none;
 }
 
 /* The way back to the main action, 10 px under «Logg inn» as login-19 draws it */
