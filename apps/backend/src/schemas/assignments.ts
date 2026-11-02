@@ -252,6 +252,13 @@ const postCompleteAssignmentSchemaBase = {
           },
           required: ['id', 'pointsEarned', 'completedAt'],
         },
+        turn: {
+          type: 'object',
+          description: '«Etter tur» chores (ST-2075): who has the turn now',
+          properties: {
+            nextChildName: { type: ['string', 'null'] },
+          },
+        },
       },
       required: ['taskAssignment', 'completion'],
     },

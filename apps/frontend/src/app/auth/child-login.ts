@@ -9,7 +9,7 @@ import {
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormGroup, FormControl, Validators } from '@angular/forms';
-import { Router, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { TopTabs } from '../components/navigation/top-tabs/top-tabs';
 import { DidditMark } from '../components/diddit-mark/diddit-mark';
 import { QrCodeScannerComponent } from '../components/qr-code-scanner/qr-code-scanner';
@@ -17,6 +17,7 @@ import { AuthService } from '../services/auth.service';
 import { QrAuthService } from '../services/qr-auth.service';
 import { TokenService } from '../services/token.service';
 import { HouseholdService } from '../services/household.service';
+import { TurnService } from '../services/turn.service';
 import { lastValueFrom } from 'rxjs';
 
 /** ST-1999: QR first, e-mail second (Stig, option A on ST-1892) */
@@ -45,6 +46,35 @@ export class ChildLoginComponent {
   private readonly householdService = inject(HouseholdService);
   private readonly host = inject<ElementRef<HTMLElement>>(ElementRef);
   private readonly injector = inject(Injector);
+  private readonly route = inject(ActivatedRoute);
+  private readonly turnService = inject(TurnService);
+
+  /** ST-2075: a scanned «Etter tur» code that waits for the sign-in, e.g. "4KQ7MF" */
+  private readonly scanCode = scanCodeIn(this.route.snapshot.queryParamMap.get('returnUrl'));
+  /** «Logg inn for å fullføre: Tømme oppvaskmaskinen» (drawing 9 on ST-2066) */
+  protected readonly pendingTask = signal<string | null>(null);
+
+  constructor() {
+    if (this.scanCode) {
+      this.turnService
+        .scanInfo(this.scanCode)
+        .then((info) => this.pendingTask.set(info.taskName))
+        .catch(() => this.pendingTask.set(null));
+    }
+  }
+
+  protected pendingLine(task: string): string {
+    return $localize`:@@childLogin.finishTask:Logg inn for å fullføre: ${task}:task:`;
+  }
+
+  /** After sign-in: back to the scan page that sent the child here, else their chores */
+  private goOn(): void {
+    if (this.scanCode) {
+      this.router.navigateByUrl(`/s/${this.scanCode}`);
+    } else {
+      this.router.navigate(['/my-tasks']);
+    }
+  }
 
   protected mode = signal<ChildLoginMode>('choices');
 
@@ -94,7 +124,7 @@ export class ChildLoginComponent {
       this.authService.isAuthenticated.set(true);
       await this.householdService.autoActivateHousehold();
 
-      this.router.navigate(['/my-tasks']);
+      this.goOn();
     } catch {
       this.qrError.set(
         $localize`:@@login.qrLoginFailed:QR-koden virket ikke. Be en voksen om en ny, og prøv igjen.`,
@@ -146,7 +176,7 @@ export class ChildLoginComponent {
       await lastValueFrom(this.authService.login(email!, password!, false));
 
       // Success - navigate to child dashboard
-      this.router.navigate(['/my-tasks']);
+      this.goOn();
     } catch (error: unknown) {
       this.credentialsRefused.set(true);
       // The signed-off login's own sentence for a refused sign-in (ST-1999 W9)
@@ -158,4 +188,10 @@ export class ChildLoginComponent {
       this.isLoading.set(false);
     }
   }
+}
+
+/** The code in a return URL of the form /s/<code>; nothing else is followed (no open redirect) */
+export function scanCodeIn(returnUrl: string | null): string | null {
+  const match = /^\/s\/([A-Za-z0-9]{1,16})$/.exec(returnUrl ?? '');
+  return match ? match[1] : null;
 }

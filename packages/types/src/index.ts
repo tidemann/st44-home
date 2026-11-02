@@ -1,10 +1,10 @@
 /**
  * @st44/types - Shared TypeScript types and schemas
- * 
+ *
  * This package provides type-safe data models shared between
  * frontend and backend, ensuring API consistency and eliminating
  * type duplication.
- * 
+ *
  * @module @st44/types
  * @version 1.0.0
  */

@@ -1,11 +1,11 @@
 /**
  * OpenAPI Schema Generator
- * 
+ *
  * Converts Zod schemas to OpenAPI 3.1 JSON Schema format for API documentation.
  * This ensures that API documentation always matches the actual validation logic.
- * 
+ *
  * Uses @asteasolutions/zod-to-openapi library which properly supports Zod 4.x
- * 
+ *
  * @module @st44/types/generators/openapi
  */
 
@@ -62,12 +62,12 @@ export interface OpenAPIGeneratorOptions {
    * Schema name/title for documentation
    */
   name?: string;
-  
+
   /**
    * Description for the schema
    */
   description?: string;
-  
+
   /**
    * Example value for the schema
    */
@@ -76,22 +76,22 @@ export interface OpenAPIGeneratorOptions {
 
 /**
  * Convert a Zod schema to OpenAPI 3.1 JSON Schema format
- * 
+ *
  * @param zodSchema - The Zod schema to convert
  * @param options - Generation options
  * @returns OpenAPI schema object
- * 
+ *
  * @example
  * ```typescript
  * import { z } from 'zod';
  * import { zodToOpenAPI } from '@st44/types/generators';
- * 
+ *
  * const UserSchema = z.object({
  *   id: z.string().uuid(),
  *   email: z.string().email(),
  *   created_at: z.string().datetime(),
  * });
- * 
+ *
  * const openApiSchema = zodToOpenAPI(UserSchema, {
  *   name: 'User',
  *   description: 'User model',
@@ -100,13 +100,13 @@ export interface OpenAPIGeneratorOptions {
  */
 export function zodToOpenAPI(
   zodSchema: z.ZodType<any, any, any>,
-  options: OpenAPIGeneratorOptions = {}
+  options: OpenAPIGeneratorOptions = {},
 ): OpenAPISchema {
   const { name, description, example } = options;
 
   // Create a registry and register the schema
   const registry = new OpenAPIRegistry();
-  
+
   // Register the schema with metadata
   const componentName = name || 'Schema';
   registry.register(componentName, zodSchema);
@@ -123,7 +123,7 @@ export function zodToOpenAPI(
 
   // Extract the schema from components
   const schema = document.components?.schemas?.[componentName] as OpenAPISchema;
-  
+
   if (!schema) {
     throw new Error(`Failed to generate schema for ${componentName}`);
   }
@@ -132,11 +132,11 @@ export function zodToOpenAPI(
   if (name) {
     schema.title = name;
   }
-  
+
   if (description) {
     schema.description = description;
   }
-  
+
   if (example !== undefined) {
     schema.example = example;
   }
@@ -146,11 +146,11 @@ export function zodToOpenAPI(
 
 /**
  * Generate OpenAPI schemas for request/response pairs
- * 
+ *
  * @param schemas - Object with request and response schemas
  * @param options - Generation options
  * @returns Object with OpenAPI request and response schemas
- * 
+ *
  * @example
  * ```typescript
  * const apiSchemas = generateAPISchemas({
@@ -160,7 +160,7 @@ export function zodToOpenAPI(
  *   requestName: 'CreateTaskRequest',
  *   responseName: 'TaskResponse',
  * });
- * 
+ *
  * // Use in Fastify route
  * fastify.post('/api/tasks', {
  *   schema: {
@@ -186,7 +186,7 @@ export function generateAPISchemas<TRequest extends z.ZodType, TResponse extends
     responseName?: string;
     responseDescription?: string;
     generatorOptions?: Omit<OpenAPIGeneratorOptions, 'name' | 'description'>;
-  } = {}
+  } = {},
 ): {
   request: OpenAPISchema;
   response: OpenAPISchema;
@@ -215,15 +215,15 @@ export function generateAPISchemas<TRequest extends z.ZodType, TResponse extends
 
 /**
  * Create an OpenAPI error response schema
- * 
+ *
  * @param statusCode - HTTP status code
  * @param description - Error description
  * @returns OpenAPI error schema
- * 
+ *
  * @example
  * ```typescript
  * const notFoundSchema = createErrorSchema(404, 'Resource not found');
- * 
+ *
  * fastify.get('/api/tasks/:id', {
  *   schema: {
  *     response: {
@@ -237,10 +237,7 @@ export function generateAPISchemas<TRequest extends z.ZodType, TResponse extends
  * });
  * ```
  */
-export function createErrorSchema(
-  statusCode: number,
-  description: string
-): OpenAPISchema {
+export function createErrorSchema(statusCode: number, description: string): OpenAPISchema {
   return {
     type: 'object',
     properties: {

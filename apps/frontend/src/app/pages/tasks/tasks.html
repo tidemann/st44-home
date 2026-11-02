@@ -115,6 +115,22 @@
             }
           }
 
+          <!-- «Etter tur» (ST-2075, drawing 3 on ST-2066): its own group, as it has no day;
+               the second line says who has the turn now and who is next -->
+          @if (turnRows().length > 0) {
+            <app-group-label i18n-label="@@tasks.nextInLineGroup" label="Etter tur" />
+            @for (t of turnRows(); track t.taskId) {
+              <app-chore-row
+                [title]="t.name"
+                [metaStrong]="turnHolder(t)"
+                [meta]="turnMeta(t)"
+                [points]="points(t.points)"
+                [openable]="true"
+                (open)="openTurn(t)"
+              />
+            }
+          }
+
           @if (overdueRows().length > 0) {
             <app-group-label
               i18n-label="@@tasks.overdueGroup"
@@ -438,6 +454,17 @@
     (closeRequested)="closeEdit()"
     (formSubmitted)="onTaskUpdate($event)"
     (taskDeleted)="onTaskDelete()"
+    (showCode)="onShowCode()"
+  />
+
+  <!-- «Etter tur» (ST-2075): history, «Flytt turen» and «Skannekode»; parents only -->
+  <app-turn-popup
+    [householdId]="householdId()"
+    [turn]="turnPopup()"
+    [startView]="turnView()"
+    [householdName]="householdName()"
+    (closed)="turnPopup.set(null)"
+    (turnChanged)="onTurnChanged($event)"
   />
 
   <app-subtask-review-modal

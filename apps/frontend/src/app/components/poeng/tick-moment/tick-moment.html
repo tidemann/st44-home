@@ -11,7 +11,17 @@
     </svg>
   </div>
   <h2 class="ytitle" id="tick-title">{{ title() }}</h2>
-  <p class="ymeta" i18n="@@tick.doneAt">Ferdig {{ doneAt() }}</p>
+  @switch (doneWord()) {
+    @case ('ticked') {
+      <p class="ymeta" i18n="@@tick.tickedAt">Haket av {{ doneAt() }}</p>
+    }
+    @case ('scanned') {
+      <p class="ymeta" i18n="@@tick.scannedAt">Skannet {{ doneAt() }}</p>
+    }
+    @default {
+      <p class="ymeta" i18n="@@tick.doneAt">Ferdig {{ doneAt() }}</p>
+    }
+  }
 
   <p class="award" [attr.aria-label]="pointsLabel()">
     <span class="big" aria-hidden="true">+{{ points() }}</span>
@@ -32,7 +42,13 @@
     <p class="ynext">{{ g.name }}</p>
   }
 
-  @if (next(); as n) {
+  @if (turnTo(); as to) {
+    <!-- «Etter tur» (ST-2075): who has the chore now -->
+    <div class="inset turn">
+      <span class="rm" i18n="@@tick.turnTo">Turen gikk videre til</span>
+      <span class="rt">{{ to }}</span>
+    </div>
+  } @else if (next(); as n) {
     <div class="inset">
       <span class="cb" aria-hidden="true"></span>
       <span class="rowtext">

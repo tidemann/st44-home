@@ -24,7 +24,13 @@
     <span class="rowtext">
       <span class="rt">{{ title() }}</span>
       @if (meta()) {
-        <span class="rm" [class.rust]="overdue()">{{ meta() }}</span>
+        <span class="rm" [class.rust]="overdue()">
+          @if (metaStrong()) {
+            <b class="rmb">{{ metaStrong() }}</b
+            >{{ ' ' }}
+          }
+          {{ meta() }}</span
+        >
       }
     </span>
     @if (points()) {
@@ -75,14 +81,26 @@
       <button type="button" class="rowtext rowtext-btn" (click)="open.emit()">
         <span class="rt">{{ title() }}</span>
         @if (meta()) {
-          <span class="rm" [class.rust]="overdue()">{{ meta() }}</span>
+          <span class="rm" [class.rust]="overdue()">
+            @if (metaStrong()) {
+              <b class="rmb">{{ metaStrong() }}</b
+              >{{ ' ' }}
+            }
+            {{ meta() }}</span
+          >
         }
       </button>
     } @else {
       <span class="rowtext">
         <span class="rt">{{ title() }}</span>
         @if (meta()) {
-          <span class="rm" [class.rust]="overdue()">{{ meta() }}</span>
+          <span class="rm" [class.rust]="overdue()">
+            @if (metaStrong()) {
+              <b class="rmb">{{ metaStrong() }}</b
+              >{{ ' ' }}
+            }
+            {{ meta() }}</span
+          >
         }
       </span>
     }

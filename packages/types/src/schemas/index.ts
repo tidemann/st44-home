@@ -36,3 +36,6 @@ export * from './pagination.schema.js';
 
 // Push notification schemas
 export * from './push.schema.js';
+
+// «Etter tur» turn schemas (ST-2075)
+export * from './turn.schema.js';

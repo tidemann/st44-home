@@ -1,9 +1,9 @@
 /**
  * Types module - Placeholder for future TypeScript types
- * 
+ *
  * This module will contain inferred TypeScript types from Zod schemas.
  * Types will be defined in task-105.
- * 
+ *
  * @module @st44/types/types
  */
 

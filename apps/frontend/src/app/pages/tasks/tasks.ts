@@ -26,9 +26,18 @@ import { PageComponent } from '../../components/page/page';
 import { ChoreRow } from '../../components/poeng/chore-row/chore-row';
 import { GroupLabel } from '../../components/poeng/group-label/group-label';
 import { EmptyGroup } from '../../components/poeng/empty-group/empty-group';
+import { TurnPopup, type TurnPopupView } from '../../components/turn-popup/turn-popup';
+import { TurnService, nextInTurn, turnChild } from '../../services/turn.service';
+import { HouseholdStore } from '../../stores/household.store';
 import { capitalize, clockTime, dayWord } from '../../utils/poeng-format';
 import { hasNoChildrenLeft } from '../../utils/task-children';
-import { summarizeSubtasks, type Task, type Child, type Assignment } from '@st44/types';
+import {
+  summarizeSubtasks,
+  type Task,
+  type Child,
+  type Assignment,
+  type TaskTurn,
+} from '@st44/types';
 import { SubtaskReviewModal } from '../../components/modals/subtask-review-modal/subtask-review-modal';
 import { doneLine, hasSubtasks, sentLine } from '../../utils/subtask-lines';
 
@@ -73,6 +82,7 @@ const COUNT_WORDS = [
     ChoreRow,
     GroupLabel,
     EmptyGroup,
+    TurnPopup,
     SubtaskReviewModal,
   ],
   templateUrl: './tasks.html',
@@ -87,6 +97,8 @@ export class Tasks implements OnInit {
   private readonly router = inject(Router);
   private readonly route = inject(ActivatedRoute);
   private readonly injector = inject(Injector);
+  private readonly turnService = inject(TurnService);
+  private readonly householdStore = inject(HouseholdStore);
 
   protected readonly pageTitle = $localize`:@@tasks.pageTitle:Oppgaver`;
 
@@ -130,6 +142,52 @@ export class Tasks implements OnInit {
   protected readonly householdId = computed(
     () => this.storage.getString(STORAGE_KEYS.ACTIVE_HOUSEHOLD_ID) || '',
   );
+
+  /** «Etter tur» chores (ST-2075): their own group, since they have no day */
+  private readonly turns = signal<TaskTurn[]>([]);
+  protected readonly turnRows = computed(() => {
+    const child = this.selectedChildId();
+    return child
+      ? this.turns().filter((t) => t.order.some((c) => c.childId === child))
+      : this.turns();
+  });
+  /** The open «Etter tur» popup: history, «Flytt turen» or «Skannekode» */
+  protected readonly turnPopup = signal<TaskTurn | null>(null);
+  protected readonly turnView = signal<TurnPopupView>('history');
+  protected readonly householdName = computed(
+    () => this.householdStore.activeHousehold()?.name ?? '',
+  );
+
+  protected turnHolder(t: TaskTurn): string {
+    return turnChild(t)?.name ?? '';
+  }
+
+  /** «har turen · neste: Jonas» */
+  protected turnMeta(t: TaskTurn): string {
+    return $localize`:@@tasks.turnMeta:har turen · neste: ${nextInTurn(t)?.name ?? ''}:next:`;
+  }
+
+  protected openTurn(t: TaskTurn, view: TurnPopupView = 'history'): void {
+    this.turnView.set(view);
+    this.turnPopup.set(t);
+  }
+
+  protected onTurnChanged(t: TaskTurn): void {
+    this.turns.update((list) => list.map((x) => (x.taskId === t.taskId ? t : x)));
+    this.openTurn(t);
+  }
+
+  /** «Vis koden» in the edit form */
+  protected onShowCode(): void {
+    const id = this.editingTask()?.id;
+    const turn = this.turns().find((t) => t.taskId === id);
+    this.closeEdit();
+    if (turn) this.openTurn(turn, 'code');
+  }
+
+  private async loadTurns(household: string): Promise<void> {
+    this.turns.set(await this.turnService.turns(household).catch(() => []));
+  }
 
   private readonly selectedChild = computed(
     () => this.children().find((c) => c.id === this.selectedChildId()) ?? null,
@@ -288,6 +346,7 @@ export class Tasks implements OnInit {
         this.householdDay.load(household),
         this.childrenService.listChildren(household),
         firstValueFrom(this.taskService.getTasks(household, true)),
+        this.loadTurns(household),
       ]);
       this.today.set(day.today);
       this.overdue.set(day.overdue);
@@ -353,7 +412,9 @@ export class Tasks implements OnInit {
     const rule =
       t.ruleType === 'single'
         ? $localize`:@@tasks.ruleOnce:Én gang`
-        : $localize`:@@tasks.ruleRepeat:Gjentas`;
+        : t.ruleType === 'next_in_line'
+          ? $localize`:@@tasks.ruleNextInLine:Etter tur`
+          : $localize`:@@tasks.ruleRepeat:Gjentas`;
     // A parent deletes by name: «Gjentas – Jonas» says whose chore it is (ST-1343)
     const ids = t.ruleConfig?.assignedChildren ?? [];
     const names = this.children()
@@ -478,9 +539,12 @@ export class Tasks implements OnInit {
         subtasks: data.subtasks,
       })
       .subscribe({
-        next: () => {
+        next: async (task) => {
           this.createOpen.set(false);
-          void this.loadTasks();
+          await this.loadTasks();
+          // «Du får en QR-kode å skrive ut når oppgaven er lagret» (ST-2075)
+          const turn = this.turns().find((t) => t.taskId === task.id);
+          if (turn) this.openTurn(turn, 'code');
         },
         error: (err) => console.error('Create task error:', err),
       });

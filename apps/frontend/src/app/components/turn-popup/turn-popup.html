@@ -1,0 +1,157 @@
+<app-modal [open]="turn() !== null" [title]="title()" (closeRequested)="closed.emit()">
+  @if (turn(); as t) {
+    @switch (view()) {
+      @case ('history') {
+        <!-- Drawings 10 and 11: «Tur nå» with «Flytt», then who did it, when and how -->
+        <p class="tp-label" i18n="@@turnPopup.turnNow">Tur nå</p>
+        <div class="tp-now">
+          <span class="tp-text">
+            <span class="tp-name">{{ holder()?.name }}</span>
+            <span class="tp-meta">{{ nextLine() }}</span>
+          </span>
+          <button type="button" class="tp-small" (click)="view.set('move')" i18n="@@turnPopup.move">
+            Flytt
+          </button>
+        </div>
+
+        <p class="tp-label" i18n="@@turnPopup.history">Historikk</p>
+        @if (history(); as h) {
+          @if (h.length === 0) {
+            <div class="tp-empty">
+              <p class="tp-name" i18n="@@turnPopup.emptyTitle">Ingen har gjort denne ennå</p>
+              <p class="tp-meta">{{ emptyLine() }}</p>
+            </div>
+          } @else {
+            <ul class="tp-list">
+              @for (entry of h; track $index) {
+                <li class="tp-row">
+                  <span class="tp-text">
+                    <span class="tp-name">{{ entry.childName }}</span>
+                    <span class="tp-meta">{{ entryMeta(entry) }}</span>
+                  </span>
+                  <span class="tp-pts" [class.none]="entry.kind === 'moved'">{{
+                    entryPoints(entry)
+                  }}</span>
+                </li>
+              }
+            </ul>
+          }
+        }
+        <div modal-actions class="tp-actions">
+          <button
+            type="button"
+            class="btn btn-secondary tp-wide"
+            (click)="closed.emit()"
+            i18n="@@turnPopup.close"
+          >
+            Lukk
+          </button>
+        </div>
+      }
+      @case ('move') {
+        <!-- Drawing 12: one choice at a time, and the sentence says what it costs: nothing -->
+        <p class="tp-sub">{{ t.name }}</p>
+        <fieldset class="tp-pick">
+          <legend class="tp-label" i18n="@@turnPopup.who">Hvem skal ha turen?</legend>
+          @for (child of t.order; track child.childId) {
+            <label class="tp-choice" [class.on]="picked() === child.childId">
+              <input
+                type="radio"
+                name="turn-child"
+                [checked]="picked() === child.childId"
+                (change)="picked.set(child.childId)"
+              />
+              <span
+                ><b>{{ child.name }}</b>
+                <span class="tp-dim">{{ holderSuffix(child.childId) }}</span></span
+              >
+            </label>
+          }
+        </fieldset>
+        <p class="tp-meta" i18n="@@turnPopup.moveNote">
+          Ingen mister poeng. Rekkefølgen er den samme – turen hopper bare til den du velger, og går
+          videre derfra.
+        </p>
+        @if (error()) {
+          <p class="tp-error" role="alert">{{ error() }}</p>
+        }
+        <div modal-actions class="tp-actions">
+          <button
+            type="button"
+            class="btn btn-secondary"
+            (click)="view.set('history')"
+            i18n="@@turnPopup.cancel"
+          >
+            Avbryt
+          </button>
+          <button
+            type="button"
+            class="btn btn-primary"
+            [disabled]="busy()"
+            (click)="onMove()"
+            i18n="@@turnPopup.moveConfirm"
+          >
+            Flytt turen
+          </button>
+        </div>
+      }
+      @case ('code') {
+        <!-- Drawing 13 and the NFC block: the real code, and three steps for a sticker -->
+        <p class="tp-sub" i18n="@@turnPopup.codeSub">{{ t.name }} · {{ t.points }} poeng</p>
+        <div class="tp-codebox">
+          @if (qr(); as src) {
+            <img class="tp-qr" [src]="src" alt="" width="96" height="96" />
+          }
+          <span class="tp-text">
+            <span class="tp-name" i18n="@@turnPopup.hangIt">Heng koden på stedet</span>
+            <span class="tp-meta" i18n="@@turnPopup.hangItBody"
+              >Den som har turen skanner den med sin egen telefon, uten å åpne appen. Koden er den
+              samme hver gang.</span
+            >
+          </span>
+        </div>
+        <p class="tp-label" i18n="@@turnPopup.nfcTitle">Eller bruk en NFC-brikke</p>
+        <p class="tp-meta" i18n="@@turnPopup.nfcBody">
+          En brikke du limer på maskinen. Barnet holder telefonen mot den i stedet for å skanne.
+        </p>
+        <ol class="tp-steps">
+          <li i18n="@@turnPopup.nfcStep1">
+            Kjøp NFC-brikker (NTAG213 eller nyere). De koster noen kroner stykket.
+          </li>
+          <li i18n="@@turnPopup.nfcStep2">
+            Last ned en gratis app som skriver til brikker, for eksempel <b>NFC Tools</b>.
+          </li>
+          <li i18n="@@turnPopup.nfcStep3">
+            Velg <b>Skriv</b> → <b>URL</b>, lim inn lenken under, og hold telefonen mot brikken.
+          </li>
+        </ol>
+        <p class="tp-link">{{ link() }}</p>
+        <p class="tp-meta" i18n="@@turnPopup.works">
+          Virker på iPhone (XS og nyere) og på Android-telefoner med NFC. QR-koden virker på alle.
+        </p>
+        @if (copied()) {
+          <p class="tp-meta" role="status" i18n="@@turnPopup.copied">Lenken er kopiert.</p>
+        }
+        <div modal-actions class="tp-actions">
+          <button
+            type="button"
+            class="btn btn-secondary"
+            (click)="onCopy()"
+            i18n="@@turnPopup.copy"
+          >
+            Kopier lenken
+          </button>
+          <button
+            type="button"
+            class="btn btn-primary"
+            [disabled]="!qr()"
+            (click)="onPrint()"
+            i18n="@@turnPopup.print"
+          >
+            Skriv ut kort
+          </button>
+        </div>
+      }
+    }
+  }
+</app-modal>

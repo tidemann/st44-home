@@ -138,6 +138,18 @@
   min-width: 0;
 }
 
+/* «Etter tur» (ST-2075): «Turen gikk videre til» over the child's name, same inset */
+.inset.turn {
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 0;
+}
+
+.inset.turn .rm {
+  margin: 0 0 6px;
+}
+
 .rt {
   display: block;
   font-family: var(--font-text);

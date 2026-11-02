@@ -10,8 +10,8 @@ function collectTitles(routeList: Routes): string[] {
 }
 
 describe('route titles', () => {
-  it('has exactly 19 titles', () => {
-    expect(collectTitles(routes)).toHaveLength(19);
+  it('has exactly 20 titles', () => {
+    expect(collectTitles(routes)).toHaveLength(20);
   });
 
   it('ends every title with the Diddit suffix', () => {

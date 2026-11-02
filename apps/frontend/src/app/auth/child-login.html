@@ -13,7 +13,12 @@
         <p class="wordmark" translate="no">Diddit</p>
       </div>
       <h1 class="title" i18n="@@childLogin.title">Velkommen tilbake!</h1>
-      <p class="subtitle" i18n="@@childLogin.subtitle">La oss komme i gang med oppgavene dine</p>
+      @if (pendingTask(); as task) {
+        <!-- ST-2075: a scanned «Etter tur» code waits; the line names the chore -->
+        <p class="subtitle pending-task">{{ pendingLine(task) }}</p>
+      } @else {
+        <p class="subtitle" i18n="@@childLogin.subtitle">La oss komme i gang med oppgavene dine</p>
+      }
     </div>
 
     <div class="child-body desk-column">

@@ -1,0 +1,74 @@
+/* ST-2075, drawing 8 on ST-2066: «Det er Emmas tur». A white card on the paper and one
+   yellow button the width of the column; no rust, nothing is wrong. */
+
+.scan-card {
+  margin-top: 16px;
+  padding: 20px 18px;
+  background: var(--surface);
+  border-radius: var(--r-card);
+  color: var(--ink);
+}
+
+.scan-title {
+  margin: 0 0 10px;
+  font-family: var(--font-display);
+  font-size: 20px;
+  font-weight: 700;
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+}
+
+.scan-text {
+  margin: 0;
+  font-family: var(--font-text);
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 1.45;
+  color: var(--text-muted);
+}
+
+.scan-text b {
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.scan-facts {
+  margin: 16px 0 0;
+  padding-left: 18px;
+  list-style: disc;
+  font-family: var(--font-text);
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 1.6;
+  color: var(--text-muted);
+}
+
+.scan-btn {
+  display: block;
+  width: 100%;
+  height: 49px;
+  margin-top: 16px;
+  border: 0;
+  border-radius: var(--r-button);
+  background: var(--yellow);
+  color: var(--ink);
+  font-family: var(--font-text);
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.scan-btn:focus-visible {
+  outline: var(--focus-ring);
+  outline-offset: 2px;
+}
+
+.scan-wait {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  padding: 96px 24px;
+  font-family: var(--font-text);
+  color: var(--text-muted);
+}

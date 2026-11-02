@@ -1,5 +1,11 @@
 <fieldset class="rot" [class.bad]="showError() && !canReorder()">
-  <legend class="form-label" i18n="@@rotationOrder.label">Hvem bytter på oppgaven? *</legend>
+  @if (turns()) {
+    <legend class="form-label" i18n="@@rotationOrder.turnsLabel">
+      Hvem går oppgaven mellom? *
+    </legend>
+  } @else {
+    <legend class="form-label" i18n="@@rotationOrder.label">Hvem bytter på oppgaven? *</legend>
+  }
   @if (canReorder()) {
     <p class="hint" id="rotation-hint">{{ hint() }}</p>
   }
@@ -103,18 +109,31 @@
   @if (children().length === 0) {
     <p class="why" i18n="@@rotationOrder.noChildren">Ingen barn i denne husholdningen ennå.</p>
   } @else if (!canReorder()) {
-    <p
-      class="why"
-      [class.err]="showError()"
-      [attr.role]="showError() ? 'alert' : null"
-      i18n="@@rotationOrder.pickTwo"
-    >
-      Velg minst to barn – en rotasjon trenger noen å bytte med.
+    <p class="why" [class.err]="showError()" [attr.role]="showError() ? 'alert' : null">
+      @if (turns()) {
+        <ng-container i18n="@@rotationOrder.pickTwoTurns"
+          >Velg minst to barn – turen må ha noen å gå videre til.</ng-container
+        >
+      } @else {
+        <ng-container i18n="@@rotationOrder.pickTwo"
+          >Velg minst to barn – en rotasjon trenger noen å bytte med.</ng-container
+        >
+      }
     </p>
   }
 </fieldset>
 
-@if (canReorder()) {
+@if (canReorder() && turns()) {
+  @if (turnLine(); as t) {
+    <p class="prev">
+      <span class="half" i18n="@@rotationOrder.turnLine"
+        ><b>{{ t.now }}</b> har turen nå. Når {{ t.now }} har gjort den, går turen til
+        <b>{{ t.next }}</b
+        >.</span
+      >
+    </p>
+  }
+} @else if (canReorder()) {
   <div class="blk">
     <button
       type="button"

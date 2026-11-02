@@ -296,6 +296,7 @@ export class PushService {
          AND ta.date = $1::date
          AND ta.status = 'pending'
          AND ta.reminder_sent_at IS NULL
+         AND t.rule_type <> 'next_in_line'
          AND c.user_id IS NOT NULL
          AND EXISTS (SELECT 1 FROM push_subscriptions ps WHERE ps.user_id = c.user_id)
        RETURNING c.user_id, t.name AS task_name, t.points`,

@@ -43,6 +43,9 @@ export class ChoreRow {
   /** Who and when, e.g. "Mathea – I dag" (Meta sm 13/500) */
   meta = input<string>('');
 
+  /** Bold words before the meta line, e.g. the name in «**Emma** har turen» (ST-2075) */
+  metaStrong = input<string>('');
+
   /** Rust border and rust meta line */
   overdue = input<boolean>(false);
 

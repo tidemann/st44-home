@@ -69,6 +69,40 @@
           </div>
         }
 
+        <!-- «Etter tur» (ST-2075, approved on ST-2054): the child's own turn is a normal row with
+             the normal tick and «Ferdig»; someone else's turn shows who has it, with no tick -->
+        @if (myTurns().length > 0) {
+          <app-group-label i18n-label="@@childDashboard.yourTurn" label="Din tur" />
+          @for (turn of myTurns(); track turn.taskId) {
+            <app-chore-row [title]="turn.name" [meta]="myTurnMeta(turn)">
+              <button
+                row-action
+                type="button"
+                class="rbtn"
+                [disabled]="isCompleting(turn.assignmentId!)"
+                [attr.aria-label]="hakAvLabel({ taskName: turn.name })"
+                (click)="onTurnDone(turn)"
+                i18n="@@childDashboard.hakAv"
+              >
+                Ferdig
+              </button>
+            </app-chore-row>
+          }
+        }
+
+        @if (otherTurns().length > 0) {
+          <app-group-label i18n-label="@@childDashboard.nextInLine" label="Etter tur" />
+          @for (turn of otherTurns(); track turn.taskId) {
+            <app-chore-row
+              [title]="turn.name"
+              [metaStrong]="turnHolder(turn)"
+              [meta]="otherTurnMeta(turn)"
+              [box]="false"
+              [points]="turnPoints(turn)"
+            />
+          }
+        }
+
         @if (overdueTasks().length > 0) {
           <app-group-label i18n-label="@@childDashboard.overdue" label="Forfalt" [overdue]="true" />
           @for (task of overdueTasks(); track task.id) {
@@ -233,6 +267,8 @@
     [childName]="childName()"
     [goal]="tickGoal()"
     [next]="tickNext()"
+    [doneWord]="t.turnTo !== undefined ? 'ticked' : 'done'"
+    [turnTo]="t.turnTo ?? null"
     [undoBusy]="undoBusy()"
     [undoError]="undoError()"
     (undo)="onUndo()"

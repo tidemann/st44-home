@@ -23,6 +23,10 @@ const meta: Meta<ChoreRow> = {
       control: 'text',
       description: 'Who and when, e.g. "Mathea – I dag"',
     },
+    metaStrong: {
+      control: 'text',
+      description: 'Bold words before the meta line',
+    },
     overdue: {
       control: 'boolean',
       description: 'Rust border and rust meta line',
@@ -46,6 +50,10 @@ const meta: Meta<ChoreRow> = {
     openable: {
       control: 'boolean',
       description: 'The title area is a button that opens the chore',
+    },
+    box: {
+      control: 'boolean',
+      description: 'Show the empty box for a row that is neither checkable nor done',
     },
     note: {
       control: 'object',
@@ -307,4 +315,14 @@ export const ChildDay: Story = {
       <app-chore-row title="Mate katten" meta="Gjort 07.45" points="+5" [done]="true" />
     `,
   }),
+};
+
+export const EtterTur: Story = {
+  args: {
+    title: 'Tømme oppvaskmaskinen',
+    metaStrong: 'Emma',
+    meta: 'har turen · neste: Jonas',
+    points: '5 p',
+    box: false,
+  },
 };

@@ -56,6 +56,13 @@ export class TickMoment {
   childName = input<string>('');
   goal = input<TickGoal | null>(null);
   next = input<TickNext | null>(null);
+  /**
+   * The word before the time: «Ferdig 16.48», or for an «Etter tur» chore (ST-2075)
+   * «Haket av 16.48» (the tick in the app) and «Skannet 16.48» (the printed code)
+   */
+  doneWord = input<'done' | 'ticked' | 'scanned'>('done');
+  /** «Etter tur»: the child the turn went to; shown on the inset instead of the next chore */
+  turnTo = input<string | null>(null);
   /** Undo request in flight */
   undoBusy = input<boolean>(false);
   /** Why the undo did not go through, in words a child understands */

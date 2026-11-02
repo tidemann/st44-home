@@ -511,6 +511,7 @@ async function getMyTasks(
        WHERE ta.child_id = $1
          AND ta.household_id = $2
          AND ta.date = $3
+         AND NOT (t.rule_type = 'next_in_line' AND ta.status = 'pending')
        ORDER BY t.name ASC`,
       [childId, householdId, taskDate],
     );

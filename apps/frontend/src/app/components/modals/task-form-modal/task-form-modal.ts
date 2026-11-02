@@ -33,6 +33,7 @@ import {
   type SubtaskDraft,
 } from '../../subtask-list/subtask-list';
 import { HouseholdDayService } from '../../../services/household-day.service';
+import { TurnService } from '../../../services/turn.service';
 
 /**
  * Mode for the task form
@@ -138,6 +139,7 @@ export class TaskFormModal {
    */
   private readonly destroyRef = inject(DestroyRef);
   private readonly householdDay = inject(HouseholdDayService);
+  private readonly turnService = inject(TurnService);
 
   /**
    * Task types configuration
@@ -162,6 +164,12 @@ export class TaskFormModal {
       value: 'single',
       label: $localize`:@@taskFormModal.typeSingle:Én gang`,
       description: $localize`:@@taskFormModal.typeSingleDescription:med frist`,
+    },
+    {
+      // ST-2075, drawing 1 on ST-2066: the select reads «Etter tur»; the line under it explains
+      value: 'next_in_line',
+      label: $localize`:@@taskFormModal.typeNextInLine:Etter tur`,
+      description: '',
     },
   ];
 
@@ -260,6 +268,24 @@ export class TaskFormModal {
    */
   protected readonly thisWeekName = signal<string | null>(null);
 
+  /** Edit, «Etter tur» (ST-2075): «Vis koden» opens the chore's QR code and NFC link */
+  showCode = output<void>();
+
+  /**
+   * Edit, «Etter tur»: the list opens with the child who has the turn on top, as the form
+   * says «Den øverste har turen nå»; the rest keep their order round the list.
+   */
+  private async loadTurnHolder(task: Task): Promise<void> {
+    const turns = await this.turnService
+      .turns(this.householdId() || task.householdId)
+      .catch(() => []);
+    const holder = turns.find((turn) => turn.taskId === task.id)?.turnChildId;
+    if (!holder || this.task()?.id !== task.id || this.mode() !== 'edit') return;
+    const order = this.assignedChildrenArray.value as string[];
+    const at = order.indexOf(holder);
+    if (at > 0) this.setRotationOrder([...order.slice(at), ...order.slice(0, at)]);
+  }
+
   /** «Deloppgaver» (ST-2074): while there are any, «Poeng» is their sum and not a field */
   protected readonly subtasks = signal<SubtaskDraft[]>([]);
   protected readonly subtaskTotal = computed(() =>
@@ -324,6 +350,8 @@ export class TaskFormModal {
       .subscribe((ruleType) => {
         this.updateValidators(ruleType);
         this.errorMessage.set(null);
+        // «Etter tur» is done in one step, also by a scan, so it has no sub-tasks (ST-2075)
+        if (ruleType === 'next_in_line' && this.subtasks().length > 0) this.setSubtasks([]);
       });
 
     // Pre-fill form when task changes (edit mode)
@@ -378,6 +406,7 @@ export class TaskFormModal {
     }
     const assignedChildrenArray = this.form.get('assignedChildren') as FormArray;
     remaining.forEach((childId: string) => assignedChildrenArray.push(this.fb.control(childId)));
+    if (task.ruleType === 'next_in_line') void this.loadTurnHolder(task);
     this.childrenGone.set(
       task.ruleType !== 'single' && assignedChildren.length > 0 && remaining.length === 0,
     );
@@ -432,6 +461,8 @@ export class TaskFormModal {
     // Apply validators based on rule type
     if (ruleType === 'weekly_rotation') {
       rotationType?.setValidators(Validators.required);
+      assignedChildren?.setValidators([Validators.required, this.minArrayLengthValidator(2)]);
+    } else if (ruleType === 'next_in_line') {
       assignedChildren?.setValidators([Validators.required, this.minArrayLengthValidator(2)]);
     } else if (ruleType === 'repeating') {
       repeatDays?.setValidators([Validators.required, this.minArrayLengthValidator(1)]);
@@ -590,7 +621,10 @@ export class TaskFormModal {
     }
 
     // Weekly rotation requires at least 2 children selected
-    if (ruleType === 'weekly_rotation' && assignedChildren.length < 2) {
+    if (
+      (ruleType === 'weekly_rotation' || ruleType === 'next_in_line') &&
+      assignedChildren.length < 2
+    ) {
       return false;
     }
 
@@ -690,6 +724,10 @@ export class TaskFormModal {
         return {
           assignedChildren,
         };
+
+      // ST-2075: the children in turn order; the top one has the turn
+      case 'next_in_line':
+        return { assignedChildren };
 
       default:
         return null;

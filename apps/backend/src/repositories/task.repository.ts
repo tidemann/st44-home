@@ -8,7 +8,7 @@ import type { TaskRow, TaskRuleConfig } from '../types/database.js';
  * Services should use this repository instead of direct database access.
  */
 
-export type TaskRuleType = 'weekly_rotation' | 'repeating' | 'daily' | 'single';
+export type TaskRuleType = 'weekly_rotation' | 'repeating' | 'daily' | 'single' | 'next_in_line';
 
 export interface Task {
   id: string;

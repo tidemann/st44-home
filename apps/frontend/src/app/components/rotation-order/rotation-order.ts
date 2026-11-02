@@ -78,6 +78,8 @@ export class RotationOrder {
   readonly showError = input(false);
   /** Today, for the week numbers (stories and tests pin it) */
   readonly today = input<Date>(new Date());
+  /** «Etter tur» (ST-2075): the rows are turns, not weeks; the top child has the turn now */
+  readonly turns = input(false);
 
   readonly orderChange = output<string[]>();
   readonly oddEvenChange = output<boolean>();
@@ -132,6 +134,11 @@ export class RotationOrder {
 
   /** Second line of the row at a place in the rotation */
   protected weekLabel(place: number): string {
+    if (this.turns()) {
+      if (place === 0) return $localize`:@@rotationOrder.turnNow:nå`;
+      if (place === 1) return $localize`:@@rotationOrder.turnNext:neste`;
+      return $localize`:@@rotationOrder.turnPlace:${place + 1}:place:. i rekken`;
+    }
     if (this.oddEvenOn()) {
       return place === 0
         ? $localize`:@@rotationOrder.oddWeeks:oddetallsuker`
@@ -201,12 +208,20 @@ export class RotationOrder {
     return lines;
   });
 
+  /** «Emma har turen nå. Når Emma har gjort den, går turen til Jonas.» (turns mode) */
+  protected readonly turnLine = computed(() => {
+    const [now, next] = this.previewOrder();
+    return now && next ? { now: now.name, next: next.name } : null;
+  });
+
   protected readonly hint = computed(() => {
     const id = this.movingId();
     const child = id ? this.childById().get(id) : undefined;
     return child
       ? $localize`:@@rotationOrder.moveHint:Flytt ${child.name}:name: med pilene. Trykk håndtaket igjen når du er ferdig.`
-      : $localize`:@@rotationOrder.dragHint:Dra håndtaket for å bytte rekkefølge.`;
+      : this.turns()
+        ? $localize`:@@rotationOrder.turnsHint:Den øverste har turen nå. Dra håndtaket for å bytte rekkefølge.`
+        : $localize`:@@rotationOrder.dragHint:Dra håndtaket for å bytte rekkefølge.`;
   });
 
   constructor() {

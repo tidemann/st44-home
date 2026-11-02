@@ -108,11 +108,13 @@
         </div>
       }
 
-      <app-subtask-list
-        [items]="subtasks()"
-        [showErrors]="submitAttempted()"
-        (itemsChange)="setSubtasks($event)"
-      />
+      @if (ruleType !== 'next_in_line') {
+        <app-subtask-list
+          [items]="subtasks()"
+          [showErrors]="submitAttempted()"
+          (itemsChange)="setSubtasks($event)"
+        />
+      }
 
       <!-- Task Type -->
       <div class="form-group">
@@ -121,9 +123,16 @@
         >
         <select appDidditMenu id="rule-type" class="form-select" formControlName="ruleType">
           @for (type of taskTypes; track type.value) {
-            <option [value]="type.value">{{ type.label }} - {{ type.description }}</option>
+            <option [value]="type.value">
+              {{ type.description ? type.label + ' - ' + type.description : type.label }}
+            </option>
           }
         </select>
+        @if (ruleType === 'next_in_line') {
+          <p class="form-hint" i18n="@@taskFormModal.nextInLineHint">
+            Ingen fast dag. Én har turen av gangen, og turen går videre når oppgaven er gjort.
+          </p>
+        }
       </div>
 
       <!-- Repeating: Day Selection -->
@@ -169,6 +178,39 @@
           (orderChange)="setRotationOrder($event)"
           (oddEvenChange)="setOddEven($event)"
         />
+      }
+
+      <!-- «Etter tur» (ST-2075, drawings 1 and 2 on ST-2066): the same order list as the
+           rotation, in turns; then what the scan code is -->
+      @if (ruleType === 'next_in_line') {
+        <app-rotation-order
+          [children]="children()"
+          [order]="assignedChildrenArray.value"
+          [turns]="true"
+          [showError]="submitAttempted()"
+          (orderChange)="setRotationOrder($event)"
+        />
+        <div class="form-group scan-code">
+          <p class="form-label" i18n="@@taskFormModal.scanCodeLabel">Skannekode</p>
+          @if (mode() === 'edit') {
+            <p class="form-hint-top" i18n="@@taskFormModal.scanCodeEdit">
+              Skriv ut kortet, eller kopier lenken til en NFC-brikke.
+            </p>
+            <button
+              type="button"
+              class="scan-code-btn"
+              (click)="showCode.emit()"
+              i18n="@@taskFormModal.showCode"
+            >
+              Vis koden
+            </button>
+          } @else {
+            <p class="form-hint-top" i18n="@@taskFormModal.scanCodeNew">
+              Du får en QR-kode å skrive ut når oppgaven er lagret. Den samme lenken kan skrives til
+              en NFC-brikke.
+            </p>
+          }
+        </div>
       }
 
       <!-- Single Task: Deadline & Candidates -->

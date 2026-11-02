@@ -226,4 +226,32 @@ describe('RotationOrder (ST-2030)', () => {
     expect(moveItem(list, 2, 0)).toEqual(['c', 'a', 'b']);
     expect(list).toEqual(['a', 'b', 'c']);
   });
+
+  describe('turns mode (ST-2075)', () => {
+    beforeEach(() => {
+      fixture.componentRef.setInput('turns', true);
+      setup(['emma', 'jonas', 'mathea']);
+    });
+
+    it('labels the three ticked rows by turn', () => {
+      expect(text('[data-ticked-row] .wk')).toEqual(['nå', 'neste', '3. i rekken']);
+    });
+
+    it('asks which children take turns', () => {
+      expect(text('legend')).toEqual(['Hvem går oppgaven mellom? *']);
+    });
+
+    it('hides odd/even and shows who has the turn now and next', () => {
+      expect(el.querySelector('.swrow')).toBeNull();
+      expect(text('.prev')).toEqual([
+        'Emma har turen nå. Når Emma har gjort den, går turen til Jonas.',
+      ]);
+    });
+
+    it('explains that the top child has the turn now', () => {
+      expect(text('.hint')).toEqual([
+        'Den øverste har turen nå. Dra håndtaket for å bytte rekkefølge.',
+      ]);
+    });
+  });
 });
