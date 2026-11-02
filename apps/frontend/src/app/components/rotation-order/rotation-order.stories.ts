@@ -65,6 +65,9 @@ export const OddEven: Story = { args: { order: ['emma', 'jonas'], oddEven: true 
 /** 3 — Three children: odd/even is off and says why */
 export const ThreeChildren: Story = { args: { order: ['emma', 'jonas', 'mathea'] } };
 
+/** «Etter tur»: the top child has the turn now */
+export const Turns: Story = { args: { order: ['emma', 'jonas', 'mathea'], turns: true } };
+
 /** Edit: rows start next week; this week keeps Jonas */
 export const EditStartsNextWeek: Story = {
   args: { order: ['mathea', 'emma', 'jonas'], startsNextWeek: true, thisWeekName: 'Jonas' },
