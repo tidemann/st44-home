@@ -95,6 +95,14 @@ export const ScanResultSchema = z.discriminatedUnion('result', [
     /** The scanning child is the next in the order after the one whose turn it is */
     youAreNext: z.boolean(),
   }),
+  /** A grown-up scanned: only the child whose turn it is finishes the chore with the code */
+  z.object({
+    result: z.literal('parent'),
+    taskId: z.string().uuid(),
+    taskName: z.string(),
+    points: z.number().int().min(0),
+    turnChildName: z.string().nullable(),
+  }),
 ]);
 
 export type ScanResult = z.infer<typeof ScanResultSchema>;

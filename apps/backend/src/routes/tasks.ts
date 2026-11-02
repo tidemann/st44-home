@@ -25,7 +25,7 @@ import type { TaskRow } from '../types/database.js';
 import { todayInTimeZone, DAYS_AHEAD } from '../services/assignment-scheduler.js';
 import { generateAssignments } from '../services/assignment-generator.js';
 import { addWeeks, mondayOf, toIsoDate } from '../services/rotation.js';
-import { giveTurnTo, newScanCode, syncTurn } from '../services/turns.js';
+import { giveTurnTo, syncTurn, withNewScanCode } from '../services/turns.js';
 import type { PoolClient } from 'pg';
 import { loadTaskSubtasks, saveSubtasks } from '../services/subtasks.js';
 import { withTransaction } from '../utils/index.js';
@@ -360,30 +360,32 @@ async function createTask(request: FastifyRequest<CreateTaskRequest>, reply: Fas
       : null;
 
     // The chore and its sub-tasks are saved together, or not at all
-    const scanCode = ruleType === 'next_in_line' ? await newScanCode(db) : null;
-    const createdTask = await withTransaction(db, async (client) => {
-      const result = await client.query(
-        `INSERT INTO tasks (household_id, name, description, points, rule_type, rule_config, deadline, scan_code)
+    const save = (scanCode: string | null) =>
+      withTransaction(db, async (client) => {
+        const result = await client.query(
+          `INSERT INTO tasks (household_id, name, description, points, rule_type, rule_config, deadline, scan_code)
          VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
          RETURNING id, household_id, name, description, points, rule_type, rule_config, deadline, scan_code, active, created_at, updated_at`,
-        [
-          householdId,
-          name.trim(),
-          description || null,
-          points,
-          ruleType,
-          ruleConfigForStorage === null || Object.keys(ruleConfigForStorage).length === 0
-            ? null
-            : JSON.stringify(ruleConfigForStorage),
-          deadline,
-          scanCode,
-        ],
-      );
-      if (subtasks.length > 0) {
-        await saveSubtasks(client, householdId, result.rows[0].id, subtasks);
-      }
-      return result.rows[0];
-    });
+          [
+            householdId,
+            name.trim(),
+            description || null,
+            points,
+            ruleType,
+            ruleConfigForStorage === null || Object.keys(ruleConfigForStorage).length === 0
+              ? null
+              : JSON.stringify(ruleConfigForStorage),
+            deadline,
+            scanCode,
+          ],
+        );
+        if (subtasks.length > 0) {
+          await saveSubtasks(client, householdId, result.rows[0].id, subtasks);
+        }
+        return result.rows[0];
+      });
+    const createdTask =
+      ruleType === 'next_in_line' ? await withNewScanCode(db, save) : await save(null);
 
     // «Etter tur» (ST-2075): the first child in the order has the turn
     if (ruleType === 'next_in_line') {
@@ -652,9 +654,10 @@ async function updateTask(request: FastifyRequest<UpdateTaskRequest>, reply: Fas
     let paramIndex = 1;
 
     // A chore that becomes «Etter tur» gets its code for the QR card (ST-2075)
+    let scanCodeAt = -1;
     if (ruleType === 'next_in_line' && before.rows[0] && !before.rows[0].scan_code) {
-      updates.push(`scan_code = $${paramIndex++}`);
-      values.push(await newScanCode(db));
+      updates.push(`scan_code = ${paramIndex++}`);
+      scanCodeAt = values.push(null) - 1;
     }
 
     if (name !== undefined) {
@@ -707,13 +710,17 @@ async function updateTask(request: FastifyRequest<UpdateTaskRequest>, reply: Fas
     `;
 
     // The chore and its sub-tasks are saved together, or not at all
-    const task = await withTransaction(db, async (client) => {
-      const result = await client.query(query, values);
-      if (result.rows.length > 0 && subtasks !== undefined) {
-        await saveSubtasks(client, householdId, taskId, subtasks);
-      }
-      return result.rows[0];
-    });
+    const save = (scanCode?: string) => {
+      if (scanCode !== undefined) values[scanCodeAt] = scanCode;
+      return withTransaction(db, async (client) => {
+        const result = await client.query(query, values);
+        if (result.rows.length > 0 && subtasks !== undefined) {
+          await saveSubtasks(client, householdId, taskId, subtasks);
+        }
+        return result.rows[0];
+      });
+    };
+    const task = scanCodeAt >= 0 ? await withNewScanCode(db, save) : await save();
 
     if (!task) {
       return reply.status(404).send({

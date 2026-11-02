@@ -173,3 +173,26 @@ export async function newScanCode(client: Queryable): Promise<string> {
   }
   throw new Error('Could not find a free scan code');
 }
+
+/** The unique index on tasks.scan_code stopped a write: the code was taken after the check */
+export function isScanCodeClash(error: unknown): boolean {
+  const pgError = error as { code?: unknown; constraint?: unknown } | null;
+  return pgError?.code === '23505' && pgError.constraint === 'idx_tasks_scan_code';
+}
+
+/**
+ * Saves with a new code. Two chores saved at the same moment can both find the same code
+ * free; the unique index stops the second, and it is saved again with another code.
+ */
+export async function withNewScanCode<T>(
+  client: Queryable,
+  save: (code: string) => Promise<T>,
+): Promise<T> {
+  for (let attempt = 1; ; attempt++) {
+    try {
+      return await save(await newScanCode(client));
+    } catch (error) {
+      if (!isScanCodeClash(error) || attempt >= 3) throw error;
+    }
+  }
+}

@@ -23,6 +23,7 @@ type ScanState =
   | { kind: 'loading' }
   | { kind: 'done'; result: Extract<ScanResult, { result: 'done' }> }
   | { kind: 'notYours'; result: Extract<ScanResult, { result: 'not_your_turn' }> }
+  | { kind: 'parent'; result: Extract<ScanResult, { result: 'parent' }> }
   | { kind: 'unknown' }
   | { kind: 'failed' };
 
@@ -35,7 +36,8 @@ export function possessive(name: string): string {
  * What the phone shows after the camera or the NFC sticker opened the chore's link
  * (ST-2075, drawings 7 and 8 on ST-2066). The child whose turn it is: the tick moment,
  * «Skannet 16.48», the points and who has the turn now; the same as the tick in the app.
- * Anyone else: «Det er Emmas tur», and nothing changes.
+ * Anyone else: «Det er Emmas tur», and nothing changes. A grown-up is told that only that
+ * child finishes it with the code (ST-2114).
  */
 @Component({
   selector: 'app-scan-page',
@@ -77,6 +79,8 @@ export class ScanPage implements OnInit {
       if (result.result === 'done') {
         this.state.set({ kind: 'done', result });
         if (this.authService.getUserRole() === 'child') this.refreshRewards();
+      } else if (result.result === 'parent') {
+        this.state.set({ kind: 'parent', result });
       } else {
         this.state.set({ kind: 'notYours', result });
       }
@@ -90,7 +94,7 @@ export class ScanPage implements OnInit {
     return clockTime(iso);
   }
 
-  protected turnTitle(result: Extract<ScanResult, { result: 'not_your_turn' }>): string {
+  protected turnTitle(result: { turnChildName: string | null }): string {
     const name = result.turnChildName ?? '';
     return $localize`:@@scan.theirTurn:Det er ${possessive(name)}:name: tur`;
   }
@@ -98,6 +102,11 @@ export class ScanPage implements OnInit {
   protected turnBody(result: Extract<ScanResult, { result: 'not_your_turn' }>): string {
     const name = result.turnChildName ?? '';
     return $localize`:@@scan.theyTick:${name}:name: haker den av når oppgaven er gjort.`;
+  }
+
+  protected parentBody(result: Extract<ScanResult, { result: 'parent' }>): string {
+    const name = result.turnChildName ?? '';
+    return $localize`:@@scan.parentBody:Du er logget inn som voksen. Bare ${name}:name: kan hake av oppgaven med koden.`;
   }
 
   protected youNext(result: Extract<ScanResult, { result: 'not_your_turn' }>): string {
