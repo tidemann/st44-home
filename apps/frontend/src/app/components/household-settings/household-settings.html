@@ -1,10 +1,5 @@
 @if (ready()) {
-  <app-page
-    [title]="title"
-    [subtitle]="householdName()"
-    [band]="true"
-    maxWidth="wide"
-  >
+  <app-page [title]="title" [subtitle]="householdName()" [band]="true" maxWidth="wide">
     <div class="iv-cols">
       <!-- «Ny invitasjon»: on the paper, not in a card (D3) -->
       <section class="iv-form" aria-labelledby="iv-new">
@@ -137,7 +132,8 @@
               @let parts = emailParts(inv.email);
               <li class="iv-card">
                 <p class="iv-mail" [title]="inv.email">
-                  <span class="lp">{{ parts[0] }}</span><span class="dm">{{ parts[1] }}</span>
+                  <span class="lp">{{ parts[0] }}</span
+                  ><span class="dm">{{ parts[1] }}</span>
                 </p>
                 <div class="iv-meta">
                   @if (inv.expired) {

@@ -1,4 +1,11 @@
-import { Component, signal, computed, inject, OnInit, ChangeDetectionStrategy } from '@angular/core';
+import {
+  Component,
+  signal,
+  computed,
+  inject,
+  OnInit,
+  ChangeDetectionStrategy,
+} from '@angular/core';
 import { Router } from '@angular/router';
 import { HouseholdService } from '../../services/household.service';
 import { InvitationService, Invitation } from '../../services/invitation.service';

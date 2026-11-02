@@ -433,7 +433,7 @@ describe('Family', () => {
       expect(members.length).toBe(5);
 
       // First should be admin
-      expect(members[0].role).toBe('parent'); // admin gets mapped to parent in display
+      expect(members[0].role).toBe('admin'); // «Administrator» on the card (ST-2078)
       expect(members[0].name).toBe('Alice Admin');
 
       // Then parents, alphabetically

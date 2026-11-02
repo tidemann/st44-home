@@ -87,57 +87,19 @@ test.describe('Family Screen - Invite Member', () => {
     });
   });
 
-  test('can open invite modal', async ({ page }) => {
+  // «+ Inviter» opens «Invitasjoner til husstanden»; the invite popup is retired (ST-2068)
+  test('«+ Inviter» opens the invitations page', async ({ page }) => {
     await loginAsUser(page, scenario.user.email, 'SecureTestPass123!');
 
     const familyPage = new FamilyPage(page);
     await familyPage.goto();
     await familyPage.waitForFamilyLoad();
 
-    await familyPage.openInviteModal();
+    await familyPage.inviteMemberButton.click();
 
-    await expect(familyPage.inviteModal).toBeVisible();
-  });
-
-  test('invite modal has email input', async ({ page }) => {
-    await loginAsUser(page, scenario.user.email, 'SecureTestPass123!');
-
-    const familyPage = new FamilyPage(page);
-    await familyPage.goto();
-    await familyPage.waitForFamilyLoad();
-
-    await familyPage.openInviteModal();
-
-    await expect(familyPage.inviteEmailInput).toBeVisible();
-  });
-
-  test('can close invite modal', async ({ page }) => {
-    await loginAsUser(page, scenario.user.email, 'SecureTestPass123!');
-
-    const familyPage = new FamilyPage(page);
-    await familyPage.goto();
-    await familyPage.waitForFamilyLoad();
-
-    await familyPage.openInviteModal();
-    await expect(familyPage.inviteModal).toBeVisible();
-
-    await familyPage.closeInviteModal();
-    await expect(familyPage.inviteModal).toBeHidden();
-  });
-
-  test.skip('can send invitation', async ({ page }) => {
-    // Note: Skipped - requires full API integration
-    await loginAsUser(page, scenario.user.email, 'SecureTestPass123!');
-
-    const familyPage = new FamilyPage(page);
-    await familyPage.goto();
-    await familyPage.waitForFamilyLoad();
-
-    await familyPage.inviteMember('newmember@example.com', 'parent');
-
-    // Should show success message
-    const hasSuccess = await familyPage.hasSuccessMessage();
-    expect(hasSuccess).toBe(true);
+    await expect(page).toHaveURL(/\/household\/settings$/);
+    await expect(page.getByRole('heading', { level: 1 })).toHaveText('Invitasjoner til husstanden');
+    await expect(page.getByLabel('E-postadresse')).toBeVisible();
   });
 });
 

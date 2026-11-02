@@ -9,7 +9,10 @@ import { ConfirmDialogService } from '../../services/confirm-dialog.service';
 describe('HouseholdSettingsComponent («Invitasjoner til husstanden»)', () => {
   let fixture: ComponentFixture<HouseholdSettingsComponent>;
   let el: HTMLElement;
-  let household: { getActiveHouseholdId: ReturnType<typeof vi.fn>; getHousehold: ReturnType<typeof vi.fn> };
+  let household: {
+    getActiveHouseholdId: ReturnType<typeof vi.fn>;
+    getHousehold: ReturnType<typeof vi.fn>;
+  };
   let invitations: {
     sendInvitation: ReturnType<typeof vi.fn>;
     listSentInvitations: ReturnType<typeof vi.fn>;
@@ -40,7 +43,9 @@ describe('HouseholdSettingsComponent («Invitasjoner til husstanden»)', () => {
   }
 
   const text = (selector: string): string[] =>
-    [...el.querySelectorAll(selector)].map((n) => (n.textContent ?? '').replace(/\s+/g, ' ').trim());
+    [...el.querySelectorAll(selector)].map((n) =>
+      (n.textContent ?? '').replace(/\s+/g, ' ').trim(),
+    );
 
   function type(email: string): void {
     const input = el.querySelector<HTMLInputElement>('#iv-email')!;
@@ -63,7 +68,9 @@ describe('HouseholdSettingsComponent («Invitasjoner til husstanden»)', () => {
   beforeEach(async () => {
     household = {
       getActiveHouseholdId: vi.fn().mockReturnValue('h1'),
-      getHousehold: vi.fn().mockResolvedValue({ id: 'h1', name: 'Familien Nordmann', role: 'admin' }),
+      getHousehold: vi
+        .fn()
+        .mockResolvedValue({ id: 'h1', name: 'Familien Nordmann', role: 'admin' }),
     };
     invitations = {
       sendInvitation: vi.fn().mockResolvedValue({ id: 'n1', token: 'tok-1' }),
@@ -105,7 +112,11 @@ describe('HouseholdSettingsComponent («Invitasjoner til husstanden»)', () => {
     type('per.hansen@eksempel.no');
     chooseRole('parent');
     await submit();
-    expect(invitations.sendInvitation).toHaveBeenCalledWith('h1', 'per.hansen@eksempel.no', 'parent');
+    expect(invitations.sendInvitation).toHaveBeenCalledWith(
+      'h1',
+      'per.hansen@eksempel.no',
+      'parent',
+    );
   });
 
   it('sends «Administrator» as admin', async () => {

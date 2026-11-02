@@ -182,14 +182,17 @@
                 </svg>
               </a>
 
-              <a routerLink="/household/settings" class="settings-row">
-                <span class="row-title" i18n="@@settings.householdSettingsLink"
-                  >Inviter og sendte invitasjoner</span
-                >
-                <svg class="row-chevron" viewBox="0 0 8 14" aria-hidden="true">
-                  <path d="m1 1 6 6-6 6" />
-                </svg>
-              </a>
+              <!-- Admin only, as the page it opens (ST-2068 build line 5) -->
+              @if (activeHousehold()?.role === 'admin') {
+                <a routerLink="/household/settings" class="settings-row">
+                  <span class="row-title" i18n="@@settings.householdSettingsLink"
+                    >Inviter og sendte invitasjoner</span
+                  >
+                  <svg class="row-chevron" viewBox="0 0 8 14" aria-hidden="true">
+                    <path d="m1 1 6 6-6 6" />
+                  </svg>
+                </a>
+              }
 
               <a routerLink="/invitations" class="settings-row">
                 <span class="row-title" i18n="@@settings.invitationsLink">Invitasjoner</span>

@@ -36,14 +36,7 @@ import { personInitial, personName } from '../../utils/person-name';
  */
 @Component({
   selector: 'app-family',
-  imports: [
-    MemberCard,
-    AddChildModal,
-    ChildDetailsModal,
-    QrCodeModal,
-    PageComponent,
-    RouterLink,
-  ],
+  imports: [MemberCard, AddChildModal, ChildDetailsModal, QrCodeModal, PageComponent, RouterLink],
   templateUrl: './family.html',
   styleUrl: './family.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
