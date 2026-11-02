@@ -504,7 +504,8 @@ async function getMyTasks(
         ta.date::text as date,
         ta.status,
         ta.submitted_at,
-        tc.completed_at
+        tc.completed_at,
+        (SELECT SUM(e.points_earned) FROM task_completions e WHERE e.task_assignment_id = ta.id)::int AS points_earned
        FROM task_assignments ta
        JOIN tasks t ON ta.task_id = t.id
        LEFT JOIN task_completions tc ON ta.id = tc.task_assignment_id
@@ -529,9 +530,10 @@ async function getMyTasks(
 
     // Step 4: Calculate points
     const totalPoints = tasks.reduce((sum, task) => sum + task.points, 0);
-    const completedPoints = tasks
-      .filter((task) => task.status === 'completed')
-      .reduce((sum, task) => sum + task.points, 0);
+    // The points the child really got: a part-approved chore earns less than its full points (ST-2104)
+    const completedPoints = tasksResult.rows
+      .filter((row) => row.status === 'completed')
+      .reduce((sum, row) => sum + (row.points_earned ?? row.points), 0);
 
     return reply.send({
       tasks: await withAssignmentSubtasks(db, tasks),

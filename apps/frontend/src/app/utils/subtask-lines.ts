@@ -35,10 +35,12 @@ export function waitingLine(subtasks: AssignmentSubtask[]): string {
   );
 }
 
-/** The parent, not sent yet: «0 av 4 deloppgaver gjort» */
+/** The parent, not sent yet: «0 av 4 deloppgaver gjort», «0 av 1 deloppgave gjort» */
 export function doneLine(subtasks: AssignmentSubtask[]): string {
   const s = summarizeSubtasks(subtasks);
-  return $localize`:@@subtasks.doneOf:${s.done}:done: av ${subtasks.length}:total: deloppgaver gjort`;
+  return subtasks.length === 1
+    ? $localize`:@@subtasks.doneOfOne:${s.done}:done: av 1 deloppgave gjort`
+    : $localize`:@@subtasks.doneOf:${s.done}:done: av ${subtasks.length}:total: deloppgaver gjort`;
 }
 
 /** The parent, sent: «2 av 3 gjort · 1 ikke mulig» */

@@ -454,6 +454,21 @@ describe('TaskFormModal', () => {
       ]);
     });
 
+    it('the main action is live at every width; the press shows the error (ST-2104)', () => {
+      const spy = vi.spyOn(component.formSubmitted, 'emit');
+      fixture.componentRef.setInput('open', true);
+      fixture.detectChanges();
+      const el = fixture.nativeElement as HTMLElement;
+      const submit = el.querySelector<HTMLButtonElement>('button[type="submit"]')!;
+      expect(submit.disabled).toBe(false);
+      submit.click();
+      fixture.detectChanges();
+      expect(spy).not.toHaveBeenCalled();
+      expect(el.querySelector('#task-name-error')?.textContent).toContain(
+        'Oppgavenavn er obligatorisk',
+      );
+    });
+
     it('a normal chore sends no sub-tasks', () => {
       const spy = vi.spyOn(component.formSubmitted, 'emit');
       component['form'].patchValue({ name: 'Dekke bord', points: 5, ruleType: 'daily' });

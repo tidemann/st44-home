@@ -132,6 +132,19 @@ export class RotationOrder {
     weekNumbers(addWeeks(this.thisMonday(), this.startsNextWeek() ? 1 : 0), this.count()),
   );
 
+  /** Button names. An i18n-aria-label with {{ }} renders empty, so these are bound (ST-2104) */
+  protected upLabel(child: Child): string {
+    return $localize`:@@rotationOrder.moveUp:Flytt ${child.name}:name: opp`;
+  }
+
+  protected downLabel(child: Child): string {
+    return $localize`:@@rotationOrder.moveDown:Flytt ${child.name}:name: ned`;
+  }
+
+  protected handleLabel(child: Child, index: number): string {
+    return $localize`:@@rotationOrder.moveChild:Flytt ${child.name}:name:, nummer ${index + 1}:place:`;
+  }
+
   /** Second line of the row at a place in the rotation */
   protected weekLabel(place: number): string {
     if (this.turns()) {

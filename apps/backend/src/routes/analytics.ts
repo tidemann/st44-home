@@ -166,12 +166,15 @@ async function getHouseholdAnalytics(
   try {
     const { startDate, endDate, previousStartDate, previousEndDate } = getDateRange(period);
 
+    // Points are what the child really got (task_completions.points_earned; a part-approved chore
+    // earns less). SUM over no completion row is NULL, so COALESCE falls back to the chore's
+    // points. Same in every points sum below (ST-2104).
     // 1. Period Comparison (current vs previous)
     const currentPeriodResult = await db.query(
       `SELECT
         COUNT(*) as total_tasks,
         SUM(CASE WHEN status = 'completed' THEN 1 ELSE 0 END) as completed_tasks,
-        SUM(CASE WHEN status = 'completed' THEN t.points ELSE 0 END) as total_points
+        SUM(CASE WHEN ta.status = 'completed' THEN COALESCE((SELECT SUM(tc.points_earned) FROM task_completions tc WHERE tc.task_assignment_id = ta.id), t.points) ELSE 0 END) as total_points
       FROM task_assignments ta
       JOIN tasks t ON ta.task_id = t.id
       WHERE ta.household_id = $1
@@ -184,7 +187,7 @@ async function getHouseholdAnalytics(
       `SELECT
         COUNT(*) as total_tasks,
         SUM(CASE WHEN status = 'completed' THEN 1 ELSE 0 END) as completed_tasks,
-        SUM(CASE WHEN status = 'completed' THEN t.points ELSE 0 END) as total_points
+        SUM(CASE WHEN ta.status = 'completed' THEN COALESCE((SELECT SUM(tc.points_earned) FROM task_completions tc WHERE tc.task_assignment_id = ta.id), t.points) ELSE 0 END) as total_points
       FROM task_assignments ta
       JOIN tasks t ON ta.task_id = t.id
       WHERE ta.household_id = $1
@@ -241,7 +244,7 @@ async function getHouseholdAnalytics(
           ta.date::text as date,
           COUNT(*) as total_tasks,
           SUM(CASE WHEN ta.status = 'completed' THEN 1 ELSE 0 END) as completed_tasks,
-          SUM(CASE WHEN ta.status = 'completed' THEN t.points ELSE 0 END) as points_earned
+          SUM(CASE WHEN ta.status = 'completed' THEN COALESCE((SELECT SUM(tc.points_earned) FROM task_completions tc WHERE tc.task_assignment_id = ta.id), t.points) ELSE 0 END) as points_earned
         FROM task_assignments ta
         JOIN tasks t ON ta.task_id = t.id
         WHERE ta.child_id = $1
@@ -393,7 +396,7 @@ async function getChildAnalytics(
       `SELECT
         COUNT(*) as total_tasks,
         SUM(CASE WHEN ta.status = 'completed' THEN 1 ELSE 0 END) as completed_tasks,
-        SUM(CASE WHEN ta.status = 'completed' THEN t.points ELSE 0 END) as points_earned
+        SUM(CASE WHEN ta.status = 'completed' THEN COALESCE((SELECT SUM(tc.points_earned) FROM task_completions tc WHERE tc.task_assignment_id = ta.id), t.points) ELSE 0 END) as points_earned
       FROM task_assignments ta
       JOIN tasks t ON ta.task_id = t.id
       WHERE ta.child_id = $1
@@ -414,7 +417,7 @@ async function getChildAnalytics(
       `SELECT
         COUNT(*) as total_tasks,
         SUM(CASE WHEN ta.status = 'completed' THEN 1 ELSE 0 END) as completed_tasks,
-        SUM(CASE WHEN ta.status = 'completed' THEN t.points ELSE 0 END) as points_earned
+        SUM(CASE WHEN ta.status = 'completed' THEN COALESCE((SELECT SUM(tc.points_earned) FROM task_completions tc WHERE tc.task_assignment_id = ta.id), t.points) ELSE 0 END) as points_earned
       FROM task_assignments ta
       JOIN tasks t ON ta.task_id = t.id
       WHERE ta.child_id = $1
@@ -435,7 +438,7 @@ async function getChildAnalytics(
         ta.date::text as date,
         COUNT(*) as total_tasks,
         SUM(CASE WHEN ta.status = 'completed' THEN 1 ELSE 0 END) as completed_tasks,
-        SUM(CASE WHEN ta.status = 'completed' THEN t.points ELSE 0 END) as points_earned
+        SUM(CASE WHEN ta.status = 'completed' THEN COALESCE((SELECT SUM(tc.points_earned) FROM task_completions tc WHERE tc.task_assignment_id = ta.id), t.points) ELSE 0 END) as points_earned
       FROM task_assignments ta
       JOIN tasks t ON ta.task_id = t.id
       WHERE ta.child_id = $1
