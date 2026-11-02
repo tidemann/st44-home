@@ -4,6 +4,7 @@ import { UNDO_COMPLETE_SECONDS, MoveTurnRequestSchema } from '@st44/types';
 import type { ScanResult, TaskTurn, TurnHistoryEntry } from '@st44/types';
 import { pool } from '../database.js';
 import { authenticateUser } from '../middleware/auth.js';
+import { createIpRateLimiter } from '../middleware/rate-limit.js';
 import {
   validateHouseholdMembership,
   requireHouseholdParent,
@@ -21,6 +22,9 @@ import { withTransaction } from '../utils/index.js';
 const householdParams = z.object({ householdId: z.string().uuid() });
 const taskParams = z.object({ householdId: z.string().uuid(), taskId: z.string().uuid() });
 const codeParams = z.object({ code: z.string().max(32) });
+
+/** Printed codes cannot be guessed: one IP gets 120 scan calls an hour (a GET and a POST per scan) */
+const scanRateLimiter = createIpRateLimiter('ratelimit:scan:', 120, 3600);
 
 /** The normalised code from the route, or null when it cannot be a scan code (a 404) */
 function routeCode(params: unknown): string | null {
@@ -207,7 +211,7 @@ export default async function turnRoutes(fastify: FastifyInstance) {
    * The chore's name, so the children's sign-in can say what the scan will finish.
    * No sign-in needed: whoever holds the card can read its name anyway.
    */
-  fastify.get('/api/scan/:code', async (request, reply) => {
+  fastify.get('/api/scan/:code', { preHandler: [scanRateLimiter] }, async (request, reply) => {
     const code = routeCode(request.params);
     if (!code) return reply.code(404).send({ error: 'Unknown code' });
     const result = await pool.query<{ name: string }>(
@@ -223,65 +227,68 @@ export default async function turnRoutes(fastify: FastifyInstance) {
    * The signed-in child scanned the chore's code. Their turn: done, points given, the turn
    * moves on (the same as the tick in the app). Someone else's turn: nothing changes.
    */
-  fastify.post('/api/scan/:code', { preHandler: [authenticateUser] }, async (request, reply) => {
-    const code = routeCode(request.params);
-    if (!code) return reply.code(404).send({ error: 'Unknown code' });
-    const userId = request.user?.userId;
+  fastify.post(
+    '/api/scan/:code',
+    { preHandler: [scanRateLimiter, authenticateUser] },
+    async (request, reply) => {
+      const code = routeCode(request.params);
+      if (!code) return reply.code(404).send({ error: 'Unknown code' });
+      const userId = request.user?.userId;
 
-    try {
-      const outcome = await withTransaction(pool, async (client) => {
-        const taskResult = await client.query<{
-          id: string;
-          household_id: string;
-          name: string;
-          points: number | null;
-        }>(
-          `SELECT id, household_id, name, points FROM tasks
+      try {
+        const outcome = await withTransaction(pool, async (client) => {
+          const taskResult = await client.query<{
+            id: string;
+            household_id: string;
+            name: string;
+            points: number | null;
+          }>(
+            `SELECT id, household_id, name, points FROM tasks
            WHERE scan_code = $1 AND active = true AND rule_type = 'next_in_line'
            FOR UPDATE`,
-          [code],
-        );
-        const task = taskResult.rows[0];
-        if (!task) throw new ScanError(404, 'Unknown code');
+            [code],
+          );
+          const task = taskResult.rows[0];
+          if (!task) throw new ScanError(404, 'Unknown code');
 
-        // Outsiders get the same 404, so a code cannot be probed for another household
-        const member = await client.query<{ role: string }>(
-          'SELECT role FROM household_members WHERE household_id = $1 AND user_id = $2',
-          [task.household_id, userId],
-        );
-        if (member.rows.length === 0) throw new ScanError(404, 'Unknown code');
+          // Outsiders get the same 404, so a code cannot be probed for another household
+          const member = await client.query<{ role: string }>(
+            'SELECT role FROM household_members WHERE household_id = $1 AND user_id = $2',
+            [task.household_id, userId],
+          );
+          if (member.rows.length === 0) throw new ScanError(404, 'Unknown code');
 
-        const childResult = await client.query<{ id: string }>(
-          'SELECT id FROM children WHERE user_id = $1 AND household_id = $2',
-          [userId, task.household_id],
-        );
-        const childId = childResult.rows[0]?.id ?? null;
+          const childResult = await client.query<{ id: string }>(
+            'SELECT id FROM children WHERE user_id = $1 AND household_id = $2',
+            [userId, task.household_id],
+          );
+          const childId = childResult.rows[0]?.id ?? null;
 
-        const open = await client.query<{ id: string; child_id: string; name: string }>(
-          `SELECT ta.id, ta.child_id, c.name FROM task_assignments ta
+          const open = await client.query<{ id: string; child_id: string; name: string }>(
+            `SELECT ta.id, ta.child_id, c.name FROM task_assignments ta
            JOIN children c ON c.id = ta.child_id
            WHERE ta.task_id = $1 AND ta.status = 'pending'
            ORDER BY ta.date LIMIT 1`,
-          [task.id],
-        );
-        const turn = open.rows[0];
-        const points = task.points ?? 0;
+            [task.id],
+          );
+          const turn = open.rows[0];
+          const points = task.points ?? 0;
 
-        // The same child scanning again (a second NFC tap, a reload after sign-in) gets the
-        // answer of the scan they just made. This runs before the "your turn" branch, so a
-        // repeat never pays twice even when the turn is already back with this child. It is a
-        // repeat only while that scan is the chore's latest event: after another completion
-        // or a move, a scan by the same child is a new turn.
-        if (childId) {
-          const recent = await client.query<{
-            id: string;
-            child_id: string;
-            completed_via: string;
-            completed_at: Date;
-            points_earned: number;
-            fresh: boolean;
-          }>(
-            `SELECT ta.id, tc.child_id, tc.completed_via, tc.completed_at, tc.points_earned,
+          // The same child scanning again (a second NFC tap, a reload after sign-in) gets the
+          // answer of the scan they just made. This runs before the "your turn" branch, so a
+          // repeat never pays twice even when the turn is already back with this child. It is a
+          // repeat only while that scan is the chore's latest event: after another completion
+          // or a move, a scan by the same child is a new turn.
+          if (childId) {
+            const recent = await client.query<{
+              id: string;
+              child_id: string;
+              completed_via: string;
+              completed_at: Date;
+              points_earned: number;
+              fresh: boolean;
+            }>(
+              `SELECT ta.id, tc.child_id, tc.completed_via, tc.completed_at, tc.points_earned,
                     tc.completed_at > NOW() - make_interval(secs => $2)
                       AND NOT EXISTS (SELECT 1 FROM task_turn_moves m
                                       WHERE m.task_id = $1 AND m.moved_at > tc.completed_at) AS fresh
@@ -289,26 +296,26 @@ export default async function turnRoutes(fastify: FastifyInstance) {
              JOIN task_assignments ta ON ta.id = tc.task_assignment_id
              WHERE ta.task_id = $1
              ORDER BY tc.completed_at DESC LIMIT 1`,
-            [task.id, UNDO_COMPLETE_SECONDS],
-          );
-          const last = recent.rows[0];
-          if (last?.fresh && last.child_id === childId && last.completed_via === 'scan') {
-            const result: ScanResult = {
-              result: 'done',
-              taskId: task.id,
-              taskName: task.name,
-              assignmentId: last.id,
-              pointsEarned: last.points_earned,
-              completedAt: new Date(last.completed_at).toISOString(),
-              nextChildName: turn?.name ?? null,
-            };
-            return { result, completedAssignmentId: null };
+              [task.id, UNDO_COMPLETE_SECONDS],
+            );
+            const last = recent.rows[0];
+            if (last?.fresh && last.child_id === childId && last.completed_via === 'scan') {
+              const result: ScanResult = {
+                result: 'done',
+                taskId: task.id,
+                taskName: task.name,
+                assignmentId: last.id,
+                pointsEarned: last.points_earned,
+                completedAt: new Date(last.completed_at).toISOString(),
+                nextChildName: turn?.name ?? null,
+              };
+              return { result, completedAssignmentId: null };
+            }
           }
-        }
 
-        if (childId && turn && turn.child_id === childId) {
-          const completion = await client.query<{ completed_at: Date }>(
-            `WITH done AS (
+          if (childId && turn && turn.child_id === childId) {
+            const completion = await client.query<{ completed_at: Date }>(
+              `WITH done AS (
                UPDATE task_assignments SET status = 'completed'
                WHERE id = $1 AND status = 'pending' RETURNING id
              )
@@ -316,53 +323,55 @@ export default async function turnRoutes(fastify: FastifyInstance) {
                (household_id, task_assignment_id, child_id, completed_at, points_earned, completed_via)
              SELECT $2, done.id, $3, NOW(), $4, 'scan' FROM done
              RETURNING completed_at`,
-            [turn.id, task.household_id, childId, points],
-          );
-          if (completion.rows.length === 0) throw new ScanError(409, 'The turn has already moved');
-          await dateDoneTurnToday(client, turn.id);
-          const next = await passTurn(client, task.household_id, task.id, childId);
+              [turn.id, task.household_id, childId, points],
+            );
+            if (completion.rows.length === 0)
+              throw new ScanError(409, 'The turn has already moved');
+            await dateDoneTurnToday(client, turn.id);
+            const next = await passTurn(client, task.household_id, task.id, childId);
+            const result: ScanResult = {
+              result: 'done',
+              taskId: task.id,
+              taskName: task.name,
+              assignmentId: turn.id,
+              pointsEarned: points,
+              completedAt: new Date(completion.rows[0].completed_at).toISOString(),
+              nextChildName: next?.name ?? null,
+            };
+            return { result, completedAssignmentId: turn.id };
+          }
+
           const result: ScanResult = {
-            result: 'done',
+            result: 'not_your_turn',
             taskId: task.id,
             taskName: task.name,
-            assignmentId: turn.id,
-            pointsEarned: points,
-            completedAt: new Date(completion.rows[0].completed_at).toISOString(),
-            nextChildName: next?.name ?? null,
+            points,
+            turnChildName: turn?.name ?? null,
+            youAreNext:
+              !!childId &&
+              !!turn &&
+              nextInLine(
+                (await turnOrder(client, task.id)).map((c) => c.childId),
+                turn.child_id,
+              ) === childId,
           };
-          return { result, completedAssignmentId: turn.id };
+          return { result, completedAssignmentId: null };
+        });
+
+        if (outcome.completedAssignmentId) {
+          const assignmentId = outcome.completedAssignmentId;
+          pushService
+            .notifyAssignmentDone(assignmentId, userId)
+            .catch((err) => fastify.log.error({ err, assignmentId }, 'Done notification failed'));
         }
-
-        const result: ScanResult = {
-          result: 'not_your_turn',
-          taskId: task.id,
-          taskName: task.name,
-          points,
-          turnChildName: turn?.name ?? null,
-          youAreNext:
-            !!childId &&
-            !!turn &&
-            nextInLine(
-              (await turnOrder(client, task.id)).map((c) => c.childId),
-              turn.child_id,
-            ) === childId,
-        };
-        return { result, completedAssignmentId: null };
-      });
-
-      if (outcome.completedAssignmentId) {
-        const assignmentId = outcome.completedAssignmentId;
-        pushService
-          .notifyAssignmentDone(assignmentId, userId)
-          .catch((err) => fastify.log.error({ err, assignmentId }, 'Done notification failed'));
+        return reply.send(outcome.result);
+      } catch (error) {
+        if (error instanceof ScanError) {
+          return reply.code(error.statusCode).send({ error: error.message });
+        }
+        fastify.log.error(error, 'Scan failed');
+        return reply.code(500).send({ error: 'Scan failed' });
       }
-      return reply.send(outcome.result);
-    } catch (error) {
-      if (error instanceof ScanError) {
-        return reply.code(error.statusCode).send({ error: error.message });
-      }
-      fastify.log.error(error, 'Scan failed');
-      return reply.code(500).send({ error: 'Scan failed' });
-    }
-  });
+    },
+  );
 }
