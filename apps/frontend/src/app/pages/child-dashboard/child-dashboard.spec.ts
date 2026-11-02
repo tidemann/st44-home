@@ -13,6 +13,7 @@ describe('ChildDashboardComponent', () => {
   let taskDate: (offset: number) => string;
   let hold: Promise<void> | null = null;
   let rewardsHold: Promise<void> | null = null;
+  let turnsAnswer: { turns: unknown[]; myChildId: string } = { turns: [], myChildId: 'c-mathea' };
 
   const task = (id: string, taskName: string, offset: number, status: string) => ({
     id,
@@ -25,6 +26,19 @@ describe('ChildDashboardComponent', () => {
   });
 
   const api = {
+    post: vi.fn(async (endpoint: string) =>
+      endpoint.endsWith('/complete')
+        ? {
+            taskAssignment: {
+              id: 't1',
+              status: 'completed',
+              completedAt: '2026-11-01T15:48:00.000Z',
+            },
+            completion: { id: 'k1', pointsEarned: 5, completedAt: '2026-11-01T15:48:00.000Z' },
+            turn: { nextChildName: 'Jonas' },
+          }
+        : {},
+    ),
     get: vi.fn(async (endpoint: string) => {
       if (endpoint.startsWith('/children/me/tasks')) {
         if (hold) await hold;
@@ -38,6 +52,7 @@ describe('ChildDashboardComponent', () => {
             : [task('a1', 'Mate katten', 0, 'pending'), task('a2', 'Dekke bordet', 0, 'completed')],
         };
       }
+      if (endpoint.startsWith('/children/me/turns')) return turnsAnswer;
       if (endpoint.startsWith('/children/me/rewards')) {
         if (rewardsHold) await rewardsHold;
         return { rewards: [], pointsBalance: 35 };
@@ -69,6 +84,7 @@ describe('ChildDashboardComponent', () => {
     taskDate = (offset) => isoDay(offset);
     hold = null;
     rewardsHold = null;
+    turnsAnswer = { turns: [], myChildId: 'c-mathea' };
     api.get.mockClear();
 
     await TestBed.configureTestingModule({
@@ -193,5 +209,63 @@ describe('ChildDashboardComponent', () => {
     expect(el.querySelector('.bandhold')).toBeNull();
     expect(el.querySelector('.hero')!.textContent).toBe('35');
     expect(el.querySelector('h1.page-title')!.textContent).toBe('Mathea');
+  });
+
+  // ST-2075 «Etter tur»: drawings 4, 5 and 6 on ST-2066 (approved on ST-2054)
+  const dishwasher = (turnChildId: string) => ({
+    taskId: 'task-1',
+    name: 'Tømme oppvaskmaskinen',
+    points: 5,
+    assignmentId: 't1',
+    order: [
+      { childId: 'c-mathea', name: 'Mathea' },
+      { childId: 'c-jonas', name: 'Jonas' },
+      { childId: 'c-emma', name: 'Emma' },
+    ],
+    turnChildId,
+    scanCode: null,
+  });
+
+  it('«Din tur»: a normal row with the normal tick and «Ferdig», next child on the second line', async () => {
+    turnsAnswer = { turns: [dishwasher('c-mathea')], myChildId: 'c-mathea' };
+    const el = await render();
+
+    expect(el.textContent).toContain('Din tur');
+    expect(rowTitles(el)[0]).toBe('Tømme oppvaskmaskinen');
+    const row = el.querySelector('app-chore-row')!;
+    expect(row.querySelector('.cb')).not.toBeNull();
+    expect(row.querySelector('.rm')!.textContent!.trim()).toBe('neste: Jonas · 5 poeng');
+    expect(row.querySelector('button.rbtn')!.textContent!.trim()).toBe('Ferdig');
+  });
+
+  it('«Etter tur»: someone else has the turn, no tick, and the child is told they are next', async () => {
+    turnsAnswer = { turns: [dishwasher('c-emma')], myChildId: 'c-mathea' };
+    const el = await render();
+
+    expect(el.textContent).toContain('Etter tur');
+    const row = el.querySelector('app-chore-row')!;
+    expect(row.querySelector('.cb')).toBeNull();
+    expect(row.querySelector('button.rbtn')).toBeNull();
+    expect(row.querySelector('.rm')!.textContent!.replace(/\s+/g, ' ').trim()).toBe(
+      'Emma har turen · du er nestemann',
+    );
+    expect(row.querySelector('.pts')!.textContent!.trim()).toBe('5 p');
+  });
+
+  it('the tick on «Din tur» opens «Haket av» and says who has the turn now', async () => {
+    turnsAnswer = { turns: [dishwasher('c-mathea')], myChildId: 'c-mathea' };
+    const el = await render();
+    (el.querySelector('app-chore-row button.rbtn') as HTMLButtonElement).click();
+    for (let i = 0; i < 3; i++) {
+      fixture.detectChanges();
+      await fixture.whenStable();
+    }
+
+    expect(api.post).toHaveBeenCalledWith('/assignments/t1/complete', {});
+    const moment = el.querySelector('app-tick-moment')!;
+    expect(moment.querySelector('.ymeta')!.textContent).toMatch(/^Haket av \d\d\.\d\d$/);
+    const inset = moment.querySelector('.inset.turn')!;
+    expect(inset.querySelector('.rm')!.textContent!.trim()).toBe('Turen gikk videre til');
+    expect(inset.querySelector('.rt')!.textContent!.trim()).toBe('Jonas');
   });
 });
