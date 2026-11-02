@@ -288,10 +288,24 @@ describe('Chores with sub-tasks', () => {
       { name: 'Re opp sengen', points: 5 },
       { name: 'Rydd pulten', points: 15 },
     ]);
+    const byParent = await api('POST', `/api/assignments/${assignmentId}/submit`, parentToken);
+    assert.strictEqual(byParent.status, 403);
     await api('POST', `/api/assignments/${assignmentId}/submit`, childToken);
     const approved = await api('POST', `/api/assignments/${assignmentId}/complete`, parentToken);
     assert.strictEqual(approved.status, 200);
     assert.strictEqual(approved.body.completion.pointsEarned, 0);
+
+    // Undoing the approval puts the chore back to waiting for a parent, not back to the child
+    const undone = await api('POST', `/api/assignments/${assignmentId}/uncomplete`, parentToken);
+    assert.strictEqual(undone.status, 200, JSON.stringify(undone.body));
+    const list = await api(
+      'GET',
+      `/api/households/${householdId}/assignments?date=${today}&days=1`,
+      parentToken,
+    );
+    const row = list.body.assignments.find((a: { id: string }) => a.id === assignmentId);
+    assert.strictEqual(row.status, 'pending');
+    assert.ok(row.submittedAt);
   });
 
   test("another child cannot tick or send someone else's chore", async () => {

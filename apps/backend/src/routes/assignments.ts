@@ -936,23 +936,29 @@ export default async function assignmentRoutes(fastify: FastifyInstance) {
           }
         }
 
-        // A chore with sub-tasks (ST-2074): the child finishes it only with every sub-task done;
-        // a parent's approval gives the points of the done ones ("not possible" and not done: 0)
-        const subtasks =
-          (await loadAssignmentSubtasks(pool, [assignmentId])).get(assignmentId) ?? [];
-        let pointsEarned: number = assignment.points;
-        if (subtasks.length > 0) {
-          const summary = summarizeSubtasks(subtasks);
-          if (userRole === 'child' && !summary.allDone) {
-            return reply.code(400).send({
-              error: 'Every sub-task must be done; send the chore for approval instead',
-            });
-          }
-          pointsEarned = summary.earned;
-        }
-
         // Use transaction to ensure atomicity
         const result = await withTransaction(pool, async (client) => {
+          // Lock the assignment so a sub-task change cannot land between reading and paying
+          await client.query('SELECT id FROM task_assignments WHERE id = $1 FOR UPDATE', [
+            assignmentId,
+          ]);
+
+          // A chore with sub-tasks (ST-2074): the child finishes it only with every sub-task done;
+          // a parent's approval gives the points of the done ones ("not possible" and not done: 0)
+          const subtasks =
+            (await loadAssignmentSubtasks(client, [assignmentId])).get(assignmentId) ?? [];
+          let pointsEarned: number = assignment.points;
+          if (subtasks.length > 0) {
+            const summary = summarizeSubtasks(subtasks);
+            if (userRole === 'child' && !summary.allDone) {
+              throw new TransactionValidationError(
+                400,
+                'Every sub-task must be done; send the chore for approval instead',
+              );
+            }
+            pointsEarned = summary.earned;
+          }
+
           // Update assignment status
           const updateResult = await client.query(
             `UPDATE task_assignments
@@ -1364,22 +1370,33 @@ export default async function assignmentRoutes(fastify: FastifyInstance) {
           return reply.code(404).send({ error: 'Sub-task not found on this chore' });
         }
 
-        if (state === null) {
-          await pool.query(
-            'DELETE FROM assignment_subtask_states WHERE assignment_id = $1 AND subtask_id = $2',
-            [assignmentId, subtaskId],
+        const subtasks = await withTransaction(pool, async (client) => {
+          // Same lock as /complete, so a tick cannot land while a parent approves
+          const locked = await client.query<{ status: string; submitted_at: Date | null }>(
+            'SELECT status, submitted_at FROM task_assignments WHERE id = $1 FOR UPDATE',
+            [assignmentId],
           );
-        } else {
-          await pool.query(
-            `INSERT INTO assignment_subtask_states (assignment_id, subtask_id, state, updated_at)
-             VALUES ($1, $2, $3, NOW())
-             ON CONFLICT (assignment_id, subtask_id)
-             DO UPDATE SET state = EXCLUDED.state, updated_at = NOW()`,
-            [assignmentId, subtaskId, state],
-          );
-        }
+          if (locked.rows[0]?.status !== 'pending' || locked.rows[0]?.submitted_at) {
+            throw new TransactionValidationError(400, 'This chore is no longer open');
+          }
 
-        const subtasks = (await loadAssignmentSubtasks(pool, [assignmentId])).get(assignmentId);
+          if (state === null) {
+            await client.query(
+              'DELETE FROM assignment_subtask_states WHERE assignment_id = $1 AND subtask_id = $2',
+              [assignmentId, subtaskId],
+            );
+          } else {
+            await client.query(
+              `INSERT INTO assignment_subtask_states (assignment_id, subtask_id, state, updated_at)
+               VALUES ($1, $2, $3, NOW())
+               ON CONFLICT (assignment_id, subtask_id)
+               DO UPDATE SET state = EXCLUDED.state, updated_at = NOW()`,
+              [assignmentId, subtaskId, state],
+            );
+          }
+          return (await loadAssignmentSubtasks(client, [assignmentId])).get(assignmentId);
+        });
+
         return reply.code(200).send({ subtasks: subtasks ?? [] });
       } catch (error) {
         if (error instanceof z.ZodError) {
@@ -1387,6 +1404,9 @@ export default async function assignmentRoutes(fastify: FastifyInstance) {
             error: 'Validation failed',
             details: error.issues.map((e) => ({ path: e.path.join('.'), message: e.message })),
           });
+        }
+        if (error instanceof TransactionValidationError) {
+          return reply.code(error.statusCode).send({ error: error.message });
         }
         fastify.log.error(error, 'Failed to set sub-task state');
         return reply.code(500).send({ error: 'Failed to set sub-task state' });
@@ -1423,6 +1443,10 @@ export default async function assignmentRoutes(fastify: FastifyInstance) {
         });
         if ('code' in access) {
           return reply.code(access.code).send({ error: access.error });
+        }
+        // Only the child sends; a parent approves with /complete
+        if (access.assignment.role !== 'child') {
+          return reply.code(403).send({ error: 'Only the child can send a chore for approval' });
         }
 
         const result = await pool.query<{ submitted_at: Date }>(

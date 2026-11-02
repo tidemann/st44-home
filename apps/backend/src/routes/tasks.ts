@@ -27,6 +27,7 @@ import { generateAssignments } from '../services/assignment-generator.js';
 import { addWeeks, mondayOf, toIsoDate } from '../services/rotation.js';
 import type { PoolClient } from 'pg';
 import { loadTaskSubtasks, saveSubtasks } from '../services/subtasks.js';
+import { withTransaction } from '../utils/index.js';
 
 interface HouseholdParams {
   householdId: string;
@@ -349,27 +350,29 @@ async function createTask(request: FastifyRequest<CreateTaskRequest>, reply: Fas
         }
       : null;
 
-    const result = await db.query(
-      `INSERT INTO tasks (household_id, name, description, points, rule_type, rule_config, deadline)
-       VALUES ($1, $2, $3, $4, $5, $6, $7)
-       RETURNING id, household_id, name, description, points, rule_type, rule_config, deadline, active, created_at, updated_at`,
-      [
-        householdId,
-        name.trim(),
-        description || null,
-        points,
-        ruleType,
-        ruleConfigForStorage === null || Object.keys(ruleConfigForStorage).length === 0
-          ? null
-          : JSON.stringify(ruleConfigForStorage),
-        deadline,
-      ],
-    );
-
-    const createdTask = result.rows[0];
-    if (subtasks.length > 0) {
-      await saveSubtasks(db, householdId, createdTask.id, subtasks);
-    }
+    // The chore and its sub-tasks are saved together, or not at all
+    const createdTask = await withTransaction(db, async (client) => {
+      const result = await client.query(
+        `INSERT INTO tasks (household_id, name, description, points, rule_type, rule_config, deadline)
+         VALUES ($1, $2, $3, $4, $5, $6, $7)
+         RETURNING id, household_id, name, description, points, rule_type, rule_config, deadline, active, created_at, updated_at`,
+        [
+          householdId,
+          name.trim(),
+          description || null,
+          points,
+          ruleType,
+          ruleConfigForStorage === null || Object.keys(ruleConfigForStorage).length === 0
+            ? null
+            : JSON.stringify(ruleConfigForStorage),
+          deadline,
+        ],
+      );
+      if (subtasks.length > 0) {
+        await saveSubtasks(client, householdId, result.rows[0].id, subtasks);
+      }
+      return result.rows[0];
+    });
 
     // For single tasks, insert candidates into task_candidates table
     if (
@@ -676,19 +679,21 @@ async function updateTask(request: FastifyRequest<UpdateTaskRequest>, reply: Fas
       RETURNING id, household_id, name, description, points, rule_type, rule_config, created_at, updated_at
     `;
 
-    const result = await db.query(query, values);
+    // The chore and its sub-tasks are saved together, or not at all
+    const task = await withTransaction(db, async (client) => {
+      const result = await client.query(query, values);
+      if (result.rows.length > 0 && subtasks !== undefined) {
+        await saveSubtasks(client, householdId, taskId, subtasks);
+      }
+      return result.rows[0];
+    });
 
-    if (result.rows.length === 0) {
+    if (!task) {
       return reply.status(404).send({
         statusCode: 404,
         error: 'Not Found',
         message: 'Task not found in this household',
       });
-    }
-
-    const task = result.rows[0];
-    if (subtasks !== undefined) {
-      await saveSubtasks(db, householdId, taskId, subtasks);
     }
 
     // If assignedChildren was updated, update or create today's pending assignment

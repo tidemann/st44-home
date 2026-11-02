@@ -25,6 +25,7 @@ const assignmentSubtasksSchema = {
       state: { type: 'string', enum: ['done', 'not_possible'], nullable: true },
       updatedAt: { ...timestampSchema, nullable: true },
     },
+    required: ['id', 'name', 'points', 'position'],
   },
 } as const;
 
