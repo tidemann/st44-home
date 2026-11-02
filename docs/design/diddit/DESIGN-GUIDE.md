@@ -865,14 +865,14 @@ A 390 × 844 phone, single column, content scrolling between a fixed title area 
 
 Strokes do exist. There are exactly three kinds in the picture, and each one is doing a job:
 
-| Stroke                                              | Colour                | Width | Where                                                                                              |
-| --------------------------------------------------- | --------------------- | ----- | -------------------------------------------------------------------------------------------------- |
-| State — an overdue card                             | `#A43A16`             | 2px   | Screens 1 and 3                                                                                    |
-| Control boundary — an unchecked checkbox            | `#DFDFD9`             | 2px   | Every chore row                                                                                    |
-| Structural divider — above the nav, under a heading | `#DFDFD9`             | 1px   | All four light screens; "Hentet før"                                                               |
-| Layer boundary — the edge of a popup                | `#555E64` / `#17120A` | 1.5px | Not in the picture; approved 2026-10-11, see **Popups**                                            |
+| Stroke                                              | Colour                | Width | Where                                                                                                |
+| --------------------------------------------------- | --------------------- | ----- | ---------------------------------------------------------------------------------------------------- |
+| State — an overdue card                             | `#A43A16`             | 2px   | Screens 1 and 3                                                                                      |
+| Control boundary — an unchecked checkbox            | `#DFDFD9`             | 2px   | Every chore row                                                                                      |
+| Structural divider — above the nav, under a heading | `#DFDFD9`             | 1px   | All four light screens; "Hentet før"                                                                 |
+| Layer boundary — the edge of a popup                | `#555E64` / `#17120A` | 1.5px | Not in the picture; approved 2026-10-11, see **Popups**                                              |
 | Control boundary — an unselected filter chip        | `#555E64`             | 1.5px | Inside the chip (`box-shadow: inset 0 0 0 1.5px`). Not in the picture; approved 2026-11-02 (ST-2058) |
-| State — a row held under a finger (long press)      | `#17120A`             | 2px   | Inside the card (`box-shadow: inset 0 0 0 2px`). Not in the picture; approved 2026-10-18 (ST-1391) |
+| State — a row held under a finger (long press)      | `#17120A`             | 2px   | Inside the card (`box-shadow: inset 0 0 0 2px`). Not in the picture; approved 2026-10-18 (ST-1391)   |
 
 The checkbox stroke is the picture's colour. **A build draws it in `#555E64` instead** — one of the
 two approved exceptions listed under Accessibility. Same width, same shape, same position.
@@ -961,8 +961,9 @@ is why 14.21 on the reward and child cards is read as 14 and not 15. No value he
 - **Filter chips** ("Alle / Emma / Jonas / Mathea"): **33 px tall**, 9 px radius, 7 px apart,
   Meta 15 px. Selected is a `#15181C` fill with a white label; unselected is a white fill with
   `#15181C` label. Selection is a fill change, not a colour-only tint.
-- **The unselected chip has a 1.5 px `#555E64` edge, inside its 33 px** (`box-shadow: inset 0 0 0
-  1.5px`, so the chip does not grow; a 1.5 px border draws 1 px in Chromium). Not in the picture:
+- **The unselected chip has a 1.5 px `#555E64` edge, inside its 33 px**
+  (`box-shadow: inset 0 0 0 1.5px`, so the chip does not grow; a 1.5 px border draws 1 px in
+  Chromium). Not in the picture:
   the white chip on the paper is 1.08:1 (1.18:1 on white), and WCAG 2.2 1.4.11 asks 3:1 for a
   control's boundary. With the edge it is 6.12:1 against the paper and 6.62:1 against white.
   Approved by Stig on ST-2058, 2026-11-02. The selected chip keeps its ink fill and no edge. The
