@@ -939,6 +939,12 @@ export default async function assignmentRoutes(fastify: FastifyInstance) {
 
         // Use transaction to ensure atomicity
         const result = await withTransaction(pool, async (client) => {
+          // «Etter tur»: lock the task first, as a scan does, so a tick and a scan cannot both pass the turn
+          if (assignment.rule_type === 'next_in_line') {
+            await client.query('SELECT id FROM tasks WHERE id = $1 FOR UPDATE', [
+              assignment.task_id,
+            ]);
+          }
           // Lock the assignment so a sub-task change cannot land between reading and paying
           await client.query('SELECT id FROM task_assignments WHERE id = $1 FOR UPDATE', [
             assignmentId,
@@ -1120,6 +1126,13 @@ export default async function assignmentRoutes(fastify: FastifyInstance) {
         }
 
         const result = await withTransaction(pool, async (client) => {
+          // «Etter tur»: lock the task first, as a scan does, so the turn cannot move during the undo
+          await client.query(
+            `SELECT t.id FROM tasks t JOIN task_assignments ta ON ta.task_id = t.id
+             WHERE ta.id = $1 AND t.rule_type = 'next_in_line'
+             FOR UPDATE OF t`,
+            [assignmentId],
+          );
           // Lock the assignment so a double tap cannot undo twice
           const lockedResult = await client.query(
             `SELECT status FROM task_assignments WHERE id = $1 FOR UPDATE`,

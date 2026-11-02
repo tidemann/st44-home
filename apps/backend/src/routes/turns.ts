@@ -22,6 +22,12 @@ const householdParams = z.object({ householdId: z.string().uuid() });
 const taskParams = z.object({ householdId: z.string().uuid(), taskId: z.string().uuid() });
 const codeParams = z.object({ code: z.string().max(32) });
 
+/** The normalised code from the route, or null when it cannot be a scan code (a 404) */
+function routeCode(params: unknown): string | null {
+  const parsed = codeParams.safeParse(params);
+  return parsed.success ? normalizeScanCode(parsed.data.code) : null;
+}
+
 class ScanError extends Error {
   constructor(
     public statusCode: number,
@@ -202,7 +208,7 @@ export default async function turnRoutes(fastify: FastifyInstance) {
    * No sign-in needed: whoever holds the card can read its name anyway.
    */
   fastify.get('/api/scan/:code', async (request, reply) => {
-    const code = normalizeScanCode(codeParams.parse(request.params).code);
+    const code = routeCode(request.params);
     if (!code) return reply.code(404).send({ error: 'Unknown code' });
     const result = await pool.query<{ name: string }>(
       `SELECT name FROM tasks WHERE scan_code = $1 AND active = true AND rule_type = 'next_in_line'`,
@@ -218,7 +224,7 @@ export default async function turnRoutes(fastify: FastifyInstance) {
    * moves on (the same as the tick in the app). Someone else's turn: nothing changes.
    */
   fastify.post('/api/scan/:code', { preHandler: [authenticateUser] }, async (request, reply) => {
-    const code = normalizeScanCode(codeParams.parse(request.params).code);
+    const code = routeCode(request.params);
     if (!code) return reply.code(404).send({ error: 'Unknown code' });
     const userId = request.user?.userId;
 
@@ -261,6 +267,45 @@ export default async function turnRoutes(fastify: FastifyInstance) {
         const turn = open.rows[0];
         const points = task.points ?? 0;
 
+        // The same child scanning again (a second NFC tap, a reload after sign-in) gets the
+        // answer of the scan they just made. This runs before the "your turn" branch, so a
+        // repeat never pays twice even when the turn is already back with this child. It is a
+        // repeat only while that scan is the chore's latest event: after another completion
+        // or a move, a scan by the same child is a new turn.
+        if (childId) {
+          const recent = await client.query<{
+            id: string;
+            child_id: string;
+            completed_via: string;
+            completed_at: Date;
+            points_earned: number;
+            fresh: boolean;
+          }>(
+            `SELECT ta.id, tc.child_id, tc.completed_via, tc.completed_at, tc.points_earned,
+                    tc.completed_at > NOW() - make_interval(secs => $2)
+                      AND NOT EXISTS (SELECT 1 FROM task_turn_moves m
+                                      WHERE m.task_id = $1 AND m.moved_at > tc.completed_at) AS fresh
+             FROM task_completions tc
+             JOIN task_assignments ta ON ta.id = tc.task_assignment_id
+             WHERE ta.task_id = $1
+             ORDER BY tc.completed_at DESC LIMIT 1`,
+            [task.id, UNDO_COMPLETE_SECONDS],
+          );
+          const last = recent.rows[0];
+          if (last?.fresh && last.child_id === childId && last.completed_via === 'scan') {
+            const result: ScanResult = {
+              result: 'done',
+              taskId: task.id,
+              taskName: task.name,
+              assignmentId: last.id,
+              pointsEarned: last.points_earned,
+              completedAt: new Date(last.completed_at).toISOString(),
+              nextChildName: turn?.name ?? null,
+            };
+            return { result, completedAssignmentId: null };
+          }
+        }
+
         if (childId && turn && turn.child_id === childId) {
           const completion = await client.query<{ completed_at: Date }>(
             `WITH done AS (
@@ -273,6 +318,7 @@ export default async function turnRoutes(fastify: FastifyInstance) {
              RETURNING completed_at`,
             [turn.id, task.household_id, childId, points],
           );
+          if (completion.rows.length === 0) throw new ScanError(409, 'The turn has already moved');
           await dateDoneTurnToday(client, turn.id);
           const next = await passTurn(client, task.household_id, task.id, childId);
           const result: ScanResult = {
@@ -285,37 +331,6 @@ export default async function turnRoutes(fastify: FastifyInstance) {
             nextChildName: next?.name ?? null,
           };
           return { result, completedAssignmentId: turn.id };
-        }
-
-        // The same child scanning again (a second NFC tap, a reload after sign-in) gets the
-        // answer of the scan they just made, not "it is someone else's turn"
-        if (childId) {
-          const recent = await client.query<{
-            id: string;
-            completed_at: Date;
-            points_earned: number;
-          }>(
-            `SELECT ta.id, tc.completed_at, tc.points_earned
-             FROM task_completions tc
-             JOIN task_assignments ta ON ta.id = tc.task_assignment_id
-             WHERE ta.task_id = $1 AND tc.child_id = $2 AND tc.completed_via = 'scan'
-               AND tc.completed_at > NOW() - make_interval(secs => $3)
-             ORDER BY tc.completed_at DESC LIMIT 1`,
-            [task.id, childId, UNDO_COMPLETE_SECONDS],
-          );
-          const last = recent.rows[0];
-          if (last) {
-            const result: ScanResult = {
-              result: 'done',
-              taskId: task.id,
-              taskName: task.name,
-              assignmentId: last.id,
-              pointsEarned: last.points_earned,
-              completedAt: new Date(last.completed_at).toISOString(),
-              nextChildName: turn?.name ?? null,
-            };
-            return { result, completedAssignmentId: null };
-          }
         }
 
         const result: ScanResult = {

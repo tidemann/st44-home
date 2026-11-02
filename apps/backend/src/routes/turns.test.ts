@@ -394,4 +394,49 @@ describe('«Etter tur» chores (ST-2075)', () => {
     assert.strictEqual((await turnOf()).turnChildId, mathea);
     assert.strictEqual(await moves(), before + 1);
   });
+
+  test('a repeat scan never pays twice; after a move the same child scans a new turn', async () => {
+    const moveTo = (childId: string) =>
+      app.inject({
+        method: 'POST',
+        url: `/api/households/${householdId}/tasks/${taskId}/turn`,
+        headers: auth(parentToken),
+        payload: { childId },
+      });
+    const scan = async () =>
+      JSON.parse(
+        (
+          await app.inject({
+            method: 'POST',
+            url: `/api/scan/${scanCode}`,
+            headers: auth(emmaToken),
+          })
+        ).body,
+      );
+
+    const start = await balance(emma);
+    await moveTo(emma);
+    assert.strictEqual((await scan()).result, 'done');
+    assert.strictEqual(await balance(emma), start + 5);
+
+    // The turn is back with Emma, but her scan is still the chore's latest event: a repeat
+    await pool.query(
+      `UPDATE task_assignments SET child_id = $1, date = CURRENT_DATE + 30
+       WHERE task_id = $2 AND status = 'pending'`,
+      [emma, taskId],
+    );
+    assert.strictEqual((await scan()).result, 'done');
+    assert.strictEqual(await balance(emma), start + 5);
+
+    // A parent's move after the scan makes the next scan a new turn
+    await moveTo(mathea);
+    await moveTo(emma);
+    assert.strictEqual((await scan()).result, 'done');
+    assert.strictEqual(await balance(emma), start + 10);
+  });
+
+  test('a code that is too long is a 404, not a 500', async () => {
+    const res = await app.inject({ method: 'GET', url: `/api/scan/${'A'.repeat(40)}` });
+    assert.strictEqual(res.statusCode, 404);
+  });
 });
