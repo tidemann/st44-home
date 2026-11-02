@@ -156,16 +156,18 @@ CREATE TABLE IF NOT EXISTS tasks (
   name VARCHAR(255) NOT NULL,
   description TEXT,
   points INTEGER DEFAULT 10,
-  rule_type VARCHAR(50) NOT NULL CHECK (rule_type IN ('weekly_rotation', 'repeating', 'daily', 'single')),
+  rule_type VARCHAR(50) NOT NULL CHECK (rule_type IN ('weekly_rotation', 'repeating', 'daily', 'single', 'next_in_line')),
   rule_config JSONB,
   deadline TIMESTAMP WITH TIME ZONE,
   active BOOLEAN NOT NULL DEFAULT true,
+  scan_code VARCHAR(16), -- Added in migration 058: code in the «Etter tur» QR/NFC link
   created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
 CREATE INDEX IF NOT EXISTS idx_tasks_household ON tasks(household_id);
 CREATE INDEX IF NOT EXISTS idx_tasks_active ON tasks(household_id, active);
+CREATE UNIQUE INDEX IF NOT EXISTS idx_tasks_scan_code ON tasks(scan_code) WHERE scan_code IS NOT NULL;
 
 -- Task candidates table (children who can accept/decline single tasks)
 CREATE TABLE IF NOT EXISTS task_candidates (
@@ -225,11 +227,25 @@ CREATE TABLE IF NOT EXISTS task_completions (
   task_assignment_id UUID NOT NULL REFERENCES task_assignments(id) ON DELETE CASCADE,
   child_id UUID NOT NULL REFERENCES children(id) ON DELETE CASCADE,
   completed_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-  points_earned INTEGER NOT NULL
+  points_earned INTEGER NOT NULL,
+  completed_via VARCHAR(10) CHECK (completed_via IS NULL OR completed_via IN ('app', 'scan')) -- migration 058
 );
 
 CREATE INDEX IF NOT EXISTS idx_task_completions_household ON task_completions(household_id);
 CREATE INDEX IF NOT EXISTS idx_task_completions_child ON task_completions(child_id);
+
+-- «Etter tur» turns moved by a parent (migration 058)
+CREATE TABLE IF NOT EXISTS task_turn_moves (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  household_id UUID NOT NULL REFERENCES households(id) ON DELETE CASCADE,
+  task_id UUID NOT NULL REFERENCES tasks(id) ON DELETE CASCADE,
+  from_child_id UUID REFERENCES children(id) ON DELETE SET NULL,
+  to_child_id UUID REFERENCES children(id) ON DELETE SET NULL,
+  moved_by UUID REFERENCES users(id) ON DELETE SET NULL,
+  moved_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE INDEX IF NOT EXISTS idx_task_turn_moves_task ON task_turn_moves(task_id, moved_at DESC);
 
 -- Push subscriptions (migration 052): one row per phone/browser with notifications on
 CREATE TABLE IF NOT EXISTS push_subscriptions (
