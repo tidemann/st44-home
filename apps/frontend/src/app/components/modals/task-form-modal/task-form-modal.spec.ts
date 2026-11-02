@@ -4,6 +4,7 @@ import { TaskFormModal } from './task-form-modal';
 import { FormArray } from '@angular/forms';
 import type { Task, Child } from '@st44/types';
 import { HouseholdDayService } from '../../../services/household-day.service';
+import { TurnService } from '../../../services/turn.service';
 
 describe('TaskFormModal', () => {
   let component: TaskFormModal;
@@ -40,12 +41,17 @@ describe('TaskFormModal', () => {
   };
 
   let mockDay: { thisWeekChildId: ReturnType<typeof vi.fn> };
+  let mockTurns: { turns: ReturnType<typeof vi.fn> };
 
   beforeEach(async () => {
     mockDay = { thisWeekChildId: vi.fn().mockResolvedValue(null) };
+    mockTurns = { turns: vi.fn().mockResolvedValue([]) };
     await TestBed.configureTestingModule({
       imports: [TaskFormModal],
-      providers: [{ provide: HouseholdDayService, useValue: mockDay }],
+      providers: [
+        { provide: HouseholdDayService, useValue: mockDay },
+        { provide: TurnService, useValue: mockTurns },
+      ],
     }).compileComponents();
 
     fixture = TestBed.createComponent(TaskFormModal);
@@ -83,12 +89,13 @@ describe('TaskFormModal', () => {
     });
 
     it('should have all task type options', () => {
-      expect(component.taskTypes.length).toBe(4);
+      expect(component.taskTypes.length).toBe(5);
       expect(component.taskTypes.map((t) => t.value)).toEqual([
         'daily',
         'repeating',
         'weekly_rotation',
         'single',
+        'next_in_line',
       ]);
     });
 
@@ -460,6 +467,50 @@ describe('TaskFormModal', () => {
             assignedChildren: expect.arrayContaining(['child-1', 'child-2']),
           }),
         }),
+      );
+    });
+
+    it('ST-2075: «Etter tur» sends the children in turn order, and needs two', () => {
+      const formSubmittedSpy = vi.spyOn(component.formSubmitted, 'emit');
+      component['form'].patchValue({
+        name: 'Tømme oppvaskmaskinen',
+        points: 5,
+        ruleType: 'next_in_line',
+      });
+      component['setRotationOrder'](['child-2']);
+      component.onSubmit();
+      expect(formSubmittedSpy).not.toHaveBeenCalled();
+
+      component['setRotationOrder'](['child-2', 'child-1']);
+      component.onSubmit();
+      expect(formSubmittedSpy).toHaveBeenLastCalledWith(
+        expect.objectContaining({
+          ruleType: 'next_in_line',
+          ruleConfig: { assignedChildren: ['child-2', 'child-1'] },
+        }),
+      );
+    });
+
+    it('ST-2075: editing «Etter tur» opens with the child who has the turn on top', async () => {
+      fixture.componentRef.setInput('children', [
+        ...mockChildren,
+        { ...mockChildren[0], id: 'child-3', name: 'Kim' },
+      ]);
+      mockTurns.turns.mockResolvedValue([{ taskId: 'task-1', turnChildId: 'child-2' }]);
+      fixture.componentRef.setInput('task', {
+        ...mockTask,
+        ruleType: 'next_in_line',
+        ruleConfig: { assignedChildren: ['child-1', 'child-2', 'child-3'] },
+      });
+      fixture.componentRef.setInput('mode', 'edit');
+      fixture.detectChanges();
+
+      await vi.waitFor(() =>
+        expect(component['form'].get('assignedChildren')?.value).toEqual([
+          'child-2',
+          'child-3',
+          'child-1',
+        ]),
       );
     });
 
