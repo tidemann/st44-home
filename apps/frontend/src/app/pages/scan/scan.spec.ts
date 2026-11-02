@@ -46,7 +46,9 @@ describe('ScanPage', () => {
     };
     const text = await render();
     expect(text).toContain('Det er Emmas tur');
-    expect(text).toContain('Du er logget inn som voksen. Bare Emma kan hake av oppgaven med koden.');
+    expect(text).toContain(
+      'Du er logget inn som voksen. Bare Emma kan hake av oppgaven med koden.',
+    );
     expect(text).toContain('Til oppgavene');
     expect(text).not.toContain('haker den av når oppgaven er gjort');
   });
