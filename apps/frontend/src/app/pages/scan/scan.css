@@ -35,6 +35,7 @@
 .scan-facts {
   margin: 16px 0 0;
   padding-left: 18px;
+  list-style: disc;
   font-family: var(--font-text);
   font-size: 13px;
   font-weight: 500;

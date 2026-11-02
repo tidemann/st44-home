@@ -146,13 +146,42 @@
   image-rendering: pixelated;
 }
 
+/* Drawing 13: each step has its number in a small grey circle */
 .tp-steps {
   margin: 12px 0;
-  padding-left: 20px;
+  padding: 0;
+  list-style: none;
+  counter-reset: tp-step;
   font-family: var(--font-text);
   font-size: 12px;
   line-height: 1.5;
   color: var(--text-muted);
+}
+
+.tp-steps li {
+  position: relative;
+  padding-left: 26px;
+  counter-increment: tp-step;
+}
+
+.tp-steps li + li {
+  margin-top: 6px;
+}
+
+.tp-steps li::before {
+  content: counter(tp-step);
+  position: absolute;
+  top: 1px;
+  left: 0;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--bg);
+  color: var(--ink);
+  font-size: 10px;
+  font-weight: 600;
+  line-height: 16px;
+  text-align: center;
 }
 
 .tp-steps b {
