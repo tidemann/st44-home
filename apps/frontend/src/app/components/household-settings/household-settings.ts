@@ -5,6 +5,7 @@ import {
   inject,
   OnInit,
   ChangeDetectionStrategy,
+  LOCALE_ID,
 } from '@angular/core';
 import { Router } from '@angular/router';
 import { HouseholdService } from '../../services/household.service';
@@ -24,27 +25,12 @@ export interface SentInvitation {
   expiresAt: string;
 }
 
-const MONTHS = [
-  'jan.',
-  'feb.',
-  'mars',
-  'apr.',
-  'mai',
-  'juni',
-  'juli',
-  'aug.',
-  'sep.',
-  'okt.',
-  'nov.',
-  'des.',
-];
-
-/** «9. nov.», or «i dag» for today */
-export function shortDay(iso: string, now: Date = new Date()): string {
+/** «9. nov.» in the build's own language, or «i dag» for today */
+export function shortDay(iso: string, now: Date = new Date(), locale = 'nb'): string {
   const d = new Date(iso);
   if (Number.isNaN(d.getTime())) return '';
   if (d.toDateString() === now.toDateString()) return $localize`:@@invitations.today:i dag`;
-  return `${d.getDate()}. ${MONTHS[d.getMonth()]}`;
+  return new Intl.DateTimeFormat(locale, { day: 'numeric', month: 'short' }).format(d);
 }
 
 /**
@@ -64,6 +50,7 @@ export class HouseholdSettingsComponent implements OnInit {
   private readonly householdService = inject(HouseholdService);
   private readonly invitationService = inject(InvitationService);
   private readonly confirmDialog = inject(ConfirmDialogService);
+  private readonly locale = inject(LOCALE_ID);
 
   protected readonly title = $localize`:@@invitations.title:Invitasjoner til husstanden`;
   protected readonly householdId = signal<string | null>(null);
@@ -191,6 +178,9 @@ export class HouseholdSettingsComponent implements OnInit {
       this.copied.set(true);
     } catch {
       this.copied.set(false);
+      this.announce.set(
+        $localize`:@@invitations.copyFailed:Vi fikk ikke kopiert lenken. Merk den og kopier den selv.`,
+      );
     }
   }
 
@@ -250,8 +240,8 @@ export class HouseholdSettingsComponent implements OnInit {
 
   protected detailLine(invitation: SentInvitation): string {
     const role = this.roleLabel(invitation.role);
-    const sent = shortDay(invitation.createdAt);
-    const until = shortDay(invitation.expiresAt);
+    const sent = shortDay(invitation.createdAt, new Date(), this.locale);
+    const until = shortDay(invitation.expiresAt, new Date(), this.locale);
     return invitation.expired
       ? $localize`:@@invitations.detailExpired:${role}:role: · sendt ${sent}:sent: · utløp ${until}:until:`
       : $localize`:@@invitations.detailPending:${role}:role: · sendt ${sent}:sent: · utløper ${until}:until:`;

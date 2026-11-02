@@ -227,5 +227,7 @@ describe('HouseholdSettingsComponent («Invitasjoner til husstanden»)', () => {
     const now = new Date(2026, 10, 2, 12);
     expect(shortDay(new Date(2026, 10, 9, 10).toISOString(), now)).toBe('9. nov.');
     expect(shortDay(new Date(2026, 10, 2, 8).toISOString(), now)).toBe('i dag');
+    expect(shortDay(new Date(2026, 9, 26, 10).toISOString(), now, 'no')).toBe('26. okt.');
+    expect(shortDay(new Date(2026, 10, 9, 10).toISOString(), now, 'en')).toBe('Nov 9');
   });
 });
