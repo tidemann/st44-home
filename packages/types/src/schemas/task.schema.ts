@@ -2,6 +2,7 @@
  * Task Schema - Task templates and rules
  */
 import { z } from '../generators/openapi.generator.js';
+import { MAX_SUBTASKS, SubtaskInputSchema, SubtaskSchema } from './subtask.schema.js';
 
 /**
  * Task Rule Types
@@ -49,10 +50,11 @@ export const TaskSchema = z.object({
   householdId: z.string().uuid(),
   name: z.string().min(1).max(255),
   description: z.string().nullable(),
-  points: z.number().int().min(0).max(1000),
+  points: z.number().int().min(0).max(20000), // up to 1000 each, or the sum of up to 20 sub-tasks
   ruleType: TaskRuleTypeSchema,
   ruleConfig: TaskRuleConfigSchema,
   deadline: z.string().datetime().nullable().optional(),
+  subtasks: z.array(SubtaskSchema).optional(),
   active: z.boolean(),
   createdAt: z.string().datetime(),
   updatedAt: z.string().datetime(),
@@ -77,6 +79,7 @@ export const CreateTaskRequestSchema = z.object({
   points: z.number().int().min(0).max(1000).default(10),
   ruleType: TaskRuleTypeSchema,
   ruleConfig: TaskRuleConfigSchema.optional(),
+  subtasks: z.array(SubtaskInputSchema).max(MAX_SUBTASKS).optional(),
 });
 
 export type CreateTaskRequest = z.infer<typeof CreateTaskRequestSchema>;
@@ -92,6 +95,7 @@ export const UpdateTaskRequestSchema = z.object({
   ruleType: TaskRuleTypeSchema.optional(),
   ruleConfig: TaskRuleConfigSchema.optional(),
   active: z.boolean().optional(),
+  subtasks: z.array(SubtaskInputSchema).max(MAX_SUBTASKS).optional(),
 });
 
 export type UpdateTaskRequest = z.infer<typeof UpdateTaskRequestSchema>;
