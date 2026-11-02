@@ -887,7 +887,10 @@ card, not a lift (no blur, no offset), so it does not break this rule.
 
 **The Borders Mean Something Rule.** A visible stroke carries **state**, a **control boundary**, a
 **structural divider**, or — on the popup layer only — a **layer boundary**. It is never decoration,
-and a card never gets a decorative hairline.
+and a card never gets a decorative hairline. **One more, approved by Stig on 2026-11-02 (ST-2052,
+choice 5):** the read-only sub-task rows in the parent's approval popup carry a thin grey **read
+edge**: 1.5 px `#555E64` (Chromium draws 1 CSS px), the same stroke as the child's sub-task rows. It
+exists only so white rows on the white popup do not run together, and it appears nowhere else.
 
 ## Shapes
 
