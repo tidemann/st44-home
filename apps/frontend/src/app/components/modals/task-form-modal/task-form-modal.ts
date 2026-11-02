@@ -22,10 +22,16 @@ import {
 import { Modal } from '../modal/modal';
 import { DidditMenu } from '../../../directives/diddit-menu.directive';
 import { DidditDate } from '../../../directives/diddit-date.directive';
-import type { Task, TaskRuleType, Child, CreateTaskRequest } from '@st44/types';
+import type { Task, TaskRuleType, Child, CreateTaskRequest, SubtaskInput } from '@st44/types';
 import { isDesktopSignal } from '../../../utils/desktop-query';
 import { rotationFromNextWeek } from '../../../utils/rotation-weeks';
 import { RotationOrder } from '../../rotation-order/rotation-order';
+import {
+  SubtaskList,
+  subtaskDraft,
+  subtaskPointsValid,
+  type SubtaskDraft,
+} from '../../subtask-list/subtask-list';
 import { HouseholdDayService } from '../../../services/household-day.service';
 
 /**
@@ -51,6 +57,8 @@ export interface TaskFormData {
   points: number;
   ruleType: TaskRuleType;
   ruleConfig: CreateTaskRequest['ruleConfig'];
+  /** In order; [] = a normal chore, and on edit removes the ones it had (ST-2074) */
+  subtasks: SubtaskInput[];
 }
 
 /**
@@ -72,7 +80,7 @@ export interface TaskFormData {
  */
 @Component({
   selector: 'app-task-form-modal',
-  imports: [Modal, DidditMenu, DidditDate, ReactiveFormsModule, RotationOrder],
+  imports: [Modal, DidditMenu, DidditDate, ReactiveFormsModule, RotationOrder, SubtaskList],
   templateUrl: './task-form-modal.html',
   styleUrl: './task-form-modal.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -252,6 +260,20 @@ export class TaskFormModal {
    */
   protected readonly thisWeekName = signal<string | null>(null);
 
+  /** «Deloppgaver» (ST-2074): while there are any, «Poeng» is their sum and not a field */
+  protected readonly subtasks = signal<SubtaskDraft[]>([]);
+  protected readonly subtaskTotal = computed(() =>
+    this.subtasks().reduce((sum, s) => sum + (subtaskPointsValid(s.points) ? s.points! : 0), 0),
+  );
+
+  protected setSubtasks(list: SubtaskDraft[]): void {
+    this.subtasks.set(list);
+    // The «Poeng» field comes back, with its own value, when the last sub-task is removed
+    const points = this.form.controls.points;
+    if (list.length > 0) points.disable({ emitEvent: false });
+    else points.enable({ emitEvent: false });
+  }
+
   /**
    * Modal title based on mode
    */
@@ -373,6 +395,8 @@ export class TaskFormModal {
       { emitEvent: false },
     );
 
+    this.setSubtasks((task.subtasks ?? []).map((s) => subtaskDraft(s.name, s.points, s.id)));
+
     // Update validators for current rule type
     this.updateValidators(task.ruleType);
     this.errorMessage.set(null);
@@ -452,6 +476,7 @@ export class TaskFormModal {
       { emitEvent: false },
     );
 
+    this.setSubtasks([]);
     this.updateValidators('daily');
     this.errorMessage.set(null);
     this.showDeleteConfirm.set(false);
@@ -550,6 +575,11 @@ export class TaskFormModal {
   protected isFormValid(): boolean {
     if (this.form.invalid) return false;
 
+    // Every sub-task needs a name and 1–1000 points
+    if (this.subtasks().some((s) => s.name.trim() === '' || !subtaskPointsValid(s.points))) {
+      return false;
+    }
+
     const ruleType = this.form.get('ruleType')?.value as TaskRuleType;
     const repeatDays = this.repeatDaysArray;
     const assignedChildren = this.assignedChildrenArray;
@@ -600,12 +630,19 @@ export class TaskFormModal {
     const formValue = this.form.value;
     const ruleType = formValue.ruleType as TaskRuleType;
 
+    const subtasks = this.subtasks().map((s) => ({
+      ...(s.id && { id: s.id }),
+      name: s.name.trim(),
+      points: s.points!,
+    }));
     const taskData: TaskFormData = {
       name: formValue.name!.trim(),
       description: formValue.description || undefined,
-      points: formValue.points!,
+      // With sub-tasks the field is switched off and the chore is worth their sum
+      points: subtasks.length > 0 ? this.subtaskTotal() : formValue.points!,
       ruleType,
       ruleConfig: this.buildRuleConfig(ruleType),
+      subtasks,
     };
 
     // Add deadline for single tasks

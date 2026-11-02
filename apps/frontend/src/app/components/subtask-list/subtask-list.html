@@ -1,0 +1,155 @@
+<fieldset class="sub">
+  <legend class="form-label">
+    <span i18n="@@subtaskList.label">Deloppgaver</span>
+    <span class="opt" i18n="@@subtaskList.optional">(valgfritt)</span>
+  </legend>
+  <p class="hint" id="subtask-hint">{{ hint() }}</p>
+
+  @if (items().length > 0 && !compact()) {
+    <div class="heads" aria-hidden="true">
+      <span class="h-name" i18n="@@subtaskList.nameHead">Deloppgave</span>
+      <span class="h-pts" i18n="@@subtaskList.pointsHead">Poeng</span>
+    </div>
+  }
+
+  <div class="list" [class.compact]="compact()" [class.dragging]="drag() !== null">
+    @if (slot(); as s) {
+      <div
+        class="slot"
+        [style.top.px]="s.top"
+        [style.height.px]="s.height"
+        aria-hidden="true"
+      ></div>
+    }
+
+    <!-- Rows by place, so a move keeps the DOM node and its focus where it was -->
+    @for (item of items(); track $index; let i = $index; let first = $first; let last = $last) {
+      <div
+        class="row"
+        data-sub-row
+        [attr.data-row]="item.key"
+        [class.held]="drag()?.from === i"
+        [class.moving]="movingKey() === item.key"
+        [style.transform]="rowTransform(i)"
+      >
+        @if (canReorder()) {
+          <button
+            type="button"
+            class="grip"
+            data-grip
+            aria-describedby="subtask-hint"
+            i18n-aria-label="@@subtaskList.moveRow"
+            aria-label="Flytt {{ label(item) }}, nummer {{ i + 1 }}"
+            [attr.aria-pressed]="movingKey() === item.key"
+            (pointerdown)="onHandlePointerDown(i, $event)"
+            (click)="onHandleClick(item)"
+            (keydown)="onRowKeydown(i, item, $event)"
+          >
+            <i></i>
+          </button>
+        } @else {
+          <span class="grip-space" aria-hidden="true"></span>
+        }
+
+        @if (compact()) {
+          <span class="nm">{{ label(item) }}</span>
+          <span class="pts">{{ item.points ?? 0 }}&nbsp;p</span>
+          @if (movingKey() === item.key) {
+            <span class="arrows" data-arrows>
+              <button
+                type="button"
+                class="arr up"
+                data-arrow="up"
+                [class.gone]="first"
+                [attr.aria-hidden]="first ? 'true' : null"
+                [tabindex]="first ? -1 : 0"
+                (click)="moveBy(i, -1)"
+                (keydown)="onRowKeydown(i, item, $event)"
+                (focusout)="onRowFocusOut(item, $event)"
+                i18n-aria-label="@@subtaskList.moveUp"
+                aria-label="Flytt {{ label(item) }} opp"
+              >
+                <i></i>
+              </button>
+              <button
+                type="button"
+                class="arr dn"
+                data-arrow="down"
+                [class.gone]="last"
+                [attr.aria-hidden]="last ? 'true' : null"
+                [tabindex]="last ? -1 : 0"
+                (click)="moveBy(i, 1)"
+                (keydown)="onRowKeydown(i, item, $event)"
+                (focusout)="onRowFocusOut(item, $event)"
+                i18n-aria-label="@@subtaskList.moveDown"
+                aria-label="Flytt {{ label(item) }} ned"
+              >
+                <i></i>
+              </button>
+            </span>
+          }
+        } @else {
+          <input
+            type="text"
+            class="form-input name"
+            data-name
+            maxlength="100"
+            [value]="item.name"
+            (input)="setName(i, $event)"
+            [class.error]="nameInvalid(item)"
+            [attr.aria-invalid]="nameInvalid(item) || null"
+            i18n-placeholder="@@subtaskList.namePlaceholder"
+            placeholder="f.eks. Re opp sengen"
+            i18n-aria-label="@@subtaskList.nameLabel"
+            aria-label="Deloppgave {{ i + 1 }}"
+          />
+          <input
+            type="number"
+            class="form-input pts-in"
+            inputmode="numeric"
+            min="1"
+            max="1000"
+            [value]="item.points ?? ''"
+            (input)="setPoints(i, $event)"
+            [class.error]="pointsInvalid(item)"
+            [attr.aria-invalid]="pointsInvalid(item) || null"
+            i18n-aria-label="@@subtaskList.pointsLabel"
+            aria-label="Poeng for deloppgave {{ i + 1 }}"
+          />
+          <button
+            type="button"
+            class="rm"
+            data-remove
+            (click)="remove(i)"
+            i18n-aria-label="@@subtaskList.remove"
+            aria-label="Fjern {{ label(item) }}"
+          >
+            <i aria-hidden="true"></i>
+          </button>
+        }
+      </div>
+    }
+  </div>
+
+  @if (showErrors() && !compact()) {
+    @for (item of items(); track item.key; let i = $index) {
+      @if (nameInvalid(item)) {
+        <p class="err" role="alert" i18n="@@subtaskList.nameRequired">
+          Deloppgave {{ i + 1 }} mangler navn.
+        </p>
+      } @else if (pointsInvalid(item)) {
+        <p class="err" role="alert" i18n="@@subtaskList.pointsRange">
+          Poeng for «{{ label(item) }}» må være mellom 1 og 1000.
+        </p>
+      }
+    }
+  }
+
+  @if (!compact()) {
+    <button type="button" class="btn btn-secondary add" data-add (click)="add()">
+      <span i18n="@@subtaskList.add">+ Legg til deloppgave</span>
+    </button>
+  }
+</fieldset>
+
+<p class="sr-only" aria-live="polite">{{ announcement() }}</p>

@@ -532,6 +532,7 @@ export class Home implements OnInit {
         points: data.points,
         ruleType: data.ruleType,
         ruleConfig: data.ruleConfig,
+        subtasks: data.subtasks,
       })
       .subscribe({
         next: () => {
