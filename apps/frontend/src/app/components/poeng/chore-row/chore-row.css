@@ -204,6 +204,12 @@ button.cb:disabled {
   color: var(--overdue);
 }
 
+/* «Etter tur» (ST-2075): the name of the child who has the turn, in Ink */
+.rmb {
+  font-weight: 600;
+  color: var(--ink);
+}
+
 .pts {
   flex: none;
   font-family: var(--font-text);

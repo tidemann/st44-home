@@ -1,5 +1,6 @@
 import { Routes } from '@angular/router';
 import { roleGuard } from './guards/role.guard';
+import { scanGuard } from './guards/scan.guard';
 
 export const routes: Routes = [
   // Public routes (no layout)
@@ -42,6 +43,21 @@ export const routes: Routes = [
     path: 'invitasjon/:token',
     title: $localize`:@@routeTitle.childInvite:Lag passordet ditt - Diddit!`,
     loadComponent: () => import('./auth/child-invite').then((m) => m.ChildInviteComponent),
+  },
+
+  {
+    // ST-2075: the printed QR code and the NFC sticker of an «Etter tur» chore open this
+    // (nginx sends https://home.st44.no/s/<code> here). Not signed in: children's sign-in first
+    path: 's/:code',
+    title: $localize`:@@routeTitle.scan:Skannet - Diddit!`,
+    canActivate: [scanGuard],
+    loadComponent: () => import('./layouts/child-layout/child-layout').then((m) => m.ChildLayout),
+    children: [
+      {
+        path: '',
+        loadComponent: () => import('./pages/scan/scan').then((m) => m.ScanPage),
+      },
+    ],
   },
 
   // Parent/Admin routes - wrapped in MainLayout

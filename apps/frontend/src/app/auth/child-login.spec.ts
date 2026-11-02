@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { Router, provideRouter } from '@angular/router';
+import { ActivatedRoute, Router, convertToParamMap, provideRouter } from '@angular/router';
 import { provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { of, throwError } from 'rxjs';
@@ -9,6 +9,7 @@ import { AuthService } from '../services/auth.service';
 import { HouseholdService } from '../services/household.service';
 import { QrAuthService } from '../services/qr-auth.service';
 import { TokenService } from '../services/token.service';
+import { TurnService } from '../services/turn.service';
 
 describe('ChildLoginComponent (ST-1999: QR first, e-mail second)', () => {
   let fixture: ComponentFixture<ChildLoginComponent>;
@@ -158,5 +159,85 @@ describe('ChildLoginComponent (ST-1999: QR first, e-mail second)', () => {
       'QR-koden virket ikke. Be en voksen om en ny, og prøv igjen.',
     );
     expect(router.navigate).not.toHaveBeenCalled();
+  });
+});
+
+describe('ChildLoginComponent after a scanned «Etter tur» code (ST-2075)', () => {
+  const qrLogin = {
+    accessToken: 'a',
+    refreshToken: 'r',
+    userId: 'u1',
+    email: 'barn@eksempel.no',
+    role: 'child',
+    firstName: 'Emma',
+    lastName: 'T',
+  };
+
+  function create(returnUrl: string) {
+    const scanInfo = vi.fn().mockResolvedValue({ taskName: 'Tømme oppvaskmaskinen' });
+    TestBed.configureTestingModule({
+      imports: [ChildLoginComponent],
+      providers: [
+        provideHttpClient(),
+        provideHttpClientTesting(),
+        provideRouter([]),
+        {
+          provide: ActivatedRoute,
+          useValue: { snapshot: { queryParamMap: convertToParamMap({ returnUrl }) } },
+        },
+        {
+          provide: AuthService,
+          useValue: {
+            login: vi.fn(),
+            currentUser: { set: vi.fn() },
+            isAuthenticated: { set: vi.fn() },
+          },
+        },
+        {
+          provide: QrAuthService,
+          useValue: { loginWithQrToken: vi.fn().mockReturnValue(of(qrLogin)) },
+        },
+        { provide: TokenService, useValue: { storeTokens: vi.fn() } },
+        { provide: TurnService, useValue: { scanInfo } },
+        {
+          provide: HouseholdService,
+          useValue: { autoActivateHousehold: vi.fn().mockResolvedValue(undefined) },
+        },
+      ],
+    });
+    const fixture = TestBed.createComponent(ChildLoginComponent);
+    const router = TestBed.inject(Router);
+    vi.spyOn(router, 'navigate').mockResolvedValue(true);
+    vi.spyOn(router, 'navigateByUrl').mockResolvedValue(true);
+    fixture.detectChanges();
+    return { fixture, router, scanInfo };
+  }
+
+  it('names the chore that waits, then goes back to the scan page to finish it', async () => {
+    const { fixture, router, scanInfo } = create('/s/4KQ7MF');
+    await fixture.whenStable();
+    fixture.detectChanges();
+    expect(scanInfo).toHaveBeenCalledWith('4KQ7MF');
+    expect(fixture.nativeElement.querySelector('.subtitle').textContent.trim()).toBe(
+      'Logg inn for å fullføre: Tømme oppvaskmaskinen',
+    );
+
+    const component = fixture.componentInstance as unknown as {
+      onQrCodeScanned(token: string): Promise<void>;
+    };
+    await component.onQrCodeScanned('tok');
+    expect(router.navigateByUrl).toHaveBeenCalledWith('/s/4KQ7MF');
+    expect(router.navigate).not.toHaveBeenCalled();
+  });
+
+  it('follows only a scan page, never another address', async () => {
+    const { fixture, router, scanInfo } = create('https://evil.example/s/4KQ7MF');
+    expect(scanInfo).not.toHaveBeenCalled();
+    const component = fixture.componentInstance as unknown as {
+      onQrCodeScanned(token: string): Promise<void>;
+    };
+    await component.onQrCodeScanned('tok');
+    expect(router.navigate).toHaveBeenCalledWith(['/my-tasks']);
+    expect(router.navigateByUrl).not.toHaveBeenCalled();
   });
 });

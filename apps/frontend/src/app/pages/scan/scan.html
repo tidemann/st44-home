@@ -1,0 +1,79 @@
+@switch (state().kind) {
+  @case ('done') {
+    @if (state(); as s) {
+      @if (s.kind === 'done') {
+        <!-- Drawing 7: the signed-off tick moment, reached without opening the app -->
+        <app-tick-moment
+          [title]="s.result.taskName"
+          [doneAt]="doneAt(s.result.completedAt)"
+          [points]="s.result.pointsEarned"
+          [childName]="childName()"
+          [goal]="goal()"
+          doneWord="scanned"
+          [turnTo]="s.result.nextChildName"
+          [undoBusy]="undoBusy()"
+          [undoError]="undoError()"
+          (undo)="onUndo()"
+          (closed)="goToMyTasks()"
+        />
+      }
+    }
+  }
+  @case ('notYours') {
+    @if (state(); as s) {
+      @if (s.kind === 'notYours') {
+        <!-- Drawing 8: nothing changed and nothing is wrong, so no rust and no warning -->
+        <app-page
+          [title]="s.result.taskName"
+          [subtitle]="subtitle(s.result)"
+          maxWidth="narrow"
+          [band]="true"
+        >
+          <section class="scan-card" aria-live="polite">
+            <h2 class="scan-title">{{ turnTitle(s.result) }}</h2>
+            <p class="scan-text">
+              {{ turnBody(s.result) }}
+              @if (s.result.youAreNext) {
+                <b>{{ youNext(s.result) }}</b>
+              }
+            </p>
+            <ul class="scan-facts">
+              <li i18n="@@scan.noPoints">Ingen poeng er gitt.</li>
+              <li i18n="@@scan.stillOpen">Oppgaven står fortsatt åpen.</li>
+            </ul>
+          </section>
+          <button type="button" class="scan-btn" (click)="goToMyTasks()" i18n="@@scan.toMyTasks">
+            Til mine oppgaver
+          </button>
+        </app-page>
+      }
+    }
+  }
+  @case ('loading') {
+    <div class="scan-wait" role="status" aria-live="polite">
+      <span class="spinner" aria-hidden="true"></span>
+      <p i18n="@@scan.loading">Fullfører oppgaven …</p>
+    </div>
+  }
+  @default {
+    <app-page i18n-title="@@scan.unknownTitle" title="Ukjent kode" maxWidth="narrow" [band]="true">
+      <section class="scan-card" role="alert">
+        <p class="scan-text">
+          @if (state().kind === 'unknown') {
+            <ng-container i18n="@@scan.unknownBody"
+              >Denne koden hører ikke til noen oppgave i familien din. Spør en voksen om kortet er
+              riktig.</ng-container
+            >
+          } @else {
+            <ng-container i18n="@@scan.failedBody"
+              >Vi fikk ikke fullført oppgaven nå. Prøv å skanne igjen.</ng-container
+            >
+          }
+        </p>
+      </section>
+      <button type="button" class="scan-btn" (click)="goToMyTasks()" i18n="@@scan.toMyTasks">
+        Til mine oppgaver
+      </button>
+    </app-page>
+  }
+}

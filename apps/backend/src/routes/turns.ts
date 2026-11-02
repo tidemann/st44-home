@@ -9,7 +9,7 @@ import {
   requireHouseholdParent,
 } from '../middleware/household-membership.js';
 import { pushService } from '../services/push.service.js';
-import { normalizeScanCode } from '../services/next-in-line.js';
+import { nextInLine, normalizeScanCode } from '../services/next-in-line.js';
 import { dateDoneTurnToday, moveTurn, passTurn, turnOrder } from '../services/turns.js';
 import { withTransaction } from '../utils/index.js';
 
@@ -64,6 +64,33 @@ async function toTurn(row: TurnTaskRow, withCode: boolean): Promise<TaskTurn> {
 }
 
 export default async function turnRoutes(fastify: FastifyInstance) {
+  /**
+   * GET /api/children/me/turns
+   * The signed-in child's household's «Etter tur» chores, and the child's own id, so the
+   * child's home can tell «Din tur» from someone else's turn. No codes.
+   */
+  fastify.get(
+    '/api/children/me/turns',
+    { preHandler: [authenticateUser] },
+    async (request, reply) => {
+      const child = await pool.query<{ id: string; household_id: string }>(
+        `SELECT c.id, c.household_id FROM children c
+       JOIN household_members hm ON hm.household_id = c.household_id AND hm.user_id = c.user_id
+       WHERE c.user_id = $1 AND hm.role = 'child'
+       ORDER BY hm.joined_at NULLS LAST
+       LIMIT 1`,
+        [request.user?.userId],
+      );
+      const me = child.rows[0];
+      if (!me) return reply.code(404).send({ error: 'Child profile not found' });
+      const result = await pool.query<TurnTaskRow>(`${TURN_TASKS_SQL} ORDER BY t.name`, [
+        me.household_id,
+      ]);
+      const turns = await Promise.all(result.rows.map((row) => toTurn(row, false)));
+      return reply.send({ turns, myChildId: me.id });
+    },
+  );
+
   /**
    * GET /api/households/:householdId/turns
    * Every «Etter tur» chore and whose turn it is. Any member; only parents get the code.
@@ -297,6 +324,13 @@ export default async function turnRoutes(fastify: FastifyInstance) {
           taskName: task.name,
           points,
           turnChildName: turn?.name ?? null,
+          youAreNext:
+            !!childId &&
+            !!turn &&
+            nextInLine(
+              (await turnOrder(client, task.id)).map((c) => c.childId),
+              turn.child_id,
+            ) === childId,
         };
         return { result, completedAssignmentId: null };
       });

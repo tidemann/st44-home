@@ -46,6 +46,7 @@ describe('«Etter tur» schemas (ST-2075)', () => {
       taskName: 'Tømme oppvaskmaskinen',
       points: 5,
       turnChildName: 'Emma',
+      youAreNext: false,
     });
     expect(notYours.result).toBe('not_your_turn');
     expect(() => ScanResultSchema.parse({ result: 'done', taskId: task })).toThrow();

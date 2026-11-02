@@ -14,6 +14,7 @@ import { AnalyticsService } from '../../services/analytics.service';
 import { TaskService, type MyTaskAssignment } from '../../services/task.service';
 import { DashboardService, type ChildTask } from '../../services/dashboard.service';
 import { RewardService } from '../../services/reward.service';
+import { TurnService, nextInTurn, turnChild } from '../../services/turn.service';
 import { SingleTaskService } from '../../services/single-task.service';
 import { AvailableTasksSectionComponent } from '../../components/available-tasks-section/available-tasks-section';
 import { StreakCounter } from '../../components/streak-counter/streak-counter';
@@ -31,7 +32,7 @@ import {
   type TickNext,
 } from '../../components/poeng/tick-moment/tick-moment';
 import { capitalize, clockTime, dayWord, isoDay, longDate } from '../../utils/poeng-format';
-import type { ChildAnalytics } from '@st44/types';
+import type { ChildAnalytics, TaskTurn } from '@st44/types';
 import { isDesktopSignal } from '../../utils/desktop-query';
 
 /** What the tick moment shows for the chore just ticked */
@@ -40,6 +41,8 @@ interface TickState {
   title: string;
   doneAt: string;
   points: number;
+  /** «Etter tur» (ST-2075): the child the turn went to */
+  turnTo?: string | null;
 }
 
 /**
@@ -76,6 +79,7 @@ export class ChildDashboardComponent implements OnInit {
   private dashboardService = inject(DashboardService);
   private rewardService = inject(RewardService);
   private singleTaskService = inject(SingleTaskService);
+  private turnService = inject(TurnService);
 
   // Local state
   analytics = signal<ChildAnalytics | null>(null);
@@ -103,7 +107,28 @@ export class ChildDashboardComponent implements OnInit {
   /** 1024 px and wider: desktop A, done chores move to their own column */
   protected readonly desktop = isDesktopSignal();
 
-  hasTasks = computed(() => this.tasks().length > 0 || this.overdueTasks().length > 0);
+  /** «Etter tur» chores (ST-2075) and which child is signed in */
+  turns = signal<TaskTurn[]>([]);
+  myChildId = signal<string | null>(null);
+  /** «Din tur»: the child's own turns, a normal row with the normal tick */
+  myTurns = computed(() =>
+    this.turns().filter((t) => t.assignmentId && t.turnChildId === this.myChildId()),
+  );
+  /** «Etter tur»: chores the child is in the order of, someone else's turn; no tick */
+  otherTurns = computed(() =>
+    this.turns().filter(
+      (t) =>
+        t.turnChildId !== this.myChildId() && t.order.some((c) => c.childId === this.myChildId()),
+    ),
+  );
+
+  hasTasks = computed(
+    () =>
+      this.tasks().length > 0 ||
+      this.overdueTasks().length > 0 ||
+      this.myTurns().length > 0 ||
+      this.otherTurns().length > 0,
+  );
   pendingTasks = computed(() => this.tasks().filter((t) => t.status === 'pending'));
   completedTasks = computed(() => this.tasks().filter((t) => t.status === 'completed'));
   hasAvailableTasks = computed(() => this.singleTaskService.availableTasks().length > 0);
@@ -158,6 +183,7 @@ export class ChildDashboardComponent implements OnInit {
       await Promise.all([
         firstValueFrom(this.taskService.getMyTasks(undefined, isoDay())),
         this.loadOverdue(),
+        this.loadTurns(),
         firstValueFrom(this.rewardService.loadChildRewards())
           .catch((err) => console.error('Failed to load points balance:', err))
           .finally(() => this.rewardsLoading.set(false)),
@@ -194,6 +220,72 @@ export class ChildDashboardComponent implements OnInit {
       console.error('Failed to load overdue tasks:', err);
       this.overdueTasks.set([]);
     }
+  }
+
+  /** «Etter tur» chores; a failure here only hides the groups */
+  private async loadTurns(): Promise<void> {
+    try {
+      const { turns, myChildId } = await this.turnService.myTurns();
+      this.turns.set(turns);
+      this.myChildId.set(myChildId);
+    } catch (err) {
+      console.error('Failed to load turns:', err);
+      this.turns.set([]);
+    }
+  }
+
+  /** The tick on «Din tur»: the same as a scan, the turn moves on (ST-2075) */
+  async onTurnDone(turn: TaskTurn): Promise<void> {
+    const id = turn.assignmentId;
+    if (!id) return;
+    this.completingTasks.update((set) => new Set(set).add(id));
+    try {
+      const result = await this.taskService.completeTask(id);
+      this.undoError.set(null);
+      this.tick.set({
+        assignmentId: id,
+        title: turn.name,
+        doneAt: clockTime(result?.completion?.completedAt ?? new Date()),
+        points: result?.completion?.pointsEarned ?? turn.points,
+        turnTo: result?.turn?.nextChildName ?? nextInTurn(turn)?.name ?? null,
+      });
+      this.refreshBalance();
+      await this.loadTurns();
+    } catch (error) {
+      console.error('Failed to complete turn:', error);
+      this.errorMessage.set(
+        $localize`:@@childDashboard.errMarkDone:Kunne ikke merke oppgaven som ferdig. Prøv igjen.`,
+      );
+    } finally {
+      this.completingTasks.update((set) => {
+        const newSet = new Set(set);
+        newSet.delete(id);
+        return newSet;
+      });
+    }
+  }
+
+  /** «neste: Jonas · 5 poeng» */
+  myTurnMeta(turn: TaskTurn): string {
+    const next = nextInTurn(turn)?.name ?? '';
+    return $localize`:@@childDashboard.myTurnMeta:neste: ${next}:next: · ${turn.points}:points: poeng`;
+  }
+
+  /** The name before «har turen» */
+  turnHolder(turn: TaskTurn): string {
+    return turnChild(turn)?.name ?? '';
+  }
+
+  /** «har turen · du er nestemann», or «har turen · neste: Emma» */
+  otherTurnMeta(turn: TaskTurn): string {
+    const next = nextInTurn(turn);
+    return next?.childId === this.myChildId()
+      ? $localize`:@@childDashboard.turnYouNext:har turen · du er nestemann`
+      : $localize`:@@childDashboard.turnNext:har turen · neste: ${next?.name ?? ''}:next:`;
+  }
+
+  turnPoints(turn: TaskTurn): string {
+    return $localize`:@@childDashboard.turnPoints:${turn.points}:points: p`;
   }
 
   async onMarkDone(task: MyTaskAssignment | ChildTask) {
@@ -237,8 +329,8 @@ export class ChildDashboardComponent implements OnInit {
     try {
       await this.taskService.uncompleteTask(tick.assignmentId);
       this.tick.set(null);
-      // An undone chore from yesterday goes back under Forfalt
-      await this.loadOverdue();
+      // An undone chore from yesterday goes back under Forfalt; an undone turn comes back
+      await Promise.all([this.loadOverdue(), this.loadTurns()]);
       this.refreshBalance();
     } catch (err) {
       this.undoError.set(undoErrorText(err));

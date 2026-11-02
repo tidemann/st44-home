@@ -195,7 +195,7 @@ describe('zodToOpenAPI', () => {
         z.object({
           id: z.string(),
           name: z.string(),
-        })
+        }),
       );
       const result = zodToOpenAPI(schema);
 
@@ -255,9 +255,7 @@ describe('zodToOpenAPI', () => {
       const result = zodToOpenAPI(schema);
 
       // Nullable in OpenAPI 3.1 can be represented as anyOf or type array
-      expect(
-        result.anyOf || Array.isArray(result.type) || result.nullable
-      ).toBeTruthy();
+      expect(result.anyOf || Array.isArray(result.type) || result.nullable).toBeTruthy();
     });
 
     it('should convert optional schema', () => {
@@ -355,7 +353,7 @@ describe('generateAPISchemas', () => {
       {
         requestName: 'CreateUserRequest',
         responseName: 'UserResponse',
-      }
+      },
     );
 
     expect(result.request.title).toBe('CreateUserRequest');
@@ -376,7 +374,7 @@ describe('generateAPISchemas', () => {
       {
         requestDescription: 'Request for creating a user',
         responseDescription: 'User model response',
-      }
+      },
     );
 
     expect(result.request.description).toBe('Request for creating a user');

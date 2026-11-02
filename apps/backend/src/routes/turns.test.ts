@@ -162,6 +162,26 @@ describe('«Etter tur» chores (ST-2075)', () => {
     assert.strictEqual(res.statusCode, 400);
   });
 
+  test('the child home gets the turns and which child is signed in', async () => {
+    const res = await app.inject({
+      method: 'GET',
+      url: '/api/children/me/turns',
+      headers: auth(jonasToken),
+    });
+    assert.strictEqual(res.statusCode, 200, res.body);
+    const body = JSON.parse(res.body);
+    assert.strictEqual(body.myChildId, jonas);
+    assert.strictEqual(body.turns[0].turnChildId, emma);
+    assert.strictEqual(body.turns[0].scanCode, null);
+
+    const parent = await app.inject({
+      method: 'GET',
+      url: '/api/children/me/turns',
+      headers: auth(parentToken),
+    });
+    assert.strictEqual(parent.statusCode, 404);
+  });
+
   test('children see whose turn it is, but not the code', async () => {
     const turn = await turnOf(jonasToken);
     assert.strictEqual(turn.turnChildId, emma);
@@ -199,6 +219,7 @@ describe('«Etter tur» chores (ST-2075)', () => {
       taskName: 'Tømme oppvaskmaskinen',
       points: 5,
       turnChildName: 'Emma',
+      youAreNext: true,
     });
     assert.strictEqual((await turnOf()).turnChildId, emma);
   });

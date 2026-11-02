@@ -415,6 +415,8 @@ export class TaskService {
   async completeTask(assignmentId: string): Promise<{
     taskAssignment: { id: string; status: string; completedAt: string };
     completion: { id: string; pointsEarned: number; completedAt: string };
+    /** «Etter tur» chores (ST-2075): who has the turn now */
+    turn?: { nextChildName: string | null };
   }> {
     // Store previous state for rollback
     const previousAssignments = this.assignmentsSignal();

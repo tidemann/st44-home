@@ -92,7 +92,16 @@ export const ScanResultSchema = z.discriminatedUnion('result', [
     taskName: z.string(),
     points: z.number().int().min(0),
     turnChildName: z.string().nullable(),
+    /** The scanning child is the next in the order after the one whose turn it is */
+    youAreNext: z.boolean(),
   }),
 ]);
 
 export type ScanResult = z.infer<typeof ScanResultSchema>;
+
+/** The signed-in child's view: the same turns, and which child they are */
+export const MyTurnsResponseSchema = TaskTurnsResponseSchema.extend({
+  myChildId: z.string().uuid(),
+});
+
+export type MyTurnsResponse = z.infer<typeof MyTurnsResponseSchema>;
