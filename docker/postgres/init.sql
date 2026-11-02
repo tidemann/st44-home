@@ -234,6 +234,7 @@ CREATE TABLE IF NOT EXISTS task_completions (
 
 CREATE INDEX IF NOT EXISTS idx_task_completions_household ON task_completions(household_id);
 CREATE INDEX IF NOT EXISTS idx_task_completions_child ON task_completions(child_id);
+CREATE INDEX IF NOT EXISTS idx_task_completions_assignment ON task_completions(task_assignment_id); -- migration 059
 
 -- «Etter tur» turns moved by a parent (migration 058)
 CREATE TABLE IF NOT EXISTS task_turn_moves (

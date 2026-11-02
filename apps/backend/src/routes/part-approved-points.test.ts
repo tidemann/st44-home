@@ -134,4 +134,33 @@ describe('Points of part-approved chores (ST-2104)', () => {
     assert.strictEqual(body.totalPointsToday, 85);
     assert.strictEqual(body.completedPoints, 55);
   });
+
+  // Runs last: it adds a sixth chore. A completed chore with no completion row (older data)
+  // still counts its full points, as before.
+  test('a completed chore without a completion row counts its full points', async () => {
+    const taskId = (
+      await pool.query(
+        'INSERT INTO tasks (household_id, name, points, rule_type, active) VALUES ($1, $2, $3, $4, true) RETURNING id',
+        [householdId, 'Oppgave 6', 10, 'daily'],
+      )
+    ).rows[0].id;
+    await pool.query(
+      'INSERT INTO task_assignments (household_id, task_id, child_id, date, status) VALUES ($1, $2, $3, $4, $5)',
+      [householdId, taskId, childId, today, 'completed'],
+    );
+
+    const analytics = await app.inject({
+      method: 'GET',
+      url: `/api/households/${householdId}/analytics?period=week`,
+      headers: { Authorization: `Bearer ${parentToken}` },
+    });
+    assert.strictEqual(JSON.parse(analytics.body).periodComparison.current.totalPoints, 65);
+
+    const myTasks = await app.inject({
+      method: 'GET',
+      url: `/api/children/my-tasks?date=${today}`,
+      headers: { Authorization: `Bearer ${childToken}` },
+    });
+    assert.strictEqual(JSON.parse(myTasks.body).completedPoints, 65);
+  });
 });

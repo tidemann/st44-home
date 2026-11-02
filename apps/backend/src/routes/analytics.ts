@@ -166,6 +166,9 @@ async function getHouseholdAnalytics(
   try {
     const { startDate, endDate, previousStartDate, previousEndDate } = getDateRange(period);
 
+    // Points are what the child really got (task_completions.points_earned; a part-approved chore
+    // earns less). SUM over no completion row is NULL, so COALESCE falls back to the chore's
+    // points. Same in every points sum below (ST-2104).
     // 1. Period Comparison (current vs previous)
     const currentPeriodResult = await db.query(
       `SELECT
