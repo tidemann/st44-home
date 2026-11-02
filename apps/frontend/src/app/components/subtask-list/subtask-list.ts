@@ -8,7 +8,7 @@ import {
   computed,
   inject,
   input,
-  output,
+  model,
   signal,
 } from '@angular/core';
 import { moveItem } from '../rotation-order/rotation-order';
@@ -76,12 +76,13 @@ export class SubtaskList {
   private readonly host = inject<ElementRef<HTMLElement>>(ElementRef);
   private readonly injector = inject(Injector);
 
-  /** The rows, in order */
-  readonly items = input<SubtaskDraft[]>([]);
+  /**
+   * The rows, in order. A model, so a change is the list's own value at once: an «add» and the
+   * typing right after it in the same tick must build on each other, not on the old input.
+   */
+  readonly items = model<SubtaskDraft[]>([]);
   /** The main action was pressed: rows that are not complete show as errors */
   readonly showErrors = input(false);
-
-  readonly itemsChange = output<SubtaskDraft[]>();
 
   protected readonly drag = signal<DragState | null>(null);
   /** Key of the row in move mode (the keyboard / one-finger way), or null */
@@ -130,6 +131,32 @@ export class SubtaskList {
     return item?.name.trim() || $localize`:@@subtaskList.unnamed:Uten navn`;
   }
 
+  // Names for screen readers. Bound with $localize: an interpolated i18n-aria-label comes out
+  // empty in this build, so the controls would have no name.
+  protected gripLabel(item: SubtaskDraft, index: number): string {
+    return $localize`:@@subtaskList.moveRow:Flytt ${this.label(item)}:name:, nummer ${index + 1}:place:`;
+  }
+
+  protected upLabel(item: SubtaskDraft): string {
+    return $localize`:@@subtaskList.moveUp:Flytt ${this.label(item)}:name: opp`;
+  }
+
+  protected downLabel(item: SubtaskDraft): string {
+    return $localize`:@@subtaskList.moveDown:Flytt ${this.label(item)}:name: ned`;
+  }
+
+  protected nameLabel(index: number): string {
+    return $localize`:@@subtaskList.nameLabel:Deloppgave ${index + 1}:place:`;
+  }
+
+  protected pointsLabel(index: number): string {
+    return $localize`:@@subtaskList.pointsLabel:Poeng for deloppgave ${index + 1}:place:`;
+  }
+
+  protected removeLabel(item: SubtaskDraft): string {
+    return $localize`:@@subtaskList.remove:Fjern ${this.label(item)}:name:`;
+  }
+
   protected nameInvalid(item: SubtaskDraft): boolean {
     return this.showErrors() && item.name.trim() === '';
   }
@@ -142,7 +169,7 @@ export class SubtaskList {
 
   protected add(): void {
     const row = subtaskDraft();
-    this.itemsChange.emit([...this.items(), row]);
+    this.items.set([...this.items(), row]);
     afterNextRender(
       () =>
         this.host.nativeElement
@@ -154,7 +181,7 @@ export class SubtaskList {
 
   protected remove(index: number): void {
     const items = this.items();
-    this.itemsChange.emit(items.filter((_, i) => i !== index));
+    this.items.set(items.filter((_, i) => i !== index));
     // Focus stays in the list: the next row's ×, the one above, or «Legg til deloppgave»
     const next = items[index + 1] ?? items[index - 1];
     afterNextRender(
@@ -171,15 +198,13 @@ export class SubtaskList {
 
   protected setName(index: number, event: Event): void {
     const name = (event.target as HTMLInputElement).value;
-    this.itemsChange.emit(this.items().map((item, i) => (i === index ? { ...item, name } : item)));
+    this.items.set(this.items().map((item, i) => (i === index ? { ...item, name } : item)));
   }
 
   protected setPoints(index: number, event: Event): void {
     const raw = (event.target as HTMLInputElement).value;
     const points = raw === '' ? null : Number(raw);
-    this.itemsChange.emit(
-      this.items().map((item, i) => (i === index ? { ...item, points } : item)),
-    );
+    this.items.set(this.items().map((item, i) => (i === index ? { ...item, points } : item)));
   }
 
   // ------------------------------------------------------------ move mode (no drag)
@@ -199,7 +224,7 @@ export class SubtaskList {
     const target = index + step;
     if (target < 0 || target >= items.length) return;
     const moved = items[index];
-    this.itemsChange.emit(moveItem(items, index, target));
+    this.items.set(moveItem(items, index, target));
     this.announce(moved, target);
     const edge = target === 0 || target === items.length - 1;
     this.focusArrow(moved.key, edge ? (step < 0 ? 'down' : 'up') : step < 0 ? 'up' : 'down');
@@ -295,7 +320,7 @@ export class SubtaskList {
     this.drag.set(null);
     this.geometry.set(null);
     if (drag.to !== drag.from) {
-      this.itemsChange.emit(moveItem(items, drag.from, drag.to));
+      this.items.set(moveItem(items, drag.from, drag.to));
       this.announce(items[drag.from], drag.to);
     }
   };

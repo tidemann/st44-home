@@ -1,7 +1,10 @@
 <fieldset class="sub">
   <legend class="form-label">
-    <span i18n="@@subtaskList.label">Deloppgaver</span>
-    <span class="opt" i18n="@@subtaskList.optional">(valgfritt)</span>
+    <span i18n="@@subtaskList.label">Deloppgaver</span>&ngsp;<span
+      class="opt"
+      i18n="@@subtaskList.optional"
+      >(valgfritt)</span
+    >
   </legend>
   <p class="hint" id="subtask-hint">{{ hint() }}</p>
 
@@ -38,8 +41,7 @@
             class="grip"
             data-grip
             aria-describedby="subtask-hint"
-            i18n-aria-label="@@subtaskList.moveRow"
-            aria-label="Flytt {{ label(item) }}, nummer {{ i + 1 }}"
+            [attr.aria-label]="gripLabel(item, i)"
             [attr.aria-pressed]="movingKey() === item.key"
             (pointerdown)="onHandlePointerDown(i, $event)"
             (click)="onHandleClick(item)"
@@ -66,8 +68,7 @@
                 (click)="moveBy(i, -1)"
                 (keydown)="onRowKeydown(i, item, $event)"
                 (focusout)="onRowFocusOut(item, $event)"
-                i18n-aria-label="@@subtaskList.moveUp"
-                aria-label="Flytt {{ label(item) }} opp"
+                [attr.aria-label]="upLabel(item)"
               >
                 <i></i>
               </button>
@@ -81,8 +82,7 @@
                 (click)="moveBy(i, 1)"
                 (keydown)="onRowKeydown(i, item, $event)"
                 (focusout)="onRowFocusOut(item, $event)"
-                i18n-aria-label="@@subtaskList.moveDown"
-                aria-label="Flytt {{ label(item) }} ned"
+                [attr.aria-label]="downLabel(item)"
               >
                 <i></i>
               </button>
@@ -100,8 +100,7 @@
             [attr.aria-invalid]="nameInvalid(item) || null"
             i18n-placeholder="@@subtaskList.namePlaceholder"
             placeholder="f.eks. Re opp sengen"
-            i18n-aria-label="@@subtaskList.nameLabel"
-            aria-label="Deloppgave {{ i + 1 }}"
+            [attr.aria-label]="nameLabel(i)"
           />
           <input
             type="number"
@@ -113,16 +112,14 @@
             (input)="setPoints(i, $event)"
             [class.error]="pointsInvalid(item)"
             [attr.aria-invalid]="pointsInvalid(item) || null"
-            i18n-aria-label="@@subtaskList.pointsLabel"
-            aria-label="Poeng for deloppgave {{ i + 1 }}"
+            [attr.aria-label]="pointsLabel(i)"
           />
           <button
             type="button"
             class="rm"
             data-remove
             (click)="remove(i)"
-            i18n-aria-label="@@subtaskList.remove"
-            aria-label="Fjern {{ label(item) }}"
+            [attr.aria-label]="removeLabel(item)"
           >
             <i aria-hidden="true"></i>
           </button>

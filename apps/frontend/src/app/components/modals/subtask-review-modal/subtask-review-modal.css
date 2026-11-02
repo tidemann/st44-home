@@ -51,3 +51,8 @@
   line-height: 1.4;
   color: var(--overdue);
 }
+
+/* «Lukk / Ferdig» and «Ikke nå / Godkjenn»: the guide's two halves, fixed under the body */
+.popup-actions {
+  padding-top: 15px;
+}

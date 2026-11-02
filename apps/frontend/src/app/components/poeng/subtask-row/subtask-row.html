@@ -52,8 +52,7 @@
         [attr.aria-pressed]="notPossible()"
         [disabled]="busy()"
         (click)="toggleNotPossible.emit()"
-        i18n-aria-label="@@subtaskRow.notPossibleAria"
-        aria-label="Ikke mulig: {{ subtask().name }}"
+        [attr.aria-label]="notPossibleLabel()"
         i18n="@@subtaskRow.notPossibleChip"
       >
         Ikke mulig

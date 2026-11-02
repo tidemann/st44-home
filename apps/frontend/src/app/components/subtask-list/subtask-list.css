@@ -215,8 +215,9 @@
   transition: transform 150ms ease;
 }
 
-/* lifted = the ink fill of a chosen control and 6 px out of the column (no shadow) */
-.row.held {
+/* lifted = the ink fill of a chosen control and 6 px out of the column (no shadow). Written
+   .compact .row.held: the encapsulation attribute on each part would let .compact .row win */
+.compact .row.held {
   z-index: 3;
   transition: none;
   background: var(--text);

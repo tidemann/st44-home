@@ -34,6 +34,12 @@ export class SubtaskRow {
   protected readonly done = computed(() => this.subtask().state === 'done');
   protected readonly notPossible = computed(() => this.subtask().state === 'not_possible');
 
+  /** The chip's name for a screen reader. Bound with $localize: an interpolated
+   *  i18n-aria-label comes out empty in this build, so the chip would have no name */
+  protected readonly notPossibleLabel = computed(
+    () => $localize`:@@subtaskRow.notPossibleAria:Ikke mulig: ${this.subtask().name}:name:`,
+  );
+
   /** «Gjort 17.02» */
   protected readonly doneAt = computed(() => {
     const at = this.subtask().updatedAt;

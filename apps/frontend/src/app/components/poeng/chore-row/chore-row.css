@@ -102,9 +102,14 @@
   color: var(--overdue);
 }
 
-/* the count line of a chore with sub-tasks (ST-2074): the same line, no sign, in #555E64 */
+/* the count line of a chore with sub-tasks (ST-2074): the same line, no sign, in #555E64,
+   under the title (ST-2042 sheet 5): past the 22 px box and the 12 px gap when there is a box */
 .note.plain {
   color: var(--text-muted);
+}
+
+.cb ~ .note.plain {
+  padding-left: 34px;
 }
 
 /* Checkbox: 22 px drawn in muted (approved exception 2: 6.62:1), 44 px pressed */
