@@ -467,14 +467,17 @@ describe('«Etter tur» chores (ST-2075)', () => {
         await holder.query('BEGIN');
         await holder.query('SELECT id FROM tasks WHERE id = $1 FOR UPDATE', [taskId]);
         const pending = moveTo(childId);
-        for (let i = 0; i < 100; i++) {
+        let waited = false;
+        for (let i = 0; i < 250 && !waited; i++) {
           const waiting = await pool.query(
             `SELECT count(*)::int AS n FROM pg_stat_activity
-             WHERE datname = current_database() AND wait_event_type = 'Lock'`,
+             WHERE datname = current_database() AND wait_event_type = 'Lock'
+               AND query LIKE '%next_in_line%FOR UPDATE%'`,
           );
-          if (waiting.rows[0].n > 0) break;
-          await new Promise((r) => setTimeout(r, 20));
+          waited = waiting.rows[0].n > 0;
+          if (!waited) await new Promise((r) => setTimeout(r, 20));
         }
+        assert.ok(waited, '«Flytt» waits on the held chore');
         await holder.query(change, [taskId]);
         await holder.query('COMMIT');
         return await pending;
