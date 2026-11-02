@@ -129,7 +129,7 @@ export interface ChildRow {
 // Tasks
 // ============================================================================
 
-export type TaskRuleType = 'weekly_rotation' | 'repeating' | 'daily' | 'single';
+export type TaskRuleType = 'weekly_rotation' | 'repeating' | 'daily' | 'single' | 'next_in_line';
 export type TaskRotationType = 'odd_even_week' | 'alternating';
 
 /**
@@ -153,6 +153,7 @@ export interface TaskRow {
   rule_type: TaskRuleType;
   rule_config: TaskRuleConfig | null;
   deadline: Date | null;
+  scan_code?: string | null;
   active: boolean;
   created_at: Date;
   updated_at: Date;

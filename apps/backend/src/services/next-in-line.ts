@@ -23,7 +23,8 @@ export function generateScanCode(bytes: (n: number) => Uint8Array = randomBytes)
 /** The code in upper case, or null when it cannot be one of ours (so we never query the DB with junk) */
 export function normalizeScanCode(value: string): string | null {
   const code = value.trim().toUpperCase();
-  return code.length === SCAN_CODE_LENGTH && [...code].every((char) => SCAN_CODE_ALPHABET.includes(char))
+  return code.length === SCAN_CODE_LENGTH &&
+    [...code].every((char) => SCAN_CODE_ALPHABET.includes(char))
     ? code
     : null;
 }

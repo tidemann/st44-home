@@ -5,6 +5,7 @@ import { validateHouseholdMembership } from '../middleware/household-membership.
 import { pool } from '../database.js';
 import { generateAssignments } from '../services/assignment-generator.js';
 import { pushService } from '../services/push.service.js';
+import { dateDoneTurnToday, passTurn } from '../services/turns.js';
 import { UNDO_COMPLETE_SECONDS } from '@st44/types';
 import { withTransaction, validateBody, validateParams, validateQuery } from '../utils/index.js';
 import {
@@ -469,7 +470,7 @@ export default async function assignmentRoutes(fastify: FastifyInstance) {
           FROM task_assignments ta
           JOIN tasks t ON ta.task_id = t.id
           LEFT JOIN task_completions tc ON ta.id = tc.task_assignment_id
-          WHERE ta.child_id = $1 AND ta.date = $2
+          WHERE ta.child_id = $1 AND ta.date = $2 AND NOT (t.rule_type = 'next_in_line' AND ta.status = 'pending')
         `;
 
         const queryParams: (string | undefined)[] = [childId, date];
@@ -570,7 +571,7 @@ export default async function assignmentRoutes(fastify: FastifyInstance) {
           JOIN tasks t ON ta.task_id = t.id
           LEFT JOIN children c ON ta.child_id = c.id
           LEFT JOIN task_completions tc ON ta.id = tc.task_assignment_id
-          WHERE t.household_id = $1
+          WHERE t.household_id = $1 AND NOT (t.rule_type = 'next_in_line' AND ta.status = 'pending')
         `;
 
         const queryParams: (string | undefined)[] = [householdId];
@@ -786,7 +787,7 @@ export default async function assignmentRoutes(fastify: FastifyInstance) {
         const { assignmentId } = validateParams(assignmentIdParamSchema, request);
         // Fetch assignment with task details for points and authorization
         const assignmentResult = await pool.query(
-          `SELECT ta.id, ta.household_id, ta.child_id, ta.status, ta.task_id, t.points
+          `SELECT ta.id, ta.household_id, ta.child_id, ta.status, ta.task_id, t.points, t.rule_type
            FROM task_assignments ta
            JOIN tasks t ON ta.task_id = t.id
            WHERE ta.id = $1`,
@@ -901,8 +902,8 @@ export default async function assignmentRoutes(fastify: FastifyInstance) {
 
           // Insert task completion record with points
           const completionResult = await client.query(
-            `INSERT INTO task_completions (household_id, task_assignment_id, child_id, completed_at, points_earned)
-             VALUES ($1, $2, $3, $4, $5)
+            `INSERT INTO task_completions (household_id, task_assignment_id, child_id, completed_at, points_earned, completed_via)
+             VALUES ($1, $2, $3, $4, $5, 'app')
              RETURNING id, points_earned, completed_at`,
             [
               assignment.household_id,
@@ -915,7 +916,21 @@ export default async function assignmentRoutes(fastify: FastifyInstance) {
 
           const completion = completionResult.rows[0];
 
+          // «Etter tur» (ST-2075): the tick does what a scan does, the turn moves on
+          let turn: { nextChildName: string | null } | undefined;
+          if (assignment.rule_type === 'next_in_line' && completedAssignment.child_id) {
+            await dateDoneTurnToday(client, assignmentId);
+            const next = await passTurn(
+              client,
+              assignment.household_id,
+              completedAssignment.task_id,
+              completedAssignment.child_id,
+            );
+            turn = { nextChildName: next?.name ?? null };
+          }
+
           return {
+            ...(turn && { turn }),
             taskAssignment: {
               id: completedAssignment.id,
               status: 'completed' as const,
@@ -1082,6 +1097,15 @@ export default async function assignmentRoutes(fastify: FastifyInstance) {
           await client.query('DELETE FROM task_completions WHERE task_assignment_id = $1', [
             assignmentId,
           ]);
+
+          // «Etter tur» (ST-2075): undoing takes the turn back, so the next child's open turn goes
+          await client.query(
+            `DELETE FROM task_assignments
+             WHERE status = 'pending' AND id <> $1
+               AND task_id = (SELECT t.id FROM tasks t JOIN task_assignments ta ON ta.task_id = t.id
+                              WHERE ta.id = $1 AND t.rule_type = 'next_in_line')`,
+            [assignmentId],
+          );
 
           await client.query(
             `UPDATE task_assignments

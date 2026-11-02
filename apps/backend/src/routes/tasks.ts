@@ -24,6 +24,7 @@ import type { TaskRow } from '../types/database.js';
 import { todayInTimeZone, DAYS_AHEAD } from '../services/assignment-scheduler.js';
 import { generateAssignments } from '../services/assignment-generator.js';
 import { addWeeks, mondayOf, toIsoDate } from '../services/rotation.js';
+import { newScanCode, syncTurn } from '../services/turns.js';
 import type { PoolClient } from 'pg';
 
 interface HouseholdParams {
@@ -40,7 +41,7 @@ interface CreateTaskRequest {
     name: string;
     description?: string;
     points?: number;
-    ruleType: 'weekly_rotation' | 'repeating' | 'daily';
+    ruleType: 'weekly_rotation' | 'repeating' | 'daily' | 'next_in_line';
     ruleConfig?: {
       rotationType?: 'odd_even_week' | 'alternating';
       repeatDays?: number[];
@@ -191,6 +192,7 @@ function mapTaskRowToTask(row: TaskRow): Task {
     ruleType: row.rule_type,
     ruleConfig: normalizedRuleConfig === undefined ? null : normalizedRuleConfig,
     deadline: row.deadline ? toDateTimeString(row.deadline) : null,
+    scanCode: row.scan_code ?? null,
     active: row.active !== false,
     createdAt: toDateTimeString(row.created_at),
     updatedAt: toDateTimeString(row.updated_at),
@@ -239,6 +241,13 @@ function validateTaskData(
     if (data.ruleType === 'daily') {
       // Assigned children optional for daily tasks
       // No specific validation needed
+    }
+
+    if (data.ruleType === 'next_in_line') {
+      // The turn goes round the children in this order (ST-2075)
+      if (!config.assignedChildren || config.assignedChildren.length < 2) {
+        errors.push('At least two children are required for next_in_line tasks');
+      }
     }
 
     if (data.ruleType === 'single') {
@@ -344,9 +353,9 @@ async function createTask(request: FastifyRequest<CreateTaskRequest>, reply: Fas
       : null;
 
     const result = await db.query(
-      `INSERT INTO tasks (household_id, name, description, points, rule_type, rule_config, deadline)
-       VALUES ($1, $2, $3, $4, $5, $6, $7)
-       RETURNING id, household_id, name, description, points, rule_type, rule_config, deadline, active, created_at, updated_at`,
+      `INSERT INTO tasks (household_id, name, description, points, rule_type, rule_config, deadline, scan_code)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+       RETURNING id, household_id, name, description, points, rule_type, rule_config, deadline, scan_code, active, created_at, updated_at`,
       [
         householdId,
         name.trim(),
@@ -357,10 +366,16 @@ async function createTask(request: FastifyRequest<CreateTaskRequest>, reply: Fas
           ? null
           : JSON.stringify(ruleConfigForStorage),
         deadline,
+        ruleType === 'next_in_line' ? await newScanCode(db) : null,
       ],
     );
 
     const createdTask = result.rows[0];
+
+    // «Etter tur» (ST-2075): the first child in the order has the turn
+    if (ruleType === 'next_in_line') {
+      await syncTurn(db, householdId, createdTask.id);
+    }
 
     // For single tasks, insert candidates into task_candidates table
     if (
@@ -384,7 +399,7 @@ async function createTask(request: FastifyRequest<CreateTaskRequest>, reply: Fas
     }
 
     // A new recurring chore gets its chores at once, so today's child sees it today (ST-2036)
-    if (ruleType !== 'single') {
+    if (ruleType !== 'single' && ruleType !== 'next_in_line') {
       const generated = await generateAssignments(
         householdId,
         todayInTimeZone(new Date()),
@@ -602,10 +617,21 @@ async function updateTask(request: FastifyRequest<UpdateTaskRequest>, reply: Fas
       }
     }
 
+    const before = await db.query<{ rule_type: string; scan_code: string | null }>(
+      'SELECT rule_type, scan_code FROM tasks WHERE id = $1 AND household_id = $2',
+      [taskId, householdId],
+    );
+
     // Build dynamic update query
     const updates: string[] = [];
     const values: (string | number | boolean | null)[] = [];
     let paramIndex = 1;
+
+    // A chore that becomes «Etter tur» gets its code for the QR card (ST-2075)
+    if (ruleType === 'next_in_line' && before.rows[0] && !before.rows[0].scan_code) {
+      updates.push(`scan_code = $${paramIndex++}`);
+      values.push(await newScanCode(db));
+    }
 
     if (name !== undefined) {
       updates.push(`name = $${paramIndex++}`);
@@ -653,7 +679,7 @@ async function updateTask(request: FastifyRequest<UpdateTaskRequest>, reply: Fas
       UPDATE tasks 
       SET ${updates.join(', ')}
       WHERE id = $${paramIndex++} AND household_id = $${paramIndex++}
-      RETURNING id, household_id, name, description, points, rule_type, rule_config, created_at, updated_at
+      RETURNING id, household_id, name, description, points, rule_type, rule_config, scan_code, created_at, updated_at
     `;
 
     const result = await db.query(query, values);
@@ -668,8 +694,24 @@ async function updateTask(request: FastifyRequest<UpdateTaskRequest>, reply: Fas
 
     const task = result.rows[0];
 
+    // «Etter tur» (ST-2075): one open turn, on a child still in the order. A chore that
+    // becomes or stops being «Etter tur» drops the open rows of its old kind first.
+    const wasTurns = before.rows[0]?.rule_type === 'next_in_line';
+    const isTurns = task.rule_type === 'next_in_line';
+    if (wasTurns !== isTurns) {
+      await db.query(
+        `DELETE FROM task_assignments WHERE task_id = $1 AND status = 'pending' AND date >= $2`,
+        [taskId, wasTurns ? '-infinity' : todayIso()],
+      );
+    }
+    if (isTurns) {
+      await syncTurn(db, householdId, taskId);
+    } else if (wasTurns) {
+      await generateAssignments(householdId, todayInTimeZone(new Date()), DAYS_AHEAD);
+    }
+
     // If assignedChildren was updated, update or create today's pending assignment
-    if (normalizedRuleConfig?.assignedChildren !== undefined) {
+    if (!isTurns && normalizedRuleConfig?.assignedChildren !== undefined) {
       const today = new Date().toISOString().split('T')[0];
       const newAssignedChildren = normalizedRuleConfig.assignedChildren || [];
 
