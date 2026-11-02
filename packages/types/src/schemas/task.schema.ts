@@ -7,7 +7,13 @@ import { z } from '../generators/openapi.generator.js';
  * Task Rule Types
  * Defines how tasks are assigned to children
  */
-export const TaskRuleTypeSchema = z.enum(['daily', 'repeating', 'weekly_rotation', 'single']);
+export const TaskRuleTypeSchema = z.enum([
+  'daily',
+  'repeating',
+  'weekly_rotation',
+  'single',
+  'next_in_line',
+]);
 
 export type TaskRuleType = z.infer<typeof TaskRuleTypeSchema>;
 
@@ -23,7 +29,8 @@ export const TaskRuleConfigSchema = z
     // For repeating: days of week (0=Sunday, 6=Saturday)
     repeatDays: z.array(z.number().int().min(0).max(6)).optional(),
 
-    // For weekly_rotation and single: children assigned to the task
+    // For weekly_rotation, single and next_in_line: children assigned to the task
+    // (for next_in_line in turn order)
     assignedChildren: z.array(z.string().uuid()).optional(),
 
     // For alternating weekly_rotation: Monday (YYYY-MM-DD) of the week assignedChildren[0]
@@ -53,6 +60,8 @@ export const TaskSchema = z.object({
   ruleType: TaskRuleTypeSchema,
   ruleConfig: TaskRuleConfigSchema,
   deadline: z.string().datetime().nullable().optional(),
+  // For next_in_line: code in the chore's QR/NFC link https://home.st44.no/s/<code>
+  scanCode: z.string().nullable().optional(),
   active: z.boolean(),
   createdAt: z.string().datetime(),
   updatedAt: z.string().datetime(),
