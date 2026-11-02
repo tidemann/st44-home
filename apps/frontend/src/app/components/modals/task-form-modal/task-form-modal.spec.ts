@@ -460,6 +460,16 @@ describe('TaskFormModal', () => {
       component.onSubmit();
       expect(spy).toHaveBeenCalledWith(expect.objectContaining({ points: 5, subtasks: [] }));
     });
+
+    it('«Etter tur» has no sub-tasks: the list is hidden and switching clears it (ST-2075)', () => {
+      component['setSubtasks']([draft('Re opp sengen', 5)]);
+      component['form'].patchValue({ ruleType: 'next_in_line' });
+      fixture.detectChanges();
+      const el = fixture.nativeElement as HTMLElement;
+      expect(el.querySelector('app-subtask-list')).toBeNull();
+      expect(component['subtasks']()).toEqual([]);
+      expect(el.querySelector('#points')).not.toBeNull();
+    });
   });
 
   describe('Form Submission', () => {

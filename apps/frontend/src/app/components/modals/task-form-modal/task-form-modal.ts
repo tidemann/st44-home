@@ -350,6 +350,8 @@ export class TaskFormModal {
       .subscribe((ruleType) => {
         this.updateValidators(ruleType);
         this.errorMessage.set(null);
+        // «Etter tur» is done in one step, also by a scan, so it has no sub-tasks (ST-2075)
+        if (ruleType === 'next_in_line' && this.subtasks().length > 0) this.setSubtasks([]);
       });
 
     // Pre-fill form when task changes (edit mode)

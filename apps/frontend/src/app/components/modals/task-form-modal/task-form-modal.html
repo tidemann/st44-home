@@ -108,11 +108,13 @@
         </div>
       }
 
-      <app-subtask-list
-        [items]="subtasks()"
-        [showErrors]="submitAttempted()"
-        (itemsChange)="setSubtasks($event)"
-      />
+      @if (ruleType !== 'next_in_line') {
+        <app-subtask-list
+          [items]="subtasks()"
+          [showErrors]="submitAttempted()"
+          (itemsChange)="setSubtasks($event)"
+        />
+      }
 
       <!-- Task Type -->
       <div class="form-group">
