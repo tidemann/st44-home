@@ -29,14 +29,11 @@
     <section class="members-section">
       <div class="section-header">
         <h2 i18n="@@family.membersTitle">Familiemedlemmer</h2>
-        <button
-          type="button"
-          class="btn-invite"
-          (click)="openInviteModal()"
-          i18n="@@family.inviteButton"
-        >
-          + Inviter
-        </button>
+        @if (isAdmin()) {
+          <a routerLink="/household/settings" class="btn-invite" i18n="@@family.inviteButton"
+            >+ Inviter</a
+          >
+        }
       </div>
 
       @if (members().length > 0) {
@@ -105,12 +102,6 @@
     </div>
 
     <!-- Modals -->
-    <app-invite-modal
-      [open]="inviteModalOpen()"
-      (closeRequested)="closeInviteModal()"
-      (inviteSent)="onInviteSent($event)"
-    />
-
     <app-add-child-modal
       [open]="addChildModalOpen()"
       (closeRequested)="closeAddChildModal()"

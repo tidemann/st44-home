@@ -1,156 +1,174 @@
-<div class="household-settings">
-  @if (isLoading()) {
-    <div class="loading" aria-live="polite" i18n="@@householdSettings.loading">
-      Laster husholdningsinnstillinger...
-    </div>
-  } @else if (household()) {
-    <div class="household-settings__header desk-band">
-      <h1 i18n="@@householdSettings.title">Husholdningsinnstillinger</h1>
-      <p class="household-settings__subtitle" i18n="@@householdSettings.subtitle">
-        Administrer husholdningsdetaljer og medlemmer
-      </p>
-      <p class="desk-band-sub" i18n="@@householdSettings.memberCount">
-        {{ members().length }} medlemmer
-      </p>
-    </div>
+@if (ready()) {
+  <app-page [title]="title" [subtitle]="householdName()" [band]="true" maxWidth="wide">
+    <div class="iv-cols">
+      <!-- «Ny invitasjon»: on the paper, not in a card (D3) -->
+      <section class="iv-form" aria-labelledby="iv-new">
+        <h2 id="iv-new" class="iv-grp" i18n="@@invitations.newTitle">Ny invitasjon</h2>
 
-    <div class="household-settings__content desk-column">
-      <!-- Household Name Section -->
-      <section class="settings-section">
-        <h2 i18n="@@householdSettings.detailsTitle">Husholdningsdetaljer</h2>
+        <form class="iv-fields" (submit)="$event.preventDefault(); send()" novalidate>
+          <label for="iv-email" class="iv-fl" i18n="@@invitations.emailLabel">E-postadresse</label>
+          <input
+            id="iv-email"
+            class="iv-field"
+            type="email"
+            autocomplete="email"
+            inputmode="email"
+            [value]="email()"
+            (input)="onEmailInput($event)"
+            [attr.aria-invalid]="sendError() ? true : null"
+            [attr.aria-describedby]="sendError() ? 'iv-email-error' : null"
+          />
+          @if (sendError()) {
+            <p id="iv-email-error" class="iv-error" role="alert">{{ sendError() }}</p>
+          }
 
-        <form [formGroup]="householdForm" (ngSubmit)="onSubmit()" class="household-form">
-          <div class="form-group">
-            <label for="household-name" class="form-label" i18n="@@householdSettings.nameLabel"
-              >Husholdningsnavn</label
-            >
-            <input
-              id="household-name"
-              type="text"
-              formControlName="name"
-              class="form-input"
-              i18n-placeholder="@@householdSettings.namePlaceholder"
-              placeholder="f.eks. Familien Hansen"
-              [attr.aria-invalid]="
-                householdForm.get('name')?.invalid && householdForm.get('name')?.touched
-              "
-              [attr.aria-describedby]="
-                householdForm.get('name')?.invalid && householdForm.get('name')?.touched
-                  ? 'name-error'
-                  : null
-              "
-            />
-
-            @if (householdForm.get('name')?.invalid && householdForm.get('name')?.touched) {
-              <div id="name-error" class="form-error" role="alert">
-                @if (householdForm.get('name')?.errors?.['required']) {
-                  <span i18n="@@householdSettings.nameRequired">Husholdningsnavn er pakrevd</span>
-                }
-                @if (householdForm.get('name')?.errors?.['maxlength']) {
-                  <span i18n="@@householdSettings.nameMaxLength"
-                    >Husholdningsnavn ma vaere under 100 tegn</span
-                  >
-                }
-              </div>
-            }
+          <div class="iv-role" role="radiogroup" aria-labelledby="iv-role-label">
+            <span id="iv-role-label" class="iv-fl" i18n="@@invitations.roleLabel">Rolle</span>
+            <div class="iv-chips">
+              <label class="iv-chip" [class.on]="role() === 'parent'">
+                <input
+                  type="radio"
+                  name="iv-role"
+                  value="parent"
+                  [checked]="role() === 'parent'"
+                  (change)="role.set('parent')"
+                />
+                <ng-container i18n="@@invitations.roleParent">Forelder</ng-container>
+              </label>
+              <label class="iv-chip" [class.on]="role() === 'admin'">
+                <input
+                  type="radio"
+                  name="iv-role"
+                  value="admin"
+                  [checked]="role() === 'admin'"
+                  (change)="role.set('admin')"
+                />
+                <ng-container i18n="@@invitations.roleAdmin">Administrator</ng-container>
+              </label>
+            </div>
           </div>
+          <p class="iv-hint" i18n="@@invitations.roleHint">
+            Begge kan lage oppgaver og godkjenne dem. Bare en administrator kan invitere flere og
+            endre husstanden.
+          </p>
 
-          @if (!isAdmin()) {
-            <div class="info-message" role="status">
-              <p i18n="@@householdSettings.adminOnlyMessage">
-                Kun husholdningsadministratorer kan redigere husholdningsdetaljer.
-              </p>
-            </div>
-          }
-
-          @if (isAdmin()) {
-            <div class="form-actions">
-              <button
-                type="submit"
-                class="btn btn-primary"
-                [disabled]="householdForm.invalid || isSaving()"
-                [attr.aria-busy]="isSaving()"
-              >
-                @if (isSaving()) {
-                  <span i18n="@@householdSettings.savingButton">Lagrer...</span>
-                } @else {
-                  <span i18n="@@householdSettings.saveButton">Lagre endringer</span>
-                }
-              </button>
-            </div>
-          }
+          <button type="submit" class="iv-main" [attr.aria-busy]="sending() || null">
+            @if (sending()) {
+              <ng-container i18n="@@invitations.sending">Sender …</ng-container>
+            } @else {
+              <ng-container i18n="@@invitations.send">Send invitasjon</ng-container>
+            }
+          </button>
         </form>
+
+        <div aria-live="polite">
+          @if (sentTo()) {
+            <p class="iv-ok">
+              <svg width="14" height="14" viewBox="0 0 14 14" aria-hidden="true" focusable="false">
+                <path d="M2 7.4 L5.4 10.8 L12 3.6" />
+              </svg>
+              <span i18n="@@invitations.sentReceipt"
+                >Invitasjonen er sendt til {{ sentTo() }}. Den gjelder i sju dager.</span
+              >
+            </p>
+          }
+        </div>
+        @if (link()) {
+          <h3 class="iv-grp iv-link-title" i18n="@@invitations.linkTitle">
+            Lenke til invitasjonen
+          </h3>
+          <p class="iv-link" [title]="link()">{{ link() }}</p>
+          <button type="button" class="iv-outbtn" (click)="copyLink()">
+            @if (copied()) {
+              <ng-container i18n="@@invitations.linkCopied">Kopiert</ng-container>
+            } @else {
+              <ng-container i18n="@@invitations.copyLink">Kopier lenke</ng-container>
+            }
+          </button>
+        }
       </section>
 
-      <!-- Members Section -->
-      <section class="settings-section">
-        <h2 i18n="@@householdSettings.membersTitle">Husholdningsmedlemmer</h2>
+      <!-- «Sendte invitasjoner» -->
+      <section class="iv-list" aria-labelledby="iv-sent">
+        <div class="iv-grpline">
+          <h2 id="iv-sent" class="iv-grp" i18n="@@invitations.sentTitle">Sendte invitasjoner</h2>
+          @if (!listLoading() && !listError() && invitations().length > 0) {
+            <span class="iv-count">{{ invitations().length }}</span>
+          }
+        </div>
 
-        @if (isAdmin()) {
-          <div class="section-actions">
-            <app-invite-user
-              [householdId]="household()!.id"
-              (invitationSent)="onInvitationSent()"
-            />
+        @if (listLoading()) {
+          <div class="iv-cards" aria-busy="true">
+            <span class="visually-hidden" i18n="@@invitations.loading">Henter invitasjonene</span>
+            @for (row of [1, 2, 3]; track row) {
+              <div class="iv-skeleton" aria-hidden="true"></div>
+            }
           </div>
-
-          <app-invitations-sent-list />
-        }
-
-        @if (members().length > 0) {
-          <ul class="members-list" role="list">
-            @for (member of members(); track member.userId) {
-              <li class="member-item">
-                <div class="member-info">
-                  <span class="member-name">
-                    {{ member.displayName || member.email }}
-                  </span>
-                  <span
-                    class="member-role"
-                    [class.member-role--parent]="member.role === 'parent'"
-                    [class.member-role--child]="member.role === 'child'"
-                  >
-                    {{ roleLabel(member.role) }}
-                  </span>
+        } @else if (listError()) {
+          <div class="iv-card iv-empty" role="alert">
+            <p class="iv-empty-t" i18n="@@invitations.loadFailedTitle">
+              Vi fikk ikke hentet invitasjonene
+            </p>
+            <p class="iv-empty-p" i18n="@@invitations.loadFailedText">Prøv igjen om litt.</p>
+            <button
+              type="button"
+              class="iv-main iv-retry"
+              (click)="loadInvitations()"
+              i18n="@@invitations.retry"
+            >
+              Prøv igjen
+            </button>
+          </div>
+        } @else if (invitations().length === 0) {
+          <div class="iv-card iv-empty">
+            <p class="iv-empty-t" i18n="@@invitations.emptyTitle">Ingen invitasjoner sendt</p>
+            <p class="iv-empty-p" i18n="@@invitations.emptyText">
+              Invitasjoner du sender vises her, med status og en knapp for å trekke dem tilbake.
+            </p>
+          </div>
+        } @else {
+          <ul class="iv-cards" role="list">
+            @for (inv of invitations(); track inv.id) {
+              @let parts = emailParts(inv.email);
+              <li class="iv-card">
+                <p class="iv-mail" [title]="inv.email">
+                  <span class="lp">{{ parts[0] }}</span
+                  ><span class="dm">{{ parts[1] }}</span>
+                </p>
+                <div class="iv-meta">
+                  @if (inv.expired) {
+                    <span class="iv-stat gone" i18n="@@invitations.statusExpired">Utløpt</span>
+                  } @else {
+                    <span class="iv-stat" i18n="@@invitations.statusPending">Venter</span>
+                  }
+                  <span class="iv-r2">{{ detailLine(inv) }}</span>
                 </div>
-                <div class="member-meta">
-                  @let email = emailParts(member.email ?? '');
-                  <span class="member-email" [title]="member.email"
-                    ><span class="email-part">{{ email[0] }}</span
-                    ><span class="email-part">{{ email[1] }}</span></span
+                @if (!inv.expired) {
+                  <button
+                    type="button"
+                    class="iv-outbtn iv-r3"
+                    (click)="withdraw(inv)"
+                    i18n="@@invitations.withdraw"
                   >
-                  <span class="member-joined" i18n="@@householdSettings.joinedDate">
-                    Ble med {{ member.joinedAt | date: 'mediumDate' }}
-                  </span>
-                </div>
+                    Trekk tilbake
+                  </button>
+                }
               </li>
             }
           </ul>
-        } @else {
-          <p class="empty-state" i18n="@@householdSettings.noMembers">Ingen medlemmer funnet.</p>
+          @if (hasExpired()) {
+            <button
+              type="button"
+              class="iv-outbtn iv-cleanup"
+              (click)="cleanUp()"
+              i18n="@@invitations.cleanup"
+            >
+              Rydd opp gamle
+            </button>
+          }
         }
-      </section>
-
-      <!-- Children Section -->
-      <section class="settings-section">
-        <h2 i18n="@@householdSettings.childrenTitle">Barn</h2>
-        <p class="section-description" i18n="@@householdSettings.childrenDescription">
-          Administrer barn i husholdningen din.
-        </p>
-        <app-children-management />
+        <p class="visually-hidden" aria-live="polite">{{ announce() }}</p>
       </section>
     </div>
-
-    @if (successMessage()) {
-      <div class="alert alert--success" role="status" aria-live="polite">
-        {{ successMessage() }}
-      </div>
-    }
-
-    @if (errorMessage()) {
-      <div class="alert alert--error" role="alert" aria-live="polite">
-        {{ errorMessage() }}
-      </div>
-    }
-  }
-</div>
+  </app-page>
+}
