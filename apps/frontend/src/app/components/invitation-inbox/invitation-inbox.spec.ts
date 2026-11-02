@@ -89,6 +89,27 @@ describe('InvitationInboxComponent', () => {
     vi.useRealTimers();
   });
 
+  it('still lands on «Familie» without an error when the household refresh fails (ST-2099)', async () => {
+    vi.useFakeTimers();
+    const service = TestBed.inject(InvitationService) as unknown as Record<string, unknown>;
+    service['acceptInvitation'] = vi
+      .fn()
+      .mockResolvedValue({ household: { id: 'joined-h', name: 'Familien Ny' } });
+    vi.mocked(TestBed.inject(ConfirmDialogService).confirm).mockResolvedValue(true);
+    const store = TestBed.inject(HouseholdStore);
+    vi.mocked(store.loadHouseholds).mockRejectedValue(new Error('offline'));
+    const router = TestBed.inject(Router);
+    const component = TestBed.createComponent(InvitationInboxComponent).componentInstance;
+
+    await component.acceptInvitation(invitation('parent'));
+    expect(store.setActiveHousehold).toHaveBeenCalledWith('joined-h');
+    expect(component['errorMessage']()).toBeNull();
+
+    vi.advanceTimersByTime(1500);
+    expect(router.navigate).toHaveBeenCalledWith(['/family']);
+    vi.useRealTimers();
+  });
+
   it('says the invitation was declined in Norwegian', async () => {
     const service = TestBed.inject(InvitationService) as unknown as Record<string, unknown>;
     service['declineInvitation'] = vi.fn().mockResolvedValue(undefined);

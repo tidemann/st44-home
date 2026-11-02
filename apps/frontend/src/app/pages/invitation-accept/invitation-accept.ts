@@ -79,9 +79,10 @@ export class InvitationAcceptComponent implements OnInit {
         $localize`:@@invitationAccept.joined:Du er nå med i «${response.household.name}:household:».`,
       );
 
-      // Make the household just joined the active one (ST-2099)
-      await this.householdStore.loadHouseholds({ forceRefresh: true });
+      // Make the household just joined the active one (ST-2099).
+      // The invitation is already accepted, so a failed refresh must not show an error.
       this.householdStore.setActiveHousehold(response.household.id);
+      await this.householdStore.loadHouseholds({ forceRefresh: true }).catch(() => undefined);
 
       // Redirect to home after a brief delay (with proper cleanup)
       this.redirectToHomeAfterDelay();
