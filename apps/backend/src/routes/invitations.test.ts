@@ -189,6 +189,7 @@ describe('Invitation API', () => {
       assert.strictEqual(response.statusCode, 409);
       const body = JSON.parse(response.body);
       assert.ok(body.message.includes('already a household member'));
+      assert.strictEqual(body.code, 'ALREADY_HOUSEHOLD_MEMBER');
     });
 
     test('should reject duplicate pending invitation', async () => {
@@ -215,6 +216,7 @@ describe('Invitation API', () => {
       assert.strictEqual(response2.statusCode, 409);
       const body = JSON.parse(response2.body);
       assert.ok(body.message.includes('Pending invitation already exists'));
+      assert.strictEqual(body.code, 'INVITATION_ALREADY_PENDING');
 
       // Cleanup
       await pool.query('DELETE FROM invitations WHERE id = $1', [invitationId]);
