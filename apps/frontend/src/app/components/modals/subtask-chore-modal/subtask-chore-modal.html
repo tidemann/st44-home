@@ -1,0 +1,37 @@
+<app-modal [open]="chore() !== null" [title]="chore()?.taskName ?? ''" (closeModal)="onClose()">
+  <p class="count" aria-live="polite">{{ countLine() }}</p>
+  <p class="why" i18n="@@subtaskChore.howTo">Huk av ett og ett. Det lagres med en gang.</p>
+
+  <ul class="rows">
+    @for (subtask of subtasks(); track subtask.id) {
+      <li>
+        <app-subtask-row
+          [subtask]="subtask"
+          [busy]="busyId() === subtask.id || sending()"
+          (toggleDone)="toggleDone(subtask)"
+          (toggleNotPossible)="toggleNotPossible(subtask)"
+        />
+      </li>
+    }
+  </ul>
+
+  <p class="why foot">{{ footLine() }}</p>
+  @if (error(); as e) {
+    <p class="err" role="alert">{{ e }}</p>
+  }
+
+  <div class="modal-actions" modal-actions>
+    <button type="button" class="btn btn-secondary" (click)="onClose()" i18n="@@subtaskChore.close">
+      Lukk
+    </button>
+    <button
+      type="button"
+      class="btn btn-primary"
+      [disabled]="sending()"
+      (click)="onFinish()"
+      i18n="@@subtaskChore.finish"
+    >
+      Ferdig
+    </button>
+  </div>
+</app-modal>

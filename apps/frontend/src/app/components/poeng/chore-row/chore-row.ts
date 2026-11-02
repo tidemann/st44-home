@@ -68,7 +68,7 @@ export class ChoreRow {
    * A line under the row, inside the card: «Påminnelse sendt 16.49» with a green
    * tick, or a failure in rust with a warning sign (ST-1066, option C). Null hides it
    */
-  note = input<{ text: string; tone: 'done' | 'overdue' } | null>(null);
+  note = input<{ text: string; tone: 'done' | 'overdue' | 'plain' } | null>(null);
 
   /** Ticked the box */
   check = output<void>();

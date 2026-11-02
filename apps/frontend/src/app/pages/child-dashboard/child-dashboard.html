@@ -72,18 +72,37 @@
         @if (overdueTasks().length > 0) {
           <app-group-label i18n-label="@@childDashboard.overdue" label="Forfalt" [overdue]="true" />
           @for (task of overdueTasks(); track task.id) {
-            <app-chore-row [title]="task.taskName" [meta]="overdueMeta(task)" [overdue]="true">
-              <button
-                row-action
-                type="button"
-                class="rbtn"
-                [disabled]="isCompleting(task.id)"
-                [attr.aria-label]="hakAvLabel(task)"
-                (click)="onMarkDone(task)"
-                i18n="@@childDashboard.hakAv"
-              >
-                Ferdig
-              </button>
+            <app-chore-row
+              [title]="task.taskName"
+              [meta]="overdueMeta(task)"
+              [note]="subtaskNote(task)"
+              [overdue]="true"
+            >
+              @if (!hasSubtasks(task)) {
+                <button
+                  row-action
+                  type="button"
+                  class="rbtn"
+                  [disabled]="isCompleting(task.id)"
+                  [attr.aria-label]="hakAvLabel(task)"
+                  (click)="onMarkDone(task)"
+                  i18n="@@childDashboard.hakAv"
+                >
+                  Ferdig
+                </button>
+              } @else if (!task.submittedAt) {
+                <!-- A chore with sub-tasks opens as a popup (ST-2042 sheet 5); sent ones wait -->
+                <button
+                  row-action
+                  type="button"
+                  class="rbtn"
+                  [attr.aria-label]="openLabel(task)"
+                  (click)="openChore(task)"
+                  i18n="@@childDashboard.open"
+                >
+                  Åpne
+                </button>
+              }
             </app-chore-row>
           }
         }
@@ -91,18 +110,36 @@
         @if (tasks().length > 0) {
           <app-group-label i18n-label="@@childDashboard.today" label="I dag" />
           @for (task of pendingTasks(); track task.id) {
-            <app-chore-row [title]="task.taskName" [meta]="openMeta(task)">
-              <button
-                row-action
-                type="button"
-                class="rbtn"
-                [disabled]="isCompleting(task.id)"
-                [attr.aria-label]="hakAvLabel(task)"
-                (click)="onMarkDone(task)"
-                i18n="@@childDashboard.hakAv"
-              >
-                Ferdig
-              </button>
+            <app-chore-row
+              [title]="task.taskName"
+              [meta]="openMeta(task)"
+              [note]="subtaskNote(task)"
+            >
+              @if (!hasSubtasks(task)) {
+                <button
+                  row-action
+                  type="button"
+                  class="rbtn"
+                  [disabled]="isCompleting(task.id)"
+                  [attr.aria-label]="hakAvLabel(task)"
+                  (click)="onMarkDone(task)"
+                  i18n="@@childDashboard.hakAv"
+                >
+                  Ferdig
+                </button>
+              } @else if (!task.submittedAt) {
+                <!-- A chore with sub-tasks opens as a popup (ST-2042 sheet 5); sent ones wait -->
+                <button
+                  row-action
+                  type="button"
+                  class="rbtn"
+                  [attr.aria-label]="openLabel(task)"
+                  (click)="openChore(task)"
+                  i18n="@@childDashboard.open"
+                >
+                  Åpne
+                </button>
+              }
             </app-chore-row>
           }
           @if (!desktop()) {
@@ -111,7 +148,7 @@
                 [title]="task.taskName"
                 [meta]="doneMeta(task)"
                 [done]="true"
-                [points]="'+' + task.points"
+                [points]="'+' + earned(task)"
               />
             }
           }
@@ -127,7 +164,7 @@
               [title]="task.taskName"
               [meta]="doneMeta(task)"
               [done]="true"
-              [points]="'+' + task.points"
+              [points]="'+' + earned(task)"
             />
           }
         }
@@ -180,6 +217,13 @@
     </div>
   }
 </app-page>
+
+<app-subtask-chore-modal
+  [chore]="openedChore()"
+  (closed)="openedChore.set(null)"
+  (finish)="onFinishChore($event)"
+  (submitted)="onSubmitted($event)"
+/>
 
 @if (tick(); as t) {
   <app-tick-moment

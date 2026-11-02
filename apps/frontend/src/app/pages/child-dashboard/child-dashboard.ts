@@ -31,6 +31,12 @@ import {
   type TickNext,
 } from '../../components/poeng/tick-moment/tick-moment';
 import { capitalize, clockTime, dayWord, isoDay, longDate } from '../../utils/poeng-format';
+import { summarizeSubtasks } from '@st44/types';
+import { hasSubtasks, leftLine, waitingLine } from '../../utils/subtask-lines';
+import {
+  SubtaskChoreModal,
+  type SubtaskChore,
+} from '../../components/modals/subtask-chore-modal/subtask-chore-modal';
 import type { ChildAnalytics } from '@st44/types';
 import { isDesktopSignal } from '../../utils/desktop-query';
 
@@ -64,6 +70,7 @@ interface TickState {
     ProgressSummary,
     DailyPointsChart,
     NotificationSettings,
+    SubtaskChoreModal,
   ],
   templateUrl: './child-dashboard.html',
   styleUrl: './child-dashboard.css',
@@ -84,6 +91,9 @@ export class ChildDashboardComponent implements OnInit {
   /** Yesterday's chores that were never ticked */
   overdueTasks = signal<ChildTask[]>([]);
   tick = signal<TickState | null>(null);
+  /** The chore with sub-tasks whose popup is open (ST-2074) */
+  openedChore = signal<SubtaskChore | null>(null);
+  protected readonly hasSubtasks = hasSubtasks;
   undoBusy = signal(false);
   undoError = signal<string | null>(null);
 
@@ -209,7 +219,9 @@ export class ChildDashboardComponent implements OnInit {
         assignmentId: task.id,
         title: task.taskName,
         doneAt: clockTime(result?.completion?.completedAt ?? new Date()),
-        points: result?.completion?.pointsEarned ?? task.points,
+        points:
+          result?.completion?.pointsEarned ??
+          (hasSubtasks(task) ? summarizeSubtasks(task.subtasks!).earned : task.points),
       });
       this.refreshBalance();
     } catch (error) {
@@ -270,6 +282,42 @@ export class ChildDashboardComponent implements OnInit {
   doneMeta(task: MyTaskAssignment): string {
     const at = task.completedAt ? ` ${clockTime(task.completedAt)}` : '';
     return $localize`:@@childDashboard.doneMeta:Gjort${at}:at: – ${task.points}:points: poeng`;
+  }
+
+  /** The count line under a chore with sub-tasks: what is left, or that it waits for a parent */
+  subtaskNote(task: MyTaskAssignment | ChildTask): { text: string; tone: 'plain' } | null {
+    const subtasks = task.subtasks ?? [];
+    if (subtasks.length === 0) return null;
+    return { text: task.submittedAt ? waitingLine(subtasks) : leftLine(subtasks), tone: 'plain' };
+  }
+
+  /** Points a done chore gave: with sub-tasks, the done ones only */
+  earned(task: MyTaskAssignment): number {
+    return hasSubtasks(task) ? summarizeSubtasks(task.subtasks!).earned : task.points;
+  }
+
+  openLabel(task: { taskName: string }): string {
+    return $localize`:@@childDashboard.openAria:Åpne ${task.taskName}:title:`;
+  }
+
+  openChore(task: MyTaskAssignment | ChildTask): void {
+    this.openedChore.set({ id: task.id, taskName: task.taskName, subtasks: task.subtasks ?? [] });
+  }
+
+  /** «Ferdig» with every sub-task ticked: the usual done tap and tick moment */
+  async onFinishChore(chore: SubtaskChore): Promise<void> {
+    this.openedChore.set(null);
+    const task = [...this.overdueTasks(), ...this.tasks()].find((t) => t.id === chore.id);
+    if (task) await this.onMarkDone({ ...task, subtasks: chore.subtasks });
+  }
+
+  /** Sent to a parent: the row waits, with no button */
+  onSubmitted(chore: SubtaskChore): void {
+    this.openedChore.set(null);
+    const submittedAt = new Date().toISOString();
+    this.overdueTasks.update((list) =>
+      list.map((t) => (t.id === chore.id ? { ...t, subtasks: chore.subtasks, submittedAt } : t)),
+    );
   }
 
   hakAvLabel(task: { taskName: string }): string {
