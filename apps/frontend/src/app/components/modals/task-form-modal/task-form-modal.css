@@ -15,6 +15,24 @@
   max-width: 120px;
 }
 
+/* «20 poeng til sammen» and why, where the field was (ST-2074) */
+.points-sum {
+  margin: 0;
+  font-weight: 600;
+  font-size: 16px;
+  line-height: 1.4;
+  color: var(--text);
+  font-variant-numeric: tabular-nums;
+}
+
+.points-sum-why {
+  margin: 4px 0 0;
+  font-weight: 500;
+  font-size: 15px;
+  line-height: 1.4;
+  color: var(--text-muted);
+}
+
 /* Day Pills */
 .day-pills {
   display: flex;

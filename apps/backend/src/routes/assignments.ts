@@ -6,7 +6,12 @@ import { pool } from '../database.js';
 import { generateAssignments } from '../services/assignment-generator.js';
 import { pushService } from '../services/push.service.js';
 import { dateDoneTurnToday, passTurn } from '../services/turns.js';
-import { UNDO_COMPLETE_SECONDS } from '@st44/types';
+import {
+  UNDO_COMPLETE_SECONDS,
+  SetSubtaskStateRequestSchema,
+  summarizeSubtasks,
+} from '@st44/types';
+import { loadAssignmentSubtasks, withAssignmentSubtasks } from '../services/subtasks.js';
 import { withTransaction, validateBody, validateParams, validateQuery } from '../utils/index.js';
 import {
   getChildTasksSchema,
@@ -89,6 +94,55 @@ interface Assignment {
   date: string;
   status: string;
   created_at: string;
+}
+
+const subtaskParamSchema = z.object({
+  assignmentId: uuidSchema,
+  subtaskId: uuidSchema,
+});
+
+const uuidSchemaJson = { type: 'string', format: 'uuid' } as const;
+
+interface SubtaskChoreRow {
+  id: string;
+  status: string;
+  submitted_at: Date | null;
+  role: string | null;
+  child_user_id: string | null;
+  subtask_count: number;
+}
+
+/**
+ * The open chore with sub-tasks that this user may work on (ST-2074): the child it belongs to,
+ * or a parent of its household. Open = not done and, unless allowSubmitted, not yet sent to a
+ * parent. Returns the row, or the HTTP error to send.
+ */
+async function loadOpenSubtaskChore(
+  assignmentId: string,
+  userId: string | undefined,
+  { allowSubmitted = false }: { allowSubmitted?: boolean } = {},
+): Promise<{ assignment: SubtaskChoreRow } | { code: number; error: string }> {
+  const result = await pool.query<SubtaskChoreRow>(
+    `SELECT ta.id, ta.status, ta.submitted_at, hm.role, c.user_id AS child_user_id,
+            (SELECT COUNT(*)::int FROM task_subtasks s WHERE s.task_id = ta.task_id) AS subtask_count
+     FROM task_assignments ta
+     LEFT JOIN household_members hm ON hm.household_id = ta.household_id AND hm.user_id = $2
+     LEFT JOIN children c ON c.id = ta.child_id
+     WHERE ta.id = $1`,
+    [assignmentId, userId ?? null],
+  );
+  const row = result.rows[0];
+  if (!row) return { code: 404, error: 'Assignment not found' };
+  if (!row.role) return { code: 403, error: 'You are not a member of this household' };
+  if (row.role === 'child' && row.child_user_id !== userId) {
+    return { code: 403, error: 'You can only work on chores assigned to you' };
+  }
+  if (row.subtask_count === 0) return { code: 400, error: 'This chore has no sub-tasks' };
+  if (row.status !== 'pending') return { code: 400, error: 'This chore is already done' };
+  if (row.submitted_at && !allowSubmitted) {
+    return { code: 400, error: 'This chore is waiting for a parent' };
+  }
+  return { assignment: row };
 }
 
 /**
@@ -466,6 +520,7 @@ export default async function assignmentRoutes(fastify: FastifyInstance) {
             t.points,
             ta.date::text as date,
             ta.status,
+            ta.submitted_at,
             tc.completed_at::text as completed_at
           FROM task_assignments ta
           JOIN tasks t ON ta.task_id = t.id
@@ -496,10 +551,11 @@ export default async function assignmentRoutes(fastify: FastifyInstance) {
           status: row.status,
           completedAt: row.completed_at || null,
           points: row.points ?? 0,
+          submittedAt: row.submitted_at ? row.submitted_at.toISOString() : null,
         }));
 
         return reply.code(200).send({
-          assignments,
+          assignments: await withAssignmentSubtasks(pool, assignments),
           total: assignments.length,
         });
       } catch (error) {
@@ -565,6 +621,7 @@ export default async function assignmentRoutes(fastify: FastifyInstance) {
             c.name as child_name,
             ta.date::text as date,
             ta.status,
+            ta.submitted_at,
             tc.completed_at::text as completed_at,
             ta.created_at::text as created_at
           FROM task_assignments ta
@@ -614,10 +671,11 @@ export default async function assignmentRoutes(fastify: FastifyInstance) {
           completedAt: row.completed_at || null,
           createdAt: row.created_at,
           points: row.points ?? 0,
+          submittedAt: row.submitted_at ? row.submitted_at.toISOString() : null,
         }));
 
         return reply.code(200).send({
-          assignments,
+          assignments: await withAssignmentSubtasks(pool, assignments),
           total: assignments.length,
         });
       } catch (error) {
@@ -881,6 +939,27 @@ export default async function assignmentRoutes(fastify: FastifyInstance) {
 
         // Use transaction to ensure atomicity
         const result = await withTransaction(pool, async (client) => {
+          // Lock the assignment so a sub-task change cannot land between reading and paying
+          await client.query('SELECT id FROM task_assignments WHERE id = $1 FOR UPDATE', [
+            assignmentId,
+          ]);
+
+          // A chore with sub-tasks (ST-2074): the child finishes it only with every sub-task done;
+          // a parent's approval gives the points of the done ones ("not possible" and not done: 0)
+          const subtasks =
+            (await loadAssignmentSubtasks(client, [assignmentId])).get(assignmentId) ?? [];
+          let pointsEarned: number = assignment.points;
+          if (subtasks.length > 0) {
+            const summary = summarizeSubtasks(subtasks);
+            if (userRole === 'child' && !summary.allDone) {
+              throw new TransactionValidationError(
+                400,
+                'Every sub-task must be done; send the chore for approval instead',
+              );
+            }
+            pointsEarned = summary.earned;
+          }
+
           // Update assignment status
           const updateResult = await client.query(
             `UPDATE task_assignments
@@ -910,7 +989,7 @@ export default async function assignmentRoutes(fastify: FastifyInstance) {
               assignmentId,
               completedAssignment.child_id,
               completedAt,
-              assignment.points,
+              pointsEarned,
             ],
           );
 
@@ -1261,6 +1340,167 @@ export default async function assignmentRoutes(fastify: FastifyInstance) {
         return reply.code(500).send({
           error: 'Failed to reassign assignment',
         });
+      }
+    },
+  );
+
+  /**
+   * PUT /api/assignments/:assignmentId/subtasks/:subtaskId
+   * The child ticks a sub-task, marks it "not possible", or clears it (state null) (ST-2074).
+   * Only while the chore is open: not done and not sent to a parent.
+   */
+  fastify.put<{
+    Params: { assignmentId: string; subtaskId: string };
+    Body: { state: 'done' | 'not_possible' | null };
+  }>(
+    '/api/assignments/:assignmentId/subtasks/:subtaskId',
+    {
+      schema: {
+        summary: 'Set what the child did with one sub-task',
+        tags: ['assignments'],
+        security: [{ bearerAuth: [] }],
+        params: {
+          type: 'object',
+          properties: { assignmentId: uuidSchemaJson, subtaskId: uuidSchemaJson },
+          required: ['assignmentId', 'subtaskId'],
+        },
+        body: {
+          type: 'object',
+          properties: {
+            state: { type: ['string', 'null'], enum: ['done', 'not_possible', null] },
+          },
+          required: ['state'],
+        },
+      },
+      preHandler: [authenticateUser],
+    },
+    async (request, reply) => {
+      try {
+        const { assignmentId, subtaskId } = validateParams(subtaskParamSchema, request);
+        const { state } = validateBody(SetSubtaskStateRequestSchema, request);
+
+        const access = await loadOpenSubtaskChore(assignmentId, request.user?.userId);
+        if ('code' in access) {
+          return reply.code(access.code).send({ error: access.error });
+        }
+
+        const subtask = await pool.query(
+          `SELECT s.id FROM task_subtasks s
+           JOIN task_assignments ta ON ta.task_id = s.task_id
+           WHERE ta.id = $1 AND s.id = $2`,
+          [assignmentId, subtaskId],
+        );
+        if (subtask.rows.length === 0) {
+          return reply.code(404).send({ error: 'Sub-task not found on this chore' });
+        }
+
+        const subtasks = await withTransaction(pool, async (client) => {
+          // Same lock as /complete, so a tick cannot land while a parent approves
+          const locked = await client.query<{ status: string; submitted_at: Date | null }>(
+            'SELECT status, submitted_at FROM task_assignments WHERE id = $1 FOR UPDATE',
+            [assignmentId],
+          );
+          if (locked.rows[0]?.status !== 'pending' || locked.rows[0]?.submitted_at) {
+            throw new TransactionValidationError(400, 'This chore is no longer open');
+          }
+
+          if (state === null) {
+            await client.query(
+              'DELETE FROM assignment_subtask_states WHERE assignment_id = $1 AND subtask_id = $2',
+              [assignmentId, subtaskId],
+            );
+          } else {
+            await client.query(
+              `INSERT INTO assignment_subtask_states (assignment_id, subtask_id, state, updated_at)
+               VALUES ($1, $2, $3, NOW())
+               ON CONFLICT (assignment_id, subtask_id)
+               DO UPDATE SET state = EXCLUDED.state, updated_at = NOW()`,
+              [assignmentId, subtaskId, state],
+            );
+          }
+          return (await loadAssignmentSubtasks(client, [assignmentId])).get(assignmentId);
+        });
+
+        return reply.code(200).send({ subtasks: subtasks ?? [] });
+      } catch (error) {
+        if (error instanceof z.ZodError) {
+          return reply.code(400).send({
+            error: 'Validation failed',
+            details: error.issues.map((e) => ({ path: e.path.join('.'), message: e.message })),
+          });
+        }
+        if (error instanceof TransactionValidationError) {
+          return reply.code(error.statusCode).send({ error: error.message });
+        }
+        fastify.log.error(error, 'Failed to set sub-task state');
+        return reply.code(500).send({ error: 'Failed to set sub-task state' });
+      }
+    },
+  );
+
+  /**
+   * POST /api/assignments/:assignmentId/submit
+   * The child sends a chore with sub-tasks to a parent ("Ferdig" with some not done) (ST-2074).
+   * No points yet: a parent approves it with POST /complete. Sending twice is harmless.
+   */
+  fastify.post<{ Params: { assignmentId: string } }>(
+    '/api/assignments/:assignmentId/submit',
+    {
+      schema: {
+        summary: 'Send a chore with sub-tasks to a parent for approval',
+        tags: ['assignments'],
+        security: [{ bearerAuth: [] }],
+        params: {
+          type: 'object',
+          properties: { assignmentId: uuidSchemaJson },
+          required: ['assignmentId'],
+        },
+      },
+      preHandler: [authenticateUser],
+    },
+    async (request, reply) => {
+      try {
+        const { assignmentId } = validateParams(assignmentIdParamSchema, request);
+
+        const access = await loadOpenSubtaskChore(assignmentId, request.user?.userId, {
+          allowSubmitted: true,
+        });
+        if ('code' in access) {
+          return reply.code(access.code).send({ error: access.error });
+        }
+        // Only the child sends; a parent approves with /complete
+        if (access.assignment.role !== 'child') {
+          return reply.code(403).send({ error: 'Only the child can send a chore for approval' });
+        }
+
+        const result = await pool.query<{ submitted_at: Date }>(
+          `UPDATE task_assignments
+           SET submitted_at = COALESCE(submitted_at, NOW())
+           WHERE id = $1 AND status = 'pending'
+           RETURNING submitted_at`,
+          [assignmentId],
+        );
+        // A parent approved it between the check and here
+        if (result.rows.length === 0) {
+          return reply.code(400).send({ error: 'This chore is already done' });
+        }
+
+        if (!access.assignment.submitted_at) {
+          notifyParentsDone(fastify, assignmentId, request.user?.userId);
+        }
+        return reply.code(200).send({
+          id: assignmentId,
+          submittedAt: result.rows[0].submitted_at.toISOString(),
+        });
+      } catch (error) {
+        if (error instanceof z.ZodError) {
+          return reply.code(400).send({
+            error: 'Validation failed',
+            details: error.issues.map((e) => ({ path: e.path.join('.'), message: e.message })),
+          });
+        }
+        fastify.log.error(error, 'Failed to submit assignment');
+        return reply.code(500).send({ error: 'Failed to submit assignment' });
       }
     },
   );

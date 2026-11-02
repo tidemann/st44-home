@@ -3,6 +3,7 @@
  */
 import { z } from '../generators/openapi.generator.js';
 import { TaskRuleTypeSchema } from './task.schema.js';
+import { AssignmentSubtaskSchema } from './subtask.schema.js';
 
 /**
  * Assignment Status
@@ -29,6 +30,10 @@ export const AssignmentSchema = z.object({
   createdAt: z.string().datetime(),
   // Points the chore is worth (tasks.points), shown on the chore card (ST-777)
   points: z.number().int().nonnegative().optional(),
+  // Sub-tasks in order, with what the child did (ST-2074); absent or [] = a normal chore
+  subtasks: z.array(AssignmentSubtaskSchema).optional(),
+  // When the child sent the chore to a parent with sub-tasks not all done (ST-2074)
+  submittedAt: z.string().datetime().nullable().optional(),
 });
 
 /**

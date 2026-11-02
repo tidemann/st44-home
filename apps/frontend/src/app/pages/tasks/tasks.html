@@ -142,6 +142,7 @@
               <app-chore-row
                 [title]="a.title"
                 [meta]="overdueMeta(a)"
+                [note]="subtaskNote(a)"
                 [overdue]="true"
                 [points]="canReassign() ? '' : points(a.points)"
                 [checkable]="true"
@@ -167,6 +168,39 @@
             }
           }
 
+          @if (waitingRows().length > 0) {
+            <app-group-label
+              i18n-label="@@tasks.waitingGroup"
+              label="Venter på godkjenning"
+              [right]="'' + waitingRows().length"
+            />
+            @for (a of waitingRows(); track a.id) {
+              <app-chore-row
+                [title]="a.title"
+                [meta]="waitingMeta(a)"
+                [note]="subtaskNote(a)"
+                [points]="points(a.points)"
+                [checkable]="true"
+                [busy]="completingId() === a.id"
+                [openable]="true"
+                [pressable]="isLive(a.taskId)"
+                (check)="onComplete(a)"
+                (open)="onEdit(a.taskId)"
+                (longPress)="onLongPress(a.taskId, $event)"
+              >
+                <button
+                  row-action
+                  type="button"
+                  class="rbtn"
+                  (click)="onComplete(a)"
+                  i18n="@@tasks.review"
+                >
+                  Se over
+                </button>
+              </app-chore-row>
+            }
+          }
+
           @if (openRows().length > 0) {
             <app-group-label
               i18n-label="@@tasks.todayGroup"
@@ -177,6 +211,7 @@
               <app-chore-row
                 [title]="a.title"
                 [meta]="openMeta(a)"
+                [note]="subtaskNote(a)"
                 [points]="canReassign() ? '' : points(a.points)"
                 [checkable]="true"
                 [busy]="completingId() === a.id"
@@ -222,7 +257,7 @@
                 [title]="a.title"
                 [meta]="doneMeta(a)"
                 [done]="true"
-                [points]="points(a.points)"
+                [points]="points(earned(a))"
                 [openable]="true"
                 [pressable]="isLive(a.taskId)"
                 (open)="onEdit(a.taskId)"
@@ -430,6 +465,14 @@
     [householdName]="householdName()"
     (closed)="turnPopup.set(null)"
     (turnChanged)="onTurnChanged($event)"
+  />
+
+  <app-subtask-review-modal
+    [chore]="reviewing()"
+    [busy]="completingId() !== null"
+    [error]="reviewError()"
+    (closed)="reviewing.set(null)"
+    (approve)="onApprove($event)"
   />
 
   <app-reassign-task-modal

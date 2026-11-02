@@ -19,6 +19,9 @@ export * from './child.schema.js';
 // Task schemas
 export * from './task.schema.js';
 
+// Sub-task schemas
+export * from './subtask.schema.js';
+
 // Assignment schemas
 export * from './assignment.schema.js';
 

@@ -31,7 +31,15 @@ import { TurnService, nextInTurn, turnChild } from '../../services/turn.service'
 import { HouseholdStore } from '../../stores/household.store';
 import { capitalize, clockTime, dayWord } from '../../utils/poeng-format';
 import { hasNoChildrenLeft } from '../../utils/task-children';
-import type { Task, Child, Assignment, TaskTurn } from '@st44/types';
+import {
+  summarizeSubtasks,
+  type Task,
+  type Child,
+  type Assignment,
+  type TaskTurn,
+} from '@st44/types';
+import { SubtaskReviewModal } from '../../components/modals/subtask-review-modal/subtask-review-modal';
+import { doneLine, hasSubtasks, sentLine } from '../../utils/subtask-lines';
 
 /** "tre oppgaver" as drawn (ST-1343); digits from 13 up */
 const COUNT_WORDS = [
@@ -75,6 +83,7 @@ const COUNT_WORDS = [
     GroupLabel,
     EmptyGroup,
     TurnPopup,
+    SubtaskReviewModal,
   ],
   templateUrl: './tasks.html',
   styleUrl: './tasks.css',
@@ -192,9 +201,18 @@ export class Tasks implements OnInit {
     return list.filter((a) => a.childId === child.id || a.childName === child.name);
   };
 
-  protected readonly overdueRows = computed(() => this.forChild(this.overdue()));
+  /** Sent by the child with sub-tasks not all done (ST-2074): waiting for a parent */
+  private readonly sent = (a: Assignment): boolean => a.status === 'pending' && !!a.submittedAt;
+
+  protected readonly overdueRows = computed(() =>
+    this.forChild(this.overdue()).filter((a) => !this.sent(a)),
+  );
+  /** «Venter på godkjenning», under «Forfalt» (ST-2042 sheet 5) */
+  protected readonly waitingRows = computed(() =>
+    this.forChild([...this.overdue(), ...this.today()]).filter(this.sent),
+  );
   protected readonly openRows = computed(() =>
-    this.forChild(this.today()).filter((a) => a.status === 'pending'),
+    this.forChild(this.today()).filter((a) => a.status === 'pending' && !this.sent(a)),
   );
   protected readonly doneRows = computed(() =>
     this.forChild(this.today()).filter((a) => a.status === 'completed'),
@@ -203,15 +221,25 @@ export class Tasks implements OnInit {
   /** "7 i dag – 1 forfalt" */
   protected readonly subtitle = computed(() => {
     const late = this.overdueRows().length;
-    const total = late + this.openRows().length + this.doneRows().length;
+    const total =
+      late + this.waitingRows().length + this.openRows().length + this.doneRows().length;
     return late > 0
       ? $localize`:@@tasks.subtitleLate:${total}:total: i dag – ${late}:late: forfalt`
       : $localize`:@@tasks.subtitle:${total}:total: i dag`;
   });
 
   protected readonly hasDay = computed(
-    () => this.overdueRows().length + this.openRows().length + this.doneRows().length > 0,
+    () =>
+      this.overdueRows().length +
+        this.waitingRows().length +
+        this.openRows().length +
+        this.doneRows().length >
+      0,
   );
+
+  /** The approval popup of a chore with sub-tasks (ST-2042 sheet 4) */
+  protected readonly reviewing = signal<Assignment | null>(null);
+  protected readonly reviewError = signal<string | null>(null);
 
   /** With one child selected, open rows offer «Bytt» */
   protected readonly canReassign = computed(() => this.selectedChildId() !== null);
@@ -353,6 +381,23 @@ export class Tasks implements OnInit {
     return $localize`:@@tasks.openMeta:${this.who(a)}:who: – ${capitalize(dayWord(a.date))}:day:`;
   }
 
+  /** "Emma – ferdig 17.20": sent with sub-tasks, waiting for a parent */
+  protected waitingMeta(a: Assignment): string {
+    const at = a.submittedAt ? clockTime(a.submittedAt) : '';
+    return $localize`:@@tasks.waitingMeta:${this.who(a)}:who: – ferdig ${at}:at:`;
+  }
+
+  /** The count line under a chore with sub-tasks */
+  protected subtaskNote(a: Assignment): { text: string; tone: 'plain' } | null {
+    if (!hasSubtasks(a)) return null;
+    return { text: a.submittedAt ? sentLine(a.subtasks!) : doneLine(a.subtasks!), tone: 'plain' };
+  }
+
+  /** Points a done chore gave: with sub-tasks, the done ones only */
+  protected earned(a: Assignment): number | undefined {
+    return hasSubtasks(a) ? summarizeSubtasks(a.subtasks!).earned : a.points;
+  }
+
   /** "Emma – Gjort 16.10" */
   protected doneMeta(a: Assignment): string {
     const at = a.completedAt ? ` ${clockTime(a.completedAt)}` : '';
@@ -386,8 +431,29 @@ export class Tasks implements OnInit {
     return a.childName || $localize`:@@tasks.anyone:Alle`;
   }
 
-  /** A parent may tick a chore off for the child */
+  /** A parent may tick a chore off for the child; one with sub-tasks is approved in its popup */
   protected async onComplete(a: Assignment): Promise<void> {
+    if (hasSubtasks(a)) {
+      this.reviewError.set(null);
+      this.reviewing.set(a);
+      return;
+    }
+    await this.complete(a);
+  }
+
+  /** «Godkjenn»: the points of the done sub-tasks */
+  protected async onApprove(a: Assignment): Promise<void> {
+    this.reviewError.set(null);
+    if (await this.complete(a)) {
+      this.reviewing.set(null);
+    } else {
+      this.reviewError.set(
+        $localize`:@@tasks.approveFailed:Det gikk ikke å godkjenne. Sjekk nettet og prøv igjen.`,
+      );
+    }
+  }
+
+  private async complete(a: Assignment): Promise<boolean> {
     this.completingId.set(a.id);
     try {
       await this.taskService.completeTask(a.id);
@@ -396,9 +462,13 @@ export class Tasks implements OnInit {
       this.today.update((list) =>
         list.some((x) => x.id === a.id) ? list.map((x) => (x.id === a.id ? done : x)) : list,
       );
+      return true;
     } catch (err) {
       console.error('Complete task error:', err);
-      this.error.set($localize`:@@tasks.completeFailed:Kunne ikke merke oppgaven som ferdig`);
+      if (!hasSubtasks(a)) {
+        this.error.set($localize`:@@tasks.completeFailed:Kunne ikke merke oppgaven som ferdig`);
+      }
+      return false;
     } finally {
       this.completingId.set(null);
     }
@@ -466,6 +536,7 @@ export class Tasks implements OnInit {
         points: data.points,
         ruleType: data.ruleType,
         ruleConfig: data.ruleConfig,
+        subtasks: data.subtasks,
       })
       .subscribe({
         next: async (task) => {

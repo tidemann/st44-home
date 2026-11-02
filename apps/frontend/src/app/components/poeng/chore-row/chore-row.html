@@ -111,7 +111,7 @@
     <ng-content select="[row-action]" />
 
     @if (note(); as n) {
-      <span class="note" [class.rust]="n.tone === 'overdue'">
+      <span class="note" [class.rust]="n.tone === 'overdue'" [class.plain]="n.tone === 'plain'">
         @if (n.tone === 'overdue') {
           <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
             <path
@@ -123,7 +123,7 @@
             <path d="M8 6.6v3.2" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" />
             <circle cx="8" cy="11.7" r="0.95" fill="currentColor" />
           </svg>
-        } @else {
+        } @else if (n.tone === 'done') {
           <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
             <path
               d="M2.2 8.4 6 12.1 13.8 4.3"

@@ -9,6 +9,7 @@ import {
   calculateOffset,
   type Task,
   type PaginationQuery,
+  type Subtask,
 } from '@st44/types';
 import { z, zodToOpenAPI, generateAPISchemas, CommonErrors } from '@st44/types/generators';
 import { db } from '../database.js';
@@ -26,6 +27,8 @@ import { generateAssignments } from '../services/assignment-generator.js';
 import { addWeeks, mondayOf, toIsoDate } from '../services/rotation.js';
 import { giveTurnTo, newScanCode, syncTurn } from '../services/turns.js';
 import type { PoolClient } from 'pg';
+import { loadTaskSubtasks, saveSubtasks } from '../services/subtasks.js';
+import { withTransaction } from '../utils/index.js';
 
 interface HouseholdParams {
   householdId: string;
@@ -180,7 +183,7 @@ function toDateTimeString(value: unknown): string {
   return new Date(String(value)).toISOString();
 }
 
-function mapTaskRowToTask(row: TaskRow): Task {
+function mapTaskRowToTask(row: TaskRow, subtasks: Subtask[] = []): Task {
   const normalizedRuleConfig = normalizeRuleConfig(row.rule_config);
 
   return {
@@ -196,6 +199,7 @@ function mapTaskRowToTask(row: TaskRow): Task {
     active: row.active !== false,
     createdAt: toDateTimeString(row.created_at),
     updatedAt: toDateTimeString(row.updated_at),
+    subtasks,
   };
 }
 
@@ -289,7 +293,10 @@ async function createTask(request: FastifyRequest<CreateTaskRequest>, reply: Fas
   try {
     // Validate request body with Zod schema
     const validatedData = validateRequest(CreateTaskRequestSchema, request.body);
-    const { name, description, points, ruleType, ruleConfig } = validatedData;
+    const { name, description, ruleType, ruleConfig, subtasks = [] } = validatedData;
+    // A chore with sub-tasks is worth their sum (ST-2074)
+    const points =
+      subtasks.length > 0 ? subtasks.reduce((sum, s) => sum + s.points, 0) : validatedData.points;
     const normalizedRuleConfig = withRotationStartForCreate(
       ruleType,
       normalizeRuleConfig(ruleConfig),
@@ -352,25 +359,31 @@ async function createTask(request: FastifyRequest<CreateTaskRequest>, reply: Fas
         }
       : null;
 
-    const result = await db.query(
-      `INSERT INTO tasks (household_id, name, description, points, rule_type, rule_config, deadline, scan_code)
-       VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
-       RETURNING id, household_id, name, description, points, rule_type, rule_config, deadline, scan_code, active, created_at, updated_at`,
-      [
-        householdId,
-        name.trim(),
-        description || null,
-        points,
-        ruleType,
-        ruleConfigForStorage === null || Object.keys(ruleConfigForStorage).length === 0
-          ? null
-          : JSON.stringify(ruleConfigForStorage),
-        deadline,
-        ruleType === 'next_in_line' ? await newScanCode(db) : null,
-      ],
-    );
-
-    const createdTask = result.rows[0];
+    // The chore and its sub-tasks are saved together, or not at all
+    const scanCode = ruleType === 'next_in_line' ? await newScanCode(db) : null;
+    const createdTask = await withTransaction(db, async (client) => {
+      const result = await client.query(
+        `INSERT INTO tasks (household_id, name, description, points, rule_type, rule_config, deadline, scan_code)
+         VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+         RETURNING id, household_id, name, description, points, rule_type, rule_config, deadline, scan_code, active, created_at, updated_at`,
+        [
+          householdId,
+          name.trim(),
+          description || null,
+          points,
+          ruleType,
+          ruleConfigForStorage === null || Object.keys(ruleConfigForStorage).length === 0
+            ? null
+            : JSON.stringify(ruleConfigForStorage),
+          deadline,
+          scanCode,
+        ],
+      );
+      if (subtasks.length > 0) {
+        await saveSubtasks(client, householdId, result.rows[0].id, subtasks);
+      }
+      return result.rows[0];
+    });
 
     // «Etter tur» (ST-2075): the first child in the order has the turn
     if (ruleType === 'next_in_line') {
@@ -410,7 +423,8 @@ async function createTask(request: FastifyRequest<CreateTaskRequest>, reply: Fas
       }
     }
 
-    return reply.status(201).send(mapTaskRowToTask(createdTask));
+    const created = await loadTaskSubtasks(db, [createdTask.id]);
+    return reply.status(201).send(mapTaskRowToTask(createdTask, created.get(createdTask.id)));
   } catch (error) {
     // Handle Zod validation errors
     if (error instanceof z.ZodError) {
@@ -478,8 +492,12 @@ async function listTasks(request: FastifyRequest<ListTasksRequest>, reply: Fasti
 
     const pagination = calculatePaginationMeta(validPage, validPageSize, total);
 
+    const subtasksByTask = await loadTaskSubtasks(
+      db,
+      dataResult.rows.map((row) => row.id),
+    );
     return reply.send({
-      tasks: dataResult.rows.map(mapTaskRowToTask),
+      tasks: dataResult.rows.map((row) => mapTaskRowToTask(row, subtasksByTask.get(row.id))),
       pagination,
     });
   } catch (error) {
@@ -514,8 +532,9 @@ async function getTask(request: FastifyRequest<{ Params: TaskParams }>, reply: F
     }
 
     const task = result.rows[0];
+    const subtasksByTask = await loadTaskSubtasks(db, [task.id]);
 
-    return reply.send(mapTaskRowToTask(task));
+    return reply.send(mapTaskRowToTask(task, subtasksByTask.get(task.id)));
   } catch (error) {
     if (error instanceof z.ZodError) {
       return handleZodError(error, reply);
@@ -539,7 +558,12 @@ async function updateTask(request: FastifyRequest<UpdateTaskRequest>, reply: Fas
     const { householdId, taskId } = validateParams(householdTaskParamsSchema, request);
     // Validate request body with Zod schema
     const validatedData = validateRequest(UpdateTaskRequestSchema, request.body);
-    const { name, description, points, ruleType, ruleConfig, active } = validatedData;
+    const { name, description, ruleType, ruleConfig, active, subtasks } = validatedData;
+    // A chore with sub-tasks is worth their sum (ST-2074)
+    const points =
+      subtasks && subtasks.length > 0
+        ? subtasks.reduce((sum, s) => sum + s.points, 0)
+        : validatedData.points;
     let normalizedRuleConfig = normalizeRuleConfig(ruleConfig);
 
     // Validate update data if rule_type is being changed
@@ -662,7 +686,7 @@ async function updateTask(request: FastifyRequest<UpdateTaskRequest>, reply: Fas
       values.push(active);
     }
 
-    if (updates.length === 0) {
+    if (updates.length === 0 && subtasks === undefined) {
       return reply.status(400).send({
         statusCode: 400,
         error: 'Bad Request',
@@ -682,17 +706,22 @@ async function updateTask(request: FastifyRequest<UpdateTaskRequest>, reply: Fas
       RETURNING id, household_id, name, description, points, rule_type, rule_config, scan_code, created_at, updated_at
     `;
 
-    const result = await db.query(query, values);
+    // The chore and its sub-tasks are saved together, or not at all
+    const task = await withTransaction(db, async (client) => {
+      const result = await client.query(query, values);
+      if (result.rows.length > 0 && subtasks !== undefined) {
+        await saveSubtasks(client, householdId, taskId, subtasks);
+      }
+      return result.rows[0];
+    });
 
-    if (result.rows.length === 0) {
+    if (!task) {
       return reply.status(404).send({
         statusCode: 404,
         error: 'Not Found',
         message: 'Task not found in this household',
       });
     }
-
-    const task = result.rows[0];
 
     // «Etter tur» (ST-2075): one open turn, on a child still in the order. A chore that
     // becomes or stops being «Etter tur» drops the open rows of its old kind first.
@@ -761,7 +790,8 @@ async function updateTask(request: FastifyRequest<UpdateTaskRequest>, reply: Fas
       await regenerateRotationFromNextWeek(householdId, taskId);
     }
 
-    return reply.send(mapTaskRowToTask(task));
+    const saved = await loadTaskSubtasks(db, [taskId]);
+    return reply.send(mapTaskRowToTask(task, saved.get(taskId)));
   } catch (error) {
     // Handle Zod validation errors
     if (error instanceof z.ZodError) {

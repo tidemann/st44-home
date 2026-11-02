@@ -11,6 +11,7 @@ import {
   CreateChildRequestSchema,
   UpdateChildRequestSchema,
   CreateChildUserAccountRequestSchema,
+  AssignmentSubtaskSchema,
 } from '@st44/types';
 import { z, zodToOpenAPI, CommonErrors } from '@st44/types/generators';
 import {
@@ -21,6 +22,7 @@ import {
 } from '../utils/index.js';
 import { householdChildParamsSchema } from '../schemas/validation.js';
 import { stripResponseValidation } from '../schemas/common.js';
+import { withAssignmentSubtasks } from '../services/subtasks.js';
 import bcrypt from 'bcrypt';
 
 /**
@@ -501,6 +503,7 @@ async function getMyTasks(
         t.points,
         ta.date::text as date,
         ta.status,
+        ta.submitted_at,
         tc.completed_at
        FROM task_assignments ta
        JOIN tasks t ON ta.task_id = t.id
@@ -521,6 +524,7 @@ async function getMyTasks(
       date: row.date,
       status: row.status,
       completedAt: row.completed_at ? row.completed_at.toISOString() : null,
+      submittedAt: row.submitted_at ? row.submitted_at.toISOString() : null,
     }));
 
     // Step 4: Calculate points
@@ -530,7 +534,7 @@ async function getMyTasks(
       .reduce((sum, task) => sum + task.points, 0);
 
     return reply.send({
-      tasks,
+      tasks: await withAssignmentSubtasks(db, tasks),
       totalPointsToday: totalPoints,
       completedPoints,
       childName,
@@ -578,6 +582,9 @@ export default async function childrenRoutes(server: FastifyInstance) {
     date: z.string(),
     status: z.enum(['pending', 'completed', 'overdue']),
     completedAt: z.string().nullable(),
+    // Chores with sub-tasks (ST-2074)
+    subtasks: z.array(AssignmentSubtaskSchema),
+    submittedAt: z.string().nullable(),
   });
 
   const MyTasksResponseSchema = z.object({

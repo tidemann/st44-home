@@ -11,7 +11,7 @@ export interface MemberCardData {
   /** The badge letter, when the shown name is a fallback («Ukjent», «Barn») */
   initial?: string;
   email?: string;
-  role: 'parent' | 'child';
+  role: 'admin' | 'parent' | 'child';
   tasksCompleted?: number;
   totalTasks?: number;
   points?: number;

@@ -10,7 +10,10 @@ import type {
   Assignment,
   AssignmentFilters,
   PaginationMeta,
+  AssignmentSubtask,
+  SubtaskState,
 } from '@st44/types';
+import { summarizeSubtasks } from '@st44/types';
 
 /**
  * Pagination options for list queries
@@ -46,6 +49,10 @@ export interface MyTaskAssignment {
   date: string;
   status: 'pending' | 'completed' | 'overdue';
   completedAt: string | null;
+  // Sub-tasks with what the child did (ST-2074); [] for a normal chore
+  subtasks?: AssignmentSubtask[];
+  // Set when the child sent the chore to a parent with sub-tasks not all done
+  submittedAt?: string | null;
 }
 
 /**
@@ -434,7 +441,10 @@ export class TaskService {
     this.myTasksResponseSignal.update((response) => {
       if (!response) return response;
       const task = response.tasks.find((t) => t.id === assignmentId);
-      const pointsEarned = task?.points ?? 0;
+      // A chore with sub-tasks earns the points of the done ones (ST-2074)
+      const pointsEarned = task?.subtasks?.length
+        ? summarizeSubtasks(task.subtasks).earned
+        : (task?.points ?? 0);
       return {
         ...response,
         tasks: response.tasks.map((t) =>
@@ -478,6 +488,51 @@ export class TaskService {
       this.assignmentsErrorSignal.set('Failed to complete task');
       throw err;
     }
+  }
+
+  /**
+   * Tick, mark "not possible" or clear (null) one sub-task of a chore (ST-2074).
+   * Not optimistic: the list shows what the server saved.
+   */
+  async setSubtaskState(
+    assignmentId: string,
+    subtaskId: string,
+    state: SubtaskState | null,
+  ): Promise<AssignmentSubtask[]> {
+    const { subtasks } = await this.apiService.put<{ subtasks: AssignmentSubtask[] }>(
+      `/assignments/${assignmentId}/subtasks/${subtaskId}`,
+      { state },
+    );
+    this.patchAssignment(assignmentId, { subtasks });
+    return subtasks;
+  }
+
+  /** Send a chore with sub-tasks to a parent: «Ferdig» with some not done (ST-2074) */
+  async submitTask(assignmentId: string): Promise<string> {
+    const { submittedAt } = await this.apiService.post<{ id: string; submittedAt: string }>(
+      `/assignments/${assignmentId}/submit`,
+      {},
+    );
+    this.patchAssignment(assignmentId, { submittedAt });
+    return submittedAt;
+  }
+
+  /** Apply the same change to one chore in both lists the service holds */
+  private patchAssignment(
+    assignmentId: string,
+    patch: { subtasks?: AssignmentSubtask[]; submittedAt?: string },
+  ): void {
+    this.assignmentsSignal.update((list) =>
+      list.map((a) => (a.id === assignmentId ? { ...a, ...patch } : a)),
+    );
+    this.myTasksResponseSignal.update((response) =>
+      response
+        ? {
+            ...response,
+            tasks: response.tasks.map((t) => (t.id === assignmentId ? { ...t, ...patch } : t)),
+          }
+        : response,
+    );
   }
 
   /**

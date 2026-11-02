@@ -12,6 +12,23 @@ import {
 } from './common.js';
 import { UNDO_COMPLETE_SECONDS } from '@st44/types';
 
+// A chore's sub-tasks with what the child did (ST-2074); [] for a normal chore
+const assignmentSubtasksSchema = {
+  type: 'array',
+  items: {
+    type: 'object',
+    properties: {
+      id: uuidSchema,
+      name: { type: 'string' },
+      points: { type: 'integer', minimum: 0 },
+      position: { type: 'integer', minimum: 0 },
+      state: { type: 'string', enum: ['done', 'not_possible'], nullable: true },
+      updatedAt: { ...timestampSchema, nullable: true },
+    },
+    required: ['id', 'name', 'points', 'position'],
+  },
+} as const;
+
 const taskAssignmentSchemaBase = {
   type: 'object',
   properties: {
@@ -31,6 +48,8 @@ const taskAssignmentSchemaBase = {
     },
     completedAt: { ...timestampSchema, nullable: true },
     points: { type: 'integer', minimum: 0, description: 'Points the chore is worth' },
+    subtasks: assignmentSubtasksSchema,
+    submittedAt: { ...timestampSchema, nullable: true },
   },
   required: ['id', 'taskId', 'childId', 'title', 'ruleType', 'date', 'status'],
 } as const;
@@ -147,6 +166,8 @@ const getHouseholdAssignmentsSchemaBase = {
               completedAt: { ...timestampSchema, nullable: true },
               createdAt: timestampSchema,
               points: { type: 'integer', minimum: 0, description: 'Points the chore is worth' },
+              subtasks: assignmentSubtasksSchema,
+              submittedAt: { ...timestampSchema, nullable: true },
             },
           },
         },

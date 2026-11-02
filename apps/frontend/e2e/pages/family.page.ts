@@ -61,9 +61,7 @@ export class FamilyPage extends BasePage {
     this.pageTitle = page.locator('h1, [data-testid="page-title"]');
 
     // Action buttons
-    this.inviteMemberButton = page.locator(
-      'button:has-text("Invite"), button:has-text("Add Member"), [data-testid="invite-member-btn"]',
-    );
+    this.inviteMemberButton = page.locator('a.btn-invite, [data-testid="invite-member-btn"]');
     this.addChildButton = page.locator(
       'button:has-text("Add Child"), [data-testid="add-child-btn"]',
     );
