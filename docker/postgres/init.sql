@@ -205,6 +205,7 @@ CREATE TABLE IF NOT EXISTS task_assignments (
   date DATE NOT NULL, -- Renamed from due_date (migration 021)
   status VARCHAR(50) DEFAULT 'pending' CHECK (status IN ('pending', 'completed', 'overdue', 'expired')),
   reminder_sent_at TIMESTAMP WITH TIME ZONE, -- Added in migration 052: "due" push reminder sent
+  submitted_at TIMESTAMP WITH TIME ZONE, -- Added in migration 057: sent to a parent for approval
   created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
@@ -230,6 +231,27 @@ CREATE TABLE IF NOT EXISTS task_completions (
 
 CREATE INDEX IF NOT EXISTS idx_task_completions_household ON task_completions(household_id);
 CREATE INDEX IF NOT EXISTS idx_task_completions_child ON task_completions(child_id);
+
+-- Sub-tasks on a chore, and what the child did with each on one chore instance (migration 057)
+CREATE TABLE IF NOT EXISTS task_subtasks (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  household_id UUID NOT NULL REFERENCES households(id) ON DELETE CASCADE,
+  task_id UUID NOT NULL REFERENCES tasks(id) ON DELETE CASCADE,
+  name VARCHAR(100) NOT NULL,
+  points INTEGER NOT NULL DEFAULT 0 CHECK (points >= 0 AND points <= 1000),
+  position INTEGER NOT NULL DEFAULT 0,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE INDEX IF NOT EXISTS idx_task_subtasks_task ON task_subtasks(task_id, position);
+
+CREATE TABLE IF NOT EXISTS assignment_subtask_states (
+  assignment_id UUID NOT NULL REFERENCES task_assignments(id) ON DELETE CASCADE,
+  subtask_id UUID NOT NULL REFERENCES task_subtasks(id) ON DELETE CASCADE,
+  state VARCHAR(20) NOT NULL CHECK (state IN ('done', 'not_possible')),
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (assignment_id, subtask_id)
+);
 
 -- Push subscriptions (migration 052): one row per phone/browser with notifications on
 CREATE TABLE IF NOT EXISTS push_subscriptions (

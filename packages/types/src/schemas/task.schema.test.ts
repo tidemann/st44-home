@@ -98,7 +98,7 @@ describe('TaskSchema', () => {
       householdId: '123e4567-e89b-12d3-a456-426614174001',
       name: 'Task',
       description: null,
-      points: 9999, // Exceeds max of 1000
+      points: 20001, // Exceeds max of 20000 (20 sub-tasks of 1000, ST-2074)
       ruleType: 'daily' as const,
       ruleConfig: null,
       active: true,

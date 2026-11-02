@@ -1,5 +1,6 @@
 import { Injectable, inject } from '@angular/core';
 import { ApiService } from './api.service';
+import type { AssignmentSubtask } from '@st44/types';
 
 /**
  * Child statistics for dashboard
@@ -46,6 +47,9 @@ export interface ChildTask {
   date: string;
   status: 'pending' | 'completed';
   completedAt: string | null;
+  // Sub-tasks with what the child did, and when it was sent to a parent (ST-2074)
+  subtasks?: AssignmentSubtask[];
+  submittedAt?: string | null;
 }
 
 /**

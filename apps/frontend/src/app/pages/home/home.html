@@ -53,7 +53,7 @@
               [checkable]="true"
               [busy]="completingId() === task.id"
               [openable]="true"
-              [note]="reminderNote(task)"
+              [note]="reminderNote(task) ?? subtaskNote(task)"
               (check)="onCompleteTask(task.id)"
               (open)="onEditTask(task.id)"
             >
@@ -111,6 +111,7 @@
             <app-chore-row
               [title]="task.title"
               [meta]="rowMeta(task)"
+              [note]="subtaskNote(task)"
               [points]="pointsText(task)"
               [checkable]="true"
               [busy]="completingId() === task.id"
@@ -237,3 +238,10 @@
     (closed)="householdSheetOpen.set(false)"
   />
 </app-page>
+
+<app-subtask-review-modal
+  [chore]="reviewing()"
+  [busy]="completingId() !== null"
+  (closed)="reviewing.set(null)"
+  (approve)="onCompleteTask($event.id)"
+/>

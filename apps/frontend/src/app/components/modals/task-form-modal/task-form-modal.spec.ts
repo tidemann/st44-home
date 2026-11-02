@@ -383,6 +383,78 @@ describe('TaskFormModal', () => {
     });
   });
 
+  describe('Sub-tasks (ST-2074)', () => {
+    const draft = (name: string, points: number | null, id?: string) => ({
+      key: `k-${name}`,
+      ...(id && { id }),
+      name,
+      points,
+    });
+
+    beforeEach(() => {
+      fixture.componentRef.setInput('open', true);
+      fixture.detectChanges();
+    });
+
+    it('«Poeng» becomes the sum while there are sub-tasks, and comes back after the last', () => {
+      component['form'].patchValue({ points: 7 });
+      component['setSubtasks']([draft('Re opp sengen', 5), draft('Støvsug gulvet', 15)]);
+      fixture.detectChanges();
+      const el = fixture.nativeElement as HTMLElement;
+      expect(el.querySelector('#points')).toBeNull();
+      expect(el.textContent).toContain('20 poeng til sammen');
+      expect(el.textContent).toContain('Regnet ut fra deloppgavene under.');
+
+      component['setSubtasks']([]);
+      fixture.detectChanges();
+      expect(el.querySelector<HTMLInputElement>('#points')?.value).toBe('7');
+    });
+
+    it('sends the sub-tasks in order, with ids on kept rows, and the sum as points', () => {
+      const spy = vi.spyOn(component.formSubmitted, 'emit');
+      component['form'].patchValue({ name: 'Rydd rommet', ruleType: 'daily' });
+      component['setSubtasks']([draft(' Re opp sengen ', 5, 's1'), draft('Rydd pulten', 5)]);
+      component.onSubmit();
+      expect(spy).toHaveBeenCalledWith(
+        expect.objectContaining({
+          points: 10,
+          subtasks: [
+            { id: 's1', name: 'Re opp sengen', points: 5 },
+            { name: 'Rydd pulten', points: 5 },
+          ],
+        }),
+      );
+    });
+
+    it('a sub-task without a name stops the save', () => {
+      const spy = vi.spyOn(component.formSubmitted, 'emit');
+      component['form'].patchValue({ name: 'Rydd rommet', ruleType: 'daily' });
+      component['setSubtasks']([draft('', 5)]);
+      component.onSubmit();
+      expect(spy).not.toHaveBeenCalled();
+    });
+
+    it('edit fills the rows from the task, keeping their ids', () => {
+      fixture.componentRef.setInput('mode', 'edit');
+      fixture.componentRef.setInput('task', {
+        ...mockTask,
+        points: 20,
+        subtasks: [{ id: 's1', name: 'Re opp sengen', points: 20, position: 0 }],
+      });
+      fixture.detectChanges();
+      expect(component['subtasks']()).toEqual([
+        expect.objectContaining({ id: 's1', name: 'Re opp sengen', points: 20 }),
+      ]);
+    });
+
+    it('a normal chore sends no sub-tasks', () => {
+      const spy = vi.spyOn(component.formSubmitted, 'emit');
+      component['form'].patchValue({ name: 'Dekke bord', points: 5, ruleType: 'daily' });
+      component.onSubmit();
+      expect(spy).toHaveBeenCalledWith(expect.objectContaining({ points: 5, subtasks: [] }));
+    });
+  });
+
   describe('Form Submission', () => {
     beforeEach(() => {
       fixture.detectChanges();

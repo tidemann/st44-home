@@ -68,28 +68,51 @@
         ></textarea>
       </div>
 
-      <!-- Points -->
-      <div class="form-group">
-        <label class="form-label" for="points" i18n="@@taskFormModal.pointsLabel">Poeng *</label>
-        <input
-          type="number"
-          id="points"
-          class="form-input points-input"
-          formControlName="points"
-          min="1"
-          max="1000"
-          [class.error]="form.controls.points.invalid && form.controls.points.touched"
-          [attr.aria-invalid]="form.controls.points.invalid && form.controls.points.touched"
-          [attr.aria-describedby]="
-            form.controls.points.invalid && form.controls.points.touched ? 'points-error' : null
-          "
-        />
-        @if (form.controls.points.invalid && form.controls.points.touched) {
-          <div id="points-error" class="form-error" role="alert" i18n="@@taskFormModal.pointsRange">
-            Poeng må være mellom 1 og 1000
-          </div>
-        }
-      </div>
+      <!-- Points: with sub-tasks it is their sum, not a field (ST-2074, ST-2042 sheet 2) -->
+      @if (subtasks().length > 0) {
+        <div class="form-group">
+          <p class="form-label" i18n="@@taskFormModal.pointsLabelSum">Poeng *</p>
+          <p class="points-sum" i18n="@@taskFormModal.pointsSum">
+            {{ subtaskTotal() }} poeng til sammen
+          </p>
+          <p class="points-sum-why" i18n="@@taskFormModal.pointsSumWhy">
+            Regnet ut fra deloppgavene under.
+          </p>
+        </div>
+      } @else {
+        <div class="form-group">
+          <label class="form-label" for="points" i18n="@@taskFormModal.pointsLabel">Poeng *</label>
+          <input
+            type="number"
+            id="points"
+            class="form-input points-input"
+            formControlName="points"
+            min="1"
+            max="1000"
+            [class.error]="form.controls.points.invalid && form.controls.points.touched"
+            [attr.aria-invalid]="form.controls.points.invalid && form.controls.points.touched"
+            [attr.aria-describedby]="
+              form.controls.points.invalid && form.controls.points.touched ? 'points-error' : null
+            "
+          />
+          @if (form.controls.points.invalid && form.controls.points.touched) {
+            <div
+              id="points-error"
+              class="form-error"
+              role="alert"
+              i18n="@@taskFormModal.pointsRange"
+            >
+              Poeng må være mellom 1 og 1000
+            </div>
+          }
+        </div>
+      }
+
+      <app-subtask-list
+        [items]="subtasks()"
+        [showErrors]="submitAttempted()"
+        (itemsChange)="setSubtasks($event)"
+      />
 
       <!-- Task Type -->
       <div class="form-group">

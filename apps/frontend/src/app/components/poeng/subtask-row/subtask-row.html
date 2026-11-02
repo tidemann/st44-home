@@ -1,0 +1,62 @@
+<div
+  class="row"
+  [class.done]="done()"
+  [class.np]="notPossible()"
+  [class.chip-row]="!readonly() && !done()"
+  [class.one-line]="readonly() && !done() && !notPossible()"
+>
+  @if (!readonly()) {
+    <!-- The whole row is the box (sheet 3): this button covers it, the chip sits above it -->
+    <button
+      type="button"
+      class="hit"
+      role="checkbox"
+      [attr.aria-checked]="done()"
+      [disabled]="busy()"
+      [attr.aria-busy]="busy()"
+      (click)="toggleDone.emit()"
+    >
+      <span class="sr-only">{{ subtask().name }}</span>
+    </button>
+  }
+
+  <span class="box" [class.on]="done()" [class.np]="notPossible()" aria-hidden="true">
+    @if (done()) {
+      <svg width="13" height="10" viewBox="0 0 13 10" fill="none">
+        <path
+          d="M1.4 5.1 4.7 8.4 11.4 1.7"
+          stroke="#fff"
+          stroke-width="2.1"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        />
+      </svg>
+    }
+  </span>
+
+  <span class="nm">{{ subtask().name }}</span>
+  <span class="pts" [class.dim]="notPossible()">{{ subtask().points }}&nbsp;p</span>
+
+  @if (done()) {
+    <span class="sub">{{ doneAt() }}</span>
+  } @else if (readonly()) {
+    @if (notPossible()) {
+      <span class="sub" i18n="@@subtaskRow.notPossible">Ikke mulig</span>
+    }
+  } @else {
+    <span class="sub">
+      <button
+        type="button"
+        class="chip"
+        [class.on]="notPossible()"
+        [attr.aria-pressed]="notPossible()"
+        [disabled]="busy()"
+        (click)="toggleNotPossible.emit()"
+        [attr.aria-label]="notPossibleLabel()"
+        i18n="@@subtaskRow.notPossibleChip"
+      >
+        Ikke mulig
+      </button>
+    </span>
+  }
+</div>

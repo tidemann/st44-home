@@ -16,6 +16,8 @@ import {
 } from '../../components/modals/task-form-modal/task-form-modal';
 import { FailedTasksSectionComponent } from '../../components/failed-tasks-section/failed-tasks-section';
 import { PageComponent } from '../../components/page/page';
+import { SubtaskReviewModal } from '../../components/modals/subtask-review-modal/subtask-review-modal';
+import { doneLine, hasSubtasks, sentLine } from '../../utils/subtask-lines';
 import { ChoreRow } from '../../components/poeng/chore-row/chore-row';
 import { GroupLabel } from '../../components/poeng/group-label/group-label';
 import { EmptyGroup } from '../../components/poeng/empty-group/empty-group';
@@ -78,6 +80,7 @@ export function childCardColumns(count: number): number {
     TaskFormModal,
     FailedTasksSectionComponent,
     HouseholdSheet,
+    SubtaskReviewModal,
   ],
   templateUrl: './home.html',
   styleUrl: './home.css',
@@ -98,6 +101,15 @@ export class Home implements OnInit {
   protected readonly error = signal<string | null>(null);
   /** Today's open chores ("Igjen i dag") */
   protected readonly todayTasks = signal<Assignment[]>([]);
+  /** The approval popup of a chore with sub-tasks (ST-2042 sheet 4) */
+  protected readonly reviewing = signal<Assignment | null>(null);
+  protected readonly subtaskNote = (a: Assignment) =>
+    hasSubtasks(a)
+      ? {
+          text: a.submittedAt ? sentLine(a.subtasks!) : doneLine(a.subtasks!),
+          tone: 'plain' as const,
+        }
+      : null;
   /** Today's chores already done */
   protected readonly doneToday = signal<Assignment[]>([]);
   /** Open chores from earlier days ("Forfalt") */
@@ -373,9 +385,16 @@ export class Home implements OnInit {
    * Handle task completion (a parent may still tick a chore off here)
    */
   protected async onCompleteTask(taskId: string): Promise<void> {
+    // A chore with sub-tasks is approved in its popup, with the points of the done ones (ST-2074)
+    const chore = [...this.todayTasks(), ...this.overdueTasks()].find((t) => t.id === taskId);
+    if (chore && hasSubtasks(chore) && !this.reviewing()) {
+      this.reviewing.set(chore);
+      return;
+    }
     this.completingId.set(taskId);
     try {
       await this.taskService.completeTask(taskId);
+      this.reviewing.set(null);
 
       const done =
         this.todayTasks().find((t) => t.id === taskId) ??
@@ -532,6 +551,7 @@ export class Home implements OnInit {
         points: data.points,
         ruleType: data.ruleType,
         ruleConfig: data.ruleConfig,
+        subtasks: data.subtasks,
       })
       .subscribe({
         next: () => {
