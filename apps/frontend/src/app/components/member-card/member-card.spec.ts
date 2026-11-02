@@ -82,6 +82,15 @@ describe('MemberCard', () => {
     expect(fixture.nativeElement.querySelector('.member-stats')).toBeNull();
   });
 
+  it('should display admin role as «Administrator»', () => {
+    componentRef.setInput('member', { ...mockParentMember, role: 'admin', points: 0 });
+    fixture.detectChanges();
+
+    const meta = fixture.nativeElement.querySelector('.member-meta');
+    expect(meta?.textContent!.replace(/\s+/g, ' ').trim()).toBe('Administrator');
+    expect(fixture.nativeElement.querySelector('.member-points')).toBeNull();
+  });
+
   it('should display child role', () => {
     componentRef.setInput('member', {
       ...mockChildMember,

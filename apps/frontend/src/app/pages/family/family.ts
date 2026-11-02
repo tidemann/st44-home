@@ -220,7 +220,7 @@ export class Family implements OnInit {
           name: displayName,
           initial: personInitial(name, member.email),
           email: member.email ?? undefined, // Convert null to undefined for optional field
-          role: isChild ? 'child' : 'parent',
+          role: isChild ? 'child' : member.role === 'admin' ? 'admin' : 'parent',
           // Use real stats from backend
           tasksCompleted: member.tasksCompleted,
           totalTasks: member.totalTasks,

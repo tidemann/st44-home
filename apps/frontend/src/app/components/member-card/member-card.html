@@ -16,7 +16,9 @@
     <div class="member-info">
       <div class="member-name">{{ member().name }}</div>
       <div class="member-meta">
-        @if (member().role === 'parent') {
+        @if (member().role === 'admin') {
+          <ng-container i18n="@@memberCard.roleAdmin">Administrator</ng-container>
+        } @else if (member().role === 'parent') {
           <ng-container i18n="@@memberCard.roleParent">Forelder</ng-container>
         } @else if (showStats()) {
           <span class="member-points" i18n="@@memberCard.pointsShort"
