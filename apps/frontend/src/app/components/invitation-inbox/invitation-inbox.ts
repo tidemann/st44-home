@@ -101,9 +101,9 @@ export class InvitationInboxComponent implements OnInit {
       // Remove from list immediately
       this.invitations.update((list) => list.filter((inv) => inv.id !== invitation.id));
 
-      // Redirect to household after brief delay
+      // Land on «Familie», the household just joined (ST-2068 build line 1)
       setTimeout(() => {
-        this.router.navigate(['/household/settings']);
+        this.router.navigate(['/family']);
       }, 1500);
     } catch (error) {
       console.error('Failed to accept invitation:', error);

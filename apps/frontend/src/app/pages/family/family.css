@@ -165,9 +165,11 @@
 }
 
 @media (min-width: 1024px) {
-  /* Rule 5: the row action is 36 px on desktop; the phone keeps the drawn 33 px */
+  /* Rule 5: the row action is 36 px on desktop; the phone keeps the drawn 33 px.
+     The label is 16 px here as the signed-off picture draws it (83 px wide, ST-2068 D15) */
   .btn-invite {
     height: 36px;
+    font-size: 16px;
   }
 
   .new-slot {
