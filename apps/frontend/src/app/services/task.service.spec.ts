@@ -1023,6 +1023,100 @@ describe('TaskService', () => {
     });
   });
 
+  describe('chores with sub-tasks (ST-2074)', () => {
+    const subtasks = [
+      { id: 'sub-1', name: 'Wash', points: 5, position: 0, state: 'done' as const, updatedAt: null },
+      {
+        id: 'sub-2',
+        name: 'Dry',
+        points: 10,
+        position: 1,
+        state: 'not_possible' as const,
+        updatedAt: null,
+      },
+    ];
+    const assignment: Assignment = {
+      id: 'assignment-1',
+      taskId: 'task-1',
+      title: 'Daily Chores',
+      description: null,
+      ruleType: 'daily',
+      childId: 'child-1',
+      childName: 'Emma',
+      date: '2025-01-20',
+      status: 'pending',
+      completedAt: null,
+      createdAt: '2025-01-19T10:00:00Z',
+    };
+
+    beforeEach(async () => {
+      mockApiService.get.mockResolvedValue({ assignments: [assignment], total: 1 });
+      await firstValueFrom(service.getChildTasks('child-1'));
+    });
+
+    it('saves a done sub-task and updates the assignment from the server response', async () => {
+      mockApiService.put.mockResolvedValue({ subtasks });
+
+      const result = await service.setSubtaskState('assignment-1', 'sub-1', 'done');
+
+      expect(mockApiService.put).toHaveBeenCalledWith(
+        '/assignments/assignment-1/subtasks/sub-1',
+        { state: 'done' },
+      );
+      expect(result).toEqual(subtasks);
+      expect(service.assignments()[0].subtasks).toEqual(subtasks);
+    });
+
+    it('sends null to clear a sub-task state', async () => {
+      mockApiService.put.mockResolvedValue({ subtasks });
+
+      await service.setSubtaskState('assignment-1', 'sub-1', null);
+
+      expect(mockApiService.put).toHaveBeenCalledWith(
+        '/assignments/assignment-1/subtasks/sub-1',
+        { state: null },
+      );
+    });
+
+    it('submits the chore and stores the server timestamp', async () => {
+      const submittedAt = '2026-11-02T17:20:00.000Z';
+      mockApiService.post.mockResolvedValue({ id: 'assignment-1', submittedAt });
+
+      const result = await service.submitTask('assignment-1');
+
+      expect(mockApiService.post).toHaveBeenCalledWith('/assignments/assignment-1/submit', {});
+      expect(result).toBe(submittedAt);
+      expect(service.assignments()[0].submittedAt).toBe(submittedAt);
+    });
+
+    it('optimistically credits only done sub-task points when completing', async () => {
+      mockApiService.get.mockResolvedValue({
+        tasks: [{
+          id: 'assignment-1',
+          taskName: 'Daily Chores',
+          taskDescription: null,
+          points: 15,
+          date: '2025-01-20',
+          status: 'pending',
+          completedAt: null,
+          subtasks,
+        }],
+        totalPointsToday: 15,
+        completedPoints: 0,
+        childName: 'Emma',
+      });
+      await firstValueFrom(service.getMyTasks());
+      mockApiService.post.mockResolvedValue({
+        taskAssignment: { id: 'assignment-1', status: 'completed', completedAt: '2025-01-20T12:00:00Z' },
+        completion: { id: 'completion-1', pointsEarned: 5, completedAt: '2025-01-20T12:00:00Z' },
+      });
+
+      const completion = service.completeTask('assignment-1');
+      expect(service.myTasksResponse()?.completedPoints).toBe(5);
+      await completion;
+    });
+  });
+
   describe('reassignTask', () => {
     const mockAssignment: Assignment = {
       id: 'assignment-1',
