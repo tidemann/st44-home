@@ -49,7 +49,9 @@ export interface SubtaskSummary {
   allDone: boolean;
 }
 
-export function summarizeSubtasks(subtasks: ReadonlyArray<{ points: number; state: SubtaskState | null }>): SubtaskSummary {
+export function summarizeSubtasks(
+  subtasks: ReadonlyArray<{ points: number; state: SubtaskState | null }>,
+): SubtaskSummary {
   let total = 0;
   let earned = 0;
   let done = 0;
@@ -66,5 +68,12 @@ export function summarizeSubtasks(subtasks: ReadonlyArray<{ points: number; stat
       left++;
     }
   }
-  return { total, earned, done, notPossible, left, allDone: subtasks.length > 0 && done === subtasks.length };
+  return {
+    total,
+    earned,
+    done,
+    notPossible,
+    left,
+    allDone: subtasks.length > 0 && done === subtasks.length,
+  };
 }
