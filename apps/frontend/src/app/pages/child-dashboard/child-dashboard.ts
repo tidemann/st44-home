@@ -146,7 +146,10 @@ export class ChildDashboardComponent implements OnInit {
   /** The next open chore, for the inset on the tick moment */
   tickNext = computed<TickNext | null>(() => {
     const current = this.tick()?.assignmentId;
-    const next = [...this.overdueTasks(), ...this.pendingTasks()].find((t) => t.id !== current);
+    // A chore sent to a parent (ST-2074) is not next: there is nothing left to do on it
+    const next = [...this.overdueTasks(), ...this.pendingTasks()].find(
+      (t) => t.id !== current && !t.submittedAt,
+    );
     if (!next) return null;
     return {
       title: next.taskName,
