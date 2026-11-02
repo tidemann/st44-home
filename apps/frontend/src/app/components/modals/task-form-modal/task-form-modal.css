@@ -64,46 +64,75 @@
   color: white;
 }
 
-/* Child Selection */
+/* Child Selection: one field per child, the popup field's edge and the rotation list's tick box
+   (ST-2104, sheet 2 on ST-2052; guide popup rule 5) */
 .child-selection {
   display: flex;
   flex-direction: column;
-  gap: var(--space-sm);
+  gap: 8px;
   margin-top: var(--space-xs);
 }
 
 .child-checkbox {
   display: flex;
   align-items: center;
-  gap: var(--space-sm);
-  padding: var(--space-sm) var(--space-md);
+  gap: 13px;
+  min-height: 49px;
+  padding: 0 16px;
+  box-sizing: border-box;
   background: var(--color-surface);
-  border: 1px solid var(--hairline);
-  border-radius: var(--radius-sm);
+  border: 1.5px solid var(--text-muted);
+  border-radius: var(--r-card);
   cursor: pointer;
-  transition: all 0.2s ease;
 }
 
-.child-checkbox:hover {
-  border-color: var(--color-primary);
-  background: var(--bg);
-}
-
-.child-checkbox:has(input:checked) {
-  background: var(--track);
-  border-color: var(--color-primary);
-}
-
+/* the real checkbox stays for screen readers and keys; the box draws it */
 .child-checkbox input[type='checkbox'] {
-  width: 18px;
-  height: 18px;
-  accent-color: var(--color-primary);
-  cursor: pointer;
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+.box {
+  display: flex;
+  flex: 0 0 22px;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  box-sizing: border-box;
+  border: 2px solid var(--text-muted);
+  border-radius: 6px;
+}
+
+.child-checkbox input:checked + .box {
+  background: var(--text);
+  border-color: var(--text);
+}
+
+.child-checkbox input:checked + .box::after {
+  content: '';
+  width: 11px;
+  height: 6px;
+  margin-top: -3px;
+  border-left: 2.5px solid #fff;
+  border-bottom: 2.5px solid #fff;
+  transform: rotate(-45deg);
+}
+
+.child-checkbox input:focus-visible + .box {
+  outline: var(--focus-ring);
+  outline-offset: 2px;
 }
 
 .child-name {
-  font-size: var(--font-size-base);
-  color: var(--color-text-primary);
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text);
 }
 
 .no-children {
@@ -149,28 +178,98 @@
   outline-offset: 2px;
 }
 
-/* Form Textarea */
+/* Sheet 2 (ST-2052) draws popup rules 3–6 on the phone too, so they hold at every width here
+   (ST-2104). On desktop they are the same numbers <app-modal> already sets. */
+
+/* 5 · one field: 49 px, 13 px corners, the 1.5 px muted edge, white, 16 px inside */
+.form-input,
+.form-select,
+.form-textarea {
+  box-sizing: border-box;
+  height: 49px;
+  min-height: 49px;
+  padding: 0 16px;
+  border: 1.5px solid var(--text-muted);
+  border-radius: var(--r-card);
+  background-color: var(--color-surface);
+}
+
+/* a text box is that same field, 76 px tall */
 .form-textarea {
   width: 100%;
-  padding: var(--space-sm) var(--space-md);
-  border: 2px solid var(--hairline);
-  border-radius: var(--radius-sm);
-  font-family: var(--font-body);
-  font-size: var(--font-size-base);
-  color: var(--color-text-primary);
-  background: var(--color-background);
+  height: 76px;
+  min-height: 76px;
+  padding: 13px 16px;
+  font-family: var(--font-text);
+  font-size: 16px;
+  line-height: 1.4;
+  color: var(--text);
   resize: vertical;
-  min-height: 60px;
-  transition: border-color 0.2s ease;
 }
 
 .form-textarea:focus {
   outline: var(--focus-ring);
-  border-color: var(--color-primary);
 }
 
 .form-textarea::placeholder {
   color: var(--text-muted);
+}
+
+/* 6 · the Diddit caret, never the browser's own */
+.form-select {
+  appearance: none;
+  -webkit-appearance: none;
+  padding-right: 40px;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='14' height='9' viewBox='0 0 14 9' fill='none'><path d='M1.5 1.5 7 7l5.5-5.5' stroke='%2317120A' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/></svg>");
+  background-repeat: no-repeat;
+  background-position: right 15px center;
+}
+
+/* 4 · the error the press produces: a 2 px rust edge and one rust line under that field */
+:is(.form-input, .form-select, .form-textarea):is(.error, [aria-invalid='true']) {
+  border: 2px solid var(--overdue);
+}
+
+.form-error {
+  margin-top: 6px;
+  font-family: var(--font-text);
+  font-size: 15px;
+  font-weight: 500;
+  line-height: 1.4;
+  color: var(--overdue);
+}
+
+/* 3 · the action row: equal parts of the row, 8 px apart, no line over it.
+   «Slett» + «Avbryt» + «Lagre» in «Rediger oppgave» share it in thirds. */
+.modal-actions,
+.modal-actions-split {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: 1fr;
+  gap: 8px;
+  margin-top: var(--space-lg);
+  padding-top: 8px;
+  border-top: none;
+}
+
+.modal-actions-split > .modal-actions-right {
+  display: contents;
+}
+
+:is(.modal-actions, .modal-actions-split) .btn {
+  width: auto;
+  min-width: 0;
+  height: 49px;
+  min-height: 49px;
+  border-radius: var(--r-card);
+  font-size: 16.5px;
+  font-weight: 600;
+}
+
+/* 4 · never pale: the only `disabled` is the moment it saves, and it keeps its yellow */
+:is(.modal-actions, .modal-actions-split) .btn[disabled] {
+  opacity: 1;
+  cursor: progress;
 }
 
 /* Help Text */
@@ -178,23 +277,6 @@
   font-size: var(--font-size-sm);
   color: var(--color-text-secondary);
   font-weight: normal;
-}
-
-/* Modal Actions Split Layout (Edit mode) */
-.modal-actions-split {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: var(--space-md);
-  margin-top: var(--space-lg);
-  /* The same line over the row as «Ny oppgave», so the fields scroll under a footer (ST-954) */
-  padding-top: var(--space-lg);
-  border-top: 1px solid var(--color-border);
-}
-
-.modal-actions-right {
-  display: flex;
-  gap: var(--space-md);
 }
 
 /* Delete Confirmation */
@@ -222,24 +304,5 @@ fieldset {
   .day-pill {
     padding: var(--space-xs) var(--space-sm);
     font-size: var(--font-size-xs);
-  }
-
-  .modal-actions-split {
-    flex-direction: column-reverse;
-    gap: var(--space-sm);
-  }
-
-  .modal-actions-split .btn {
-    width: 100%;
-  }
-
-  .modal-actions-right {
-    width: 100%;
-    flex-direction: column-reverse;
-    gap: var(--space-sm);
-  }
-
-  .modal-actions-right .btn {
-    width: 100%;
   }
 }
