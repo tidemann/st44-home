@@ -45,5 +45,7 @@ export const ReadOnlyDone: Story = { args: { ...Done.args, readonly: true } };
 export const ReadOnlyNotPossible: Story = { args: { ...NotPossible.args, readonly: true } };
 export const Busy: Story = { args: { busy: true } };
 export const LongName: Story = {
-  args: { subtask: { ...subtask, name: 'Støvsugingavhelekjellergulvetinklunderhyllene', points: 999 } },
+  args: {
+    subtask: { ...subtask, name: 'Støvsugingavhelekjellergulvetinklunderhyllene', points: 999 },
+  },
 };

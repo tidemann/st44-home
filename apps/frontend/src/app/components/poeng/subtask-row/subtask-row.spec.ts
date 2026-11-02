@@ -4,13 +4,19 @@ import type { AssignmentSubtask } from '@st44/types';
 import { SubtaskRow } from './subtask-row';
 
 const open: AssignmentSubtask = {
-  id: 's1', name: 'Re opp sengen', points: 5, position: 0, state: null, updatedAt: null,
+  id: 's1',
+  name: 'Re opp sengen',
+  points: 5,
+  position: 0,
+  state: null,
+  updatedAt: null,
 };
 
 describe('SubtaskRow', () => {
   let fixture: ComponentFixture<SubtaskRow>;
   let row: SubtaskRow;
-  const checkbox = () => fixture.nativeElement.querySelector('button[role="checkbox"]') as HTMLButtonElement;
+  const checkbox = () =>
+    fixture.nativeElement.querySelector('button[role="checkbox"]') as HTMLButtonElement;
   const chip = () => fixture.nativeElement.querySelector('button.chip') as HTMLButtonElement;
 
   beforeEach(async () => {
@@ -40,13 +46,15 @@ describe('SubtaskRow', () => {
 
   it('shows a completed sub-task with a checked box and a time, without the chip', () => {
     fixture.componentRef.setInput('subtask', {
-      ...open, state: 'done', updatedAt: '2026-11-02T16:02:00.000Z',
+      ...open,
+      state: 'done',
+      updatedAt: '2026-11-02T16:02:00.000Z',
     });
     fixture.detectChanges();
 
     expect(checkbox().getAttribute('aria-checked')).toBe('true');
     expect((fixture.nativeElement.querySelector('.box') as HTMLElement).classList).toContain('on');
-    expect((fixture.nativeElement.textContent as string)).toMatch(/Gjort \d{2}\.\d{2}/);
+    expect(fixture.nativeElement.textContent as string).toMatch(/Gjort \d{2}\.\d{2}/);
     expect(chip()).toBeNull();
   });
 

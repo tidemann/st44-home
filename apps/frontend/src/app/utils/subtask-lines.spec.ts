@@ -1,18 +1,43 @@
 import { describe, it, expect } from 'vitest';
 import type { AssignmentSubtask } from '@st44/types';
-import { leftLine, popupCountLine, waitingLine, doneLine, sentLine, hasSubtasks } from './subtask-lines';
+import {
+  leftLine,
+  popupCountLine,
+  waitingLine,
+  doneLine,
+  sentLine,
+  hasSubtasks,
+} from './subtask-lines';
 
 const subtasks: AssignmentSubtask[] = [
-  { id: 's1', name: 'Re opp sengen', points: 5, position: 0, state: 'done', updatedAt: '2026-11-02T16:02:00.000Z' },
+  {
+    id: 's1',
+    name: 'Re opp sengen',
+    points: 5,
+    position: 0,
+    state: 'done',
+    updatedAt: '2026-11-02T16:02:00.000Z',
+  },
   { id: 's2', name: 'Rydde rommet', points: 5, position: 1, state: null, updatedAt: null },
-  { id: 's3', name: 'Vaske gulvet', points: 10, position: 2, state: 'not_possible', updatedAt: null },
+  {
+    id: 's3',
+    name: 'Vaske gulvet',
+    points: 10,
+    position: 2,
+    state: 'not_possible',
+    updatedAt: null,
+  },
 ];
 
 const allOpen: AssignmentSubtask[] = subtasks.map((subtask) => ({
-  ...subtask, state: null, updatedAt: null,
+  ...subtask,
+  state: null,
+  updatedAt: null,
 }));
 const allDone: AssignmentSubtask[] = subtasks.map((subtask) => ({
-  ...subtask, state: 'done', updatedAt: '2026-11-02T16:02:00.000Z',
+  ...subtask,
+  state: 'done',
+  updatedAt: '2026-11-02T16:02:00.000Z',
 }));
 
 describe('sub-task count lines', () => {
