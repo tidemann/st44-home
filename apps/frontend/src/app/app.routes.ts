@@ -90,7 +90,8 @@ export const routes: Routes = [
       },
       {
         path: 'household/settings',
-        title: $localize`:@@routeTitle.householdSettings:Husstandsinnstillinger - Diddit!`,
+        title: $localize`:@@routeTitle.householdSettings:Invitasjoner til husstanden - Diddit!`,
+        data: { ownHead: true },
         loadComponent: () =>
           import('./components/household-settings/household-settings').then(
             (m) => m.HouseholdSettingsComponent,
