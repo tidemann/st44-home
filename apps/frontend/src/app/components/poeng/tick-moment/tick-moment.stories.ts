@@ -29,6 +29,15 @@ const meta: Meta<TickMoment> = {
       control: 'text',
       description: 'Clock time it was ticked, e.g. "16.48" (required)',
     },
+    doneWord: {
+      control: 'select',
+      options: ['done', 'ticked', 'scanned'],
+      description: 'How the chore was completed before the clock time',
+    },
+    turnTo: {
+      control: 'text',
+      description: 'Child whose turn is next; replaces the next chore inset',
+    },
     points: {
       control: { type: 'number', min: 0, step: 5 },
       description: 'Points awarded (required)',
@@ -158,5 +167,25 @@ export const UndoError: Story = {
     goal: kino,
     next: nextChore,
     undoError: 'Det gikk ikke å angre nå. Prøv igjen om litt.',
+  },
+};
+
+export const EtterTurTicked: Story = {
+  args: {
+    title: 'Tømme oppvaskmaskinen',
+    doneAt: '16.48',
+    points: 5,
+    doneWord: 'ticked',
+    turnTo: 'Jonas',
+  },
+};
+
+export const EtterTurScanned: Story = {
+  args: {
+    title: 'Tømme oppvaskmaskinen',
+    doneAt: '16.48',
+    points: 5,
+    doneWord: 'scanned',
+    turnTo: 'Jonas',
   },
 };
