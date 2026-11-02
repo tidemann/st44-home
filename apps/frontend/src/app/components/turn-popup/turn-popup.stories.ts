@@ -18,9 +18,30 @@ const TURN: TaskTurn = {
 };
 
 const HISTORY: TurnHistoryEntry[] = [
-  { kind: 'app', childId: TURN.order[0].childId, childName: 'Emma', at: '2026-11-01T15:48:00.000Z', points: 5, movedByName: null },
-  { kind: 'scan', childId: TURN.order[1].childId, childName: 'Jonas', at: '2026-11-01T08:14:00.000Z', points: 5, movedByName: null },
-  { kind: 'moved', childId: TURN.order[2].childId, childName: 'Mathea', at: '2026-10-30T17:02:00.000Z', points: 0, movedByName: 'Mor' },
+  {
+    kind: 'app',
+    childId: TURN.order[0].childId,
+    childName: 'Emma',
+    at: '2026-11-01T15:48:00.000Z',
+    points: 5,
+    movedByName: null,
+  },
+  {
+    kind: 'scan',
+    childId: TURN.order[1].childId,
+    childName: 'Jonas',
+    at: '2026-11-01T08:14:00.000Z',
+    points: 5,
+    movedByName: null,
+  },
+  {
+    kind: 'moved',
+    childId: TURN.order[2].childId,
+    childName: 'Mathea',
+    at: '2026-10-30T17:02:00.000Z',
+    points: 0,
+    movedByName: 'Mor',
+  },
 ];
 
 const meta: Meta<TurnPopup> = {

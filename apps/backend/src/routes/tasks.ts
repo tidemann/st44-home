@@ -573,14 +573,19 @@ async function updateTask(request: FastifyRequest<UpdateTaskRequest>, reply: Fas
       }
     }
 
+    const before = await db.query<{
+      rule_type: string;
+      rule_config: unknown;
+      scan_code: string | null;
+    }>('SELECT rule_type, rule_config, scan_code FROM tasks WHERE id = $1 AND household_id = $2', [
+      taskId,
+      householdId,
+    ]);
+
     // A rotation's start week is the server's to set: a changed order starts next Monday
     let rotationNeedsRegenerating = false;
     if (normalizedRuleConfig) {
-      const stored = await db.query<{ rule_type: string; rule_config: unknown }>(
-        'SELECT rule_type, rule_config FROM tasks WHERE id = $1 AND household_id = $2',
-        [taskId, householdId],
-      );
-      const storedRow = stored.rows[0];
+      const storedRow = before.rows[0];
       if (storedRow && (ruleType ?? storedRow.rule_type) === 'weekly_rotation') {
         const storedConfig = normalizeRuleConfig(storedRow.rule_config);
         const changed =
@@ -616,11 +621,6 @@ async function updateTask(request: FastifyRequest<UpdateTaskRequest>, reply: Fas
         });
       }
     }
-
-    const before = await db.query<{ rule_type: string; scan_code: string | null }>(
-      'SELECT rule_type, scan_code FROM tasks WHERE id = $1 AND household_id = $2',
-      [taskId, householdId],
-    );
 
     // Build dynamic update query
     const updates: string[] = [];

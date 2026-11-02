@@ -144,7 +144,12 @@ export async function moveTurn(
   );
 }
 
-/** Done rows of an «Etter tur» chore are dated the day they were done, as other chores are */
+/**
+ * Done rows of an «Etter tur» chore are dated the day they were done, as other chores are.
+ * Known limit: when the same child finishes a second turn on the same day, the
+ * (task, child, date) unique index keeps that row on the later date openTurn gave it, so
+ * the day lists show it there. The history and points use completed_at and stay right.
+ */
 export async function dateDoneTurnToday(client: Queryable, assignmentId: string) {
   await client.query(
     `UPDATE task_assignments ta
