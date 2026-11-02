@@ -7,6 +7,7 @@ import {
   AcceptInvitationResponse,
 } from '../../services/invitation.service';
 import { ConfirmDialogService } from '../../services/confirm-dialog.service';
+import { HouseholdStore } from '../../stores/household.store';
 
 @Component({
   selector: 'app-invitation-inbox',
@@ -19,6 +20,7 @@ export class InvitationInboxComponent implements OnInit {
   private readonly invitationService = inject(InvitationService);
   private readonly router = inject(Router);
   private readonly confirmDialog = inject(ConfirmDialogService);
+  private readonly householdStore = inject(HouseholdStore);
 
   protected readonly invitations = signal<Invitation[]>([]);
   protected readonly isLoading = signal(false);
@@ -100,6 +102,10 @@ export class InvitationInboxComponent implements OnInit {
 
       // Remove from list immediately
       this.invitations.update((list) => list.filter((inv) => inv.id !== invitation.id));
+
+      // Make the household just joined the active one, so «Familie» shows it (ST-2099)
+      await this.householdStore.loadHouseholds({ forceRefresh: true });
+      this.householdStore.setActiveHousehold(response.household.id);
 
       // Land on «Familie», the household just joined (ST-2068 build line 1)
       setTimeout(() => {
