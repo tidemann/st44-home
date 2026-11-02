@@ -373,6 +373,7 @@ All indexes designed to optimize common query patterns with household_id filteri
 | idx_task_assignments_household_status_due | task_assignments  | (household_id, status, due_date) | Household task management      |
 | idx_task_completions_household            | task_completions  | (household_id)                   | Household statistics           |
 | idx_task_completions_child                | task_completions  | (child_id)                       | Child's point history          |
+| idx_task_completions_assignment           | task_completions  | (task_assignment_id)             | Points earned per chore (059)  |
 | idx_users_email                           | users             | (email) UNIQUE                   | Login lookup                   |
 | schema_migrations_pkey                    | schema_migrations | (version)                        | Migration tracking             |
 

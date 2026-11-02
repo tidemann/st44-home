@@ -505,7 +505,7 @@ async function getMyTasks(
         ta.status,
         ta.submitted_at,
         tc.completed_at,
-        tc.points_earned
+        (SELECT SUM(e.points_earned) FROM task_completions e WHERE e.task_assignment_id = ta.id)::int AS points_earned
        FROM task_assignments ta
        JOIN tasks t ON ta.task_id = t.id
        LEFT JOIN task_completions tc ON ta.id = tc.task_assignment_id
