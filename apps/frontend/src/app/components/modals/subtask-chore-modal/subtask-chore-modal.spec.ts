@@ -43,7 +43,7 @@ describe('SubtaskChoreModal', () => {
     fixture = TestBed.createComponent(SubtaskChoreModal);
     finished = [];
     submitted = [];
-    fixture.componentInstance.finish.subscribe((c) => finished.push(c));
+    fixture.componentInstance.completed.subscribe((c) => finished.push(c));
     fixture.componentInstance.submitted.subscribe((c) => submitted.push(c));
   });
 

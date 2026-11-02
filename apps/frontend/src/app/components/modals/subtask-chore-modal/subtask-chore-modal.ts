@@ -40,7 +40,7 @@ export class SubtaskChoreModal {
 
   readonly closed = output<void>();
   /** «Ferdig» with every sub-task ticked: the page completes the chore */
-  readonly finish = output<SubtaskChore>();
+  readonly completed = output<SubtaskChore>();
   /** «Ferdig» with some not done: the chore was sent to a parent */
   readonly submitted = output<SubtaskChore>();
 
@@ -98,7 +98,7 @@ export class SubtaskChoreModal {
     if (!chore || this.sending() || this.busyId()) return;
     const current = { ...chore, subtasks: this.subtasks() };
     if (this.summary().allDone) {
-      this.finish.emit(current);
+      this.completed.emit(current);
       return;
     }
     this.sending.set(true);

@@ -36,7 +36,7 @@ const meta: Meta<SubtaskChoreModal> = {
   argTypes: {
     chore: { control: 'object', description: 'The chore and its sub-tasks; null closes it' },
     closed: { action: 'closed' },
-    finish: { action: 'finish' },
+    completed: { action: 'completed' },
     submitted: { action: 'submitted' },
   },
 };

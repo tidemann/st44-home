@@ -221,7 +221,7 @@
 <app-subtask-chore-modal
   [chore]="openedChore()"
   (closed)="openedChore.set(null)"
-  (finish)="onFinishChore($event)"
+  (completed)="onFinishChore($event)"
   (submitted)="onSubmitted($event)"
 />
 

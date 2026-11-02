@@ -1025,7 +1025,14 @@ describe('TaskService', () => {
 
   describe('chores with sub-tasks (ST-2074)', () => {
     const subtasks = [
-      { id: 'sub-1', name: 'Wash', points: 5, position: 0, state: 'done' as const, updatedAt: null },
+      {
+        id: 'sub-1',
+        name: 'Wash',
+        points: 5,
+        position: 0,
+        state: 'done' as const,
+        updatedAt: null,
+      },
       {
         id: 'sub-2',
         name: 'Dry',
@@ -1059,10 +1066,9 @@ describe('TaskService', () => {
 
       const result = await service.setSubtaskState('assignment-1', 'sub-1', 'done');
 
-      expect(mockApiService.put).toHaveBeenCalledWith(
-        '/assignments/assignment-1/subtasks/sub-1',
-        { state: 'done' },
-      );
+      expect(mockApiService.put).toHaveBeenCalledWith('/assignments/assignment-1/subtasks/sub-1', {
+        state: 'done',
+      });
       expect(result).toEqual(subtasks);
       expect(service.assignments()[0].subtasks).toEqual(subtasks);
     });
@@ -1072,10 +1078,9 @@ describe('TaskService', () => {
 
       await service.setSubtaskState('assignment-1', 'sub-1', null);
 
-      expect(mockApiService.put).toHaveBeenCalledWith(
-        '/assignments/assignment-1/subtasks/sub-1',
-        { state: null },
-      );
+      expect(mockApiService.put).toHaveBeenCalledWith('/assignments/assignment-1/subtasks/sub-1', {
+        state: null,
+      });
     });
 
     it('submits the chore and stores the server timestamp', async () => {
@@ -1091,23 +1096,29 @@ describe('TaskService', () => {
 
     it('optimistically credits only done sub-task points when completing', async () => {
       mockApiService.get.mockResolvedValue({
-        tasks: [{
-          id: 'assignment-1',
-          taskName: 'Daily Chores',
-          taskDescription: null,
-          points: 15,
-          date: '2025-01-20',
-          status: 'pending',
-          completedAt: null,
-          subtasks,
-        }],
+        tasks: [
+          {
+            id: 'assignment-1',
+            taskName: 'Daily Chores',
+            taskDescription: null,
+            points: 15,
+            date: '2025-01-20',
+            status: 'pending',
+            completedAt: null,
+            subtasks,
+          },
+        ],
         totalPointsToday: 15,
         completedPoints: 0,
         childName: 'Emma',
       });
       await firstValueFrom(service.getMyTasks());
       mockApiService.post.mockResolvedValue({
-        taskAssignment: { id: 'assignment-1', status: 'completed', completedAt: '2025-01-20T12:00:00Z' },
+        taskAssignment: {
+          id: 'assignment-1',
+          status: 'completed',
+          completedAt: '2025-01-20T12:00:00Z',
+        },
         completion: { id: 'completion-1', pointsEarned: 5, completedAt: '2025-01-20T12:00:00Z' },
       });
 
