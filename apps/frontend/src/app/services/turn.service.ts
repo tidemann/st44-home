@@ -18,7 +18,7 @@ export function scanLink(code: string): string {
 }
 
 /** The child in the order after the one whose turn it is, round the list */
-export function nextInTurn(turn: TaskTurn, offset: number = 1): TaskTurn['order'][number] | null {
+export function nextInTurn(turn: TaskTurn, offset = 1): TaskTurn['order'][number] | null {
   const n = turn.order.length;
   if (n === 0) return null;
   const at = turn.order.findIndex((c) => c.childId === turn.turnChildId);
