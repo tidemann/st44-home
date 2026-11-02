@@ -500,6 +500,29 @@ describe('«Etter tur» chores (ST-2075)', () => {
     ]);
   });
 
+  test('a chore changed to «Etter tur» gets its code and a turn (ST-2114)', async () => {
+    const made = await app.inject({
+      method: 'POST',
+      url: `/api/households/${householdId}/tasks`,
+      headers: auth(parentToken),
+      payload: { name: 'Bære ut søppel', points: 3, ruleType: 'daily' },
+    });
+    assert.strictEqual(made.statusCode, 201, made.body);
+    const changed = JSON.parse(made.body).id as string;
+
+    const res = await app.inject({
+      method: 'PUT',
+      url: `/api/households/${householdId}/tasks/${changed}`,
+      headers: auth(parentToken),
+      payload: { ruleType: 'next_in_line', ruleConfig: { assignedChildren: [jonas, emma] } },
+    });
+    assert.strictEqual(res.statusCode, 200, res.body);
+    assert.match(JSON.parse(res.body).scanCode, /^[23456789ABCDEFGHJKLMNPQRSTUVWXYZ]{6}$/);
+    const turn = (await turns(parentToken)).find((t) => t.taskId === changed);
+    assert.strictEqual(turn?.turnChildId, jonas);
+    await pool.query('UPDATE tasks SET active = false WHERE id = $1', [changed]);
+  });
+
   test('a code that is too long is a 404, not a 500', async () => {
     const res = await app.inject({ method: 'GET', url: `/api/scan/${'A'.repeat(40)}` });
     assert.strictEqual(res.statusCode, 404);

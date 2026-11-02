@@ -656,7 +656,7 @@ async function updateTask(request: FastifyRequest<UpdateTaskRequest>, reply: Fas
     // A chore that becomes «Etter tur» gets its code for the QR card (ST-2075)
     let scanCodeAt = -1;
     if (ruleType === 'next_in_line' && before.rows[0] && !before.rows[0].scan_code) {
-      updates.push(`scan_code = ${paramIndex++}`);
+      updates.push(`scan_code = $${paramIndex++}`);
       scanCodeAt = values.push(null) - 1;
     }
 
