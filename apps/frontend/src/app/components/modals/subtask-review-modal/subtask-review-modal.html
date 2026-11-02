@@ -1,0 +1,40 @@
+<app-modal [open]="chore() !== null" [title]="chore()?.title ?? ''" (closeModal)="closed.emit()">
+  <p class="first">{{ firstLine() }}</p>
+  <p class="why">{{ doneCount() }}</p>
+
+  <ul class="rows">
+    @for (subtask of subtasks(); track subtask.id) {
+      <li><app-subtask-row [subtask]="subtask" [readonly]="true" /></li>
+    }
+  </ul>
+
+  <p class="sum">
+    <span>{{ sumLabel() }}</span>
+    <span class="sum-value">{{ sumValue() }}</span>
+  </p>
+  <p class="why" i18n="@@subtaskReview.zeroRule">Ikke mulig og ikke gjort gir 0 poeng.</p>
+  @if (error(); as e) {
+    <p class="err" role="alert">{{ e }}</p>
+  }
+
+  <div class="modal-actions" modal-actions>
+    <button
+      type="button"
+      class="btn btn-secondary"
+      (click)="closed.emit()"
+      i18n="@@subtaskReview.notNow"
+    >
+      Ikke nå
+    </button>
+    <button
+      type="button"
+      class="btn btn-primary"
+      [disabled]="busy()"
+      [attr.aria-busy]="busy()"
+      (click)="onApprove()"
+      i18n="@@subtaskReview.approve"
+    >
+      Godkjenn
+    </button>
+  </div>
+</app-modal>
