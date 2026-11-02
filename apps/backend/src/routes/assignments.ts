@@ -1452,10 +1452,14 @@ export default async function assignmentRoutes(fastify: FastifyInstance) {
         const result = await pool.query<{ submitted_at: Date }>(
           `UPDATE task_assignments
            SET submitted_at = COALESCE(submitted_at, NOW())
-           WHERE id = $1
+           WHERE id = $1 AND status = 'pending'
            RETURNING submitted_at`,
           [assignmentId],
         );
+        // A parent approved it between the check and here
+        if (result.rows.length === 0) {
+          return reply.code(400).send({ error: 'This chore is already done' });
+        }
 
         if (!access.assignment.submitted_at) {
           notifyParentsDone(fastify, assignmentId, request.user?.userId);
