@@ -109,6 +109,28 @@
   margin-bottom: var(--space-xs);
 }
 
+/* «Etter tur» (ST-2075): «Skannekode» is a label over a sentence, not a field */
+.scan-code .form-label {
+  margin-bottom: 4px;
+}
+
+.scan-code-btn {
+  height: 40px;
+  padding: 0 16px;
+  border: 1.5px solid var(--ink);
+  border-radius: var(--r-button);
+  background: var(--surface);
+  color: var(--ink);
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.scan-code-btn:focus-visible {
+  outline: var(--focus-ring);
+  outline-offset: 2px;
+}
+
 /* Form Textarea */
 .form-textarea {
   width: 100%;
