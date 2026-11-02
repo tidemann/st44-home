@@ -44,7 +44,9 @@ export class SubtaskReviewModal {
   protected readonly doneCount = computed(() => {
     const done = this.summary().done;
     const total = this.subtasks().length;
-    return $localize`:@@subtaskReview.doneCount:${done}:done: av ${total}:total: deloppgaver er gjort.`;
+    return total === 1
+      ? $localize`:@@subtaskReview.doneCountOne:${done}:done: av 1 deloppgave er gjort.`
+      : $localize`:@@subtaskReview.doneCount:${done}:done: av ${total}:total: deloppgaver er gjort.`;
   });
 
   protected readonly sumValue = computed(() => {

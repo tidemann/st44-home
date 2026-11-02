@@ -53,8 +53,7 @@
                 (click)="moveBy(i, -1)"
                 (keydown)="onRowKeydown(i, child, $event)"
                 (focusout)="onRowFocusOut(child, $event)"
-                i18n-aria-label="@@rotationOrder.moveUp"
-                aria-label="Flytt {{ child.name }} opp"
+                [attr.aria-label]="upLabel(child)"
               >
                 <i></i>
               </button>
@@ -68,8 +67,7 @@
                 (click)="moveBy(i, 1)"
                 (keydown)="onRowKeydown(i, child, $event)"
                 (focusout)="onRowFocusOut(child, $event)"
-                i18n-aria-label="@@rotationOrder.moveDown"
-                aria-label="Flytt {{ child.name }} ned"
+                [attr.aria-label]="downLabel(child)"
               >
                 <i></i>
               </button>
@@ -80,8 +78,7 @@
               class="grip"
               data-grip
               aria-describedby="rotation-hint"
-              i18n-aria-label="@@rotationOrder.moveChild"
-              aria-label="Flytt {{ child.name }}, nummer {{ i + 1 }}"
+              [attr.aria-label]="handleLabel(child, i)"
               (pointerdown)="onHandlePointerDown(i, $event)"
               (click)="onHandleClick(child)"
             >

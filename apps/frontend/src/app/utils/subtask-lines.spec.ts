@@ -58,6 +58,8 @@ describe('sub-task count lines', () => {
 
   it('reports the done count before sending and after sending', () => {
     expect(doneLine(subtasks)).toBe('1 av 3 deloppgaver gjort');
+    expect(doneLine([{ ...subtasks[0], state: null }])).toBe('0 av 1 deloppgave gjort');
+    expect(doneLine([subtasks[0]])).toBe('1 av 1 deloppgave gjort');
     expect(sentLine(subtasks)).toBe('1 av 3 gjort · 1 ikke mulig');
   });
 

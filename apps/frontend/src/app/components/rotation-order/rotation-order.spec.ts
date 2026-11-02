@@ -151,6 +151,21 @@ describe('RotationOrder (ST-2030)', () => {
     expect(text('[aria-live]')).toEqual(['Jonas er nå nummer 1, uke 45.']);
   });
 
+  it('handle and arrows have real names (ST-2104)', () => {
+    setup(['emma', 'jonas', 'mathea']);
+    const grips = el.querySelectorAll<HTMLButtonElement>('.grip');
+    expect(grips[0].getAttribute('aria-label')).toBe('Flytt Emma, nummer 1');
+    expect(grips[1].getAttribute('aria-label')).toBe('Flytt Jonas, nummer 2');
+    grips[1].click();
+    fixture.detectChanges();
+    expect(el.querySelector('[data-arrow="up"]')!.getAttribute('aria-label')).toBe(
+      'Flytt Jonas opp',
+    );
+    expect(el.querySelector('[data-arrow="down"]')!.getAttribute('aria-label')).toBe(
+      'Flytt Jonas ned',
+    );
+  });
+
   it('move mode on the last row hides the down arrow but keeps its place', () => {
     setup(['emma', 'jonas', 'mathea']);
     el.querySelectorAll<HTMLButtonElement>('.grip')[2].click();
