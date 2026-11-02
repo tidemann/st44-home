@@ -362,19 +362,36 @@ describe('«Etter tur» chores (ST-2075)', () => {
     assert.strictEqual((await turnOf()).turnChildId, jonas);
   });
 
-  test('a child taken out of the order loses the turn to the first child', async () => {
-    const res = await app.inject({
-      method: 'PUT',
-      url: `/api/households/${householdId}/tasks/${taskId}`,
-      headers: auth(parentToken),
-      payload: { ruleType: 'next_in_line', ruleConfig: { assignedChildren: [mathea, emma] } },
-    });
+  test('a saved order gives the turn to the top child («Den øverste har turen nå»)', async () => {
+    const moves = async () =>
+      (
+        await pool.query(`SELECT count(*)::int AS n FROM task_turn_moves WHERE task_id = $1`, [
+          taskId,
+        ])
+      ).rows[0].n as number;
+    const save = (order: string[]) =>
+      app.inject({
+        method: 'PUT',
+        url: `/api/households/${householdId}/tasks/${taskId}`,
+        headers: auth(parentToken),
+        payload: { ruleType: 'next_in_line', ruleConfig: { assignedChildren: order } },
+      });
+
+    // Jonas has the turn and is taken out: Mathea, on top, gets it, and the history says so
+    const before = await moves();
+    const res = await save([mathea, emma]);
     assert.strictEqual(res.statusCode, 200, res.body);
     assert.strictEqual((await turnOf()).turnChildId, mathea);
+    assert.strictEqual(await moves(), before + 1);
     const open = await pool.query(
       `SELECT count(*)::int AS n FROM task_assignments WHERE task_id = $1 AND status = 'pending'`,
       [taskId],
     );
     assert.strictEqual(open.rows[0].n, 1);
+
+    // Saving again with the same child on top (a name change, say) changes nothing
+    await save([mathea, emma]);
+    assert.strictEqual((await turnOf()).turnChildId, mathea);
+    assert.strictEqual(await moves(), before + 1);
   });
 });

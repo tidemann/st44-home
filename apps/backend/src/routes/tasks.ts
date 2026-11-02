@@ -24,7 +24,7 @@ import type { TaskRow } from '../types/database.js';
 import { todayInTimeZone, DAYS_AHEAD } from '../services/assignment-scheduler.js';
 import { generateAssignments } from '../services/assignment-generator.js';
 import { addWeeks, mondayOf, toIsoDate } from '../services/rotation.js';
-import { newScanCode, syncTurn } from '../services/turns.js';
+import { giveTurnTo, newScanCode, syncTurn } from '../services/turns.js';
 import type { PoolClient } from 'pg';
 
 interface HouseholdParams {
@@ -705,7 +705,13 @@ async function updateTask(request: FastifyRequest<UpdateTaskRequest>, reply: Fas
       );
     }
     if (isTurns) {
-      await syncTurn(db, householdId, taskId);
+      // The form says «Den øverste har turen nå»: a saved order gives the turn to the top child
+      const top = normalizedRuleConfig?.assignedChildren?.[0];
+      if (wasTurns && top) {
+        await giveTurnTo(db, householdId, taskId, top, request.user?.userId);
+      } else {
+        await syncTurn(db, householdId, taskId);
+      }
     } else if (wasTurns) {
       await generateAssignments(householdId, todayInTimeZone(new Date()), DAYS_AHEAD);
     }

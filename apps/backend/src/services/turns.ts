@@ -104,6 +104,29 @@ export async function syncTurn(client: Queryable, householdId: string, taskId: s
   if (keep) await openTurn(client, householdId, taskId, keep);
 }
 
+/**
+ * After a parent saved the order: the top child has the turn. Nothing changes when they
+ * already have it; otherwise it is a move by hand, and the history says so.
+ */
+export async function giveTurnTo(
+  client: Queryable,
+  householdId: string,
+  taskId: string,
+  childId: string,
+  movedBy: string | undefined,
+) {
+  const open = await client.query<{ child_id: string | null }>(
+    `SELECT child_id FROM task_assignments WHERE task_id = $1 AND status = 'pending'`,
+    [taskId],
+  );
+  if (open.rows.length === 1 && open.rows[0].child_id === childId) return;
+  if (open.rows.length === 0) {
+    await openTurn(client, householdId, taskId, childId);
+    return;
+  }
+  await moveTurn(client, householdId, taskId, childId, movedBy);
+}
+
 /** A parent gives the turn to another child by hand; no points change */
 export async function moveTurn(
   client: Queryable,
