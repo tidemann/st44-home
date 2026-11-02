@@ -137,7 +137,7 @@
               @let parts = emailParts(inv.email);
               <li class="iv-card">
                 <p class="iv-mail" [title]="inv.email">
-                  {{ parts[0] }}<span class="dm">{{ parts[1] }}</span>
+                  <span class="lp">{{ parts[0] }}</span><span class="dm">{{ parts[1] }}</span>
                 </p>
                 <div class="iv-meta">
                   @if (inv.expired) {

@@ -28,6 +28,7 @@
 /* Group label: Label 13/600, 8 px over the first element */
 .iv-grp {
   margin: 0;
+  font-family: var(--font-text);
   font-size: 13px;
   font-weight: 600;
   line-height: 18px;
@@ -298,8 +299,12 @@
   color: var(--text);
 }
 
+/* Both halves are whole boxes, so the first break is at «@»; a half wider than the card still
+   breaks anywhere inside it */
+.iv-mail .lp,
 .iv-mail .dm {
   display: inline-block;
+  max-width: 100%;
 }
 
 /* The status chip leads the meta line; at 346 px the line drops under it (V3) */
@@ -348,7 +353,6 @@
   margin: 0;
   font-size: 16px;
   font-weight: 600;
-  line-height: 20px;
   color: var(--text);
 }
 
