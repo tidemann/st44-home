@@ -364,6 +364,11 @@ h2 {
     inset: -6px 0;
   }
 
+  /* The unselected tab takes the chip's 1.5 px edge (ST-2064) */
+  .tabs button:not(.active) {
+    box-shadow: inset 0 0 0 1.5px var(--text-muted);
+  }
+
   .tabs button.active {
     background: var(--text);
     color: var(--surface);
