@@ -139,12 +139,26 @@ describe('HouseholdSettingsComponent («Invitasjoner til husstanden»)', () => {
   it('says «allerede invitert» on a 409', async () => {
     invitations.sendInvitation.mockRejectedValue({
       status: 409,
-      error: { message: 'A pending invitation already exists' },
+      error: {
+        code: 'INVITATION_ALREADY_PENDING',
+        message: 'Pending invitation already exists for this email',
+      },
     });
     await render();
     type('per.hansen@eksempel.no');
     await submit();
     expect(text('.iv-error')).toEqual(['Denne adressen er allerede invitert.']);
+  });
+
+  it('says «allerede med i husstanden» on the member 409, by its code', async () => {
+    invitations.sendInvitation.mockRejectedValue({
+      status: 409,
+      error: { code: 'ALREADY_HOUSEHOLD_MEMBER', message: 'anything' },
+    });
+    await render();
+    type('per.hansen@eksempel.no');
+    await submit();
+    expect(text('.iv-error')).toEqual(['Denne personen er allerede med i husstanden.']);
   });
 
   it('after a send shows the receipt, the accept link and «Kopier lenke»', async () => {

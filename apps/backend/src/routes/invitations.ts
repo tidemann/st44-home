@@ -120,6 +120,7 @@ async function createInvitation(
     if (memberCheck.rows.length > 0) {
       return reply.status(409).send({
         error: 'Conflict',
+        code: 'ALREADY_HOUSEHOLD_MEMBER',
         message: 'User is already a household member',
       });
     }
@@ -134,6 +135,7 @@ async function createInvitation(
     if (invitationCheck.rows.length > 0) {
       return reply.status(409).send({
         error: 'Conflict',
+        code: 'INVITATION_ALREADY_PENDING',
         message: 'Pending invitation already exists for this email',
       });
     }

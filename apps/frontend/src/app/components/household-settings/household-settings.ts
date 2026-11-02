@@ -156,15 +156,14 @@ export class HouseholdSettingsComponent implements OnInit {
     }
   }
 
-  /** The backend speaks English: map it, never show it (rule 8) */
+  /** The backend speaks English: map its error code, never show its text (rule 8) */
   private sendErrorText(error: unknown): string {
-    const http = error as { status?: number; error?: { message?: string } };
+    const http = error as { status?: number; error?: { code?: string } };
     if (http?.status === 400) {
       return $localize`:@@invitations.emailInvalid:Skriv en gyldig e-postadresse.`;
     }
     if (http?.status === 409) {
-      const message = http.error?.message?.toLowerCase() ?? '';
-      if (message.includes('already a household member')) {
+      if (http.error?.code === 'ALREADY_HOUSEHOLD_MEMBER') {
         return $localize`:@@invitations.alreadyMember:Denne personen er allerede med i husstanden.`;
       }
       return $localize`:@@invitations.alreadyInvited:Denne adressen er allerede invitert.`;
