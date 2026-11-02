@@ -9,19 +9,15 @@ import {
 import type { Child } from '@st44/types';
 import { MemberCard, type MemberCardData } from '../../components/member-card/member-card';
 import {
-  InviteModal,
-  type InviteMemberData,
-} from '../../components/modals/invite-modal/invite-modal';
-import {
   AddChildModal,
   type AddChildData,
 } from '../../components/modals/add-child-modal/add-child-modal';
 import { ChildDetailsModal } from '../../components/modals/child-details-modal/child-details-modal';
 import { QrCodeModal } from '../../components/modals/qr-code-modal/qr-code-modal';
 import { PageComponent } from '../../components/page/page';
+import { RouterLink } from '@angular/router';
 import { HouseholdService, type HouseholdMemberResponse } from '../../services/household.service';
 import { AuthService } from '../../services/auth.service';
-import { InvitationService } from '../../services/invitation.service';
 import { ChildrenService } from '../../services/children.service';
 import { HouseholdStore } from '../../stores/household.store';
 import { personInitial, personName } from '../../utils/person-name';
@@ -33,14 +29,21 @@ import { personInitial, personName } from '../../utils/person-name';
  * - Household info (name and member count)
  * - Action buttons (Invite Member, Add Child)
  * - List of all family members with their stats using member-card components
- * - Integration with invite-modal and add-child-modal for member management
+ * - «+ Inviter» opens «Invitasjoner til husstanden»; add-child-modal adds a child
  *
  * Design matches the "Diddit!" playful aesthetic from UX redesign.
  * Navigation is handled by the parent MainLayout component.
  */
 @Component({
   selector: 'app-family',
-  imports: [MemberCard, InviteModal, AddChildModal, ChildDetailsModal, QrCodeModal, PageComponent],
+  imports: [
+    MemberCard,
+    AddChildModal,
+    ChildDetailsModal,
+    QrCodeModal,
+    PageComponent,
+    RouterLink,
+  ],
   templateUrl: './family.html',
   styleUrl: './family.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -49,7 +52,6 @@ export class Family implements OnInit {
   private readonly householdService = inject(HouseholdService);
   private readonly householdStore = inject(HouseholdStore);
   private readonly authService = inject(AuthService);
-  private readonly invitationService = inject(InvitationService);
   private readonly childrenService = inject(ChildrenService);
 
   // State signals
@@ -61,9 +63,10 @@ export class Family implements OnInit {
   );
   protected readonly householdId = signal<string | null>(null);
   protected readonly currentUserId = signal<string | null>(null);
+  /** «+ Inviter» is the admin's, as the page it opens (ST-2068 build line 5) */
+  protected readonly isAdmin = signal(false);
 
   // Modal state
-  protected readonly inviteModalOpen = signal(false);
   protected readonly addChildModalOpen = signal(false);
   protected readonly childDetailsModalOpen = signal(false);
   protected readonly qrCodeModalOpen = signal(false);
@@ -125,6 +128,7 @@ export class Family implements OnInit {
 
       this.householdId.set(household.id);
       this.householdName.set(household.name);
+      this.isAdmin.set(household.role === 'admin');
 
       // Active household is already set - don't overwrite it
       // (either from switcher or from autoActivateHousehold above)
@@ -262,32 +266,6 @@ export class Family implements OnInit {
   }
 
   /**
-   * Handle invite member submission
-   */
-  protected async onInviteSent(data: InviteMemberData): Promise<void> {
-    const householdId = this.householdId();
-    if (!householdId) {
-      this.error.set($localize`:@@family.error.noHouseholdSelected:Velg en familie først.`);
-      return;
-    }
-
-    try {
-      // Map frontend role to backend role
-      const apiRole = data.role === 'parent' ? 'parent' : 'parent';
-      await this.invitationService.sendInvitation(householdId, data.email, apiRole);
-      this.inviteModalOpen.set(false);
-
-      // Reload members to show updated state
-      await this.loadData();
-    } catch (err) {
-      console.error('Failed to send invitation:', err);
-      this.error.set(
-        $localize`:@@family.error.inviteFailed:Kunne ikke sende invitasjonen. Prøv igjen.`,
-      );
-    }
-  }
-
-  /**
    * Handle add child submission
    */
   protected async onChildAdded(data: AddChildData): Promise<void> {
@@ -313,20 +291,6 @@ export class Family implements OnInit {
         $localize`:@@family.error.addChildFailed:Kunne ikke legge til barnet. Prøv igjen.`,
       );
     }
-  }
-
-  /**
-   * Open invite member modal
-   */
-  protected openInviteModal(): void {
-    this.inviteModalOpen.set(true);
-  }
-
-  /**
-   * Close invite member modal
-   */
-  protected closeInviteModal(): void {
-    this.inviteModalOpen.set(false);
   }
 
   /**

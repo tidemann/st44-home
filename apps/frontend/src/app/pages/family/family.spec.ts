@@ -3,10 +3,9 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { Family } from './family';
 import { HouseholdService, type HouseholdMemberResponse } from '../../services/household.service';
 import { AuthService } from '../../services/auth.service';
-import { InvitationService } from '../../services/invitation.service';
 import { ChildrenService } from '../../services/children.service';
 import { HouseholdStore } from '../../stores/household.store';
-import type { InviteMemberData } from '../../components/modals/invite-modal/invite-modal';
+import { provideRouter } from '@angular/router';
 import type { AddChildData } from '../../components/modals/add-child-modal/add-child-modal';
 
 describe('Family', () => {
@@ -17,7 +16,6 @@ describe('Family', () => {
     getHouseholdMembers: ReturnType<typeof vi.fn>;
   };
   let mockAuthService: { currentUser: ReturnType<typeof vi.fn> };
-  let mockInvitationService: { sendInvitation: ReturnType<typeof vi.fn> };
   let mockChildrenService: {
     createChild: ReturnType<typeof vi.fn>;
     listChildren: ReturnType<typeof vi.fn>;
@@ -61,9 +59,6 @@ describe('Family', () => {
     mockAuthService = {
       currentUser: vi.fn().mockReturnValue(mockUser),
     };
-    mockInvitationService = {
-      sendInvitation: vi.fn().mockResolvedValue({ id: 'invite-1' }),
-    };
     mockChildrenService = {
       createChild: vi.fn().mockResolvedValue({ id: 'child-1', name: 'New Child' }),
       listChildren: vi.fn().mockResolvedValue([
@@ -94,7 +89,7 @@ describe('Family', () => {
       providers: [
         { provide: HouseholdService, useValue: mockHouseholdService },
         { provide: AuthService, useValue: mockAuthService },
-        { provide: InvitationService, useValue: mockInvitationService },
+        provideRouter([]),
         { provide: ChildrenService, useValue: mockChildrenService },
         { provide: HouseholdStore, useValue: mockHouseholdStore },
       ],
@@ -251,16 +246,6 @@ describe('Family', () => {
   });
 
   describe('modal interactions', () => {
-    it('should open and close invite modal', () => {
-      expect(component['inviteModalOpen']()).toBe(false);
-
-      component['openInviteModal']();
-      expect(component['inviteModalOpen']()).toBe(true);
-
-      component['closeInviteModal']();
-      expect(component['inviteModalOpen']()).toBe(false);
-    });
-
     it('should open and close add child modal', () => {
       expect(component['addChildModalOpen']()).toBe(false);
 
@@ -272,53 +257,28 @@ describe('Family', () => {
     });
   });
 
-  describe('onInviteSent', () => {
-    it('should handle invite sent event', async () => {
-      // First load data to set householdId
-      await component.ngOnInit();
+  // «+ Inviter» opens «Invitasjoner til husstanden»; the popup is retired (ST-2068)
+  describe('«+ Inviter»', () => {
+    const invite = (): HTMLAnchorElement | null =>
+      fixture.nativeElement.querySelector('.btn-invite');
 
-      const inviteData: InviteMemberData = {
-        email: 'new@example.com',
-        role: 'parent',
-        message: 'Welcome!',
-      };
+    it('links an admin to the invitations page', async () => {
+      mockHouseholdService.listHouseholds.mockResolvedValue([{ ...mockHousehold, role: 'admin' }]);
+      fixture.detectChanges();
+      await vi.waitFor(() => expect(component['loading']()).toBe(false));
+      fixture.detectChanges();
 
-      await component['onInviteSent'](inviteData);
-
-      expect(component['inviteModalOpen']()).toBe(false);
-      expect(mockInvitationService.sendInvitation).toHaveBeenCalledWith(
-        'household-1',
-        'new@example.com',
-        'parent',
-      );
+      expect(invite()?.getAttribute('href')).toBe('/household/settings');
+      expect(invite()?.textContent?.trim()).toBe('+ Inviter');
     });
 
-    it('should close modal after invite sent', async () => {
-      // First load data to set householdId
-      await component.ngOnInit();
+    it('is not shown to a parent who is not admin', async () => {
+      mockHouseholdService.listHouseholds.mockResolvedValue([{ ...mockHousehold, role: 'parent' }]);
+      fixture.detectChanges();
+      await vi.waitFor(() => expect(component['loading']()).toBe(false));
+      fixture.detectChanges();
 
-      const inviteData: InviteMemberData = {
-        email: 'new@example.com',
-        role: 'adult',
-      };
-
-      await component['onInviteSent'](inviteData);
-
-      // Modal should be closed after invite
-      expect(component['inviteModalOpen']()).toBe(false);
-    });
-
-    it('should set error when no household is selected', async () => {
-      // Don't call ngOnInit - householdId will be null
-      const inviteData: InviteMemberData = {
-        email: 'new@example.com',
-        role: 'parent',
-      };
-
-      await component['onInviteSent'](inviteData);
-
-      expect(component['error']()).toBe('Velg en familie først.');
-      expect(mockInvitationService.sendInvitation).not.toHaveBeenCalled();
+      expect(invite()).toBeNull();
     });
   });
 

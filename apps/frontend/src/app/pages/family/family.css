@@ -101,6 +101,8 @@
 .btn-invite {
   position: relative;
   flex: none;
+  display: inline-flex;
+  align-items: center;
   height: 33px;
   padding: 0 13px;
   border: 0;
@@ -113,6 +115,7 @@
   line-height: 1;
   letter-spacing: -0.02em;
   white-space: nowrap;
+  text-decoration: none;
   cursor: pointer;
 }
 

@@ -1,351 +1,365 @@
-.household-settings {
-  max-width: 800px;
-  margin: 0 auto;
-  padding: 2rem 1rem;
-}
+/* «Invitasjoner til husstanden» (ST-2068, approved on ST-2076). Every number is a token of the
+   design guide; the measures are section 3 of the ST-2068 design document. */
 
-.household-settings__header {
-  margin-bottom: 2rem;
-}
-
-.household-settings__header h1 {
-  font-size: 2rem;
-  font-weight: 600;
-  color: var(--text);
-  margin: 0 0 0.5rem 0;
-}
-
-.household-settings__subtitle {
-  font-size: 1rem;
-  color: var(--text-muted);
-  margin: 0;
-}
-
-.household-settings__content {
-  display: flex;
-  flex-direction: column;
-  gap: 2rem;
-}
-
-/* Settings Section */
-.settings-section {
-  background: white;
-  border: 1px solid var(--hairline);
-  border-radius: 8px;
-  padding: 1.5rem;
-}
-
-.settings-section h2 {
-  font-size: 1.25rem;
-  font-weight: 600;
-  color: var(--text);
-  margin: 0 0 1rem 0;
-}
-
-.section-description {
-  font-size: 0.875rem;
-  color: var(--text-muted);
-  margin: 0 0 1rem 0;
-}
-
-/* Form Styles */
-.household-form {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-}
-
-.form-group {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-}
-
-.form-label {
-  font-size: 0.875rem;
-  font-weight: 500;
+/* The first group line sits 20 px under the band, as on «Familie» */
+.iv-cols {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 20px;
+  padding-top: 20px;
+  font-family: var(--font-text);
   color: var(--text);
 }
 
-.form-input {
-  padding: 0.75rem;
-  font-size: 1rem;
-  border: 1px solid var(--hairline);
-  border-radius: 4px;
-  transition: border-color 0.2s;
+/* Rule 4: two groups, 428 + 24 + 428 on the 880 px page */
+@media (min-width: 1024px) {
+  .iv-cols {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: 24px;
+    align-items: start;
+  }
 }
 
-.form-input:focus {
-  outline: var(--focus-ring);
-  border-color: var(--ink);
-}
-
-.form-input:disabled {
-  background-color: var(--track);
-  cursor: not-allowed;
-}
-
-.form-input[aria-invalid='true'] {
-  border-color: var(--color-danger);
-}
-
-.form-error {
-  font-size: 0.875rem;
-  color: var(--color-danger);
-  margin-top: 0.25rem;
-}
-
-/* Info Message */
-.info-message {
-  padding: 0.75rem 1rem;
-  background-color: var(--track);
-  border-left: 4px solid var(--color-primary);
-  border-radius: 4px;
-}
-
-.info-message p {
-  font-size: 0.875rem;
-  color: var(--color-primary);
-  margin: 0;
-}
-
-/* Members List */
-.members-list {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
-}
-
-.member-item {
-  padding: 1rem;
-  background-color: var(--bg);
-  border: 1px solid var(--hairline);
-  border-radius: 6px;
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
+.iv-form,
+.iv-list {
   min-width: 0;
 }
 
-.member-info {
+/* Group label: Label 13/600, 8 px over the first element */
+.iv-grp {
+  margin: 0;
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 18px;
+  color: var(--text);
+}
+
+.iv-grpline {
   display: flex;
-  align-items: center;
+  align-items: baseline;
   justify-content: space-between;
-  gap: 1rem;
 }
 
-.member-name {
-  font-size: 1rem;
-  font-weight: 500;
+.iv-count {
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 18px;
+  color: var(--text-muted);
+}
+
+.iv-fields {
+  display: flex;
+  flex-direction: column;
+  margin: 8px 0 0;
+}
+
+/* Field label 4 px over the field */
+.iv-fl {
+  display: block;
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 18px;
   color: var(--text);
 }
 
-.member-role {
-  padding: 0.25rem 0.75rem;
-  font-size: 0.75rem;
-  font-weight: 600;
-  border-radius: 12px;
-  background-color: var(--track);
-  color: var(--text-muted);
-}
-
-.member-role--admin {
-  background-color: var(--color-danger-light);
-  color: var(--color-danger-dark);
-}
-
-.member-role--parent {
-  background-color: var(--color-success-light);
-  color: var(--color-success-dark);
-}
-
-.member-meta {
-  display: flex;
-  flex-direction: column;
-  gap: 0.25rem;
-  font-size: 0.875rem;
-  color: var(--text-muted);
-  min-width: 0;
-}
-
-/* The address breaks only before «@»; a part wider than the card ends in an ellipsis
-   (the full address is in the title) instead of pushing the page sideways (ST-1557) */
-.member-email {
-  font-family: monospace;
-  display: flex;
-  flex-wrap: wrap;
-  min-width: 0;
-  max-width: 100%;
-}
-
-.email-part {
-  min-width: 0;
-  max-width: 100%;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-/* Form Actions */
-.form-actions {
-  display: flex;
-  justify-content: flex-start;
-  padding-top: 0.5rem;
-}
-
-/* Button */
-.btn {
-  padding: 0.75rem 1.5rem;
-  font-size: 1rem;
+.iv-field {
+  box-sizing: border-box;
+  width: 100%;
+  height: 49px;
+  margin-top: 4px;
+  padding: 0 18px;
+  border: 1.5px solid var(--text-muted);
+  border-radius: var(--r-button);
+  background: var(--surface);
+  color: var(--text);
+  font-family: var(--font-text);
+  font-size: 16px;
   font-weight: 500;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-  transition: transform 0.2s;
+}
+
+.iv-field:focus-visible {
+  outline: var(--focus-ring);
+  outline-offset: 2px;
+}
+
+.iv-field[aria-invalid='true'] {
+  border-color: var(--overdue);
+}
+
+/* The send error, under the field, in Overdue Rust (rule 6) */
+.iv-error {
+  margin: 6px 0 0;
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 18px;
+  color: var(--overdue);
+}
+
+.iv-role {
+  margin-top: 12px;
+}
+
+/* Role chips (Chips, ST-2058): 33 px, r9, 7 px apart. The chosen one is the ink fill with no
+   edge; the unchosen one carries a 1.5 px #555E64 edge inside its 33 px (ST-2064) */
+.iv-chips {
+  display: flex;
+  gap: 7px;
+  margin-top: 4px;
+}
+
+.iv-chip {
+  position: relative;
   display: inline-flex;
   align-items: center;
-  justify-content: center;
-  gap: 0.5rem;
+  height: 33px;
+  padding: 0 13px;
+  border-radius: var(--r-chip);
+  background: var(--surface);
+  color: var(--text);
+  box-shadow: inset 0 0 0 1.5px var(--text-muted);
+  font-size: 15px;
+  font-weight: 500;
+  line-height: 1;
+  white-space: nowrap;
+  cursor: pointer;
 }
 
-.btn-primary {
-  background: var(--yellow);
-  color: var(--ink);
+.iv-chip.on {
+  background: var(--text);
+  color: var(--surface);
+  box-shadow: none;
 }
 
-.btn-primary:hover:not(:disabled) {
-  transform: translateY(-2px);
+.iv-chip input {
+  position: absolute;
+  opacity: 0;
+  width: 1px;
+  height: 1px;
+  margin: 0;
+  pointer-events: none;
 }
 
-.btn-primary:active:not(:disabled) {
-  transform: translateY(0);
-}
-
-.btn:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
-
-.btn:focus-visible {
-  outline: 3px solid var(--ink);
+.iv-chip:has(input:focus-visible) {
+  outline: var(--focus-ring);
   outline-offset: 2px;
 }
 
-/* Alerts */
-.alert {
-  padding: 1rem;
-  border-radius: 4px;
-  margin-top: 1rem;
-  font-size: 0.875rem;
-}
-
-.alert--success {
-  background-color: var(--color-success-light);
-  color: var(--color-success-dark);
-  border: 1px solid var(--color-success);
-}
-
-.alert--error {
-  background-color: var(--color-danger-light);
-  color: var(--color-danger-dark);
-  border: 1px solid var(--color-danger);
-}
-
-/* Loading State */
-.loading {
-  text-align: center;
-  padding: 2rem;
-  font-size: 1rem;
+/* Hint: Meta sm 13/500, 8 px under the chips */
+.iv-hint {
+  margin: 8px 0 0;
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 18px;
   color: var(--text-muted);
 }
 
-/* Empty State */
-.empty-state,
-.placeholder {
-  text-align: center;
-  padding: 2rem;
-  font-size: 0.875rem;
-  color: var(--color-text-tertiary);
-  font-style: italic;
+/* «Send invitasjon»: the main button, yellow from the first moment (rule 5, rule 6) */
+.iv-main {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 49px;
+  margin-top: 20px;
+  border: 0;
+  border-radius: var(--r-button);
+  background: var(--yellow);
+  color: var(--ink);
+  font-family: var(--font-text);
+  font-size: 16.5px;
+  font-weight: 600;
+  cursor: pointer;
 }
 
-/* Responsive Design */
-@media (max-width: 640px) {
-  .household-settings {
-    padding: 1rem 0.5rem;
-  }
-
-  .household-settings__header h1 {
-    font-size: 1.5rem;
-  }
-
-  .settings-section {
-    padding: 1rem;
-  }
-
-  .member-info {
-    flex-direction: column;
-    align-items: flex-start;
-  }
+/* Row buttons: 36 px, r10, white with the 1.5 px edge, label 16/600 */
+.iv-outbtn {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  height: 36px;
+  padding: 0 14px;
+  border: 1.5px solid var(--text-muted);
+  border-radius: var(--r-row-action);
+  background: var(--surface);
+  color: var(--text);
+  font-family: var(--font-text);
+  font-size: 16px;
+  font-weight: 600;
+  white-space: nowrap;
+  cursor: pointer;
 }
 
-/* High Contrast Mode Support */
-@media (prefers-contrast: high) {
-  .form-input {
-    border-width: 2px;
-  }
-
-  .btn-primary {
-    border: 2px solid var(--color-primary);
-  }
+/* 2.5.8: the 33 px chips and 36 px row buttons press as 44 px without changing what is drawn */
+.iv-chip::after,
+.iv-outbtn::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 50%;
+  height: 44px;
+  transform: translateY(-50%);
 }
 
-/* Focus Management */
-.form-input:focus-visible {
-  outline: 3px solid var(--ink);
+.iv-main:focus-visible,
+.iv-outbtn:focus-visible {
+  outline: var(--focus-ring);
   outline-offset: 2px;
 }
 
-/* ===== DESKTOP, 1024 px AND WIDER (guide: Desktop: rules for all pages) =====
-   The header is the yellow band (rule 2) with the member count as its sub-line, and the
-   content one 428 px column (rules 1 and 4). The cards inside cards are ST-1345 F12, a
-   drawing of its own, not this step. */
-@media (min-width: 1024px) {
-  .household-settings {
-    max-width: none;
-    padding: 0 0 32px;
+@media (hover: hover) {
+  .iv-main:hover {
+    background: var(--yellow-inset);
   }
 
-  .household-settings__header {
-    margin-bottom: 0;
+  .iv-outbtn:hover {
+    background: var(--track);
   }
+}
 
-  /* Rule 3: the one title style (the global .desk-band h1 loses to this component's h1) */
-  .household-settings__header h1 {
-    margin: 0;
-    font-size: 26px;
-    font-weight: 800;
-    color: var(--ink);
-  }
+/* The receipt row: a 14 px Done Green tick, 7 px, then Meta sm; 20 px under the button */
+.iv-ok {
+  display: flex;
+  align-items: flex-start;
+  gap: 7px;
+  margin: 20px 0 0;
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 18px;
+  color: var(--text);
+}
 
-  .household-settings__subtitle {
-    display: none;
-  }
+.iv-ok svg {
+  flex: 0 0 auto;
+  margin-top: 2px;
+}
 
-  .household-settings__content {
-    padding-top: 20px;
-  }
+.iv-ok path {
+  fill: none;
+  stroke: var(--done);
+  stroke-width: 2.2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
 
-  /* Rule 5: the main button 49 px, 13 px corners, 16.5 px label, as wide as its column */
-  .btn-primary {
-    width: 100%;
-    height: 49px;
-    padding: 0 16px;
-    border-radius: var(--r-button);
-    font-size: 16.5px;
-    font-weight: 600;
-  }
+.iv-link-title {
+  margin-top: 20px;
+}
+
+.iv-link {
+  margin: 4px 0 8px;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 18px;
+  color: var(--text-muted);
+}
+
+/* Cards: white, r13, 15 px padding, 8 px apart, no border, no shadow */
+.iv-cards {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 8px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.iv-card {
+  padding: 15px;
+  border-radius: var(--r-card);
+  background: var(--surface);
+}
+
+.iv-empty {
+  margin-top: 8px;
+}
+
+/* Loading: rule 7's grey rows, the card's own size */
+.iv-skeleton {
+  height: 139px;
+  border-radius: var(--r-card);
+  background: var(--track);
+}
+
+/* The address breaks at «@» first, so the domain stays whole; two lines, then «…» (D14) */
+.iv-mail {
+  display: -webkit-box;
+  margin: 0;
+  overflow: hidden;
+  overflow-wrap: anywhere;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 20px;
+  color: var(--text);
+}
+
+.iv-mail .dm {
+  display: inline-block;
+}
+
+/* The status chip leads the meta line; at 346 px the line drops under it (V3) */
+.iv-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+/* A badge, not a control: #ECECE8, no edge (ST-1609) */
+.iv-stat {
+  display: inline-flex;
+  flex: 0 0 auto;
+  align-items: center;
+  height: 33px;
+  padding: 0 11px;
+  border-radius: var(--r-chip);
+  background: var(--track);
+  color: var(--text);
+  font-size: 15px;
+  font-weight: 500;
+}
+
+.iv-stat.gone {
+  color: var(--overdue);
+}
+
+.iv-r2 {
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 18px;
+  color: var(--text-muted);
+}
+
+.iv-r3 {
+  margin-top: 12px;
+}
+
+.iv-cleanup {
+  margin-top: 12px;
+}
+
+.iv-empty-t {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 20px;
+  color: var(--text);
+}
+
+.iv-empty-p {
+  margin: 6px 0 0;
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 18px;
+  color: var(--text-muted);
+}
+
+.iv-retry {
+  margin-top: 15px;
 }
