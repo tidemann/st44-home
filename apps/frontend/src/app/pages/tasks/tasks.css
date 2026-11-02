@@ -17,9 +17,9 @@
   cursor: pointer;
 }
 
-/* Unselected label is Muted Text #555E64, as in the picture (Stig, ST-2071, 2026-11-02) */
 /* Unselected: a 1.5 px Muted Text edge inside the 33 px, so the chip is 6.1:1 against the paper
-   (WCAG 1.4.11; Stig, ST-2058, 2026-11-02). Inset, as a border would grow the chip and draw 1 px */
+   (WCAG 1.4.11; Stig, ST-2058, 2026-11-02). Inset, as a border would grow the chip and draw 1 px.
+   The label is Muted Text too, as in the picture (Stig, ST-2071, 2026-11-02) */
 .chip:not(.on) {
   box-shadow: inset 0 0 0 1.5px var(--text-muted);
   color: var(--text-muted);
