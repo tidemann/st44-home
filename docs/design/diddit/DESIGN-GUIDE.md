@@ -963,7 +963,8 @@ is why 14.21 on the reward and child cards is read as 14 and not 15. No value he
 
 - **Filter chips** ("Alle / Emma / Jonas / Mathea"): **33 px tall**, 9 px radius, 7 px apart,
   Meta 15 px. Selected is a `#15181C` fill with a white label; unselected is a white fill with
-  `#15181C` label. Selection is a fill change, not a colour-only tint.
+  a `#555E64` label (6.6:1 on white, 6.1:1 on the paper), as the picture draws it; approved by
+  Stig on ST-2071, 2026-11-02. Selection is a fill change, not a colour-only tint.
 - **The unselected chip has a 1.5 px `#555E64` edge, inside its 33 px**
   (`box-shadow: inset 0 0 0 1.5px`, so the chip does not grow; a 1.5 px border draws 1 px in
   Chromium). Not in the picture:
