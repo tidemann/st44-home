@@ -11,7 +11,7 @@ import {
 } from '../middleware/household-membership.js';
 import { pushService } from '../services/push.service.js';
 import { nextInLine, normalizeScanCode } from '../services/next-in-line.js';
-import { dateDoneTurnToday, moveTurn, passTurn, turnOrder } from '../services/turns.js';
+import { dateDoneTurnToday, moveTurn, passTurn, turnOrder, turnOrders } from '../services/turns.js';
 import { withTransaction } from '../utils/index.js';
 
 /**
@@ -61,16 +61,21 @@ const TURN_TASKS_SQL = `
   ) open ON true
   WHERE t.household_id = $1 AND t.active = true AND t.rule_type = 'next_in_line'`;
 
-async function toTurn(row: TurnTaskRow, withCode: boolean): Promise<TaskTurn> {
-  return {
+/** The chores as turns; every chore's order comes from one query */
+async function toTurns(rows: TurnTaskRow[], withCode: boolean): Promise<TaskTurn[]> {
+  const orders = await turnOrders(
+    pool,
+    rows.map((row) => row.id),
+  );
+  return rows.map((row) => ({
     taskId: row.id,
     name: row.name,
     points: row.points ?? 0,
     assignmentId: row.assignment_id,
-    order: await turnOrder(pool, row.id),
+    order: orders.get(row.id) ?? [],
     turnChildId: row.turn_child_id,
     scanCode: withCode ? row.scan_code : null,
-  };
+  }));
 }
 
 export default async function turnRoutes(fastify: FastifyInstance) {
@@ -96,7 +101,7 @@ export default async function turnRoutes(fastify: FastifyInstance) {
       const result = await pool.query<TurnTaskRow>(`${TURN_TASKS_SQL} ORDER BY t.name`, [
         me.household_id,
       ]);
-      const turns = await Promise.all(result.rows.map((row) => toTurn(row, false)));
+      const turns = await toTurns(result.rows, false);
       return reply.send({ turns, myChildId: me.id });
     },
   );
@@ -115,7 +120,7 @@ export default async function turnRoutes(fastify: FastifyInstance) {
       const result = await pool.query<TurnTaskRow>(`${TURN_TASKS_SQL} ORDER BY t.name`, [
         householdId,
       ]);
-      const turns = await Promise.all(result.rows.map((row) => toTurn(row, isParent)));
+      const turns = await toTurns(result.rows, isParent);
       return reply.send({ turns });
     },
   );
@@ -210,7 +215,7 @@ export default async function turnRoutes(fastify: FastifyInstance) {
         taskId,
       ]);
       if (result.rows.length === 0) return reply.code(404).send({ error: 'Task not found' });
-      return reply.send(await toTurn(result.rows[0], true));
+      return reply.send((await toTurns(result.rows, true))[0]);
     },
   );
 
