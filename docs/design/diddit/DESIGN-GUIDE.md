@@ -78,6 +78,11 @@ typography:
     fontSize: '15px'
     fontWeight: 500
     lineHeight: 1.4
+  meta-tick:
+    fontFamily: 'Hanken Grotesk, system-ui, sans-serif'
+    fontSize: '13.5px'
+    fontWeight: 500
+    lineHeight: 1.4
   meta-sm:
     fontFamily: 'Hanken Grotesk, system-ui, sans-serif'
     fontSize: '13px'
@@ -665,8 +670,15 @@ neutral one to pass a check. Black on yellow is the system's answer; it already 
 >    ink height and are far less font-dependent. See the re-derivation note after the table.
 >
 > After that fitting, what is left is residual and uncorrected: chore-row titles render 3.7 % wide
-> (83.0 vs 80.0 px ink), chore-row meta 4 % narrow (110.5 vs 115.0), screen 4's title 2.5 % narrow.
+> (83.0 vs 80.0 px ink), chore-row meta 4 % narrow (110.5 vs 115.0), and screen 4's three quiet
+> lines 1.3–3.5 % narrow at 13.5 px (11.0 px of width across all three strings).
 > Full detail in [RULE-CHECK.md](RULE-CHECK.md#unverified-in-this-pass).
+>
+> **Screen 4's title is no longer in that list.** The old entry read "2.5 % narrow" and was measured
+> against Title 27 px; the title is the Number step (ST-2041, see the note under the table). At
+> 30 px its ink _height_ lands on the picture to 0.0 px and the width runs **4.0 % wide** (249 vs
+> 239.5) — the documented Bricolage letter-width reserve, the same sign and size as the 8 % the
+> guide already notes for «215». Number is a height-derived size; do not re-fit it on width.
 
 **Character:** A tight, heavy grotesque for every number and screen title, and a calm humanist
 grotesque for everything a person reads as a sentence. The pairing does the hierarchy on its own:
@@ -675,7 +687,7 @@ there is no third font, no italic, and no uppercase tracking anywhere in the pic
 ### Hierarchy
 
 Every size was derived from one string in the picture, and the string is named so you can re-check
-it. **Three different methods, and it matters which one you re-run:**
+it. **Four different methods, and it matters which one you re-run:**
 
 - **Display sizes — ratio against "215".** «215» is the anchor at 83 px. The other three are fixed
   by the ratio of their ink to its ink: that is a measurement _inside_ the picture and it does not
@@ -685,6 +697,8 @@ it. **Three different methods, and it matters which one you re-run:**
 - **Text sizes — ink width.** The size at which the string's drawn width reproduces the picture's.
   Ink height is too coarse at these sizes: a 1 board px threshold error is 3.5 % of a 29 px
   measurement, which is how "Body 20 px" survived a pass.
+- **Meta tick — x-height and ascender height.** The one text size not fitted on width, because
+  width alone could not have found it. See the note after the table.
 
 | Style            | Size   | Measured from                                 | Measured ink in the picture          |
 | ---------------- | ------ | --------------------------------------------- | ------------------------------------ |
@@ -697,6 +711,7 @@ it. **Three different methods, and it matters which one you re-run:**
 | **Button label** | 16.5px | "+ Ny oppgave" primary label, screen 2        | 105.5 px wide                        |
 | **Body**         | 16px   | "Dekke bord" chore title, screen 2            | 80.0 px wide                         |
 | **Meta**         | 15px   | "Ferdig 16.48" (drawn "Haket av 16.48"), s. 4 | 98.0 px wide                         |
+| **Meta tick**    | 13.5px | "Kinotur med en venn", screen 4               | x-height 6.5, ascender 9.5 px high   |
 | **Meta sm**      | 13px   | "Mathea – I dag 16.30" in a card, s. 2        | 115.0 px wide                        |
 | **Label**        | 13px   | "Forfalt" group label, screen 2               | 18 board px high                     |
 | **Caption**      | 12px   | bottom-nav labels, screen 1                   | 22 board px high                     |
@@ -712,6 +727,42 @@ it. **Three different methods, and it matters which one you re-run:**
 > height per em against Bricolage's own 0.687–0.691 — a 2 % gap in the same direction as the text
 > sizes, from the same cause: the face is a guess.
 
+> **Meta tick is a half-step, and width-fitting alone could not have found it (ST-2041, ST-2053).**
+> The three quiet lines on screen 4 stood at Meta 15 until they were measured letter by letter.
+> **Why width missed it:** both approved text anchors are **digit-rich** strings — «Haket av 16.48»
+> and «Mathea – I dag 16.30» — and their figures are tabular and fixed, while Hanken draws
+> _letters_ about 6 % wider than the picture's face. So the anchor lands exactly and letter-rich
+> lines spread, and width alone cannot tell "wrong size" from "wrong face". **What settles it is
+> vertical**, which is far less face-dependent. Measured in the signed-off picture at DPR 2, against
+> the Meta anchor on the same screen:
+>
+> | String                                | Picture: x-height / asc. / ink     | Rig at 13.5       |
+> | ------------------------------------- | ---------------------------------- | ----------------- |
+> | «Haket av 16.48» — the Meta 15 anchor | **7.5 / 10.5 / 98.0**              | 6.5 / 9.5 / 90.0  |
+> | «Kinotur med en venn»                 | **6.5 / 9.5 / 127.5**              | 6.5 / 9.5 / 123.5 |
+> | «225 av 250 poeng»                    | **6.5 / – / 111.5**                | 6.5 / – / 110.0   |
+> | «25 igjen»                            | **6.5 / figure height 9.5 / 46.5** | —                 |
+> | «Du kan angre i 5 minutter»           | **6.5 / – / 156.5**                | 6.5 / – / 151.0   |
+>
+> Read the anchor row first: **the rig draws Meta 15 exactly as the picture does** — 7.5 / 10.5 /
+> 98.0, three of three — so the rig is not skewed, and that is why it means something that the other
+> four all read **6.5** on the x-height, and 9.5 wherever there is an ascender or a figure to
+> measure. **13.5 px hits both x-height (6.5) and ascender (9.5) exactly**; 13 px is
+> 0.5 short on the ascender and 14 px is 0.5 over on the x-height. They are not Meta sm either: the
+> Meta sm anchor measures x-height **6.0** in the picture, one step below these.
+>
+> **A half-step is already established in this scale and needs no new sign-off:** Button label is
+> **16.5 px**, derived exactly this way and approved. This is the same move, one step down.
+
+> **Screen 4's chore title is the Number step, not Title (ST-2041, ST-2053).** It is not a new size.
+> Cap heights in the picture itself, DPR 2: «S» in «Søppel og pant ut» on screen 4 is **20.5 px**,
+> «O» in «Oppgaver» on screen 2 — the Title anchor — is **18.5 px**, and «H»/«B» on screens 1 and 5
+> are **18.0**. 20.5 / 18.5 = **1.108** and the x-heights agree (16.25 vs 14.75, 1.102), against
+> 30 / 27 = **1.111**. And «340» on a family card on screen 1, the Number anchor, measures the same
+> **20.5 px** of cap ink as that «S». Same file, same face, no rig and no font guess. Rendering the
+> title at 30 px reproduces the picture's ink run y 163.5…190.5 (**h 27.0**) to 0.0 px, where 27 px
+> gives 24.5.
+
 - **Display** (Bricolage 800, 0.95, −0.02em, tabular): the points won in the tick-off moment.
   The single largest thing in the product.
 - **Display sm** (Bricolage 800, 0.95, −0.02em, tabular): a child's total on their own chore
@@ -722,7 +773,10 @@ it. **Three different methods, and it matters which one you re-run:**
   one hero of its screen, just a smaller one — a balance you are about to spend, not a score.
 - **Display unit** (Bricolage 800, 1.0): the word "poeng" sitting on the baseline beside "+10" on
   the tick screen. Not Body — it is display type, a third the height of the numeral it follows.
-- **Number** (Bricolage 800, 1.0, tabular): a child's total on a family card — "340".
+- **Number** (Bricolage 800, 1.0, tabular): a child's total on a family card — "340" — **and the
+  chore title on the tick-off moment** ("Søppel og pant ut"). Those two carry the same 20.5 px of
+  cap ink in the picture; the tick screen's title is a step _above_ a page title, not a page title.
+  It is the only place a word, not a number, is set in Number.
 - **Title** (Bricolage 800, 1.15): the screen name — "Hjemme", "Oppgaver", "Belønninger". **27 px is
   the phone's title** (measured off «Oppgaver» in the signed-off picture). On a pointer screen the
   page title is **26 px / 800** — see **Desktop: rules for all pages**, rule 3.
@@ -733,9 +787,16 @@ it. **Three different methods, and it matters which one you re-run:**
   70 px and 87 px buttons require.
 - **Meta** (Hanken 500, 1.4): the line _outside_ a card — a screen's sub-line, the word "poeng"
   under a hero number, a person's name ("Emma" on a child card), and "Ferdig 16.48".
+- **Meta tick** (Hanken 500, 1.4): the three quiet lines on the tick-off moment, at **13.5 px** —
+  the meter line ("225 av 250 poeng" and "25 igjen"), the next-chore line inside the inset card
+  ("Kinotur med en venn") and the undo line ("Du kan angre i 5 minutter"). **Only those three, and
+  only on that screen.** The timestamp above them ("Ferdig 16.48") stays Meta 15 — it is the
+  anchor, and the one line on screen 4 that measures 15. The split is not card-versus-screen here:
+  two of the three sit on the open yellow and one sits in a card, and all three are the same size.
+  It is the signature screen's own voice, half a step under the timestamp that introduces it.
 - **Meta sm** (Hanken 500, 1.4): the same voice **inside** a card, one step down at 13 px — the
-  who-and-when line ("Mathea – I dag 16.30"), "Du har nok poeng", "1 av 2 gjort", "5 p", "60 p",
-  "25 igjen". A card's second line is quieter than a screen's second line; that is the picture.
+  who-and-when line ("Mathea – I dag 16.30"), "Du har nok poeng", "1 av 2 gjort", "5 p", "60 p".
+  A card's second line is quieter than a screen's second line; that is the picture.
 - **Label** (Hanken 600, 1.3): group labels — "Forfalt", "I dag", "Gjort i dag", "Hentet før".
 - **Caption** (Hanken 600, 1.3): bottom-nav labels.
 
@@ -746,8 +807,10 @@ row text they introduce. That is deliberate in the reference; do not "fix" it by
 > Meta sm — and only those four — were fitted by ink _width_ against Hanken Grotesk, which this
 > guide names as a guess (see the caveat above). A different face of the same ink height will want
 > different numbers. The display sizes were fitted by ink _height_ and move far less, but re-check
-> them too. The ink measurements in the right-hand column are the picture's and do not change; the
-> px sizes in the left-hand column are the ones to re-compute.
+> them too. **Meta tick is the one text size fitted vertically** — x-height and ascender, not width
+> — so it moves about as little as the display sizes; re-check it last, and if the real face makes
+> Meta move, keep the half-step between them. The ink measurements in the right-hand column are the
+> picture's and do not change; the px sizes in the left-hand column are the ones to re-compute.
 
 ### Named Rules
 
@@ -1145,14 +1208,23 @@ The single most important screen in the product, and the one most likely to be d
   `#F6F6F4`; everything below it is yellow.)
 - **This screen's gutter is 24 px, not 22** — a 342 px column. Badge, meter, inset card and both
   buttons run x 24…366.
-- Ink tick badge top-left (54 × 54 px rounded square), then the chore title in Title, then
-  "Ferdig 16.48" in Meta 15.
+- Ink tick badge top-left (54 × 54 px rounded square), then the chore title in **Number (30 px)** —
+  _not_ Title 27; this screen's title is a step above a page title, see the Hierarchy note — then
+  "Ferdig 16.48" in **Meta 15**, the only 15 px line on the screen.
 - "+10" in Display (**94 px**) with "poeng" beside it on the baseline in Display unit (**23 px**) —
   display type, not Body. In the picture "+10" runs x 27.5…170 and "poeng" x 174.5…234.5.
-- The points meter below: 10 segments, Ink on `#C59430`, with "225 av 250 poeng" and "25 igjen".
-- An inset `#DBA434` card for the next chore.
-- "Du kan angre i 5 minutter", then **Angre** (ghost) and **Ferdig** (solid ink) side by side, both
-  49 px tall. The undo is offered plainly, in the same size as the confirm — no confirmshaming.
+- The points meter below: 10 segments, Ink on `#C59430`, with "225 av 250 poeng" and "25 igjen" in
+  **Meta tick (13.5 px)**.
+- An inset `#DBA434` card for the next chore, its line ("Kinotur med en venn") in **Meta tick**.
+- "Du kan angre i 5 minutter" in **Meta tick**, then **Angre** (ghost) and **Ferdig** (solid ink)
+  side by side, both 49 px tall. The undo is offered plainly, in the same size as the confirm — no
+  confirmshaming.
+- **The three quiet lines are 13.5 px, not 15.** The meter line, the inset card's line and the undo
+  line all sit half a step under the timestamp above them. Building them at Meta 15 is the mistake
+  this screen invites; it is measured, and the note under the Hierarchy table gives the readings.
+  Their ink lands on **y 362.5 / 415.5 / 747.5** in the picture — and because the 13.5 px line box
+  is 1.4 × 1.5 px shorter than the 15 px one, the margins above them have to be re-fitted to put
+  the ink back on those three numbers. Measure that; do not scale it.
 
 ## A — the yellow top (approved 2026-10-10)
 
