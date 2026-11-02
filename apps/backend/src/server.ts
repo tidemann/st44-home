@@ -44,6 +44,10 @@ declare module 'fastify' {
 async function buildApp() {
   const fastify = Fastify({
     logger: true,
+    // Requests reach us through the frontend's nginx, which puts the visitor's address in
+    // X-Forwarded-For. Trusting only private-network peers makes request.ip that address,
+    // so the per-IP rate limits are per visitor, not one bucket for everyone (ST-2114).
+    trustProxy: 'loopback,linklocal,uniquelocal',
   });
 
   // Register CORS

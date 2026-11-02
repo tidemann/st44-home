@@ -20,21 +20,34 @@ function todayIso(): string {
   return todayInTimeZone(new Date()).toISOString().slice(0, 10);
 }
 
-/** The chore's children in turn order; children that no longer exist are left out */
-export async function turnOrder(client: Queryable, taskId: string): Promise<TurnChildRow[]> {
-  const result = await client.query<{ child_id: string; name: string }>(
-    `SELECT c.id AS child_id, c.name
+/** Several chores' children in turn order, in one query; children that no longer exist are left out */
+export async function turnOrders(
+  client: Queryable,
+  taskIds: string[],
+): Promise<Map<string, TurnChildRow[]>> {
+  const orders = new Map<string, TurnChildRow[]>(taskIds.map((id) => [id, []]));
+  if (taskIds.length === 0) return orders;
+  const result = await client.query<{ task_id: string; child_id: string; name: string }>(
+    `SELECT t.id AS task_id, c.id AS child_id, c.name
      FROM tasks t
      CROSS JOIN LATERAL jsonb_array_elements_text(
        CASE WHEN jsonb_typeof(t.rule_config->'assignedChildren') = 'array'
             THEN t.rule_config->'assignedChildren' ELSE '[]'::jsonb END
      ) WITH ORDINALITY AS a(child, n)
      JOIN children c ON c.id::text = a.child AND c.household_id = t.household_id
-     WHERE t.id = $1
-     ORDER BY a.n`,
-    [taskId],
+     WHERE t.id = ANY($1::uuid[])
+     ORDER BY t.id, a.n`,
+    [taskIds],
   );
-  return result.rows.map((r) => ({ childId: r.child_id, name: r.name }));
+  for (const r of result.rows) {
+    orders.get(r.task_id)?.push({ childId: r.child_id, name: r.name });
+  }
+  return orders;
+}
+
+/** One chore's children in turn order */
+export async function turnOrder(client: Queryable, taskId: string): Promise<TurnChildRow[]> {
+  return (await turnOrders(client, [taskId])).get(taskId) ?? [];
 }
 
 /**
@@ -172,4 +185,27 @@ export async function newScanCode(client: Queryable): Promise<string> {
     if (taken.rows.length === 0) return code;
   }
   throw new Error('Could not find a free scan code');
+}
+
+/** The unique index on tasks.scan_code stopped a write: the code was taken after the check */
+export function isScanCodeClash(error: unknown): boolean {
+  const pgError = error as { code?: unknown; constraint?: unknown } | null;
+  return pgError?.code === '23505' && pgError.constraint === 'idx_tasks_scan_code';
+}
+
+/**
+ * Saves with a new code. Two chores saved at the same moment can both find the same code
+ * free; the unique index stops the second, and it is saved again with another code.
+ */
+export async function withNewScanCode<T>(
+  client: Queryable,
+  save: (code: string) => Promise<T>,
+): Promise<T> {
+  for (let attempt = 1; ; attempt++) {
+    try {
+      return await save(await newScanCode(client));
+    } catch (error) {
+      if (!isScanCodeClash(error) || attempt >= 3) throw error;
+    }
+  }
 }

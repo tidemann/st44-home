@@ -49,6 +49,31 @@
       }
     }
   }
+  @case ('parent') {
+    @if (state(); as s) {
+      @if (s.kind === 'parent') {
+        <!-- Drawing 8's card: a grown-up has no turn, so the text says who can finish it -->
+        <app-page
+          [title]="s.result.taskName"
+          [subtitle]="subtitle(s.result)"
+          maxWidth="narrow"
+          [band]="true"
+        >
+          <section class="scan-card" aria-live="polite">
+            <h2 class="scan-title">{{ turnTitle(s.result) }}</h2>
+            <p class="scan-text">{{ parentBody(s.result) }}</p>
+            <ul class="scan-facts">
+              <li i18n="@@scan.noPoints">Ingen poeng er gitt.</li>
+              <li i18n="@@scan.stillOpen">Oppgaven står fortsatt åpen.</li>
+            </ul>
+          </section>
+          <button type="button" class="scan-btn" (click)="goToMyTasks()" i18n="@@scan.toTasks">
+            Til oppgavene
+          </button>
+        </app-page>
+      }
+    }
+  }
   @case ('loading') {
     <div class="scan-wait" role="status" aria-live="polite">
       <span class="spinner" aria-hidden="true"></span>

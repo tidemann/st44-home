@@ -579,6 +579,23 @@ jobs:
           echo "::error::https://${SITE_HOST}/health did not return 200"
           exit 1
 
+      # /health stayed 200 in the #719 deploy while every page gave 502, so a page must
+      # answer too.
+      - name: Verify a public frontend page
+        run: |
+          set -euo pipefail
+          for i in $(seq 1 30); do
+            code="$(curl -sS -o /dev/null -w '%{http_code}' "https://${SITE_HOST}/no/" || true)"
+            if [ "$code" = "200" ]; then
+              echo "public /no/: 200"
+              exit 0
+            fi
+            echo "attempt $i: http=$code"
+            sleep 10
+          done
+          echo "::error::https://${SITE_HOST}/no/ did not return 200"
+          exit 1
+
       - name: Record the deployed tag
         if: always()
         env:

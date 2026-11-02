@@ -11,7 +11,7 @@ import {
 } from '../middleware/household-membership.js';
 import { pushService } from '../services/push.service.js';
 import { nextInLine, normalizeScanCode } from '../services/next-in-line.js';
-import { dateDoneTurnToday, moveTurn, passTurn, turnOrder } from '../services/turns.js';
+import { dateDoneTurnToday, moveTurn, passTurn, turnOrder, turnOrders } from '../services/turns.js';
 import { withTransaction } from '../utils/index.js';
 
 /**
@@ -32,7 +32,7 @@ function routeCode(params: unknown): string | null {
   return parsed.success ? normalizeScanCode(parsed.data.code) : null;
 }
 
-class ScanError extends Error {
+class RouteError extends Error {
   constructor(
     public statusCode: number,
     message: string,
@@ -61,16 +61,21 @@ const TURN_TASKS_SQL = `
   ) open ON true
   WHERE t.household_id = $1 AND t.active = true AND t.rule_type = 'next_in_line'`;
 
-async function toTurn(row: TurnTaskRow, withCode: boolean): Promise<TaskTurn> {
-  return {
+/** The chores as turns; every chore's order comes from one query */
+async function toTurns(rows: TurnTaskRow[], withCode: boolean): Promise<TaskTurn[]> {
+  const orders = await turnOrders(
+    pool,
+    rows.map((row) => row.id),
+  );
+  return rows.map((row) => ({
     taskId: row.id,
     name: row.name,
     points: row.points ?? 0,
     assignmentId: row.assignment_id,
-    order: await turnOrder(pool, row.id),
+    order: orders.get(row.id) ?? [],
     turnChildId: row.turn_child_id,
     scanCode: withCode ? row.scan_code : null,
-  };
+  }));
 }
 
 export default async function turnRoutes(fastify: FastifyInstance) {
@@ -96,7 +101,7 @@ export default async function turnRoutes(fastify: FastifyInstance) {
       const result = await pool.query<TurnTaskRow>(`${TURN_TASKS_SQL} ORDER BY t.name`, [
         me.household_id,
       ]);
-      const turns = await Promise.all(result.rows.map((row) => toTurn(row, false)));
+      const turns = await toTurns(result.rows, false);
       return reply.send({ turns, myChildId: me.id });
     },
   );
@@ -115,7 +120,7 @@ export default async function turnRoutes(fastify: FastifyInstance) {
       const result = await pool.query<TurnTaskRow>(`${TURN_TASKS_SQL} ORDER BY t.name`, [
         householdId,
       ]);
-      const turns = await Promise.all(result.rows.map((row) => toTurn(row, isParent)));
+      const turns = await toTurns(result.rows, isParent);
       return reply.send({ turns });
     },
   );
@@ -182,27 +187,35 @@ export default async function turnRoutes(fastify: FastifyInstance) {
         return reply.code(400).send({ error: 'childId is required' });
       }
       const { childId } = parsed.data;
-      const task = await pool.query(
-        `SELECT 1 FROM tasks
-         WHERE id = $1 AND household_id = $2 AND rule_type = 'next_in_line' AND active = true`,
-        [taskId, householdId],
-      );
-      if (task.rows.length === 0) {
-        return reply.code(404).send({ error: 'Task not found' });
+      // The chore and its order are read under the lock: a save of the order or a
+      // deactivation that lands first is seen here, not overwritten by a stale check
+      try {
+        await withTransaction(pool, async (client) => {
+          const task = await client.query(
+            `SELECT 1 FROM tasks
+             WHERE id = $1 AND household_id = $2 AND rule_type = 'next_in_line' AND active = true
+             FOR UPDATE`,
+            [taskId, householdId],
+          );
+          if (task.rows.length === 0) throw new RouteError(404, 'Task not found');
+          const order = await turnOrder(client, taskId);
+          if (!order.some((c) => c.childId === childId)) {
+            throw new RouteError(400, 'The child is not in this chore’s order');
+          }
+          await moveTurn(client, householdId, taskId, childId, request.user?.userId);
+        });
+      } catch (error) {
+        if (error instanceof RouteError) {
+          return reply.code(error.statusCode).send({ error: error.message });
+        }
+        throw error;
       }
-      const order = await turnOrder(pool, taskId);
-      if (!order.some((c) => c.childId === childId)) {
-        return reply.code(400).send({ error: 'The child is not in this chore’s order' });
-      }
-      await withTransaction(pool, async (client) => {
-        await client.query('SELECT id FROM tasks WHERE id = $1 FOR UPDATE', [taskId]);
-        await moveTurn(client, householdId, taskId, childId, request.user?.userId);
-      });
       const result = await pool.query<TurnTaskRow>(`${TURN_TASKS_SQL} AND t.id = $2`, [
         householdId,
         taskId,
       ]);
-      return reply.send(await toTurn(result.rows[0], true));
+      if (result.rows.length === 0) return reply.code(404).send({ error: 'Task not found' });
+      return reply.send((await toTurns(result.rows, true))[0]);
     },
   );
 
@@ -249,14 +262,14 @@ export default async function turnRoutes(fastify: FastifyInstance) {
             [code],
           );
           const task = taskResult.rows[0];
-          if (!task) throw new ScanError(404, 'Unknown code');
+          if (!task) throw new RouteError(404, 'Unknown code');
 
           // Outsiders get the same 404, so a code cannot be probed for another household
           const member = await client.query<{ role: string }>(
             'SELECT role FROM household_members WHERE household_id = $1 AND user_id = $2',
             [task.household_id, userId],
           );
-          if (member.rows.length === 0) throw new ScanError(404, 'Unknown code');
+          if (member.rows.length === 0) throw new RouteError(404, 'Unknown code');
 
           const childResult = await client.query<{ id: string }>(
             'SELECT id FROM children WHERE user_id = $1 AND household_id = $2',
@@ -273,6 +286,18 @@ export default async function turnRoutes(fastify: FastifyInstance) {
           );
           const turn = open.rows[0];
           const points = task.points ?? 0;
+
+          // A grown-up has no turn to wait for, so «not your turn» would mislead them
+          if (!childId && member.rows[0].role !== 'child') {
+            const result: ScanResult = {
+              result: 'parent',
+              taskId: task.id,
+              taskName: task.name,
+              points,
+              turnChildName: turn?.name ?? null,
+            };
+            return { result, completedAssignmentId: null };
+          }
 
           // The same child scanning again (a second NFC tap, a reload after sign-in) gets the
           // answer of the scan they just made. This runs before the "your turn" branch, so a
@@ -326,7 +351,7 @@ export default async function turnRoutes(fastify: FastifyInstance) {
               [turn.id, task.household_id, childId, points],
             );
             if (completion.rows.length === 0)
-              throw new ScanError(409, 'The turn has already moved');
+              throw new RouteError(409, 'The turn has already moved');
             await dateDoneTurnToday(client, turn.id);
             const next = await passTurn(client, task.household_id, task.id, childId);
             const result: ScanResult = {
@@ -366,7 +391,7 @@ export default async function turnRoutes(fastify: FastifyInstance) {
         }
         return reply.send(outcome.result);
       } catch (error) {
-        if (error instanceof ScanError) {
+        if (error instanceof RouteError) {
           return reply.code(error.statusCode).send({ error: error.message });
         }
         fastify.log.error(error, 'Scan failed');

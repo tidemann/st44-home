@@ -224,6 +224,23 @@ describe('«Etter tur» chores (ST-2075)', () => {
     assert.strictEqual((await turnOf()).turnChildId, emma);
   });
 
+  test('a parent who scans is told who can finish it, not «not your turn» (ST-2114)', async () => {
+    const scan = await app.inject({
+      method: 'POST',
+      url: `/api/scan/${scanCode}`,
+      headers: auth(parentToken),
+    });
+    assert.strictEqual(scan.statusCode, 200, scan.body);
+    assert.deepStrictEqual(JSON.parse(scan.body), {
+      result: 'parent',
+      taskId,
+      taskName: 'Tømme oppvaskmaskinen',
+      points: 5,
+      turnChildName: 'Emma',
+    });
+    assert.strictEqual((await turnOf()).turnChildId, emma);
+  });
+
   test('the tick: done, points given, the turn moves to the next child', async () => {
     const { assignmentId } = await turnOf();
     const res = await app.inject({
@@ -433,6 +450,80 @@ describe('«Etter tur» chores (ST-2075)', () => {
     await moveTo(emma);
     assert.strictEqual((await scan()).result, 'done');
     assert.strictEqual(await balance(emma), start + 10);
+  });
+
+  test('«Flytt» checks the chore under the lock: a deactivation or a new order that lands first wins (ST-2114)', async () => {
+    const moveTo = (childId: string) =>
+      app.inject({
+        method: 'POST',
+        url: `/api/households/${householdId}/tasks/${taskId}/turn`,
+        headers: auth(parentToken),
+        payload: { childId },
+      });
+    /** Another save holds the chore; «Flytt» arrives and waits; the other save commits `change` */
+    async function moveWhileHeld(childId: string, change: string) {
+      const holder = await pool.connect();
+      try {
+        await holder.query('BEGIN');
+        await holder.query('SELECT id FROM tasks WHERE id = $1 FOR UPDATE', [taskId]);
+        const pending = moveTo(childId);
+        let waited = false;
+        for (let i = 0; i < 250 && !waited; i++) {
+          const waiting = await pool.query(
+            `SELECT count(*)::int AS n FROM pg_stat_activity
+             WHERE datname = current_database() AND wait_event_type = 'Lock'
+               AND query LIKE '%next_in_line%FOR UPDATE%'`,
+          );
+          waited = waiting.rows[0].n > 0;
+          if (!waited) await new Promise((r) => setTimeout(r, 20));
+        }
+        assert.ok(waited, '«Flytt» waits on the held chore');
+        await holder.query(change, [taskId]);
+        await holder.query('COMMIT');
+        return await pending;
+      } finally {
+        holder.release();
+      }
+    }
+
+    const gone = await moveWhileHeld(emma, 'UPDATE tasks SET active = false WHERE id = $1');
+    assert.strictEqual(gone.statusCode, 404, gone.body);
+    await pool.query('UPDATE tasks SET active = true WHERE id = $1', [taskId]);
+
+    const before = await pool.query('SELECT rule_config FROM tasks WHERE id = $1', [taskId]);
+    const notInOrder = await moveWhileHeld(
+      emma,
+      `UPDATE tasks SET rule_config = jsonb_set(rule_config, '{assignedChildren}',
+         '["${mathea}", "${jonas}"]'::jsonb) WHERE id = $1`,
+    );
+    assert.strictEqual(notInOrder.statusCode, 400, notInOrder.body);
+    await pool.query('UPDATE tasks SET rule_config = $2 WHERE id = $1', [
+      taskId,
+      before.rows[0].rule_config,
+    ]);
+  });
+
+  test('a chore changed to «Etter tur» gets its code and a turn (ST-2114)', async () => {
+    const made = await app.inject({
+      method: 'POST',
+      url: `/api/households/${householdId}/tasks`,
+      headers: auth(parentToken),
+      payload: { name: 'Bære ut søppel', points: 3, ruleType: 'daily' },
+    });
+    assert.strictEqual(made.statusCode, 201, made.body);
+    const changed = JSON.parse(made.body).id as string;
+
+    const res = await app.inject({
+      method: 'PUT',
+      url: `/api/households/${householdId}/tasks/${changed}`,
+      headers: auth(parentToken),
+      payload: { ruleType: 'next_in_line', ruleConfig: { assignedChildren: [jonas, emma] } },
+    });
+    assert.strictEqual(res.statusCode, 200, res.body);
+    assert.match(JSON.parse(res.body).scanCode, /^[23456789ABCDEFGHJKLMNPQRSTUVWXYZ]{6}$/);
+    const turn = (await turns(parentToken)).find((t) => t.taskId === changed);
+    assert.strictEqual(turn?.turnChildId, jonas);
+    await pool.query('UPDATE tasks SET active = false WHERE id = $1', [changed]);
   });
 
   test('a code that is too long is a 404, not a 500', async () => {
