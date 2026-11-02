@@ -5377,7 +5377,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/scan/scan.ts</context>
-          <context context-type="linenumber">124</context>
+          <context context-type="linenumber">133</context>
         </context-group>
       </trans-unit>
       <trans-unit id="childDashboard.undoFailed" datatype="html">
@@ -5388,7 +5388,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/scan/scan.ts</context>
-          <context context-type="linenumber">125</context>
+          <context context-type="linenumber">134</context>
         </context-group>
       </trans-unit>
       <trans-unit id="childRewards.title" datatype="html">
@@ -7333,12 +7333,20 @@
           <context context-type="sourcefile">src/app/pages/scan/scan.html</context>
           <context context-type="linenumber">41,42</context>
         </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/pages/scan/scan.html</context>
+          <context context-type="linenumber">66,67</context>
+        </context-group>
       </trans-unit>
       <trans-unit id="scan.stillOpen" datatype="html">
         <source>Oppgaven står fortsatt åpen.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/scan/scan.html</context>
           <context context-type="linenumber">42,44</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/pages/scan/scan.html</context>
+          <context context-type="linenumber">67,69</context>
         </context-group>
       </trans-unit>
       <trans-unit id="scan.toMyTasks" datatype="html">
@@ -7349,63 +7357,77 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/scan/scan.html</context>
-          <context context-type="linenumber">75,77</context>
+          <context context-type="linenumber">100,102</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="scan.toTasks" datatype="html">
+        <source> Til oppgavene </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/pages/scan/scan.html</context>
+          <context context-type="linenumber">71,72</context>
         </context-group>
       </trans-unit>
       <trans-unit id="scan.loading" datatype="html">
         <source>Fullfører oppgaven …</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/scan/scan.html</context>
-          <context context-type="linenumber">55,58</context>
+          <context context-type="linenumber">80,83</context>
         </context-group>
       </trans-unit>
       <trans-unit id="scan.unknownTitle" datatype="html">
         <source>Ukjent kode</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/scan/scan.html</context>
-          <context context-type="linenumber">59</context>
+          <context context-type="linenumber">84</context>
         </context-group>
       </trans-unit>
       <trans-unit id="scan.unknownBody" datatype="html">
         <source>Denne koden hører ikke til noen oppgave i familien din. Spør en voksen om kortet er riktig.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/scan/scan.html</context>
-          <context context-type="linenumber">64,66</context>
+          <context context-type="linenumber">89,91</context>
         </context-group>
       </trans-unit>
       <trans-unit id="scan.failedBody" datatype="html">
         <source>Vi fikk ikke fullført oppgaven nå. Prøv å skanne igjen.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/scan/scan.html</context>
-          <context context-type="linenumber">69,71</context>
+          <context context-type="linenumber">94,96</context>
         </context-group>
       </trans-unit>
       <trans-unit id="scan.theirTurn" datatype="html">
         <source>Det er <x id="name" equiv-text="possessive(name)"/> tur</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/scan/scan.ts</context>
-          <context context-type="linenumber">95</context>
+          <context context-type="linenumber">99</context>
         </context-group>
       </trans-unit>
       <trans-unit id="scan.theyTick" datatype="html">
         <source><x id="name" equiv-text="name"/> haker den av når oppgaven er gjort.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/scan/scan.ts</context>
-          <context context-type="linenumber">100</context>
+          <context context-type="linenumber">104</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="scan.parentBody" datatype="html">
+        <source>Du er logget inn som voksen. Bare <x id="name" equiv-text="name"/> kan hake av oppgaven med koden.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/pages/scan/scan.ts</context>
+          <context context-type="linenumber">109</context>
         </context-group>
       </trans-unit>
       <trans-unit id="scan.youNext" datatype="html">
         <source>Du er nestemann etter <x id="name" equiv-text="name"/>.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/scan/scan.ts</context>
-          <context context-type="linenumber">105</context>
+          <context context-type="linenumber">114</context>
         </context-group>
       </trans-unit>
       <trans-unit id="scan.subtitle" datatype="html">
         <source>Etter tur · <x id="points" equiv-text="result.points"/> poeng</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/scan/scan.ts</context>
-          <context context-type="linenumber">109</context>
+          <context context-type="linenumber">118</context>
         </context-group>
       </trans-unit>
       <trans-unit id="settings.loading" datatype="html">
