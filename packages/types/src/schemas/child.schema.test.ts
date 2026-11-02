@@ -2,7 +2,11 @@
  * Child Schema Tests
  */
 import { describe, it, expect } from 'vitest';
-import { ChildSchema, CreateChildRequestSchema, UpdateChildRequestSchema } from './child.schema.js';
+import {
+  ChildSchema,
+  CreateChildRequestSchema,
+  UpdateChildRequestSchema,
+} from './child.schema.js';
 
 describe('ChildSchema', () => {
   it('validates correct child object', () => {
