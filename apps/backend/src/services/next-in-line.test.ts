@@ -1,6 +1,11 @@
 import { test, describe } from 'node:test';
 import assert from 'node:assert';
-import { nextInLine, generateScanCode, normalizeScanCode, SCAN_CODE_ALPHABET } from './next-in-line.js';
+import {
+  nextInLine,
+  generateScanCode,
+  normalizeScanCode,
+  SCAN_CODE_ALPHABET,
+} from './next-in-line.js';
 
 describe('next in line (ST-2075)', () => {
   test('advances to the next child and wraps round', () => {
@@ -24,7 +29,10 @@ describe('next in line (ST-2075)', () => {
   });
 
   test('maps injected random bytes modulo 32 to six characters', () => {
-    assert.strictEqual(generateScanCode(() => Uint8Array.from([0, 1, 31, 32, 255, 100])), '23Z2Z6');
+    assert.strictEqual(
+      generateScanCode(() => Uint8Array.from([0, 1, 31, 32, 255, 100])),
+      '23Z2Z6',
+    );
   });
 
   test('generates a six-character scan code with default randomness', () => {
