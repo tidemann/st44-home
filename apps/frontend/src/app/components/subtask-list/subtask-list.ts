@@ -5,6 +5,7 @@ import {
   ElementRef,
   Injector,
   afterNextRender,
+  afterRenderEffect,
   computed,
   inject,
   input,
@@ -120,8 +121,20 @@ export class SubtaskList {
       if (this.drag()) event.preventDefault();
     };
     el.addEventListener('touchmove', stopScroll, { passive: false });
+
+    // Fit the name fields after each change of the rows, and when the popup's width changes
+    afterRenderEffect(() => {
+      this.items();
+      this.compact();
+      this.fitNames();
+    });
+    const resize =
+      typeof ResizeObserver === 'undefined' ? null : new ResizeObserver(() => this.fitNames());
+    resize?.observe(el);
+
     inject(DestroyRef).onDestroy(() => {
       el.removeEventListener('touchmove', stopScroll);
+      resize?.disconnect();
       this.stopListening();
     });
   }
@@ -197,8 +210,30 @@ export class SubtaskList {
   }
 
   protected setName(index: number, event: Event): void {
-    const name = (event.target as HTMLInputElement).value;
+    const field = event.target as HTMLTextAreaElement;
+    // A pasted line break is a space: the name is one line of text that only wraps
+    const name = field.value.replace(/[\r\n]+/g, ' ');
+    if (name !== field.value) field.value = name;
     this.items.set(this.items().map((item, i) => (i === index ? { ...item, name } : item)));
+  }
+
+  /** Enter does what it did in the one-line field: it sends the form, and adds no line break */
+  protected onNameKeydown(event: KeyboardEvent): void {
+    if (event.key !== 'Enter' || event.isComposing) return;
+    event.preventDefault();
+    const form = (event.target as HTMLTextAreaElement).form;
+    const submit = form?.querySelector<HTMLButtonElement>('button[type="submit"]');
+    if (form && !submit?.disabled) form.requestSubmit(submit ?? undefined);
+  }
+
+  /** Each name field is as tall as its text, so no line is hidden behind a scroll */
+  private fitNames(): void {
+    for (const field of this.host.nativeElement.querySelectorAll<HTMLTextAreaElement>(
+      'textarea[data-name]',
+    )) {
+      field.style.height = 'auto';
+      field.style.height = `${field.scrollHeight + field.offsetHeight - field.clientHeight}px`;
+    }
   }
 
   protected setPoints(index: number, event: Event): void {

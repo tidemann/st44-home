@@ -75,6 +75,38 @@
   margin: 0;
 }
 
+/* A long name wraps and the field grows a line at a time (ST-2131). One line is exactly the
+   points field beside it (52 px on the phone, the popup's 49 px from 1024 px), never the popup's
+   76 px text box. The handle, points and × stay on the first line. */
+.list:not(.compact) .row {
+  align-items: start;
+}
+
+.list:not(.compact) .row > :is(.grip, .rm) {
+  margin-top: 14px;
+}
+
+.row textarea.name {
+  line-height: 24px;
+  overflow: hidden;
+  overflow-wrap: anywhere;
+  resize: none;
+}
+
+@media (min-width: 1024px) {
+  .list:not(.compact) .row > :is(.grip, .rm) {
+    margin-top: 12.5px;
+  }
+
+  .row textarea.name {
+    min-height: 49px;
+    padding-top: 11px;
+    padding-bottom: 11px;
+    font-family: var(--font-body);
+    font-size: var(--font-size-base);
+  }
+}
+
 .pts-in {
   text-align: center;
   font-variant-numeric: tabular-nums;
