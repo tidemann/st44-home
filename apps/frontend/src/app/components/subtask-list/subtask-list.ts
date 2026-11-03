@@ -128,8 +128,16 @@ export class SubtaskList {
       this.compact();
       this.fitNames();
     });
+    // Only a new width can rewrap the text; the height change from fitting is ignored
+    let width = -1;
     const resize =
-      typeof ResizeObserver === 'undefined' ? null : new ResizeObserver(() => this.fitNames());
+      typeof ResizeObserver === 'undefined'
+        ? null
+        : new ResizeObserver(([entry]) => {
+            if (entry.contentRect.width === width) return;
+            width = entry.contentRect.width;
+            this.fitNames();
+          });
     resize?.observe(el);
 
     inject(DestroyRef).onDestroy(() => {
@@ -228,12 +236,13 @@ export class SubtaskList {
 
   /** Each name field is as tall as its text, so no line is hidden behind a scroll */
   private fitNames(): void {
-    for (const field of this.host.nativeElement.querySelectorAll<HTMLTextAreaElement>(
-      'textarea[data-name]',
-    )) {
-      field.style.height = 'auto';
-      field.style.height = `${field.scrollHeight + field.offsetHeight - field.clientHeight}px`;
-    }
+    const fields = [
+      ...this.host.nativeElement.querySelectorAll<HTMLTextAreaElement>('textarea[data-name]'),
+    ];
+    // Reset all, read all, then write all: one layout, not one per row
+    for (const field of fields) field.style.height = 'auto';
+    const heights = fields.map((f) => f.scrollHeight + f.offsetHeight - f.clientHeight);
+    fields.forEach((field, i) => (field.style.height = `${heights[i]}px`));
   }
 
   protected setPoints(index: number, event: Event): void {
