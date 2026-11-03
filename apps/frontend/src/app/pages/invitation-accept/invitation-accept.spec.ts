@@ -3,6 +3,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { InvitationAcceptComponent } from './invitation-accept';
 import { InvitationService } from '../../services/invitation.service';
 import { AuthService } from '../../services/auth.service';
+import { HouseholdStore } from '../../stores/household.store';
 import { ConfirmDialogService } from '../../services/confirm-dialog.service';
 import { Router, ActivatedRoute, provideRouter } from '@angular/router';
 import { provideHttpClient } from '@angular/common/http';
@@ -20,6 +21,10 @@ describe('InvitationAcceptComponent', () => {
     isAuthenticated: ReturnType<typeof signal<boolean>>;
   };
   let mockActivatedRoute: { snapshot: { paramMap: Map<string, string> } };
+  let mockHouseholdStore: {
+    loadHouseholds: ReturnType<typeof vi.fn>;
+    setActiveHousehold: ReturnType<typeof vi.fn>;
+  };
   let router: Router;
 
   beforeEach(() => {
@@ -38,6 +43,10 @@ describe('InvitationAcceptComponent', () => {
     mockActivatedRoute = {
       snapshot: { paramMap: new Map([['token', 'test-token-123']]) },
     };
+    mockHouseholdStore = {
+      loadHouseholds: vi.fn().mockResolvedValue([]),
+      setActiveHousehold: vi.fn(),
+    };
 
     TestBed.configureTestingModule({
       imports: [InvitationAcceptComponent],
@@ -48,6 +57,7 @@ describe('InvitationAcceptComponent', () => {
         { provide: InvitationService, useValue: mockInvitationService },
         { provide: AuthService, useValue: mockAuthService },
         { provide: ActivatedRoute, useValue: mockActivatedRoute },
+        { provide: HouseholdStore, useValue: mockHouseholdStore },
       ],
     });
 
@@ -187,6 +197,31 @@ describe('InvitationAcceptComponent', () => {
       await new Promise((resolve) => setTimeout(resolve, 2100));
 
       expect(router.navigate).toHaveBeenCalledWith(['/home']);
+    });
+
+    it('makes the joined household active before going home (ST-2099)', async () => {
+      mockInvitationService.acceptInvitation.mockResolvedValue({
+        household: { id: 'joined-h', name: 'Familien Ny' },
+      });
+
+      await component['acceptInvitation']();
+
+      expect(mockHouseholdStore.loadHouseholds).toHaveBeenCalledWith({ forceRefresh: true });
+      expect(mockHouseholdStore.setActiveHousehold).toHaveBeenCalledWith('joined-h');
+      expect(router.navigate).not.toHaveBeenCalled();
+    });
+
+    it('shows no error when the household refresh fails after accepting (ST-2099)', async () => {
+      mockInvitationService.acceptInvitation.mockResolvedValue({
+        household: { id: 'joined-h', name: 'Familien Ny' },
+      });
+      mockHouseholdStore.loadHouseholds.mockRejectedValue(new Error('network'));
+
+      await component['acceptInvitation']();
+
+      expect(mockHouseholdStore.setActiveHousehold).toHaveBeenCalledWith('joined-h');
+      expect(component['errorMessage']()).toBe(null);
+      expect(component['successMessage']()).toBe('Du er nå med i «Familien Ny».');
     });
 
     it('should clear error message on new acceptance attempt', async () => {

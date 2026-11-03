@@ -15,6 +15,7 @@ import { timer } from 'rxjs';
 import { InvitationService, AcceptInvitationResponse } from '../../services/invitation.service';
 import { AuthService } from '../../services/auth.service';
 import { ConfirmDialogService } from '../../services/confirm-dialog.service';
+import { HouseholdStore } from '../../stores/household.store';
 
 const REDIRECT_DELAY_MS = 2000;
 
@@ -32,6 +33,7 @@ export class InvitationAcceptComponent implements OnInit {
   private readonly route = inject(ActivatedRoute);
   private readonly destroyRef = inject(DestroyRef);
   private readonly confirmDialog = inject(ConfirmDialogService);
+  private readonly householdStore = inject(HouseholdStore);
 
   protected readonly token = signal<string | null>(null);
   protected readonly isProcessing = signal(false);
@@ -76,6 +78,11 @@ export class InvitationAcceptComponent implements OnInit {
       this.successMessage.set(
         $localize`:@@invitationAccept.joined:Du er nå med i «${response.household.name}:household:».`,
       );
+
+      // Make the household just joined the active one (ST-2099).
+      // The invitation is already accepted, so a failed refresh must not show an error.
+      this.householdStore.setActiveHousehold(response.household.id);
+      await this.householdStore.loadHouseholds({ forceRefresh: true }).catch(() => undefined);
 
       // Redirect to home after a brief delay (with proper cleanup)
       this.redirectToHomeAfterDelay();
