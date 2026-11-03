@@ -14,7 +14,7 @@
     "test:ci": "cross-env CI=true ng test --watch=false",
     "pretest": "cd ../../packages/types && npm run build",
     "test:watch": "ng test",
-    "lint": "ng lint",
+    "lint": "node scripts/check-output-bindings.mjs && ng lint",
     "type-check": "ng build --configuration production",
     "test:e2e": "npx playwright test",
     "test:e2e:local": "cross-env BACKEND_PORT=3001 BACKEND_HOST=localhost FRONTEND_PORT=4201 USE_DOCKER_COMPOSE=true npx playwright test",

@@ -21,7 +21,7 @@ import {
  * - Content and actions slots via ng-content
  *
  * Usage:
- * <app-modal [open]="isOpen()" (close)="handleClose()" title="Modal Title">
+ * <app-modal [open]="isOpen()" (closeModal)="handleClose()" title="Modal Title">
  *   <div class="modal-content">Your content here</div>
  *   <div class="modal-actions">
  *     <button>Action buttons here</button>
