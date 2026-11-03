@@ -294,14 +294,13 @@ describe('Home', () => {
       expect(remindButton()?.textContent).toContain('Minn på');
     });
 
-    // ST-800: as in the signed-off picture, only Forfalt rows get «Minn på»
-    it('shows points, not the button, on today’s open chores', () => {
+    // ST-2168: Stig wants it back on today's open chores, where ST-686 put it
+    it('shows the button on today’s open chores too', () => {
       const el = render([], [{ ...open, points: 10 } as Assignment]);
-      expect(el.querySelector('app-chore-row .rbtn')).toBeNull();
-      expect(el.querySelector('app-chore-row')?.textContent).toContain('10');
+      expect(el.querySelector('app-chore-row .rbtn')?.textContent).toContain('Minn på');
     });
 
-    it('puts one button on each overdue row and none on today’s rows', () => {
+    it('puts one button on each overdue and each open row of today', () => {
       const el = render(
         [open, { ...open, id: 'a-2' }],
         [
@@ -310,7 +309,22 @@ describe('Home', () => {
         ],
       );
       expect(el.querySelectorAll('app-chore-row').length).toBe(4);
-      expect(el.querySelectorAll('app-chore-row .rbtn').length).toBe(2);
+      expect(el.querySelectorAll('app-chore-row .rbtn').length).toBe(4);
+    });
+
+    it('shows points, not the button, on a chore no child holds', () => {
+      const el = render([], [{ ...open, childId: null, points: 10 } as Assignment]);
+      expect(el.querySelector('app-chore-row .rbtn')).toBeNull();
+      expect(el.querySelector('app-chore-row')?.textContent).toContain('10');
+    });
+
+    it('sends the reminder for a today row and says so in its button', async () => {
+      render([], [open]).querySelector<HTMLButtonElement>('app-chore-row .rbtn')!.click();
+      await fixture.whenStable();
+      const el = render([], [open]); // the mocked first load settled during the await
+      expect(mockPush.remind).toHaveBeenCalledWith('a-1');
+      expect(el.querySelector('app-chore-row .rbtn')!.textContent!.trim()).toBe('Sendt');
+      expect(el.querySelector('app-chore-row .note')!.textContent).toContain('Påminnelse sendt');
     });
 
     it('does not show it to a child', () => {

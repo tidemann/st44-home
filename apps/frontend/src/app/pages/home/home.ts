@@ -145,6 +145,10 @@ export class Home implements OnInit {
 
   // «Minn på» (ST-686): parents push a reminder for one open chore
   protected readonly canRemind = computed(() => !this.authService.hasRole('child'));
+  /** A row gets «Minn på» when a parent looks and a child holds the chore */
+  protected remindable(a: Assignment): boolean {
+    return this.canRemind() && !!a.childId;
+  }
   protected readonly remindingId = signal<string | null>(null);
   protected readonly remindMessage = signal<string | null>(null);
   // ST-1066 C: what happened to each reminder stays in its row; a success is only read aloud

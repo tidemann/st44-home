@@ -49,7 +49,7 @@
               [title]="task.title"
               [meta]="rowMeta(task, true)"
               [overdue]="true"
-              [points]="canRemind() ? '' : pointsText(task)"
+              [points]="remindable(task) ? '' : pointsText(task)"
               [checkable]="true"
               [busy]="completingId() === task.id"
               [openable]="true"
@@ -57,43 +57,10 @@
               (check)="onCompleteTask(task.id)"
               (open)="onEditTask(task.id)"
             >
-              @if (canRemind()) {
-                <!-- ST-1066 C: thumbs up + «Sendt» stays in the button; a failure offers «Prøv igjen».
-                     One button element, so it is still the single root that [row-action] projects -->
-                <button
-                  row-action
-                  type="button"
-                  class="rbtn"
-                  [class.rbtn-sent]="reminderSent(task)"
-                  [disabled]="reminderSent(task) || remindingId() === task.id"
-                  [attr.aria-label]="reminderSent(task) ? remindSentLabel(task) : remindLabel(task)"
-                  (click)="onRemind(task.id)"
-                >
-                  @if (reminderSent(task)) {
-                    <svg
-                      width="16"
-                      height="16"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      stroke-width="2.2"
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      aria-hidden="true"
-                    >
-                      <path d="M7 10v12" />
-                      <path
-                        d="M15 5.88 14 10h5.83a2 2 0 0 1 1.92 2.56l-2.33 8A2 2 0 0 1 17.5 22H4a2 2 0 0 1-2-2v-8a2 2 0 0 1 2-2h2.76a2 2 0 0 0 1.79-1.11L12 2a3.13 3.13 0 0 1 3 3.88Z"
-                      />
-                    </svg>
-                    <span i18n="@@home.remindSentButton">Sendt</span>
-                  } @else if (reminderFailed(task)) {
-                    <ng-container i18n="@@home.remindRetry">Prøv igjen</ng-container>
-                  } @else {
-                    <ng-container i18n="@@home.remind">Minn på</ng-container>
-                  }
-                </button>
-              }
+              <ng-container
+                ngProjectAs="[row-action]"
+                *ngTemplateOutlet="remindAction; context: { $implicit: task }"
+              />
             </app-chore-row>
           }
           <ng-container
@@ -111,14 +78,20 @@
             <app-chore-row
               [title]="task.title"
               [meta]="rowMeta(task)"
-              [note]="subtaskNote(task)"
-              [points]="pointsText(task)"
+              [note]="reminderNote(task) ?? subtaskNote(task)"
+              [points]="remindable(task) ? '' : pointsText(task)"
               [checkable]="true"
               [busy]="completingId() === task.id"
               [openable]="true"
               (check)="onCompleteTask(task.id)"
               (open)="onEditTask(task.id)"
-            />
+            >
+              <!-- ST-2168: «Minn på» is back on today's open chores, as ST-686 built it -->
+              <ng-container
+                ngProjectAs="[row-action]"
+                *ngTemplateOutlet="remindAction; context: { $implicit: task }"
+              />
+            </app-chore-row>
           }
           <ng-container
             *ngTemplateOutlet="showMore; context: { group: 'today', tasks: todayTasks() }"
@@ -194,6 +167,47 @@
       </div>
     </div>
   }
+
+  <!-- «Minn på» for one chore row, pushed to the child's phone (ST-686). ST-1066 C: thumbs up +
+       «Sendt» stays in the button; a failure offers «Prøv igjen». One button element, so it is
+       the single root that [row-action] projects. Any chore row on this page can use it -->
+  <ng-template #remindAction let-task>
+    @if (remindable(task)) {
+      <button
+        row-action
+        type="button"
+        class="rbtn"
+        [class.rbtn-sent]="reminderSent(task)"
+        [disabled]="reminderSent(task) || remindingId() === task.id"
+        [attr.aria-label]="reminderSent(task) ? remindSentLabel(task) : remindLabel(task)"
+        (click)="onRemind(task.id)"
+      >
+        @if (reminderSent(task)) {
+          <svg
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2.2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            aria-hidden="true"
+          >
+            <path d="M7 10v12" />
+            <path
+              d="M15 5.88 14 10h5.83a2 2 0 0 1 1.92 2.56l-2.33 8A2 2 0 0 1 17.5 22H4a2 2 0 0 1-2-2v-8a2 2 0 0 1 2-2h2.76a2 2 0 0 0 1.79-1.11L12 2a3.13 3.13 0 0 1 3 3.88Z"
+            />
+          </svg>
+          <span i18n="@@home.remindSentButton">Sendt</span>
+        } @else if (reminderFailed(task)) {
+          <ng-container i18n="@@home.remindRetry">Prøv igjen</ng-container>
+        } @else {
+          <ng-container i18n="@@home.remind">Minn på</ng-container>
+        }
+      </button>
+    }
+  </ng-template>
 
   <!-- After the first 10 chores in a group: «Vis flere» shows the rest (ST-954) -->
   <ng-template #showMore let-group="group" let-tasks="tasks">

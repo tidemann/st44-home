@@ -1,4 +1,4 @@
-<app-modal [open]="turn() !== null" [title]="title()" (closeRequested)="closed.emit()">
+<app-modal [open]="turn() !== null" [title]="title()" (closeModal)="closed.emit()">
   @if (turn(); as t) {
     @switch (view()) {
       @case ('history') {
