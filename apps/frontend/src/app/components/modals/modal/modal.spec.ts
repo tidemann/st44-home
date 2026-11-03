@@ -1,5 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { Modal } from './modal';
+import modalCss from './modal.css' with { loader: 'text' };
 
 describe('Modal', () => {
   let component: Modal;
@@ -83,5 +84,45 @@ describe('Modal', () => {
     fixture.componentRef.setInput('showClose', false);
     fixture.detectChanges();
     expect((fixture.nativeElement as HTMLElement).querySelector('.modal-close')).toBeNull();
+  });
+});
+
+describe('Modal caret (popup rule 6, ST-2143)', () => {
+  const down = 'M1.5 1.5 7 7l5.5-5.5';
+  const up = 'M1.5 7.5 7 2l5.5 5.5';
+  let style: HTMLStyleElement;
+  let host: HTMLElement;
+
+  // The desktop block of modal.css as the page sees it: jsdom does not apply @media rules
+  beforeEach(() => {
+    const desktop = modalCss.slice(modalCss.indexOf('@media (min-width: 1024px)'));
+    style = document.createElement('style');
+    style.textContent = desktop
+      .slice(desktop.indexOf('{') + 1, desktop.lastIndexOf('}'))
+      .replaceAll('::ng-deep ', '');
+    document.head.appendChild(style);
+    host = document.createElement('div');
+    host.innerHTML = `<div class="modal"><select aria-expanded="false"></select><input type="datetime-local" aria-expanded="true" /></div>`;
+    document.body.appendChild(host);
+  });
+
+  afterEach(() => {
+    style.remove();
+    host.remove();
+  });
+
+  const caret = (el: Element | null): string => getComputedStyle(el as Element).backgroundImage;
+
+  it('points down while the menu is closed', () => {
+    expect(caret(host.querySelector('select'))).toContain(down);
+  });
+
+  it('points up while the menu is open', () => {
+    host.querySelector('select')?.setAttribute('aria-expanded', 'true');
+    expect(caret(host.querySelector('select'))).toContain(up);
+  });
+
+  it('leaves the date field caret pointing down', () => {
+    expect(caret(host.querySelector('input'))).toContain(down);
   });
 });
