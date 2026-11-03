@@ -51,17 +51,6 @@ export function dayWord(day: string, today: string = isoDay()): string {
   return isNaN(date.getTime()) ? '' : WEEKDAY.format(date);
 }
 
-/**
- * The «Frist» day of a weekly chore (ST-2143): "i dag" on the day itself, else its weekday,
- * "søndag". A weekly chore is on the list from Monday, so the day is never in the past here.
- */
-export function deadlineWord(day: string, today: string = isoDay()): string {
-  const key = String(day ?? '').slice(0, 10);
-  if (key === today) return $localize`:@@poeng.today:i dag`;
-  const date = new Date(`${key}T12:00:00Z`);
-  return isNaN(date.getTime()) ? '' : WEEKDAY.format(date);
-}
-
 /** Days from today to Sunday, the last day of the week a weekly chore is due in (0 on Sunday) */
 export function daysToSunday(today: string = isoDay()): number {
   return (7 - new Date(`${today}T12:00:00Z`).getUTCDay()) % 7;

@@ -37,7 +37,6 @@ import { remindNote, type RemindState } from '../../utils/remind-note';
 import {
   capitalize,
   dayWord,
-  deadlineWord,
   doneWhen,
   isoDay,
   longDate,
@@ -348,7 +347,7 @@ export class Home implements OnInit {
   protected rowMeta(a: Assignment, overdue = false): string {
     const who = a.childName || $localize`:@@home.anyone:Alle`;
     if (!overdue && a.ruleType === 'weekly_rotation') {
-      return $localize`:@@home.deadlineMeta:${who}:who: – frist ${deadlineWord(a.date)}:day:`;
+      return $localize`:@@home.deadlineMeta:${who}:who: – frist ${dayWord(a.date)}:day:`;
     }
     return overdue
       ? $localize`:@@home.overdueMeta:${who}:who: – forfalt ${dayWord(a.date)}:day:`

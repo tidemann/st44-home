@@ -35,7 +35,6 @@ import {
   capitalize,
   clockTime,
   dayWord,
-  deadlineWord,
   doneWhen,
   isoDay,
   longDate,
@@ -379,7 +378,7 @@ export class ChildDashboardComponent implements OnInit {
   /** "I dag – 10 poeng"; a weekly chore "Frist søndag – 5 poeng", on the day "Frist i dag" */
   openMeta(task: MyTaskAssignment): string {
     if (task.ruleType === 'weekly_rotation') {
-      return $localize`:@@childDashboard.deadlineMeta:Frist ${deadlineWord(task.date)}:day: – ${task.points}:points: poeng`;
+      return $localize`:@@childDashboard.deadlineMeta:Frist ${dayWord(task.date)}:day: – ${task.points}:points: poeng`;
     }
     return $localize`:@@childDashboard.openMeta:${capitalize(dayWord(task.date))}:day: – ${task.points}:points: poeng`;
   }

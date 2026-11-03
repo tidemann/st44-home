@@ -4,7 +4,6 @@ import {
   clockTime,
   dayWord,
   daysToSunday,
-  deadlineWord,
   doneWhen,
   isoDay,
   longDate,
@@ -12,10 +11,10 @@ import {
 
 describe('weekly «Frist» words (ST-2143)', () => {
   it('names the deadline day, «i dag» on the day itself', () => {
-    expect(deadlineWord('2026-11-08', '2026-11-04')).toBe('søndag');
-    expect(deadlineWord('2026-11-08', '2026-11-08')).toBe('i dag');
-    // Not «i morgen» or «i går»: the row reads «Frist lørdag» on Friday
-    expect(deadlineWord('2026-11-07', '2026-11-06')).toBe('lørdag');
+    expect(dayWord('2026-11-08', '2026-11-04')).toBe('søndag');
+    expect(dayWord('2026-11-08', '2026-11-08')).toBe('i dag');
+    // Not «i morgen»: the row reads «Frist lørdag» on Friday
+    expect(dayWord('2026-11-07', '2026-11-06')).toBe('lørdag');
   });
 
   it('counts the days to Sunday, the end of the week', () => {

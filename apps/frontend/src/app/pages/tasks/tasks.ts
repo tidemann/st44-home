@@ -29,7 +29,7 @@ import { EmptyGroup } from '../../components/poeng/empty-group/empty-group';
 import { TurnPopup, type TurnPopupView } from '../../components/turn-popup/turn-popup';
 import { TurnService, nextInTurn, turnChild } from '../../services/turn.service';
 import { HouseholdStore } from '../../stores/household.store';
-import { capitalize, clockTime, dayWord, deadlineWord, doneWhen } from '../../utils/poeng-format';
+import { capitalize, clockTime, dayWord, doneWhen } from '../../utils/poeng-format';
 import { hasNoChildrenLeft } from '../../utils/task-children';
 import {
   summarizeSubtasks,
@@ -379,7 +379,7 @@ export class Tasks implements OnInit {
   /** "Mathea – I dag"; a weekly chore "Emma – Frist søndag", on the day "Frist i dag" (ST-2143) */
   protected openMeta(a: Assignment): string {
     if (a.ruleType === 'weekly_rotation') {
-      return $localize`:@@tasks.deadlineMeta:${this.who(a)}:who: – Frist ${deadlineWord(a.date)}:day:`;
+      return $localize`:@@tasks.deadlineMeta:${this.who(a)}:who: – Frist ${dayWord(a.date)}:day:`;
     }
     return $localize`:@@tasks.openMeta:${this.who(a)}:who: – ${capitalize(dayWord(a.date))}:day:`;
   }
