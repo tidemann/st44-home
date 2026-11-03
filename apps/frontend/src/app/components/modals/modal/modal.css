@@ -314,4 +314,9 @@
     background-position: right 15px center;
     padding-right: 40px;
   }
+
+  /* The caret points up while the menu is open (appDidditMenu sets aria-expanded) */
+  .modal ::ng-deep select[aria-expanded='true'] {
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='14' height='9' viewBox='0 0 14 9' fill='none'><path d='M1.5 7.5 7 2l5.5 5.5' stroke='%2317120A' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/></svg>");
+  }
 }
