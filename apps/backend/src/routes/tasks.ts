@@ -390,6 +390,9 @@ async function createTask(request: FastifyRequest<CreateTaskRequest>, reply: Fas
           ...(normalizedRuleConfig.rotationStart && {
             rotationStart: normalizedRuleConfig.rotationStart,
           }),
+          ...(normalizedRuleConfig.dueDay !== undefined && {
+            dueDay: normalizedRuleConfig.dueDay,
+          }),
         }
       : null;
 

@@ -377,7 +377,7 @@ describe('Assignment Generator Service', () => {
       assert.strictEqual(weekNum % 2, 0, 'Should be even week');
 
       const result = await generateAssignments(testHouseholdId, startDate, 7);
-      assert.strictEqual(result.created, 7);
+      assert.strictEqual(result.created, 1); // one row a week, on Sunday
 
       const assignments = await pool.query(
         `SELECT DISTINCT child_id FROM task_assignments WHERE task_id = $1`,
@@ -412,7 +412,7 @@ describe('Assignment Generator Service', () => {
       assert.strictEqual(weekNum % 2, 1, 'Should be odd week');
 
       const result = await generateAssignments(testHouseholdId, startDate, 5); // Wed-Sun of week 1
-      assert.strictEqual(result.created, 5);
+      assert.strictEqual(result.created, 1); // Sunday 5th
 
       const assignments = await pool.query(
         `SELECT DISTINCT child_id FROM task_assignments WHERE task_id = $1`,
@@ -476,7 +476,7 @@ describe('Assignment Generator Service', () => {
       const jan4 = new Date('2025-01-04');
       assert.strictEqual(getISOWeek(jan4), 1);
 
-      const result = await generateAssignments(testHouseholdId, jan4, 1);
+      const result = await generateAssignments(testHouseholdId, jan4, 2);
 
       const assignment = await pool.query(
         `SELECT child_id FROM task_assignments WHERE task_id = $1`,
@@ -507,7 +507,7 @@ describe('Assignment Generator Service', () => {
       const dec30 = new Date('2024-12-30');
       const weekNum = getISOWeek(dec30);
 
-      await generateAssignments(testHouseholdId, dec30, 1);
+      await generateAssignments(testHouseholdId, dec30, 7);
 
       const assignment = await pool.query(
         `SELECT child_id FROM task_assignments WHERE task_id = $1`,
@@ -552,7 +552,7 @@ describe('Assignment Generator Service', () => {
       const startDate = new Date('2025-01-06');
       const result = await generateAssignments(testHouseholdId, startDate, 7);
 
-      assert.strictEqual(result.created, 7);
+      assert.strictEqual(result.created, 1);
 
       const assignments = await pool.query(
         `SELECT DISTINCT child_id FROM task_assignments 
@@ -585,7 +585,7 @@ describe('Assignment Generator Service', () => {
       const startDate = new Date('2025-01-06');
       const result = await generateAssignments(testHouseholdId, startDate, 7);
 
-      assert.strictEqual(result.created, 7);
+      assert.strictEqual(result.created, 1);
 
       const assignments = await pool.query(
         `SELECT DISTINCT child_id FROM task_assignments WHERE task_id = $1`,
@@ -691,7 +691,7 @@ describe('Assignment Generator Service', () => {
       // Generate for household 1
       const result = await generateAssignments(testHouseholdId, new Date('2025-01-06'), 7);
 
-      assert.strictEqual(result.created, 7);
+      assert.strictEqual(result.created, 1);
 
       const assignments = await pool.query(
         `SELECT DISTINCT child_id FROM task_assignments WHERE task_id = $1`,
@@ -757,7 +757,7 @@ describe('Assignment Generator Service', () => {
 
       const result = await generateAssignments(testHouseholdId, new Date('2025-01-06'), 7);
 
-      assert.strictEqual(result.created, 14); // 7 days × 2 tasks
+      assert.strictEqual(result.created, 2); // one Sunday row × 2 tasks
 
       // Task 1 should have Bob (next after Alice)
       const task1Assignments = await pool.query(
@@ -1055,7 +1055,7 @@ describe('Assignment Generator Service', () => {
       const rows = await runDailyFor(taskId, '2025-01-08', 7);
 
       assertOnePerDate(rows);
-      assert.strictEqual(rows.length, 13);
+      assert.strictEqual(rows.length, 2); // Sundays 12th and 19th
       for (const row of rows) {
         const oddWeek = row.date >= '2025-01-13' && row.date <= '2025-01-19'; // week 3
         const expected = oddWeek ? testChildIds[0] : testChildIds[1];
@@ -1139,7 +1139,7 @@ describe('Assignment Generator Service', () => {
 
       const result = await generateAssignments(testHouseholdId, new Date('2025-01-06'), 7);
       assert.deepStrictEqual(result.errors, []);
-      assert.strictEqual(result.created, 21);
+      assert.strictEqual(result.created, 15); // 7 + 7 daily, 1 weekly
 
       const rows = await pool.query(
         `SELECT task_id, child_id FROM task_assignments WHERE household_id = $1`,

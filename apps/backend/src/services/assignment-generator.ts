@@ -411,11 +411,11 @@ async function generateWeeklyRotationAssignments(
   return dates
     .filter((date) => date.getUTCDay() === dueDay)
     .map((date) => ({
-    task_id: task.id,
-    child_id: childForDate(date),
-    date: formatDate(date),
-    household_id: householdId,
-  }));
+      task_id: task.id,
+      child_id: childForDate(date),
+      date: formatDate(date),
+      household_id: householdId,
+    }));
 }
 
 /**

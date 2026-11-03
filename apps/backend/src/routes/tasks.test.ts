@@ -174,7 +174,7 @@ describe('Tasks API', () => {
       assert.strictEqual(assignments.rows[0].child_id, childId1);
     });
 
-    test("ST-2036: a new weekly rotation gives this week's child today's chore at once", async () => {
+    test("ST-2036, ST-2143: a new weekly rotation gives this week's child the chore at once, due Sunday", async () => {
       const response = await app.inject({
         method: 'POST',
         url: `/api/households/${householdId}/tasks`,
@@ -188,14 +188,66 @@ describe('Tasks API', () => {
       });
 
       assert.strictEqual(response.statusCode, 201, response.body);
-      const id = JSON.parse(response.body).id;
-      const todayIso = todayInTimeZone(new Date()).toISOString().slice(0, 10);
+      const body = JSON.parse(response.body);
+      assert.strictEqual(body.ruleConfig.dueDay, 0);
+      const today = todayInTimeZone(new Date());
+      const sunday = new Date(today.getTime() + ((7 - today.getUTCDay()) % 7) * 86400000);
       const assignments = await pool.query(
-        'SELECT child_id FROM task_assignments WHERE task_id = $1 AND date = $2',
-        [id, todayIso],
+        'SELECT child_id, date::text FROM task_assignments WHERE task_id = $1 ORDER BY date',
+        [body.id],
       );
-      assert.strictEqual(assignments.rows.length, 1);
-      assert.strictEqual(assignments.rows[0].child_id, childId1);
+      assert.deepStrictEqual(assignments.rows, [
+        { child_id: childId1, date: sunday.toISOString().slice(0, 10) },
+      ]);
+    });
+
+    test("ST-2143: changing «Frist» moves this week's row to the new day, kept when left out", async () => {
+      const create = await app.inject({
+        method: 'POST',
+        url: `/api/households/${householdId}/tasks`,
+        headers: { Authorization: `Bearer ${adminToken}` },
+        payload: {
+          name: 'ST-2143 frist',
+          points: 5,
+          ruleType: 'weekly_rotation',
+          ruleConfig: { rotationType: 'odd_even_week', assignedChildren: [childId1, childId2] },
+        },
+      });
+      assert.strictEqual(create.statusCode, 201, create.body);
+      const id = JSON.parse(create.body).id;
+      const before = await pool.query('SELECT child_id FROM task_assignments WHERE task_id = $1', [
+        id,
+      ]);
+
+      // Today is never past, so this week's row moves to today
+      const today = todayInTimeZone(new Date());
+      const config = { rotationType: 'odd_even_week', assignedChildren: [childId1, childId2] };
+      const update = await app.inject({
+        method: 'PUT',
+        url: `/api/households/${householdId}/tasks/${id}`,
+        headers: { Authorization: `Bearer ${adminToken}` },
+        payload: { ruleConfig: { ...config, dueDay: today.getUTCDay() } },
+      });
+      assert.strictEqual(update.statusCode, 200, update.body);
+      assert.strictEqual(JSON.parse(update.body).ruleConfig.dueDay, today.getUTCDay());
+      const rows = await pool.query(
+        'SELECT child_id, date::text FROM task_assignments WHERE task_id = $1 ORDER BY date',
+        [id],
+      );
+      assert.deepStrictEqual(rows.rows[0], {
+        child_id: before.rows[0].child_id,
+        date: today.toISOString().slice(0, 10),
+      });
+      assert.ok(rows.rows.length <= 2, 'one row this week, at most one next week');
+
+      // A form that leaves dueDay out keeps the chosen day
+      const keep = await app.inject({
+        method: 'PUT',
+        url: `/api/households/${householdId}/tasks/${id}`,
+        headers: { Authorization: `Bearer ${adminToken}` },
+        payload: { ruleConfig: config },
+      });
+      assert.strictEqual(JSON.parse(keep.body).ruleConfig.dueDay, today.getUTCDay());
     });
 
     test('should create a repeating task (parent)', async () => {
