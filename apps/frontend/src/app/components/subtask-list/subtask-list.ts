@@ -5,6 +5,7 @@ import {
   ElementRef,
   Injector,
   afterNextRender,
+  afterRenderEffect,
   computed,
   inject,
   input,
@@ -120,8 +121,28 @@ export class SubtaskList {
       if (this.drag()) event.preventDefault();
     };
     el.addEventListener('touchmove', stopScroll, { passive: false });
+
+    // Fit the name fields after each change of the rows, and when the popup's width changes
+    afterRenderEffect(() => {
+      this.items();
+      this.compact();
+      this.fitNames();
+    });
+    // Only a new width can rewrap the text; the height change from fitting is ignored
+    let width = -1;
+    const resize =
+      typeof ResizeObserver === 'undefined'
+        ? null
+        : new ResizeObserver(([entry]) => {
+            if (entry.contentRect.width === width) return;
+            width = entry.contentRect.width;
+            this.fitNames();
+          });
+    resize?.observe(el);
+
     inject(DestroyRef).onDestroy(() => {
       el.removeEventListener('touchmove', stopScroll);
+      resize?.disconnect();
       this.stopListening();
     });
   }
@@ -197,8 +218,31 @@ export class SubtaskList {
   }
 
   protected setName(index: number, event: Event): void {
-    const name = (event.target as HTMLInputElement).value;
+    const field = event.target as HTMLTextAreaElement;
+    // A pasted line break is a space: the name is one line of text that only wraps
+    const name = field.value.replace(/[\r\n]+/g, ' ');
+    if (name !== field.value) field.value = name;
     this.items.set(this.items().map((item, i) => (i === index ? { ...item, name } : item)));
+  }
+
+  /** Enter does what it did in the one-line field: it sends the form, and adds no line break */
+  protected onNameKeydown(event: KeyboardEvent): void {
+    if (event.key !== 'Enter' || event.isComposing) return;
+    event.preventDefault();
+    const form = (event.target as HTMLTextAreaElement).form;
+    const submit = form?.querySelector<HTMLButtonElement>('button[type="submit"]');
+    if (form && !submit?.disabled) form.requestSubmit(submit ?? undefined);
+  }
+
+  /** Each name field is as tall as its text, so no line is hidden behind a scroll */
+  private fitNames(): void {
+    const fields = [
+      ...this.host.nativeElement.querySelectorAll<HTMLTextAreaElement>('textarea[data-name]'),
+    ];
+    // Reset all, read all, then write all: one layout, not one per row
+    for (const field of fields) field.style.height = 'auto';
+    const heights = fields.map((f) => f.scrollHeight + f.offsetHeight - f.clientHeight);
+    fields.forEach((field, i) => (field.style.height = `${heights[i]}px`));
   }
 
   protected setPoints(index: number, event: Event): void {

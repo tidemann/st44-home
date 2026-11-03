@@ -80,6 +80,41 @@ describe('SubtaskList', () => {
     expect(current()[0].points).toBeNull();
   });
 
+  it('the name field is a one-line text box that wraps; a pasted line break becomes a space', () => {
+    setup([subtaskDraft('A', 1)]);
+    const name = el().querySelector<HTMLTextAreaElement>('[data-name]')!;
+    expect(name.tagName).toBe('TEXTAREA');
+    expect(name.rows).toBe(1);
+    name.value = 'Rydd pulten\nog hylla';
+    name.dispatchEvent(new Event('input'));
+    expect(current()[0].name).toBe('Rydd pulten og hylla');
+    expect(name.value).toBe('Rydd pulten og hylla');
+  });
+
+  it('Enter in a name sends the form as before and adds no line break', () => {
+    setup([subtaskDraft('A', 1)]);
+    const form = document.createElement('form');
+    const submit = document.createElement('button');
+    submit.type = 'submit';
+    form.append(fixture.nativeElement, submit);
+    document.body.append(form);
+    let sent = 0;
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      sent++;
+    });
+    const name = el().querySelector<HTMLTextAreaElement>('[data-name]')!;
+    const enter = new KeyboardEvent('keydown', { key: 'Enter', cancelable: true });
+    name.dispatchEvent(enter);
+    expect(enter.defaultPrevented).toBe(true);
+    expect(sent).toBe(1);
+    // a disabled «Lagre» (saving) sends nothing, as the one-line field did
+    submit.disabled = true;
+    name.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', cancelable: true }));
+    expect(sent).toBe(1);
+    form.remove();
+  });
+
   it('the handle opens move mode: rows show name and points, the arrows move the row', () => {
     setup([subtaskDraft('A', 1), subtaskDraft('B', 2), subtaskDraft('C', 3)]);
     click('[data-grip]', 1);

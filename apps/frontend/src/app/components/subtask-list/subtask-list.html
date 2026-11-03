@@ -89,19 +89,21 @@
             </span>
           }
         } @else {
-          <input
-            type="text"
+          <!-- One line that grows a line per line of text (ST-2131); the name itself has no breaks -->
+          <textarea
             class="form-input name"
             data-name
+            rows="1"
             maxlength="100"
             [value]="item.name"
             (input)="setName(i, $event)"
+            (keydown)="onNameKeydown($event)"
             [class.error]="nameInvalid(item)"
             [attr.aria-invalid]="nameInvalid(item) || null"
             i18n-placeholder="@@subtaskList.namePlaceholder"
             placeholder="f.eks. Re opp sengen"
             [attr.aria-label]="nameLabel(i)"
-          />
+          ></textarea>
           <input
             type="number"
             class="form-input pts-in"
