@@ -318,6 +318,12 @@ describe('Home', () => {
       expect(el.querySelector('app-chore-row')?.textContent).toContain('10');
     });
 
+    // ST-2168 live check: a handed-in chore waits for approval, not for a reminder
+    it('shows no button on a chore the child has handed in', () => {
+      const el = render([], [{ ...open, submittedAt: '2026-10-05T10:00:00Z' } as Assignment]);
+      expect(el.querySelector('app-chore-row .rbtn')).toBeNull();
+    });
+
     it('sends the reminder for a today row and says so in its button', async () => {
       render([], [open]).querySelector<HTMLButtonElement>('app-chore-row .rbtn')!.click();
       await fixture.whenStable();
