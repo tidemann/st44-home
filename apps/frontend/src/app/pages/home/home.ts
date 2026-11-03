@@ -34,13 +34,7 @@ import { PushNotificationService } from '../../services/push-notification.servic
 import { HttpErrorResponse } from '@angular/common/http';
 import { isDesktopSignal } from '../../utils/desktop-query';
 import { remindNote, type RemindState } from '../../utils/remind-note';
-import {
-  capitalize,
-  dayWord,
-  doneWhen,
-  isoDay,
-  longDate,
-} from '../../utils/poeng-format';
+import { capitalize, dayWord, doneWhen, isoDay, longDate } from '../../utils/poeng-format';
 import type { Task, Assignment, Child, HouseholdMemberResponse } from '@st44/types';
 
 /** Child cards beside the title from 1024 px (desktop A); more go on one "+N barn til" tile */
