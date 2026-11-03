@@ -211,6 +211,19 @@ describe('InvitationAcceptComponent', () => {
       expect(router.navigate).not.toHaveBeenCalled();
     });
 
+    it('shows no error when the household refresh fails after accepting (ST-2099)', async () => {
+      mockInvitationService.acceptInvitation.mockResolvedValue({
+        household: { id: 'joined-h', name: 'Familien Ny' },
+      });
+      mockHouseholdStore.loadHouseholds.mockRejectedValue(new Error('network'));
+
+      await component['acceptInvitation']();
+
+      expect(mockHouseholdStore.setActiveHousehold).toHaveBeenCalledWith('joined-h');
+      expect(component['errorMessage']()).toBe(null);
+      expect(component['successMessage']()).toBe('Du er nå med i «Familien Ny».');
+    });
+
     it('should clear error message on new acceptance attempt', async () => {
       component['errorMessage'].set('Previous error');
       mockInvitationService.acceptInvitation.mockResolvedValue({
