@@ -62,6 +62,24 @@ describe('InitialBadge', () => {
     expect(el.querySelector('.badge-menu')).toBeNull();
   });
 
+  it("should close a child's menu on Escape and on a tap outside", () => {
+    const el = create({ firstName: 'Jonas', email: 'j@example.test', role: 'child' });
+    const badge = el.querySelector('.initial-badge') as HTMLElement;
+
+    badge.click();
+    fixture.detectChanges();
+    document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape' }));
+    fixture.detectChanges();
+    expect(badge.getAttribute('aria-expanded')).toBe('false');
+
+    badge.click();
+    fixture.detectChanges();
+    document.body.click();
+    fixture.detectChanges();
+    expect(badge.getAttribute('aria-expanded')).toBe('false');
+    expect(el.querySelector('.badge-menu')).toBeNull();
+  });
+
   it('should take the Yellow Inset fill on the yellow', () => {
     create({ firstName: 'Kari', email: 'k@example.test', role: 'parent' });
     fixture.componentRef.setInput('onYellow', true);

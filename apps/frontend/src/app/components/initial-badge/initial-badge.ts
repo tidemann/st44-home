@@ -1,5 +1,13 @@
 import '@angular/localize/init';
-import { Component, ChangeDetectionStrategy, computed, inject, input, signal } from '@angular/core';
+import {
+  Component,
+  ChangeDetectionStrategy,
+  ElementRef,
+  computed,
+  inject,
+  input,
+  signal,
+} from '@angular/core';
 import { Router } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
 import { personInitial } from '../../utils/person-name';
@@ -34,10 +42,15 @@ import { personInitial } from '../../utils/person-name';
   }`,
   styleUrl: './initial-badge.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
+  host: {
+    '(document:keydown.escape)': 'menuOpen.set(false)',
+    '(document:click)': 'onDocumentClick($event)',
+  },
 })
 export class InitialBadge {
   private readonly router = inject(Router);
   private readonly authService = inject(AuthService);
+  private readonly host = inject<ElementRef<HTMLElement>>(ElementRef);
 
   /** On the yellow band: Yellow Inset fill, ink initial */
   onYellow = input<boolean>(false);
@@ -64,6 +77,11 @@ export class InitialBadge {
       return;
     }
     void this.router.navigate(['/settings']);
+  }
+
+  /** A tap anywhere outside the badge and its menu closes the menu */
+  protected onDocumentClick(event: MouseEvent): void {
+    if (!this.host.nativeElement.contains(event.target as Node)) this.menuOpen.set(false);
   }
 
   protected onLogout(): void {
