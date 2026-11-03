@@ -36,7 +36,6 @@ import { isDesktopSignal } from '../../utils/desktop-query';
 import { remindNote, type RemindState } from '../../utils/remind-note';
 import {
   capitalize,
-  clockTime,
   dayWord,
   deadlineWord,
   doneWhen,
