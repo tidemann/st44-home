@@ -51,6 +51,22 @@ export function dayWord(day: string, today: string = isoDay()): string {
   return isNaN(date.getTime()) ? '' : WEEKDAY.format(date);
 }
 
+/** Days from today to Sunday, the last day of the week a weekly chore is due in (0 on Sunday) */
+export function daysToSunday(today: string = isoDay()): number {
+  return (7 - new Date(`${today}T12:00:00Z`).getUTCDay()) % 7;
+}
+
+/**
+ * When a chore was done: "15.30" today, else "lørdag 7.11" (a weekly chore can be done on an
+ * earlier day of its week, ST-2143)
+ */
+export function doneWhen(value: string, now: Date = new Date()): string {
+  const date = new Date(value);
+  if (isNaN(date.getTime())) return '';
+  if (date.toDateString() === now.toDateString()) return clockTime(date);
+  return `${WEEKDAY.format(date)} ${date.getDate()}.${date.getMonth() + 1}`;
+}
+
 /** Upper-case the first letter: "i går" → "I går" */
 export function capitalize(text: string): string {
   return text.charAt(0).toUpperCase() + text.slice(1);

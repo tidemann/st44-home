@@ -29,7 +29,7 @@ import { EmptyGroup } from '../../components/poeng/empty-group/empty-group';
 import { TurnPopup, type TurnPopupView } from '../../components/turn-popup/turn-popup';
 import { TurnService, nextInTurn, turnChild } from '../../services/turn.service';
 import { HouseholdStore } from '../../stores/household.store';
-import { capitalize, clockTime, dayWord } from '../../utils/poeng-format';
+import { capitalize, clockTime, dayWord, doneWhen } from '../../utils/poeng-format';
 import { hasNoChildrenLeft } from '../../utils/task-children';
 import {
   summarizeSubtasks,
@@ -376,8 +376,11 @@ export class Tasks implements OnInit {
     return $localize`:@@tasks.overdueMeta:${this.who(a)}:who: – Forfalt ${dayWord(a.date)}:day:`;
   }
 
-  /** "Mathea – I dag" */
+  /** "Mathea – I dag"; a weekly chore "Emma – Frist søndag", on the day "Frist i dag" (ST-2143) */
   protected openMeta(a: Assignment): string {
+    if (a.ruleType === 'weekly_rotation') {
+      return $localize`:@@tasks.deadlineMeta:${this.who(a)}:who: – Frist ${dayWord(a.date)}:day:`;
+    }
     return $localize`:@@tasks.openMeta:${this.who(a)}:who: – ${capitalize(dayWord(a.date))}:day:`;
   }
 
@@ -400,7 +403,7 @@ export class Tasks implements OnInit {
 
   /** "Emma – Gjort 16.10" */
   protected doneMeta(a: Assignment): string {
-    const at = a.completedAt ? ` ${clockTime(a.completedAt)}` : '';
+    const at = a.completedAt ? ` ${doneWhen(a.completedAt)}` : '';
     return $localize`:@@tasks.doneMeta:${this.who(a)}:who: – Gjort${at}:at:`;
   }
 

@@ -61,6 +61,17 @@ export interface TaskFormData {
   subtasks: SubtaskInput[];
 }
 
+/** The day in the line under «Frist», by dueDay (0 = Sunday) */
+const DUE_DAY_DEFINITE: Record<number, string> = {
+  0: $localize`:@@taskFormModal.sundayDefinite:søndagen`,
+  1: $localize`:@@taskFormModal.mondayDefinite:mandagen`,
+  2: $localize`:@@taskFormModal.tuesdayDefinite:tirsdagen`,
+  3: $localize`:@@taskFormModal.wednesdayDefinite:onsdagen`,
+  4: $localize`:@@taskFormModal.thursdayDefinite:torsdagen`,
+  5: $localize`:@@taskFormModal.fridayDefinite:fredagen`,
+  6: $localize`:@@taskFormModal.saturdayDefinite:lørdagen`,
+};
+
 /**
  * Unified Task Form Modal
  *
@@ -211,6 +222,18 @@ export class TaskFormModal {
     },
   ];
 
+  /** «Frist» for a weekly rotation (ST-2143): «hver mandag» … «hver søndag» */
+  readonly dueDays = this.daysOfWeek.map((day) => ({
+    value: String(day.value),
+    label: $localize`:@@taskFormModal.dueDayOption:hver ${day.label}:day:`,
+  }));
+
+  /** The line under «Frist»: «Oppgaven er forfalt først når søndagen er over.» */
+  protected dueDayHint(): string {
+    const day = DUE_DAY_DEFINITE[Number(this.form.controls.dueDay.value)] ?? DUE_DAY_DEFINITE[0];
+    return $localize`:@@taskFormModal.dueDayHint:Oppgaven er forfalt først når ${day}:day: er over.`;
+  }
+
   /**
    * Main form group
    */
@@ -221,6 +244,7 @@ export class TaskFormModal {
     ruleType: ['daily' as TaskRuleType, [Validators.required]],
     deadline: [''],
     rotationType: ['alternating' as 'alternating' | 'odd_even_week'],
+    dueDay: ['0'],
     repeatDays: this.fb.array<number>([]),
     assignedChildren: this.fb.array<string>([]),
   });
@@ -416,6 +440,7 @@ export class TaskFormModal {
         points: task.points,
         ruleType: task.ruleType,
         rotationType: rotationType,
+        dueDay: String(ruleConfig.dueDay ?? 0),
         deadline: '',
       },
       { emitEvent: false },
@@ -500,6 +525,7 @@ export class TaskFormModal {
         ruleType: 'daily',
         deadline: '',
         rotationType: 'alternating',
+        dueDay: '0',
       },
       { emitEvent: false },
     );
@@ -715,6 +741,7 @@ export class TaskFormModal {
               ? 'odd_even_week'
               : 'alternating',
           assignedChildren,
+          dueDay: Number(this.form.controls.dueDay.value ?? 0),
         };
 
       case 'single':

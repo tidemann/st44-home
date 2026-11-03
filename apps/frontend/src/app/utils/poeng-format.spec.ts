@@ -1,5 +1,35 @@
 import '@angular/localize/init';
-import { capitalize, clockTime, dayWord, isoDay, longDate } from './poeng-format';
+import {
+  capitalize,
+  clockTime,
+  dayWord,
+  daysToSunday,
+  doneWhen,
+  isoDay,
+  longDate,
+} from './poeng-format';
+
+describe('weekly «Frist» words (ST-2143)', () => {
+  it('names the deadline day, «i dag» on the day itself', () => {
+    expect(dayWord('2026-11-08', '2026-11-04')).toBe('søndag');
+    expect(dayWord('2026-11-08', '2026-11-08')).toBe('i dag');
+    // Not «i morgen»: the row reads «Frist lørdag» on Friday
+    expect(dayWord('2026-11-07', '2026-11-06')).toBe('lørdag');
+  });
+
+  it('counts the days to Sunday, the end of the week', () => {
+    expect(daysToSunday('2026-11-02')).toBe(6); // Monday
+    expect(daysToSunday('2026-11-04')).toBe(4); // Wednesday
+    expect(daysToSunday('2026-11-08')).toBe(0); // Sunday
+  });
+
+  it('says when a chore was done: the clock today, the day and date before', () => {
+    const now = new Date(2026, 10, 9, 16, 48);
+    expect(doneWhen(new Date(2026, 10, 9, 15, 30).toISOString(), now)).toBe('15.30');
+    expect(doneWhen(new Date(2026, 10, 7, 11, 0).toISOString(), now)).toBe('lørdag 7.11');
+    expect(doneWhen('not a date', now)).toBe('');
+  });
+});
 
 describe('poeng-format', () => {
   it('writes the long date the way the pictures do', () => {

@@ -411,6 +411,7 @@ async function createChildUserAccount(
 interface MyTasksQuerystring {
   householdId?: string;
   date?: string;
+  week?: boolean;
 }
 
 /**
@@ -431,7 +432,8 @@ async function getMyTasks(
     });
   }
 
-  const { householdId: householdIdParam, date } = request.query;
+  // week: also this week's weekly chores due later than the date (ST-2143)
+  const { householdId: householdIdParam, date, week = false } = request.query;
   const taskDate = date || new Date().toISOString().split('T')[0];
 
   try {
@@ -501,6 +503,7 @@ async function getMyTasks(
         t.name as task_name,
         t.description as task_description,
         t.points,
+        t.rule_type,
         ta.date::text as date,
         ta.status,
         ta.submitted_at,
@@ -511,10 +514,14 @@ async function getMyTasks(
        LEFT JOIN task_completions tc ON ta.id = tc.task_assignment_id
        WHERE ta.child_id = $1
          AND ta.household_id = $2
-         AND ta.date = $3
+         AND (
+           ta.date = $3
+           OR ($4 AND t.rule_type = 'weekly_rotation' AND ta.date > $3
+               AND ta.date <= $3::date + (7 - EXTRACT(ISODOW FROM $3::date))::int)
+         )
          AND NOT (t.rule_type = 'next_in_line' AND ta.status = 'pending')
        ORDER BY t.name ASC`,
-      [childId, householdId, taskDate],
+      [childId, householdId, taskDate, week],
     );
 
     const tasks = tasksResult.rows.map((row) => ({
@@ -522,6 +529,7 @@ async function getMyTasks(
       taskName: row.task_name,
       taskDescription: row.task_description,
       points: row.points,
+      ruleType: row.rule_type,
       date: row.date,
       status: row.status,
       completedAt: row.completed_at ? row.completed_at.toISOString() : null,
@@ -573,6 +581,7 @@ export default async function childrenRoutes(server: FastifyInstance) {
       .regex(/^\d{4}-\d{2}-\d{2}$/)
       .optional(),
     status: z.enum(['pending', 'completed']).optional(),
+    week: z.boolean().optional(),
   });
 
   // Schema for child's task assignment response
@@ -581,6 +590,7 @@ export default async function childrenRoutes(server: FastifyInstance) {
     taskName: z.string(),
     taskDescription: z.string().nullable(),
     points: z.number(),
+    ruleType: z.string(),
     date: z.string(),
     status: z.enum(['pending', 'completed', 'overdue']),
     completedAt: z.string().nullable(),

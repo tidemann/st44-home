@@ -157,7 +157,7 @@ CREATE TABLE IF NOT EXISTS tasks (
   description TEXT,
   points INTEGER DEFAULT 10,
   rule_type VARCHAR(50) NOT NULL CHECK (rule_type IN ('weekly_rotation', 'repeating', 'daily', 'single', 'next_in_line')),
-  rule_config JSONB,
+  rule_config JSONB, -- weekly_rotation: dueDay 0-6 (0 = Sunday), migration 060
   deadline TIMESTAMP WITH TIME ZONE,
   active BOOLEAN NOT NULL DEFAULT true,
   scan_code VARCHAR(16), -- Added in migration 058: code in the «Etter tur» QR/NFC link

@@ -46,6 +46,8 @@ export interface MyTaskAssignment {
   taskName: string;
   taskDescription: string | null;
   points: number;
+  /** Weekly chores read «Frist søndag» (ST-2143) */
+  ruleType?: string;
   date: string;
   status: 'pending' | 'completed' | 'overdue';
   completedAt: string | null;
@@ -387,7 +389,12 @@ export class TaskService {
    * @param status - Optional status filter ('pending' | 'completed')
    * @returns Observable of my tasks response
    */
-  getMyTasks(householdId?: string, date?: string, status?: string): Observable<MyTasksResponse> {
+  getMyTasks(
+    householdId?: string,
+    date?: string,
+    status?: string,
+    week = false,
+  ): Observable<MyTasksResponse> {
     this.myTasksLoadingSignal.set(true);
     this.myTasksErrorSignal.set(null);
 
@@ -396,6 +403,8 @@ export class TaskService {
     if (householdId) params.push(`householdId=${householdId}`);
     if (date) params.push(`date=${date}`);
     if (status) params.push(`status=${status}`);
+    // Also this week's weekly chores, due on a later day (ST-2143)
+    if (week) params.push('week=true');
     if (params.length > 0) endpoint += `?${params.join('&')}`;
 
     return from(this.apiService.get<MyTasksResponse>(endpoint)).pipe(

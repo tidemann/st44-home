@@ -90,6 +90,7 @@ type NormalizedRuleConfig = {
   repeatDays?: number[];
   assignedChildren?: string[];
   rotationStart?: string;
+  dueDay?: number;
   deadline?: string;
 } | null;
 
@@ -130,6 +131,9 @@ function normalizeRuleConfig(ruleConfig: unknown): NormalizedRuleConfig | undefi
   if (typeof obj.rotationStart === 'string') {
     normalized.rotationStart = obj.rotationStart;
   }
+  if (typeof obj.dueDay === 'number') {
+    normalized.dueDay = obj.dueDay;
+  }
 
   return normalized;
 }
@@ -143,8 +147,41 @@ function osloMonday(weeksAhead: number = 0): string {
  * A new alternating rotation starts this week with the first child in the list (ST-2030)
  */
 function withRotationStartForCreate(ruleType: string, config: NormalizedRuleConfig | undefined) {
-  if (ruleType !== 'weekly_rotation' || config?.rotationType !== 'alternating') return config;
-  return { ...config, rotationStart: config.rotationStart ?? osloMonday() };
+  if (ruleType !== 'weekly_rotation') return config;
+  // A weekly chore is due on Sunday unless the parent chose another day (ST-2143)
+  const withDueDay = { ...config, dueDay: config?.dueDay ?? 0 };
+  if (withDueDay.rotationType !== 'alternating') return withDueDay;
+  return { ...withDueDay, rotationStart: withDueDay.rotationStart ?? osloMonday() };
+}
+
+/**
+ * A weekly chore's deadline day changed (ST-2143): this week's open row moves to the new day
+ * when that day is still ahead, even if its old day has passed, so the week keeps one row.
+ * Later weeks are made again. Done and sent rows, and rows with ticked sub-tasks, are not touched.
+ */
+async function moveWeeklyDueDay(householdId: string, taskId: string, dueDay: number) {
+  const today = todayInTimeZone(new Date());
+  const newDue = new Date(mondayOf(today).getTime() + ((dueDay + 6) % 7) * 24 * 60 * 60 * 1000);
+  if (newDue >= today) {
+    await db.query(
+      `UPDATE task_assignments SET date = $3
+       WHERE household_id = $1 AND task_id = $2 AND status = 'pending' AND submitted_at IS NULL
+         AND date >= $4 AND date < $5`,
+      [householdId, taskId, toIsoDate(newDue), osloMonday(), osloMonday(1)],
+    );
+  }
+  await db.query(
+    `DELETE FROM task_assignments ta
+     WHERE ta.household_id = $1 AND ta.task_id = $2 AND ta.date >= $3 AND ta.status = 'pending'
+       AND ta.submitted_at IS NULL
+       AND NOT EXISTS (SELECT 1 FROM assignment_subtask_states s WHERE s.assignment_id = ta.id)
+       AND NOT EXISTS (SELECT 1 FROM task_completions c WHERE c.task_assignment_id = ta.id)`,
+    [householdId, taskId, osloMonday(1)],
+  );
+  const result = await generateAssignments(householdId, today, DAYS_AHEAD);
+  if (result.errors.length > 0) {
+    throw new Error(`Moving the deadline day failed: ${result.errors.join('; ')}`);
+  }
 }
 
 /**
@@ -355,6 +392,9 @@ async function createTask(request: FastifyRequest<CreateTaskRequest>, reply: Fas
           }),
           ...(normalizedRuleConfig.rotationStart && {
             rotationStart: normalizedRuleConfig.rotationStart,
+          }),
+          ...(normalizedRuleConfig.dueDay !== undefined && {
+            dueDay: normalizedRuleConfig.dueDay,
           }),
         }
       : null;
@@ -610,6 +650,7 @@ async function updateTask(request: FastifyRequest<UpdateTaskRequest>, reply: Fas
 
     // A rotation's start week is the server's to set: a changed order starts next Monday
     let rotationNeedsRegenerating = false;
+    let dueDayChanged = false;
     if (normalizedRuleConfig) {
       const storedRow = before.rows[0];
       if (storedRow && (ruleType ?? storedRow.rule_type) === 'weekly_rotation') {
@@ -625,7 +666,11 @@ async function updateTask(request: FastifyRequest<UpdateTaskRequest>, reply: Fas
             : changed
               ? osloMonday(1)
               : storedConfig?.rotationStart;
-        normalizedRuleConfig = { ...rest, ...(rotationStart && { rotationStart }) };
+        // The deadline day: kept when the form leaves it out, Sunday when never set (ST-2143)
+        const dueDay = rest.dueDay ?? storedConfig?.dueDay ?? 0;
+        dueDayChanged =
+          storedRow.rule_type === 'weekly_rotation' && dueDay !== (storedConfig?.dueDay ?? 0);
+        normalizedRuleConfig = { ...rest, dueDay, ...(rotationStart && { rotationStart }) };
         rotationNeedsRegenerating = changed;
       }
     }
@@ -753,7 +798,12 @@ async function updateTask(request: FastifyRequest<UpdateTaskRequest>, reply: Fas
     }
 
     // If assignedChildren was updated, update or create today's pending assignment
-    if (!isTurns && normalizedRuleConfig?.assignedChildren !== undefined) {
+    // Not for weekly chores: their one row a week sits on the deadline day (ST-2143)
+    if (
+      !isTurns &&
+      task.rule_type !== 'weekly_rotation' &&
+      normalizedRuleConfig?.assignedChildren !== undefined
+    ) {
       const today = new Date().toISOString().split('T')[0];
       const newAssignedChildren = normalizedRuleConfig.assignedChildren || [];
 
@@ -793,7 +843,10 @@ async function updateTask(request: FastifyRequest<UpdateTaskRequest>, reply: Fas
       // as the rotation logic is handled by the assignment generator
     }
 
-    if (rotationNeedsRegenerating) {
+    if (dueDayChanged) {
+      // Also makes later weeks again, so a changed rotation is covered too
+      await moveWeeklyDueDay(householdId, taskId, normalizedRuleConfig?.dueDay ?? 0);
+    } else if (rotationNeedsRegenerating) {
       await regenerateRotationFromNextWeek(householdId, taskId);
     }
 

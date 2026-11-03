@@ -41,6 +41,10 @@ export const TaskRuleConfigSchema = z
       .regex(/^\d{4}-\d{2}-\d{2}$/)
       .optional(),
 
+    // For weekly_rotation: the day of the week the chore is due (0=Sunday, 6=Saturday).
+    // Missing means Sunday (ST-2143).
+    dueDay: z.number().int().min(0).max(6).optional(),
+
     // For single tasks: optional deadline
     deadline: z.string().datetime().optional(),
   })
