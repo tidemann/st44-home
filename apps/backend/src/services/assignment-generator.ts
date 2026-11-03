@@ -27,6 +27,8 @@ interface RuleConfig {
   assignedChildren?: string[];
   /** Alternating: Monday (YYYY-MM-DD) of the week assignedChildren[0] has the chore */
   rotationStart?: string;
+  /** Weekly rotation: the day the chore is due, 0=Sunday ... 6=Saturday; missing means Sunday */
+  dueDay?: number;
 }
 
 const DAY_MS = 24 * 60 * 60 * 1000;
@@ -341,7 +343,7 @@ function generateRepeatingAssignments(
 }
 
 /**
- * Weekly rotation rule: one child per ISO week (Monday-Sunday)
+ * Weekly rotation rule: one child per ISO week (Monday-Sunday), one row on the week's deadline day
  */
 async function generateWeeklyRotationAssignments(
   task: Task,
@@ -404,7 +406,11 @@ async function generateWeeklyRotationAssignments(
     throw new Error(`Unknown rotationType: ${rotationType}`);
   }
 
-  return dates.map((date) => ({
+  // One row per week, dated on the deadline day (ST-2143)
+  const dueDay = task.rule_config.dueDay ?? 0;
+  return dates
+    .filter((date) => date.getUTCDay() === dueDay)
+    .map((date) => ({
     task_id: task.id,
     child_id: childForDate(date),
     date: formatDate(date),
@@ -447,6 +453,9 @@ export function readRuleConfig(raw: unknown): RuleConfig {
   }
   if (typeof obj.rotationStart === 'string') {
     config.rotationStart = obj.rotationStart;
+  }
+  if (Number.isInteger(obj.dueDay) && (obj.dueDay as number) >= 0 && (obj.dueDay as number) <= 6) {
+    config.dueDay = obj.dueDay as number;
   }
   return config;
 }
