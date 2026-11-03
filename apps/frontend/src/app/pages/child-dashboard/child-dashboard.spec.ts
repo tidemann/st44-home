@@ -14,6 +14,7 @@ describe('ChildDashboardComponent', () => {
   let hold: Promise<void> | null = null;
   let rewardsHold: Promise<void> | null = null;
   let turnsAnswer: { turns: unknown[]; myChildId: string } = { turns: [], myChildId: 'c-mathea' };
+  let todayTasks: unknown[] | null = null;
 
   const task = (id: string, taskName: string, offset: number, status: string) => ({
     id,
@@ -49,7 +50,10 @@ describe('ChildDashboardComponent', () => {
           completedPoints: 10,
           tasks: yesterday
             ? [task('a0', 'Rydde rommet', -1, 'pending')]
-            : [task('a1', 'Mate katten', 0, 'pending'), task('a2', 'Dekke bordet', 0, 'completed')],
+            : (todayTasks ?? [
+                task('a1', 'Mate katten', 0, 'pending'),
+                task('a2', 'Dekke bordet', 0, 'completed'),
+              ]),
         };
       }
       if (endpoint.startsWith('/children/me/turns')) return turnsAnswer;
@@ -85,6 +89,7 @@ describe('ChildDashboardComponent', () => {
     hold = null;
     rewardsHold = null;
     turnsAnswer = { turns: [], myChildId: 'c-mathea' };
+    todayTasks = null;
     api.get.mockClear();
 
     await TestBed.configureTestingModule({
@@ -110,6 +115,33 @@ describe('ChildDashboardComponent', () => {
     expect(el.querySelectorAll('app-chore-row .rm').length).toBe(3);
     expect(el.textContent).toContain('Forfalt');
     expect(el.textContent).toContain('I dag');
+  });
+
+  it('ST-2143: asks for the week, and a weekly chore reads «Frist søndag», on the day «Frist i dag»', async () => {
+    const dueDay = new Date(`${isoDay(4)}T12:00:00Z`).toLocaleDateString('nb-NO', {
+      weekday: 'long',
+      timeZone: 'UTC',
+    });
+    todayTasks = [
+      {
+        ...task('w1', 'Tømme oppvaskmaskinen', 4, 'pending'),
+        points: 5,
+        ruleType: 'weekly_rotation',
+      },
+      { ...task('w2', 'Vaske badet', 0, 'pending'), points: 5, ruleType: 'weekly_rotation' },
+      { ...task('d1', 'Rydde rommet', 0, 'pending'), ruleType: 'daily' },
+    ];
+    const el = await render();
+
+    expect(api.get).toHaveBeenCalledWith(`/children/me/tasks?date=${isoDay()}&week=true`);
+    // The overdue ask stays one exact day
+    expect(api.get).toHaveBeenCalledWith(expect.stringMatching(new RegExp(`date=${isoDay(-1)}$`)));
+    const metas = Array.from(el.querySelectorAll('app-chore-row .rm')).map((m) =>
+      m.textContent!.replace(/\s+/g, ' ').trim(),
+    );
+    expect(metas).toContain(`Frist ${dueDay} – 5 poeng`);
+    expect(metas).toContain('Frist i dag – 5 poeng');
+    expect(metas).toContain('I dag – 10 poeng');
   });
 
   it('labels the row button «Ferdig», not «Hak av»', async () => {

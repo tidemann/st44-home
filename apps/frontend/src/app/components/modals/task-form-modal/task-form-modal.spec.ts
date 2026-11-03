@@ -102,6 +102,63 @@ describe('TaskFormModal', () => {
     it('should have all days of week options', () => {
       expect(component.daysOfWeek.length).toBe(7);
     });
+
+    describe('«Frist» (ST-2143)', () => {
+      const field = () => fixture.nativeElement.querySelector('#due-day') as HTMLSelectElement;
+      const label = () =>
+        fixture.nativeElement.querySelector('label[for="due-day"]') as HTMLLabelElement | null;
+
+      beforeEach(() => {
+        fixture.componentRef.setInput('open', true);
+        fixture.detectChanges();
+      });
+
+      it('shows only for «Ukesrotasjon», under «Oppgavetype»', () => {
+        expect(field()).toBeNull();
+        component['form'].patchValue({ ruleType: 'weekly_rotation' });
+        fixture.detectChanges();
+
+        expect(label()?.textContent?.trim()).toBe('Frist *');
+        const typeGroup = fixture.nativeElement.querySelector('#rule-type').closest('.form-group');
+        expect(typeGroup.nextElementSibling.querySelector('#due-day')).toBe(field());
+
+        component['form'].patchValue({ ruleType: 'repeating' });
+        fixture.detectChanges();
+        expect(field()).toBeNull();
+      });
+
+      it('offers «hver mandag» … «hver søndag», søndag chosen, with the line under it', () => {
+        component['form'].patchValue({ ruleType: 'weekly_rotation' });
+        fixture.detectChanges();
+
+        const options = Array.from(field().options).map((o) => o.textContent?.trim());
+        expect(options).toEqual([
+          'hver mandag',
+          'hver tirsdag',
+          'hver onsdag',
+          'hver torsdag',
+          'hver fredag',
+          'hver lørdag',
+          'hver søndag',
+        ]);
+        expect(field().selectedOptions[0].textContent?.trim()).toBe('hver søndag');
+        expect(field().parentElement?.querySelector('.form-hint')?.textContent?.trim()).toBe(
+          'Oppgaven er forfalt først når søndagen er over.',
+        );
+      });
+
+      it('the line under it follows the chosen day', () => {
+        component['form'].patchValue({ ruleType: 'weekly_rotation' });
+        fixture.detectChanges();
+        field().value = '3';
+        field().dispatchEvent(new Event('change'));
+        fixture.detectChanges();
+
+        expect(field().parentElement?.querySelector('.form-hint')?.textContent?.trim()).toBe(
+          'Oppgaven er forfalt først når onsdagen er over.',
+        );
+      });
+    });
   });
 
   describe('Edit Mode', () => {
@@ -161,6 +218,21 @@ describe('TaskFormModal', () => {
       expect(component['form'].get('rotationType')?.value).toBe('odd_even_week');
       const assignedChildren = component['form'].get('assignedChildren') as FormArray;
       expect(assignedChildren.length).toBe(2);
+      // Saved before ST-2143 without a day: «Rediger oppgave» shows søndag
+      expect(component['form'].get('dueDay')?.value).toBe('0');
+    });
+
+    it('ST-2143: «Rediger oppgave» opens on the saved «Frist» day', () => {
+      fixture.componentRef.setInput('task', {
+        ...mockTask,
+        ruleType: 'weekly_rotation',
+        ruleConfig: { rotationType: 'odd_even_week', assignedChildren: ['child-1'], dueDay: 3 },
+      });
+      fixture.componentRef.setInput('open', true);
+      fixture.detectChanges();
+
+      const select = fixture.nativeElement.querySelector('#due-day') as HTMLSelectElement;
+      expect(select.selectedOptions[0].textContent?.trim()).toBe('hver onsdag');
     });
 
     it('ST-2030: an alternating rotation opens with next week first and names this week', () => {
@@ -562,8 +634,27 @@ describe('TaskFormModal', () => {
           ruleConfig: expect.objectContaining({
             rotationType: 'alternating',
             assignedChildren: expect.arrayContaining(['child-1', 'child-2']),
+            dueDay: 0,
           }),
         }),
+      );
+    });
+
+    it('ST-2143: a weekly rotation sends the chosen «Frist» day', () => {
+      const formSubmittedSpy = vi.spyOn(component.formSubmitted, 'emit');
+      fixture.componentRef.setInput('open', true);
+      component['form'].patchValue({ name: 'Tømme oppvaskmaskinen', ruleType: 'weekly_rotation' });
+      component.onChildChange('child-1', true);
+      component.onChildChange('child-2', true);
+      fixture.detectChanges();
+
+      const select = fixture.nativeElement.querySelector('#due-day') as HTMLSelectElement;
+      select.value = '3';
+      select.dispatchEvent(new Event('change'));
+      component.onSubmit();
+
+      expect(formSubmittedSpy).toHaveBeenCalledWith(
+        expect.objectContaining({ ruleConfig: expect.objectContaining({ dueDay: 3 }) }),
       );
     });
 
@@ -626,6 +717,7 @@ describe('TaskFormModal', () => {
           ruleConfig: {
             rotationType: 'alternating',
             assignedChildren: ['child-3', 'child-1', 'child-2'],
+            dueDay: 0,
           },
         }),
       );
@@ -634,7 +726,11 @@ describe('TaskFormModal', () => {
       component.onSubmit();
       expect(formSubmittedSpy).toHaveBeenLastCalledWith(
         expect.objectContaining({
-          ruleConfig: { rotationType: 'odd_even_week', assignedChildren: ['child-2', 'child-1'] },
+          ruleConfig: {
+            rotationType: 'odd_even_week',
+            assignedChildren: ['child-2', 'child-1'],
+            dueDay: 0,
+          },
         }),
       );
     });

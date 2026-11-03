@@ -31,7 +31,15 @@ import {
   type TickGoal,
   type TickNext,
 } from '../../components/poeng/tick-moment/tick-moment';
-import { capitalize, clockTime, dayWord, isoDay, longDate } from '../../utils/poeng-format';
+import {
+  capitalize,
+  clockTime,
+  dayWord,
+  deadlineWord,
+  doneWhen,
+  isoDay,
+  longDate,
+} from '../../utils/poeng-format';
 import { summarizeSubtasks } from '@st44/types';
 import { hasSubtasks, leftLine, waitingLine } from '../../utils/subtask-lines';
 import {
@@ -194,7 +202,7 @@ export class ChildDashboardComponent implements OnInit {
       // Today's chores via TaskService (updates signals), yesterday's left-overs,
       // the balance and rewards for the meter, and analytics, in parallel
       await Promise.all([
-        firstValueFrom(this.taskService.getMyTasks(undefined, isoDay())),
+        firstValueFrom(this.taskService.getMyTasks(undefined, isoDay(), undefined, true)),
         this.loadOverdue(),
         this.loadTurns(),
         firstValueFrom(this.rewardService.loadChildRewards())
@@ -368,14 +376,17 @@ export class ChildDashboardComponent implements OnInit {
     return $localize`:@@childDashboard.overdueMeta:Forfalt ${dayWord(task.date)}:day:`;
   }
 
-  /** "I dag – 10 poeng" */
+  /** "I dag – 10 poeng"; a weekly chore "Frist søndag – 5 poeng", on the day "Frist i dag" */
   openMeta(task: MyTaskAssignment): string {
+    if (task.ruleType === 'weekly_rotation') {
+      return $localize`:@@childDashboard.deadlineMeta:Frist ${deadlineWord(task.date)}:day: – ${task.points}:points: poeng`;
+    }
     return $localize`:@@childDashboard.openMeta:${capitalize(dayWord(task.date))}:day: – ${task.points}:points: poeng`;
   }
 
   /** "Gjort 15.30 – 10 poeng" */
   doneMeta(task: MyTaskAssignment): string {
-    const at = task.completedAt ? ` ${clockTime(task.completedAt)}` : '';
+    const at = task.completedAt ? ` ${doneWhen(task.completedAt)}` : '';
     return $localize`:@@childDashboard.doneMeta:Gjort${at}:at: – ${task.points}:points: poeng`;
   }
 

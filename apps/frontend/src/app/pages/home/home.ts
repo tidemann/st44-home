@@ -34,7 +34,15 @@ import { PushNotificationService } from '../../services/push-notification.servic
 import { HttpErrorResponse } from '@angular/common/http';
 import { isDesktopSignal } from '../../utils/desktop-query';
 import { remindNote, type RemindState } from '../../utils/remind-note';
-import { capitalize, clockTime, dayWord, isoDay, longDate } from '../../utils/poeng-format';
+import {
+  capitalize,
+  clockTime,
+  dayWord,
+  deadlineWord,
+  doneWhen,
+  isoDay,
+  longDate,
+} from '../../utils/poeng-format';
 import type { Task, Assignment, Child, HouseholdMemberResponse } from '@st44/types';
 
 /** Child cards beside the title from 1024 px (desktop A); more go on one "+N barn til" tile */
@@ -329,7 +337,9 @@ export class Home implements OnInit {
           status: 'pending',
         }),
       );
-      this.upcomingTasks.set(assignments.slice(0, 3));
+      // This week's weekly chores are already on today's list (ST-2143)
+      const upcoming = assignments.filter((a) => a.ruleType !== 'weekly_rotation');
+      this.upcomingTasks.set(upcoming.slice(0, 3));
     } catch (err) {
       console.error('Failed to load upcoming tasks:', err);
     }
@@ -338,6 +348,9 @@ export class Home implements OnInit {
   /** "Mathea – i dag" / "Jonas – forfalt i går" */
   protected rowMeta(a: Assignment, overdue = false): string {
     const who = a.childName || $localize`:@@home.anyone:Alle`;
+    if (!overdue && a.ruleType === 'weekly_rotation') {
+      return $localize`:@@home.deadlineMeta:${who}:who: – frist ${deadlineWord(a.date)}:day:`;
+    }
     return overdue
       ? $localize`:@@home.overdueMeta:${who}:who: – forfalt ${dayWord(a.date)}:day:`
       : $localize`:@@home.openMeta:${who}:who: – ${dayWord(a.date)}:day:`;
@@ -346,7 +359,7 @@ export class Home implements OnInit {
   /** "Emma – gjort 16.10" for "Gjort i dag" */
   protected doneMeta(a: Assignment): string {
     const who = a.childName || $localize`:@@home.anyone:Alle`;
-    const at = a.completedAt ? ` ${clockTime(a.completedAt)}` : '';
+    const at = a.completedAt ? ` ${doneWhen(a.completedAt)}` : '';
     return $localize`:@@home.doneMeta:${who}:who: – gjort${at}:at:`;
   }
 

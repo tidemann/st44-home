@@ -166,6 +166,20 @@
         </fieldset>
       }
 
+      <!-- Weekly Rotation: the day it is due (ST-2143, sheet 2 on ST-2142), the same control
+           as «Oppgavetype» -->
+      @if (ruleType === 'weekly_rotation') {
+        <div class="form-group">
+          <label class="form-label" for="due-day" i18n="@@taskFormModal.dueDayLabel">Frist *</label>
+          <select appDidditMenu id="due-day" class="form-select" formControlName="dueDay">
+            @for (day of dueDays; track day.value) {
+              <option [value]="day.value">{{ day.label }}</option>
+            }
+          </select>
+          <p class="form-hint">{{ dueDayHint() }}</p>
+        </div>
+      }
+
       <!-- Weekly Rotation: one list, dragged into order (ST-2030, signed off on ST-2028) -->
       @if (ruleType === 'weekly_rotation') {
         <app-rotation-order
