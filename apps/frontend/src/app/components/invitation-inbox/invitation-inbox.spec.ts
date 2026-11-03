@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { TestBed } from '@angular/core/testing';
 import { Router } from '@angular/router';
 import { InvitationInboxComponent } from './invitation-inbox';
@@ -44,6 +44,10 @@ describe('InvitationInboxComponent', () => {
     });
   });
 
+  afterEach(() => {
+    vi.useRealTimers();
+  });
+
   it('shows the role in Norwegian with a space after «Rolle:»', async () => {
     const fixture = TestBed.createComponent(InvitationInboxComponent);
     fixture.detectChanges();
@@ -86,7 +90,6 @@ describe('InvitationInboxComponent', () => {
 
     vi.advanceTimersByTime(1500);
     expect(router.navigate).toHaveBeenCalledWith(['/family']);
-    vi.useRealTimers();
   });
 
   it('still lands on «Familie» without an error when the household refresh fails (ST-2099)', async () => {
@@ -107,7 +110,6 @@ describe('InvitationInboxComponent', () => {
 
     vi.advanceTimersByTime(1500);
     expect(router.navigate).toHaveBeenCalledWith(['/family']);
-    vi.useRealTimers();
   });
 
   it('says the invitation was declined in Norwegian', async () => {
