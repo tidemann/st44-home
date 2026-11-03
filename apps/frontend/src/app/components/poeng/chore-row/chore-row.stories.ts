@@ -27,6 +27,10 @@ const meta: Meta<ChoreRow> = {
       control: 'text',
       description: 'Bold words before the meta line',
     },
+    turn: {
+      control: 'boolean',
+      description: '«Etter tur» on Hjem: meta line and row action on a second line (ST-2180)',
+    },
     overdue: {
       control: 'boolean',
       description: 'Rust border and rust meta line',
@@ -324,5 +328,42 @@ export const EtterTur: Story = {
     meta: 'har turen · neste: Jonas',
     points: '5 p',
     box: false,
+  },
+};
+
+/** «Etter tur» on Hjem (ST-2180): title and points on line 1, the turn and «Minn på» on line 2 */
+export const EtterTurHjem: Story = {
+  render: (args) => ({
+    props: args,
+    template: `
+      <app-chore-row [turn]="true" [title]="title" [metaStrong]="metaStrong" [meta]="meta" [points]="points" [checkable]="true">
+        <button row-action type="button" class="rbtn">Minn på</button>
+      </app-chore-row>
+    `,
+  }),
+  args: {
+    title: 'Tømme oppvaskmaskinen',
+    metaStrong: 'Leon',
+    meta: 'har turen · neste: Julie',
+    points: '5 p',
+  },
+};
+
+/** «Etter tur» on Hjem, sent: «Sendt» in the button and the time in a line under the row */
+export const EtterTurHjemSendt: Story = {
+  render: (args) => ({
+    props: args,
+    template: `
+      <app-chore-row [turn]="true" [title]="title" [metaStrong]="metaStrong" [meta]="meta" [points]="points" [checkable]="true" [note]="note">
+        <button row-action type="button" class="rbtn" disabled style="gap: 8px; padding: 0 12px; opacity: 1">Sendt</button>
+      </app-chore-row>
+    `,
+  }),
+  args: {
+    title: 'Tømme oppvaskmaskinen',
+    metaStrong: 'Leon',
+    meta: 'har turen · neste: Julie',
+    points: '5 p',
+    note: { text: 'Påminnelse sendt 16.49', tone: 'done' },
   },
 };
