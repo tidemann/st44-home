@@ -1600,6 +1600,7 @@ whole viewBox, never the stroke on its own.
   brand area and on the desktop panel.
 - **Stacked lockup** — mark above, wordmark below, both centred.
 - **App icon** — the whole square is the icon: ink-on-yellow, yellow-on-ink, or ink-on-white.
+- Yellow square with ink tick is approved as the app icon on any ground (Stig, ST-2150, 2026-11-03).
 
 ### Rules for the mark
 
