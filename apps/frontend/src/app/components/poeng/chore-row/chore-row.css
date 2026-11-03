@@ -80,6 +80,38 @@
   justify-content: center;
 }
 
+/* «Etter tur» on Hjem (ST-2180, Ida's kit on ST-2169): line 1 keeps title and points; the
+   turn line and the button share line 2, from 34 px (the box and its 12 px gap). The
+   .has-note geometry: wrap, 6 px row-gap, 15 px under, so the card is 11 + 22 + 6 + 36 + 15 */
+.row.turn {
+  flex-wrap: wrap;
+  row-gap: 6px;
+  padding-bottom: 15px;
+}
+
+.row.turn > .rowtext {
+  min-height: 0;
+}
+
+.turnline {
+  flex-basis: 100%;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding-left: 34px;
+  min-width: 0;
+}
+
+/* Long names wrap inside the button's 36 px; nothing is cut */
+.turnline .rm {
+  flex: 1 1 auto;
+  min-width: 0;
+  margin-top: 0;
+  white-space: normal;
+  overflow: visible;
+  text-overflow: clip;
+}
+
 /* Icon under the checkbox column, text from 39 px (drawn) */
 .note {
   flex-basis: 100%;
