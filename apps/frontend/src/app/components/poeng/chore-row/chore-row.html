@@ -43,6 +43,7 @@
     class="row"
     [class.overdue]="overdue()"
     [class.has-note]="note()"
+    [class.turn]="turn()"
     [class.pressable]="pressable()"
     [class.held]="held()"
     (pointerdown)="onPointerDown($event)"
@@ -80,27 +81,15 @@
     @if (openable()) {
       <button type="button" class="rowtext rowtext-btn" (click)="open.emit()">
         <span class="rt">{{ title() }}</span>
-        @if (meta()) {
-          <span class="rm" [class.rust]="overdue()">
-            @if (metaStrong()) {
-              <b class="rmb">{{ metaStrong() }}</b
-              >{{ ' ' }}
-            }
-            {{ meta() }}</span
-          >
+        @if (meta() && !turn()) {
+          <ng-container *ngTemplateOutlet="metaLine" />
         }
       </button>
     } @else {
       <span class="rowtext">
         <span class="rt">{{ title() }}</span>
-        @if (meta()) {
-          <span class="rm" [class.rust]="overdue()">
-            @if (metaStrong()) {
-              <b class="rmb">{{ metaStrong() }}</b
-              >{{ ' ' }}
-            }
-            {{ meta() }}</span
-          >
+        @if (meta() && !turn()) {
+          <ng-container *ngTemplateOutlet="metaLine" />
         }
       </span>
     }
@@ -108,7 +97,18 @@
     @if (points()) {
       <span class="pts">{{ points() }}</span>
     }
-    <ng-content select="[row-action]" />
+    <!-- «Etter tur» on Hjem (ST-2180, drawn on ST-2169): the turn line and the button share
+         a second line, so the title and the points never move when the button changes -->
+    @if (turn()) {
+      <span class="turnline">
+        @if (meta()) {
+          <ng-container *ngTemplateOutlet="metaLine" />
+        }
+        <ng-container *ngTemplateOutlet="action" />
+      </span>
+    } @else {
+      <ng-container *ngTemplateOutlet="action" />
+    }
 
     @if (note(); as n) {
       <span class="note" [class.rust]="n.tone === 'overdue'" [class.plain]="n.tone === 'plain'">
@@ -139,3 +139,16 @@
     }
   </div>
 }
+
+<!-- Projected once, placed on line 1 or, on a turn row, on line 2 -->
+<ng-template #action><ng-content select="[row-action]" /></ng-template>
+
+<ng-template #metaLine>
+  <span class="rm" [class.rust]="overdue()">
+    @if (metaStrong()) {
+      <b class="rmb">{{ metaStrong() }}</b
+      >{{ ' ' }}
+    }
+    {{ meta() }}</span
+  >
+</ng-template>

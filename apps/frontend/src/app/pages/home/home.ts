@@ -31,17 +31,28 @@ import { HouseholdSheet } from '../../components/household-sheet/household-sheet
 import { HouseholdStore } from '../../stores/household.store';
 import { HouseholdDayService } from '../../services/household-day.service';
 import { PushNotificationService } from '../../services/push-notification.service';
+import { TurnService, nextInTurn, turnChild } from '../../services/turn.service';
+import { TurnPopup } from '../../components/turn-popup/turn-popup';
 import { HttpErrorResponse } from '@angular/common/http';
 import { isDesktopSignal } from '../../utils/desktop-query';
 import { remindNote, type RemindState } from '../../utils/remind-note';
 import { capitalize, dayWord, doneWhen, isoDay, longDate } from '../../utils/poeng-format';
-import type { Task, Assignment, Child, HouseholdMemberResponse } from '@st44/types';
+import type { Task, Assignment, Child, HouseholdMemberResponse, TaskTurn } from '@st44/types';
 
 /** Child cards beside the title from 1024 px (desktop A); more go on one "+N barn til" tile */
 export const DESKTOP_MAX_CHILD_CARDS = 4;
 
 /** The chore groups on the family home */
-type HomeGroup = 'overdue' | 'today' | 'done' | 'upcoming';
+type HomeGroup = 'overdue' | 'turns' | 'today' | 'done' | 'upcoming';
+
+/** What a «Minn på» button needs to know about its chore: an assignment, or a turn's open one */
+type RemindTarget = Pick<Assignment, 'id' | 'title' | 'childId' | 'childName' | 'submittedAt'>;
+
+/** One «Etter tur» row on Hjem: the turn, and its open assignment as the button sees it */
+interface TurnRow {
+  turn: TaskTurn;
+  remind: RemindTarget | null;
+}
 
 /** One child card on the family home */
 interface ChildSummary {
@@ -81,6 +92,7 @@ export function childCardColumns(count: number): number {
     FailedTasksSectionComponent,
     HouseholdSheet,
     SubtaskReviewModal,
+    TurnPopup,
   ],
   templateUrl: './home.html',
   styleUrl: './home.css',
@@ -94,6 +106,7 @@ export class Home implements OnInit {
   private readonly householdStore = inject(HouseholdStore);
   private readonly householdDay = inject(HouseholdDayService);
   private readonly push = inject(PushNotificationService);
+  private readonly turnService = inject(TurnService);
   private readonly router = inject(Router);
 
   // State signals
@@ -115,6 +128,25 @@ export class Home implements OnInit {
   /** Open chores from earlier days ("Forfalt") */
   protected readonly overdueTasks = signal<Assignment[]>([]);
   protected readonly upcomingTasks = signal<Assignment[]>([]);
+  /** «Etter tur» chores (ST-2180): under «Forfalt», not counted in the day's numbers */
+  protected readonly turns = signal<TaskTurn[]>([]);
+  protected readonly turnRows = computed<TurnRow[]>(() =>
+    this.turns().map((turn) => ({
+      turn,
+      remind:
+        turn.assignmentId && turn.turnChildId
+          ? {
+              id: turn.assignmentId,
+              title: turn.name,
+              childId: turn.turnChildId,
+              childName: turnChild(turn)?.name ?? null,
+              submittedAt: null,
+            }
+          : null,
+    })),
+  );
+  /** The open «Etter tur» popup (history, «Flytt turen»), as on «Oppgaver» */
+  protected readonly turnPopup = signal<TaskTurn | null>(null);
   protected readonly members = signal<HouseholdMemberResponse[]>([]);
   protected readonly children = signal<Child[]>([]);
   protected readonly householdId = signal<string | null>(null);
@@ -146,8 +178,8 @@ export class Home implements OnInit {
   // «Minn på» (ST-686): parents push a reminder for one open chore
   protected readonly canRemind = computed(() => !this.authService.hasRole('child'));
   /** A row gets «Minn på» when a parent looks, a child holds the chore and has not handed it in */
-  protected remindable(a: Assignment): boolean {
-    return this.canRemind() && !!a.childId && !a.submittedAt;
+  protected remindable(a: RemindTarget | null): boolean {
+    return !!a && this.canRemind() && !!a.childId && !a.submittedAt;
   }
   protected readonly remindingId = signal<string | null>(null);
   protected readonly remindMessage = signal<string | null>(null);
@@ -158,15 +190,20 @@ export class Home implements OnInit {
   protected readonly hasTodayTasks = computed(() => this.todayTasks().length > 0);
   protected readonly hasUpcomingTasks = computed(() => this.upcomingTasks().length > 0);
 
-  /** A group shows its first 10 chores, then «Vis flere» shows the rest (ST-954) */
-  protected readonly groupLimit = 10;
+  /**
+   * A group shows its first 10 chores, then «Vis flere» shows the rest (ST-954).
+   * «Etter tur» shows 3: its rows are 90 px and none of them is late (ST-2169 § 10)
+   */
+  private groupLimit(group: HomeGroup): number {
+    return group === 'turns' ? 3 : 10;
+  }
   private readonly expandedGroups = signal<ReadonlySet<HomeGroup>>(new Set());
 
-  protected shown(group: HomeGroup, tasks: Assignment[]): Assignment[] {
-    return this.expandedGroups().has(group) ? tasks : tasks.slice(0, this.groupLimit);
+  protected shown<T>(group: HomeGroup, tasks: T[]): T[] {
+    return this.expandedGroups().has(group) ? tasks : tasks.slice(0, this.groupLimit(group));
   }
 
-  protected hiddenCount(group: HomeGroup, tasks: Assignment[]): number {
+  protected hiddenCount(group: HomeGroup, tasks: unknown[]): number {
     return tasks.length - this.shown(group, tasks).length;
   }
 
@@ -279,6 +316,7 @@ export class Home implements OnInit {
         this.loadDay(household.id),
         this.loadMembers(household.id),
         this.loadUpcomingTasks(household.id),
+        this.loadTurns(household.id),
       ]);
 
       this.children.set(childrenData);
@@ -341,6 +379,50 @@ export class Home implements OnInit {
     }
   }
 
+  /** «Etter tur»: the group stays away if this fails, like «Kommende» */
+  private async loadTurns(householdId: string): Promise<void> {
+    try {
+      this.turns.set(await this.turnService.turns(householdId));
+    } catch (err) {
+      console.error('Failed to load turns:', err);
+    }
+  }
+
+  /** «har turen · neste: Julie», after the name in Ink */
+  protected turnMeta(t: TaskTurn): string {
+    return $localize`:@@home.turnMeta:har turen · neste: ${nextInTurn(t)?.name ?? ''}:next:`;
+  }
+
+  protected turnHolder(t: TaskTurn): string {
+    return turnChild(t)?.name ?? '';
+  }
+
+  /** The popup moved the turn: the row follows */
+  protected onTurnChanged(t: TaskTurn): void {
+    this.turns.update((list) => list.map((x) => (x.taskId === t.taskId ? t : x)));
+    this.turnPopup.set(t);
+  }
+
+  /** Tick a turn off: the child who had it gets the points, and the turn moves on */
+  protected async onCompleteTurn(t: TaskTurn): Promise<void> {
+    const household = this.householdId();
+    if (!t.assignmentId || !household) return;
+    this.completingId.set(t.assignmentId);
+    try {
+      await this.taskService.completeTask(t.assignmentId);
+      await Promise.all([
+        this.loadTurns(household),
+        this.loadDay(household),
+        this.loadMembers(household),
+      ]);
+    } catch (err) {
+      console.error('Failed to complete turn:', err);
+      this.error.set('Failed to complete task. Please try again.');
+    } finally {
+      this.completingId.set(null);
+    }
+  }
+
   /** "Mathea – i dag" / "Jonas – forfalt i går" */
   protected rowMeta(a: Assignment, overdue = false): string {
     const who = a.childName || $localize`:@@home.anyone:Alle`;
@@ -365,28 +447,28 @@ export class Home implements OnInit {
     return $localize`:@@home.upcomingMeta:${who}:who: – i morgen`;
   }
 
-  protected pointsText(a: Assignment): string {
+  protected pointsText(a: { points?: number | null }): string {
     return a.points != null ? $localize`:@@home.points:${a.points}:points: p` : '';
   }
 
-  protected reminderNote(a: Assignment) {
+  protected reminderNote(a: RemindTarget) {
     return remindNote(this.reminders()[a.id]);
   }
 
-  protected reminderSent(a: Assignment): boolean {
+  protected reminderSent(a: RemindTarget): boolean {
     return this.reminders()[a.id]?.status === 'sent';
   }
 
-  protected reminderFailed(a: Assignment): boolean {
+  protected reminderFailed(a: RemindTarget): boolean {
     return this.reminders()[a.id]?.status === 'failed';
   }
 
-  protected remindLabel(a: Assignment): string {
+  protected remindLabel(a: RemindTarget): string {
     return $localize`:@@home.remindAria:Minn ${a.childName ?? ''}:name: på ${a.title}:title:`;
   }
 
   /** «Sendt» still says which chore it belongs to when a screen reader lists the buttons */
-  protected remindSentLabel(a: Assignment): string {
+  protected remindSentLabel(a: RemindTarget): string {
     return $localize`:@@home.remindSentAria:Påminnelse sendt til ${a.childName ?? ''}:name: om ${a.title}:title:`;
   }
 
@@ -429,9 +511,11 @@ export class Home implements OnInit {
    * «Minn på»: send the reminder for one open chore to the child's phone now
    */
   protected async onRemind(assignmentId: string): Promise<void> {
-    const assignment = [...this.overdueTasks(), ...this.todayTasks()].find(
-      (t) => t.id === assignmentId,
-    );
+    const assignment = [
+      ...this.overdueTasks(),
+      ...this.todayTasks(),
+      ...this.turnRows().map((r) => r.remind),
+    ].find((t) => t?.id === assignmentId);
     const name = assignment?.childName || $localize`:@@home.remindFallbackName:Barnet`;
     this.remindingId.set(assignmentId);
     this.remindMessage.set(null);

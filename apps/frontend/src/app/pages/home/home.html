@@ -68,6 +68,35 @@
           />
         }
 
+        <!-- «Etter tur» (ST-2180, drawn on ST-2169 and approved): under «Forfalt», as on
+             «Oppgaver». Title and points on line 1; who has the turn and «Minn på» on line 2 -->
+        @if (turnRows().length > 0) {
+          <app-group-label i18n-label="@@home.nextInLineGroup" label="Etter tur" />
+          @for (row of shown('turns', turnRows()); track row.turn.taskId) {
+            <app-chore-row
+              [turn]="true"
+              [title]="row.turn.name"
+              [metaStrong]="turnHolder(row.turn)"
+              [meta]="turnMeta(row.turn)"
+              [points]="pointsText(row.turn)"
+              [checkable]="!!row.turn.assignmentId"
+              [busy]="completingId() === row.turn.assignmentId"
+              [openable]="canRemind()"
+              [note]="row.remind ? reminderNote(row.remind) : null"
+              (check)="onCompleteTurn(row.turn)"
+              (open)="turnPopup.set(row.turn)"
+            >
+              <ng-container
+                ngProjectAs="[row-action]"
+                *ngTemplateOutlet="remindAction; context: { $implicit: row.remind, sending: true }"
+              />
+            </app-chore-row>
+          }
+          <ng-container
+            *ngTemplateOutlet="showMore; context: { group: 'turns', tasks: turnRows() }"
+          />
+        }
+
         <app-group-label
           i18n-label="@@home.leftTodayLabel"
           label="Igjen i dag"
@@ -171,13 +200,15 @@
   <!-- «Minn på» for one chore row, pushed to the child's phone (ST-686). ST-1066 C: thumbs up +
        «Sendt» stays in the button; a failure offers «Prøv igjen». One button element, so it is
        the single root that [row-action] projects. Any chore row on this page can use it -->
-  <ng-template #remindAction let-task>
+  <ng-template #remindAction let-task let-sending="sending">
     @if (remindable(task)) {
       <button
         row-action
         type="button"
         class="rbtn"
         [class.rbtn-sent]="reminderSent(task)"
+        [class.rbtn-sending]="sending && remindingId() === task.id"
+        [attr.aria-busy]="sending && remindingId() === task.id ? true : null"
         [disabled]="reminderSent(task) || remindingId() === task.id"
         [attr.aria-label]="reminderSent(task) ? remindSentLabel(task) : remindLabel(task)"
         (click)="onRemind(task.id)"
@@ -200,6 +231,9 @@
             />
           </svg>
           <span i18n="@@home.remindSentButton">Sendt</span>
+        } @else if (sending && remindingId() === task.id) {
+          <!-- ST-2169: it keeps its yellow and changes its label, as «Logg inn …» does -->
+          <ng-container i18n="@@home.remindSending">Sender …</ng-container>
         } @else if (reminderFailed(task)) {
           <ng-container i18n="@@home.remindRetry">Prøv igjen</ng-container>
         } @else {
@@ -240,6 +274,17 @@
     (formSubmitted)="onTaskUpdated($event)"
     (taskDeleted)="onTaskDeleted()"
   />
+
+  <!-- «Etter tur»: history and «Flytt turen», the same popup as on «Oppgaver» (ST-2075) -->
+  @if (householdId()) {
+    <app-turn-popup
+      [householdId]="householdId()!"
+      [turn]="turnPopup()"
+      [householdName]="householdName() ?? ''"
+      (closed)="turnPopup.set(null)"
+      (turnChanged)="onTurnChanged($event)"
+    />
+  }
 
   <!-- «Bytt husstand», behind the caret in the title (ST-1065) -->
   <app-household-sheet

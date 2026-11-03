@@ -10,9 +10,10 @@ import { HouseholdService } from '../../services/household.service';
 import { HouseholdStore } from '../../stores/household.store';
 import { PushNotificationService } from '../../services/push-notification.service';
 import { HouseholdDayService } from '../../services/household-day.service';
+import { TurnService } from '../../services/turn.service';
 import { isoDay } from '../../utils/poeng-format';
 import { HttpErrorResponse } from '@angular/common/http';
-import type { Assignment, Task } from '@st44/types';
+import type { Assignment, Task, TaskTurn } from '@st44/types';
 
 describe('Home', () => {
   let component: Home;
@@ -36,6 +37,7 @@ describe('Home', () => {
     getHouseholdMembers: ReturnType<typeof vi.fn>;
   };
   let mockDay: { load: ReturnType<typeof vi.fn> };
+  let mockTurns: { turns: ReturnType<typeof vi.fn> };
   let mockHouseholdStore: {
     activeHouseholdId: ReturnType<typeof vi.fn>;
     autoActivateHousehold: ReturnType<typeof vi.fn>;
@@ -63,6 +65,7 @@ describe('Home', () => {
       getHouseholdMembers: vi.fn().mockResolvedValue([]),
     };
     mockDay = { load: vi.fn().mockResolvedValue({ today: [], overdue: [] }) };
+    mockTurns = { turns: vi.fn().mockResolvedValue([]) };
 
     // Default mock returns
     mockHouseholdService.listHouseholds.mockResolvedValue([
@@ -87,6 +90,7 @@ describe('Home', () => {
         { provide: HouseholdStore, useValue: mockHouseholdStore },
         { provide: PushNotificationService, useValue: mockPush },
         { provide: HouseholdDayService, useValue: mockDay },
+        { provide: TurnService, useValue: mockTurns },
         provideRouter([]),
       ],
     }).compileComponents();
@@ -424,6 +428,163 @@ describe('Home', () => {
       await component['onRemind']('a-1');
       expect(component['remindMessage']()).toBe('Kunne ikke sende påminnelsen. Prøv igjen.');
       expect(component['remindMessage']()).not.toContain('sendt');
+    });
+  });
+
+  describe('«Etter tur» on Hjem (ST-2180)', () => {
+    const leon = '00000000-0000-4000-8000-00000000000a';
+    const julie = '00000000-0000-4000-8000-00000000000b';
+    const turn = (n: number, over: Partial<TaskTurn> = {}): TaskTurn => ({
+      taskId: `t-${n}`,
+      name: `Tømme oppvaskmaskinen ${n}`,
+      points: 5,
+      assignmentId: `ta-${n}`,
+      order: [
+        { childId: julie, name: 'Julie' },
+        { childId: leon, name: 'Leon' },
+      ],
+      turnChildId: leon,
+      scanCode: null,
+      ...over,
+    });
+    const overdue = {
+      id: 'a-1',
+      title: 'Søppel og pant ut',
+      childId: 'c-1',
+      childName: 'Julie',
+      status: 'pending',
+      date: '2026-10-05',
+    } as Assignment;
+
+    async function render(turns: TaskTurn[], late: Assignment[] = []): Promise<HTMLElement> {
+      mockTurns.turns.mockResolvedValue(turns);
+      mockDay.load.mockResolvedValue({ today: [{ ...overdue, id: 'a-9' }], overdue: late });
+      fixture.detectChanges(); // first render starts the (mocked) load
+      await component.ngOnInit(); // and wait for a whole load
+      fixture.detectChanges();
+      return fixture.nativeElement as HTMLElement;
+    }
+
+    const labels = (el: HTMLElement) =>
+      [...el.querySelectorAll('app-group-label')].map((g) => g.textContent!.trim());
+    const turnRows = (el: HTMLElement) => [...el.querySelectorAll('.row.turn')];
+
+    it('sits under «Forfalt» and above «Igjen i dag»', async () => {
+      const el = await render([turn(1)], [overdue]);
+      const order = labels(el).map((l) => l.split(/\s/)[0]);
+      expect(order.slice(0, 3)).toEqual(['Forfalt', 'Etter', 'Igjen']);
+    });
+
+    it('is not there when there are no turn chores', async () => {
+      const el = await render([]);
+      expect(labels(el).some((l) => l.startsWith('Etter tur'))).toBe(false);
+      expect(turnRows(el).length).toBe(0);
+    });
+
+    it('draws title and points on line 1, the turn and «Minn på» on line 2', async () => {
+      const row = turnRows(await render([turn(1)]))[0];
+      expect(row.querySelector('.rowtext .rt')!.textContent!.trim()).toBe(
+        'Tømme oppvaskmaskinen 1',
+      );
+      expect(row.querySelector(':scope > .pts')!.textContent!.trim()).toBe('5 p');
+      const line2 = row.querySelector('.turnline')!;
+      expect(line2.querySelector('.rmb')!.textContent!.trim()).toBe('Leon');
+      expect(line2.querySelector('.rm')!.textContent!.replace(/\s+/g, ' ').trim()).toBe(
+        'Leon har turen · neste: Julie',
+      );
+      const btn = line2.querySelector<HTMLButtonElement>('.rbtn')!;
+      expect(btn.textContent!.trim()).toBe('Minn på');
+      expect(btn.getAttribute('aria-label')).toBe('Minn Leon på Tømme oppvaskmaskinen 1');
+    });
+
+    it('shows 3 rows, then «Vis flere» shows the rest', async () => {
+      const el = await render([1, 2, 3, 4, 5].map((n) => turn(n)));
+      expect(turnRows(el).length).toBe(3);
+      const more = [...el.querySelectorAll<HTMLButtonElement>('.show-more')][0];
+      expect(more.textContent!.trim()).toBe('Vis flere (2)');
+      more.click();
+      fixture.detectChanges();
+      expect(turnRows(el).length).toBe(5);
+    });
+
+    it('does not count the turns in the day line or «Igjen i dag»', async () => {
+      await render([turn(1), turn(2)]);
+      expect(component['subtitle']()).toContain('0 av 1 gjort');
+      expect(component['leftToday']()).toBe('1 oppgaver – 0 poeng');
+    });
+
+    it('sends the reminder for the open turn and says «Sender …» while it goes', async () => {
+      let resolve!: (n: number) => void;
+      mockPush.remind.mockReturnValue(new Promise<number>((r) => (resolve = r)));
+      const el = await render([turn(1)]);
+      el.querySelector<HTMLButtonElement>('.row.turn .rbtn')!.click();
+      fixture.detectChanges();
+      let btn = el.querySelector<HTMLButtonElement>('.row.turn .rbtn')!;
+      expect(mockPush.remind).toHaveBeenCalledWith('ta-1');
+      expect(btn.textContent!.trim()).toBe('Sender …');
+      expect(btn.classList).toContain('rbtn-sending');
+      expect(btn.getAttribute('aria-busy')).toBe('true');
+      expect(btn.disabled).toBe(true);
+
+      resolve(1);
+      await fixture.whenStable();
+      fixture.detectChanges();
+      btn = el.querySelector<HTMLButtonElement>('.row.turn .rbtn')!;
+      expect(btn.textContent!.trim()).toBe('Sendt');
+      expect(btn.getAttribute('aria-busy')).toBeNull();
+      expect(el.querySelector('.row.turn .note')!.textContent!.trim()).toMatch(
+        /^Påminnelse sendt \d\d\.\d\d$/,
+      );
+      expect(component['remindAnnounce']()).toBe('Påminnelse sendt til Leon.');
+    });
+
+    it('offers «Prøv igjen» with the rust line when it did not go through', async () => {
+      mockPush.remind.mockRejectedValue(new HttpErrorResponse({ status: 500 }));
+      const el = await render([turn(1)]);
+      await component['onRemind']('ta-1');
+      fixture.detectChanges();
+      expect(el.querySelector('.row.turn .rbtn')!.textContent!.trim()).toBe('Prøv igjen');
+      const note = el.querySelector('.row.turn .note')!;
+      expect(note.textContent!.trim()).toBe('Påminnelsen gikk ikke gjennom');
+      expect(note.classList).toContain('rust');
+    });
+
+    it('keeps «Minn på» on the other rows without «Sender …»', async () => {
+      mockPush.remind.mockReturnValue(new Promise<number>(() => undefined));
+      const el = await render([turn(1)], [overdue]);
+      const late = el.querySelector<HTMLButtonElement>('.row.overdue .rbtn')!;
+      late.click();
+      fixture.detectChanges();
+      expect(late.textContent!.trim()).toBe('Minn på');
+      expect(late.getAttribute('aria-busy')).toBeNull();
+    });
+
+    it('has no button when nobody has the turn', async () => {
+      const el = await render([turn(1, { turnChildId: null, assignmentId: null })]);
+      expect(el.querySelector('.row.turn .rbtn')).toBeNull();
+      expect(el.querySelector('.row.turn .pts')!.textContent!.trim()).toBe('5 p');
+    });
+
+    it('does not show «Minn på» to a child', async () => {
+      mockAuthService.hasRole.mockImplementation((role: string) => role === 'child');
+      const el = await render([turn(1)]);
+      expect(el.querySelector('.row.turn .rbtn')).toBeNull();
+    });
+
+    it('ticks the turn off and reloads, so the turn moves to the next child', async () => {
+      mockTaskService.completeTask.mockResolvedValue({});
+      const el = await render([turn(1)]);
+      mockTurns.turns.mockResolvedValue([turn(1, { turnChildId: julie, assignmentId: 'ta-2' })]);
+      await component['onCompleteTurn'](component['turns']()[0]);
+      fixture.detectChanges();
+      expect(mockTaskService.completeTask).toHaveBeenCalledWith('ta-1');
+      expect(el.querySelector('.row.turn .rmb')!.textContent!.trim()).toBe('Julie');
+    });
+
+    it('opens the turn popup from the title', async () => {
+      const el = await render([turn(1)]);
+      el.querySelector<HTMLButtonElement>('.row.turn .rowtext-btn')!.click();
+      expect(component['turnPopup']()?.taskId).toBe('t-1');
     });
   });
 

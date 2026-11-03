@@ -66,6 +66,12 @@
   opacity: 1;
 }
 
+/* «Sender …» keeps its yellow and its ink: no dimming while it works (ST-2169) */
+.rbtn.rbtn-sending:disabled {
+  opacity: 1;
+  cursor: progress;
+}
+
 .empty {
   padding: 20px 15px;
   background: var(--surface);

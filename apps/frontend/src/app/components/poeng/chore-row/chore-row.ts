@@ -9,6 +9,7 @@ import {
   output,
   signal,
 } from '@angular/core';
+import { NgTemplateOutlet } from '@angular/common';
 
 /** The Android and iOS long-press threshold (ST-1391) */
 export const LONG_PRESS_MS = 500;
@@ -30,6 +31,7 @@ export const LONG_PRESS_SLOP_PX = 10;
  */
 @Component({
   selector: 'app-chore-row',
+  imports: [NgTemplateOutlet],
   templateUrl: './chore-row.html',
   styleUrl: './chore-row.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -72,6 +74,12 @@ export class ChoreRow {
    * tick, or a failure in rust with a warning sign (ST-1066, option C). Null hides it
    */
   note = input<{ text: string; tone: 'done' | 'overdue' | 'plain' } | null>(null);
+
+  /**
+   * «Etter tur» on Hjem (ST-2180): title and points on line 1; the meta line and the row
+   * action on line 2, from 34 px. The meta line wraps there instead of being cut
+   */
+  turn = input<boolean>(false);
 
   /** Ticked the box */
   check = output<void>();
