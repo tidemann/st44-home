@@ -156,7 +156,8 @@ function withRotationStartForCreate(ruleType: string, config: NormalizedRuleConf
 
 /**
  * A weekly chore's deadline day changed (ST-2143): this week's open row moves to the new day
- * when that day is still ahead, later weeks are made again. Done and sent rows are not touched.
+ * when that day is still ahead, even if its old day has passed, so the week keeps one row.
+ * Later weeks are made again. Done and sent rows, and rows with ticked sub-tasks, are not touched.
  */
 async function moveWeeklyDueDay(householdId: string, taskId: string, dueDay: number) {
   const today = todayInTimeZone(new Date());
@@ -166,13 +167,15 @@ async function moveWeeklyDueDay(householdId: string, taskId: string, dueDay: num
       `UPDATE task_assignments SET date = $3
        WHERE household_id = $1 AND task_id = $2 AND status = 'pending' AND submitted_at IS NULL
          AND date >= $4 AND date < $5`,
-      [householdId, taskId, toIsoDate(newDue), toIsoDate(today), osloMonday(1)],
+      [householdId, taskId, toIsoDate(newDue), osloMonday(), osloMonday(1)],
     );
   }
   await db.query(
-    `DELETE FROM task_assignments
-     WHERE household_id = $1 AND task_id = $2 AND date >= $3 AND status = 'pending'
-       AND submitted_at IS NULL`,
+    `DELETE FROM task_assignments ta
+     WHERE ta.household_id = $1 AND ta.task_id = $2 AND ta.date >= $3 AND ta.status = 'pending'
+       AND ta.submitted_at IS NULL
+       AND NOT EXISTS (SELECT 1 FROM assignment_subtask_states s WHERE s.assignment_id = ta.id)
+       AND NOT EXISTS (SELECT 1 FROM task_completions c WHERE c.task_assignment_id = ta.id)`,
     [householdId, taskId, osloMonday(1)],
   );
   const result = await generateAssignments(householdId, today, DAYS_AHEAD);

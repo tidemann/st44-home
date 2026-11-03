@@ -37,6 +37,7 @@ WHERE ta.task_id = t.id
   AND ta.submitted_at IS NULL
   AND ta.date >= CURRENT_DATE - 1
   AND NOT EXISTS (SELECT 1 FROM assignment_subtask_states s WHERE s.assignment_id = ta.id)
+  AND NOT EXISTS (SELECT 1 FROM task_completions c WHERE c.task_assignment_id = ta.id)
   AND EXISTS (
     SELECT 1 FROM task_assignments d
     WHERE d.task_id = ta.task_id

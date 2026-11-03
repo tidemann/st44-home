@@ -250,6 +250,86 @@ describe('Tasks API', () => {
       assert.strictEqual(JSON.parse(keep.body).ruleConfig.dueDay, today.getUTCDay());
     });
 
+    test('ST-2143: an open row from earlier this week moves too, so the week keeps one row; ticked rows next week stay', async () => {
+      const config = { rotationType: 'odd_even_week', assignedChildren: [childId1, childId2] };
+      const create = await app.inject({
+        method: 'POST',
+        url: `/api/households/${householdId}/tasks`,
+        headers: { Authorization: `Bearer ${adminToken}` },
+        payload: {
+          name: 'ST-2143 past row',
+          points: 5,
+          ruleType: 'weekly_rotation',
+          ruleConfig: config,
+        },
+      });
+      assert.strictEqual(create.statusCode, 201, create.body);
+      const id = JSON.parse(create.body).id;
+
+      const today = todayInTimeZone(new Date());
+      const monday = new Date(today.getTime() - ((today.getUTCDay() + 6) % 7) * 86400000);
+      const nextMonday = new Date(monday.getTime() + 7 * 86400000);
+      const iso = (d: Date) => d.toISOString().slice(0, 10);
+
+      // This week's row sits on Monday, as if «Frist» was Monday and the day has passed
+      await pool.query('UPDATE task_assignments SET date = $2 WHERE task_id = $1 AND date < $3', [
+        id,
+        iso(monday),
+        iso(nextMonday),
+      ]);
+      // Next week's row has a ticked sub-task
+      const subtask = await pool.query(
+        `INSERT INTO task_subtasks (household_id, task_id, name) VALUES ($1, $2, 'Støvsug') RETURNING id`,
+        [householdId, id],
+      );
+      await pool.query('DELETE FROM task_assignments WHERE task_id = $1 AND date >= $2', [
+        id,
+        iso(nextMonday),
+      ]);
+      const ticked = await pool.query(
+        `INSERT INTO task_assignments (household_id, task_id, child_id, date, status)
+         VALUES ($1, $2, $3, $4, 'pending') RETURNING id`,
+        [householdId, id, childId1, iso(new Date(nextMonday.getTime() + 6 * 86400000))],
+      );
+      await pool.query(
+        `INSERT INTO assignment_subtask_states (assignment_id, subtask_id, state) VALUES ($1, $2, 'done')`,
+        [ticked.rows[0].id, subtask.rows[0].id],
+      );
+
+      const update = await app.inject({
+        method: 'PUT',
+        url: `/api/households/${householdId}/tasks/${id}`,
+        headers: { Authorization: `Bearer ${adminToken}` },
+        payload: { ruleConfig: { ...config, dueDay: today.getUTCDay() } },
+      });
+      assert.strictEqual(update.statusCode, 200, update.body);
+
+      const thisWeek = await pool.query(
+        'SELECT date::text FROM task_assignments WHERE task_id = $1 AND date >= $2 AND date < $3',
+        [id, iso(monday), iso(nextMonday)],
+      );
+      assert.deepStrictEqual(thisWeek.rows, [{ date: iso(today) }]);
+      const kept = await pool.query('SELECT 1 FROM task_assignments WHERE id = $1', [
+        ticked.rows[0].id,
+      ]);
+      assert.strictEqual(kept.rows.length, 1, 'the row with a ticked sub-task is kept');
+    });
+
+    test('ST-2143: a «Frist» day outside 0–6 is refused', async () => {
+      const response = await app.inject({
+        method: 'POST',
+        url: `/api/households/${householdId}/tasks`,
+        headers: { Authorization: `Bearer ${adminToken}` },
+        payload: {
+          name: 'ST-2143 bad day',
+          points: 5,
+          ruleType: 'weekly_rotation',
+          ruleConfig: { rotationType: 'odd_even_week', assignedChildren: [childId1], dueDay: 9 },
+        },
+      });
+      assert.strictEqual(response.statusCode, 400, response.body);
+    });
+
     test('should create a repeating task (parent)', async () => {
       const response = await app.inject({
         method: 'POST',
