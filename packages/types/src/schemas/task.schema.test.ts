@@ -5,6 +5,7 @@ import { describe, it, expect } from 'vitest';
 import {
   TaskSchema,
   TaskRuleTypeSchema,
+  TaskRuleConfigSchema,
   CreateTaskRequestSchema,
   UpdateTaskRequestSchema,
 } from './task.schema.js';
@@ -126,6 +127,26 @@ describe('TaskSchema', () => {
     };
 
     expect(() => TaskSchema.parse(invalidTask)).toThrow();
+  });
+});
+
+describe('TaskRuleConfigSchema', () => {
+  const weeklyRotation = {
+    rotationType: 'alternating',
+    assignedChildren: ['123e4567-e89b-12d3-a456-426614174002'],
+  };
+
+  it('accepts Sunday and Wednesday as due days', () => {
+    expect(TaskRuleConfigSchema.safeParse({ ...weeklyRotation, dueDay: 0 }).success).toBe(true);
+    expect(TaskRuleConfigSchema.safeParse({ ...weeklyRotation, dueDay: 3 }).success).toBe(true);
+  });
+
+  it('rejects due days outside the week', () => {
+    expect(TaskRuleConfigSchema.safeParse({ ...weeklyRotation, dueDay: 7 }).success).toBe(false);
+  });
+
+  it('rejects fractional due days', () => {
+    expect(TaskRuleConfigSchema.safeParse({ ...weeklyRotation, dueDay: 2.5 }).success).toBe(false);
   });
 });
 
