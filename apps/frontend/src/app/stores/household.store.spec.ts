@@ -515,6 +515,26 @@ describe('HouseholdStore - Multi-household caching', () => {
 
       expect(mockApiService.get).toHaveBeenCalledTimes(1);
     });
+
+    it('forceRefresh starts a new request instead of reusing one in flight (ST-2125)', async () => {
+      let resolveOld!: (value: HouseholdListItem[]) => void;
+      const joined: HouseholdListItem = { ...mockHouseholds[1], id: 'household-joined' };
+      mockApiService.get
+        .mockImplementationOnce(() => new Promise<HouseholdListItem[]>((r) => (resolveOld = r)))
+        .mockImplementationOnce(() => Promise.resolve([...mockHouseholds, joined]));
+
+      const oldLoad = store.loadHouseholds();
+      const refreshed = await store.loadHouseholds({ forceRefresh: true });
+
+      expect(mockApiService.get).toHaveBeenCalledTimes(2);
+      expect(refreshed.map((h) => h.id)).toContain('household-joined');
+
+      // The older request lands last and must not overwrite the newer result
+      resolveOld(mockHouseholds);
+      await oldLoad;
+      expect(store.households().map((h) => h.id)).toContain('household-joined');
+      expect(store.isLoadingHouseholds()).toBe(false);
+    });
   });
 
   describe('Default parameter behavior', () => {

@@ -118,6 +118,9 @@ export class HouseholdStore {
     childrenByHousehold: new Map<string, Promise<Child[]>>(),
   };
 
+  // Bumped by every households request; only the newest may write state (ST-2125)
+  private householdsRequestSeq = 0;
+
   // ============================================
   // PUBLIC SELECTORS (read-only computed signals)
   // ============================================
@@ -220,9 +223,11 @@ export class HouseholdStore {
     }
 
     // Return pending request if one exists (request deduplication)
-    if (this.pendingRequests.households) {
+    // A forced refresh never reuses an older request: it may predate the change (ST-2125)
+    if (!options?.forceRefresh && this.pendingRequests.households) {
       return this.pendingRequests.households;
     }
+    const seq = ++this.householdsRequestSeq;
 
     // Set loading state
     this.updateState({ loading: { ...this.state().loading, households: true } });
@@ -235,6 +240,11 @@ export class HouseholdStore {
 
       const households = await request;
 
+      // A newer request owns state and the pending slot
+      if (seq !== this.householdsRequestSeq) {
+        return households;
+      }
+
       // Update state
       this.updateState({
         households,
@@ -244,6 +254,9 @@ export class HouseholdStore {
 
       return households;
     } catch (error) {
+      if (seq !== this.householdsRequestSeq) {
+        throw error;
+      }
       this.updateState({
         loading: { ...this.state().loading, households: false },
         errors: {
@@ -253,7 +266,9 @@ export class HouseholdStore {
       });
       throw error;
     } finally {
-      this.pendingRequests.households = null;
+      if (seq === this.householdsRequestSeq) {
+        this.pendingRequests.households = null;
+      }
     }
   }
 
