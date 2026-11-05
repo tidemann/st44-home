@@ -140,7 +140,7 @@ export class Home implements OnInit {
               title: turn.name,
               childId: turn.turnChildId,
               childName: turnChild(turn)?.name ?? null,
-              submittedAt: null,
+              submittedAt: turn.submittedAt ?? null,
             }
           : null,
     })),

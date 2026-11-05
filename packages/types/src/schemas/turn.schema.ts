@@ -25,6 +25,8 @@ export const TaskTurnSchema = z.object({
   /** The children in turn order (children that no longer exist are left out) */
   order: z.array(TurnChildSchema),
   turnChildId: z.string().uuid().nullable(),
+  /** When the child handed in the open turn (ST-2185); a parent cannot remind about it then */
+  submittedAt: z.string().nullable().optional(),
   /** Code in the link https://home.st44.no/s/<code>; only sent to parents */
   scanCode: z.string().nullable(),
 });

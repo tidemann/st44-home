@@ -27,6 +27,22 @@ describe('«Etter tur» schemas (ST-2075)', () => {
     expect(turn.order.map((c) => c.name)).toEqual(['Emma', 'Jonas']);
   });
 
+  it('a turn can say the open chore is handed in (ST-2185)', () => {
+    const base = {
+      taskId: task,
+      name: 'Søppel',
+      points: 0,
+      assignmentId: null,
+      order: [],
+      turnChildId: null,
+      scanCode: null,
+    };
+    expect(
+      TaskTurnSchema.parse({ ...base, submittedAt: '2026-11-05T17:00:00.000Z' }).submittedAt,
+    ).toBe('2026-11-05T17:00:00.000Z');
+    expect(TaskTurnSchema.parse({ ...base, submittedAt: null }).submittedAt).toBeNull();
+  });
+
   it('a history line is app, scan or moved', () => {
     const base = {
       childId: emma,
