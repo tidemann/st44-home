@@ -99,6 +99,19 @@ describe('ChildInviteModal (popup 18)', () => {
     expect(text()).toContain('Lenken er kopiert');
   });
 
+  it('ST-2227: when the link is ready, focus moves to «Kopier lenke» and the status is announced', async () => {
+    emailField().value = 'mathea@eksempel.no';
+    emailField().dispatchEvent(new Event('input'));
+    await component.onSubmit();
+    fixture.detectChanges();
+    await new Promise((resolve) => setTimeout(resolve));
+
+    const active = document.activeElement as HTMLElement;
+    expect(active.textContent?.trim()).toBe('Kopier lenke');
+    const status = fixture.nativeElement.querySelector('.invite-status') as HTMLElement;
+    expect(status.getAttribute('role')).toBe('status');
+  });
+
   it('pressing «Lag invitasjon» submits through the form, not a page load', async () => {
     emailField().value = 'mathea@eksempel.no';
     emailField().dispatchEvent(new Event('input'));

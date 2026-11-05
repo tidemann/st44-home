@@ -54,76 +54,83 @@
           Logget inn som {{ signedInEmail() }}
         </p>
       </header>
-      <div class="link-body desk-column">
-        <p class="link-lead" i18n="@@childInvite.consent.lead">Les gjennom før du godtar.</p>
-        <ng-container *ngTemplateOutlet="summary" />
-        <section class="link-card" aria-labelledby="consent-what">
-          <h2 id="consent-what" class="link-card-title" i18n="@@childInvite.consent.whatTitle">
-            Det skjer når du godtar
-          </h2>
-          <ul class="link-checks">
-            <li>
-              <ng-container *ngTemplateOutlet="tick" />
-              <span i18n="@@childInvite.consent.what1"
-                >Du blir barn i {{ householdName() }}. Foreldrene der ser oppgavene og poengene
-                dine.</span
-              >
-            </li>
-            <li>
-              <ng-container *ngTemplateOutlet="tick" />
-              <span i18n="@@childInvite.consent.what2"
-                >Poeng og historikk på profilen {{ childName() }} blir der de er.</span
-              >
-            </li>
-            @for (other of otherHouseholds(); track other.name) {
+      <div class="link-body desk-column consent-split">
+        <p class="link-lead consent-lead" i18n="@@childInvite.consent.lead">
+          Les gjennom før du godtar.
+        </p>
+        <div class="consent-main">
+          <ng-container *ngTemplateOutlet="summary" />
+          <section class="link-card" aria-labelledby="consent-what">
+            <h2 id="consent-what" class="link-card-title" i18n="@@childInvite.consent.whatTitle">
+              Det skjer når du godtar
+            </h2>
+            <ul class="link-checks">
               <li>
                 <ng-container *ngTemplateOutlet="tick" />
-                <span i18n="@@childInvite.consent.what3"
-                  >Du er fortsatt <strong>{{ other.role }}</strong> i {{ other.name }}. Ingenting
-                  endres der.</span
+                <span i18n="@@childInvite.consent.what1"
+                  >Du blir barn i {{ householdName() }}. Foreldrene der ser oppgavene og poengene
+                  dine.</span
                 >
               </li>
-            }
-          </ul>
-        </section>
-        <div role="status" aria-live="polite" class="link-status">
-          @if (accepting()) {
-            <span i18n="@@childInvite.consent.accepting">Kobler kontoen …</span>
-          }
+              <li>
+                <ng-container *ngTemplateOutlet="tick" />
+                <span i18n="@@childInvite.consent.what2"
+                  >Poeng og historikk på profilen {{ childName() }} blir der de er.</span
+                >
+              </li>
+              @for (other of otherHouseholds(); track other.name) {
+                <li>
+                  <ng-container *ngTemplateOutlet="tick" />
+                  <span i18n="@@childInvite.consent.what3"
+                    >Du er fortsatt <strong>{{ other.role }}</strong> i {{ other.name }}. Ingenting
+                    endres der.</span
+                  >
+                </li>
+              }
+            </ul>
+          </section>
         </div>
-        @if (acceptError()) {
-          <p class="link-error" role="alert">{{ acceptError() }}</p>
-        }
-        <button
-          type="button"
-          class="link-btn link-btn--primary"
-          [attr.aria-busy]="accepting()"
-          (click)="acceptExisting()"
-          i18n="@@childInvite.consent.accept"
-        >
-          Godta: bli barn i {{ householdName() }}
-        </button>
-        <button
-          type="button"
-          class="link-btn link-btn--outline"
-          [disabled]="accepting()"
-          (click)="decline()"
-          i18n="@@childInvite.consent.decline"
-        >
-          Avslå
-        </button>
-        <p class="link-foot link-foot--left">
-          <span i18n="@@childInvite.consent.wrong">Feil konto?</span>{{ ' ' }}
+        <!-- d03: from 1024 px the actions stand in a second column, beside the summary -->
+        <div class="consent-actions">
+          <div role="status" aria-live="polite" class="link-status">
+            @if (accepting()) {
+              <span i18n="@@childInvite.consent.accepting">Kobler kontoen …</span>
+            }
+          </div>
+          @if (acceptError()) {
+            <p class="link-error" role="alert">{{ acceptError() }}</p>
+          }
           <button
             type="button"
-            class="link-inline"
-            (click)="switchAccount()"
-            i18n="@@childInvite.switchGoogle"
+            class="link-btn link-btn--primary"
+            [attr.aria-busy]="accepting()"
+            (click)="acceptExisting()"
+            i18n="@@childInvite.consent.accept"
           >
-            Bytt Google-konto
+            Godta: bli barn i {{ householdName() }}
           </button>
-        </p>
-        <p class="link-note" i18n="@@childInvite.consent.undo">Kontoen din slettes ikke.</p>
+          <button
+            type="button"
+            class="link-btn link-btn--outline"
+            [disabled]="accepting()"
+            (click)="decline()"
+            i18n="@@childInvite.consent.decline"
+          >
+            Avslå
+          </button>
+          <p class="link-foot link-foot--left">
+            <span i18n="@@childInvite.consent.wrong">Feil konto?</span>{{ ' ' }}
+            <button
+              type="button"
+              class="link-inline"
+              (click)="switchAccount()"
+              i18n="@@childInvite.switchGoogle"
+            >
+              Bytt Google-konto
+            </button>
+          </p>
+          <p class="link-note" i18n="@@childInvite.consent.undo">Kontoen din slettes ikke.</p>
+        </div>
       </div>
     }
 
@@ -468,7 +475,11 @@
     }
 
     @case ('loading') {
-      <div class="reset-body desk-column" aria-busy="true"></div>
+      <div class="reset-body desk-column" aria-busy="true">
+        <p class="visually-hidden" role="status" i18n="@@childInvite.loading">
+          Henter invitasjonen …
+        </p>
+      </div>
     }
 
     @default {

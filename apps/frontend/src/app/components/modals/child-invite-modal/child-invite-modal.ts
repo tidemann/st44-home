@@ -7,6 +7,8 @@ import {
   effect,
   computed,
   untracked,
+  viewChild,
+  ElementRef,
   ChangeDetectionStrategy,
 } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
@@ -56,6 +58,8 @@ export class ChildInviteModal {
   protected readonly serverError = signal<string | null>(null);
   protected readonly created = signal<ChildInvitation | null>(null);
   protected readonly copied = signal(false);
+  /** The form is replaced by the link: focus moves to «Kopier lenke» so it is not lost (ST-2227) */
+  private readonly copyButton = viewChild<ElementRef<HTMLButtonElement>>('copyButton');
 
   protected readonly titleText = computed(
     () => $localize`:@@childInviteModal.title:Inviter ${this.childName()}:name: på e-post`,
@@ -113,6 +117,7 @@ export class ChildInviteModal {
       );
       this.created.set(invitation);
       this.invitationCreated.emit(invitation);
+      setTimeout(() => this.copyButton()?.nativeElement.focus());
     } catch (error: unknown) {
       const status = (error as { status?: number })?.status;
       this.serverError.set(

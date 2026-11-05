@@ -383,3 +383,26 @@
   border-radius: 0;
   min-height: 100dvh;
 }
+
+/* d03: consent on desktop is two 428 px columns: what you accept left, the choice right */
+.consent-main,
+.consent-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+@media (min-width: 1024px) {
+  .link-body.consent-split {
+    display: grid;
+    grid-template-columns: 428px 428px;
+    column-gap: 24px;
+    align-items: start;
+    padding-right: 0;
+  }
+
+  .consent-lead {
+    grid-column: 1 / -1;
+    margin-bottom: 12px;
+  }
+}
