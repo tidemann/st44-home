@@ -37,14 +37,21 @@ export function roleGuard(allowedRoles: ('admin' | 'parent' | 'child')[]): CanAc
       });
     }
 
-    // ST-2227: the role is the one in the active household. Know the households first, so
-    // an account that is child here and admin elsewhere never gets parent pages here.
-    if (householdStore.activeHouseholdId() && !householdStore.activeHousehold()) {
-      await householdStore.loadHouseholds().catch(() => undefined);
+    // ST-2227: the role is the one in the active household. One account can be child here and
+    // admin elsewhere, so the login role is never trusted while the households are unknown.
+    // Load them and make sure one is active; if that fails, use the least privilege (child).
+    let householdsUnknown = false;
+    if (!householdStore.activeHousehold()) {
+      try {
+        await householdStore.autoActivateHousehold();
+      } catch {
+        householdsUnknown = true;
+      }
     }
 
-    // Check if user has an allowed role
-    const userRole = authService.getUserRole();
+    const userRole: 'admin' | 'parent' | 'child' | undefined = householdsUnknown
+      ? 'child'
+      : (householdStore.activeHousehold()?.role ?? authService.getUserRole());
 
     // If user has no role (shouldn't happen), redirect to login
     if (!userRole) {
