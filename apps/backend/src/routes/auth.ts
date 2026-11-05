@@ -124,8 +124,19 @@ interface RefreshTokenPayload {
   exp: number;
 }
 
+class TransactionValidationError extends Error {
+  constructor(
+    public statusCode: number,
+    public error: string,
+    message: string,
+  ) {
+    super(message);
+  }
+}
+
 interface GoogleAuthBody {
   credential: string;
+  invitationToken?: string;
 }
 
 interface ForgotPasswordRequest {
@@ -451,6 +462,7 @@ export default async function authRoutes(fastify: FastifyInstance) {
       required: ['credential'],
       properties: {
         credential: { type: 'string' },
+        invitationToken: { type: 'string' },
       },
     },
   };
@@ -461,7 +473,7 @@ export default async function authRoutes(fastify: FastifyInstance) {
       schema: googleAuthSchema,
     },
     async (request, reply) => {
-      const { credential } = request.body;
+      const { credential, invitationToken } = request.body;
 
       try {
         // Verify ID token with Google
@@ -498,13 +510,47 @@ export default async function authRoutes(fastify: FastifyInstance) {
         let userEmail: string;
         let firstName: string | null = null;
         let lastName: string | null = null;
+        let invitationAccepted = false;
 
         if (existingUserResult.rows.length === 0) {
-          // Create new user with Google OAuth including name from Google
-          // Use transaction to create user, household, and membership atomically
+          // Create the user and either accept the explicit invitation or make a household atomically.
           const client = await pool.connect();
           try {
             await client.query('BEGIN');
+
+            let invitation: { id: string; household_id: string; role: string } | undefined;
+            if (invitationToken) {
+              if (payload.email_verified !== true) {
+                throw new TransactionValidationError(
+                  403,
+                  'Forbidden',
+                  'Verified Google email required',
+                );
+              }
+              const found = await client.query(
+                `SELECT id, household_id, invited_email, role, status, expires_at
+                 FROM invitations WHERE token = $1 AND role <> 'child' FOR UPDATE`,
+                [invitationToken],
+              );
+              const row = found.rows[0];
+              if (!row)
+                throw new TransactionValidationError(404, 'Not Found', 'Invitation not found');
+              if (row.invited_email.toLowerCase() !== email.toLowerCase()) {
+                throw new TransactionValidationError(
+                  403,
+                  'Forbidden',
+                  'Invitation email does not match',
+                );
+              }
+              if (new Date(row.expires_at) < new Date() || row.status !== 'pending') {
+                throw new TransactionValidationError(
+                  400,
+                  'Bad Request',
+                  'Invitation expired or already used',
+                );
+              }
+              invitation = row;
+            }
 
             // Create user
             const insertResult = await client.query(
@@ -518,26 +564,34 @@ export default async function authRoutes(fastify: FastifyInstance) {
             firstName = insertResult.rows[0].first_name;
             lastName = insertResult.rows[0].last_name;
 
-            // Create default household for new user
-            const householdName = defaultHouseholdName(firstName, lastName);
-            const householdResult = await client.query(
-              `INSERT INTO households (name) VALUES ($1) RETURNING id`,
-              [householdName],
-            );
-            const newHouseholdId = householdResult.rows[0].id;
-
-            // Add user as admin of their household
-            await client.query(
-              `INSERT INTO household_members (household_id, user_id, role)
-               VALUES ($1, $2, $3)`,
-              [newHouseholdId, userId, 'admin'],
-            );
+            if (invitation) {
+              await client.query(
+                `INSERT INTO household_members (household_id, user_id, role)
+                 VALUES ($1, $2, $3)`,
+                [invitation.household_id, userId, invitation.role],
+              );
+              await client.query(
+                `UPDATE invitations SET status = 'accepted', accepted_at = NOW(), updated_at = NOW()
+                 WHERE id = $1`,
+                [invitation.id],
+              );
+              invitationAccepted = true;
+            } else {
+              const householdName = defaultHouseholdName(firstName, lastName);
+              const householdResult = await client.query(
+                `INSERT INTO households (name) VALUES ($1) RETURNING id`,
+                [householdName],
+              );
+              const newHouseholdId = householdResult.rows[0].id;
+              await client.query(
+                `INSERT INTO household_members (household_id, user_id, role)
+                 VALUES ($1, $2, $3)`,
+                [newHouseholdId, userId, 'admin'],
+              );
+            }
 
             await client.query('COMMIT');
-            fastify.log.info(
-              { userId, email: userEmail, householdId: newHouseholdId },
-              'New user and household created via Google OAuth',
-            );
+            fastify.log.info({ userId, email: userEmail }, 'New user created via Google OAuth');
           } catch (error) {
             await client.query('ROLLBACK');
             throw error;
@@ -618,10 +672,14 @@ export default async function authRoutes(fastify: FastifyInstance) {
           email: userEmail,
           role,
           householdId,
+          invitationAccepted,
           firstName,
           lastName,
         });
       } catch (error) {
+        if (error instanceof TransactionValidationError) {
+          return reply.code(error.statusCode).send({ error: error.error, message: error.message });
+        }
         fastify.log.error(error, 'Google OAuth error');
         if (!reply.sent) {
           return reply.code(401).send({ error: 'Google authentication failed' });

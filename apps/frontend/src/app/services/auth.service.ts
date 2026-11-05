@@ -26,6 +26,12 @@ export interface AuthResponse {
   householdId?: string;
   firstName?: string | null;
   lastName?: string | null;
+  invitationAccepted?: boolean;
+}
+
+/** Only explicit household invitation return URLs are passed to Google sign-in. */
+export function invitationTokenFromReturnUrl(returnUrl: string | undefined): string | undefined {
+  return /^\/invitations\/accept\/([a-f0-9]{64})$/.exec(returnUrl ?? '')?.[1];
 }
 
 export interface User {
@@ -116,10 +122,11 @@ export class AuthService {
       );
   }
 
-  loginWithGoogle(credential: string): Observable<AuthResponse> {
+  loginWithGoogle(credential: string, invitationToken?: string): Observable<AuthResponse> {
     return this.http
       .post<AuthResponse>(`${this.apiUrl}/google`, {
         credential,
+        ...(invitationToken ? { invitationToken } : {}),
       })
       .pipe(
         tap((response) => {
