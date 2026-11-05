@@ -497,6 +497,12 @@ describe('Home', () => {
       expect(btn.getAttribute('aria-label')).toBe('Minn Leon på Tømme oppvaskmaskinen 1');
     });
 
+    it('has no «Minn på» once the child has handed the turn in (ST-2185)', async () => {
+      const row = turnRows(await render([turn(1, { submittedAt: '2026-11-05T17:00:00.000Z' })]))[0];
+      expect(row.querySelector('.rbtn')).toBeNull();
+      expect(row.querySelector(':scope > .pts')!.textContent!.trim()).toBe('5 p');
+    });
+
     it('shows 3 rows, then «Vis flere» shows the rest', async () => {
       const el = await render([1, 2, 3, 4, 5].map((n) => turn(n)));
       expect(turnRows(el).length).toBe(3);

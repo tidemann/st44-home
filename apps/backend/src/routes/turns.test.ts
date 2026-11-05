@@ -39,6 +39,7 @@ describe('«Etter tur» chores (ST-2075)', () => {
       assignmentId: string | null;
       turnChildId: string | null;
       order: Array<{ childId: string; name: string }>;
+      submittedAt?: string | null;
       scanCode: string | null;
     }>;
   }
@@ -186,6 +187,23 @@ describe('«Etter tur» chores (ST-2075)', () => {
     const turn = await turnOf(jonasToken);
     assert.strictEqual(turn.turnChildId, emma);
     assert.strictEqual(turn.scanCode, null);
+  });
+
+  test('the turn carries the open chore hand-in (ST-2185)', async () => {
+    const before = await turnOf();
+    assert.strictEqual(before.submittedAt, null);
+    await pool.query('UPDATE task_assignments SET submitted_at = NOW() WHERE id = $1', [
+      before.assignmentId,
+    ]);
+    try {
+      const after = await turnOf();
+      assert.strictEqual(after.assignmentId, before.assignmentId);
+      assert.ok(after.submittedAt, 'a handed-in turn says when');
+    } finally {
+      await pool.query('UPDATE task_assignments SET submitted_at = NULL WHERE id = $1', [
+        before.assignmentId,
+      ]);
+    }
   });
 
   test('the open turn is not a dated chore in the day lists', async () => {

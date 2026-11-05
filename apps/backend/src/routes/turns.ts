@@ -48,14 +48,15 @@ interface TurnTaskRow {
   scan_code: string | null;
   assignment_id: string | null;
   turn_child_id: string | null;
+  submitted_at: Date | null;
 }
 
 const TURN_TASKS_SQL = `
   SELECT t.id, t.name, t.points, t.scan_code,
-         open.id AS assignment_id, open.child_id AS turn_child_id
+         open.id AS assignment_id, open.child_id AS turn_child_id, open.submitted_at
   FROM tasks t
   LEFT JOIN LATERAL (
-    SELECT ta.id, ta.child_id FROM task_assignments ta
+    SELECT ta.id, ta.child_id, ta.submitted_at FROM task_assignments ta
     WHERE ta.task_id = t.id AND ta.status = 'pending'
     ORDER BY ta.date LIMIT 1
   ) open ON true
@@ -74,6 +75,7 @@ async function toTurns(rows: TurnTaskRow[], withCode: boolean): Promise<TaskTurn
     assignmentId: row.assignment_id,
     order: orders.get(row.id) ?? [],
     turnChildId: row.turn_child_id,
+    submittedAt: row.submitted_at ? row.submitted_at.toISOString() : null,
     scanCode: withCode ? row.scan_code : null,
   }));
 }
