@@ -1,6 +1,8 @@
 <app-page
   [title]="childName() || ''"
-  [subtitle]="today"
+  [subtitle]="subline()"
+  [subtitleMenu]="multiHousehold()"
+  (subtitleMenuOpen)="householdSheetOpen.set(true)"
   maxWidth="narrow"
   [band]="true"
   [split]="true"
@@ -33,6 +35,34 @@
         <p class="herolab">&nbsp;</p>
         <div class="meterlabel"><span class="l">&nbsp;</span></div>
         <app-points-meter class="pmeter" [onYellow]="true" />
+      </div>
+    }
+  </div>
+
+  <!-- ST-2227: informative only; the sub-line in the band says the same for good. The live
+       region is always there so the text is announced when it arrives -->
+  <div role="status" aria-live="polite">
+    @if (linkedToast(); as toast) {
+      <div class="linked-toast">
+        <svg width="18" height="18" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+          <path
+            d="M2.5 8.5L6.2 12L13.5 4.5"
+            stroke="currentColor"
+            stroke-width="2.2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          />
+        </svg>
+        <p>{{ toast }}</p>
+        <button
+          type="button"
+          class="linked-toast-close"
+          (click)="dismissToast()"
+          i18n-aria-label="@@childDashboard.toastClose"
+          aria-label="Lukk"
+        >
+          ×
+        </button>
       </div>
     }
   </div>
@@ -275,3 +305,13 @@
     (closed)="onTickClosed()"
   />
 }
+
+<!-- ST-2227: «Bytt husstand» behind the sub-line, with the role in each household -->
+<app-household-sheet
+  [open]="householdSheetOpen()"
+  [households]="households()"
+  [activeId]="activeHouseholdId()"
+  (pick)="switchHousehold($event)"
+  (manage)="manageHouseholds()"
+  (closed)="householdSheetOpen.set(false)"
+/>

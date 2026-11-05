@@ -188,3 +188,15 @@
     animation: none;
   }
 }
+
+/* ST-2227: the role chip on the other rows when the roles differ («Admin») */
+.sheet-row-role {
+  flex: none;
+  padding: 6px 12px;
+  border-radius: var(--r-chip);
+  background: var(--track);
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-size: 14px;
+  font-weight: 500;
+}

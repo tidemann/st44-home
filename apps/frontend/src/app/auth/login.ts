@@ -192,9 +192,14 @@ export class LoginComponent implements OnInit, AfterViewInit, OnDestroy {
       await this.householdService.autoActivateHousehold();
       // A new invitee joined atomically during Google sign-in; the link is now spent.
       this.router.navigateByUrl(result.invitationAccepted ? '/home' : returnUrl || '/home');
-    } catch {
+    } catch (error: unknown) {
+      // ST-2227: a child link opened with a Google login that has no Diddit account. Nothing
+      // was made; the child goes back to the link and chooses «Lag passord».
+      const code = (error as { error?: { error?: string } })?.error?.error;
       this.errorMessage.set(
-        $localize`:@@login.googleSigninFailed:Google-innloggingen gikk ikke. Prøv igjen.`,
+        code === 'NO_ACCOUNT'
+          ? $localize`:@@login.googleNoAccount:Denne Google-kontoen har ingen Diddit-konto. Gå tilbake til invitasjonen og velg «Lag passord».`
+          : $localize`:@@login.googleSigninFailed:Google-innloggingen gikk ikke. Prøv igjen.`,
       );
     } finally {
       this.isLoading.set(false);

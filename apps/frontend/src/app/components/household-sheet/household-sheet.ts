@@ -10,6 +10,7 @@ import {
   viewChild,
 } from '@angular/core';
 import type { HouseholdListItem } from '../../services/household.service';
+import { roleChip, roleSentence } from '../../utils/household-role';
 
 /**
  * «Bytt husstand» (ST-1065): the bottom sheet behind the caret in the home title.
@@ -38,8 +39,18 @@ export class HouseholdSheet {
   private readonly sheet = viewChild<ElementRef<HTMLElement>>('sheet');
 
   /** «Du er med i to husstander.» */
+  /** ST-2227: one account, different roles: every row says which role it has there */
+  protected readonly mixedRoles = computed(
+    () => new Set(this.households().map((h) => h.role)).size > 1,
+  );
+
   protected readonly lead = computed(() => {
     const count = this.households().length;
+    if (this.mixedRoles()) {
+      return count === 2
+        ? $localize`:@@householdSheet.leadTwoRoles:Du er med i to husstander, med ulik rolle.`
+        : $localize`:@@householdSheet.leadRoles:Du er med i ${count}:count: husstander, med ulik rolle.`;
+    }
     return count === 2
       ? $localize`:@@householdSheet.leadTwo:Du er med i to husstander.`
       : $localize`:@@householdSheet.lead:Du er med i ${count}:count: husstander.`;
@@ -76,7 +87,12 @@ export class HouseholdSheet {
   }
 
   /** «5 medlemmer – 3 av 7 gjort i dag» */
+  protected chip(household: HouseholdListItem): string {
+    return roleChip(household.role);
+  }
+
   protected detail(household: HouseholdListItem): string {
+    if (this.mixedRoles()) return roleSentence(household.role);
     const count = household.memberCount ?? 0;
     const members =
       count === 1

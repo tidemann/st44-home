@@ -28,6 +28,7 @@ describe('TopTabs', () => {
     currentUser: vi
       .fn()
       .mockReturnValue({ firstName: 'Kari', email: 'k@example.test', role: 'parent' }),
+    activeRole: () => 'parent',
     logout: vi.fn(),
   };
 

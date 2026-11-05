@@ -7,11 +7,14 @@ import { ApiService } from '../../services/api.service';
 import { AvailableTasksSectionComponent } from '../../components/available-tasks-section/available-tasks-section';
 import { NotificationSettings } from '../../components/notification-settings/notification-settings';
 import { isoDay } from '../../utils/poeng-format';
+import { HouseholdStore } from '../../stores/household.store';
 
 describe('ChildDashboardComponent', () => {
   let fixture: ComponentFixture<ChildDashboardComponent>;
   let taskDate: (offset: number) => string;
   let hold: Promise<void> | null = null;
+  /** ST-2227: GET /households */
+  let householdsAnswer: unknown[] = [];
   let rewardsHold: Promise<void> | null = null;
   let turnsAnswer: { turns: unknown[]; myChildId: string } = { turns: [], myChildId: 'c-mathea' };
   let todayTasks: unknown[] | null = null;
@@ -41,6 +44,7 @@ describe('ChildDashboardComponent', () => {
         : {},
     ),
     get: vi.fn(async (endpoint: string) => {
+      if (endpoint === '/households') return householdsAnswer;
       if (endpoint.startsWith('/children/me/tasks')) {
         if (hold) await hold;
         const yesterday = endpoint.includes(`date=${isoDay(-1)}`);
@@ -90,6 +94,7 @@ describe('ChildDashboardComponent', () => {
     rewardsHold = null;
     turnsAnswer = { turns: [], myChildId: 'c-mathea' };
     todayTasks = null;
+    householdsAnswer = [];
     api.get.mockClear();
 
     await TestBed.configureTestingModule({
@@ -299,5 +304,46 @@ describe('ChildDashboardComponent', () => {
     const inset = moment.querySelector('.inset.turn')!;
     expect(inset.querySelector('.rm')!.textContent!.trim()).toBe('Turen gikk videre til');
     expect(inset.querySelector('.rt')!.textContent!.trim()).toBe('Jonas');
+  });
+
+  // ===== ST-2227: one account, child here and admin elsewhere =====
+
+  const twoHouseholds = [
+    { id: 'fam', name: 'Familien Nordmann', role: 'child', createdAt: '', updatedAt: '' },
+    { id: 'own', name: 'Jonas sin husstand', role: 'admin', createdAt: '', updatedAt: '' },
+  ];
+
+  it('in more than one household the sub-line says where and as what, in place of the date', async () => {
+    householdsAnswer = twoHouseholds;
+    TestBed.inject(HouseholdStore).setActiveHousehold('fam');
+    const el = await render();
+    const button = el.querySelector('.page-subtitle-menu') as HTMLButtonElement;
+    expect(button.textContent).toContain('Familien Nordmann · Barn');
+    expect(button.getAttribute('aria-haspopup')).toBe('dialog');
+    button.click();
+    fixture.detectChanges();
+    const sheet = el.querySelector('app-household-sheet') as HTMLElement;
+    expect(sheet.textContent).toContain('Du er med i to husstander, med ulik rolle.');
+    expect(sheet.textContent).toContain('Du er barn');
+    expect(sheet.textContent).toContain('Du er administrator');
+  });
+
+  it('with one household the date stays', async () => {
+    householdsAnswer = [twoHouseholds[0]];
+    TestBed.inject(HouseholdStore).setActiveHousehold('fam');
+    const el = await render();
+    expect(el.querySelector('.page-subtitle-menu')).toBeNull();
+  });
+
+  it('after a link the informative toast is announced once', async () => {
+    householdsAnswer = twoHouseholds;
+    TestBed.inject(HouseholdStore).setActiveHousehold('fam');
+    history.replaceState({ linkedHousehold: 'Familien Nordmann' }, '');
+    const el = await render();
+    const status = el.querySelector('[role="status"][aria-live="polite"]') as HTMLElement;
+    expect(status.textContent).toContain(
+      'Du er med i Familien Nordmann som barn. Jonas sin husstand finner du under «Bytt husstand».',
+    );
+    expect(history.state?.linkedHousehold).toBeUndefined();
   });
 });

@@ -142,46 +142,378 @@
           <context context-type="linenumber">160</context>
         </context-group>
       </trans-unit>
+      <trans-unit id="childInvite.entry.title" datatype="html">
+        <source>Invitasjon</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/auth/child-invite.html</context>
+          <context context-type="linenumber">13,14</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/auth/child-invite.html</context>
+          <context context-type="linenumber">603,604</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="childInvite.entry.sub" datatype="html">
+        <source> Du er invitert inn i <x id="INTERPOLATION" equiv-text="{{ householdName() }}"/> </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/auth/child-invite.html</context>
+          <context context-type="linenumber">15,17</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="childInvite.entry.lead" datatype="html">
+        <source> <x id="INTERPOLATION" equiv-text="{{ inviterName() }}"/> vil koble kontoen din til profilen <x id="INTERPOLATION_1" equiv-text="{{ childName() }}"/>. </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/auth/child-invite.html</context>
+          <context context-type="linenumber">20,22</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="childInvite.entry.note" datatype="html">
+        <source> Invitasjonen gjelder <x id="INTERPOLATION" equiv-text="{{ maskedEmail() }}"/>. Logg inn med den Google-kontoen for å se og godta. </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/auth/child-invite.html</context>
+          <context context-type="linenumber">24,26</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="childInvite.entry.google" datatype="html">
+        <source>Fortsett med Google</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/auth/child-invite.html</context>
+          <context context-type="linenumber">29,31</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="childInvite.entry.noAccount" datatype="html">
+        <source>Har du ikke en Diddit-konto?</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/auth/child-invite.html</context>
+          <context context-type="linenumber">32,34</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="childInvite.entry.password" datatype="html">
+        <source> Lag passord </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/auth/child-invite.html</context>
+          <context context-type="linenumber">40,42</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="childInvite.consent.title" datatype="html">
+        <source>Bli med som barn?</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/auth/child-invite.html</context>
+          <context context-type="linenumber">52,53</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="childInvite.consent.sub" datatype="html">
+        <source> Logget inn som <x id="INTERPOLATION" equiv-text="{{ signedInEmail() }}"/> </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/auth/child-invite.html</context>
+          <context context-type="linenumber">54,56</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="childInvite.consent.lead" datatype="html">
+        <source>Les gjennom før du godtar.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/auth/child-invite.html</context>
+          <context context-type="linenumber">58,59</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="childInvite.consent.whatTitle" datatype="html">
+        <source> Det skjer når du godtar </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/auth/child-invite.html</context>
+          <context context-type="linenumber">62,64</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="childInvite.consent.what1" datatype="html">
+        <source>Du blir barn i <x id="INTERPOLATION" equiv-text="{{ householdName() }}"/>. Foreldrene der ser oppgavene og poengene dine.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/auth/child-invite.html</context>
+          <context context-type="linenumber">68,69</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="childInvite.consent.what2" datatype="html">
+        <source>Poeng og historikk på profilen <x id="INTERPOLATION" equiv-text="{{ childName() }}"/> blir der de er.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/auth/child-invite.html</context>
+          <context context-type="linenumber">75,76</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="childInvite.consent.what3" datatype="html">
+        <source>Du er fortsatt <x id="START_TAG_STRONG" ctype="x-strong" equiv-text="&lt;strong&gt;"/><x id="INTERPOLATION" equiv-text="{{ other.role }}"/><x id="CLOSE_TAG_STRONG" ctype="x-strong" equiv-text="&lt;/strong&gt;"/> i <x id="INTERPOLATION_1" equiv-text="{{ other.name }}"/>. Ingenting endres der.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/auth/child-invite.html</context>
+          <context context-type="linenumber">82,83</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="childInvite.consent.accepting" datatype="html">
+        <source>Kobler kontoen …</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/auth/child-invite.html</context>
+          <context context-type="linenumber">91,94</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="childInvite.consent.accept" datatype="html">
+        <source> Godta: bli barn i <x id="INTERPOLATION" equiv-text="{{ householdName() }}"/> </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/auth/child-invite.html</context>
+          <context context-type="linenumber">104,105</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="childInvite.consent.decline" datatype="html">
+        <source> Avslå </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/auth/child-invite.html</context>
+          <context context-type="linenumber">113,115</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="childInvite.consent.wrong" datatype="html">
+        <source>Feil konto?</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/auth/child-invite.html</context>
+          <context context-type="linenumber">116,118</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="childInvite.switchGoogle" datatype="html">
+        <source> Bytt Google-konto </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/auth/child-invite.html</context>
+          <context context-type="linenumber">123,125</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/auth/child-invite.html</context>
+          <context context-type="linenumber">159,161</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="childInvite.consent.undo" datatype="html">
+        <source> En forelder i <x id="INTERPOLATION" equiv-text="{{ householdName() }}"/> kan fjerne koblingen senere. Kontoen din slettes ikke. </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/auth/child-invite.html</context>
+          <context context-type="linenumber">127,129</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="childInvite.wrong.title" datatype="html">
+        <source>Feil konto</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/auth/child-invite.html</context>
+          <context context-type="linenumber">138,139</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="childInvite.wrong.sub" datatype="html">
+        <source>Invitasjonen gjelder en annen e-post</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/auth/child-invite.html</context>
+          <context context-type="linenumber">139,141</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="childInvite.wrong.cardTitle" datatype="html">
+        <source> Du er logget inn med en annen konto </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/auth/child-invite.html</context>
+          <context context-type="linenumber">144,146</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="childInvite.wrong.signedIn" datatype="html">
+        <source> Logget inn som <x id="INTERPOLATION" equiv-text="{{ signedInEmail() }}"/>. </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/auth/child-invite.html</context>
+          <context context-type="linenumber">147,149</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/auth/child-invite.html</context>
+          <context context-type="linenumber">192,194</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="childInvite.wrong.text" datatype="html">
+        <source>Invitasjonen til <x id="INTERPOLATION" equiv-text="{{ householdName() }}"/> gjelder <x id="INTERPOLATION_1" equiv-text="{{ maskedEmail() }}"/>. Den kan bare godtas fra den kontoen.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/auth/child-invite.html</context>
+          <context context-type="linenumber">152,153</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="childInvite.cancel" datatype="html">
+        <source> Avbryt </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/auth/child-invite.html</context>
+          <context context-type="linenumber">167,169</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/auth/child-invite.html</context>
+          <context context-type="linenumber">212,214</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="childInvite.wrong.foot" datatype="html">
+        <source> Bruker du en annen e-post? Be <x id="INTERPOLATION" equiv-text="{{ inviterName() }}"/> sende invitasjonen til den. </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/auth/child-invite.html</context>
+          <context context-type="linenumber">170,172</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="childInvite.notGoogle.title" datatype="html">
+        <source>Logg inn med Google</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/auth/child-invite.html</context>
+          <context context-type="linenumber">181,182</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="childInvite.notGoogle.sub" datatype="html">
+        <source> Denne invitasjonen godtas med Google </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/auth/child-invite.html</context>
+          <context context-type="linenumber">183,186</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="childInvite.notGoogle.cardTitle" datatype="html">
+        <source> Kontoen er ikke logget inn med Google </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/auth/child-invite.html</context>
+          <context context-type="linenumber">189,191</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="childInvite.notGoogle.text" datatype="html">
+        <source>For å bli koblet til profilen <x id="INTERPOLATION" equiv-text="{{ childName() }}"/> må du logge inn med Google-kontoen <x id="INTERPOLATION_1" equiv-text="{{ maskedEmail() }}"/>. Ingenting er endret.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/auth/child-invite.html</context>
+          <context context-type="linenumber">197,199</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="childInvite.notGoogle.button" datatype="html">
+        <source>Logg inn med Google</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/auth/child-invite.html</context>
+          <context context-type="linenumber">204,207</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="childInvite.refused.title" datatype="html">
+        <source>Kan ikke godtas</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/auth/child-invite.html</context>
+          <context context-type="linenumber">223,224</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/auth/child-invite.html</context>
+          <context context-type="linenumber">270,271</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="childInvite.member.sub" datatype="html">
+        <source> Du er allerede med i <x id="INTERPOLATION" equiv-text="{{ householdName() }}"/> </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/auth/child-invite.html</context>
+          <context context-type="linenumber">225,227</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="childInvite.member.cardTitle" datatype="html">
+        <source> Du er allerede <x id="INTERPOLATION" equiv-text="{{ memberRole() }}"/> her </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/auth/child-invite.html</context>
+          <context context-type="linenumber">231,233</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="childInvite.member.text" datatype="html">
+        <source>Kontoen din har rollen <x id="INTERPOLATION" equiv-text="{{ memberRole() }}"/> i <x id="INTERPOLATION_1" equiv-text="{{ householdName() }}"/>. Diddit bytter ikke rolle automatisk.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/auth/child-invite.html</context>
+          <context context-type="linenumber">236,237</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="childInvite.member.how" datatype="html">
+        <source> For å bli barn her må en administrator først fjerne deg som <x id="INTERPOLATION" equiv-text="{{ memberRole() }}"/>. Send så en ny invitasjon. </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/auth/child-invite.html</context>
+          <context context-type="linenumber">241,243</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="childInvite.member.go" datatype="html">
+        <source> Gå til <x id="INTERPOLATION" equiv-text="{{ householdName() }}"/> </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/auth/child-invite.html</context>
+          <context context-type="linenumber">251,252</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="childInvite.member.decline" datatype="html">
+        <source> Avslå invitasjonen </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/auth/child-invite.html</context>
+          <context context-type="linenumber">259,262</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="childInvite.linked.sub" datatype="html">
+        <source> Profilen <x id="INTERPOLATION" equiv-text="{{ childName() }}"/> har allerede en konto </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/auth/child-invite.html</context>
+          <context context-type="linenumber">272,274</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="childInvite.linked.cardTitle" datatype="html">
+        <source> Profilen er allerede koblet </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/auth/child-invite.html</context>
+          <context context-type="linenumber">278,280</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="childInvite.linked.text" datatype="html">
+        <source><x id="INTERPOLATION" equiv-text="{{ childName() }}"/> i <x id="INTERPOLATION_1" equiv-text="{{ householdName() }}"/> er koblet til en annen konto. En profil kan bare ha én konto.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/auth/child-invite.html</context>
+          <context context-type="linenumber">283,284</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="childInvite.linked.how" datatype="html">
+        <source> Ingenting er endret. Be en forelder fjerne den gamle koblingen og sende en ny invitasjon. </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/auth/child-invite.html</context>
+          <context context-type="linenumber">288,290</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="childInvite.goToDiddit" datatype="html">
+        <source> Gå til Diddit </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/auth/child-invite.html</context>
+          <context context-type="linenumber">298,300</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/auth/child-invite.html</context>
+          <context context-type="linenumber">638,641</context>
+        </context-group>
+      </trans-unit>
       <trans-unit id="childInvite.title" datatype="html">
         <source>Lag passordet ditt</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/auth/child-invite.html</context>
-          <context context-type="linenumber">8,9</context>
+          <context context-type="linenumber">305,306</context>
         </context-group>
       </trans-unit>
       <trans-unit id="childInvite.bandSubtitle" datatype="html">
         <source>Velg et passord du husker</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/auth/child-invite.html</context>
-          <context context-type="linenumber">9,12</context>
+          <context context-type="linenumber">306,309</context>
         </context-group>
       </trans-unit>
       <trans-unit id="childInvite.subtitle" datatype="html">
         <source> Hei <x id="INTERPOLATION" equiv-text="{{ info()?.childName }}"/>! <x id="INTERPOLATION_1" equiv-text="{{ info()?.inviterName }}"/> har invitert deg inn i <x id="INTERPOLATION_2" equiv-text="{{ info()?.householdName }}"/>. Velg et passord, så er du i gang. </source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/auth/child-invite.html</context>
-          <context context-type="linenumber">14,18</context>
+          <context context-type="linenumber">311,315</context>
         </context-group>
       </trans-unit>
       <trans-unit id="childInvite.password" datatype="html">
         <source>Passord</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/auth/child-invite.html</context>
-          <context context-type="linenumber">20,21</context>
+          <context context-type="linenumber">317,318</context>
         </context-group>
       </trans-unit>
       <trans-unit id="childInvite.passwordPlaceholder" datatype="html">
         <source>Minst 8 tegn</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/auth/child-invite.html</context>
-          <context context-type="linenumber">28,29</context>
+          <context context-type="linenumber">325,326</context>
         </context-group>
       </trans-unit>
       <trans-unit id="error.password.required" datatype="html">
         <source>Passord er påkrevd</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/auth/child-invite.html</context>
-          <context context-type="linenumber">72,74</context>
+          <context context-type="linenumber">369,371</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/auth/reset-password.html</context>
@@ -192,7 +524,7 @@
         <source>Passordet må være minst 8 tegn</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/auth/child-invite.html</context>
-          <context context-type="linenumber">75,77</context>
+          <context context-type="linenumber">372,374</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/auth/reset-password.html</context>
@@ -203,21 +535,21 @@
         <source>Gjenta passordet</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/auth/child-invite.html</context>
-          <context context-type="linenumber">83,85</context>
+          <context context-type="linenumber">380,382</context>
         </context-group>
       </trans-unit>
       <trans-unit id="childInvite.confirmPlaceholder" datatype="html">
         <source>Skriv det en gang til</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/auth/child-invite.html</context>
-          <context context-type="linenumber">92,94</context>
+          <context context-type="linenumber">389,391</context>
         </context-group>
       </trans-unit>
       <trans-unit id="error.password.mismatch" datatype="html">
         <source>Passordene samsvarer ikke</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/auth/child-invite.html</context>
-          <context context-type="linenumber">130,132</context>
+          <context context-type="linenumber">427,429</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/auth/register.ts</context>
@@ -232,105 +564,200 @@
         <source>Lager passordet …</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/auth/child-invite.html</context>
-          <context context-type="linenumber">143,145</context>
+          <context context-type="linenumber">440,442</context>
         </context-group>
       </trans-unit>
       <trans-unit id="childInvite.submit" datatype="html">
         <source>Lag passordet</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/auth/child-invite.html</context>
-          <context context-type="linenumber">145,147</context>
+          <context context-type="linenumber">442,444</context>
         </context-group>
       </trans-unit>
       <trans-unit id="childInvite.pointsReady" datatype="html">
         <source> Poengene dine (<x id="INTERPOLATION" equiv-text="{{ info()?.points ?? 0 }}"/> p) og oppgavene dine ligger klare. </source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/auth/child-invite.html</context>
-          <context context-type="linenumber">150,152</context>
+          <context context-type="linenumber">447,449</context>
         </context-group>
       </trans-unit>
       <trans-unit id="childInvite.usedTitle" datatype="html">
         <source>Lenken er brukt</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/auth/child-invite.html</context>
-          <context context-type="linenumber">158,159</context>
+          <context context-type="linenumber">458,459</context>
         </context-group>
       </trans-unit>
       <trans-unit id="childInvite.usedBandSubtitle" datatype="html">
         <source> Du har laget passordet ditt </source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/auth/child-invite.html</context>
-          <context context-type="linenumber">160,163</context>
+          <context context-type="linenumber">460,462</context>
         </context-group>
       </trans-unit>
       <trans-unit id="childInvite.usedText" datatype="html">
         <source> Du har allerede laget passordet ditt. Logg inn med e-posten din. </source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/auth/child-invite.html</context>
-          <context context-type="linenumber">165,167</context>
+          <context context-type="linenumber">465,467</context>
         </context-group>
       </trans-unit>
       <trans-unit id="childInvite.logIn" datatype="html">
         <source>Logg inn</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/auth/child-invite.html</context>
-          <context context-type="linenumber">167,171</context>
+          <context context-type="linenumber">467,470</context>
         </context-group>
       </trans-unit>
       <trans-unit id="childInvite.deadTitle" datatype="html">
         <source>Lenken virker ikke lenger</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/auth/child-invite.html</context>
-          <context context-type="linenumber">178,179</context>
+          <context context-type="linenumber">482,483</context>
         </context-group>
       </trans-unit>
       <trans-unit id="childInvite.expiredBandSubtitle" datatype="html">
         <source>Invitasjonen er utløpt</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/auth/child-invite.html</context>
-          <context context-type="linenumber">182,184</context>
+          <context context-type="linenumber">486,488</context>
         </context-group>
       </trans-unit>
       <trans-unit id="childInvite.cancelledBandSubtitle" datatype="html">
         <source>Invitasjonen er avbrutt</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/auth/child-invite.html</context>
-          <context context-type="linenumber">185,188</context>
+          <context context-type="linenumber">489,491</context>
         </context-group>
       </trans-unit>
       <trans-unit id="childInvite.invalidBandSubtitle" datatype="html">
         <source>Lenken er ikke gyldig</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/auth/child-invite.html</context>
-          <context context-type="linenumber">188,191</context>
+          <context context-type="linenumber">492,495</context>
         </context-group>
       </trans-unit>
       <trans-unit id="childInvite.expiredText" datatype="html">
         <source>Invitasjonen fra <x id="INTERPOLATION" equiv-text="{{ info()?.inviterName }}"/> utløp <x id="INTERPOLATION_1" equiv-text="{{ expiredOn() }}"/>. Be om en ny — poengene og oppgavene dine ligger trygt der de er.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/auth/child-invite.html</context>
-          <context context-type="linenumber">198,199</context>
+          <context context-type="linenumber">502,503</context>
         </context-group>
       </trans-unit>
       <trans-unit id="childInvite.cancelledText" datatype="html">
         <source>Invitasjonen fra <x id="INTERPOLATION" equiv-text="{{ info()?.inviterName }}"/> er avbrutt. Be om en ny — poengene og oppgavene dine ligger trygt der de er.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/auth/child-invite.html</context>
-          <context context-type="linenumber">204,205</context>
+          <context context-type="linenumber">508,509</context>
         </context-group>
       </trans-unit>
       <trans-unit id="childInvite.invalidText" datatype="html">
         <source>Be den voksne som inviterte deg om en ny lenke.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/auth/child-invite.html</context>
-          <context context-type="linenumber">210,213</context>
+          <context context-type="linenumber">514,516</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="childInvite.summary.household" datatype="html">
+        <source>Husstand</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/auth/child-invite.html</context>
+          <context context-type="linenumber">529,531</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="childInvite.summary.profile" datatype="html">
+        <source>Profil</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/auth/child-invite.html</context>
+          <context context-type="linenumber">533,534</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="childInvite.summary.profileValue" datatype="html">
+        <source><x id="INTERPOLATION" equiv-text="{{ childName() }}"/> · <x id="INTERPOLATION_1" equiv-text="{{ points() }}"/> poeng</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/auth/child-invite.html</context>
+          <context context-type="linenumber">534,536</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="childInvite.summary.role" datatype="html">
+        <source>Rolle her</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/auth/child-invite.html</context>
+          <context context-type="linenumber">537,538</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="householdRole.chip.child" datatype="html">
+        <source>Barn</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/auth/child-invite.html</context>
+          <context context-type="linenumber">538,541</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/utils/household-role.ts</context>
+          <context context-type="linenumber">16</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="childInvite.dead.sub" datatype="html">
+        <source>Lenken virker ikke lenger</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/auth/child-invite.html</context>
+          <context context-type="linenumber">604,606</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="childInvite.dead.expired" datatype="html">
+        <source>Invitasjonen er utløpt</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/auth/child-invite.html</context>
+          <context context-type="linenumber">611,613</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="childInvite.dead.cancelled" datatype="html">
+        <source>Invitasjonen er trukket tilbake</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/auth/child-invite.html</context>
+          <context context-type="linenumber">614,616</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="childInvite.dead.used" datatype="html">
+        <source>Invitasjonen er allerede brukt</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/auth/child-invite.html</context>
+          <context context-type="linenumber">617,619</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="childInvite.dead.invalid" datatype="html">
+        <source>Lenken er ikke gyldig</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/auth/child-invite.html</context>
+          <context context-type="linenumber">620,623</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="childInvite.dead.text" datatype="html">
+        <source> Lenker gjelder i 7 dager og kan brukes én gang. Be en forelder i <x id="INTERPOLATION" equiv-text="{{ householdName() || &apos;familien&apos; }}"/> sende en ny invitasjon. </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/auth/child-invite.html</context>
+          <context context-type="linenumber">625,628</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="childInvite.dead.nothing" datatype="html">
+        <source> Ingenting er endret på kontoen din. </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/auth/child-invite.html</context>
+          <context context-type="linenumber">629,632</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="childInvite.existing.failed" datatype="html">
+        <source>Noe gikk galt. Ingenting er endret. Prøv igjen.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/auth/child-invite.ts</context>
+          <context context-type="linenumber">221</context>
         </context-group>
       </trans-unit>
       <trans-unit id="resetPassword.strongPassword" datatype="html">
         <source>Sterkt passord</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/auth/child-invite.ts</context>
-          <context context-type="linenumber">110</context>
+          <context context-type="linenumber">298</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/auth/reset-password.ts</context>
@@ -341,7 +768,7 @@
         <source>8 tegn</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/auth/child-invite.ts</context>
-          <context context-type="linenumber">114</context>
+          <context context-type="linenumber">302</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/auth/reset-password.ts</context>
@@ -352,7 +779,7 @@
         <source>stor bokstav</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/auth/child-invite.ts</context>
-          <context context-type="linenumber">115</context>
+          <context context-type="linenumber">303</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/auth/reset-password.ts</context>
@@ -363,7 +790,7 @@
         <source>liten bokstav</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/auth/child-invite.ts</context>
-          <context context-type="linenumber">116</context>
+          <context context-type="linenumber">304</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/auth/reset-password.ts</context>
@@ -374,7 +801,7 @@
         <source>tall</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/auth/child-invite.ts</context>
-          <context context-type="linenumber">117</context>
+          <context context-type="linenumber">305</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/auth/reset-password.ts</context>
@@ -385,18 +812,25 @@
         <source>Passordet må inneholde: <x id="PH" equiv-text="missing.join(&apos;, &apos;)"/></source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/auth/child-invite.ts</context>
-          <context context-type="linenumber">119</context>
+          <context context-type="linenumber">307</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/auth/reset-password.ts</context>
           <context context-type="linenumber">91</context>
         </context-group>
       </trans-unit>
+      <trans-unit id="childInvite.accountExists" datatype="html">
+        <source>Denne e-posten har allerede en Diddit-konto. Gå tilbake og velg «Fortsett med Google».</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/auth/child-invite.ts</context>
+          <context context-type="linenumber">334</context>
+        </context-group>
+      </trans-unit>
       <trans-unit id="childInvite.failed" datatype="html">
         <source>Kunne ikke lage passordet. Prøv igjen, eller be om en ny lenke.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/auth/child-invite.ts</context>
-          <context context-type="linenumber">145</context>
+          <context context-type="linenumber">338</context>
         </context-group>
       </trans-unit>
       <trans-unit id="childLogin.title" datatype="html">
@@ -516,7 +950,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/auth/login.ts</context>
-          <context context-type="linenumber">320</context>
+          <context context-type="linenumber">328</context>
         </context-group>
       </trans-unit>
       <trans-unit id="childLogin.loginFailed" datatype="html">
@@ -789,25 +1223,32 @@
           <context context-type="linenumber">222</context>
         </context-group>
       </trans-unit>
+      <trans-unit id="login.googleNoAccount" datatype="html">
+        <source>Denne Google-kontoen har ingen Diddit-konto. Gå tilbake til invitasjonen og velg «Lag passord».</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/auth/login.ts</context>
+          <context context-type="linenumber">201</context>
+        </context-group>
+      </trans-unit>
       <trans-unit id="login.googleSigninFailed" datatype="html">
         <source>Google-innloggingen gikk ikke. Prøv igjen.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/auth/login.ts</context>
-          <context context-type="linenumber">194</context>
+          <context context-type="linenumber">202</context>
         </context-group>
       </trans-unit>
       <trans-unit id="login.error.bothEmpty" datatype="html">
         <source>Skriv inn e-post og passord.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/auth/login.ts</context>
-          <context context-type="linenumber">235</context>
+          <context context-type="linenumber">243</context>
         </context-group>
       </trans-unit>
       <trans-unit id="login.error.email" datatype="html">
         <source>Skriv inn en gyldig e-postadresse.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/auth/login.ts</context>
-          <context context-type="linenumber">237</context>
+          <context context-type="linenumber">245</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/auth/register.ts</context>
@@ -818,28 +1259,28 @@
         <source>Skriv inn passordet ditt.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/auth/login.ts</context>
-          <context context-type="linenumber">238</context>
+          <context context-type="linenumber">246</context>
         </context-group>
       </trans-unit>
       <trans-unit id="login.error.credentials" datatype="html">
         <source>Feil e-post eller passord. Prøv igjen.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/auth/login.ts</context>
-          <context context-type="linenumber">263</context>
+          <context context-type="linenumber">271</context>
         </context-group>
       </trans-unit>
       <trans-unit id="login.error.tooMany" datatype="html">
         <source>For mange forsøk. Vent litt, og prøv igjen.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/auth/login.ts</context>
-          <context context-type="linenumber">267</context>
+          <context context-type="linenumber">275</context>
         </context-group>
       </trans-unit>
       <trans-unit id="login.loginFailed" datatype="html">
         <source>Vi fikk ikke logget deg inn. Sjekk nettet, og prøv igjen.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/auth/login.ts</context>
-          <context context-type="linenumber">271</context>
+          <context context-type="linenumber">279</context>
         </context-group>
       </trans-unit>
       <trans-unit id="register.title" datatype="html">
@@ -1014,14 +1455,14 @@
         <source>Google-registrering feilet. Vennligst prøv igjen.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/auth/register.ts</context>
-          <context context-type="linenumber">244</context>
+          <context context-type="linenumber">251</context>
         </context-group>
       </trans-unit>
       <trans-unit id="register.registrationFailed" datatype="html">
         <source>Registrering feilet. Vennligst prøv igjen.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/auth/register.ts</context>
-          <context context-type="linenumber">302</context>
+          <context context-type="linenumber">309</context>
         </context-group>
       </trans-unit>
       <trans-unit id="resetPassword.title" datatype="html">
@@ -1824,35 +2265,49 @@
         <source> Administrer husstander </source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/household-sheet/household-sheet.html</context>
-          <context context-type="linenumber">56,60</context>
+          <context context-type="linenumber">58,62</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="householdSheet.leadTwoRoles" datatype="html">
+        <source>Du er med i to husstander, med ulik rolle.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/household-sheet/household-sheet.ts</context>
+          <context context-type="linenumber">51</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="householdSheet.leadRoles" datatype="html">
+        <source>Du er med i <x id="count" equiv-text="count"/> husstander, med ulik rolle.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/household-sheet/household-sheet.ts</context>
+          <context context-type="linenumber">52</context>
         </context-group>
       </trans-unit>
       <trans-unit id="householdSheet.leadTwo" datatype="html">
         <source>Du er med i to husstander.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/household-sheet/household-sheet.ts</context>
-          <context context-type="linenumber">44</context>
+          <context context-type="linenumber">55</context>
         </context-group>
       </trans-unit>
       <trans-unit id="householdSheet.lead" datatype="html">
         <source>Du er med i <x id="count" equiv-text="count"/> husstander.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/household-sheet/household-sheet.ts</context>
-          <context context-type="linenumber">45</context>
+          <context context-type="linenumber">56</context>
         </context-group>
       </trans-unit>
       <trans-unit id="householdSheet.oneMember" datatype="html">
         <source>1 medlem</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/household-sheet/household-sheet.ts</context>
-          <context context-type="linenumber">83</context>
+          <context context-type="linenumber">99</context>
         </context-group>
       </trans-unit>
       <trans-unit id="householdSheet.members" datatype="html">
         <source><x id="count" equiv-text="count"/> medlemmer</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/household-sheet/household-sheet.ts</context>
-          <context context-type="linenumber">84</context>
+          <context context-type="linenumber">100</context>
         </context-group>
       </trans-unit>
       <trans-unit id="page.logout" datatype="html">
@@ -2698,60 +3153,67 @@
           <context context-type="linenumber">42,44</context>
         </context-group>
       </trans-unit>
+      <trans-unit id="childInviteModal.existingAccount" datatype="html">
+        <source> Har <x id="INTERPOLATION" equiv-text="{{ childName() }}"/> allerede en Diddit-konto med denne e-posten, logger <x id="INTERPOLATION" equiv-text="{{ childName() }}"/> inn med Google og godtar selv. Poeng og historikk blir der de er. </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/modals/child-invite-modal/child-invite-modal.html</context>
+          <context context-type="linenumber">48,50</context>
+        </context-group>
+      </trans-unit>
       <trans-unit id="childInviteModal.close" datatype="html">
         <source> Lukk </source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/modals/child-invite-modal/child-invite-modal.html</context>
-          <context context-type="linenumber">53,55</context>
+          <context context-type="linenumber">59,61</context>
         </context-group>
       </trans-unit>
       <trans-unit id="childInviteModal.lead" datatype="html">
         <source> <x id="INTERPOLATION" equiv-text="{{ childName() }}"/> får en lenke på e-post, lager sitt eget passord og beholder poengene og historikken sin. </source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/modals/child-invite-modal/child-invite-modal.html</context>
-          <context context-type="linenumber">60,62</context>
+          <context context-type="linenumber">66,68</context>
         </context-group>
       </trans-unit>
       <trans-unit id="childInviteModal.emailLabel" datatype="html">
         <source>E-postadresse *</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/modals/child-invite-modal/child-invite-modal.html</context>
-          <context context-type="linenumber">65,68</context>
+          <context context-type="linenumber">71,74</context>
         </context-group>
       </trans-unit>
       <trans-unit id="childInviteModal.emailInvalid" datatype="html">
         <source>Skriv en hel e-postadresse, for eksempel <x id="INTERPOLATION" equiv-text="{{ placeholder() }}"/></source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/modals/child-invite-modal/child-invite-modal.html</context>
-          <context context-type="linenumber">84,85</context>
+          <context context-type="linenumber">90,91</context>
         </context-group>
       </trans-unit>
       <trans-unit id="childInviteModal.hint" datatype="html">
         <source> Lenken virker i 7 dager. Du kan avbryte den når som helst. </source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/modals/child-invite-modal/child-invite-modal.html</context>
-          <context context-type="linenumber">90,93</context>
+          <context context-type="linenumber">96,99</context>
         </context-group>
       </trans-unit>
       <trans-unit id="childInviteModal.cancel" datatype="html">
         <source> Avbryt </source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/modals/child-invite-modal/child-invite-modal.html</context>
-          <context context-type="linenumber">100,102</context>
+          <context context-type="linenumber">106,108</context>
         </context-group>
       </trans-unit>
       <trans-unit id="childInviteModal.creating" datatype="html">
         <source>Lager lenken …</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/modals/child-invite-modal/child-invite-modal.html</context>
-          <context context-type="linenumber">104,106</context>
+          <context context-type="linenumber">110,112</context>
         </context-group>
       </trans-unit>
       <trans-unit id="childInviteModal.create" datatype="html">
         <source>Lag invitasjon</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/modals/child-invite-modal/child-invite-modal.html</context>
-          <context context-type="linenumber">106,108</context>
+          <context context-type="linenumber">112,114</context>
         </context-group>
       </trans-unit>
       <trans-unit id="childInviteModal.title" datatype="html">
@@ -2761,8 +3223,8 @@
           <context context-type="linenumber">61</context>
         </context-group>
       </trans-unit>
-      <trans-unit id="childInviteModal.emailInUse" datatype="html">
-        <source>Denne e-postadressen er allerede i bruk i Diddit.</source>
+      <trans-unit id="childInviteModal.profileLinked" datatype="html">
+        <source>Profilen har allerede en konto.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/modals/child-invite-modal/child-invite-modal.ts</context>
           <context context-type="linenumber">120</context>
@@ -3834,6 +4296,10 @@
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/page/page.html</context>
           <context context-type="linenumber">33,34</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/page/page.html</context>
+          <context context-type="linenumber">84,85</context>
         </context-group>
       </trans-unit>
       <trans-unit id="childCard.pointsWord" datatype="html">
@@ -5192,265 +5658,286 @@
         <source>poeng</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/child-dashboard/child-dashboard.html</context>
-          <context context-type="linenumber">17,20</context>
+          <context context-type="linenumber">19,22</context>
         </context-group>
       </trans-unit>
       <trans-unit id="childDashboard.goalLeft" datatype="html">
         <source><x id="INTERPOLATION" equiv-text="{{ g.pointsCost - balance() }}"/> igjen</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/child-dashboard/child-dashboard.html</context>
-          <context context-type="linenumber">22,23</context>
+          <context context-type="linenumber">24,25</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="childDashboard.toastClose" datatype="html">
+        <source>Lukk</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/pages/child-dashboard/child-dashboard.html</context>
+          <context context-type="linenumber">63,65</context>
         </context-group>
       </trans-unit>
       <trans-unit id="childDashboard.loading" datatype="html">
         <source>Laster oppgavene dine...</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/child-dashboard/child-dashboard.html</context>
-          <context context-type="linenumber">44,45</context>
+          <context context-type="linenumber">74,75</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/child-dashboard/child-dashboard.html</context>
-          <context context-type="linenumber">47,51</context>
+          <context context-type="linenumber">77,81</context>
         </context-group>
       </trans-unit>
       <trans-unit id="childDashboard.tryAgain" datatype="html">
         <source> Prøv igjen </source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/child-dashboard/child-dashboard.html</context>
-          <context context-type="linenumber">56,59</context>
+          <context context-type="linenumber">86,89</context>
         </context-group>
       </trans-unit>
       <trans-unit id="childDashboard.noTasksToday" datatype="html">
         <source>Ingen oppgaver i dag!</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/child-dashboard/child-dashboard.html</context>
-          <context context-type="linenumber">67,68</context>
+          <context context-type="linenumber">97,98</context>
         </context-group>
       </trans-unit>
       <trans-unit id="childDashboard.enjoyFreeTime" datatype="html">
         <source>Nyt fritiden din!</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/child-dashboard/child-dashboard.html</context>
-          <context context-type="linenumber">68,72</context>
+          <context context-type="linenumber">98,102</context>
         </context-group>
       </trans-unit>
       <trans-unit id="childDashboard.yourTurn" datatype="html">
         <source>Din tur</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/child-dashboard/child-dashboard.html</context>
-          <context context-type="linenumber">75,76</context>
+          <context context-type="linenumber">105,106</context>
         </context-group>
       </trans-unit>
       <trans-unit id="childDashboard.hakAv" datatype="html">
         <source> Ferdig </source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/child-dashboard/child-dashboard.html</context>
-          <context context-type="linenumber">87,88</context>
+          <context context-type="linenumber">117,118</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/child-dashboard/child-dashboard.html</context>
-          <context context-type="linenumber">125,126</context>
+          <context context-type="linenumber">155,156</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/child-dashboard/child-dashboard.html</context>
-          <context context-type="linenumber">162,163</context>
+          <context context-type="linenumber">192,193</context>
         </context-group>
       </trans-unit>
       <trans-unit id="childDashboard.nextInLine" datatype="html">
         <source>Etter tur</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/child-dashboard/child-dashboard.html</context>
-          <context context-type="linenumber">94,95</context>
+          <context context-type="linenumber">124,125</context>
         </context-group>
       </trans-unit>
       <trans-unit id="childDashboard.overdue" datatype="html">
         <source>Forfalt</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/child-dashboard/child-dashboard.html</context>
-          <context context-type="linenumber">107,108</context>
+          <context context-type="linenumber">137,138</context>
         </context-group>
       </trans-unit>
       <trans-unit id="childDashboard.open" datatype="html">
         <source> Åpne </source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/child-dashboard/child-dashboard.html</context>
-          <context context-type="linenumber">137,138</context>
+          <context context-type="linenumber">167,168</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/child-dashboard/child-dashboard.html</context>
-          <context context-type="linenumber">174,175</context>
+          <context context-type="linenumber">204,205</context>
         </context-group>
       </trans-unit>
       <trans-unit id="childDashboard.today" datatype="html">
         <source>I dag</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/child-dashboard/child-dashboard.html</context>
-          <context context-type="linenumber">145,146</context>
+          <context context-type="linenumber">175,176</context>
         </context-group>
       </trans-unit>
       <trans-unit id="childDashboard.doneToday" datatype="html">
         <source>Gjort i dag</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/child-dashboard/child-dashboard.html</context>
-          <context context-type="linenumber">195,196</context>
+          <context context-type="linenumber">225,226</context>
         </context-group>
       </trans-unit>
       <trans-unit id="childDashboard.thisWeekGroup" datatype="html">
         <source>Denne uken</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/child-dashboard/child-dashboard.html</context>
-          <context context-type="linenumber">222,224</context>
+          <context context-type="linenumber">252,254</context>
         </context-group>
       </trans-unit>
       <trans-unit id="childDashboard.thisWeek" datatype="html">
         <source>Denne uken</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/child-dashboard/child-dashboard.html</context>
-          <context context-type="linenumber">230,232</context>
+          <context context-type="linenumber">260,262</context>
         </context-group>
       </trans-unit>
       <trans-unit id="childDashboard.thisMonth" datatype="html">
         <source>Denne måneden</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/child-dashboard/child-dashboard.html</context>
-          <context context-type="linenumber">236,238</context>
+          <context context-type="linenumber">266,268</context>
         </context-group>
       </trans-unit>
       <trans-unit id="childDashboard.pointsThisWeek" datatype="html">
         <source>Poeng denne uken</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/child-dashboard/child-dashboard.html</context>
-          <context context-type="linenumber">245,248</context>
+          <context context-type="linenumber">275,278</context>
         </context-group>
       </trans-unit>
       <trans-unit id="childDashboard.pointsAria" datatype="html">
         <source><x id="points" equiv-text="this.balance()"/> poeng</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/child-dashboard/child-dashboard.ts</context>
-          <context context-type="linenumber">169</context>
+          <context context-type="linenumber">193</context>
         </context-group>
       </trans-unit>
       <trans-unit id="childDashboard.nextMeta" datatype="html">
         <source>Neste – <x id="day" equiv-text="dayWord(next.date)"/></source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/child-dashboard/child-dashboard.ts</context>
-          <context context-type="linenumber">188</context>
+          <context context-type="linenumber">212</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="childDashboard.linkedToastOther" datatype="html">
+        <source>Du er med i <x id="household" equiv-text="name"/> som barn. <x id="other" equiv-text="other.name"/> finner du under «Bytt husstand».</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/pages/child-dashboard/child-dashboard.ts</context>
+          <context context-type="linenumber">233</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="childDashboard.linkedToast" datatype="html">
+        <source>Du er med i <x id="household" equiv-text="name"/> som barn.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/pages/child-dashboard/child-dashboard.ts</context>
+          <context context-type="linenumber">234</context>
         </context-group>
       </trans-unit>
       <trans-unit id="childDashboard.errNotChild" datatype="html">
         <source>Denne siden er bare for barn.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/child-dashboard/child-dashboard.ts</context>
-          <context context-type="linenumber">220</context>
+          <context context-type="linenumber">284</context>
         </context-group>
       </trans-unit>
       <trans-unit id="childDashboard.errNoProfile" datatype="html">
         <source>Vi fant ikke profilen din. Spør en voksen om hjelp.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/child-dashboard/child-dashboard.ts</context>
-          <context context-type="linenumber">224</context>
+          <context context-type="linenumber">288</context>
         </context-group>
       </trans-unit>
       <trans-unit id="childDashboard.errLoad" datatype="html">
         <source>Vi fikk ikke hentet oppgavene dine nå. Prøv igjen!</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/child-dashboard/child-dashboard.ts</context>
-          <context context-type="linenumber">228</context>
+          <context context-type="linenumber">292</context>
         </context-group>
       </trans-unit>
       <trans-unit id="childDashboard.errMarkDone" datatype="html">
         <source>Kunne ikke merke oppgaven som ferdig. Prøv igjen.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/child-dashboard/child-dashboard.ts</context>
-          <context context-type="linenumber">277</context>
+          <context context-type="linenumber">341</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/child-dashboard/child-dashboard.ts</context>
-          <context context-type="linenumber">332</context>
+          <context context-type="linenumber">396</context>
         </context-group>
       </trans-unit>
       <trans-unit id="childDashboard.myTurnMeta" datatype="html">
         <source>neste: <x id="next" equiv-text="next"/> · <x id="points" equiv-text="turn.points"/> poeng</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/child-dashboard/child-dashboard.ts</context>
-          <context context-type="linenumber">291</context>
+          <context context-type="linenumber">355</context>
         </context-group>
       </trans-unit>
       <trans-unit id="childDashboard.turnYouNext" datatype="html">
         <source>har turen · du er nestemann</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/child-dashboard/child-dashboard.ts</context>
-          <context context-type="linenumber">303</context>
+          <context context-type="linenumber">367</context>
         </context-group>
       </trans-unit>
       <trans-unit id="childDashboard.turnNext" datatype="html">
         <source>har turen · neste: <x id="next" equiv-text="next?.name ?? &apos;&apos;"/></source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/child-dashboard/child-dashboard.ts</context>
-          <context context-type="linenumber">304</context>
+          <context context-type="linenumber">368</context>
         </context-group>
       </trans-unit>
       <trans-unit id="childDashboard.turnPoints" datatype="html">
         <source><x id="points" equiv-text="turn.points"/> p</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/child-dashboard/child-dashboard.ts</context>
-          <context context-type="linenumber">308</context>
+          <context context-type="linenumber">372</context>
         </context-group>
       </trans-unit>
       <trans-unit id="childDashboard.overdueMeta" datatype="html">
         <source>Forfalt <x id="day" equiv-text="dayWord(task.date)"/></source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/child-dashboard/child-dashboard.ts</context>
-          <context context-type="linenumber">375</context>
+          <context context-type="linenumber">439</context>
         </context-group>
       </trans-unit>
       <trans-unit id="childDashboard.deadlineMeta" datatype="html">
         <source>Frist <x id="day" equiv-text="dayWord(task.date)"/> – <x id="points" equiv-text="task.points"/> poeng</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/child-dashboard/child-dashboard.ts</context>
-          <context context-type="linenumber">381</context>
+          <context context-type="linenumber">445</context>
         </context-group>
       </trans-unit>
       <trans-unit id="childDashboard.openMeta" datatype="html">
         <source><x id="day" equiv-text="capitalize(dayWord(task.date))"/> – <x id="points" equiv-text="task.points"/> poeng</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/child-dashboard/child-dashboard.ts</context>
-          <context context-type="linenumber">383</context>
+          <context context-type="linenumber">447</context>
         </context-group>
       </trans-unit>
       <trans-unit id="childDashboard.doneMeta" datatype="html">
         <source>Gjort<x id="at" equiv-text="at"/> – <x id="points" equiv-text="task.points"/> poeng</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/child-dashboard/child-dashboard.ts</context>
-          <context context-type="linenumber">389</context>
+          <context context-type="linenumber">453</context>
         </context-group>
       </trans-unit>
       <trans-unit id="childDashboard.openAria" datatype="html">
         <source>Åpne <x id="title" equiv-text="task.taskName"/></source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/child-dashboard/child-dashboard.ts</context>
-          <context context-type="linenumber">405</context>
+          <context context-type="linenumber">469</context>
         </context-group>
       </trans-unit>
       <trans-unit id="childDashboard.hakAvAria" datatype="html">
         <source>Merk som ferdig: <x id="title" equiv-text="task.taskName"/></source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/child-dashboard/child-dashboard.ts</context>
-          <context context-type="linenumber">429</context>
+          <context context-type="linenumber">493</context>
         </context-group>
       </trans-unit>
       <trans-unit id="childDashboard.undoSpent" datatype="html">
         <source>Poengene er alt brukt, så denne kan ikke angres.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/child-dashboard/child-dashboard.ts</context>
-          <context context-type="linenumber">445</context>
+          <context context-type="linenumber">509</context>
         </context-group>
       </trans-unit>
       <trans-unit id="childDashboard.undoTooLate" datatype="html">
         <source>Det er for sent å angre denne nå.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/child-dashboard/child-dashboard.ts</context>
-          <context context-type="linenumber">447</context>
+          <context context-type="linenumber">511</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/scan/scan.ts</context>
@@ -5461,7 +5948,7 @@
         <source>Det gikk ikke å angre. Prøv igjen.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/child-dashboard/child-dashboard.ts</context>
-          <context context-type="linenumber">449</context>
+          <context context-type="linenumber">513</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/scan/scan.ts</context>
@@ -8538,6 +9025,62 @@
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/tasks/tasks.ts</context>
           <context context-type="linenumber">679</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="householdRole.chip.admin" datatype="html">
+        <source>Admin</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/utils/household-role.ts</context>
+          <context context-type="linenumber">12</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="householdRole.chip.parent" datatype="html">
+        <source>Forelder</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/utils/household-role.ts</context>
+          <context context-type="linenumber">14</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="householdRole.sentence.admin" datatype="html">
+        <source>Du er administrator</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/utils/household-role.ts</context>
+          <context context-type="linenumber">24</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="householdRole.sentence.parent" datatype="html">
+        <source>Du er forelder</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/utils/household-role.ts</context>
+          <context context-type="linenumber">26</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="householdRole.sentence.child" datatype="html">
+        <source>Du er barn</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/utils/household-role.ts</context>
+          <context context-type="linenumber">28</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="householdRole.word.admin" datatype="html">
+        <source>administrator</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/utils/household-role.ts</context>
+          <context context-type="linenumber">36</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="householdRole.word.parent" datatype="html">
+        <source>forelder</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/utils/household-role.ts</context>
+          <context context-type="linenumber">38</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="householdRole.word.child" datatype="html">
+        <source>barn</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/utils/household-role.ts</context>
+          <context context-type="linenumber">40</context>
         </context-group>
       </trans-unit>
       <trans-unit id="settings.roleParent" datatype="html">

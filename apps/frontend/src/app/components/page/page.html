@@ -70,7 +70,31 @@
         </div>
         @if (band()) {
           <div class="page-band">
-            @if (subtitle()) {
+            @if (subtitle() && subtitleMenu()) {
+              <!-- ST-2227: «Familien Nordmann · Barn ▾» opens «Bytt husstand» -->
+              <p class="page-subtitle">
+                <button
+                  type="button"
+                  class="page-subtitle-menu"
+                  aria-haspopup="dialog"
+                  (click)="subtitleMenuOpen.emit()"
+                >
+                  {{ subtitle()
+                  }}<span class="visually-hidden" i18n="@@page.switchHousehold">
+                    – bytt husstand</span
+                  ><svg
+                    class="page-subtitle-caret"
+                    width="12"
+                    height="12"
+                    viewBox="0 0 14 14"
+                    fill="currentColor"
+                    aria-hidden="true"
+                  >
+                    <path d="M2 4.5h10L7 10.5z" />
+                  </svg>
+                </button>
+              </p>
+            } @else if (subtitle()) {
               <p class="page-subtitle">{{ subtitle() }}</p>
             }
             <div class="page-band-slot">

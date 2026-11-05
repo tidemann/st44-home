@@ -55,7 +55,7 @@ export class InitialBadge {
   /** On the yellow band: Yellow Inset fill, ink initial */
   onYellow = input<boolean>(false);
 
-  protected readonly isChild = computed(() => this.authService.currentUser()?.role === 'child');
+  protected readonly isChild = computed(() => this.authService.activeRole() === 'child');
   protected readonly menuOpen = signal(false);
 
   /** The person's single initial */

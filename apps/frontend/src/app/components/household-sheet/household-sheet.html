@@ -41,6 +41,8 @@
                 </svg>
                 <ng-container i18n="@@householdSheet.chosen">Valgt nå</ng-container>
               </span>
+            } @else if (mixedRoles()) {
+              <span class="sheet-row-role">{{ chip(household) }}</span>
             }
           </button>
         </li>

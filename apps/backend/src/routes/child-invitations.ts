@@ -436,10 +436,8 @@ async function checkLink(
   const state = stateOf(invitation.status, invitation.expires_at);
   if (state !== 'valid') {
     const code = state === 'used' ? 'USED' : state === 'cancelled' ? 'CANCELLED' : 'EXPIRED';
-    throw new LinkRefused(410, code, `Invitation is ${state}`, {
-      householdName: base.householdName,
-      inviterName: base.inviterName,
-    });
+    // A dead link tells only what the public page tells: no household or child names
+    throw new LinkRefused(410, code, `Invitation is ${state}`, { inviterName: base.inviterName });
   }
 
   // The inviter must still be a parent or admin there; otherwise the link is dead
@@ -450,7 +448,6 @@ async function checkLink(
   );
   if (inviter.rows.length === 0) {
     throw new LinkRefused(410, 'CANCELLED', 'Invitation is cancelled', {
-      householdName: base.householdName,
       inviterName: base.inviterName,
     });
   }

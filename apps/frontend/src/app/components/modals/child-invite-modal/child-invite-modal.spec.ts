@@ -111,12 +111,14 @@ describe('ChildInviteModal (popup 18)', () => {
     expect(text()).toContain('Invitasjonen er klar');
   });
 
-  it('an address already in use is said under the field', async () => {
+  // ST-2227: an e-mail with an account is no longer refused (no enumeration); 409 now only
+  // means the profile already has an account
+  it('a profile that already has an account is said under the field', async () => {
     create.mockRejectedValue({ status: 409 });
     emailField().value = 'mathea@eksempel.no';
     emailField().dispatchEvent(new Event('input'));
     await component.onSubmit();
     fixture.detectChanges();
-    expect(text()).toContain('Denne e-postadressen er allerede i bruk i Diddit.');
+    expect(text()).toContain('Profilen har allerede en konto.');
   });
 });

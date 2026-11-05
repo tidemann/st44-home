@@ -6,6 +6,7 @@ import {
   RouterStateSnapshot,
 } from '@angular/router';
 import { AuthService } from '../services/auth.service';
+import { HouseholdStore } from '../stores/household.store';
 
 /**
  * Role Guard Factory
@@ -22,9 +23,10 @@ import { AuthService } from '../services/auth.service';
  *   - Parent/admin users accessing child routes -> /dashboard
  */
 export function roleGuard(allowedRoles: ('admin' | 'parent' | 'child')[]): CanActivateFn {
-  return (route: ActivatedRouteSnapshot, state: RouterStateSnapshot) => {
+  return async (route: ActivatedRouteSnapshot, state: RouterStateSnapshot) => {
     const authService = inject(AuthService);
     const router = inject(Router);
+    const householdStore = inject(HouseholdStore);
 
     // Check if user is authenticated
     if (!authService.isAuthenticated()) {
@@ -33,6 +35,12 @@ export function roleGuard(allowedRoles: ('admin' | 'parent' | 'child')[]): CanAc
       return router.createUrlTree(['/login'], {
         queryParams: { returnUrl: returnUrl !== '/' ? returnUrl : null },
       });
+    }
+
+    // ST-2227: the role is the one in the active household. Know the households first, so
+    // an account that is child here and admin elsewhere never gets parent pages here.
+    if (householdStore.activeHouseholdId() && !householdStore.activeHousehold()) {
+      await householdStore.loadHouseholds().catch(() => undefined);
     }
 
     // Check if user has an allowed role

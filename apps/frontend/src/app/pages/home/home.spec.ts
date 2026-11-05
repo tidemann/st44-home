@@ -30,6 +30,7 @@ describe('Home', () => {
   let mockAuthService: {
     currentUser: ReturnType<typeof vi.fn>;
     hasRole: ReturnType<typeof vi.fn>;
+    activeRole: () => string | undefined;
   };
   let mockPush: { remind: ReturnType<typeof vi.fn> };
   let mockHouseholdService: {
@@ -58,6 +59,7 @@ describe('Home', () => {
     mockAuthService = {
       currentUser: vi.fn().mockReturnValue({ id: '1', email: 'test@example.com' }),
       hasRole: vi.fn().mockReturnValue(false),
+      activeRole: () => undefined,
     };
     mockPush = { remind: vi.fn().mockResolvedValue(1) };
     mockHouseholdService = {

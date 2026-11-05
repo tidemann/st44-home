@@ -23,6 +23,45 @@ export interface ChildInvitationInfo {
   points?: number;
 }
 
+/** ST-2227: the signed-in account may accept (GET /child-invitations/:token/existing) */
+export interface ExistingLinkInfo {
+  householdName: string;
+  childName: string;
+  points: number;
+  inviterName: string;
+  signedInEmail: string;
+  role: 'child';
+}
+
+export interface ExistingLinkResult {
+  householdId: string;
+  householdName: string;
+  childId: string;
+  childName: string;
+  role: 'child';
+}
+
+/** Why the signed-in account cannot accept; the server sends it as `code` */
+export type ExistingLinkRefusal =
+  | 'NOT_FOUND'
+  | 'EXPIRED'
+  | 'CANCELLED'
+  | 'USED'
+  | 'NOT_GOOGLE'
+  | 'WRONG_ACCOUNT'
+  | 'ALREADY_MEMBER'
+  | 'PROFILE_LINKED';
+
+export interface ExistingLinkRefusalBody {
+  code?: ExistingLinkRefusal;
+  householdName?: string;
+  childName?: string;
+  inviterName?: string;
+  signedInEmail?: string;
+  householdId?: string;
+  role?: 'admin' | 'parent' | 'child';
+}
+
 /**
  * Child invitations: a parent makes a 7-day link for an existing child profile, and the child
  * sets their own password on it. No e-mail is sent yet (ST-1362); the parent copies the link.
@@ -57,6 +96,18 @@ export class ChildInvitationService {
 
   async accept(token: string, password: string): Promise<{ email: string }> {
     return this.api.post<{ email: string }>(`/child-invitations/${token}/accept`, { password });
+  }
+
+  /** ST-2227: what the consent page shows for the signed-in account; changes nothing */
+  async existing(token: string): Promise<ExistingLinkInfo> {
+    return this.api.get<ExistingLinkInfo>(`/child-invitations/${token}/existing`);
+  }
+
+  /** ST-2227: the signed-in Google account becomes the child on this profile */
+  async acceptExisting(token: string): Promise<ExistingLinkResult> {
+    return this.api.post<ExistingLinkResult>(`/child-invitations/${token}/accept-existing`, {
+      consent: true,
+    });
   }
 
   /** The link the child opens, under the app's own locale prefix (/no/) */

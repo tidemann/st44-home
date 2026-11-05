@@ -8,6 +8,8 @@ describe('InitialBadge', () => {
   let router: Router;
   const auth = {
     currentUser: vi.fn(),
+    // ST-2227: the role in the active household; here the same as the login role
+    activeRole: () => auth.currentUser()?.role,
     logout: vi.fn(),
   };
 

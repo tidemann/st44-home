@@ -47,3 +47,339 @@
     font-size: 16.5px;
   }
 }
+
+/* ===== ST-2227: the existing-account states (p02–p09, d02–d08) =====
+   Phone: the yellow band with the login lockup, then cards on the paper. From 1024 px the
+   band is the global .desk-band and the body the 428 px .desk-column. */
+:host {
+  display: block;
+}
+
+.link-head {
+  margin: 0;
+  padding: calc(env(safe-area-inset-top, 0px) + 24px) var(--gutter) 20px;
+  background: var(--yellow);
+  color: var(--ink);
+  text-align: left;
+}
+
+.link-head h1 {
+  margin: 24px 0 0;
+  font-family: var(--font-display);
+  font-size: 27px;
+  font-weight: 800;
+  line-height: 1.15;
+  letter-spacing: -0.01em;
+  text-align: left;
+  color: var(--ink);
+  overflow-wrap: anywhere;
+}
+
+.link-head h1:focus {
+  outline: none;
+}
+
+.link-head h1:focus-visible {
+  outline: var(--focus-ring);
+  outline-offset: 2px;
+}
+
+.link-sub {
+  margin: 8px 0 0;
+  font-family: var(--font-text);
+  font-size: 15px;
+  font-weight: 500;
+  line-height: 1.4;
+  color: var(--ink);
+  overflow-wrap: anywhere;
+}
+
+.lockup {
+  display: flex;
+  align-items: center;
+  gap: 13px;
+}
+
+.wordmark {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: 37px;
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: -0.02em;
+  color: var(--ink);
+}
+
+.link-body {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 22px var(--gutter) 32px;
+  background: var(--bg);
+}
+
+.link-lead,
+.link-note,
+.link-muted {
+  margin: 0;
+  font-family: var(--font-text);
+  font-size: 15px;
+  line-height: 1.5;
+  color: var(--text-muted);
+  overflow-wrap: anywhere;
+}
+
+.link-summary,
+.link-card {
+  margin: 0;
+  padding: 8px 16px;
+  background: var(--surface);
+  border-radius: var(--r-card);
+}
+
+.link-card {
+  padding: 16px;
+}
+
+.link-card--error {
+  border: 2px solid var(--overdue);
+}
+
+.link-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  min-height: 48px;
+  padding: 6px 0;
+  border-bottom: 1px solid var(--hairline);
+}
+
+.link-row:last-child {
+  border-bottom: 0;
+}
+
+.link-row dt {
+  flex: none;
+  font-family: var(--font-text);
+  font-size: 14px;
+  color: var(--text-muted);
+}
+
+.link-row dd {
+  min-width: 0;
+  margin: 0;
+  font-family: var(--font-text);
+  font-size: 16px;
+  font-weight: 500;
+  color: var(--text);
+  text-align: right;
+  overflow-wrap: anywhere;
+}
+
+.link-chip {
+  display: inline-block;
+  padding: 6px 12px;
+  border-radius: var(--r-chip);
+  background: var(--track);
+  color: var(--ink);
+}
+
+.link-card-title {
+  margin: 0 0 8px;
+  font-family: var(--font-display);
+  font-size: 19px;
+  font-weight: 800;
+  line-height: 1.2;
+  color: var(--text);
+  overflow-wrap: anywhere;
+}
+
+.link-checks {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.link-checks li {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  font-family: var(--font-text);
+  font-size: 15px;
+  line-height: 1.45;
+  color: var(--text);
+  overflow-wrap: anywhere;
+}
+
+.link-tick {
+  flex: none;
+  margin-top: 2px;
+  color: var(--done);
+}
+
+.link-strong {
+  margin: 0 0 8px;
+  font-family: var(--font-text);
+  font-size: 15px;
+  font-weight: 500;
+  line-height: 1.45;
+  color: var(--text);
+  overflow-wrap: anywhere;
+}
+
+.link-warn {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  margin: 0 0 8px;
+  font-family: var(--font-text);
+  font-size: 15px;
+  line-height: 1.45;
+  color: var(--overdue);
+  overflow-wrap: anywhere;
+}
+
+.link-warn-icon {
+  flex: none;
+  margin-top: 2px;
+}
+
+.link-status:empty {
+  display: none;
+}
+
+.link-status {
+  font-family: var(--font-text);
+  font-size: 15px;
+  color: var(--text-muted);
+}
+
+.link-error {
+  margin: 0;
+  font-family: var(--font-text);
+  font-size: 15px;
+  color: var(--overdue);
+}
+
+.link-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  box-sizing: border-box;
+  width: 100%;
+  min-height: 49px;
+  padding: 10px 16px;
+  border-radius: var(--r-button);
+  font-family: var(--font-text);
+  font-size: 16.5px;
+  font-weight: 600;
+  line-height: 1.25;
+  text-align: center;
+  color: var(--ink);
+  cursor: pointer;
+  overflow-wrap: anywhere;
+}
+
+.link-btn--primary {
+  border: 0;
+  background: var(--yellow);
+}
+
+.link-btn--primary:hover {
+  background: var(--yellow-inset);
+}
+
+.link-btn--outline {
+  border: 1.5px solid var(--text-muted);
+  background: var(--surface);
+}
+
+.link-btn:focus-visible,
+.link-inline:focus-visible {
+  outline: var(--focus-ring);
+  outline-offset: 2px;
+}
+
+.link-btn[aria-busy='true'],
+.link-btn:disabled {
+  cursor: progress;
+  opacity: 0.7;
+}
+
+.link-g {
+  flex: none;
+}
+
+.link-foot {
+  margin: 4px 0 0;
+  font-family: var(--font-text);
+  font-size: 15px;
+  line-height: 1.5;
+  color: var(--text-muted);
+  text-align: center;
+}
+
+.link-foot--left {
+  text-align: left;
+}
+
+.link-inline {
+  display: inline;
+  min-height: 24px;
+  padding: 0;
+  border: 0;
+  background: none;
+  font: inherit;
+  color: var(--amber-ink);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  cursor: pointer;
+}
+
+@media (min-width: 1024px) {
+  .link-head {
+    padding: 32px max(0px, calc((100% - 880px) / 2)) 0;
+  }
+
+  .link-head .lockup {
+    display: none;
+  }
+
+  .link-head h1 {
+    margin: 0;
+    padding-top: 4px;
+    font-size: 26px;
+  }
+
+  .link-sub {
+    margin: 4px 0 20px;
+  }
+
+  .link-body {
+    padding: 24px 452px 32px 0;
+    background: none;
+  }
+
+  .reset-password-container.link-page {
+    background: none;
+  }
+
+  .link-foot {
+    text-align: left;
+  }
+}
+
+/* The new states draw their own band: no white card around them on the phone */
+.reset-password-container.link-page {
+  max-width: none;
+  margin: 0;
+  padding: 0;
+  background: var(--bg);
+  border-radius: 0;
+  min-height: 100dvh;
+}

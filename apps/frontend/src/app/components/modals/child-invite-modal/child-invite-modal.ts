@@ -117,7 +117,7 @@ export class ChildInviteModal {
       const status = (error as { status?: number })?.status;
       this.serverError.set(
         status === 409
-          ? $localize`:@@childInviteModal.emailInUse:Denne e-postadressen er allerede i bruk i Diddit.`
+          ? $localize`:@@childInviteModal.profileLinked:Profilen har allerede en konto.`
           : $localize`:@@childInviteModal.failed:Kunne ikke lage invitasjonen. Prøv igjen.`,
       );
     } finally {
