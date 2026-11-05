@@ -19,7 +19,7 @@ import {
   AbstractControl,
 } from '@angular/forms';
 import { Router, ActivatedRoute, RouterLink } from '@angular/router';
-import { AuthService } from '../services/auth.service';
+import { AuthService, invitationTokenFromReturnUrl } from '../services/auth.service';
 import { DidditMark } from '../components/diddit-mark/diddit-mark';
 import { lastValueFrom } from 'rxjs';
 import { environment } from '../../environments/environment';
@@ -228,11 +228,18 @@ export class RegisterComponent implements OnInit, AfterViewInit, OnDestroy {
     this.errorMessage.set(null);
 
     try {
-      await lastValueFrom(this.authService.loginWithGoogle(response.credential));
-
-      // Success - navigate to returnUrl if provided, otherwise household creation page
       const returnUrl = this.route.snapshot.queryParams['returnUrl'];
-      if (returnUrl) {
+      const result = await lastValueFrom(
+        this.authService.loginWithGoogle(
+          response.credential,
+          invitationTokenFromReturnUrl(returnUrl),
+        ),
+      );
+
+      // New invitees already joined during Google sign-in; do not reopen the spent link.
+      if (result.invitationAccepted) {
+        this.router.navigateByUrl('/home');
+      } else if (returnUrl) {
         this.router.navigateByUrl(returnUrl);
       } else {
         this.router.navigate(['/household/create']);

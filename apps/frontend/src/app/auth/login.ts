@@ -13,7 +13,7 @@ import { NgTemplateOutlet } from '@angular/common';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { ReactiveFormsModule, FormGroup, FormControl, Validators } from '@angular/forms';
 import { Router, RouterLink, ActivatedRoute } from '@angular/router';
-import { AuthService } from '../services/auth.service';
+import { AuthService, invitationTokenFromReturnUrl } from '../services/auth.service';
 import { HouseholdService } from '../services/household.service';
 import { QrAuthService } from '../services/qr-auth.service';
 import { TokenService } from '../services/token.service';
@@ -181,14 +181,17 @@ export class LoginComponent implements OnInit, AfterViewInit, OnDestroy {
     this.fieldError.set('none');
 
     try {
-      await lastValueFrom(this.authService.loginWithGoogle(response.credential));
+      const returnUrl = this.route.snapshot.queryParams['returnUrl'];
+      const result = await lastValueFrom(
+        this.authService.loginWithGoogle(
+          response.credential,
+          invitationTokenFromReturnUrl(returnUrl),
+        ),
+      );
 
-      // Auto-activate household after successful login
       await this.householdService.autoActivateHousehold();
-
-      // Success - navigate to return URL or home
-      const returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/home';
-      this.router.navigateByUrl(returnUrl);
+      // A new invitee joined atomically during Google sign-in; the link is now spent.
+      this.router.navigateByUrl(result.invitationAccepted ? '/home' : returnUrl || '/home');
     } catch {
       this.errorMessage.set(
         $localize`:@@login.googleSigninFailed:Google-innloggingen gikk ikke. Prøv igjen.`,
