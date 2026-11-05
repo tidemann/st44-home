@@ -19,6 +19,7 @@ describe('InvitationAcceptComponent', () => {
   };
   let mockAuthService: {
     isAuthenticated: ReturnType<typeof signal<boolean>>;
+    activeRole: () => undefined;
   };
   let mockActivatedRoute: { snapshot: { paramMap: Map<string, string> } };
   let mockHouseholdStore: {
@@ -39,6 +40,7 @@ describe('InvitationAcceptComponent', () => {
     };
     mockAuthService = {
       isAuthenticated: signal(false),
+      activeRole: () => undefined,
     };
     mockActivatedRoute = {
       snapshot: { paramMap: new Map([['token', 'test-token-123']]) },

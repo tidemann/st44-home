@@ -106,7 +106,11 @@ describe('Tasks (Poeng task list)', () => {
         { provide: HouseholdDayService, useValue: mockDay },
         {
           provide: AuthService,
-          useValue: { currentUser: signal({ id: 'user-1', role: 'parent' }), logout: vi.fn() },
+          useValue: {
+            currentUser: signal({ id: 'user-1', role: 'parent' }),
+            activeRole: () => 'parent',
+            logout: vi.fn(),
+          },
         },
         { provide: Router, useValue: mockRouter },
         { provide: ActivatedRoute, useValue: { snapshot: { queryParams } } },

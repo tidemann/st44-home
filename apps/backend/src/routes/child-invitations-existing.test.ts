@@ -174,7 +174,7 @@ describe('Child invitation — existing Google account', () => {
     assert.strictEqual(JSON.parse(check.body).role, 'child');
 
     // Consent must be explicit
-    const noConsent = await accept(token, jonas.token, undefined);
+    const noConsent = await accept(token, jonas.token, false);
     assert.strictEqual(noConsent.statusCode, 400);
     assert.deepStrictEqual(await snapshot(jonas.id, childId), before);
 
@@ -320,7 +320,7 @@ describe('Child invitation — existing Google account', () => {
     const childId = await addChild('Utløpt');
     const token = await invite(childId, jo.email);
     await pool.query(
-      `UPDATE invitations SET expires_at = NOW() - INTERVAL '1 day' WHERE token = $1`,
+      `UPDATE invitations SET created_at = NOW() - INTERVAL '8 days', expires_at = NOW() - INTERVAL '1 day' WHERE token = $1`,
       [token],
     );
     const expired = await accept(token, jo.token);
