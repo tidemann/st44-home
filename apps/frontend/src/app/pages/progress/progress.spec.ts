@@ -10,7 +10,10 @@ import type { HouseholdAnalytics } from '@st44/types';
 describe('Progress', () => {
   let component: Progress;
   let fixture: ComponentFixture<Progress>;
-  let mockAuthService: { currentUser: ReturnType<typeof vi.fn> };
+  let mockAuthService: {
+    currentUser: ReturnType<typeof vi.fn>;
+    activeRole: () => string | undefined;
+  };
   let mockHouseholdService: { listHouseholds: ReturnType<typeof vi.fn> };
   let mockAnalyticsService: { getHouseholdAnalytics: ReturnType<typeof vi.fn> };
   let mockHouseholdStore: {
@@ -118,6 +121,8 @@ describe('Progress', () => {
   beforeEach(async () => {
     mockAuthService = {
       currentUser: vi.fn().mockReturnValue(mockUser),
+      // ST-2227: the role in the active household; here the login role
+      activeRole: () => undefined,
     };
 
     mockHouseholdService = {

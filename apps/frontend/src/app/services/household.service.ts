@@ -16,6 +16,7 @@ export interface HouseholdListItem {
   memberCount?: number;
   childrenCount?: number;
   adminCount?: number; // Number of admins in the household
+  childName?: string | null; // ST-2227: own child profile here, if any
 }
 
 /**

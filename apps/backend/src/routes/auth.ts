@@ -529,12 +529,21 @@ export default async function authRoutes(fastify: FastifyInstance) {
               }
               const found = await client.query(
                 `SELECT id, household_id, invited_email, role, status, expires_at
-                 FROM invitations WHERE token = $1 AND role <> 'child' FOR UPDATE`,
+                 FROM invitations WHERE token = $1 FOR UPDATE`,
                 [invitationToken],
               );
               const row = found.rows[0];
               if (!row)
                 throw new TransactionValidationError(404, 'Not Found', 'Invitation not found');
+              // ST-2227: a child link is accepted by an existing account only, after consent.
+              // Google sign-in never makes a new account or household from it.
+              if (row.role === 'child') {
+                throw new TransactionValidationError(
+                  409,
+                  'NO_ACCOUNT',
+                  'No Diddit account for this Google login',
+                );
+              }
               if (row.invited_email.toLowerCase() !== email.toLowerCase()) {
                 throw new TransactionValidationError(
                   403,

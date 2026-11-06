@@ -89,6 +89,8 @@ for (const scenario of [
   { name: 'expired', row: { expires_at: new Date(0) }, expected: 400 },
   { name: 'reused', row: { status: 'accepted' }, expected: 400 },
   { name: 'unknown token', row: null, expected: 404 },
+  // ST-2227: a child link never makes a new Google account or household
+  { name: 'child link for a new Google login', row: { role: 'child' }, expected: 409 },
 ]) {
   test(`Google invitation rejects ${scenario.name} before creating an account`, async () => {
     const queries: string[] = [];

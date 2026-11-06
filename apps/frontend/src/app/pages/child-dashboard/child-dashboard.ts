@@ -47,6 +47,9 @@ import {
 } from '../../components/modals/subtask-chore-modal/subtask-chore-modal';
 import type { ChildAnalytics, TaskTurn } from '@st44/types';
 import { isDesktopSignal } from '../../utils/desktop-query';
+import { HouseholdStore } from '../../stores/household.store';
+import { HouseholdSheet } from '../../components/household-sheet/household-sheet';
+import { householdSubline, type LinkedChildState } from '../../utils/household-role';
 
 /** What the tick moment shows for the chore just ticked */
 interface TickState {
@@ -81,6 +84,7 @@ interface TickState {
     DailyPointsChart,
     NotificationSettings,
     SubtaskChoreModal,
+    HouseholdSheet,
   ],
   templateUrl: './child-dashboard.html',
   styleUrl: './child-dashboard.css',
@@ -94,6 +98,7 @@ export class ChildDashboardComponent implements OnInit {
   private rewardService = inject(RewardService);
   private singleTaskService = inject(SingleTaskService);
   private turnService = inject(TurnService);
+  private householdStore = inject(HouseholdStore);
 
   // Local state
   analytics = signal<ChildAnalytics | null>(null);
@@ -120,6 +125,23 @@ export class ChildDashboardComponent implements OnInit {
   bandLoading = computed(() => this.isLoading() || this.rewardsLoading());
 
   protected readonly today = longDate();
+
+  /**
+   * ST-2227: the child sees where it is and as what, in place of
+   * the date: «Familien Nordmann · Barn ▾», which opens «Bytt husstand».
+   */
+  protected readonly households = this.householdStore.households;
+  protected readonly activeHouseholdId = this.householdStore.activeHouseholdId;
+  protected readonly multiHousehold = computed(() => this.households().length > 1);
+  protected readonly subline = computed(() => {
+    const active = this.householdStore.activeHousehold();
+    return active ? householdSubline(active.name, active.role) : this.today;
+  });
+  protected readonly householdSheetOpen = signal(false);
+
+  /** ST-2227: the informative toast after a link; the sub-line says the same for good */
+  protected readonly linkedToast = signal<string | null>(null);
+  private toastTimer: ReturnType<typeof setTimeout> | null = null;
 
   /** 1024 px and wider: desktop A, done chores move to their own column */
   protected readonly desktop = isDesktopSignal();
@@ -191,7 +213,47 @@ export class ChildDashboardComponent implements OnInit {
   });
 
   async ngOnInit() {
-    await this.loadMyTasks();
+    const tasks = this.loadMyTasks();
+    await this.householdStore.loadHouseholds().catch(() => undefined);
+    this.showLinkedToast();
+    await tasks;
+  }
+
+  /** The toast after «Godta»: shown once, never needed to understand where you are */
+  private showLinkedToast(): void {
+    const state = (history.state ?? {}) as Partial<LinkedChildState>;
+    const name = state.linkedHousehold;
+    if (!name) return;
+    history.replaceState({ ...history.state, linkedHousehold: undefined }, '');
+    const other = this.households().find((h) => h.id !== this.activeHouseholdId());
+    this.linkedToast.set(
+      other
+        ? $localize`:@@childDashboard.linkedToastOther:Du er med i ${name}:household: som barn. ${other.name}:other: finner du under «Bytt husstand».`
+        : $localize`:@@childDashboard.linkedToast:Du er med i ${name}:household: som barn.`,
+    );
+    this.toastTimer = setTimeout(() => this.linkedToast.set(null), 10000);
+  }
+
+  protected dismissToast(): void {
+    if (this.toastTimer) clearTimeout(this.toastTimer);
+    this.linkedToast.set(null);
+  }
+
+  /** «Bytt husstand»: the role guard sends a parent household to the parent home */
+  protected switchHousehold(householdId: string): void {
+    this.householdSheetOpen.set(false);
+    this.householdStore.setActiveHousehold(householdId);
+    const role = this.households().find((h) => h.id === householdId)?.role;
+    if (role === 'child') {
+      void this.loadMyTasks();
+    } else {
+      void this.router.navigateByUrl('/home');
+    }
+  }
+
+  protected manageHouseholds(): void {
+    this.householdSheetOpen.set(false);
+    void this.router.navigate(['/households']);
   }
 
   async loadMyTasks() {

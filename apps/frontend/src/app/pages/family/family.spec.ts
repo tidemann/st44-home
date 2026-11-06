@@ -15,7 +15,10 @@ describe('Family', () => {
     listHouseholds: ReturnType<typeof vi.fn>;
     getHouseholdMembers: ReturnType<typeof vi.fn>;
   };
-  let mockAuthService: { currentUser: ReturnType<typeof vi.fn> };
+  let mockAuthService: {
+    currentUser: ReturnType<typeof vi.fn>;
+    activeRole: () => string | undefined;
+  };
   let mockChildrenService: {
     createChild: ReturnType<typeof vi.fn>;
     listChildren: ReturnType<typeof vi.fn>;
@@ -58,6 +61,8 @@ describe('Family', () => {
     };
     mockAuthService = {
       currentUser: vi.fn().mockReturnValue(mockUser),
+      // ST-2227: the role in the active household; here the login role
+      activeRole: () => undefined,
     };
     mockChildrenService = {
       createChild: vi.fn().mockResolvedValue({ id: 'child-1', name: 'New Child' }),

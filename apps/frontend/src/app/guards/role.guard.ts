@@ -6,6 +6,7 @@ import {
   RouterStateSnapshot,
 } from '@angular/router';
 import { AuthService } from '../services/auth.service';
+import { HouseholdStore } from '../stores/household.store';
 
 /**
  * Role Guard Factory
@@ -22,9 +23,10 @@ import { AuthService } from '../services/auth.service';
  *   - Parent/admin users accessing child routes -> /dashboard
  */
 export function roleGuard(allowedRoles: ('admin' | 'parent' | 'child')[]): CanActivateFn {
-  return (route: ActivatedRouteSnapshot, state: RouterStateSnapshot) => {
+  return async (route: ActivatedRouteSnapshot, state: RouterStateSnapshot) => {
     const authService = inject(AuthService);
     const router = inject(Router);
+    const householdStore = inject(HouseholdStore);
 
     // Check if user is authenticated
     if (!authService.isAuthenticated()) {
@@ -35,8 +37,21 @@ export function roleGuard(allowedRoles: ('admin' | 'parent' | 'child')[]): CanAc
       });
     }
 
-    // Check if user has an allowed role
-    const userRole = authService.getUserRole();
+    // ST-2227: the role is the one in the active household. One account can be child here and
+    // admin elsewhere, so the login role is never trusted while the households are unknown.
+    // Load them and make sure one is active; if that fails, use the least privilege (child).
+    let householdsUnknown = false;
+    if (!householdStore.activeHousehold()) {
+      try {
+        await householdStore.autoActivateHousehold();
+      } catch {
+        householdsUnknown = true;
+      }
+    }
+
+    const userRole: 'admin' | 'parent' | 'child' | undefined = householdsUnknown
+      ? 'child'
+      : (householdStore.activeHousehold()?.role ?? authService.getUserRole());
 
     // If user has no role (shouldn't happen), redirect to login
     if (!userRole) {

@@ -122,6 +122,10 @@ export class PageComponent {
   titleMenu = input<boolean>(false);
   titleMenuOpen = output<void>();
 
+  /** ST-2227: the band sub-line is a button that opens «Bytt husstand» */
+  subtitleMenu = input<boolean>(false);
+  subtitleMenuOpen = output<void>();
+
   /**
    * While the title is still loading (ST-1839): the h1 shows a grey placeholder bar about the
    * height of the name, in the loading rows' grey, so the band keeps its height.

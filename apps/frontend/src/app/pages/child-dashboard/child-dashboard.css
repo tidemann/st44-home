@@ -165,3 +165,49 @@
 app-loading-rows {
   margin-top: 21px;
 }
+
+/* ST-2227: the toast after a link (p04): Ink card, yellow tick, white text */
+.linked-toast {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  margin: 0 0 20px;
+  padding: 16px 12px 16px 16px;
+  background: var(--ink);
+  color: #fff;
+  border-radius: var(--r-card);
+}
+
+.linked-toast svg {
+  flex: none;
+  margin-top: 3px;
+  color: var(--yellow);
+}
+
+.linked-toast p {
+  flex: 1;
+  min-width: 0;
+  margin: 0;
+  font-size: 1rem;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}
+
+.linked-toast-close {
+  flex: none;
+  min-width: 44px;
+  min-height: 44px;
+  margin: -12px -4px -12px 0;
+  border: 0;
+  background: none;
+  color: #fff;
+  font-size: 1.5rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.linked-toast-close:focus-visible {
+  outline: 2px solid var(--yellow);
+  outline-offset: 2px;
+  border-radius: 8px;
+}

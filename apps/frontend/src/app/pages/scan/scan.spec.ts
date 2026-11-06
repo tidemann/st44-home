@@ -23,7 +23,11 @@ describe('ScanPage', () => {
         { provide: TurnService, useValue: { scan: vi.fn(async () => answer) } },
         {
           provide: AuthService,
-          useValue: { currentUser: () => null, getUserRole: () => 'parent' },
+          useValue: {
+            currentUser: () => null,
+            getUserRole: () => 'parent',
+            activeRole: () => 'parent',
+          },
         },
       ],
     }).compileComponents();

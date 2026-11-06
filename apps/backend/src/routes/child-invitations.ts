@@ -141,12 +141,9 @@ async function createChildInvitation(
         throw new TransactionValidationError(409, 'Conflict', 'Child already has a user account');
       }
 
-      const emailCheck = await client.query('SELECT id FROM users WHERE LOWER(email) = $1', [
-        email,
-      ]);
-      if (emailCheck.rows.length > 0) {
-        throw new TransactionValidationError(409, 'Conflict', 'Email already in use');
-      }
+      // ST-2227: an e-mail that already has a Diddit login is fine — that person signs in
+      // with Google and accepts on /child-invite/:token. The parent gets the same answer
+      // either way, so this endpoint never tells whether an e-mail has an account.
 
       await client.query(
         `UPDATE invitations SET status = 'cancelled', updated_at = NOW()
@@ -309,7 +306,7 @@ async function acceptChildInvitation(
         invitation.invited_email,
       ]);
       if (emailCheck.rows.length > 0) {
-        throw new TransactionValidationError(409, 'Conflict', 'Email already in use');
+        throw new TransactionValidationError(409, 'ACCOUNT_EXISTS', 'Email already in use');
       }
 
       const passwordHash = await bcrypt.hash(password, 10);
@@ -350,6 +347,280 @@ async function acceptChildInvitation(
   }
 }
 
+/**
+ * ST-2227 — an existing Google-backed account accepts a child invitation.
+ *
+ * The person is already logged in (Google). The account keeps its identity, its Google
+ * subject and every other household with its role; it gets the child role in the inviting
+ * household only, and is linked to the existing children row (points and history stay).
+ *
+ * Every rule is checked again under row locks inside one transaction, so a wrong account,
+ * a dead link, a profile linked meanwhile, a membership added meanwhile, an inviter who
+ * lost parent rights, or a second press commits nothing.
+ */
+export type ExistingAcceptCode =
+  | 'NOT_FOUND'
+  | 'EXPIRED'
+  | 'CANCELLED'
+  | 'USED'
+  | 'NOT_GOOGLE'
+  | 'WRONG_ACCOUNT'
+  | 'ALREADY_MEMBER'
+  | 'PROFILE_LINKED';
+
+class LinkRefused extends Error {
+  constructor(
+    public statusCode: number,
+    public code: ExistingAcceptCode,
+    message: string,
+    public extra: Record<string, unknown> = {},
+  ) {
+    super(message);
+    this.name = 'LinkRefused';
+  }
+}
+
+interface Queryable {
+  query: typeof db.query;
+}
+
+interface LinkCheck {
+  invitationId: string;
+  householdId: string;
+  householdName: string;
+  childId: string;
+  childName: string;
+  points: number;
+  inviterName: string;
+  invitedEmail: string;
+  signedInEmail: string;
+}
+
+/**
+ * The checks shared by the read (eligibility) and the write (accept). With `lock` the rows
+ * are taken FOR UPDATE in a fixed order: invitation, user, child, membership.
+ */
+async function checkLink(
+  client: Queryable,
+  token: string,
+  userId: string,
+  lock: boolean,
+): Promise<LinkCheck> {
+  const forUpdate = lock ? 'FOR UPDATE' : '';
+  const inv = await client.query(
+    `SELECT id, household_id, child_id, invited_by, invited_email, status, expires_at
+     FROM invitations WHERE token = $1 AND role = 'child' ${forUpdate}`,
+    [token],
+  );
+  if (inv.rows.length === 0) throw new LinkRefused(404, 'NOT_FOUND', 'Invitation not found');
+  const invitation = inv.rows[0];
+
+  const names = await client.query(
+    `SELECT h.name AS household_name, c.name AS child_name,
+            COALESCE(NULLIF(u.first_name, ''), u.email) AS inviter_name,
+            COALESCE(b.points_balance, 0)::int AS points
+     FROM households h
+     JOIN children c ON c.id = $2
+     JOIN users u ON u.id = $3
+     LEFT JOIN child_points_balance b ON b.child_id = c.id
+     WHERE h.id = $1`,
+    [invitation.household_id, invitation.child_id, invitation.invited_by],
+  );
+  const n = names.rows[0] ?? {};
+  const base = {
+    householdName: n.household_name as string,
+    childName: n.child_name as string,
+    inviterName: n.inviter_name as string,
+  };
+
+  const state = stateOf(invitation.status, invitation.expires_at);
+  if (state !== 'valid') {
+    const code = state === 'used' ? 'USED' : state === 'cancelled' ? 'CANCELLED' : 'EXPIRED';
+    // A dead link tells only what the public page tells: no household or child names
+    throw new LinkRefused(410, code, `Invitation is ${state}`, { inviterName: base.inviterName });
+  }
+
+  // The inviter must still be a parent or admin there; otherwise the link is dead
+  const inviter = await client.query(
+    `SELECT role FROM household_members
+     WHERE household_id = $1 AND user_id = $2 AND role IN ('admin', 'parent')`,
+    [invitation.household_id, invitation.invited_by],
+  );
+  if (inviter.rows.length === 0) {
+    throw new LinkRefused(410, 'CANCELLED', 'Invitation is cancelled', {
+      inviterName: base.inviterName,
+    });
+  }
+
+  const user = await client.query(
+    `SELECT email, oauth_provider, oauth_provider_id FROM users WHERE id = $1 ${forUpdate}`,
+    [userId],
+  );
+  if (user.rows.length === 0) throw new LinkRefused(401, 'WRONG_ACCOUNT', 'Unknown account');
+  const account = user.rows[0];
+  const signedInEmail = account.email as string;
+  const invitedEmail = invitation.invited_email as string;
+
+  // Strict: the invited e-mail and the account e-mail match ignoring case — and the
+  // account is Google-backed. E-mail alone never links anything.
+  if (signedInEmail.trim().toLowerCase() !== invitedEmail.trim().toLowerCase()) {
+    throw new LinkRefused(403, 'WRONG_ACCOUNT', 'Invitation email does not match', {
+      ...base,
+      signedInEmail,
+    });
+  }
+  if (account.oauth_provider !== 'google' || !account.oauth_provider_id) {
+    throw new LinkRefused(403, 'NOT_GOOGLE', 'A Google sign-in is required', {
+      ...base,
+      signedInEmail,
+    });
+  }
+
+  const child = await client.query(
+    `SELECT user_id FROM children WHERE id = $1 AND household_id = $2 ${forUpdate}`,
+    [invitation.child_id, invitation.household_id],
+  );
+  if (child.rows.length === 0) throw new LinkRefused(404, 'NOT_FOUND', 'Child not found');
+  if (child.rows[0].user_id) {
+    throw new LinkRefused(409, 'PROFILE_LINKED', 'Child already has a user account', base);
+  }
+
+  const member = await client.query(
+    `SELECT role FROM household_members WHERE household_id = $1 AND user_id = $2 ${forUpdate}`,
+    [invitation.household_id, userId],
+  );
+  if (member.rows.length > 0) {
+    throw new LinkRefused(409, 'ALREADY_MEMBER', 'Already a member of this household', {
+      ...base,
+      householdId: invitation.household_id,
+      role: member.rows[0].role,
+    });
+  }
+
+  return {
+    invitationId: invitation.id,
+    householdId: invitation.household_id,
+    childId: invitation.child_id,
+    points: n.points ?? 0,
+    invitedEmail,
+    signedInEmail,
+    ...base,
+  };
+}
+
+function sendRefusal(reply: FastifyReply, error: LinkRefused) {
+  return reply.status(error.statusCode).send({
+    error: error.code,
+    code: error.code,
+    message: error.message,
+    ...error.extra,
+  });
+}
+
+/**
+ * GET /api/child-invitations/:token/existing  (logged in)
+ * What the consent page shows for the signed-in account. Reads only; changes nothing.
+ */
+async function getExistingEligibility(
+  request: FastifyRequest<{ Params: TokenParams }>,
+  reply: FastifyReply,
+) {
+  const userId = request.user?.userId;
+  if (!userId) {
+    return reply.status(401).send({ error: 'Unauthorized', message: 'Authentication required' });
+  }
+  try {
+    const check = await checkLink(db, request.params.token, userId, false);
+    return reply.status(200).send({
+      householdName: check.householdName,
+      childName: check.childName,
+      points: check.points,
+      inviterName: check.inviterName,
+      signedInEmail: check.signedInEmail,
+      role: 'child',
+    });
+  } catch (error) {
+    if (error instanceof LinkRefused) return sendRefusal(reply, error);
+    request.log.error(error, 'Failed to check child invitation for existing account');
+    return reply
+      .status(500)
+      .send({ error: 'Internal Server Error', message: 'Failed to check invitation' });
+  }
+}
+
+/**
+ * POST /api/child-invitations/:token/accept-existing  (logged in)
+ * Body: { consent: true }. Links the signed-in Google account to the child profile.
+ */
+async function acceptExistingChildInvitation(
+  request: FastifyRequest<{ Params: TokenParams; Body: { consent?: boolean } }>,
+  reply: FastifyReply,
+) {
+  const userId = request.user?.userId;
+  if (!userId) {
+    return reply.status(401).send({ error: 'Unauthorized', message: 'Authentication required' });
+  }
+  if (request.body?.consent !== true) {
+    return reply
+      .status(400)
+      .send({ error: 'Bad Request', message: 'Explicit consent is required' });
+  }
+
+  try {
+    const linked = await withTransaction(pool, async (client) => {
+      const check = await checkLink(client, request.params.token, userId, true);
+
+      // Membership first: the children trigger checks it before user_id is linked
+      await client.query(
+        `INSERT INTO household_members (household_id, user_id, role) VALUES ($1, $2, 'child')`,
+        [check.householdId, userId],
+      );
+      const updated = await client.query(
+        `UPDATE children SET user_id = $1, updated_at = NOW()
+         WHERE id = $2 AND user_id IS NULL RETURNING id`,
+        [userId, check.childId],
+      );
+      if (updated.rows.length !== 1) {
+        throw new LinkRefused(409, 'PROFILE_LINKED', 'Child already has a user account');
+      }
+      const spent = await client.query(
+        `UPDATE invitations SET status = 'accepted', accepted_at = NOW(), updated_at = NOW()
+         WHERE id = $1 AND status = 'pending' RETURNING id`,
+        [check.invitationId],
+      );
+      if (spent.rows.length !== 1) {
+        throw new LinkRefused(410, 'USED', 'Invitation is used');
+      }
+      return check;
+    });
+
+    request.log.info(
+      { userId, householdId: linked.householdId, childId: linked.childId },
+      'Existing account linked to child profile',
+    );
+    return reply.status(200).send({
+      householdId: linked.householdId,
+      householdName: linked.householdName,
+      childId: linked.childId,
+      childName: linked.childName,
+      role: 'child',
+    });
+  } catch (error) {
+    if (error instanceof LinkRefused) return sendRefusal(reply, error);
+    // A unique violation means a parallel press won; nothing of ours was committed
+    if ((error as { code?: string })?.code === '23505') {
+      return reply
+        .status(409)
+        .send({ error: 'USED', code: 'USED', message: 'Invitation was just used' });
+    }
+    request.log.error(error, 'Failed to link existing account to child');
+    return reply.status(500).send({
+      error: 'Internal Server Error',
+      message: 'Failed to accept child invitation',
+    });
+  }
+}
+
 export async function childInvitationRoutes(fastify: FastifyInstance) {
   const parentOnly = [
     authenticateUser,
@@ -370,5 +641,15 @@ export async function childInvitationRoutes(fastify: FastifyInstance) {
   fastify.post<{ Params: TokenParams; Body: { password?: string } }>(
     '/api/child-invitations/:token/accept',
     acceptChildInvitation,
+  );
+  fastify.get<{ Params: TokenParams }>(
+    '/api/child-invitations/:token/existing',
+    { preHandler: [authenticateUser] },
+    getExistingEligibility,
+  );
+  fastify.post<{ Params: TokenParams; Body: { consent?: boolean } }>(
+    '/api/child-invitations/:token/accept-existing',
+    { preHandler: [authenticateUser] },
+    acceptExistingChildInvitation,
   );
 }

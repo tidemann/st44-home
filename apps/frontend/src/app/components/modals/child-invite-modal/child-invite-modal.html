@@ -2,7 +2,7 @@
   <div class="child-invite">
     @if (created(); as invitation) {
       <!-- Step 2: the link is ready -->
-      <div class="invite-status">
+      <div class="invite-status" role="status">
         <p class="invite-status-label">
           <span class="invite-status-icon" aria-hidden="true">✓</span>
           <span i18n="@@childInviteModal.ready">Invitasjonen er klar</span>
@@ -23,6 +23,7 @@
             [value]="displayLink(invitation.token)"
           />
           <button
+            #copyButton
             type="button"
             class="action action-primary"
             (click)="copy()"
@@ -41,6 +42,12 @@
       <p class="hint" i18n="@@childInviteModal.noEmailYet">
         Diddit sender ingen e-post ennå. Send lenken til {{ childName() }} i en melding. Den virker
         i 7 dager.
+      </p>
+
+      <!-- ST-2227: the same words whether or not the e-mail has an account (no enumeration) -->
+      <p class="hint" i18n="@@childInviteModal.existingAccount">
+        Har {{ childName() }} allerede en Diddit-konto med denne e-posten, logger {{ childName() }}
+        inn med Google og godtar selv. Poeng og historikk blir der de er.
       </p>
 
       <div class="modal-actions single-action" modal-actions>

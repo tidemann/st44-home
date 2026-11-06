@@ -286,3 +286,30 @@
     padding: 0 0 32px;
   }
 }
+
+/* ST-2227: the band sub-line as a button («Familien Nordmann · Barn ▾»). It reads as the
+   sub-line; the caret says it opens «Bytt husstand». */
+.page-subtitle-menu {
+  display: inline;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  overflow-wrap: anywhere;
+  cursor: pointer;
+}
+
+.page-subtitle-menu:focus-visible {
+  outline: var(--focus-ring);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+.page-subtitle-caret {
+  display: inline-block;
+  margin-left: 4px;
+  vertical-align: -1px;
+}

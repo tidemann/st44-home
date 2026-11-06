@@ -99,6 +99,19 @@ describe('ChildInviteModal (popup 18)', () => {
     expect(text()).toContain('Lenken er kopiert');
   });
 
+  it('ST-2227: when the link is ready, focus moves to «Kopier lenke» and the status is announced', async () => {
+    emailField().value = 'mathea@eksempel.no';
+    emailField().dispatchEvent(new Event('input'));
+    await component.onSubmit();
+    fixture.detectChanges();
+    await new Promise((resolve) => setTimeout(resolve));
+
+    const active = document.activeElement as HTMLElement;
+    expect(active.textContent?.trim()).toBe('Kopier lenke');
+    const status = fixture.nativeElement.querySelector('.invite-status') as HTMLElement;
+    expect(status.getAttribute('role')).toBe('status');
+  });
+
   it('pressing «Lag invitasjon» submits through the form, not a page load', async () => {
     emailField().value = 'mathea@eksempel.no';
     emailField().dispatchEvent(new Event('input'));
@@ -111,12 +124,14 @@ describe('ChildInviteModal (popup 18)', () => {
     expect(text()).toContain('Invitasjonen er klar');
   });
 
-  it('an address already in use is said under the field', async () => {
+  // ST-2227: an e-mail with an account is no longer refused (no enumeration); 409 now only
+  // means the profile already has an account
+  it('a profile that already has an account is said under the field', async () => {
     create.mockRejectedValue({ status: 409 });
     emailField().value = 'mathea@eksempel.no';
     emailField().dispatchEvent(new Event('input'));
     await component.onSubmit();
     fixture.detectChanges();
-    expect(text()).toContain('Denne e-postadressen er allerede i bruk i Diddit.');
+    expect(text()).toContain('Profilen har allerede en konto.');
   });
 });

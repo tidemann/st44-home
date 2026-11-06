@@ -1,4 +1,4 @@
-import { Injectable, inject, signal } from '@angular/core';
+import { Injectable, inject, signal, computed } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { Observable, tap } from 'rxjs';
@@ -31,7 +31,9 @@ export interface AuthResponse {
 
 /** Only explicit household invitation return URLs are passed to Google sign-in. */
 export function invitationTokenFromReturnUrl(returnUrl: string | undefined): string | undefined {
-  return /^\/invitations\/accept\/([a-f0-9]{64})$/.exec(returnUrl ?? '')?.[1];
+  // ST-2227: a child link (/invitasjon/:token) is sent too, so a Google login without a
+  // Diddit account is refused (NO_ACCOUNT) instead of making a new account and household
+  return /^\/(?:invitations\/accept|invitasjon)\/([a-f0-9]{64})$/.exec(returnUrl ?? '')?.[1];
 }
 
 export interface User {
@@ -146,7 +148,8 @@ export class AuthService {
       );
   }
 
-  logout(): void {
+  /** ST-2227: `returnUrl` brings the person back after signing in again («Bytt Google-konto») */
+  logout(returnUrl?: string): void {
     // Clear tokens using TokenService
     this.tokenService.clearTokens();
 
@@ -164,7 +167,11 @@ export class AuthService {
     this.isAuthenticated.set(false);
 
     // Navigate to login
-    this.router.navigate(['/login']);
+    if (returnUrl) {
+      this.router.navigate(['/login'], { queryParams: { returnUrl } });
+    } else {
+      this.router.navigate(['/login']);
+    }
   }
 
   getAccessToken(): string | null {
@@ -188,8 +195,18 @@ export class AuthService {
    * @returns The role or undefined if not authenticated
    */
   getUserRole(): 'admin' | 'parent' | 'child' | undefined {
-    return this.currentUser()?.role;
+    return this.activeRole();
   }
+
+  /**
+   * ST-2227: the role in the active household. One account can be child in one household and
+   * admin in another, so the login role (one household picked at sign-in) only stands in
+   * until the households are known. The server checks the role per household anyway.
+   */
+  readonly activeRole = computed<'admin' | 'parent' | 'child' | undefined>(() => {
+    if (!this.currentUser()) return undefined;
+    return this.householdStore.activeHousehold()?.role ?? this.currentUser()?.role;
+  });
 
   /**
    * Check if the current user has a specific role
@@ -197,7 +214,7 @@ export class AuthService {
    * @returns True if the user has the specified role
    */
   hasRole(role: 'admin' | 'parent' | 'child'): boolean {
-    return this.currentUser()?.role === role;
+    return this.activeRole() === role;
   }
 
   /**
@@ -206,7 +223,7 @@ export class AuthService {
    * @returns True if the user has any of the specified roles
    */
   hasAnyRole(roles: ('admin' | 'parent' | 'child')[]): boolean {
-    const userRole = this.currentUser()?.role;
+    const userRole = this.activeRole();
     return userRole !== undefined && roles.includes(userRole);
   }
 
