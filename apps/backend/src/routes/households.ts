@@ -25,7 +25,7 @@ export const HouseholdDetailResponseSchema = HouseholdSchema.extend({
 export const HouseholdListItemResponseSchema = HouseholdDetailResponseSchema.extend({
   adminCount: z.number().int().nonnegative(),
   // ST-2227: the child profile this account has in the household, «· profil X» in «Bytt husstand»
-  childName: z.string().nullable(),
+  childName: z.string().nullable().optional(),
 });
 
 function toDateTimeString(value: unknown): string {

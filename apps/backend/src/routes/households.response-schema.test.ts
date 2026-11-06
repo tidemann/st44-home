@@ -46,11 +46,12 @@ describe('Household response schemas', () => {
             },
           },
         },
-        async () => [{ ...household, adminCount: 1 }],
+        async () => [{ ...household, adminCount: 1, childName: 'Jonas' }],
       );
       const body = JSON.parse((await app.inject({ method: 'GET', url: '/l' })).body);
       assert.strictEqual(body[0].role, 'parent');
       assert.strictEqual(body[0].adminCount, 1);
+      assert.strictEqual(body[0].childName, 'Jonas');
     } finally {
       await app.close();
     }
