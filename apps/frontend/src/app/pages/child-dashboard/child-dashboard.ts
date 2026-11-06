@@ -127,7 +127,7 @@ export class ChildDashboardComponent implements OnInit {
   protected readonly today = longDate();
 
   /**
-   * ST-2227: an account in more than one household sees where it is and as what, in place of
+   * ST-2227: the child sees where it is and as what, in place of
    * the date: «Familien Nordmann · Barn ▾», which opens «Bytt husstand».
    */
   protected readonly households = this.householdStore.households;
@@ -135,9 +135,7 @@ export class ChildDashboardComponent implements OnInit {
   protected readonly multiHousehold = computed(() => this.households().length > 1);
   protected readonly subline = computed(() => {
     const active = this.householdStore.activeHousehold();
-    return this.multiHousehold() && active
-      ? householdSubline(active.name, active.role)
-      : this.today;
+    return active ? householdSubline(active.name, active.role) : this.today;
   });
   protected readonly householdSheetOpen = signal(false);
 

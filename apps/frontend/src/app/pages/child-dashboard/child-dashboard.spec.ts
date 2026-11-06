@@ -328,11 +328,12 @@ describe('ChildDashboardComponent', () => {
     expect(sheet.textContent).toContain('Du er administrator');
   });
 
-  it('with one household the date stays', async () => {
+  it('with one household the sub-line still says where and as what, without a menu', async () => {
     householdsAnswer = [twoHouseholds[0]];
     TestBed.inject(HouseholdStore).setActiveHousehold('fam');
     const el = await render();
     expect(el.querySelector('.page-subtitle-menu')).toBeNull();
+    expect(el.textContent).toContain('Familien Nordmann · Barn');
   });
 
   it('after a link the informative toast is announced once', async () => {

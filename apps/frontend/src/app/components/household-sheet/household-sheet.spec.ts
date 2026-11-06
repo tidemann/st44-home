@@ -94,7 +94,7 @@ describe('HouseholdSheet («Bytt husstand», ST-1065)', () => {
   // ST-2227: child in one household, admin in another
   it('labels the role in each household when the roles differ', () => {
     fixture.componentRef.setInput('households', [
-      { ...household('a', 'Familien Nordmann', 4), role: 'child' },
+      { ...household('a', 'Familien Nordmann', 4), role: 'child', childName: 'Jonas' },
       household('b', 'Jonas sin husstand', 1),
     ]);
     fixture.componentRef.setInput('open', true);
@@ -105,7 +105,7 @@ describe('HouseholdSheet («Bytt husstand», ST-1065)', () => {
     const details = Array.from(el.querySelectorAll('.sheet-row-detail')).map((d) =>
       d.textContent?.trim(),
     );
-    expect(details).toEqual(['Du er barn', 'Du er administrator']);
+    expect(details).toEqual(['Du er barn · profil Jonas', 'Du er administrator']);
     expect(el.querySelector('.sheet-row-role')?.textContent?.trim()).toBe('Admin');
   });
 });

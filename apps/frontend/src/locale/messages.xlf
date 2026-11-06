@@ -415,7 +415,7 @@
         </context-group>
       </trans-unit>
       <trans-unit id="childInvite.member.how" datatype="html">
-        <source> For å bli barn her må en administrator først fjerne deg som <x id="INTERPOLATION" equiv-text="{{ memberRole() }}"/>. Send så en ny invitasjon. </source>
+        <source> Ingenting er endret. Vil du bli barn her, kan du selv forlate <x id="INTERPOLATION" equiv-text="{{ householdName() }}"/> under «Administrer husstander», og så be om en ny invitasjon. </source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/auth/child-invite.html</context>
           <context context-type="linenumber">246,248</context>
@@ -457,7 +457,7 @@
         </context-group>
       </trans-unit>
       <trans-unit id="childInvite.linked.how" datatype="html">
-        <source> Ingenting er endret. Be en forelder fjerne den gamle koblingen og sende en ny invitasjon. </source>
+        <source> Ingenting er endret. Snakk med en forelder i <x id="INTERPOLATION" equiv-text="{{ householdName() }}"/> om hvilken konto profilen skal ha. </source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/auth/child-invite.html</context>
           <context context-type="linenumber">293,295</context>
@@ -2303,18 +2303,25 @@
           <context context-type="linenumber">56</context>
         </context-group>
       </trans-unit>
+      <trans-unit id="householdSheet.childProfile" datatype="html">
+        <source><x id="sentence" equiv-text="sentence"/> · profil <x id="name" equiv-text="household.childName"/></source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/components/household-sheet/household-sheet.ts</context>
+          <context context-type="linenumber">98</context>
+        </context-group>
+      </trans-unit>
       <trans-unit id="householdSheet.oneMember" datatype="html">
         <source>1 medlem</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/household-sheet/household-sheet.ts</context>
-          <context context-type="linenumber">99</context>
+          <context context-type="linenumber">104</context>
         </context-group>
       </trans-unit>
       <trans-unit id="householdSheet.members" datatype="html">
         <source><x id="count" equiv-text="count"/> medlemmer</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/household-sheet/household-sheet.ts</context>
-          <context context-type="linenumber">100</context>
+          <context context-type="linenumber">105</context>
         </context-group>
       </trans-unit>
       <trans-unit id="page.logout" datatype="html">

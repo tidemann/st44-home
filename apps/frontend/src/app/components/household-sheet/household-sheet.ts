@@ -92,7 +92,12 @@ export class HouseholdSheet {
   }
 
   protected detail(household: HouseholdListItem): string {
-    if (this.mixedRoles()) return roleSentence(household.role);
+    if (this.mixedRoles()) {
+      const sentence = roleSentence(household.role);
+      return household.role === 'child' && household.childName
+        ? $localize`:@@householdSheet.childProfile:${sentence}:sentence: · profil ${household.childName}:name:`
+        : sentence;
+    }
     const count = household.memberCount ?? 0;
     const members =
       count === 1
