@@ -251,6 +251,8 @@ describe('Tasks API', () => {
     });
 
     test('ST-2143: an open row from earlier this week moves too, so the week keeps one row; ticked rows next week stay', async () => {
+      const today = todayInTimeZone(new Date());
+      const storedDueDay = (today.getUTCDay() + 1) % 7;
       const config = { rotationType: 'odd_even_week', assignedChildren: [childId1, childId2] };
       const create = await app.inject({
         method: 'POST',
@@ -260,23 +262,26 @@ describe('Tasks API', () => {
           name: 'ST-2143 past row',
           points: 5,
           ruleType: 'weekly_rotation',
-          ruleConfig: config,
+          ruleConfig: { ...config, dueDay: storedDueDay },
         },
       });
       assert.strictEqual(create.statusCode, 201, create.body);
       const id = JSON.parse(create.body).id;
 
-      const today = todayInTimeZone(new Date());
       const monday = new Date(today.getTime() - ((today.getUTCDay() + 6) % 7) * 86400000);
       const nextMonday = new Date(monday.getTime() + 7 * 86400000);
       const iso = (d: Date) => d.toISOString().slice(0, 10);
 
-      // This week's row sits on Monday, as if «Frist» was Monday and the day has passed
-      await pool.query('UPDATE task_assignments SET date = $2 WHERE task_id = $1 AND date < $3', [
+      // Seed one open Monday row independently of the task's generated due day
+      await pool.query('DELETE FROM task_assignments WHERE task_id = $1 AND date < $2', [
         id,
-        iso(monday),
         iso(nextMonday),
       ]);
+      await pool.query(
+        `INSERT INTO task_assignments (household_id, task_id, child_id, date, status)
+         VALUES ($1, $2, $3, $4, 'pending')`,
+        [householdId, id, childId1, iso(monday)],
+      );
       // Next week's row has a ticked sub-task
       const subtask = await pool.query(
         `INSERT INTO task_subtasks (household_id, task_id, name) VALUES ($1, $2, 'Støvsug') RETURNING id`,
