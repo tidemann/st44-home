@@ -10,7 +10,7 @@ import {
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CommonModule } from '@angular/common';
 import { TopTabs } from '../../components/navigation/top-tabs/top-tabs';
-import { Router, ActivatedRoute, RouterLink } from '@angular/router';
+import { Router, ActivatedRoute, RouterLink, Params } from '@angular/router';
 import { timer } from 'rxjs';
 import { InvitationService, AcceptInvitationResponse } from '../../services/invitation.service';
 import { AuthService } from '../../services/auth.service';
@@ -41,15 +41,14 @@ export class InvitationAcceptComponent implements OnInit {
   protected readonly successMessage = signal<string | null>(null);
   protected readonly householdName = signal<string | null>(null);
   protected readonly isAuthenticated = computed(() => this.authService.isAuthenticated());
-  protected readonly loginUrl = computed(() => {
+  /**
+   * The returnUrl stays un-prefixed: login/register feed it to router.navigateByUrl,
+   * which adds the base href itself. routerLink puts the /no/ prefix on the href (ST-2354).
+   */
+  protected readonly returnUrlParams = computed<Params>(() => {
     const token = this.token();
-    if (!token) return '/login';
-    return `/login?returnUrl=${encodeURIComponent(`/invitations/accept/${token}`)}`;
-  });
-  protected readonly registerUrl = computed(() => {
-    const token = this.token();
-    if (!token) return '/register';
-    return `/register?returnUrl=${encodeURIComponent(`/invitations/accept/${token}`)}`;
+    if (!token) return {};
+    return { returnUrl: `/invitations/accept/${token}` };
   });
 
   ngOnInit(): void {
