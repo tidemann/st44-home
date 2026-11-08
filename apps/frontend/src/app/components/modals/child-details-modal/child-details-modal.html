@@ -171,8 +171,8 @@
                 }
               </div>
               @if (acceptedInvitation()) {
-                <p class="account-hint" i18n="@@childDetailsModal.logsInWithOwnPassword">
-                  {{ child.name }} logger inn med e-posten og sitt eget passord.
+                <p class="account-hint" i18n="@@childDetailsModal.logsInWithEmail">
+                  {{ child.name }} logger inn med e-posten sin.
                 </p>
               }
             } @else if (showCreateAccount()) {
@@ -303,7 +303,8 @@
                 Inviter {{ child.name }} på e-post
               </button>
               <p class="account-hint" i18n="@@childDetailsModal.inviteHint">
-                {{ child.name }} får en lenke, lager sitt eget passord og beholder poengene sine.
+                {{ child.name }} får en lenke, logger inn med Google eller lager sitt eget passord,
+                og beholder poengene sine.
               </p>
 
               <div class="or-divider"><span i18n="@@childDetailsModal.or">eller</span></div>

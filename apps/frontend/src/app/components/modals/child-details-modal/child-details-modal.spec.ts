@@ -286,6 +286,9 @@ describe('ChildDetailsModal', () => {
       expect(text).toContain('Inviter Alex på e-post');
       expect(text).toContain('eller');
       expect(text).toContain('For barn uten e-post: du lager passordet.');
+      expect(text).toContain(
+        'Alex får en lenke, logger inn med Google eller lager sitt eget passord, og beholder poengene sine.',
+      );
       const primary = fixture.nativeElement.querySelector('.acct-btn-primary') as HTMLElement;
       const outline = fixture.nativeElement.querySelector('.acct-btn-outline') as HTMLElement;
       expect(primary.textContent?.trim()).toBe('Inviter Alex på e-post');
@@ -349,7 +352,8 @@ describe('ChildDetailsModal', () => {
       expect(text).toContain('Konto aktiv');
       expect(text).toContain('alex@eksempel.no');
       expect(text).toContain('Invitasjonen ble godtatt 18. oktober');
-      expect(text).toContain('Alex logger inn med e-posten og sitt eget passord.');
+      expect(text).toContain('Alex logger inn med e-posten sin.');
+      expect(text).not.toContain('sitt eget passord');
       expect(text).not.toContain('Kopier lenke');
     });
 

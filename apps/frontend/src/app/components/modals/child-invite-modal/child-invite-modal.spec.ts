@@ -51,7 +51,7 @@ describe('ChildInviteModal (popup 18)', () => {
   it('step 1 asks one thing, with the lead and the hint as drawn', () => {
     expect(text()).toContain('Inviter Mathea på e-post');
     expect(text()).toContain(
-      'Mathea får en lenke på e-post, lager sitt eget passord og beholder poengene og historikken sin.',
+      'Mathea får en lenke på e-post, logger inn med Google eller lager sitt eget passord, og beholder poengene og historikken sin.',
     );
     expect(text()).toContain('E-postadresse *');
     expect(emailField().placeholder).toBe('mathea@eksempel.no');
