@@ -75,6 +75,7 @@ interface RegisterRequest {
     password: string;
     firstName: string;
     lastName: string;
+    invitationToken?: string;
   };
 }
 
@@ -83,6 +84,7 @@ interface RegisterResponse {
   email: string;
   firstName: string;
   lastName: string;
+  invitationAccepted?: boolean;
 }
 
 interface ErrorResponse {
@@ -172,7 +174,7 @@ export default async function authRoutes(fastify: FastifyInstance) {
       preHandler: rateLimiters.register,
     },
     async (request, reply) => {
-      const { email, password, firstName, lastName } = request.body;
+      const { email, password, firstName, lastName, invitationToken } = request.body;
 
       // Validate password strength
       if (!validatePasswordStrength(password)) {
@@ -201,32 +203,74 @@ export default async function authRoutes(fastify: FastifyInstance) {
 
           const user = userResult.rows[0];
 
-          // Create default household for new user
-          const householdResult = await client.query(
-            `INSERT INTO households (name)
-             VALUES ($1)
-             RETURNING id`,
-            [defaultHouseholdName(firstName, lastName)],
-          );
+          let invitationAccepted = false;
+          let invitation: { id: string; household_id: string; role: string } | undefined;
 
-          const householdId = householdResult.rows[0].id;
+          if (invitationToken) {
+            const found = await client.query(
+              `SELECT id, household_id, invited_email, role, status, expires_at
+               FROM invitations WHERE token = $1 AND role <> 'child' FOR UPDATE`,
+              [invitationToken],
+            );
+            const row = found.rows[0];
+            if (
+              row &&
+              row.status === 'pending' &&
+              new Date(row.expires_at) >= new Date() &&
+              String(row.invited_email).toLowerCase() === email.toLowerCase()
+            ) {
+              invitation = row;
+            }
+          }
 
-          // Add user as admin of their new household
-          await client.query(
-            `INSERT INTO household_members (household_id, user_id, role)
-             VALUES ($1, $2, $3)`,
-            [householdId, user.id, 'admin'],
-          );
+          let householdId: string;
+          if (invitation) {
+            // Join the inviting household; a second, empty household would be left behind.
+            householdId = invitation.household_id;
+            await client.query(
+              `INSERT INTO household_members (household_id, user_id, role)
+               VALUES ($1, $2, $3)`,
+              [householdId, user.id, invitation.role],
+            );
+            await client.query(
+              `UPDATE invitations SET status = 'accepted', accepted_at = NOW(), updated_at = NOW()
+               WHERE id = $1`,
+              [invitation.id],
+            );
+            invitationAccepted = true;
+          } else {
+            // Create default household for new user
+            const householdResult = await client.query(
+              `INSERT INTO households (name)
+               VALUES ($1)
+               RETURNING id`,
+              [defaultHouseholdName(firstName, lastName)],
+            );
+            householdId = householdResult.rows[0].id;
+
+            // Add user as admin of their new household
+            await client.query(
+              `INSERT INTO household_members (household_id, user_id, role)
+               VALUES ($1, $2, $3)`,
+              [householdId, user.id, 'admin'],
+            );
+          }
 
           await client.query('COMMIT');
 
-          fastify.log.info({ userId: user.id, householdId }, 'User registered with new household');
+          fastify.log.info(
+            { userId: user.id, householdId, invitationAccepted },
+            invitationAccepted
+              ? 'User registered into the inviting household'
+              : 'User registered with new household',
+          );
 
           return reply.code(201).send({
             userId: user.id,
             email: user.email,
             firstName: user.first_name,
             lastName: user.last_name,
+            invitationAccepted,
           });
         } catch (error) {
           await client.query('ROLLBACK');

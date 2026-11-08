@@ -36,6 +36,10 @@ const registerSchemaBase = {
         maxLength: 100,
         description: 'User last name',
       },
+      invitationToken: {
+        type: 'string',
+        description: 'Optional pending household invitation token from the invitation link',
+      },
     },
     required: ['email', 'password', 'firstName', 'lastName'],
   },
@@ -48,6 +52,7 @@ const registerSchemaBase = {
         email: { type: 'string', format: 'email' },
         firstName: { type: 'string' },
         lastName: { type: 'string' },
+        invitationAccepted: { type: 'boolean' },
       },
       required: ['userId', 'email', 'firstName', 'lastName'],
     },
