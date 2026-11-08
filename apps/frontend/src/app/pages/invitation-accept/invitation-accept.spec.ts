@@ -9,6 +9,7 @@ import { Router, ActivatedRoute, provideRouter } from '@angular/router';
 import { provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { signal } from '@angular/core';
+import { APP_BASE_HREF } from '@angular/common';
 
 describe('InvitationAcceptComponent', () => {
   let component: InvitationAcceptComponent;
@@ -112,25 +113,91 @@ describe('InvitationAcceptComponent', () => {
     });
   });
 
-  describe('URL Generation', () => {
-    it('should compute correct login URL with returnUrl', () => {
-      const expectedUrl = '/login?returnUrl=%2Finvitations%2Faccept%2Ftest-token-123';
-      expect(component['loginUrl']()).toBe(expectedUrl);
+  describe('Locale prefix on the sign-in links (ST-2354)', () => {
+    /** The live Norwegian build serves the app under <base href="/no/">. */
+    function hrefsWithBaseHref(baseHref: string): { login: string; register: string } {
+      TestBed.resetTestingModule();
+      TestBed.configureTestingModule({
+        imports: [InvitationAcceptComponent],
+        providers: [
+          provideHttpClient(),
+          provideHttpClientTesting(),
+          provideRouter([]),
+          { provide: APP_BASE_HREF, useValue: baseHref },
+          { provide: InvitationService, useValue: mockInvitationService },
+          { provide: AuthService, useValue: mockAuthService },
+          { provide: ActivatedRoute, useValue: mockActivatedRoute },
+          { provide: HouseholdStore, useValue: mockHouseholdStore },
+        ],
+      });
+      const localFixture = TestBed.createComponent(InvitationAcceptComponent);
+      localFixture.detectChanges();
+
+      const anchors: HTMLAnchorElement[] = Array.from(
+        localFixture.nativeElement.querySelectorAll('.actions a'),
+      );
+      const text = (a: HTMLAnchorElement) => (a.textContent ?? '').trim();
+      const login = anchors.find((a) => text(a) === 'Logg inn');
+      const register = anchors.find((a) => text(a) === 'Opprett konto');
+      expect(login, 'the «Logg inn» link must be rendered').toBeTruthy();
+      expect(register, 'the «Opprett konto» link must be rendered').toBeTruthy();
+      return {
+        login: login!.getAttribute('href') ?? '',
+        register: register!.getAttribute('href') ?? '',
+      };
+    }
+
+    it('renders both hrefs under the /no/ base href, keeping the un-prefixed returnUrl', () => {
+      mockAuthService.isAuthenticated.set(false);
+      const hrefs = hrefsWithBaseHref('/no/');
+
+      expect(hrefs.login).toBe('/no/login?returnUrl=%2Finvitations%2Faccept%2Ftest-token-123');
+      expect(hrefs.register).toBe(
+        '/no/register?returnUrl=%2Finvitations%2Faccept%2Ftest-token-123',
+      );
     });
 
-    it('should compute correct register URL with returnUrl', () => {
-      const expectedUrl = '/register?returnUrl=%2Finvitations%2Faccept%2Ftest-token-123';
-      expect(component['registerUrl']()).toBe(expectedUrl);
+    it('renders both hrefs at the root base href too', () => {
+      mockAuthService.isAuthenticated.set(false);
+      const hrefs = hrefsWithBaseHref('/');
+
+      expect(hrefs.login).toBe('/login?returnUrl=%2Finvitations%2Faccept%2Ftest-token-123');
+      expect(hrefs.register).toBe('/register?returnUrl=%2Finvitations%2Faccept%2Ftest-token-123');
     });
 
-    it('should return base login URL when no token', () => {
-      component['token'].set(null);
-      expect(component['loginUrl']()).toBe('/login');
-    });
+    it('drops the returnUrl when there is no token', () => {
+      mockAuthService.isAuthenticated.set(false);
+      TestBed.resetTestingModule();
+      TestBed.configureTestingModule({
+        imports: [InvitationAcceptComponent],
+        providers: [
+          provideHttpClient(),
+          provideHttpClientTesting(),
+          provideRouter([]),
+          { provide: APP_BASE_HREF, useValue: '/no/' },
+          { provide: InvitationService, useValue: mockInvitationService },
+          { provide: AuthService, useValue: mockAuthService },
+          { provide: ActivatedRoute, useValue: mockActivatedRoute },
+          { provide: HouseholdStore, useValue: mockHouseholdStore },
+        ],
+      });
+      const localFixture = TestBed.createComponent(InvitationAcceptComponent);
+      localFixture.detectChanges();
+      const instance = localFixture.componentInstance as unknown as {
+        token: { set(value: string | null): void };
+        returnUrlParams: () => Record<string, string>;
+      };
 
-    it('should return base register URL when no token', () => {
-      component['token'].set(null);
-      expect(component['registerUrl']()).toBe('/register');
+      expect(instance.returnUrlParams()).toEqual({
+        returnUrl: '/invitations/accept/test-token-123',
+      });
+      instance.token.set(null);
+      expect(instance.returnUrlParams()).toEqual({});
+      localFixture.detectChanges();
+      const anchors: HTMLAnchorElement[] = Array.from(
+        localFixture.nativeElement.querySelectorAll('.actions a'),
+      );
+      expect(anchors.map((a) => a.getAttribute('href'))).toEqual(['/no/login', '/no/register']);
     });
   });
 

@@ -60,8 +60,12 @@
         </p>
 
         <div class="actions">
-          <a [href]="loginUrl()" class="btn btn-primary">Logg inn</a>
-          <a [href]="registerUrl()" class="btn btn-secondary">Opprett konto</a>
+          <a routerLink="/login" [queryParams]="returnUrlParams()" class="btn btn-primary"
+            >Logg inn</a
+          >
+          <a routerLink="/register" [queryParams]="returnUrlParams()" class="btn btn-secondary"
+            >Opprett konto</a
+          >
         </div>
       } @else {
         <p class="invitation-text">Vil du godta invitasjonen?</p>
