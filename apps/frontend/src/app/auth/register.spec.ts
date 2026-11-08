@@ -7,6 +7,9 @@ import { of, throwError } from 'rxjs';
 import { provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 
+/** A household invitation token as the backend makes them: 64 hex characters */
+const invitationToken = 'a'.repeat(64);
+
 describe('RegisterComponent', () => {
   let component: RegisterComponent;
   let fixture: ComponentFixture<RegisterComponent>;
@@ -240,6 +243,7 @@ describe('RegisterComponent', () => {
         'Test1234',
         'Test',
         'User',
+        undefined,
       );
     });
 
@@ -280,6 +284,77 @@ describe('RegisterComponent', () => {
 
       expect(router.navigate).toHaveBeenCalledWith(['/login'], {
         queryParams: { registered: 'true', returnUrl: '/invitations/accept/test-token' },
+      });
+    });
+
+    // ST-2348: registering from an invitation link must not leave an own, empty household behind
+    it('should pass the invitation token from the returnUrl to register', async () => {
+      mockActivatedRoute.snapshot.queryParams = {
+        returnUrl: `/invitations/accept/${invitationToken}`,
+      };
+
+      component['registerForm'].patchValue({
+        firstName: 'Test',
+        lastName: 'User',
+        email: 'test@example.com',
+        password: 'Test1234',
+        confirmPassword: 'Test1234',
+      });
+
+      mockAuthService.register.mockReturnValue(of({ invitationAccepted: true }));
+
+      await component['onSubmit']();
+
+      expect(mockAuthService.register).toHaveBeenCalledWith(
+        'test@example.com',
+        'Test1234',
+        'Test',
+        'User',
+        invitationToken,
+      );
+    });
+
+    it('should drop the returnUrl when registration already accepted the invitation', async () => {
+      mockActivatedRoute.snapshot.queryParams = {
+        returnUrl: `/invitations/accept/${invitationToken}`,
+      };
+
+      component['registerForm'].patchValue({
+        firstName: 'Test',
+        lastName: 'User',
+        email: 'test@example.com',
+        password: 'Test1234',
+        confirmPassword: 'Test1234',
+      });
+
+      mockAuthService.register.mockReturnValue(of({ invitationAccepted: true }));
+
+      await component['onSubmit']();
+
+      expect(router.navigate).toHaveBeenCalledWith(['/login'], {
+        queryParams: { registered: 'true' },
+      });
+    });
+
+    it('should keep the returnUrl when the invitation was not accepted during registration', async () => {
+      mockActivatedRoute.snapshot.queryParams = {
+        returnUrl: `/invitations/accept/${invitationToken}`,
+      };
+
+      component['registerForm'].patchValue({
+        firstName: 'Test',
+        lastName: 'User',
+        email: 'test@example.com',
+        password: 'Test1234',
+        confirmPassword: 'Test1234',
+      });
+
+      mockAuthService.register.mockReturnValue(of({ invitationAccepted: false }));
+
+      await component['onSubmit']();
+
+      expect(router.navigate).toHaveBeenCalledWith(['/login'], {
+        queryParams: { registered: 'true', returnUrl: `/invitations/accept/${invitationToken}` },
       });
     });
 

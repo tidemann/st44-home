@@ -87,12 +87,15 @@ export class AuthService {
     password: string,
     firstName: string,
     lastName: string,
+    invitationToken?: string,
   ): Observable<AuthResponse> {
+    // ST-2348: the token joins the inviting household here, so no empty own household is left behind
     return this.http.post<AuthResponse>(`${this.apiUrl}/register`, {
       email,
       password,
       firstName,
       lastName,
+      ...(invitationToken ? { invitationToken } : {}),
     });
   }
 

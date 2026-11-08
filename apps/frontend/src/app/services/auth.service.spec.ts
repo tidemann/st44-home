@@ -131,6 +131,23 @@ describe('AuthService', () => {
       httpMock.verify();
     });
 
+    // ST-2348: the token lets the backend join the inviting household instead of making a new one
+    it('should send the invitation token when one is given', () => {
+      service.register('ny@example.com', 'Test1234', 'Ny', 'Forelder', 'f'.repeat(64)).subscribe();
+
+      const req = httpMock.expectOne(`/api/auth/register`);
+      expect(req.request.body).toEqual({
+        email: 'ny@example.com',
+        password: 'Test1234',
+        firstName: 'Ny',
+        lastName: 'Forelder',
+        invitationToken: 'f'.repeat(64),
+      });
+
+      req.flush({});
+      httpMock.verify();
+    });
+
     it('should handle registration errors', () => {
       const mockError = {
         error: 'Email already registered',

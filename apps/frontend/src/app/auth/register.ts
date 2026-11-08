@@ -293,12 +293,21 @@ export class RegisterComponent implements OnInit, AfterViewInit, OnDestroy {
 
     try {
       const { email, password, firstName, lastName } = this.registerForm.value;
-      await lastValueFrom(this.authService.register(email!, password!, firstName!, lastName!));
+      const returnUrl = this.route.snapshot.queryParams['returnUrl'];
+      const result = await lastValueFrom(
+        this.authService.register(
+          email!,
+          password!,
+          firstName!,
+          lastName!,
+          invitationTokenFromReturnUrl(returnUrl),
+        ),
+      );
 
       // Success - navigate to login, preserving returnUrl if provided
-      const returnUrl = this.route.snapshot.queryParams['returnUrl'];
       const queryParams: Record<string, string> = { registered: 'true' };
-      if (returnUrl) {
+      // The invitation was spent during registration; do not reopen the spent link (ST-2348)
+      if (returnUrl && !result?.invitationAccepted) {
         queryParams['returnUrl'] = returnUrl;
       }
       this.router.navigate(['/login'], { queryParams });
