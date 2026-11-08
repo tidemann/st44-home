@@ -19,6 +19,7 @@ async function register(
   invitationToken?: string,
   overrides: Partial<typeof invitation> = {},
   found = true,
+  registeredEmail = email,
 ) {
   const queries: string[] = [];
   const membershipInserts: unknown[][] = [];
@@ -44,7 +45,10 @@ async function register(
     const response = await app.inject({
       method: 'POST',
       url: '/api/auth/register',
-      payload: invitationToken === undefined ? payload : { ...payload, invitationToken },
+      payload:
+        invitationToken === undefined
+          ? { ...payload, email: registeredEmail }
+          : { ...payload, email: registeredEmail, invitationToken },
     });
     return { response, queries, membershipInserts };
   } finally {
@@ -79,6 +83,20 @@ test('an invitation token for another e-mail address falls back to an own househ
   assert.equal(Boolean(response.json().invitationAccepted), false);
   assert.equal(queries.filter((sql) => sql.includes('INSERT INTO households')).length, 1);
   assert.equal(queries.filter((sql) => sql.includes('UPDATE invitations')).length, 0);
+});
+
+// Invitations are stored lowercase; the person may well type their address with capitals.
+test('the invitation e-mail matches whatever the person capitalises', async () => {
+  const { response, queries, membershipInserts } = await register(
+    'invite-token-1',
+    {},
+    true,
+    'NyForelder@Example.COM',
+  );
+  assert.equal(response.statusCode, 201, response.body);
+  assert.equal(response.json().invitationAccepted, true);
+  assert.deepEqual(membershipInserts, [['family-1', 'user-1', 'parent']]);
+  assert.equal(queries.filter((sql) => sql.includes('INSERT INTO households')).length, 0);
 });
 
 // A bad token must never cost the person their account: the register always succeeds.

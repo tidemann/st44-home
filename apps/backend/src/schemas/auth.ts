@@ -37,6 +37,9 @@ const registerSchemaBase = {
         description: 'User last name',
       },
       invitationToken: {
+        // Tokens are 64 hex characters; the cap keeps an unauthenticated caller from
+        // making this endpoint query the invitations table with an arbitrarily long string
+        maxLength: 64,
         type: 'string',
         description: 'Optional pending household invitation token from the invitation link',
       },
