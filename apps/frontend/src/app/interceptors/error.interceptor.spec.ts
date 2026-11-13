@@ -170,4 +170,18 @@ describe('errorInterceptor: session refresh (ST-2539)', () => {
     expect(router.navigate).not.toHaveBeenCalled();
     expect(tokens.getRefreshToken()).toBe(refreshToken);
   });
+
+  it('keeps the session when the refresh is rate limited', () => {
+    let error: { status: number } | undefined;
+    http.get('/api/tasks').subscribe({ error: (e) => (error = e) });
+
+    httpMock.expectOne('/api/tasks').flush(null, { status: 401, statusText: 'Unauthorized' });
+    httpMock
+      .expectOne((r) => r.url.endsWith('/api/auth/refresh'))
+      .flush({ error: 'Too many requests' }, { status: 429, statusText: 'Too Many Requests' });
+
+    expect(error?.status).toBe(401);
+    expect(router.navigate).not.toHaveBeenCalled();
+    expect(tokens.getRefreshToken()).toBe(refreshToken);
+  });
 });

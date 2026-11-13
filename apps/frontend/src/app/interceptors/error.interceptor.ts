@@ -45,6 +45,12 @@ const RETRY_DELAY_MS = 1000;
 const NO_REDIRECT_URLS = ['/auth/login', '/auth/register', '/auth/refresh'];
 
 /**
+ * Refresh answers that mean the refresh token is refused. Any other failure
+ * (offline, 408, 429, 5xx) keeps the session for the next attempt.
+ */
+const SESSION_ENDING_REFRESH_STATUSES = new Set([400, 401, 403]);
+
+/**
  * Check if we should retry the request
  */
 function shouldRetry(error: HttpErrorResponse): boolean {
@@ -160,8 +166,8 @@ export const errorInterceptor: HttpInterceptorFn = (
 
     return token$.pipe(
       catchError((refreshError: HttpErrorResponse) => {
-        // Offline or server trouble keeps the session; only a refused refresh ends it
-        if (refreshError.status !== 0 && refreshError.status < 500) endSession();
+        // Offline, rate limits or server trouble keep the session; only a refused refresh ends it
+        if (SESSION_ENDING_REFRESH_STATUSES.has(refreshError.status)) endSession();
         return throwError(() => enhanceError(error));
       }),
       switchMap((token) =>
