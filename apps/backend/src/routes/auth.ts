@@ -65,7 +65,7 @@ function generateAccessToken(
 }
 
 function generateRefreshToken(userId: string): string {
-  return jwt.sign({ userId, type: 'refresh' }, JWT_SECRET, { expiresIn: '7d' });
+  return jwt.sign({ userId, type: 'refresh' }, JWT_SECRET, { expiresIn: '30d' });
 }
 
 // Request/Response Types
@@ -117,6 +117,7 @@ interface RefreshRequest {
 
 interface RefreshResponse {
   accessToken: string;
+  refreshToken: string;
 }
 
 interface RefreshTokenPayload {
@@ -454,9 +455,13 @@ export default async function authRoutes(fastify: FastifyInstance) {
           user.last_name,
         );
 
+        // ST-2539: rotate the refresh token, so an active user's session slides forward 30 days.
+        // The old refresh token stays valid until it expires (no reuse detection).
+        const newRefreshToken = generateRefreshToken(decoded.userId);
+
         fastify.log.info({ userId: decoded.userId }, 'Token refreshed successfully');
 
-        return reply.code(200).send({ accessToken });
+        return reply.code(200).send({ accessToken, refreshToken: newRefreshToken });
       } catch (error: unknown) {
         // Handle JWT-specific errors
         if (error instanceof jwt.TokenExpiredError) {

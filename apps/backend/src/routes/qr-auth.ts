@@ -76,7 +76,7 @@ function generateAccessToken(
  * Generate JWT refresh token
  */
 function generateRefreshToken(userId: string): string {
-  return jwt.sign({ userId, type: 'refresh' }, JWT_SECRET, { expiresIn: '7d' });
+  return jwt.sign({ userId, type: 'refresh' }, JWT_SECRET, { expiresIn: '30d' });
 }
 
 /**

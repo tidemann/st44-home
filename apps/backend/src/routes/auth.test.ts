@@ -3,6 +3,7 @@ import assert from 'node:assert';
 import { build } from '../server.ts';
 import type { FastifyInstance } from 'fastify';
 import pg from 'pg';
+import jwt from 'jsonwebtoken';
 
 /**
  * Authentication API Tests
@@ -233,6 +234,39 @@ describe('Authentication API', () => {
       assert.strictEqual(response.statusCode, 200);
       const body = JSON.parse(response.body);
       assert.ok(body.accessToken);
+    });
+
+    test('rotates the refresh token with a 30-day lifetime (ST-2539)', async () => {
+      const response = await app.inject({
+        method: 'POST',
+        url: '/api/auth/refresh',
+        payload: { refreshToken },
+      });
+
+      assert.strictEqual(response.statusCode, 200);
+      const body = JSON.parse(response.body);
+      assert.ok(body.accessToken);
+      assert.ok(body.refreshToken, 'refresh returns a new refresh token');
+
+      const decoded = jwt.decode(body.refreshToken) as { type: string; exp: number; iat: number };
+      assert.strictEqual(decoded.type, 'refresh');
+      assert.strictEqual(decoded.exp - decoded.iat, 30 * 24 * 60 * 60);
+
+      // The new refresh token works for the next refresh
+      const second = await app.inject({
+        method: 'POST',
+        url: '/api/auth/refresh',
+        payload: { refreshToken: body.refreshToken },
+      });
+      assert.strictEqual(second.statusCode, 200);
+
+      // The old refresh token keeps working until it expires
+      const old = await app.inject({
+        method: 'POST',
+        url: '/api/auth/refresh',
+        payload: { refreshToken },
+      });
+      assert.strictEqual(old.statusCode, 200);
     });
 
     test('should reject invalid refresh token', async () => {
