@@ -1,7 +1,7 @@
 import { Injectable, inject, signal, computed } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Router } from '@angular/router';
-import { Observable, tap } from 'rxjs';
+import { Observable, finalize, map, shareReplay, tap, throwError } from 'rxjs';
 import { environment } from '../../environments/environment';
 import { TokenService } from './token.service';
 import { PwaService } from './pwa.service';
@@ -67,8 +67,13 @@ export class AuthService {
   private checkAuthStatus(): void {
     const accessToken = this.tokenService.getAccessToken();
     if (accessToken) {
-      // Decode JWT to get user info including role
-      const decoded = this.tokenService.decodeToken(accessToken);
+      // Decode JWT to get user info including role. ST-2539: an expired access token still
+      // counts while the refresh token is valid; the first API call refreshes it.
+      const decoded =
+        this.tokenService.decodeToken(accessToken) ??
+        (this.tokenService.hasValidRefreshToken()
+          ? this.tokenService.decodeToken(accessToken, true)
+          : null);
       if (decoded) {
         this.currentUser.set({
           id: decoded.userId,
@@ -80,6 +85,53 @@ export class AuthService {
         this.isAuthenticated.set(true);
       }
     }
+  }
+
+  /** The refresh in flight, shared by every request that got a 401 meanwhile */
+  private refreshInFlight: Observable<string> | null = null;
+
+  /**
+   * ST-2539: trade the refresh token for a new access token (and a new refresh token).
+   * Parallel callers share one request. Emits the new access token.
+   */
+  refreshSession(): Observable<string> {
+    if (this.refreshInFlight) return this.refreshInFlight;
+
+    const refreshToken = this.tokenService.getRefreshToken();
+    if (!refreshToken) {
+      return throwError(
+        () => new HttpErrorResponse({ status: 401, statusText: 'No refresh token' }),
+      );
+    }
+    const strategy = this.tokenService.getStorageStrategy();
+
+    this.refreshInFlight = this.http
+      .post<{ accessToken: string; refreshToken?: string }>(`${this.apiUrl}/refresh`, {
+        refreshToken,
+      })
+      .pipe(
+        tap((response) => {
+          this.tokenService.storeTokens(
+            response.accessToken,
+            response.refreshToken ?? refreshToken,
+            strategy,
+          );
+          const decoded = this.tokenService.decodeToken(response.accessToken);
+          if (decoded) {
+            this.currentUser.set({
+              id: decoded.userId,
+              email: decoded.email,
+              role: decoded.role,
+              firstName: decoded.firstName,
+              lastName: decoded.lastName,
+            });
+          }
+        }),
+        map((response) => response.accessToken),
+        finalize(() => (this.refreshInFlight = null)),
+        shareReplay(1),
+      );
+    return this.refreshInFlight;
   }
 
   register(

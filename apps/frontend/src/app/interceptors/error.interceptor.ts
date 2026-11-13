@@ -7,7 +7,7 @@
  * Features:
  * - Catches all HTTP errors
  * - Logs errors for debugging
- * - Handles 401 (unauthorized) by redirecting to login
+ * - Handles 401 (unauthorized) by refreshing the session once, then redirecting to login
  * - Handles 403 (forbidden) gracefully
  * - Retries on 5xx errors with exponential backoff
  * - Provides user-friendly error messages
@@ -18,12 +18,15 @@ import {
   HttpRequest,
   HttpHandlerFn,
   HttpErrorResponse,
+  HttpEvent,
 } from '@angular/common/http';
-import { inject } from '@angular/core';
+import { Injector, inject } from '@angular/core';
 import { Router } from '@angular/router';
-import { catchError, throwError, retry, timer } from 'rxjs';
+import { Observable, catchError, of, switchMap, throwError, retry, timer } from 'rxjs';
+import { AuthService } from '../services/auth.service';
 import { StorageService } from '../services/storage.service';
 import { STORAGE_KEYS } from '../services/storage-keys';
+import { TokenService } from '../services/token.service';
 
 /**
  * Maximum retry attempts for server errors
@@ -39,7 +42,7 @@ const RETRY_DELAY_MS = 1000;
  * URLs that should not trigger auth redirect on 401
  * (prevents redirect loops)
  */
-const NO_REDIRECT_URLS = ['/auth/login', '/auth/register', '/auth/refresh-token'];
+const NO_REDIRECT_URLS = ['/auth/login', '/auth/register', '/auth/refresh'];
 
 /**
  * Check if we should retry the request
@@ -102,6 +105,22 @@ function getErrorMessage(error: HttpErrorResponse): string {
 }
 
 /**
+ * Add a user-friendly message to an error
+ */
+function enhanceError(error: HttpErrorResponse): HttpErrorResponse {
+  return new HttpErrorResponse({
+    error: {
+      ...error.error,
+      userMessage: getErrorMessage(error),
+    },
+    headers: error.headers,
+    status: error.status,
+    statusText: error.statusText,
+    url: error.url || undefined,
+  });
+}
+
+/**
  * Error interceptor function
  *
  * @example
@@ -114,52 +133,86 @@ export const errorInterceptor: HttpInterceptorFn = (
 ) => {
   const router = inject(Router);
   const storage = inject(StorageService);
+  // Looked up only on a 401: AuthService itself depends on HttpClient
+  const injector = inject(Injector);
 
-  return next(req).pipe(
-    // Retry server errors with exponential backoff
-    retry({
-      count: MAX_RETRIES,
-      delay: (error, retryCount) => {
-        if (!shouldRetry(error)) {
-          return throwError(() => error);
-        }
-        const delay = RETRY_DELAY_MS * Math.pow(2, retryCount - 1);
-        console.warn(`Retrying request (attempt ${retryCount}/${MAX_RETRIES}) in ${delay}ms...`);
-        return timer(delay);
-      },
-    }),
+  /** Session is over: clear the tokens and send the user to the login page */
+  const endSession = (): void => {
+    clearAuthTokens(storage);
+    router.navigate(['/login'], {
+      queryParams: { returnUrl: router.url },
+    });
+  };
 
-    // Handle errors
-    catchError((error: HttpErrorResponse) => {
-      // Log error for debugging
-      console.error('HTTP Error:', {
-        url: req.url,
-        status: error.status,
-        statusText: error.statusText,
-        message: error.error?.message || error.message,
-      });
+  /**
+   * ST-2539: an expired access token gets one refresh and one retry. The refreshed request
+   * comes back through `handle` with `allowRefresh` false, so a second 401 ends the session.
+   */
+  const refreshAndRetry = (request: HttpRequest<unknown>, error: HttpErrorResponse) => {
+    const tokenService = injector.get(TokenService);
+    const sent = request.headers.get('Authorization');
+    const current = tokenService.getAccessToken();
+    // Another request has already refreshed the token since this one was sent
+    const token$ =
+      current && sent && sent !== `Bearer ${current}`
+        ? of(current)
+        : injector.get(AuthService).refreshSession();
 
-      // Handle 401 Unauthorized - redirect to login
-      if (error.status === 401 && shouldRedirectOnUnauthorized(req.url)) {
-        clearAuthTokens(storage);
-        router.navigate(['/login'], {
-          queryParams: { returnUrl: router.url },
-        });
-      }
+    return token$.pipe(
+      catchError((refreshError: HttpErrorResponse) => {
+        // Offline or server trouble keeps the session; only a refused refresh ends it
+        if (refreshError.status !== 0 && refreshError.status < 500) endSession();
+        return throwError(() => enhanceError(error));
+      }),
+      switchMap((token) =>
+        handle(request.clone({ setHeaders: { Authorization: `Bearer ${token}` } }), false),
+      ),
+    );
+  };
 
-      // Enhance error with user-friendly message
-      const enhancedError = new HttpErrorResponse({
-        error: {
-          ...error.error,
-          userMessage: getErrorMessage(error),
+  const handle = (
+    request: HttpRequest<unknown>,
+    allowRefresh: boolean,
+  ): Observable<HttpEvent<unknown>> =>
+    next(request).pipe(
+      // Retry server errors with exponential backoff
+      retry({
+        count: MAX_RETRIES,
+        delay: (error, retryCount) => {
+          if (!shouldRetry(error)) {
+            return throwError(() => error);
+          }
+          const delay = RETRY_DELAY_MS * Math.pow(2, retryCount - 1);
+          console.warn(`Retrying request (attempt ${retryCount}/${MAX_RETRIES}) in ${delay}ms...`);
+          return timer(delay);
         },
-        headers: error.headers,
-        status: error.status,
-        statusText: error.statusText,
-        url: error.url || undefined,
-      });
+      }),
 
-      return throwError(() => enhancedError);
-    }),
-  );
+      // Handle errors
+      catchError((error: HttpErrorResponse) => {
+        // Log error for debugging
+        console.error('HTTP Error:', {
+          url: request.url,
+          status: error.status,
+          statusText: error.statusText,
+          message: error.error?.message || error.message,
+        });
+
+        // Handle 401 Unauthorized - refresh once, else redirect to login
+        if (error.status === 401 && shouldRedirectOnUnauthorized(request.url)) {
+          if (
+            allowRefresh &&
+            request.headers.has('Authorization') &&
+            injector.get(TokenService).getRefreshToken()
+          ) {
+            return refreshAndRetry(request, error);
+          }
+          endSession();
+        }
+
+        return throwError(() => enhanceError(error));
+      }),
+    );
+
+  return handle(req, true);
 };
