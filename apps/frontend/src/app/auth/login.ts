@@ -90,8 +90,9 @@ export class LoginComponent implements OnInit, AfterViewInit, OnDestroy {
   protected loginForm = new FormGroup({
     email: new FormControl('', [Validators.required, Validators.email]),
     password: new FormControl('', [Validators.required]),
-    // No «Husk meg» in the approved login: a password sign-in keeps the session store
-    rememberMe: new FormControl(false),
+    // No «Husk meg» in the approved login: a password sign-in is remembered, like QR and Google
+    // (ST-2539: a session store is lost whenever the home-screen app closes)
+    rememberMe: new FormControl(true),
   });
 
   private readonly passwordValue = toSignal(this.loginForm.controls.password.valueChanges, {

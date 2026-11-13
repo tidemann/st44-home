@@ -107,6 +107,21 @@ export class TokenService {
   }
 
   /**
+   * Where the stored tokens live, so refreshed tokens go back to the same place
+   */
+  getStorageStrategy(): TokenStorageStrategy {
+    return this.storage.getString(STORAGE_KEYS.REFRESH_TOKEN) ? 'persistent' : 'session';
+  }
+
+  /**
+   * Check if a non-expired refresh token is stored
+   */
+  hasValidRefreshToken(): boolean {
+    const token = this.getRefreshToken();
+    return token !== null && this.decodeToken(token) !== null;
+  }
+
+  /**
    * Check if a valid access token exists
    *
    * @returns True if a non-expired access token is stored
@@ -125,9 +140,10 @@ export class TokenService {
    * Decode a JWT token and extract its payload
    *
    * @param token - The JWT token to decode
+   * @param allowExpired - Return the payload of an expired token too
    * @returns The decoded token payload or null if invalid/expired
    */
-  decodeToken(token: string): DecodedToken | null {
+  decodeToken(token: string, allowExpired = false): DecodedToken | null {
     try {
       // JWT tokens have 3 parts separated by dots: header.payload.signature
       const parts = token.split('.');
@@ -142,7 +158,7 @@ export class TokenService {
 
       // Check if token is expired
       const now = Math.floor(Date.now() / 1000);
-      if (decoded.exp && decoded.exp < now) {
+      if (!allowExpired && decoded.exp && decoded.exp < now) {
         return null;
       }
 

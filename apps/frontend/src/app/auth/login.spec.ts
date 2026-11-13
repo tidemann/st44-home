@@ -64,11 +64,11 @@ describe('LoginComponent', () => {
       expect(component).toBeTruthy();
     });
 
-    it('should initialize form with empty values and rememberMe=false', () => {
+    it('should initialize form with empty values and rememberMe=true', () => {
       expect(component['loginForm'].value).toEqual({
         email: '',
         password: '',
-        rememberMe: false,
+        rememberMe: true,
       });
     });
 
@@ -300,18 +300,18 @@ describe('LoginComponent', () => {
       expect(component['passwordInvalid']()).toBe(false);
     });
 
-    it('should default rememberMe to false if not set', async () => {
+    it('should remember the sign-in by default (ST-2539)', async () => {
       component['loginForm'].patchValue({
         email: 'test@example.com',
         password: 'Test1234',
-        // rememberMe not set, will be null
+        // rememberMe not set, keeps its default
       });
 
       mockAuthService.login.mockReturnValue(of({ userId: '1', email: 'test@example.com' }));
 
       await component['onSubmit']();
 
-      expect(mockAuthService.login).toHaveBeenCalledWith('test@example.com', 'Test1234', false);
+      expect(mockAuthService.login).toHaveBeenCalledWith('test@example.com', 'Test1234', true);
     });
   });
 

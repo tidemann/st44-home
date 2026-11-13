@@ -33,7 +33,7 @@ export function requireJwtSecret(secret: string | undefined): string {
 // JWT Configuration
 export const JWT_SECRET = requireJwtSecret(process.env.JWT_SECRET);
 const JWT_ACCESS_EXPIRY = '1h';
-const JWT_REFRESH_EXPIRY = '7d';
+const JWT_REFRESH_EXPIRY = '30d';
 
 /**
  * Access token payload
@@ -101,7 +101,7 @@ export function generateAccessToken(
  *
  * @param userId - User ID to encode in token
  * @param secret - Optional secret (defaults to JWT_SECRET)
- * @param expiresIn - Optional expiry (defaults to 7d)
+ * @param expiresIn - Optional expiry (defaults to 30d)
  * @returns JWT refresh token string
  */
 export function generateRefreshToken(

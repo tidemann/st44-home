@@ -95,7 +95,7 @@ const loginSchemaBase = {
       type: 'object',
       properties: {
         accessToken: { type: 'string', description: 'JWT access token (1h expiry)' },
-        refreshToken: { type: 'string', description: 'JWT refresh token (7d expiry)' },
+        refreshToken: { type: 'string', description: 'JWT refresh token (30d expiry)' },
         userId: { type: 'string', format: 'uuid' },
         email: { type: 'string', format: 'email' },
         firstName: { type: 'string', nullable: true },
@@ -125,7 +125,7 @@ export const loginSchema = stripResponseValidation(loginSchemaBase);
 // POST /api/auth/refresh
 const refreshTokenSchemaBase = {
   summary: 'Refresh access token',
-  description: 'Get new access token using refresh token',
+  description: 'Get a new access token and a new (rotated) refresh token',
   tags: ['auth'],
   body: {
     type: 'object',
@@ -140,8 +140,9 @@ const refreshTokenSchemaBase = {
       type: 'object',
       properties: {
         accessToken: { type: 'string' },
+        refreshToken: { type: 'string' },
       },
-      required: ['accessToken'],
+      required: ['accessToken', 'refreshToken'],
     },
     400: errorResponseSchema,
     401: errorResponseSchema,
