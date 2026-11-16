@@ -94,7 +94,8 @@ services:
     logging: *logging
 
   gate:
-    image: nginx:1.27-alpine
+    # A fixed stable release: 1.27 gets no more fixes (CVE-2026-42533; ST-2575).
+    image: nginx:1.30.6-alpine
     container_name: st44-staging-gate
     restart: unless-stopped
     environment:
