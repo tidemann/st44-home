@@ -59,4 +59,14 @@ for svc in frontend backend db redis; do
     # shellcheck disable=SC2016 # literal: compose interpolates this, not bash
     printf '    environment:\n      POSTGRES_PASSWORD: ${DB_PASSWORD:?DB_PASSWORD must be set in the host .env}\n'
   fi
+  # The host file publishes postgres and redis on every interface (ST-2681). The
+  # backend reaches them by service name and the backups use `docker exec`, so
+  # nothing needs them from outside the host. `!override` replaces the host's
+  # list instead of merging with it; loopback keeps any host-local tool working.
+  if [ "$svc" = db ]; then
+    printf '    ports: !override\n      - "127.0.0.1:5432:5432"\n'
+  fi
+  if [ "$svc" = redis ]; then
+    printf '    ports: !override\n      - "127.0.0.1:6379:6379"\n'
+  fi
 done
