@@ -53,7 +53,10 @@ for svc in frontend backend db redis; do
     # shellcheck disable=SC2016 # literal: compose interpolates this, not bash
     printf '      VAPID_PRIVATE_KEY: ${VAPID_PRIVATE_KEY:-}\n'
     # shellcheck disable=SC2016 # literal: compose interpolates this, not bash
-    printf '      VAPID_SUBJECT: ${VAPID_SUBJECT:-https://home.st44.no}\n'
+    printf '      VAPID_SUBJECT: ${VAPID_SUBJECT:-https://diddit.no}\n'
+    # Links in mails (invitations, password reset) go to the public address
+    # (ST-2805). Fixed here, not read from the host .env, so the address is in git.
+    printf '      APP_URL: https://diddit.no\n'
   fi
   if [ "$svc" = db ]; then
     # shellcheck disable=SC2016 # literal: compose interpolates this, not bash

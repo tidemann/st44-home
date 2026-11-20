@@ -64,7 +64,7 @@ describe('Push Service', () => {
       assert.deepStrictEqual(readPushConfig({ VAPID_PUBLIC_KEY: 'p', VAPID_PRIVATE_KEY: 's' }), {
         publicKey: 'p',
         privateKey: 's',
-        subject: 'https://home.st44.no',
+        subject: 'https://diddit.no',
       });
     });
   });
