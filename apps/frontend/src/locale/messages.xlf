@@ -4772,7 +4772,7 @@
         </context-group>
       </trans-unit>
       <trans-unit id="qrCodeScanner.settingsHint" datatype="html">
-        <source> Har du sagt nei før? Slå på kamera for home.st44.no i innstillingene til nettleseren eller telefonen, og trykk på knappen igjen. Du kan også logge inn med e-post og passord. </source>
+        <source> Har du sagt nei før? Slå på kamera for diddit.no i innstillingene til nettleseren eller telefonen, og trykk på knappen igjen. Du kan også logge inn med e-post og passord. </source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/components/qr-code-scanner/qr-code-scanner.html</context>
           <context context-type="linenumber">28,31</context>
@@ -8312,7 +8312,7 @@
         </context-group>
       </trans-unit>
       <trans-unit id="setupWizard.childrenLead" datatype="html">
-        <source> Hvert barn får sin egen QR-kode. Barnet åpner home.st44.no på sin telefon eller sitt nettbrett, trykker «Skann QR-kode for å logge inn» og holder kameraet mot koden. </source>
+        <source> Hvert barn får sin egen QR-kode. Barnet åpner diddit.no på sin telefon eller sitt nettbrett, trykker «Skann QR-kode for å logge inn» og holder kameraet mot koden. </source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/pages/setup-wizard/setup-wizard.html</context>
           <context context-type="linenumber">80,82</context>

@@ -10,8 +10,8 @@ import type {
 } from '@st44/types';
 import { ApiService } from './api.service';
 
-/** Public address of the chore's QR code and NFC sticker (ST-2075) */
-export const SCAN_LINK_BASE = 'https://home.st44.no/s/';
+/** Public address of the chore's QR code and NFC sticker (ST-2075; diddit.no since ST-2805) */
+export const SCAN_LINK_BASE = 'https://diddit.no/s/';
 
 export function scanLink(code: string): string {
   return `${SCAN_LINK_BASE}${code}`;
