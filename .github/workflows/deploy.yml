@@ -58,7 +58,8 @@ env:
   # path: `$HOME` is resolved on the host, and /tmp is not used because anyone on
   # the box can write there and this file decides what the site runs.
   PIN_NAME: st44-home-image-pin.yml
-  SITE_HOST: home.st44.no
+  # Diddit answers on both (ST-2805); home.st44.no stays for installed phones and push.
+  SITE_HOSTS: diddit.no home.st44.no
 
 jobs:
   # One place decides what this run builds, what tag it deploys, and whether it
@@ -565,36 +566,40 @@ jobs:
       - name: Verify the public health endpoint
         run: |
           set -euo pipefail
-          for i in $(seq 1 30); do
-            # curl already reports 000 for a connection or TLS failure; `|| true`
-            # only stops `set -e` from aborting the retry loop.
-            code="$(curl -sS -o /dev/null -w '%{http_code}' "https://${SITE_HOST}/health" || true)"
-            if [ "$code" = "200" ]; then
-              echo "public health: 200 over valid TLS"
-              exit 0
-            fi
-            echo "attempt $i: http=$code"
-            sleep 10
+          for host in ${SITE_HOSTS}; do
+            for i in $(seq 1 30); do
+              # curl already reports 000 for a connection or TLS failure; `|| true`
+              # only stops `set -e` from aborting the retry loop.
+              code="$(curl -sS -o /dev/null -w '%{http_code}' "https://${host}/health" || true)"
+              if [ "$code" = "200" ]; then
+                echo "${host} health: 200 over valid TLS"
+                continue 2
+              fi
+              echo "${host} attempt $i: http=$code"
+              sleep 10
+            done
+            echo "::error::https://${host}/health did not return 200"
+            exit 1
           done
-          echo "::error::https://${SITE_HOST}/health did not return 200"
-          exit 1
 
       # /health stayed 200 in the #719 deploy while every page gave 502, so a page must
       # answer too.
       - name: Verify a public frontend page
         run: |
           set -euo pipefail
-          for i in $(seq 1 30); do
-            code="$(curl -sS -o /dev/null -w '%{http_code}' "https://${SITE_HOST}/no/" || true)"
-            if [ "$code" = "200" ]; then
-              echo "public /no/: 200"
-              exit 0
-            fi
-            echo "attempt $i: http=$code"
-            sleep 10
+          for host in ${SITE_HOSTS}; do
+            for i in $(seq 1 30); do
+              code="$(curl -sS -o /dev/null -w '%{http_code}' "https://${host}/no/" || true)"
+              if [ "$code" = "200" ]; then
+                echo "${host} /no/: 200"
+                continue 2
+              fi
+              echo "${host} attempt $i: http=$code"
+              sleep 10
+            done
+            echo "::error::https://${host}/no/ did not return 200"
+            exit 1
           done
-          echo "::error::https://${SITE_HOST}/no/ did not return 200"
-          exit 1
 
       - name: Record the deployed tag
         if: always()

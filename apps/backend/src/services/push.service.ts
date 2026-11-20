@@ -69,7 +69,7 @@ const DONE_TTL_SECONDS = 12 * 60 * 60;
 /** How often the reminder job looks for due chores */
 const REMINDER_CHECK_MS = 5 * 60 * 1000;
 
-const DEFAULT_SUBJECT = 'https://home.st44.no';
+const DEFAULT_SUBJECT = 'https://diddit.no';
 
 export function readPushConfig(env: NodeJS.ProcessEnv = process.env): PushConfig | null {
   const publicKey = env.VAPID_PUBLIC_KEY?.trim();
